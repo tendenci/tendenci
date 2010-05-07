@@ -1,6 +1,6 @@
 # Django settings for temp project.
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
