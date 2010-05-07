@@ -1,5 +1,9 @@
 # Ignore all dotfiles...
 .*
 
+# Ignore all pyc file
+*.pyc
+
 # except for .gitignore
 !.gitignore
+
