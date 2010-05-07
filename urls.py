@@ -1,12 +1,12 @@
 from django.conf.urls.defaults import *
+from django.views.generic.simple import direct_to_template
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^temp/', include('temp.foo.urls')),
+    url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
 
     # Uncomment the admin/doc line below and add 'django.contrib.admindocs' 
     # to INSTALLED_APPS to enable admin documentation:
