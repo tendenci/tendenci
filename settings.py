@@ -1,6 +1,10 @@
 import os.path
+import sys
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
+APPS_PATH = os.path.join(PROJECT_ROOT, 'apps')
+sys.path.insert(0, APPS_PATH)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
