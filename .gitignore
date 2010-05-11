@@ -1,3 +1,7 @@
+# Ignore all local development files
+local_settings.py
+local_urls.py
+
 # Ignore all dotfiles...
 .*
 

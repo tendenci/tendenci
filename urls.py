@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+# Django admin
+from django.contrib import admin
+admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
@@ -13,5 +13,12 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    # (r'^admin/', include(admin.site.urls)),
+    (r'^admin/', include(admin.site.urls)),
 )
+
+# Local url patterns for development
+try:
+    from local_urls import MEDIA_PATTERNS
+    urlpatterns += MEDIA_PATTERNS
+except ImportError:
+    pass
