@@ -91,7 +91,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
 
     # tendenci application
-    'profiles'
+    'profiles',
     'articles',
 )
 

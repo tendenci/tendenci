@@ -4,8 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 from timezones.fields import TimeZoneField
+from base.models import AuthorityBase
 
-class Profile(models.Model):
+class Profile(AuthorityBase):
     # relations
     user = models.ForeignKey(User, unique=True, verbose_name=_('user'))
     
@@ -62,14 +63,6 @@ class Profile(models.Model):
     hide_phone = models.BooleanField()   
     first_responder = models.BooleanField(_('first responder'))
     agreed_to_tos = models.BooleanField(_('agrees to tos'))
-
-    # authority fields
-    creator = models.ForeignKey(User, related_name="creator")
-    creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="owner")    
-    owner_username = models.CharField(max_length=50)
-    status = models.IntegerField()
-    status_detail = models.TextField()
     
     # date fields
     create_dt = models.DateTimeField(auto_now_add=True)
