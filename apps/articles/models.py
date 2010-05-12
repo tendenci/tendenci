@@ -1,9 +1,8 @@
-
-# django
 from django.db import models
-from django.contrib.auth.models import User
 
-class Article(models.Model):
+from base.models import AuthorityBase
+
+class Article(AuthorityBase):
 
     guid = models.CharField(max_length=50, unique=True, blank=True)
     timezone = models.CharField(max_length=5, blank=True)
@@ -34,18 +33,8 @@ class Article(models.Model):
 
     create_dt = models.DateTimeField(auto_now_add=True)
 
-    creator = models.ForeignKey(User, related_name="creator")
-    creator_username = models.CharField(max_length=50, blank=True)
-    owner = models.ForeignKey(User, related_name="owner")
-    owner_username = models.CharField(max_length=50, blank=True)
-
-    status = models.BooleanField()
-    status_detail = models.CharField(max_length=50, blank=True)
-
     syndicate = models.BooleanField()
-
     featured = models.BooleanField()
-
     design_notes = models.TextField(blank=True)
 
     # for podcast feeds

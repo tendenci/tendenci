@@ -14,7 +14,8 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
-    (r'^en/articles/', include('articles.urls')),
+    (r'^articles/', include('articles.urls')),
+    (r'^profiles/', include('profiles.urls')),
 )
 
 # Local url patterns for development
