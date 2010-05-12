@@ -34,6 +34,9 @@ TIME_ZONE = 'America/Chicago'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
+LANGUAGES = (
+    ('en-us', u'English'),
+)
 
 SITE_ID = 1
 
@@ -86,7 +89,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    
+    # tendenci application
+    'profiles'
 )
+
+AUTH_PROFILE_MODULE = 'profiles.Profile'
 
 # local settings for development
 try:
