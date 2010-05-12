@@ -5,8 +5,8 @@ from django.contrib.auth.models import User
 
 class Article(models.Model):
 
-    guid = models.CharField(max_length=50, unique=True)
-    timezone = models.CharField(max_length=5)
+    guid = models.CharField(max_length=50, unique=True, blank=True)
+    timezone = models.CharField(max_length=5, blank=True)
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
     body = models.TextField(blank=True)
@@ -35,12 +35,12 @@ class Article(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
 
     creator = models.ForeignKey(User, related_name="creator")
-    creator_username = models.CharField(max_length=50)
+    creator_username = models.CharField(max_length=50, blank=True)
     owner = models.ForeignKey(User, related_name="owner")
-    owner_username = models.CharField(max_length=50)
+    owner_username = models.CharField(max_length=50, blank=True)
 
     status = models.BooleanField()
-    status_detail = models.CharField(max_length=50)
+    status_detail = models.CharField(max_length=50, blank=True)
 
     syndicate = models.BooleanField()
 
@@ -49,8 +49,8 @@ class Article(models.Model):
     design_notes = models.TextField(blank=True)
 
     # for podcast feeds
-    enclosure_url = models.CharField(max_length=500)
-    enclosure_type = models.CharField(max_length=120)
+    enclosure_url = models.CharField(max_length=500, blank=True)
+    enclosure_type = models.CharField(max_length=120, blank=True)
     enclosure_length = models.IntegerField()
 
     not_official_content = models.BooleanField(blank=True)
