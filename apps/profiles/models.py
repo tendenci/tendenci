@@ -64,9 +64,9 @@ class Profile(models.Model):
     agreed_to_tos = models.BooleanField(_('agrees to tos'))
 
     # authority fields
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, related_name="creator")
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User)    
+    owner = models.ForeignKey(User, related_name="owner")    
     owner_username = models.CharField(max_length=50)
     status = models.IntegerField()
     status_detail = models.TextField()
