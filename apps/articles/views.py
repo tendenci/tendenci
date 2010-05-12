@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 # local
 from articles.models import Article
 
-def index(request, template_name="articles/articles.html"):
+def index(request, template_name="articles/index.html"):
     return HttpResponseRedirect(reverse('article.search'))
 
 def search(request, template_name="articles/search.html"):
