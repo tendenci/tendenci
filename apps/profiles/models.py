@@ -4,9 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 from timezones.fields import TimeZoneField
-from base.models import AuthorityBase
+from base.models import AuditingBase
 
-class Profile(AuthorityBase):
+class Profile(AuditingBase):
     # relations
     user = models.ForeignKey(User, unique=True, verbose_name=_('user'))
     

@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from base.models import AuthorityBase
+from timezones.fields import TimeZoneField
+from base.models import AuditingBase
 
-class Article(AuthorityBase):
-
+class Article(AuditingBase):
     guid = models.CharField(max_length=50, unique=True)
-    timezone = models.CharField(max_length=5)
+    timezone = TimeZoneField()
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
     body = models.TextField(blank=True)
@@ -39,9 +39,9 @@ class Article(AuthorityBase):
     design_notes = models.TextField(blank=True)
 
     # for podcast feeds
-    enclosure_url = models.CharField(max_length=500)
-    enclosure_type = models.CharField(max_length=120)
-    enclosure_length = models.IntegerField()
+    enclosure_url = models.CharField(max_length=500, blank=True)
+    enclosure_type = models.CharField(max_length=120, blank=True)
+    enclosure_length = models.IntegerField(default=0)
 
     not_official_content = models.BooleanField(blank=True)
 
