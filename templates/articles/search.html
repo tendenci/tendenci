@@ -1,9 +1,81 @@
-<h1>Articles Search Page</h1>
+{% extends "articles/base.html" %}
+{% load pagination_tags %}
 
-<ul>
-	<li><a href="{% url article.search %}">Search</a></li>
-	<li><a href="{% url article.view %}">View</a></li>
-	<li><a href="{% url article.print_view %}">Print View</a></li>
-	<li><a href="{% url article.edit %}">Edit</a></li>
-	<li><a href="{% url article.delete %}">Delete</a></li>
-</ul>
+{% block title %}Search Page{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/articles.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Articles Search Page</h1>
+    
+    <div class="back-to-search"><a href="{% url article.search %}">&laquo; Back to articles search</a></div>
+
+    {% autopaginate articles 10 %}
+
+	<div class="articles-wrap">
+    {% for article in articles %}
+		<div class="article-wrap">
+
+
+			<div class="options">
+
+                <div class="dropdown-options">
+                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <ul>
+                        <li>Review Reports</li>
+                        <li>Optimize Meta Tags</li>
+                        <li>Attach Files</li>
+                        <li>View Revisions</li>
+                        <li>Delete</li>
+                    </ul>
+                </div>
+
+                <div class="quick-options">
+                    <ul>
+                        <li><a href="{% url article.print_view article.id %}">Print</a></li>
+                        <li><a href="{% url article.edit article.id %}">Edit</a></li>
+						<li class="delete"><a href="{% url article.delete article.id %}">Delete</a></li>
+                    </ul>
+                </div>
+			</div>
+
+
+            <h2><a href="{% url article article.id %}">{{ article.headline }}</a></h2>
+            <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
+			<div class="meta">
+            	<div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
+            </div>
+		</div>
+
+		<!-- delete-article form -->
+        <form name="article-delete" method="POST" action="{% url article.delete article.id %}">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="delete_id" value="181" />
+        </form>
+
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block body_bottom %}
+
+	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_article = confirm('Permenantly delete article?');	// confirm
+				if(delete_article) $('form[name="article-delete"]').submit();	// delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+{% endblock %}
