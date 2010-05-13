@@ -1,9 +1,49 @@
-<h1>Articles Print View Page</h1>
+{% extends "articles/base.html" %}
 
-<ul>
-	<li><a href="{% url article.search %}">Search</a></li>
-	<li><a href="{% url article.view %}">View</a></li>
-	<li><a href="{% url article.print_view %}">Print View</a></li>
-	<li><a href="{% url article.edit %}">Edit</a></li>
-	<li><a href="{% url article.delete %}">Delete</a></li>
-</ul>
+{% block title %}View Page{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/articles.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Articles View Page</h1>
+    
+    <div class="back-to-search"><a href="{% url article.search %}">&laquo; Back to articles search</a></div>
+
+    <div class="article-wrap">
+
+        <div class="options">
+
+            <div class="dropdown-options">
+                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                <ul>
+                    <li>Review Reports</li>
+                    <li>Optimize Meta Tags</li>
+                    <li>Attach Files</li>
+                    <li>View Revisions</li>
+                    <li>Delete</li>
+                </ul>
+            </div>
+
+            <div class="quick-options">
+                <ul>
+                    <li><a href="{% url article.print_view article.id %}">Print</a></li>
+                    <li><a href="{% url article.edit article.id %}">Edit</a></li>
+                    <li><a href="{% url article.delete article.id %">Delete</a></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <h2>{{ article.headline }}</h2>
+        <div class="content">{{ article.body|safe }}</div>
+        <div class="meta">
+            <div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
