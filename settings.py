@@ -1,8 +1,8 @@
 import os.path
 import sys
 
+# Paths
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-
 APPS_PATH = os.path.join(PROJECT_ROOT, 'apps')
 sys.path.insert(0, APPS_PATH)
 
@@ -83,6 +83,14 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.request',
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -90,7 +98,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
 
-    # tendenci application
+    # third party applications
+    'authority',
+    
+    # tendenci applications
     'profiles',
     'articles',
 )
