@@ -1,10 +1,9 @@
 from django.db import models
-
 from base.models import AuthorityBase
 
 class Article(AuthorityBase):
 
-    guid = models.CharField(max_length=50, unique=True, blank=True)
+    guid = models.CharField(max_length=50, unique=False, blank=True)
     timezone = models.CharField(max_length=5, blank=True)
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
