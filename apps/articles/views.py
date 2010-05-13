@@ -3,8 +3,6 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-# local
-from articles.models import Article
 
 def index(request, template_name="articles/index.html"):
     return HttpResponseRedirect(reverse('article.search'))
