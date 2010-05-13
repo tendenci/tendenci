@@ -13,6 +13,7 @@ ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
 	('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jennifer Ulmer', 'julmer@schipul.com'),
+    ('Jenny Qian3', 'jqian@schipul.com'),
 )
 
 MANAGERS = ADMINS
@@ -72,6 +73,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'pagination.middleware.PaginationMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
@@ -100,6 +102,7 @@ INSTALLED_APPS = (
 
     # third party applications
     'authority',
+    'pagination',
     
     # tendenci applications
     'profiles',

@@ -5,7 +5,7 @@ from timezones.fields import TimeZoneField
 from base.models import AuditingBase
 
 class Article(AuditingBase):
-    guid = models.CharField(max_length=50, unique=True)
+    guid = models.CharField(max_length=50, unique=False, blank=True)
     timezone = TimeZoneField()
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
