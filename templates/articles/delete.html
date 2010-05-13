@@ -1,9 +1,5 @@
-<h1>Articles Delete Page</h1>
 
-<ul>
-	<li><a href="{% url article.search %}">Search</a></li>
-	<li><a href="{% url article.view %}">View</a></li>
-	<li><a href="{% url article.print_view %}">Print View</a></li>
-	<li><a href="{% url article.edit %}">Edit</a></li>
-	<li><a href="{% url article.delete %}">Delete</a></li>
-</ul>
+{% block body %}
+<h1>Articles Delete Page</h1>
+<div class="back-to-search"><a href="{% url article.search %}">&laquo; Back to articles search</a></div>
+{% endblock %}
