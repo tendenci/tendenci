@@ -1,9 +1,26 @@
-<h1>Articles Edit Page</h1>
+{% extends "articles/base.html" %}
 
-<ul>
-	<li><a href="{% url article.search %}">Search</a></li>
-	<li><a href="{% url article.view %}">View</a></li>
-	<li><a href="{% url article.print_view %}">Print View</a></li>
-	<li><a href="{% url article.edit %}">Edit</a></li>
-	<li><a href="{% url article.delete %}">Delete</a></li>
-</ul>
+{% block title %}Edit Page{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/articles.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Articles Edit Page</h1>
+    
+    <div class="back-to-search"><a href="{% url article.search %}">&laquo; Back to articles search</a></div>
+
+    <div class="article-wrap">
+
+    <form action="{% url article.edit article.id %}" method="post">
+        {{ form.as_p }}
+        <input type="submit" value="Save changes" />
+    </form>
+
+    </div>
+
+</div>
+{% endblock %}
