@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
 
 from timezones.fields import TimeZoneField
 from base.models import AuditingBase

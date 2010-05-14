@@ -56,7 +56,8 @@
             <input type="hidden" name="action" value="delete">
             <input type="hidden" name="delete_id" value="181" />
         </form>
-
+	{% empty %}
+		<div>0 Results Found</div>
     {% endfor %}
 	</div>
 
