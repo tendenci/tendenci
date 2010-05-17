@@ -46,9 +46,9 @@ class Authorize(object):
         if self.instance:
             if self.check.allow_anonymous_view(self.instance):
                 auth = True
-            if self.check.allow_user_view(self.instance):
+            elif self.check.allow_user_view(self.instance):
                 auth = True
-            if check_view(self.instance):
+            elif check_view(self.instance):
                 auth = True
         else:
             if check_view():
