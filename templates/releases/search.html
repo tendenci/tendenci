@@ -1,0 +1,83 @@
+{% extends "releases/base.html" %}
+{% load pagination_tags %}
+
+{% block title %}Search Page{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/releases.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Releases Search Page</h1>
+    
+    <div class="back-to-search"><a href="{% url release.search %}">&laquo; Back to releases search</a></div>
+
+    {% autopaginate releases 10 %}
+
+	<div class="releases-wrap">
+    {% for release in releases %}
+		<div class="release-wrap">
+
+
+			<div class="options">
+
+                <div class="dropdown-options">
+                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <ul>
+                        <li>Review Reports</li>
+                        <li>Optimize Meta Tags</li>
+                        <li>Attach Files</li>
+                        <li>View Revisions</li>
+                        <li>Delete</li>
+                    </ul>
+                </div>
+
+                <div class="quick-options">
+                    <ul>
+                        <li><a href="{% url release.print_view release.id %}">Print</a></li>
+                        <li><a href="{% url release.edit release.id %}">Edit</a></li>
+						<li class="delete"><a href="{% url release.delete release.id %}">Delete</a></li>
+                    </ul>
+                </div>
+			</div>
+
+
+            <h2><a href="{% url release release.id %}">{{ release.headline }}</a></h2>
+            <div class="content">{{ release.body|striptags|truncatewords:20 }}</div>
+			<div class="meta">
+            	<div class="submitted">Submitted on {{ release.create_dt|date:"D d M Y P" }} by {{ release.creator }}</div>
+            </div>
+
+            <!-- delete-release form -->
+            <form name="release-delete" method="POST" action="{% url release.delete release.id %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+
+		</div>
+
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block body_bottom %}
+
+	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_release = confirm('Permenantly delete release?');	// confirm
+				if(delete_release) $(this).parents('.release-wrap').find('form[name="release-delete"]').submit() // delete: if OK
+				return false;
+			});
+		});
+    </script>
+{% endblock %}
