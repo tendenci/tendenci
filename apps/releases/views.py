@@ -6,9 +6,6 @@ from django.core.urlresolvers import reverse
 
 from releases.models import Release
 from releases.forms import ReleaseForm
-from releases.permissions import ReleasePermission
-from base.auth import Authorize
-
 
 def index(request, id=None, template_name="releases/view.html"):
     if not id: return HttpResponseRedirect(reverse('release.search'))
