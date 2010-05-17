@@ -107,6 +107,7 @@ INSTALLED_APPS = (
     # tendenci applications
     'profiles',
     'articles',
+    'releases',
 )
 
 AUTH_PROFILE_MODULE = 'profiles.Profile'
