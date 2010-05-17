@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     (r'^articles/', include('articles.urls')),
     (r'^releases/', include('releases.urls')),
     (r'^profiles/', include('profiles.urls')),
+    (r'^stories/', include('stories.urls')),
 )
 
 # Local url patterns for development
