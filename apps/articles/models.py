@@ -4,6 +4,8 @@ from timezones.fields import TimeZoneField
 from base.models import AuditingBase
 
 class Article(AuditingBase):
+
+    # TODO: make unique=True (dependent on migration script)
     guid = models.CharField(max_length=50, unique=False, blank=True)
     timezone = TimeZoneField()
     headline = models.CharField(max_length=200, blank=True)
@@ -34,6 +36,8 @@ class Article(AuditingBase):
     create_dt = models.DateTimeField(auto_now_add=True)
 
     syndicate = models.BooleanField()
+
+    # TODO: might go away with tags
     featured = models.BooleanField()
     design_notes = models.TextField(blank=True)
 
