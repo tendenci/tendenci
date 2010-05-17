@@ -4,20 +4,44 @@ unittest). These will both pass when you run "manage.py test".
 
 Replace these with more appropriate tests for your application.
 """
+from django.test import TestCase, Client
+from django.contrib.auth.models import User
 
-from django.test import TestCase
+from articles.models import Article
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+class ArticleTest(TestCase):
+    def setUp(self):
+        # create the objects needed
+        self.client = Client()
+        self.article = Article()
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
-
->>> 1 + 1 == 2
-True
-"""}
+        self.user = User(username='admin')
+        self.user.set_password('google')
+        self.user.is_active = True
+        self.user.save()
+        
+    
+    def tearDown(self):
+        self.client = None
+        self.article = None
+        self.user = None
+        
+    def test_save(self):
+        self.article.headline = 'Unit Testing'
+        self.article.summary = 'Unit Testing'
+        
+        # required fields
+        self.article.creator = self.user
+        self.article.creator_username = self.user.username
+        self.article.owner = self.user
+        self.article.owner_username = self.user.username
+        self.article.status = True
+        self.article.status_detail = 'active'
+        self.article.enclosure_length = 0   
+        self.article.timezone = 'America/Chicago'
+        
+        self.article.save()
+        
+        self.assertEquals(type(self.article.id), long)
+        
 
