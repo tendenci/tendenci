@@ -108,6 +108,7 @@ INSTALLED_APPS = (
     'profiles',
     'articles',
     'releases',
+    'stories',
 )
 
 AUTH_PROFILE_MODULE = 'profiles.Profile'
