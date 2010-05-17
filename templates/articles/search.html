@@ -49,14 +49,15 @@
 			<div class="meta">
             	<div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
             </div>
+
+            <!-- delete-article form -->
+            <form name="article-delete" method="POST" action="{% url article.delete article.id %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+
 		</div>
-
-		<!-- delete-article form -->
-        <form name="article-delete" method="POST" action="{% url article.delete article.id %}">
-            <input type="hidden" name="action" value="delete">
-            <input type="hidden" name="delete_id" value="181" />
-        </form>
-
+	{% empty %}
+		<div>0 Results Found</div>
     {% endfor %}
 	</div>
 
@@ -73,7 +74,7 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_article = confirm('Permenantly delete article?');	// confirm
-				if(delete_article) $('form[name="article-delete"]').submit();	// delete: if OK
+				if(delete_article) $(this).parents('.article-wrap').find('form[name="article-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});
