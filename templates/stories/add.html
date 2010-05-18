@@ -1,0 +1,28 @@
+{% extends "stories/base.html" %}
+
+{% load i18n %}
+
+{% block title %}Add a Story{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/stories.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Add a Story</h1>
+    
+    <div class="back-to-search"><a href="{% url story.search %}">&laquo; Back to stories search</a></div>
+
+    <div class="story-wrap">
+
+    <form action="{% url story.add %}" method="post">
+        {{ form.as_p }}
+        <input type="submit" value="Save changes" />
+    </form>
+
+    </div>
+
+</div>
+{% endblock %}

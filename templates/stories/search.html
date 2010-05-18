@@ -1,26 +1,24 @@
-{% extends "articles/base.html" %}
+{% extends "stories/base.html" %}
 {% load pagination_tags %}
 
 {% block title %}Search Page{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="/site_media/static/css/articles.css">
+<link rel="stylesheet" href="/site_media/static/css/stories.css">
 {% endblock %}
 
 {% block body %}
 
 <div class="t">
-    <h1>Articles Search Page</h1>
+    <h1>Stories Search Page</h1>
+    
+    <div class="add-story-link"><a href="{% url story.add %}">Add a Story</a></div>
 
-    <div class="back-to-search">
-    	<a href="/">&laquo; Homepage</a>
-	</div>
+    {% autopaginate stories 10 %}
 
-    {% autopaginate articles 10 %}
-
-	<div class="articles-wrap">
-    {% for article in articles %}
-		<div class="article-wrap">
+	<div class="stories-wrap">
+    {% for story in stories %}
+		<div class="story-wrap">
 
 
 			<div class="options">
@@ -34,26 +32,25 @@
                         <li>View Revisions</li>
                         <li>Delete</li>
                     </ul>
-                </div>
+               </div>
 
                 <div class="quick-options">
                     <ul>
-                        <li><a href="{% url article.print_view article.id %}">Print</a></li>
-                        <li><a href="{% url article.edit article.id %}">Edit</a></li>
-						<li class="delete"><a href="{% url article.delete article.id %}">Delete</a></li>
+                        <li><a href="{% url story.edit story.id %}">Edit</a></li>
+						<li class="delete"><a href="{% url story.delete story.id %}">Delete</a></li>
                     </ul>
                 </div>
 			</div>
 
 
-            <h2><a href="{% url article article.id %}">{{ article.headline }}</a></h2>
-            <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
+            <h2><a href="{% url story story.id %}">{{ story.title }}</a></h2>
+            <div class="content">{{ story.content|striptags|truncatewords:200 }}</div>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
+            	<div class="submitted">Submitted on {{ story.create_dt|date:"D d M Y P" }} by {{ story.creator }}</div>
             </div>
 
-            <!-- delete-article form -->
-            <form name="article-delete" method="POST" action="{% url article.delete article.id %}">
+            <!-- delete-story form -->
+            <form name="story-delete" method="POST" action="{% url story.delete story.id %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 
@@ -75,8 +72,8 @@
 
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_article = confirm('Permenantly delete article?');	// confirm
-				if(delete_article) $(this).parents('.article-wrap').find('form[name="article-delete"]').submit() // delete: if OK
+				var delete_story = confirm('Permenantly deletestory?');	// confirm
+				if(delete_story) $(this).parents('.story-wrap').find('form[name="story-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});
