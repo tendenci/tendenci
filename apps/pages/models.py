@@ -15,17 +15,10 @@ class Page(AuditingBase):
     meta_keywords = models.TextField(blank=True)
     meta_description = models.TextField(blank=True)
 
-    # might go away w/ permissions
-    allow_anonymous_view = models.BooleanField()
-    allow_site_user_view = models.BooleanField()
-    allow_member_view = models.BooleanField()
-    allow_anonymous_edit = models.BooleanField()
-    allow_site_user_edit = models.BooleanField()
-    allow_member_edit = models.BooleanField()
-
     update_dt = models.DateTimeField(auto_now=True)
     create_dt = models.DateTimeField(auto_now_add=True)
 
+    view_contact_form = models.BooleanField()
     design_notes = models.TextField(blank=True)
 
     syndicate = models.BooleanField()
