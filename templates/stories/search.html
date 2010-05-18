@@ -4,7 +4,7 @@
 {% block title %}Search Page{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="/site_media/static/css/articles.css">
+<link rel="stylesheet" href="/site_media/static/css/stories.css">
 {% endblock %}
 
 {% block body %}
@@ -12,13 +12,13 @@
 <div class="t">
     <h1>Stories Search Page</h1>
     
-    <div class="back-to-search"><a href="{% url story.search %}">&laquo; Back to stories search</a></div>
+    <div class="add-story-link"><a href="{% url story.add %}">Add a Story</a></div>
 
     {% autopaginate stories 10 %}
 
-	<div class="articles-wrap">
+	<div class="stories-wrap">
     {% for story in stories %}
-		<div class="article-wrap">
+		<div class="story-wrap">
 
 
 			<div class="options">
@@ -32,7 +32,7 @@
                         <li>View Revisions</li>
                         <li>Delete</li>
                     </ul>
-                </div>
+               </div>
 
                 <div class="quick-options">
                     <ul>
@@ -44,13 +44,13 @@
 
 
             <h2><a href="{% url story story.id %}">{{ story.title }}</a></h2>
-            <div class="content">{{ story.content|striptags|truncatewords:20 }}</div>
+            <div class="content">{{ story.content|striptags|truncatewords:200 }}</div>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ story.create_dt|date:"D d M Y P" }} by {{ story.creator }}</div>
             </div>
 
-            <!-- delete-article form -->
-            <form name="article-delete" method="POST" action="{% url story.delete story.id %}">
+            <!-- delete-story form -->
+            <form name="story-delete" method="POST" action="{% url story.delete story.id %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 
@@ -73,7 +73,7 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_story = confirm('Permenantly deletestory?');	// confirm
-				if(delete_story) $(this).parents('.article-wrap').find('form[name="article-delete"]').submit() // delete: if OK
+				if(delete_story) $(this).parents('.story-wrap').find('form[name="story-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});
