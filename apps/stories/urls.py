@@ -1,0 +1,10 @@
+from django.conf.urls.defaults import patterns, url
+
+urlpatterns = patterns('',                  
+    url(r'^$', 'stories.views.index', name="stories"),
+    url(r'^(?P<id>\d+)/$', 'stories.views.index', name="story"),
+    url(r'^search/$', 'stories.views.search', name="story.search"),
+    url(r'^add/$', 'stories.views.add', name="story.add"),
+    url(r'^edit/(?P<id>\d+)/$', 'stories.views.edit', name="story.edit"),
+    url(r'^delete/(?P<id>\d+)/$', 'stories.views.delete', name="story.delete"),
+)
