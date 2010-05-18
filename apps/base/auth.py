@@ -44,6 +44,17 @@ class Authorize(object):
         self.globals = {"__builtins__": None}
         self.locals = {'self': self}
         
+    def assign(self, check=None, content_object=None, generic=False):
+        """
+        Assign a permission to a user.
+
+        To assign permission for all checks: let check=None.
+        To assign permission for all objects: let content_object=None.
+
+        If generic is True then "check" will be suffixed with _modelname.
+        """
+        self.check.assign(check, content_object, generic)
+        
     def view(self):
         auth = False
         check_view = eval('self.check.view_%s' % (self.object_name,),
