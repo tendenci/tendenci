@@ -14,9 +14,9 @@ class PageForm(ModelForm):
         'meta_description',
 
         'allow_anonymous_view',
-        'allow_site_user_view',
+        'allow_user_view',
         'allow_member_view',
-        'allow_site_user_edit',
+        'allow_user_edit',
         'allow_member_edit',
 
         'syndicate',
