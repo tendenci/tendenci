@@ -44,6 +44,8 @@ class Article(AuditingBase):
     meta_keywords = models.TextField(blank=True)
     meta_description = models.TextField(blank=True)
 
+    class Meta:
+        permissions = (("view_article","Can view article"),)
     def __unicode__(self):
         return self.headline
 
