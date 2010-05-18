@@ -1,6 +1,6 @@
 {% extends "articles/base.html" %}
 
-{% block title %}Edit Page{% endblock %}
+{% block title %}Add Page{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="/site_media/static/css/articles.css">
@@ -9,14 +9,14 @@
 {% block body %}
 
 <div class="t">
-    <h1>Articles Edit Page</h1>
+    <h1>Articles Add Page</h1>
     
     <div class="back-to-search"><a href="{% url article.search %}">&laquo; Back to articles search</a></div>
 
     <div class="article-wrap">
-    <form action="{% url article.edit article.id %}" method="post">
+    <form action="{% url article.add %}" method="post">
         {{ form.as_p }}
-        <input type="submit" value="Save changes" />
+        <input type="submit" value="Add Article" />
     </form>
 
     </div>
