@@ -1,0 +1,26 @@
+{% extends "pages/base.html" %}
+
+{% block title %}Edit Page{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/pages.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Pages Edit Page</h1>
+    
+    <div class="back-to-search"><a href="{% url page.search %}">&laquo; Back to pages search</a></div>
+
+    <div class="page-wrap">
+
+    <form action="{% url page.edit page.id %}" method="post">
+        {{ form.as_p }}
+        <input type="submit" value="Save changes" />
+    </form>
+
+    </div>
+
+</div>
+{% endblock %}

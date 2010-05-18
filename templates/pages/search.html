@@ -1,26 +1,26 @@
-{% extends "articles/base.html" %}
+{% extends "pages/base.html" %}
 {% load pagination_tags %}
 
 {% block title %}Search Page{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="/site_media/static/css/articles.css">
+<link rel="stylesheet" href="/site_media/static/css/pages.css">
 {% endblock %}
 
 {% block body %}
 
 <div class="t">
-    <h1>Articles Search Page</h1>
+    <h1>Pages Search Page</h1>
     
     <div class="back-to-search">
     	<a href="/">&laquo; Homepage</a>
 	</div>
 
-    {% autopaginate articles 10 %}
+    {% autopaginate pages 10 %}
 
-	<div class="articles-wrap">
-    {% for article in articles %}
-		<div class="article-wrap">
+	<div class="pages-wrap">
+    {% for page in pages %}
+		<div class="page-wrap">
 
 
 			<div class="options">
@@ -38,22 +38,22 @@
 
                 <div class="quick-options">
                     <ul>
-                        <li><a href="{% url article.print_view article.id %}">Print</a></li>
-                        <li><a href="{% url article.edit article.id %}">Edit</a></li>
-						<li class="delete"><a href="{% url article.delete article.id %}">Delete</a></li>
+                        <li><a href="{% url page.print_view page.id %}">Print</a></li>
+                        <li><a href="{% url page.edit page.id %}">Edit</a></li>
+						<li class="delete"><a href="{% url page.delete page.id %}">Delete</a></li>
                     </ul>
                 </div>
 			</div>
 
 
-            <h2><a href="{% url article article.id %}">{{ article.headline }}</a></h2>
-            <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
+            <h2><a href="{% url page page.id %}">{{ page.title }}</a></h2>
+            <div class="content">{{ page.content|striptags|truncatewords:20 }}</div>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
+            	<div class="submitted">Submitted on {{ page.create_dt|date:"D d M Y P" }} by {{ page.creator }}</div>
             </div>
 
-            <!-- delete-article form -->
-            <form name="article-delete" method="POST" action="{% url article.delete article.id %}">
+            <!-- delete-page form -->
+            <form name="page-delete" method="POST" action="{% url page.delete page.id %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 
@@ -75,8 +75,8 @@
 
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_article = confirm('Permenantly delete article?');	// confirm
-				if(delete_article) $(this).parents('.article-wrap').find('form[name="article-delete"]').submit() // delete: if OK
+				var delete_page = confirm('Permenantly delete page?');	// confirm
+				if(delete_page) $(this).parents('.page-wrap').find('form[name="page-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});
