@@ -1,0 +1,240 @@
+{% extends "photos/base.html" %}
+
+{% load i18n %}
+{% load photo_tags %}
+{% load pagination_tags %}
+
+{% block head_title %}{% blocktrans %}Batch Edit Photos{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+	<style type="text/css">
+		table.photo-form {
+			margin: 10px 0;
+			width: 800px;
+		}
+		table.photo-form td {
+			vertical-align: top;
+		}
+		
+		table.photo-form td.image {
+			text-align: right;
+		}
+		table.photo-form input[type=text] {
+			width: 280px;
+		}
+		table.photo-form textarea {
+			height: 50px;
+			width: 280px;
+		}
+		table.photo-form select {
+			width: 100px;
+			margin: 5px 0 5px 3px;
+		}
+		.photo-bulk-editor {
+			border: 1px solid silver;
+			background-color: #FDFDFD;
+			padding: 10px;
+			margin-bottom: 20px;
+			-webkit-border-radius: 8px;
+			-moz-border-radius: 8px;
+			border-radius: 8px;
+		}
+		.photo-bulk-editor p {
+			margin: 0;
+		}
+		.photo-bulk-editor td {
+			vertical-align: top;
+		}
+		.photo-bulk-editor textarea,
+		.photo-bulk-editor input[type="text"] {
+			width: 300px;
+		}
+		
+    </style>
+{% endblock %}
+
+{% block body %}
+
+<style type="text/css">
+	.edit-wrap {
+		width: 60%;
+		background-color: white;
+		border: 1px solid silver;
+		padding: 20px;
+		margin-bottom: 10px;
+		-webkit-border-top-left-radius: 8px;
+		-webkit-border-top-right-radius: 8px;
+		-moz-border-radius-topleft: 8px;
+		-moz-border-radius-topright: 8px;
+		border-top-left-radius: 8px;
+		border-top-right-radius: 8px;
+	}
+	.photo-wrap {
+		float: left;
+		margin-bottom: 5px;
+	}
+	.set-wrap {
+		float: right;
+		margin-bottom: 5px;
+	}
+	.set-wrap select {
+		height: 250px;
+	}
+
+	.title-wrap {
+		margin-bottom: 5px;
+	}
+	.title-wrap input {
+		width: 99%;
+	}
+
+	.caption-wrap {
+		margin-bottom: 5px;
+	}
+	.caption-wrap textarea {
+		width: 99%;
+		height: 100px;
+	}
+
+	.tags-wrap input {
+		width: 80%;
+	}
+
+	.public-wrap {
+		position: absolute;
+		right: 0; bottom: 0;
+		width: 75px;
+	}
+	.public-wrap .field {
+		float: right;
+		margin-right: 3px;
+	}
+	.public-wrap .label {
+		float: right;
+	}
+
+</style>
+
+<style type="text/css">
+	.float-anchor {
+	}
+	div.side-panel {
+		float: right;
+		width: 330px;
+	}
+
+	.float-window .save-wrap {
+		text-align: center;
+		border: 1px solid silver;
+		background-color: #FDFDFD;
+		padding: 10px;
+		margin-bottom: 20px;
+		-webkit-border-radius: 8px;
+		-moz-border-radius: 8px;
+		border-radius: 8px;
+	}
+	.float-window .save-wrap input {
+		font-size: 1.2em;
+		overflow: visible; /* ie7 and below: remove extra padding on button */
+		*padding: 0 10px; /* ie7 and below: custom padding */
+	}
+
+</style>
+
+    <form method="POST" action="">
+
+        <div class="side-panel">
+    
+            <div class="float-anchor"><!-- ie7 fix --></div>
+            <div class="float-window">
+    
+                <div class="photo-bulk-editor">
+                    <p>Replace all titles</p>
+                    <div><input class="title" type="text" /></div>
+                    <p>Replace all captions</p>
+                    <div><textarea class="caption"></textarea></div>
+                    <p>Replace all tags</p>
+                    <div><input class="tags" type="text" /></div>
+                </div>
+    
+                <div class="save-wrap">
+                    <input type="submit" value="Save all changes to these photos" />
+                </div>
+            </div>
+        </div>
+
+        {{ photo_formset.management_form }}
+			{% autopaginate photo_formset.forms 10 %}
+            {% for photo_form in photo_formset.forms %}
+    
+            <div class="edit-wrap">
+
+				{{ photo_form.id }}
+
+                {% for error in photo_form.errors %}
+                    <li><strong>{{ error|escape }}</strong></li>
+                {% endfor %}
+
+                <div class="photo-wrap">
+                    <img src="{{ photo_form.instance.get_display_url }}" />
+                </div>
+                <div class="set-wrap">
+                    {{ photo_form.photoset }}
+                </div>
+                <div style="clear:both;"><!-- ie7 fix --></div>
+
+                <div class="title-wrap">
+                	<div class="label">{{ photo_form.title.label_tag }}</div>
+                    <div class="field">{{ photo_form.title }}</div>
+                </div>
+                <div class="caption-wrap">
+	                <div class="label">{{ photo_form.caption.label_tag }}</div>
+                    <div class="field">{{ photo_form.caption }}</div>
+                </div>
+
+				<div style="position:relative;">
+                    <div class="tags-wrap">
+                        <div class="label">{{ photo_form.tags.label_tag }}</div>
+                        <div class="field">{{ photo_form.tags }}</div>
+                    </div>
+                    <div class="public-wrap">
+                        <div class="label">{{ photo_form.is_public.label_tag }}</div>
+                        <div class="field">{{ photo_form.is_public }}</div>
+                    </div>
+				</div>
+            </div>
+        {% empty %}
+            <p>All photos have been approved, nothing to see here.</p>
+        {% endfor %}
+    </form>
+	{% paginate %}
+
+{% endblock %}
+
+{% block extra_body_base %}
+<script type="text/javascript">
+
+	$(".photo-bulk-editor .title").keyup(function(event){
+		$('.title-wrap input').val($(this).val())
+	});
+	$(".photo-bulk-editor .caption").keyup(function(event){
+		$('.caption-wrap textarea').val($('.photo-bulk-editor .caption').val())
+	});
+	$(".photo-bulk-editor .tags").keyup(function(event){
+		$('.tags-wrap input').val($(this).val())
+	});
+
+
+	$(window).scroll(function(){
+		if  ($(window).scrollTop() > $(".float-anchor").offset().top){
+			$(".float-window").css("position", "fixed");
+			$(".float-window").css("top", "100px");
+		}
+		
+		if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
+			$(".float-window").css("position", "relative");
+			$(".float-window").css("top", $(".float-anchor").offset);
+		}
+	});
+
+</script>
+{% endblock %}

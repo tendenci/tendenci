@@ -1,0 +1,52 @@
+{% load i18n %}
+{% load avatar_tags %}
+{% load tagging_tags %}
+{% load group_tags %}
+{% load theme_tags %}
+{% load base_filters %}
+
+<div class="photo-right-profile clearfix">
+    <div class="photo-avatar">{% avatar photo.member.username 50 %}</div>
+    <div class="photo-profile-details">
+        <h2>Taken By</h2>
+        <a href="{% url profile_detail photo.member.username %}" title="{{ photo.member.username }}">{{ photo.member.username }}</a><br />
+        {{ photo.date_taken|localize_date:account.timezone|date }}<br />
+        Viewed {{ photo.view_count }} times
+    </div>
+</div>
+
+<div class="photo-right-tools">
+    {% if photo.tags %}
+        <h2>{% silk "tag_blue" %} Tags</h2>
+        <ul>
+            {% tags_for_object photo as tags %}
+            {% for tag in tags %}
+                <li><a href="/tags/{{ tag }}">{{ tag }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+        
+        <div class="embed">
+        <a href="#" id="embed-code-toggle">{% trans "Get Embed Code" %}</a>
+             <div id="embed-code" style="display: none;">
+                <textarea>
+                    <a href="{{ host }}/photos/details/{{ photo.id }}"><img src="{{ host }}/{{ photo_url }}" alt="{{ photo.title }}"/></a>
+                </textarea>
+            </div>
+        </div>
+    
+    {% if perms.photologue.delete_photo %}
+        <form action="{% groupurl photo_destroy group id=photo.id %}" method="POST">
+            <label>Delete Photo</label> <input type="image" 
+            src="{{ STATIC_URL }}pinax/images/silk/icons/delete.png" border="0" title="{% trans "Delete Photo" %}" />
+            <input type="hidden" name="action" value="delete"/>
+        </form>
+    {% endif %}   
+	{% if perms.photologue.change_photo %}
+        <a href="{% groupurl photo_edit group id=photo.id %}">Edit Photo</a> 
+    {% endif %}
+    
+</div>
+
+<div class="photo-right-exif">
+</div>

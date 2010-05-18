@@ -1,0 +1,3 @@
+{% load base_filters %}
+<img src="{{ obj.get_thumbnail_url }}" alt="{{ obj.title }}" title="{{ obj.title }}" />
+{{ obj.caption|linebreaks|safe }}

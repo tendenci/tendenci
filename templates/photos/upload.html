@@ -1,0 +1,18 @@
+{% extends "photos/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+
+{% block head_title %}{% blocktrans %}Latest Photos{% endblocktrans %}{% endblock %}
+
+{% block body %}
+    <form class="uniForm" id="edit-profile" method="POST" enctype="multipart/form-data" action="">
+        <fieldset class="inlineLabels">
+            {{ photo_form|as_uni_form }}
+            <div class="form_block">
+                <input type="hidden" name="action" value="upload" />
+                <input type="submit" value="{% trans "Upload" %}" />
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}
