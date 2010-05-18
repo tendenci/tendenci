@@ -1,0 +1,212 @@
+{% extends "photos/base.html" %}
+
+{% load i18n %}
+{% load humanize %}
+{% load tagging_tags %}
+{% load comments_tag %}
+{% load photo_tags %}
+{% load flagtags %}
+{% load base_filters %}
+{% load smart_if %}
+
+{% block head_title %}{% blocktrans %}Editing Photo Details{% endblocktrans %}{% endblock %}
+
+{% block body %}
+
+<style type="text/css">
+	.field-wrap {
+		width: 700px;
+		float: left;
+	}
+	.privacy-wrap {
+		margin-top: 10px;
+		position: relative;
+	}
+	.public {
+		float: right;
+		margin-right: 10px;
+	}
+	.safety {
+		float: right;
+		margin-right: 5px;
+		display: none;
+	}
+	.title input {
+		width: 97%;
+		padding: 7px;
+		margin-bottom: 10px;
+	}
+	.caption textarea {
+		width: 97%;
+		padding: 7px;
+		margin-bottom: 10px;
+	}
+	.tags input {
+		width: 97%;
+		padding: 7px;
+	}
+	.photo-set-wrap {
+		width: 27%;
+		float: right;
+	}
+	.photo-set-wrap h2 {
+		font-size: 1.2em;
+		line-height: 1em;
+	}
+	.photo-sets {
+		height: 309px;
+		overflow: auto;
+		background-color: white;
+		border: 1px solid silver;
+	}
+	.photo-sets ul {
+		padding: 0;
+		margin: 0;
+	}
+	.photo-sets ul li {
+		float: left;
+		list-style-type: none;
+		width: 100px; height: 75px;
+		background-color: #DDD;
+		margin: 10px;
+		position: relative;
+	}
+	.photo-sets ul li.ui-selected {
+		background-color: orange;
+	}
+	.photo-sets ul li img {
+		border: 1px solid silver;
+	}
+	.photo-sets ul li.ui-selected img {
+		border: 1px solid orange;
+	}
+	.submit input[type="submit"] {
+	}
+	.photo-sets li .selected-overlay {
+		position: absolute;
+		top: 0; left:0;
+		width: 100px; height: 75px;
+		z-index: 1;
+		display: none;
+	}
+	.photo-sets li.ui-selected .selected-overlay {
+		background-color: rgba(255, 165, 0, .9);
+		border: 1px solid orange;
+		display: block;
+	}
+	.photo-sets li.ui-selected .selected-overlay div.selected {
+		background-color: rgba(255, 165, 0, .9);
+		border: 1px solid orange;
+		display: block;
+	}
+	.photo-sets li.ui-selecting .selected-overlay {
+		background-color: rgba(255, 233, 0, .9);
+		border: 1px solid yellow;
+		display: block;
+	}
+	.photo-sets li .selected-overlay div {
+		color: white;
+		font-family: sans-serif;
+		font-size: 1.2em;
+		font-weight: bold;
+		margin: 25px 20px;
+		display: none;
+	}
+	.photo-sets li.ui-selected .selected-overlay div {
+		display: block;
+	}
+</style>
+
+<form name="photo-edit" method="post" action="">
+
+	<div class="photo-set-wrap">
+    <h2>Photo albums</h2>
+    <div class="photo-sets">
+        <ul>
+            {% for photo_set in photo_form.fields.photoset.queryset|order_by:"name" %}
+                {% if photo_set.id in photo_form.initial.photoset %}
+                    <li title="{{ photo_set.name }}" class="ui-selected">
+                        <img src="{{ photo_set.get_cover_photo }}" alt="{{ photo_set.name }}">
+                        <div class="selected-overlay"><div>Selected</div></div>
+                        <input type="hidden" name="photoset" value="{{ photo_set.id }}" />
+                    </li>
+                {% else %}
+                    <li title="{{ photo_set.name }}">
+                        <img src="{{ photo_set.get_cover_photo }}" alt="{{ photo_set.name }}">
+                        <div class="selected-overlay"><div>Selected</div></div>
+                        <input type="hidden" name="photoset" value="{{ photo_set.id }}" disabled="disabled" />
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <div style="clear:both;"></div>
+        </ul>
+    </div>
+	</div>
+
+<style type="text/css">
+	h2 {
+		font-size: 1.2em;
+		line-height: 1em;
+		margin-bottom: 5px;
+	}
+</style>
+
+	<div class="field-wrap">
+        <div class="title">
+        	<h2>{{ photo_form.title.label_tag }}</h2>
+        	{{ photo_form.title }}
+		</div>
+        <div class="caption">
+			<h2>{{ photo_form.caption.label_tag }}</h2>
+        	{{ photo_form.caption }}
+		</div>
+        <div class="tags">
+			<h2>{{ photo_form.tags.label_tag }}</h2>
+        	{{ photo_form.tags }}
+            {{ photo_form.tags.help_text }}
+		</div>
+		<div class="privacy-wrap">
+            <div class="safety">{{ photo_form.safetylevel }}</div>
+            <div class="public">{{ photo_form.is_public }} {{ photo_form.is_public.label_tag }}</div>
+        </div>
+        <div class="submit">
+            <input type="hidden" name="action" value="update" />
+            <input type="submit" value="Save changes" />
+        </div><br />
+
+	</div>
+</form>
+
+{% endblock %}
+
+{% block extra_body %}
+<script src="{{ STATIC_URL }}js/jquery.inputfieldtext.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+	// tooltip: black stylish ones
+	$('.photo-sets ul li').tipsy({
+		gravity: 's',
+		delayIn: 1
+	});
+
+	// photoset: selectable
+	$('.photo-sets ul').selectable({
+		stop: function(event, ui){
+			var $selected_sets = $(event.target).children();
+			// enable/disable input fields
+			$.each($selected_sets, function(i, element){
+				$element = $(element); // jquerize it
+				if($element.is('.ui-selected')){ // selected
+					$element.children('input[name="photoset"]')
+					.removeAttr("disabled"); // enable input field
+				}
+				else { // not selected
+					$element.children('input[name="photoset"]')
+					.attr("disabled", true); // disable input field
+				}
+			});
+		}
+	});
+
+</script>
+{% endblock %}

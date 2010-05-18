@@ -1,0 +1,133 @@
+{% extends "photos/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load photo_tags %}
+
+{% block head_title %}{% blocktrans %}Batch Edit Photos{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+	<style type="text/css">
+		table.photo-form {
+			margin: 10px 0;
+			width: 800px;
+		}
+		table.photo-form td {
+			vertical-align: top;
+		}
+		
+		table.photo-form td.image {
+			text-align: right;
+		}
+		table.photo-form input[type=text] {
+			width: 280px;
+		}
+		table.photo-form textarea {
+			height: 50px;
+			width: 280px;
+		}
+		table.photo-form select {
+			width: 100px;
+			margin: 5px 0 5px 3px;
+		}
+		.photo-bulk-editor {
+			border: 1px solid silver;
+			background-color: #FDFDFD;
+			padding: 10px;
+			margin-bottom: 20px;
+		}
+		.photo-bulk-editor p {
+			margin: 0;
+		}
+		.photo-bulk-editor td {
+			vertical-align: top;
+		}
+		.photo-bulk-editor textarea,
+		.photo-bulk-editor input[type="text"] {
+			width: 300px;
+		}
+		
+    </style>
+{% endblock %}
+
+{% block body %}
+
+<div class="photo-bulk-editor">
+    <p>Replace title</p>
+    <div><input class="title" type="text" /></div>
+    <p>Replace caption</p>
+    <div><textarea class="caption"></textarea></div>
+    <p>Replace tags</p>
+    <div><input class="tags" type="text" /></div>
+</div>
+
+<form method="POST" action="">
+	{{ photo_formset.management_form }}
+
+		{% for photo_form in photo_formset.forms %}
+
+			{% for error in photo_form.errors %}
+                    <li><strong>{{ error|escape }}</strong></li>
+            {% endfor %}
+
+            <table class="photo-form">
+                {{ photo_form.id }}
+                <tr>
+                    <td class="info">
+    
+                    <table>
+                        <tr>
+                            <td>{{ photo_form.title.label_tag }}</td>
+                            <td class="title">{{ photo_form.title }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ photo_form.caption.label_tag }}</td>
+                            <td class="caption">{{ photo_form.caption }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ photo_form.tags.label_tag }}</td>
+                            <td class="tags">{{ photo_form.tags }}</td>
+                        </tr>
+                        <tr>
+                        	<td>&nbsp;</td>
+                        	<td>
+                            	<table style="width:100%;">
+                                	<tr>
+                                    	<td>{{ photo_form.photoset }}</td>
+                                    	<td>
+                                        	<div>{{ photo_form.safetylevel }}</div>
+											<div style="padding-left:4px;">{{ photo_form.is_public }} {{ photo_form.is_public.label_tag }}</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+    
+        
+                    </td>
+                    <td class="image"><div><img src="{{ photo_form.instance.get_display_url }}" /></div></td>
+                </tr>
+            </table>
+    {% empty %}
+        <p>All photos have been approved, nothing to see here.</p>
+    {% endfor %}
+
+	<input type="submit" value="Save changes" />
+</form>
+
+{% endblock %}
+
+{% block extra_body_base %}
+	<script type="text/javascript">
+	
+		$(".photo-bulk-editor .title").keyup(function(event){
+			$('td.title input').val($(this).val())
+		});
+		$(".photo-bulk-editor .caption").keyup(function(event){
+			$('td.caption textarea').val($('.photo-bulk-editor .caption').val())
+		});
+		$(".photo-bulk-editor .tags").keyup(function(event){
+			$('td.tags input').val($(this).val())
+		});
+	</script>
+{% endblock %}

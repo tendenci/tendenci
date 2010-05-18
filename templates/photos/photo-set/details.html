@@ -1,0 +1,79 @@
+{% extends "photos/base.html" %}
+
+{% load i18n %}
+{% load humanize %}
+{% load pagination_tags %}
+{% load tagging_tags %}
+{% load group_tags %}
+{% load threadedcommentstags %}
+{% load theme_tags %}
+
+{% block head_title %}{{ photo_set.name }}{% endblock %}
+
+{% block body %}
+<style type="text/css">
+	div.gallery-photo-thumb {
+		margin: 0 5px 5px;
+	    float: left;
+		text-align: center;
+	}
+	div.gallery-photo-thumb img {
+		display: block;
+	}
+	div.gallery-photo-thumb img {
+		padding: 3px;
+		border: 1px solid black;
+		background-color: white;
+	}
+</style>
+
+    
+    <h1>{{ photo_set.name }}</h1>
+
+	<div id="photos-wrap">
+        {% if photos %}
+        {% autopaginate photos 28 %}
+            <div class="thumb-row clearfix">
+            {% for photo in photos %}
+            <div class="gallery-photo-thumb">
+                <a href="{% url photo photo.id photo_set.id %}"><img src="{{ photo.get_small_crop_url }}" alt="{{ photo.title }}"/></a>
+                <div>From <a href="{% url profile_detail photo.member.username %}">{{ photo.member.username }}</a></div>
+            </div>
+            {% endfor %}
+            </div>
+            {% paginate %}
+        {% else %}
+            <p>{% trans "No photos were found." %}</p>
+        {% endif %}
+		<div id="drag-enter" data-set-id="{{ photo_set.id }}">
+        	<div>Drag/Drop Photos Here</div>
+        </div>
+    </div>
+
+	<div id="preview" style="display:none;"></div>
+
+{% endblock %}
+
+{% block extra_body %}
+<script src="{{ STATIC_URL }}js/jquery.dropzone.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		$('#drag-enter').dropzone({send_to: '/photos/file-upload/'});
+	});
+
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,309 @@
+html, body, form 
+{
+	margin: 0;
+	padding: 0;
+	width: 100%;
+
+	font-family: Verdana;
+	font-size: 10pt;
+}
+
+.likeParent {
+	font: inherit;
+	color: inherit;
+	text-decoration: inherit;
+}
+
+a.likeParent,
+a.likeParent:link,
+a.likeParent:active,
+a.likeParent:visited,
+a.likeParent:hover 
+{
+	font: inherit;
+	color: #000000;
+	text-decoration: none;
+}
+
+div.title 
+{
+	width: auto;
+	background-color: #99BBE8;
+	border-bottom: solid 1px #000000;
+	padding: 2px;
+	margin-bottom: 15px;
+
+	font-family: Verdana;
+	font-size: 14pt;
+	color: #000000;
+	text-decoration: none;
+
+}
+div.content 
+{
+	margin: 10px;
+}
+
+fieldset {
+	margin: 5px;
+}
+
+legend 
+{
+	font-family: Arial;
+	font-size: 11pt;
+	font-weight: bold;
+	color: Black;
+}
+
+fieldset.flash
+{
+	width: 375px;
+	margin: 10px 0px 10px 0px;
+	border-color: #D9E4FF;
+}
+
+.progressWrapper {
+/*	width: 357px; */
+	overflow: hidden;
+}
+.progressContainer {
+	margin: 5px;
+	padding: 4px;
+	
+	border: solid 1px #E8E8E8;
+	background-color: #F7F7F7;
+	
+	overflow: hidden;
+}
+.red /* Error */
+{
+	border: solid 1px #B50000;
+	background-color: #FFEBEB;
+}
+.green /* Current */ 
+{
+	border: solid 1px #DDF0DD;
+	background-color: #EBFFEB;
+}
+.blue /* Complete */
+{
+	border: solid 1px #CEE2F2;
+	background-color: #F0F5FF;
+}
+
+.progressName {
+	font-weight: bold;
+	color: #555555;
+	
+	width: 323px;
+	text-align: left;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.progressBarInProgress,
+.progressBarComplete,
+.progressBarError {
+	font-size: 0px;
+	width: 0%;
+	height: 2px;
+	background-color: blue;
+	margin-top: 2px;
+}
+.progressBarComplete {
+	width: 100%;
+	background-color: green;
+	visibility: hidden;
+}
+.progressBarError {
+	width: 100%;
+	background-color: red;
+	visibility: hidden;
+}
+.progressBarStatus {
+	margin-top: 2px;
+	width: 337px;
+	font-size: 7pt;
+	font-family: Verdana;
+	text-align: left;
+	white-space: nowrap;
+}
+a.progressCancel,
+a.progressCancel:link,
+a.progressCancel:active,
+a.progressCancel:visited,
+a.progressCancel:hover
+{
+	font-size: 0px;
+	display: block;
+	height: 14px;
+	width: 14px;
+	
+	background-image: url("/site_media/static/swfupload/cancelbutton.gif");
+	background-repeat: no-repeat;
+	background-position: -14px 0px;
+	float: right;
+}
+a.progressCancel:hover 
+{
+	background-position: 0px 0px;
+}
+
+#flashUI #fsUploadProgress {
+	border: 1px solid #F7F7F7;
+	height: 250px;
+	overflow: auto;
+}
+
+h1 {
+	margin:0;
+}
+h2 {
+	margin-top:0;
+}
+span.select-photos a,
+span.queue-actions a {
+	font-size: 1.5em;
+}
+
+span.select-photos a#add-more-photos,
+span.select-photos a#remove-chosen-photos,
+span.select-photos a#stop-upload{
+	font-size: 1em;
+}
+
+span.select-photos a#choose-photos {
+	xbackground-color: #FFFFCC;
+	background-image:url(images/arrow-right_16x16.gif);
+	background-repeat: no-repeat;
+	background-position: left;
+	padding-left: 20px;
+}
+
+span.select-photos {
+	float: left;
+}
+span.queue-actions {
+	float: right;
+}
+
+p.back-link {
+	margin-bottom: 30px;
+}
+div.footer-spacer {
+	height: 20px;
+}
+
+
+
+
+
+
+
+
+
+#flashUI #fsUploadProgress {
+	border: 1px solid #F7F7F7;
+	height: 250px;
+	overflow: auto;
+}
+
+h1 {
+	margin:0;
+}
+h2 {
+	margin-top:0;
+}
+span.select-photos a,
+span.queue-actions a {
+	font-size: 1.5em;
+}
+
+span.select-photos a#add-more-photos,
+span.select-photos a#remove-chosen-photos,
+span.select-photos a#stop-upload{
+	font-size: 1em;
+}
+
+span.select-photos a#choose-photos {
+	background-image:url(/site_media/static/swfupload/arrow-right_16x16.gif);
+	background-repeat: no-repeat;
+	background-position: left;
+	padding-left: 20px;
+}
+
+span.select-photos {
+	float: left;
+}
+span.queue-actions {
+	float: right;
+}
+
+p.back-link {
+	margin-bottom: 30px;
+}
+div.footer-spacer {
+	height: 20px;
+}
+div.bottom-hr {
+	border-bottom: 1px solid gray;
+	margin-top: 50px;
+	padding-top: 10px;
+}
+
+div.simple-upload-link p {
+	margin-top: 7px;
+}
+
+div.simple-upload h2 {
+	margin:0;
+}
+.swfupload {
+	position: absolute;
+	cursor: pointer;
+}
+
+
+
+/* batch add page
+--------------------------------------------- */
+#swf-progress-wrap {
+	height: 250px;
+	background-color: white;
+	border: 1px solid gray;
+	position: relative;
+}
+#swf-progress-wrap #swf-progress-init {
+	height: 100%;
+	overflow: hidden;
+}
+#swf-progress-wrap #swf-progress-init div.even {
+	background-color: #EEE;
+	height: 30px;
+}
+#swf-progress-wrap #swf-progress-init div.odd {
+	background-color: white;
+	height: 30px;
+}
+#swf-progress {
+	height: 100%;
+	overflow: auto;
+}
+#swf-msg-mask {
+	cursor: pointer;
+	top:0; right:0; bottom:0; left:0;
+	position: absolute;
+}
+#swf-msg-mask div {
+	font-size: 5em;
+	text-align: center;
+	margin: 100px 0;
+	text-decoration: underline;
+}
+
+#SWFUpload_0 {
+	top: 0;
+	cursor: pointer;
+	position: absolute; /* swfupload already does this */
+}
+
