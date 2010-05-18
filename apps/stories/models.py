@@ -6,7 +6,7 @@ from base.models import AuditingBase
 class Story(AuditingBase):
     guid = models.CharField(max_length=50, unique=False, blank=True)
     title = models.CharField(max_length=200, blank=True)
-    content = models.CharField(max_length=1000, blank=True)
+    content = models.TextField(blank=True)
     syndicate = models.BooleanField()
     create_dt = models.DateTimeField(auto_now_add=True)
     fullstorylink = models.CharField(max_length=300, blank=True)
@@ -16,3 +16,6 @@ class Story(AuditingBase):
     
     def __unicode__(self):
         return self.title
+    
+    class Meta:
+        verbose_name_plural = "stories"
