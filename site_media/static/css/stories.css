@@ -1,0 +1,89 @@
+
+
+.t {
+	width: 60%;
+}
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t .stories-wrap {
+	margin-bottom: 20px;
+}
+
+.t .stories-wrap .story-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .stories-wrap .story-wrap h2 {
+	width: 85%;
+}
+.t .stories-wrap .story-wrap .content {
+	margin-bottom: 10px;
+}
+.t .stories-wrap .story-wrap .submitted {
+	background-color: #EEE;
+}
+
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	background-color: #EEE;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+.t .add-story-link{
+	margin-bottom: 20px;
+}
+
+
+.t ul.stories-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.stories-nav li {
+	display: inline;
+}
+.story-wrap .delete-form{
+	margin-top: 1em;
+}
+.story-wrap .delete-prompt{
+	font-size: 1.2em;
+	color: red;
+}
+

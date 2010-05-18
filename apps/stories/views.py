@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib.sites.models import Site
 
 from stories.models import Story
 from stories.forms import StoryForm
@@ -21,10 +22,24 @@ def search(request, template_name="stories/search.html"):
     
 @login_required   
 def add(request, template_name="stories/add.html"):
-    stories = Story.objects.all()
-    return render_to_response(template_name, {'stories':stories}, 
+    if request.method == "POST":
+        form = StoryForm(request.POST, request.user)
+        if form.is_valid():
+            story = form.save(commit=False)
+            story.user = request.user
+            story.creator = request.user
+            story.creator_username = request.user.username
+            story.owner = request.user
+            story.owner_username = request.user.username
+            story.save()
+            # back to view
+            return HttpResponseRedirect(reverse('story', args=[story.id]))
+    else:
+        form  = StoryForm()
+            
+    return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
-
+    
 @login_required
 def edit(request, id, template_name="stories/edit.html"):
     story = get_object_or_404(Story, pk=id)
@@ -33,7 +48,11 @@ def edit(request, id, template_name="stories/edit.html"):
     if request.method == "POST":
         form = StoryForm(request.POST, request.user, instance=story)
         if form.is_valid():
-            story = form.save()
+            story = form.save(commit=False)
+            story.owner = request.user
+            story.owner_username = request.user.username
+            story.save()
+            return HttpResponseRedirect(reverse('story', args=[story.id]))
 
     return render_to_response(template_name, {'story': story, 'form':form}, 
         context_instance=RequestContext(request))
