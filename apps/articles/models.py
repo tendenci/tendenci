@@ -24,15 +24,6 @@ class Article(AuditingBase):
 
     # release dates do not have to be set
     release_dt = models.DateTimeField(null=True, blank=True)
-
-    # might go away w/ permissions
-    allow_anonymous_view = models.BooleanField()
-    allow_site_user_view = models.BooleanField()
-    allow_member_view = models.BooleanField()
-    allow_anonymous_edit = models.BooleanField()
-    allow_site_user_edit = models.BooleanField()
-    allow_member_edit = models.BooleanField()
-
     create_dt = models.DateTimeField(auto_now_add=True)
 
     syndicate = models.BooleanField()
