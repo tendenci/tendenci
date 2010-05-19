@@ -25,7 +25,6 @@ class ReleaseForm(forms.ModelForm):
         'allow_user_edit',
 
         'syndicate',
-        'owner',
         'status',
         'status_detail',
         )
