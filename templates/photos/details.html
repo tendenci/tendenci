@@ -3,10 +3,7 @@
 {% load i18n %}
 {% load humanize %}
 {% load tagging_tags %}
-{% load comments_tag %}
 {% load photo_tags %}
-{% load flagtags %}
-{% load theme_tags %}
 {% load pagination_tags %}
 {% load smart_if %}
 
@@ -49,7 +46,7 @@
         </div>
         {% endif %}
         <div class="photo-author-wrap">
-            Uploaded by {% firstof  photo.member.get_profile.name photo.member.username %}
+            Uploaded by {# firstof  photo.member.get_profile.name photo.member.username #}
         </div>
         <div class="hr"></div>
         <div class="photo-options">

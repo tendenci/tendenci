@@ -14,6 +14,12 @@
 {% block body %}
 
 <style type="text/css">
+	.gallery-photo-thumb {
+		float: left;
+		margin: 0 5px 5px;
+		text-align: center;
+		height: 125px;
+	}
 	.gallery-photo-thumb img {
 		padding: 3px;
 		border: 1px solid black;
@@ -22,10 +28,13 @@
 </style>
 
     <div id="photos-header-wrap">
-        <h1>{% trans "Latest Photos" %}</h1>
-        <form name="search-photos" method="get" action="">
-        <input type="text" id="search-photos" name="q" value="{{ q }}" /></form>
+        <h1>{% trans "Search Photos" %}</h1>
     </div>
+
+    <div class="nav">
+    	<a href="/">&laquo; Homepage</a>
+    	<a href="{% url photos_batch_add %}">Add photos</a>
+	</div>
 
     <div id="photos-wrap">
         {% if photos %}
