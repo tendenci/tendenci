@@ -29,7 +29,7 @@ def edit(request, id, template_name="releases/edit.html"):
     form = ReleaseEditForm(instance=release)
 
     if request.method == "POST":
-        form = ReleaseEditForm(request.POST, request.user, instance=release)
+        form = ReleaseEditForm(request.user, request.POST, instance=release)
         if form.is_valid():
             release = form.save()
 
