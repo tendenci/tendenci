@@ -13,7 +13,7 @@ ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
 	('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jennifer Ulmer', 'julmer@schipul.com'),
-    ('Jenny Qian3', 'jqian@schipul.com'),
+    ('Jenny Qian', 'jqian@schipul.com'),
 )
 
 MANAGERS = ADMINS
@@ -113,6 +113,7 @@ INSTALLED_APPS = (
     'profiles',
     'articles',
     'releases',
+    'stories',
     'pages',
     'photos',
     'base',

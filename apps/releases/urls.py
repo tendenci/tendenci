@@ -5,6 +5,7 @@ urlpatterns = patterns('',
     url(r'^(?P<id>\d+)/$', 'releases.views.index', name="release"),
     url(r'^search/$', 'releases.views.search', name="release.search"),
     url(r'^print-view/(?P<id>\d+)/$', 'releases.views.print_view', name="release.print_view"),
+    url(r'^add/$', 'releases.views.add', name="release.add"),
     url(r'^edit/(?P<id>\d+)/$', 'releases.views.edit', name="release.edit"),
     url(r'^delete/(?P<id>\d+)/$', 'releases.views.delete', name="release.delete"),
 )

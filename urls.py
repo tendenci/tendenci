@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     (r'^pages/', include('pages.urls')),
     (r'^photos/', include('photos.urls')),
     (r'^profiles/', include('profiles.urls')),
+    (r'^stories/', include('stories.urls')),
     (r'^releases/', include('releases.urls')),
 )
 

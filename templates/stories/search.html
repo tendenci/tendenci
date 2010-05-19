@@ -1,27 +1,27 @@
-{% extends "releases/base.html" %}
+{% extends "stories/base.html" %}
 {% load pagination_tags %}
 
 {% block title %}Search Page{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="/site_media/static/css/releases.css">
+<link rel="stylesheet" href="/site_media/static/css/stories.css">
 {% endblock %}
 
 {% block body %}
 
 <div class="t">
-    <h1>Releases Search Page</h1>
-    
+    <h1>Stories Search Page</h1>
+
     <div class="back-to-search">
     	<a href="/">&laquo; Homepage</a>
-        <a href="{% url release.add %}">Add release</a>
+        <a href="{% url story.add %}">Add a story</a>
 	</div>
 
-    {% autopaginate releases 10 %}
+    {% autopaginate stories 10 %}
 
-	<div class="releases-wrap">
-    {% for release in releases %}
-		<div class="release-wrap">
+	<div class="stories-wrap">
+    {% for story in stories %}
+		<div class="story-wrap">
 
 
 			<div class="options">
@@ -35,31 +35,29 @@
                         <li>View Revisions</li>
                         <li>Delete</li>
                     </ul>
-                </div>
+               </div>
 
                 <div class="quick-options">
                     <ul>
-                        <li><a href="{% url release.print_view release.id %}">Print</a></li>
-                        <li><a href="{% url release.edit release.id %}">Edit</a></li>
-						<li class="delete"><a href="{% url release.delete release.id %}">Delete</a></li>
+                        <li><a href="{% url story.edit story.id %}">Edit</a></li>
+						<li class="delete"><a href="{% url story.delete story.id %}">Delete</a></li>
                     </ul>
                 </div>
 			</div>
 
 
-            <h2><a href="{% url release release.id %}">{{ release.headline }}</a></h2>
-            <div class="content">{{ release.body|striptags|truncatewords:20 }}</div>
+            <h2><a href="{% url story story.id %}">{{ story.title }}</a></h2>
+            <div class="content">{{ story.content|striptags|truncatewords:200 }}</div>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ release.create_dt|date:"D d M Y P" }} by {{ release.creator }}</div>
+            	<div class="submitted">Submitted on {{ story.create_dt|date:"D d M Y P" }} by {{ story.creator }}</div>
             </div>
 
-            <!-- delete-release form -->
-            <form name="release-delete" method="POST" action="{% url release.delete release.id %}">
+            <!-- delete-story form -->
+            <form name="story-delete" method="POST" action="{% url story.delete story.id %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 
 		</div>
-
 	{% empty %}
 		<div>0 Results Found</div>
     {% endfor %}
@@ -77,9 +75,9 @@
 
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_release = confirm('Permenantly delete release?');	// confirm
-				if(delete_release) $(this).parents('.release-wrap').find('form[name="release-delete"]').submit() // delete: if OK
-				return false;
+				var delete_story = confirm('Permenantly deletestory?');	// confirm
+				if(delete_story) $(this).parents('.story-wrap').find('form[name="story-delete"]').submit() // delete: if OK
+				return false;	// cancel
 			});
 		});
     </script>
