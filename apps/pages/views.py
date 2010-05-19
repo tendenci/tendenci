@@ -35,6 +35,8 @@ def edit(request, id, template_name="pages/edit.html"):
         if form.is_valid():
             page = form.save()
 
+            return HttpResponseRedirect(reverse('page', args=[page.pk])) 
+
     return render_to_response(template_name, {'page': page, 'form':form}, 
         context_instance=RequestContext(request))
 

@@ -33,6 +33,8 @@ def edit(request, id, template_name="releases/edit.html"):
         if form.is_valid():
             release = form.save()
 
+            return HttpResponseRedirect(reverse('release', args=[release.pk])) 
+
     return render_to_response(template_name, {'release': release, 'form':form}, 
         context_instance=RequestContext(request))
 
