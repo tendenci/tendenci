@@ -115,6 +115,7 @@ INSTALLED_APPS = (
     'releases',
     'pages',
     'photos',
+    'base',
 )
 
 AUTH_PROFILE_MODULE = 'profiles.Profile'
