@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 from pages.models import Page
-from pages.forms import PageForm
+from pages.forms import PageForm, PageEditForm
 from pages.permissions import PagePermission
 
 def index(request, id=None, template_name="pages/view.html"):
@@ -28,14 +28,37 @@ def print_view(request, id, template_name="pages/print-view.html"):
 @login_required
 def edit(request, id, template_name="pages/edit.html"):
     page = get_object_or_404(Page, pk=id)
-    form = PageForm(instance=page)
+    form = PageEditForm(instance=page)
 
     if request.method == "POST":
-        form = PageForm(request.POST, request.user, instance=page)
+        form = PageEditForm(request.user, request.POST, instance=page)
         if form.is_valid():
             page = form.save()
 
     return render_to_response(template_name, {'page': page, 'form':form}, 
+        context_instance=RequestContext(request))
+
+@login_required
+def add(request, form_class=PageForm, template_name="pages/add.html"):
+
+    if request.method == "POST":
+        form = form_class(request.user, request.POST)
+        if form.is_valid():
+            page = form.save(commit=False)
+            
+            # set up the user information
+            page.creator = request.user
+            page.creator_username = request.user.username
+            page.owner = request.user
+            page.owner_username = request.user.username
+            
+            page.save()
+            
+            return HttpResponseRedirect(reverse('page', args=[page.pk]))
+    else:
+        form = form_class(request.user)
+       
+    return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
 
 @login_required
