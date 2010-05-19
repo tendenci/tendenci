@@ -11,16 +11,14 @@ class BasePermission(permissions.BasePermission):
     """
         Permissions for articles
     """
-    checks = ('view', 'allow_anonymous_view', 'allow_user_view',
-              'allow_anonymous_edit','allow_user_edit')
+    checks = ('view', 'edit', 'delete', 'add')
 
     def __init__(self, user=None, group=None, *args, **kwargs):
         super(BasePermission, self).__init__(user=user, group=group, *args, **kwargs)
         
         # for eval function security
+        self.app_label = self.model._meta.app_label.lower()
         self.object_name = self.model._meta.object_name.lower()
-        self.globals = {"__builtins__": None}
-        self.locals = {'self': self}
 
     def remove(self, check=None, content_object=None, generic=False):
         """
@@ -75,8 +73,8 @@ class BasePermission(permissions.BasePermission):
                         pass
 
         return result
-    
-    # check curry functions
+        
+    # Main tendenci permissions, new function
     def allow_anonymous_view(self, instance):
         if instance.allow_anonymous_view:
             return True
@@ -86,6 +84,8 @@ class BasePermission(permissions.BasePermission):
         if instance.allow_user_view:
             if isinstance(self.user,AnonymousUser):
                 return False
+            else:
+                return True
         return False
 
     def allow_anonymous_edit(self, instance):
@@ -98,66 +98,63 @@ class BasePermission(permissions.BasePermission):
             if isinstance(self.user,AnonymousUser):
                 return False
         return False
-        
-    # Main tendenci permissions, new function
+    
     def view(self, instance=None):
         auth = False
-        check_view = eval('self.view_%s' % (self.object_name,),
-                          self.globals, self.locals)
         if instance:
             if self.allow_anonymous_view(instance):
                 auth = True
             elif self.allow_user_view(instance):
                 auth = True
-            elif check_view(instance):
+            elif self.user.has_perm("%s.%s" % (self.app_label, 'view_%s' % self.object_name)):
+                auth = True
+            elif self.can('view', instance):
                 auth = True
         else:
-            if check_view():
+            if self.user.has_perm("%s.%s" % (self.app_label, 'view_%s' % self.object_name)):
                 auth = True
         
         return auth
     
     def edit(self, instance=None):
         auth = False
-        check_edit = eval('self.change_%s' % (self.object_name,),
-                          self.globals, self.locals)
         if instance:
             if self.allow_anonymous_edit(instance):
                 auth = True
             elif self.allow_user_edit(instance):
                 auth = True
-            elif check_edit(instance):
+            elif self.user.has_perm("%s.%s" % (self.app_label, 'change_%s' % self.object_name)):
+                auth = True
+            elif self.can('edit', instance):
                 auth = True
         else:
-            if check_edit():
+            if self.user.has_perm("%s.%s" % (self.app_label, 'change_%s' % self.object_name)):
                 auth = True
         
         return auth
     
     def delete(self, instance=None):
         auth = False
-        check_delete = eval('self.delete_%s' % (self.object_name,),
-                          self.globals, self.locals)
-
         if instance:
-            if check_delete(instance):
-                auth = True            
+            if self.user.has_perm("%s.%s" % (self.app_label, 'delete_%s' % self.object_name)):
+                auth = True
+            elif self.can('delete', instance):
+                auth = True          
         else:
-            if check_delete():
+            if self.user.has_perm("%s.%s" % (self.app_label, 'delete_%s' % self.object_name)):
                 auth = True
                      
         return auth
     
     def add(self, instance=None):
-        auth = False
-        check_add = eval('self.add_%s' % (self.object_name,),
-                          self.globals, self.locals)
-        
+        auth = False        
         if instance:
-            if check_add(instance):
-                auth = True            
+            if self.user.has_perm("%s.%s" % (self.app_label, 'add_%s' % self.object_name)):
+                auth = True
+            elif self.can('add', instance):
+                auth = True          
         else:
-            if check_add():
+            if self.user.has_perm("%s.%s" % (self.app_label, 'add_%s' % self.object_name)):
                 auth = True
         
         return auth
