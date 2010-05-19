@@ -11,8 +11,11 @@
 
 <div class="t">
     <h1>Stories Search Page</h1>
-    
-    <div class="add-story-link"><a href="{% url story.add %}">Add a Story</a></div>
+
+    <div class="back-to-search">
+    	<a href="/">&laquo; Homepage</a>
+        <a href="{% url story.add %}">Add a story</a>
+	</div>
 
     {% autopaginate stories 10 %}
 
