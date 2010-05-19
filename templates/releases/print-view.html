@@ -1,6 +1,6 @@
 {% extends "releases/base.html" %}
 
-{% block title %}View Page{% endblock %}
+{% block title %}Print View Page{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="/site_media/static/css/releases.css">
@@ -32,7 +32,7 @@
                 <ul>
                     <li><a href="{% url release.print_view release.id %}">Print</a></li>
                     <li><a href="{% url release.edit release.id %}">Edit</a></li>
-                    <li><a href="{% url release.delete release.id %">Delete</a></li>
+                    <li><a href="{% url release.delete release.id %}">Delete</a></li>
                 </ul>
             </div>
         </div>
