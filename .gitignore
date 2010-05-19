@@ -1,6 +1,7 @@
 # Ignore all local development files
 local_settings.py
 local_urls.py
+site_media/photologue
 
 # Ignore all dotfiles...
 .*
