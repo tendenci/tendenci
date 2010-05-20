@@ -68,10 +68,10 @@ class Image(ImageModel):
     title = models.CharField(_('title'), max_length=200)
     title_slug = models.SlugField(_('slug'))
     caption = models.TextField(_('caption'), blank=True)
-    date_added = models.DateTimeField(_('date added'), default=datetime.now, editable=False)
+    date_added = models.DateTimeField(_('date added'), auto_now_add=True, editable=False)
     is_public = models.BooleanField(_('public'), default=True, help_text=_('Public photographs will be displayed in the default views.'))
     member = models.ForeignKey(User, related_name="added_photos", blank=True, null=True)
-    safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=1)
+    safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField()
 

@@ -439,7 +439,7 @@ def photos_batch_add(request, photoset_id=0):
         for field_name in request.FILES:
             uploaded_file = request.FILES[field_name]
 
-            # use file to create title
+            # use file to create title; remove extension
             clean_filename = uploaded_file.name[::-1].split(".", 1)[1][::-1]
             request.POST.update({'title': clean_filename, })
 
@@ -481,33 +481,19 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
     """ batch edit photos """
     from django.forms.models import modelformset_factory
 
-    if photoset_id:
-        # if permission; get photos for editing
-        photo_set = get_object_or_404(PhotoSet, id=photoset_id)
-        if photo_set.check_perm(request.user, 'photos.change_photoset'):
-            # my photos in this photo set
-            photo_queryset = Image.objects.filter(Q(photoset=photoset_id, member=request.user))
-            photo_queryset = photo_queryset.order_by("-date_added")
-        else: raise Http404
-    else:
-        # if permission; get photos for editing
-        if request.user.has_perm('photos.change_photoset'):
-            # my latest uploaded photos
-            photo_queryset = Image.objects.filter(Q(safetylevel=3, member=request.user))
-            photo_queryset = photo_queryset.order_by("-date_added")[:60] # limit when pulling all
-        else: raise Http404
-
     # photo form set
     PhotoFormSet = modelformset_factory(Image, exclude=('title_slug',), extra=0)
 
     if request.method == "POST":
 
-        photo_formset = PhotoFormSet(request.POST, queryset=photo_queryset)
+        photo_formset = PhotoFormSet(request.POST)
 
         if photo_formset.is_valid():
+
             photos = photo_formset.save(commit=False)
             for photo in photos:
                 photo.member = request.user
+                photo.safetylevel = 1
                 photo.save()
                 
             photo_formset.save_m2m()
@@ -515,7 +501,25 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
         return HttpResponseRedirect(reverse('photos'))
 
     else:
+
+        if photoset_id:
+            # if permission; get photos for editing
+            photo_set = get_object_or_404(PhotoSet, id=photoset_id)
+            if photo_set.check_perm(request.user, 'photos.change_photoset'):
+                # my photos in this photo set
+                photo_queryset = Image.objects.filter(Q(photoset=photoset_id, member=request.user))
+                photo_queryset = photo_queryset.order_by("-date_added")
+            else: raise Http404
+        else:
+            # if permission; get photos for editing
+            if request.user.has_perm('photos.change_photoset'):
+                # my latest uploaded photos
+                photo_queryset = Image.objects.filter(Q(safetylevel=3, member=request.user))
+                photo_queryset = photo_queryset.order_by("-date_added")[:60] # limit when pulling all
+            else: raise Http404
+
         photo_formset = PhotoFormSet(queryset=photo_queryset)
+
  
     return render_to_response(template_name, {
         "photo_formset": photo_formset,

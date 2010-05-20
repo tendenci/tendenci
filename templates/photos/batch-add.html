@@ -11,17 +11,19 @@
 
 {% block body %}
 
-	<h1>Upload photos</h1>
-
-    <div class="photos-nav">
-    	<a href="{% url photos %}">&laquo; Search photos</a>
-	</div>
-
-	<div id="swf-progress-wrap">
-		<div id="swf-progress-init"></div>
-    	<div id="swf-progress"></div>
-        <div id="swf-msg-mask"><div>Select photos to upload</div></div>
-        <div id="swf-object-mask"></div>
+	<div class="t">
+        <h1>Upload photos</h1>
+    
+        <div class="photos-nav">
+            <a href="{% url photos %}">&laquo; Search photos</a>
+        </div>
+    
+        <div id="swf-progress-wrap">
+            <div id="swf-progress-init"></div>
+            <div id="swf-progress"></div>
+            <div id="swf-msg-mask"><div>Select photos to upload</div></div>
+            <div id="swf-object-mask"></div>
+        </div>
     </div>
 
 {% endblock %}

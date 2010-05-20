@@ -23,7 +23,9 @@ class PhotoEditForm(forms.ModelForm):
     
     class Meta:
         model = Image
-        exclude = ('member', 'title_slug', 'effect', 'crop_from', 'image')
+        exclude = ('member', 'title_slug', 'effect', 'crop_from', 'image',)
+
+    safetylevel = forms.HiddenInput()
         
     def __init__(self, user=None, *args, **kwargs):
         self.user = user

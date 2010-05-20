@@ -4,7 +4,7 @@
 {% load photo_tags %}
 {% load pagination_tags %}
 
-{% block head_title %}{% blocktrans %}Batch Edit Photos{% endblocktrans %}{% endblock %}
+{% block title %}{% blocktrans %}Batch Edit Photos{% endblocktrans %}{% endblock %}
 {% block head %}
 	<style type="text/css">
 		table.photo-form {
@@ -200,6 +200,9 @@
                         <div class="label">{{ photo_form.is_public.label_tag }}</div>
                         <div class="field">{{ photo_form.is_public }}</div>
                     </div>
+                    <div class="safetylevel-wrap">
+                        {{ photo_form.safetylevel }}
+                    </div>
 				</div>
             </div>
         {% empty %}
@@ -210,7 +213,8 @@
 
 {% endblock %}
 
-{% block extra_body_base %}
+{% block body_bottom %}
+<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript">
 
 	$(".photo-bulk-editor .title").keyup(function(event){
@@ -227,7 +231,7 @@
 	$(window).scroll(function(){
 		if  ($(window).scrollTop() > $(".float-anchor").offset().top){
 			$(".float-window").css("position", "fixed");
-			$(".float-window").css("top", "100px");
+			$(".float-window").css("top", "8px");
 		}
 		
 		if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
