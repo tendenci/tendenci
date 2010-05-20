@@ -5,7 +5,7 @@
 {% load photo_tags %}
 
 {% block head_title %}{% blocktrans %}Latest Photo Sets{% endblocktrans %}{% endblock %}
-{% block extra_head %}
+{% block head %}
 	<style type="text/css">
 		.photo-set {
 			border: 1px solid #CCC;
@@ -85,7 +85,7 @@
 
 {% endblock %}
 {% block extra_body %}
-<script src="{{ STATIC_URL }}js/jquery.inputfieldtext.js" type="text/javascript"></script>
+<script src="/site_media/static/js/jquery.inputfieldtext.js" type="text/javascript"></script>
 <script type="text/javascript">
 	$('input#search-photo-sets').inputFieldText('Search photo sets ...', 'search-photo-sets-hint');
 
