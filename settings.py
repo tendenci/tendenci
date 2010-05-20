@@ -120,6 +120,7 @@ INSTALLED_APPS = (
     'releases',
     'stories',
     'pages',
+    'entities',
 )
 
 # This is the number of days users will have to activate their
