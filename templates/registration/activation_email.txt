@@ -1,0 +1,1 @@
+Please click here to activate your account: {{ site }}/accounts/activate/{{ activation_key }}/. There are {{ expiration_days  }} days left to do it.
