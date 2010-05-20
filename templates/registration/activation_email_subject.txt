@@ -1,1 +1,1 @@
-Account Activation - {{ site }}
+Account Activation - http://{{ site.domain }}
