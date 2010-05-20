@@ -25,6 +25,15 @@ DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
+# email
+EMAIL_HOST = '4.78.3.131'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = 'jqian@schipul.com'
+
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -103,6 +112,7 @@ INSTALLED_APPS = (
     # third party applications
     'authority',
     'pagination',
+    'registration',
     
     # tendenci applications
     'profiles',
@@ -111,6 +121,14 @@ INSTALLED_APPS = (
     'stories',
     'pages',
 )
+
+# This is the number of days users will have to activate their
+# accounts after registering. If a user does not activate within
+# that period, the account will remain permanently inactive and may
+#be deleted by maintenance scripts provided in django-registration.
+ACCOUNT_ACTIVATION_DAYS = 7 
+
+LOGIN_REDIRECT_URL = '/'
 
 AUTH_PROFILE_MODULE = 'profiles.Profile'
 
