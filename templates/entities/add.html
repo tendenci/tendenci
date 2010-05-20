@@ -1,0 +1,25 @@
+{% extends "entities/base.html" %}
+
+{% block title %}Add Page{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/entities.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Entities Add Page</h1>
+    
+    <div class="back-to-search"><a href="{% url entity.search %}">&laquo; Back to entities search</a></div>
+
+    <div class="entities-wrap">
+    <form action="{% url entity.add %}" method="post">
+        {{ form.as_p }}
+        <input type="submit" value="Add Entity" />
+    </form>
+
+    </div>
+
+</div>
+{% endblock %}
