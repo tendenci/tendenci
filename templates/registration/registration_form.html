@@ -1,0 +1,63 @@
+{% extends "registration/base.html" %}
+
+{% block head %}
+ <style type="text/css">
+ 	.field-wrapper label{
+        float: left;
+        width: 8em;
+        margin-right: 1em;
+        text-align:right;
+    }
+    .field-wrapper{
+        margin: 5px 0;
+    }
+    .clear-left{
+    	clear:left;
+    }
+    .submitbutton{
+        margin: 1em 0 1em 9em;
+    }
+    .errorlist{
+    	color: red;
+    	list-style: none;
+    	font-size: 0.8em;
+    	margin: 0 0 0 9em;
+    }
+ </style>
+{% endblock %}
+
+{% block body %}
+<h2>Fill out the form below to create your account</h2>
+<form method="post" action="">
+<div class="field-wrapper">
+	{% if form.username.errors %}
+		{{ form.username.errors }}
+	{% endif %}
+	<label for="id_username">Username:</label>
+	{{ form.username }}
+</div>
+<div class="clear-left"></div>
+<div class="field-wrapper">
+	{{ form.email.errors }}
+	<label for="id_email">Email Address:</label>
+	{{ form.email }}
+</div>
+<div class="clear-left"></div>
+<div class="field-wrapper">
+	{{ form.password1.errors }}
+	<label for="id_password1">Password:</label>
+	{{ form.password1 }}
+</div>
+<div class="clear-left"></div>
+<div class="field-wrapper">
+	{{ form.password2.errors }}
+	<label for="id_password2">Password (again):</label>
+	{{ form.password2 }}
+</div>
+<div class="clear-left"></div>
+<div class="submitbutton">
+<input type="submit" name="submit" value="Create Account" />
+</div>
+</form>
+ 
+{% endblock %}
