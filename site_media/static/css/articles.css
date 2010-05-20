@@ -7,6 +7,15 @@
 	margin: 0 auto 10px 0;
 }
 
+.t ul.articles-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.articles-nav li {
+	display: inline;
+}
+
 .t .articles-wrap {
 	margin-bottom: 20px;
 }
@@ -65,15 +74,5 @@
 }
 .t .back-to-search {
 	margin-bottom: 20px;
-}
-
-
-.t ul.articles-nav {
-	margin: 0; padding: 0;
-	list-style-type: none;
-	margin-bottom: 20px;
-}
-.t ul.articles-nav li {
-	display: inline;
 }
 
