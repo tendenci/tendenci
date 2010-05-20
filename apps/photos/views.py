@@ -320,11 +320,16 @@ def destroy(request, id):
     if not photo.check_perm(request.user,'photos.delete_image'):
         raise Http404
 
-    if request.method == "POST" and request.POST["action"] == "delete":
+    print "request.method:", request.method
+
+    if request.method == "POST":
         request.user.message_set.create(message=_("Successfully deleted photo '%s'") % photo.title)
         photo.delete()
-    
-    return HttpResponseRedirect(reverse("photos"))
+        return HttpResponseRedirect(reverse("photos"))
+
+    return render_to_response("photos/delete.html", {
+        "photo": photo,
+    }, context_instance=RequestContext(request))
 
 @login_required
 def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/photo-set/add.html"):

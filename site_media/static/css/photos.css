@@ -1,5 +1,17 @@
 
 
+.t {
+	width: 850px;
+}
+.t h1 {
+	margin: 0;
+}
+
+.t .photos-nav {
+	margin: 0; padding: 0;
+	margin-bottom: 20px;
+}
+
 /*= latest photos
 -------------------------------- */
 #photos-header-wrap {
