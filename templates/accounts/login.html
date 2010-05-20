@@ -1,8 +1,8 @@
-{% extends "registration/base.html" %}
+{% extends "accounts/base.html" %}
 
 {% block body %}
 <h2>Log In to the Site</h2>
-<form method="post" action="">
+<form method="post" action="">{% csrf_token %}
  {{ form.as_p }}
 <input type="submit" name="submit" value="Log in" />
 </form>
