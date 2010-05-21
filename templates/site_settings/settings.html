@@ -1,0 +1,10 @@
+{% extends "site_settings/base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block body %}
+<form action="." method="post">
+{{ form.as_p }}
+<input type="submit" value="Update Settings" name="submit" />
+</form>
+{% endblock %}

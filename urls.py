@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     (r'^profiles/', include('profiles.urls')),
     (r'^stories/', include('stories.urls')),
     (r'^releases/', include('releases.urls')),
+    (r'^settings/', include('site_settings.urls')),
 )
 
 # Local url patterns for development
