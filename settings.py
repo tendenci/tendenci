@@ -20,11 +20,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': '',
-        'NAME': '',
-        'USER': '',
-        'HOST': '',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'tendenci50',
+        'USER': 'tendenci50',
+        'PASSWORD': 'Ly89e1c',
+        'HOST': 'NTSERVER17',
+        'PORT': '3306',
     }
 }
 
