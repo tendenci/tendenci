@@ -18,13 +18,16 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = ''             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
-
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'tendenci50',
+        'USER': 'tendenci50',
+        'PASSWORD': 'Ly89e1c',
+        'HOST': 'NTSERVER17',
+        'PORT': '3306',
+    }
+}
 # email
 EMAIL_HOST = '4.78.3.131'
 EMAIL_PORT = 25
