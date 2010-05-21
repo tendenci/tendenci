@@ -120,7 +120,6 @@ INSTALLED_APPS = (
     'releases',
     'stories',
     'pages',
-    'site_settings',
     'entities',
 )
 
