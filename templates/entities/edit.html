@@ -1,0 +1,25 @@
+{% extends "entities/base.html" %}
+
+{% block title %}Edit Page{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/entities.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Entities Edit Page</h1>
+    
+    <div class="back-to-search"><a href="{% url entity.search %}">&laquo; Back to entities search</a></div>
+
+    <div class="entity-wrap">
+    <form action="{% url entity.edit entity.id %}" method="post">
+        {{ form.as_p }}
+        <input type="submit" value="Save changes" />
+    </form>
+
+    </div>
+
+</div>
+{% endblock %}

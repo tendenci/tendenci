@@ -8,6 +8,10 @@ class StoryForm(ModelForm):
         fields = (
         'title',
         'content',
+        'fullstorylink',
+        'start_dt',
+        'end_dt',
+        'ncsortorder',
 
         'syndicate',
         'owner',
