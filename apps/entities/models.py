@@ -27,6 +27,7 @@ class Entity(AuditingBase):
 
     class Meta:
         permissions = (("view_entity","Can view entity"),)
+        
     def __unicode__(self):
         return self.headline
 
