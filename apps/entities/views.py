@@ -7,14 +7,13 @@ from django.core.urlresolvers import reverse
 from base.http import Http403
 from entities.models import Entity
 from entities.forms import EntityForm, EntityEditForm
-from entities.permissions import EntityPermission
+from perms.models import ObjectPermission
 
 def index(request, id=None, template_name="entities/view.html"):
     if not id: return HttpResponseRedirect(reverse('entity.search'))
     entity = get_object_or_404(Entity, pk=id)
-    auth = EntityPermission(request.user)
     
-    if auth.view(entity): # TODO : maybe make this a decorator
+    if request.user.has_perm('entities.view_entity', entity):
         return render_to_response(template_name, {'entity': entity}, 
             context_instance=RequestContext(request))
     else:
@@ -27,9 +26,8 @@ def search(request, template_name="entities/search.html"):
 
 def print_view(request, id, template_name="entities/print-view.html"):
     entity = get_object_or_404(Entity, pk=id)
-    auth = EntityPermission(request.user)
      
-    if auth.view(entity): # TODO : maybe make this a decorator
+    if request.user.has_perm('entities.view_entity', entity):
         return render_to_response(template_name, {'entity': entity}, 
             context_instance=RequestContext(request))
     else:
@@ -38,26 +36,23 @@ def print_view(request, id, template_name="entities/print-view.html"):
 @login_required
 def edit(request, id, form_class=EntityEditForm, template_name="entities/edit.html"):
     entity = get_object_or_404(Entity, pk=id)
-    auth = EntityPermission(request.user)
-    
-    if auth.edit(entity): # TODO : maybe make this a decorator    
+    original_owner = entity.owner
+    if request.user.has_perm('entities.change_entity', entity):   
         if request.method == "POST":
             form = form_class(request.user, request.POST, instance=entity)
             if form.is_valid():
-                original_owner = entity.owner
+                
                 entity = form.save(commit=False)
                 entity.save()
                 
                 # assign creator permissions
-                auth.assign(content_object=entity)   
+                ObjectPermission.objects.assign(entity.creator, entity) 
  
                 # assign owner permissions
                 if entity.owner != original_owner:    
-                    auth = EntityPermission(entity.owner)
-                    auth.assign(content_object=entity)  
+                    ObjectPermission.objects.assign(entity.owner, entity)  
                     if original_owner != entity.creator:
-                        auth = EntityPermission(original_owner)
-                        auth.remove(content_object=entity)
+                        ObjectPermission.objects.remove(original_owner, entity) 
                                
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))             
         else:
@@ -69,10 +64,8 @@ def edit(request, id, form_class=EntityEditForm, template_name="entities/edit.ht
         raise Http403 # TODO : change where this goes
 
 @login_required
-def add(request, form_class=EntityForm, template_name="entities/add.html"):
-    auth = EntityPermission(request.user)
-    
-    if auth.add(): # TODO : maybe make this a decorator   
+def add(request, form_class=EntityForm, template_name="entities/add.html"):    
+    if request.user.has_perm('entities.add_entity'):   
         if request.method == "POST":
             form = form_class(request.user, request.POST)
             if form.is_valid():
@@ -87,7 +80,7 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
                 entity.save()
                 
                 # assign creator and owner permissions
-                auth.assign(content_object=entity)
+                ObjectPermission.objects.assign(entity.creator, entity) 
                 
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))
         else:
@@ -102,8 +95,7 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
 def delete(request, id, template_name="entities/delete.html"):
     entity = get_object_or_404(Entity, pk=id)
 
-    auth = EntityPermission(request.user)
-    if auth.delete(entity): # TODO : make this a decorator    
+    if request.user.has_perm('entities.delete_entity'):     
         if request.method == "POST":
             entity.delete()
             return HttpResponseRedirect(reverse('entity.search'))
