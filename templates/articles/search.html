@@ -1,5 +1,6 @@
 {% extends "articles/base.html" %}
 {% load pagination_tags %}
+{% load article_tags %}
 
 {% block title %}Search Page{% endblock %}
 
@@ -8,7 +9,6 @@
 {% endblock %}
 
 {% block body %}
-
 <div class="t">
     <h1>Articles Search Page</h1>
 
@@ -38,11 +38,7 @@
                 </div>
 
                 <div class="quick-options">
-                    <ul>
-                        <li><a href="{% url article.print_view article.id %}">Print</a></li>
-                        <li><a href="{% url article.edit article.id %}">Edit</a></li>
-						<li class="delete"><a href="{% url article.delete article.id %}">Delete</a></li>
-                    </ul>
+					{% article_options article request.user %} 	       
                 </div>
 			</div>
 

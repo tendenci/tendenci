@@ -113,11 +113,11 @@ INSTALLED_APPS = (
     'django.contrib.admin',
 
     # third party applications
-    'authority',
     'pagination',
     'registration',
     
     # tendenci applications
+    'perms',
     'profiles',
     'articles',
     'releases',
@@ -135,6 +135,10 @@ ACCOUNT_ACTIVATION_DAYS = 7
 LOGIN_REDIRECT_URL = '/'
 
 AUTH_PROFILE_MODULE = 'profiles.Profile'
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'perms.backend.ObjectPermBackend',
+)
 
 # local settings for development
 try:

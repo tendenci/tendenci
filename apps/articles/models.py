@@ -46,6 +46,7 @@ class Article(AuditingBase):
 
     class Meta:
         permissions = (("view_article","Can view article"),)
+        
     def __unicode__(self):
         return self.headline
 
