@@ -1,0 +1,5 @@
+<ul>
+    <li><a href="{% url article.print_view article.id %}">Print</a></li>
+    <li><a href="{% url article.edit article.id %}">Edit</a></li>
+	<li class="delete"><a href="{% url article.delete article.id %}">Delete</a></li>
+</ul>

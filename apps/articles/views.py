@@ -7,14 +7,14 @@ from django.core.urlresolvers import reverse
 from base.http import Http403
 from articles.models import Article
 from articles.forms import ArticleForm, ArticleEditForm
-from articles.permissions import ArticlePermission
+from perms.models import ObjectPermission
 
 def index(request, id=None, template_name="articles/view.html"):
     if not id: return HttpResponseRedirect(reverse('article.search'))
     article = get_object_or_404(Article, pk=id)
-    auth = ArticlePermission(request.user)
     
-    if auth.view(article): # TODO : maybe make this a decorator
+    print article.pk 
+    if request.user.has_perm('articles.view_article', article):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
@@ -27,9 +27,8 @@ def search(request, template_name="articles/search.html"):
 
 def print_view(request, id, template_name="articles/print-view.html"):
     article = get_object_or_404(Article, pk=id)
-    auth = ArticlePermission(request.user)
      
-    if auth.view(article): # TODO : maybe make this a decorator
+    if request.user.has_perm('articles.view_article', article):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
@@ -38,26 +37,23 @@ def print_view(request, id, template_name="articles/print-view.html"):
 @login_required
 def edit(request, id, form_class=ArticleEditForm, template_name="articles/edit.html"):
     article = get_object_or_404(Article, pk=id)
-    auth = ArticlePermission(request.user)
+    original_owner = article.owner
     
-    if auth.edit(article): # TODO : maybe make this a decorator    
+    if request.user.has_perm('articles.change_article', article):    
         if request.method == "POST":
             form = form_class(request.user, request.POST, instance=article)
             if form.is_valid():
-                original_owner = article.owner
                 article = form.save(commit=False)
                 article.save()
                 
                 # assign creator permissions
-                auth.assign(content_object=article)   
- 
+                ObjectPermission.objects.assign(article.creator, article)   
+
                 # assign owner permissions
-                if article.owner != original_owner:    
-                    auth = ArticlePermission(article.owner)
-                    auth.assign(content_object=article)  
+                if article.owner != original_owner:  
+                    ObjectPermission.objects.assign(article.owner, article)  
                     if original_owner != article.creator:
-                        auth = ArticlePermission(original_owner)
-                        auth.remove(content_object=article)
+                        ObjectPermission.objects.remove(original_owner, article)
                                
                 return HttpResponseRedirect(reverse('article', args=[article.pk]))             
         else:
@@ -70,9 +66,7 @@ def edit(request, id, form_class=ArticleEditForm, template_name="articles/edit.h
 
 @login_required
 def add(request, form_class=ArticleForm, template_name="articles/add.html"):
-    auth = ArticlePermission(request.user)
-    
-    if auth.add(): # TODO : maybe make this a decorator   
+    if request.user.has_perm('articles.add_article'):
         if request.method == "POST":
             form = form_class(request.user, request.POST)
             if form.is_valid():
@@ -86,8 +80,8 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 
                 article.save()
                 
-                # assign creator and owner permissions
-                auth.assign(content_object=article)
+                # assign creator permissions
+                ObjectPermission.objects.assign(article.creator, article) 
                 
                 return HttpResponseRedirect(reverse('article', args=[article.pk]))
         else:
@@ -102,8 +96,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
 def delete(request, id, template_name="articles/delete.html"):
     article = get_object_or_404(Article, pk=id)
 
-    auth = ArticlePermission(request.user)
-    if auth.delete(article): # TODO : make this a decorator    
+    if request.user.has_perm('articles.delete_article'):   
         if request.method == "POST":
             article.delete()
             return HttpResponseRedirect(reverse('article.search'))
