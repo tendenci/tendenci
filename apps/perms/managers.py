@@ -4,7 +4,6 @@ from django.contrib.contenttypes.models import ContentType
 
 class ObjectPermissionManager(models.Manager):
     def assign(self, user, object, perms=None):
-        print 'manager', user
         # check for a list of permissions to pass
         if perms:
             for perm in perms:

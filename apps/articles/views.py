@@ -12,8 +12,7 @@ from perms.models import ObjectPermission
 def index(request, id=None, template_name="articles/view.html"):
     if not id: return HttpResponseRedirect(reverse('article.search'))
     article = get_object_or_404(Article, pk=id)
-    
-    print article.pk 
+
     if request.user.has_perm('articles.view_article', article):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
