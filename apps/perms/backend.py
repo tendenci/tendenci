@@ -39,8 +39,6 @@ class ObjectPermBackend(object):
             "user": user
         }
         
-        print filters
-        
         return ObjectPermission.objects.filter(**filters).exists()
         
         
