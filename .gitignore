@@ -2,6 +2,7 @@
 local_settings.py
 local_urls.py
 site_media/photologue
+cache
 
 # Ignore all dotfiles...
 .*
