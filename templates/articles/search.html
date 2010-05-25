@@ -3,20 +3,17 @@
 {% load article_tags %}
 {% load base_tags %}
 
-{% block title %}Search Page{% endblock %}
+{% block title %}{{ block.super }}Search{% endblock %}
 
-{% block head %}
+{% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/articles.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
-    <h1>Articles Search Page</h1>
-
-    <div class="back-to-search">
-    	<a href="/">&laquo; Homepage</a>
-        <a href="{% url article.add %}">Add article</a>
-	</div>
+    <h1>Articles Search</h1>
+	
+    {% article_nav request.user %}
 
     {% autopaginate articles 10 %}
 
@@ -39,7 +36,7 @@
                 </div>
 
                 <div class="quick-options">
-					{% article_options article request.user %} 	       
+					{% article_options request.user article %} 	       
                 </div>
 			</div>
 
