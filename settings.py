@@ -8,6 +8,7 @@ sys.path.insert(0, APPS_PATH)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
+SITE_THEME = "default"
 
 ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
@@ -91,6 +92,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'Tendenci50.urls'
 
 TEMPLATE_DIRS = (
+    os.path.join(PROJECT_ROOT, "themes", SITE_THEME, "templates"),
     os.path.join(PROJECT_ROOT, "templates"),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -103,6 +105,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
+    
+    'theme.context_processors.theme',
 )
 
 INSTALLED_APPS = (
