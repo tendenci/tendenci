@@ -1,11 +1,8 @@
-<!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-	<meta charset="UTF-8">
-	<title></title>
-</head>
-<body>
+{% extends "site_base.html" %}
 
+{% block title %}Homepage{% endblock %}
+
+{% block extra_head %}
 <style type="text/css">
 	.offline a {
 		color: #DDD;
@@ -14,6 +11,9 @@
 		color: #551A8B;
 	}
 </style>
+{% endblock %}
+
+{% block body %}
 	<h1>Admin</h1>
 	<a href="/admin/">Admin Panel</a>
 	<h1>Modules</h1>
@@ -29,7 +29,6 @@
     	<li class="online"><a href="{% url stories %}">Stories</a></li>
     	<li class="online"><a href="{% url pages %}">Pages</a></li>
      	<li class="online"><a href="{% url entities %}">Entities</a></li>
+     	<li class="online"><a href="{% url settings %}">Settings</a></li>
     </ul>
-
-</body>
-</html>
+{% endblock %}
