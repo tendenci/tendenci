@@ -117,6 +117,7 @@ INSTALLED_APPS = (
     'registration',
     
     # tendenci applications
+    'base',
     'perms',
     'profiles',
     'articles',
