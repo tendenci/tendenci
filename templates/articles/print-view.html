@@ -1,4 +1,5 @@
 {% extends "articles/base.html" %}
+{% load article_tags %}
 
 {% block title %}Print View Page{% endblock %}
 
@@ -29,11 +30,7 @@
             </div>
 
             <div class="quick-options">
-                <ul>
-                    <li><a href="{% url article.print_view article.id %}">Print</a></li>
-                    <li><a href="{% url article.edit article.id %}">Edit</a></li>
-                    <li><a href="{% url article.delete article.id %}">Delete</a></li>
-                </ul>
+                {% article_options article request.user %}
             </div>
         </div>
 
