@@ -1,6 +1,7 @@
 {% extends "articles/base.html" %}
 {% load pagination_tags %}
 {% load article_tags %}
+{% load base_tags %}
 
 {% block title %}Search Page{% endblock %}
 
@@ -21,9 +22,9 @@
 
 	<div class="articles-wrap">
     {% for article in articles %}
+    	{% has_perm user articles.view_article article as can_view %}
+    	{% if can_view %}
 		<div class="article-wrap">
-
-
 			<div class="options">
 
                 <div class="dropdown-options">
@@ -53,8 +54,8 @@
             <form name="article-delete" method="POST" action="{% url article.delete article.id %}">
                 <input type="hidden" name="action" value="delete">
             </form>
-
 		</div>
+		{% endif %}
 	{% empty %}
 		<div>0 Results Found</div>
     {% endfor %}
