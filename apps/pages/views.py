@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse
 
 from pages.models import Page
 from pages.forms import PageForm, PageEditForm
-from pages.permissions import PagePermission
 
 def index(request, id=None, template_name="pages/view.html"):
     if not id: return HttpResponseRedirect(reverse('page.search'))

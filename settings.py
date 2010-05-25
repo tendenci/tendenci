@@ -8,6 +8,7 @@ sys.path.insert(0, APPS_PATH)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
+SITE_THEME = "default"
 
 ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
@@ -28,13 +29,14 @@ DATABASES = {
         'PORT': '3306',
     }
 }
+# email
+EMAIL_HOST = '4.78.3.131'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
+DEFAULT_FROM_EMAIL = 'jqian@schipul.com'
 
-DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = ''             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -90,6 +92,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'Tendenci50.urls'
 
 TEMPLATE_DIRS = (
+    os.path.join(PROJECT_ROOT, "themes", SITE_THEME, "templates"),
     os.path.join(PROJECT_ROOT, "templates"),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -102,6 +105,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
+    
+    'theme.context_processors.theme',
 )
 
 INSTALLED_APPS = (
@@ -112,18 +117,33 @@ INSTALLED_APPS = (
     'django.contrib.admin',
 
     # third party applications
-    'authority',
     'pagination',
+    'registration',
     
     # tendenci applications
+    'base',
+    'perms',
     'profiles',
     'articles',
     'releases',
     'stories',
     'pages',
+    'entities',
 )
 
+# This is the number of days users will have to activate their
+# accounts after registering. If a user does not activate within
+# that period, the account will remain permanently inactive and may
+#be deleted by maintenance scripts provided in django-registration.
+ACCOUNT_ACTIVATION_DAYS = 7 
+
+LOGIN_REDIRECT_URL = '/'
+
 AUTH_PROFILE_MODULE = 'profiles.Profile'
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'perms.backend.ObjectPermBackend',
+)
 
 # local settings for development
 try:

@@ -1,0 +1,51 @@
+{% extends "entities/base.html" %}
+
+{% block title %}View Page{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/entities.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Entities View Page</h1>
+    
+    <div class="back-to-search"><a href="{% url entity.search %}">&laquo; Back to entities search</a></div>
+
+    <div class="entity-wrap">
+
+        <div class="options">
+
+            <div class="dropdown-options">
+                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                <ul>
+                    <li>Review Reports</li>
+                    <li>Optimize Meta Tags</li>
+                    <li>Attach Files</li>
+                    <li>View Revisions</li>
+                    <li>Delete</li>
+                </ul>
+            </div>
+
+            <div class="quick-options">
+                <ul>
+                    <li><a href="{% url entity.print_view entity.id %}">Print</a></li>
+                    <li><a href="{% url entity.edit entity.id %}">Edit</a></li>
+                    <li><a href="{% url entity.delete entity.id %}">Delete</a></li>
+                </ul>
+            </div>
+        </div>
+
+
+        <h2>{{ entity.entity_name}}</h2>
+        <div class="summary">{{ entity.summary|safe }}</div>
+        <div class="mission">{{ entity.mission|safe }}</div>
+        <div class="contact_name">{{ entity.contact_name|safe }}</div>
+        <div class="meta">
+            <div class="submitted">Submitted on {{ entity.create_dt|date:"D d M Y P" }} by {{ entity.creator }}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
