@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 
-from base.http import Http403
+from base.http import render_to_403
 from entities.models import Entity
 from entities.forms import EntityForm, EntityEditForm
 from perms.models import ObjectPermission
@@ -17,7 +17,7 @@ def index(request, id=None, template_name="entities/view.html"):
         return render_to_response(template_name, {'entity': entity}, 
             context_instance=RequestContext(request))
     else:
-        raise Http403 # TODO : change where this goes
+        raise render_to_403()
 
 def search(request, template_name="entities/search.html"):
     entities = Entity.objects.all()
@@ -31,7 +31,7 @@ def print_view(request, id, template_name="entities/print-view.html"):
         return render_to_response(template_name, {'entity': entity}, 
             context_instance=RequestContext(request))
     else:
-        raise Http403 # TODO : change where this goes
+        raise render_to_403()
     
 @login_required
 def edit(request, id, form_class=EntityEditForm, template_name="entities/edit.html"):
@@ -61,7 +61,7 @@ def edit(request, id, form_class=EntityEditForm, template_name="entities/edit.ht
         return render_to_response(template_name, {'entity': entity, 'form':form}, 
             context_instance=RequestContext(request))
     else:
-        raise Http403 # TODO : change where this goes
+        raise render_to_403()
 
 @login_required
 def add(request, form_class=EntityForm, template_name="entities/add.html"):    
@@ -89,7 +89,7 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
         return render_to_response(template_name, {'form':form}, 
             context_instance=RequestContext(request))
     else:
-        raise Http403 # TODO : change where this goes
+        raise render_to_403()
     
 @login_required
 def delete(request, id, template_name="entities/delete.html"):
@@ -103,4 +103,4 @@ def delete(request, id, template_name="entities/delete.html"):
         return render_to_response(template_name, {'entity': entity}, 
             context_instance=RequestContext(request))
     else:
-        raise Http404 # TODO : change where this goes
+        raise render_to_403()
