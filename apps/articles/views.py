@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 
-from base.http import Http403
+from base.http import render_to_403
 from articles.models import Article
 from articles.forms import ArticleForm, ArticleEditForm
 from perms.models import ObjectPermission
@@ -17,7 +17,7 @@ def index(request, id=None, template_name="articles/view.html"):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
-        raise Http403 # TODO : change where this goes
+        raise render_to_403()
 
 def search(request, template_name="articles/search.html"):
     articles = Article.objects.all()
@@ -31,7 +31,7 @@ def print_view(request, id, template_name="articles/print-view.html"):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
-        raise Http403 # TODO : change where this goes
+        raise render_to_403()
     
 @login_required
 def edit(request, id, form_class=ArticleEditForm, template_name="articles/edit.html"):
@@ -61,7 +61,7 @@ def edit(request, id, form_class=ArticleEditForm, template_name="articles/edit.h
         return render_to_response(template_name, {'article': article, 'form':form}, 
             context_instance=RequestContext(request))
     else:
-        raise Http403 # TODO : change where this goes
+        raise render_to_403()
 
 @login_required
 def add(request, form_class=ArticleForm, template_name="articles/add.html"):
@@ -89,7 +89,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
         return render_to_response(template_name, {'form':form}, 
             context_instance=RequestContext(request))
     else:
-        raise Http403 # TODO : change where this goes
+        raise render_to_403()
     
 @login_required
 def delete(request, id, template_name="articles/delete.html"):
@@ -103,4 +103,4 @@ def delete(request, id, template_name="articles/delete.html"):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
-        raise Http404 # TODO : change where this goes
+        raise render_to_403()
