@@ -12,8 +12,11 @@ class ObjectPermBackend(object):
         # let the ModelBackend handle this one
         if obj is None:
             return False
-
-        content_type = ContentType.objects.get_for_model(obj)
+        
+        # if they outright have the permission from either
+        # a group or the user object no reason to hit the database
+        if user.has_perm(perm):
+            return True
 
         try:
             perm_type =  perm.split('.')[-1].split('_')[0]
@@ -31,7 +34,8 @@ class ObjectPermBackend(object):
                 return True
             if user.is_authenticated and obj.allow_user_edit:
                 return True
-            
+           
+        content_type = ContentType.objects.get_for_model(obj) 
         filters = {
             "content_type": content_type,
             "object_id": obj.pk,
