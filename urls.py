@@ -13,11 +13,13 @@ urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
     (r'^admin/', include(admin.site.urls)),
     (r'^articles/', include('articles.urls')),
+    (r'^entities/', include('entities.urls')),
     (r'^pages/', include('pages.urls')),
     (r'^photos/', include('photos.urls')),
     (r'^profiles/', include('profiles.urls')),
     (r'^stories/', include('stories.urls')),
     (r'^releases/', include('releases.urls')),
+    (r'^accounts/', include('accounts.urls')),
 )
 
 # Local url patterns for development
