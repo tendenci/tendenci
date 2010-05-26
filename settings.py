@@ -106,7 +106,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.request',
     
+    # tendenci context processors
     'theme.context_processors.theme',
+    'site_settings.context_processors.settings',
 )
 
 INSTALLED_APPS = (
@@ -144,6 +146,12 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'perms.backend.ObjectPermBackend',
 )
+
+# -------------------------------------- #
+# CACHING
+# -------------------------------------- #
+CACHE_DIR = PROJECT_ROOT + "/cache"
+CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800" # 7 days
 
 # local settings for development
 try:

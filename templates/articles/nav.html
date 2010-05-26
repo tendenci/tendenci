@@ -6,13 +6,13 @@
     
     {% url article.search as search_url %}
     {% if not search_url in request.path %}
-    	<a href="{{ search_url }}">Search articles</a>
+    	<a href="{{ search_url }}">Search {{ MODULE_ARTICLES_LABEL|lower }}</a>
     {% endif %}
     
     {% url article.add as add_url %}
     {% if not add_url in request.path %}
     {% if can_add %}
-	    <a href="{{ add_url }}">Add article</a>
+	    <a href="{{ add_url }}">Add {{ MODULE_ARTICLES_LABEL|lower }}</a>
     {% endif %}
     {% endif %}
 </div>

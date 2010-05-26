@@ -1,0 +1,19 @@
+{% extends "site_settings/base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block body %}
+
+{% regroup settings by scope_category as settings_list %}
+{% for settings in settings_list %}
+	<h2>{{ settings.grouper }}</h2>
+    <ul>
+    	{% for setting in settings.list %}
+        	<li><a href="{{ setting.get_absolute_url }}">{{ setting.label }}</a></li>
+        {% endfor %}
+    </ul>
+    {% empty %}
+    <p>No settings are currently available</p>
+{% endfor %}  
+
+{% endblock %}
