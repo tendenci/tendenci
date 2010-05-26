@@ -1,0 +1,14 @@
+{% extends "site_settings/base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/settings.css">
+{% endblock%}
+
+{% block body %}
+<form class="settings-form" action="." method="post">
+{{ form.as_p }}
+<input type="submit" value="Update Settings" name="submit" />
+</form>
+{% endblock %}
