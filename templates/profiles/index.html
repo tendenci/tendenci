@@ -1,0 +1,107 @@
+{% extends "profiles/base.html" %}
+
+{% block title %}Profile View{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/profiles.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <div id="userview-profile">
+	    <h1>{{ user_view.get_full_name }}({{ user_view.username }})</h1>
+	    	<div class="contact-info profile-selection">
+		    <h2>Contact Info</h2>
+		    	<table class="section-items">
+			    {% if user_view.email %}
+			    	<tr>
+			    	<td class="type">Email:</td> <td class="items">{{user_view.email}}</td>
+			    	</tr>
+			    {%endif%}
+			    {% if profile.phone %}
+			    	<tr>
+			    	<td class="type">Phone:</td> <td class="items"> {{profile.phone}} </td>
+			    	</tr>
+			    {%endif%}
+			    {% if profile.phone2 %}
+			    	<tr>
+			    	<td class="type">&nbsp;</td> <td class="items"> {{profile.phone2}} </td>
+			    	</tr>
+			    {%endif%}
+			    {% if profile.work_phone %}
+			    	<tr>
+			    	<td class="type">&nbsp;</td> <td class="items"> {{profile.work_phone}} (work) </td>
+			    	</tr>
+			    {%endif%}
+			    {% if profile.home_phone %}
+			    	<tr>
+			    	<td class="type">&nbsp;</td> <td class="items"> {{profile.home_phone}} (home) </td>
+			    	</tr>
+			    {%endif%}
+			    {% if profile.mobile_phone %}
+			    	<tr>
+			    	<td class="type">&nbsp;</td> <td class="items"> {{profile.mobile_phone}} (mobile) </td>
+			    	</tr>
+			    {%endif%}
+			    
+			  </table>
+			  
+			  <div class="profile-addresses profile-selection">
+			  <h2>Addresses</h2>
+		    	<div class="user-address">
+		    	{% if profile.mailing_name %}
+			    	<span class="mailing-name">{{profile.mailing_name}}</span>
+			    {%endif%}
+			    <address class="adr">
+			    {% if profile.address %}
+			    	<span class="street-address">{{profile.address}}
+			    	{% if profile.address2 %}{{profile.address}} {%endif%}
+			    	</span>
+			    {%endif%}
+			   {% if profile.city %}
+			    	<span class="locality">{{profile.city}}</span>
+			    {%endif%}
+			    {% if profile.state %}
+			    	<span class="region">, {{profile.state}}</span>
+			    {%endif%}
+			    {% if profile.zipcode %}
+			    	<span class="postal-code">, {{profile.zipcode}}</span>
+			    {%endif%}
+			     {% if profile.country %}
+			    	<span class="country">, {{profile.country}}</span>
+			    {%endif%}
+			    </address>
+			  </div>
+			  </div>
+			  
+			  
+			<div class="work-info profile-selection">
+		    <h2>Work Info</h2>
+		    	<table class="section-items">
+			    {% if profile.company %}
+			    	<tr>
+			    	<td class="type">Company:</td> <td class="items">{{profile.company}}</td>
+			    	</tr>
+			    {%endif%}
+			    {% if profile.position_title %}
+			    	<tr>
+			    	<td class="type">Position Title:</td> <td class="items"> {{profile.position_title}} </td>
+			    	</tr>
+			    {%endif%}
+			    {% if profile.position_assignment %}
+			    	<tr>
+			    	<td class="type">Position Assignment:</td> <td class="items"> {{profile.position_assignment}} </td>
+			    	</tr>
+			    {%endif%}
+			   
+			    
+			  </table>
+			  
+			  
+			  
+			 </div>
+    </div>
+
+</div>
+{% endblock %}

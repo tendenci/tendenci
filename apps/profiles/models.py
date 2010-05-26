@@ -8,18 +8,26 @@ from base.models import AuditingBase
 
 class Profile(AuditingBase):
     # relations
-    user = models.ForeignKey(User, unique=True, verbose_name=_('user'))
+    user = models.ForeignKey(User, unique=True, related_name="profile", verbose_name=_('user'))
     
     guid = models.CharField(max_length=50)
     entity_id = models.IntegerField(default=1)
     pl_id = models.IntegerField(default=1)
-    member_number = models.CharField(_('member number'), max_length=50)
+    member_number = models.CharField(_('member number'), max_length=50, blank=True)
     historical_member_number = models.CharField(_('historical member number'), max_length=50)
     
     # profile meta data
     time_zone = TimeZoneField(_('timezone'))
     language = models.CharField(_('language'), max_length=10, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
-    salutation = models.CharField(_('salutation'), max_length=15, blank=True)
+    salutation = models.CharField(_('salutation'), max_length=15, blank=True, choices=(
+                                                                                      ('Mr.', 'Mr.'),
+                                                                                      ('Mrs.', 'Mrs.'),
+                                                                                      ('Ms.', 'Ms.'),
+                                                                                      ('Miss', 'Miss'),
+                                                                                      ('Dr.', 'Dr.'),
+                                                                                      ('Prof.', 'Prof.'),
+                                                                                      ('Hon.', 'Hon.'),
+                                                                                      ))
     initials = models.CharField(_('initials'), max_length=50, blank=True)
     display_name = models.CharField(_('display name'), max_length=120, blank=True)
     mailing_name = models.CharField(_('mailing name'), max_length=120, blank=True)
@@ -57,15 +65,17 @@ class Profile(AuditingBase):
     notes = models.TextField(_('notes'), blank=True) 
     admin_notes = models.TextField(_('admin notes'), blank=True) 
     referral_source = models.CharField(_('referral source'), max_length=50, blank=True)
-    hide_in_search = models.BooleanField()
-    hide_address = models.BooleanField()
-    hide_email = models.BooleanField()
-    hide_phone = models.BooleanField()   
-    first_responder = models.BooleanField(_('first responder'))
-    agreed_to_tos = models.BooleanField(_('agrees to tos'))
+    hide_in_search = models.BooleanField(default=0)
+    hide_address = models.BooleanField(default=0)
+    hide_email = models.BooleanField(default=0)
+    hide_phone = models.BooleanField(default=0)   
+    first_responder = models.BooleanField(_('first responder'), default=0)
+    agreed_to_tos = models.BooleanField(_('agrees to tos'), default=0)
     
     # date fields
     create_dt = models.DateTimeField(auto_now_add=True)
     submit_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     
+    def __unicode__(self):
+        return self.user.username
