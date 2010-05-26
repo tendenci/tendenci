@@ -16,6 +16,12 @@ class Setting(models.Model):
     scope = models.CharField(max_length=50)
     scope_category = models.CharField(max_length=50)
     parent_id = models.IntegerField()
-    
+
+    def get_absolute_url(self):
+        return ("setting.permalink", 
+                [self.scope, self.scope_category, "%s%s" % ('#id_', self.name)])
+        
+    get_absolute_url = models.permalink(get_absolute_url)
+        
     def __unicode__(self):
         return "(%s) %s" %(self.name, self.label)
