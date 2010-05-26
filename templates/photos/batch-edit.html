@@ -6,55 +6,51 @@
 
 {% block title %}{% blocktrans %}Batch Edit Photos{% endblocktrans %}{% endblock %}
 {% block head %}
-	<style type="text/css">
-		table.photo-form {
-			margin: 10px 0;
-			width: 800px;
-		}
-		table.photo-form td {
-			vertical-align: top;
-		}
-		
-		table.photo-form td.image {
-			text-align: right;
-		}
-		table.photo-form input[type=text] {
-			width: 280px;
-		}
-		table.photo-form textarea {
-			height: 50px;
-			width: 280px;
-		}
-		table.photo-form select {
-			width: 100px;
-			margin: 5px 0 5px 3px;
-		}
-		.photo-bulk-editor {
-			border: 1px solid silver;
-			background-color: #FDFDFD;
-			padding: 10px;
-			margin-bottom: 20px;
-			-webkit-border-radius: 8px;
-			-moz-border-radius: 8px;
-			border-radius: 8px;
-		}
-		.photo-bulk-editor p {
-			margin: 0;
-		}
-		.photo-bulk-editor td {
-			vertical-align: top;
-		}
-		.photo-bulk-editor textarea,
-		.photo-bulk-editor input[type="text"] {
-			width: 300px;
-		}
-		
-    </style>
-{% endblock %}
-
-{% block body %}
-
+	<link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
 <style type="text/css">
+
+	table.photo-form {
+		margin: 10px 0;
+		width: 800px;
+	}
+	table.photo-form td {
+		vertical-align: top;
+	}
+	
+	table.photo-form td.image {
+		text-align: right;
+	}
+	table.photo-form input[type=text] {
+		width: 280px;
+	}
+	table.photo-form textarea {
+		height: 50px;
+		width: 280px;
+	}
+	table.photo-form select {
+		width: 100px;
+		margin: 5px 0 5px 3px;
+	}
+	.photo-bulk-editor {
+		border: 1px solid silver;
+		background-color: #FDFDFD;
+		padding: 10px;
+		margin-bottom: 20px;
+		-webkit-border-radius: 8px;
+		-moz-border-radius: 8px;
+		border-radius: 8px;
+	}
+	.photo-bulk-editor p {
+		margin: 0;
+	}
+	.photo-bulk-editor td {
+		vertical-align: top;
+	}
+	.photo-bulk-editor textarea,
+	.photo-bulk-editor input[type="text"] {
+		width: 300px;
+	}
+	
 	.edit-wrap {
 		width: 60%;
 		background-color: white;
@@ -79,14 +75,14 @@
 	.set-wrap select {
 		height: 250px;
 	}
-
+	
 	.title-wrap {
 		margin-bottom: 5px;
 	}
 	.title-wrap input {
 		width: 99%;
 	}
-
+	
 	.caption-wrap {
 		margin-bottom: 5px;
 	}
@@ -94,11 +90,11 @@
 		width: 99%;
 		height: 100px;
 	}
-
+	
 	.tags-wrap input {
 		width: 80%;
 	}
-
+	
 	.public-wrap {
 		position: absolute;
 		right: 0; bottom: 0;
@@ -112,9 +108,6 @@
 		float: right;
 	}
 
-</style>
-
-<style type="text/css">
 	.float-anchor {
 	}
 	div.side-panel {
@@ -139,77 +132,90 @@
 	}
 
 </style>
+{% endblock %}
 
-    <form method="POST" action="">
+{% block body %}
 
-        <div class="side-panel">
-    
-            <div class="float-anchor"><!-- ie7 fix --></div>
-            <div class="float-window">
-    
-                <div class="photo-bulk-editor">
-                    <p>Replace all titles</p>
-                    <div><input class="title" type="text" /></div>
-                    <p>Replace all captions</p>
-                    <div><textarea class="caption"></textarea></div>
-                    <p>Replace all tags</p>
-                    <div><input class="tags" type="text" /></div>
-                </div>
-    
-                <div class="save-wrap">
-                    <input type="submit" value="Save all changes to these photos" />
-                </div>
-            </div>
+	<div class="t">
+
+		<h1>Bulk edit photos</h1>
+
+        <div class="photos-nav">
+            <a href="{% url photoset_details photo_set.id %}">&laquo; Back to album</a>
         </div>
 
-        {{ photo_formset.management_form }}
-			{% autopaginate photo_formset.forms 10 %}
-            {% for photo_form in photo_formset.forms %}
+        <form method="POST" action="">
     
-            <div class="edit-wrap">
-
-				{{ photo_form.id }}
-
-                {% for error in photo_form.errors %}
-                    <li><strong>{{ error|escape }}</strong></li>
-                {% endfor %}
-
-                <div class="photo-wrap">
-                    <img src="{{ photo_form.instance.get_display_url }}" />
-                </div>
-                <div class="set-wrap">
-                    {{ photo_form.photoset }}
-                </div>
-                <div style="clear:both;"><!-- ie7 fix --></div>
-
-                <div class="title-wrap">
-                	<div class="label">{{ photo_form.title.label_tag }}</div>
-                    <div class="field">{{ photo_form.title }}</div>
-                </div>
-                <div class="caption-wrap">
-	                <div class="label">{{ photo_form.caption.label_tag }}</div>
-                    <div class="field">{{ photo_form.caption }}</div>
-                </div>
-
-				<div style="position:relative;">
-                    <div class="tags-wrap">
-                        <div class="label">{{ photo_form.tags.label_tag }}</div>
-                        <div class="field">{{ photo_form.tags }}</div>
+            <div class="side-panel">
+        
+                <div class="float-anchor"><!-- ie7 fix --></div>
+                <div class="float-window">
+        
+                    <div class="photo-bulk-editor">
+                        <p>Replace all titles</p>
+                        <div><input class="title" type="text" /></div>
+                        <p>Replace all captions</p>
+                        <div><textarea class="caption"></textarea></div>
+                        <p>Replace all tags</p>
+                        <div><input class="tags" type="text" /></div>
                     </div>
-                    <div class="public-wrap">
-                        <div class="label">{{ photo_form.is_public.label_tag }}</div>
-                        <div class="field">{{ photo_form.is_public }}</div>
+        
+                    <div class="save-wrap">
+                        <input type="submit" value="Save all changes to these photos" />
                     </div>
-                    <div class="safetylevel-wrap">
-                        {{ photo_form.safetylevel }}
-                    </div>
-				</div>
+                </div>
             </div>
-        {% empty %}
-            <p>All photos have been approved, nothing to see here.</p>
-        {% endfor %}
-    </form>
-	{% paginate %}
+    
+            {{ photo_formset.management_form }}
+                {% autopaginate photo_formset.forms 10 %}
+                {% for photo_form in photo_formset.forms %}
+        
+                <div class="edit-wrap">
+    
+                    {{ photo_form.id }}
+    
+                    {% for error in photo_form.errors %}
+                        <li><strong>{{ error|escape }}</strong></li>
+                    {% endfor %}
+    
+                    <div class="photo-wrap">
+                        <img src="{{ photo_form.instance.get_display_url }}" />
+                    </div>
+                    <div class="set-wrap">
+                        {{ photo_form.photoset }}
+                    </div>
+                    <div style="clear:both;"><!-- ie7 fix --></div>
+    
+                    <div class="title-wrap">
+                        <div class="label">{{ photo_form.title.label_tag }}</div>
+                        <div class="field">{{ photo_form.title }}</div>
+                    </div>
+                    <div class="caption-wrap">
+                        <div class="label">{{ photo_form.caption.label_tag }}</div>
+                        <div class="field">{{ photo_form.caption }}</div>
+                    </div>
+    
+                    <div style="position:relative;">
+                        <div class="tags-wrap">
+                            <div class="label">{{ photo_form.tags.label_tag }}</div>
+                            <div class="field">{{ photo_form.tags }}</div>
+                        </div>
+                        <div class="public-wrap">
+                            <div class="label">{{ photo_form.is_public.label_tag }}</div>
+                            <div class="field">{{ photo_form.is_public }}</div>
+                        </div>
+                        <div class="safetylevel-wrap">
+                            {{ photo_form.safetylevel }}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>All photos have been approved, nothing to see here.</p>
+            {% endfor %}
+        </form>
+        {% paginate %}
+
+	</div>
 
 {% endblock %}
 

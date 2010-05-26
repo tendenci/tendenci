@@ -4,51 +4,56 @@
 {% load pagination_tags %}
 {% load photo_tags %}
 
-{% block head_title %}{% blocktrans %}Latest Photo Sets{% endblocktrans %}{% endblock %}
+{% block title %}{% blocktrans %}Latest Photo Sets{% endblocktrans %}{% endblock %}
 {% block head %}
-	<style type="text/css">
-		.photo-set {
-			border: 1px solid #CCC;
-			padding: 10px;
-			margin: 10px 0;
-		}
-		.photo-set table {
-			width: 100%;
-		}
-		.photo-set table td {
-			vertical-align: top;
-		}
-		.photo-set table td.image {
-			width: 1%;
-		}
-		.photo-set table td.image img {
-			padding: 5px;
-			margin: 0 10px 0 0;
-			border: 1px solid silver;
-		}
-		.photo-set table td.info h2 {
-			margin: 0;
-		}
-		.photo-set table td.info div.actions a {
-			margin: 0 1px;
-		}
-	</style>
+    <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
+    <style type="text/css">
+        .photo-set {
+            border: 1px solid #CCC;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .photo-set table {
+            width: 100%;
+        }
+        .photo-set table td {
+            vertical-align: top;
+        }
+        .photo-set table td.image {
+            width: 1%;
+        }
+        .photo-set table td.image img {
+            padding: 5px;
+            margin: 0 10px 0 0;
+            border: 1px solid silver;
+        }
+        .photo-set table td.info h2 {
+            margin: 0;
+        }
+        .photo-set table td.info div.actions a {
+            margin: 0 1px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
 
+<div class="t">
+
     <div id="photo-sets-header-wrap">
         <h1>{% trans "Latest Photo Sets" %}</h1>
-        <form name="search-photo-sets" method="get" action="">
-        <input type="text" id="search-photo-sets" name="q" value="{{ q }}" /></form>
     </div>
+
+    <div class="photos-nav">
+    	<a href="/">&laquo; Homepage</a>
+    	<a href="{% url photoset_add %}">Add photoset</a>
+	</div>
 
     {% autopaginate photo_sets %}
 
     {% if photo_sets %}
 
         {% for photo_set in photo_sets %}
-		{% with photo_set.object as photo_set %}
 		<div class="photo-set">
         	<table><tr>
             	<td class="image">
@@ -75,7 +80,6 @@
                 </td>
 			</tr></table>
         </div>
-        {% endwith %}
         {% endfor %}
 
         {% paginate %}
@@ -83,11 +87,12 @@
     <p>No photo sets were found.</p>
     {% endif %}
 
+</div>
+
 {% endblock %}
-{% block extra_body %}
-<script src="/site_media/static/js/jquery.inputfieldtext.js" type="text/javascript"></script>
+{% block body_bottom %}
+<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript">
-	$('input#search-photo-sets').inputFieldText('Search photo sets ...', 'search-photo-sets-hint');
 
 	// photo: delete confirmation
 	$('.photo-set .info .actions .delete-set').click(function(){
