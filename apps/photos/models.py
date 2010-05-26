@@ -22,9 +22,9 @@ class PhotoSet(models.Model):
         (2, _('Public')),
     )
     name = models.CharField(_('name'), max_length=200)
-    description = models.TextField(_('description'))
+    description = models.TextField(_('description'), blank=True)
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
-    tags = TagField()
+    tags = TagField() # blank = True
     author = models.ForeignKey(User)
     update_dt = models.DateTimeField(auto_now=True)
     create_dt = models.DateTimeField(auto_now_add=True)

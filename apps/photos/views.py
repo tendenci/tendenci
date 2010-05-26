@@ -399,12 +399,14 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
 #    photo_sets = SearchQuerySet().models(PhotoSet)
 
     photo_sets = PhotoSet.objects.all()
-    if q: photo_sets = photo_sets.filter(content=q)
-    else: photo_sets = photo_sets.order_by('-photoset_create_dt')
 
-    # not authenticated; limit view
-    if not request.user.has_perm('photos.view_photoset'):
-        photo_sets = photo_sets.filter(publish_type=1) # public photo sets only
+#    photo_sets = PhotoSet.objects.all()
+#    if q: photo_sets = photo_sets.filter(content=q)
+#    else: photo_sets = photo_sets.order_by('-photoset_create_dt')
+#
+#    # not authenticated; limit view
+#    if not request.user.has_perm('photos.view_photoset'):
+#        photo_sets = photo_sets.filter(publish_type=1) # public photo sets only
         
     return render_to_response(template_name, {"photo_sets": photo_sets, "q": q }, 
         context_instance=RequestContext(request))
@@ -471,9 +473,17 @@ def photos_batch_add(request, photoset_id=0):
             return HttpResponse("photo is not valid", mimetype="text/plain")
 
     else:
+
+        if not photoset_id:
+            HttpResponseRedirect(reverse('photoset_latest'))
+
+        photo_set = get_object_or_404(PhotoSet, id=photoset_id)
+
         # show the upload UI
-        return render_to_response('photos/batch-add.html', 
-            {"photoset_id":photoset_id,},
+        return render_to_response('photos/batch-add.html', {
+            "photoset_id":photoset_id,
+            "photo_set": photo_set,
+             },
             context_instance=RequestContext(request))
 
 def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
@@ -497,18 +507,29 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
                 photo.save()
                 
             photo_formset.save_m2m()
-                
-        return HttpResponseRedirect(reverse('photos'))
+
+        if photoset_id:
+            return HttpResponseRedirect(reverse('photoset_details', args=[photoset_id]))  
+        else: return HttpResponseRedirect(reverse('photos'))
 
     else:
 
         if photoset_id:
+
+            photo_set = get_object_or_404(PhotoSet, id=photoset_id)
+
             # if permission; get photos for editing
             photo_set = get_object_or_404(PhotoSet, id=photoset_id)
             if photo_set.check_perm(request.user, 'photos.change_photoset'):
                 # my photos in this photo set
-                photo_queryset = Image.objects.filter(Q(photoset=photoset_id, member=request.user))
+                photo_queryset = Image.objects.filter(Q(photoset=photoset_id, safetylevel=3, member=request.user))
                 photo_queryset = photo_queryset.order_by("-date_added")
+
+                if photo_queryset.count() <= 0:
+                    # my photos in this photo set
+                    photo_queryset = Image.objects.filter(Q(photoset=photoset_id, member=request.user))
+                    photo_queryset = photo_queryset.order_by("-date_added")                    
+
             else: raise Http404
         else:
             # if permission; get photos for editing
@@ -523,6 +544,7 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
  
     return render_to_response(template_name, {
         "photo_formset": photo_formset,
+        "photo_set": photo_set,
     }, context_instance=RequestContext(request))
 
 

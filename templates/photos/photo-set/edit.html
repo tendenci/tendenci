@@ -1,14 +1,13 @@
 {% extends "photos/base.html" %}
 
 {% load i18n %}
-{% load uni_form %}
 
 {% block head_title %}{% blocktrans %}Edit Photo Set{% endblocktrans %}{% endblock %}
         
 {% block body %}
     <form class="uniForm" id="edit-photo-set" method="POST" action="">
         <fieldset class="inlineLabels">
-            {{ photoset_form|as_uni_form }}
+            {{ photoset_form.as_p }}
             <div class="form_block">
             <input type="hidden" name="action" value="edit" />
             <input type="submit" value="{% trans "Edit" %}"/>
@@ -18,11 +17,4 @@
 {% endblock %}
 
 {% block extra_body %}
-    {% load jquery_validation %}
-    {% include_validation %}
-    <script type="text/javascript">
-        $(function(){
-            //$('#blog_form').validate('{% url blog_form_validate %}', {type: 'table'});
-        });
-    </script>
 {% endblock %}
