@@ -34,7 +34,11 @@ class ObjectPermBackend(object):
                 return True
             if user.is_authenticated and obj.allow_user_edit:
                 return True
-           
+        
+        # no anonymous user currently... TODO: create one?   
+        if not user.is_authenticated():
+            return False
+        
         content_type = ContentType.objects.get_for_model(obj) 
         filters = {
             "content_type": content_type,
