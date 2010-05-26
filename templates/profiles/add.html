@@ -1,0 +1,24 @@
+{% extends "profiles/base.html" %}
+
+{% block title %}Add Page{% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Add User</h1>
+
+    <div class="profile-wrap">
+    <form action="{% url profile.add %}" method="post">
+        {{ form.as_p }}
+        {{ form2.as_p }}
+        <input type="submit" value="Add User" />
+    </form>
+
+    </div>
+
+</div>
+{% endblock %}
