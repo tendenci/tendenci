@@ -1,0 +1,9 @@
+{% extends "accounts/base.html" %}
+{% block body %}
+{% if account %}
+Your account has been activated. <a href="{% url auth_login %}">Log in</a><br />
+{% else %}
+Activation failed. <br /><br />
+{% endif %}
+
+{% endblock %}
