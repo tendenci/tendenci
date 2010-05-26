@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     (r'^users/', include('profiles.urls')),
     (r'^stories/', include('stories.urls')),
     (r'^releases/', include('releases.urls')),
+    (r'^settings/', include('site_settings.urls')),
     (r'^accounts/', include('accounts.urls')),
 )
 
