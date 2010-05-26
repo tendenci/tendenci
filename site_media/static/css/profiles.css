@@ -1,0 +1,254 @@
+#userview-profile {
+    padding-top: 10px;
+}
+
+/*LEFT COLUMN*/
+
+#userview-profile .profile-left {
+    padding: 0;
+    margin: 0;
+    width: 29%;
+    overflow:hidden;
+    float: left;
+}
+
+/*User Profile Image*/
+#userview-profile .profile-left .profile-picture {
+    
+}
+
+#userview-profile .profile-left .profile-picture img.t-usericon {
+    padding: 4px;
+    border: solid 1px silver;
+}
+
+/*Option Links*/
+#userview-profile .profile-left .option-links a {
+    display: block;
+    width: auto;
+    text-indent: 6px;
+    font-size: 11px;
+    text-decoration: none;
+    border-bottom: dotted 1px silver;
+    padding: 2px 0;
+    margin: 0;
+}
+
+#userview-profile .profile-left .option-links a:hover {
+    background: #EFF8FF;
+}
+
+/*Web Identites*/
+#userview-profile .profile-left .web-identities {
+    margin: 0;
+    padding: 4px;
+}
+
+#userview-profile .profile-left .web-identities img {
+    border: 0;
+    margin-left: 2px;
+}
+
+/*Module Content*/
+#userview-profile .profile-left .module-content {
+    margin-top: 20px;
+}
+
+#userview-profile .profile-left .module-content h2{
+    margin-bottom: 5px;
+}
+
+/*MEMBERSHIPS */
+#userview-profile .profile-left .membership-details {
+    margin-top: 20px;
+}
+
+#userview-profile .profile-left .membership-details h2{
+    margin-bottom: 8px;
+}
+
+#userview-profile .profile-left .membership-details .member-info 
+{
+    padding-left: 6px;
+}
+
+#userview-profile .profile-left .membership-details .member-info div.data {
+    margin: 4px 0;
+    display: block;
+}
+
+#userview-profile .profile-left .membership-details .member-info div.data .type{
+    color: #666;
+}
+
+
+/*RIGHT COLUMN*/
+
+#userview-profile .profile-right {
+    float: left;
+    margin-left: 15px;
+    width: 68%;
+}
+
+/*Global Boxes*/
+
+#userview-profile .profile-section {
+    margin-bottom: 18px;
+}
+
+#userview-profile .profile-section h2 {
+    font-size: 1em;
+    font-weight: bold;
+    margin: 0 0 4px 0;
+    padding: 4px;
+    border-top: solid 1px #BBB;
+    border-bottom: dotted 1px #BBB;
+    background: #F9F9F9;
+}
+
+#userview-profile .profile-section small {
+    font-size: .8em;
+}
+
+/* TABLES for Contact/Work/Education*/
+
+#userview-profile .profile-section table.section-items {
+    margin: 0;
+    padding: 0;
+}
+
+#userview-profile .profile-section table.section-items tr td {
+    vertical-align: top;
+    padding-bottom: 3px;
+}
+#userview-profile .profile-section table.section-items tr td.type {
+    color: #666;
+}
+
+#userview-profile .profile-section table.section-items tr td span.item {
+    display: block;
+}
+
+/* ADDRESSES */
+#userview-profile .profile-addresses .user-address {
+    margin: 10px 2px;
+}
+
+#userview-profile .profile-addresses .additional-addresses {
+    display: none;
+}
+
+#userview-profile .profile-addresses .additional-addresses address {
+    margin-bottom: 10px;
+    padding: 6px;
+}
+
+#userview-profile .profile-addresses address.adr span {
+    font-style: normal;
+}
+
+#userview-profile .profile-addresses address .street-address, #userview-profile .profile-addresses address .mailing-name {
+    display: block;
+}
+
+/*WORK INFO*/
+#userview-profile .previous-careers {
+    display: none;
+}
+
+#userview-profile .profile-right .work-info table.section-items {
+    margin: 10px 0;
+}
+
+#userview-profile .profile-right .work-info .previous-careers table.section-items {
+    margin-bottom: 0;
+}
+
+/*EDUCATION INFO*/
+#userview-profile .education-history {
+    display: none;
+}
+
+#userview-profile .profile-right .education-info table.section-items {
+    margin: 10px 0;
+}
+
+#userview-profile .profile-right .education-info .education-history table.section-items {
+    margin-bottom: 0;
+}
+
+/*BOTTOM COLUMN*/
+
+#userview-profile .profile-bottom {
+    clear: both;
+    padding-top: 10px;
+}
+
+/*Skills*/
+#userview-profile .user-skills .first-responder
+{
+    xfont-weight: normal;
+    xfont-size: 10px;
+    xline-height: 12px;
+}
+
+#userview-profile .user-skills .first-responder img 
+{
+    border: 0;
+}
+
+#userview-profile .user-skills .column 
+{
+    margin-left: 2%;
+    width: 31%;
+    float: left;
+}
+
+#userview-profile .user-skills .edit-skills
+{
+    clear: both;
+    text-align: right;
+}
+
+/*Notes*/
+#userview-profile .user-notes {
+    clear: both;
+}
+
+
+/*Admin-Only Block*/
+
+#userview-profile .admin-section {
+    border: solid 1px #DDD;
+    padding-top: 0px;
+    padding: 0 6px 6px 6px;
+    margin-top: 10px;
+    clear: both;
+}
+#userview-profile .admin-section h2 {
+    background: #EFEFEF;
+    color: #AF0000;
+    margin: 0;
+    margin-top: 6px;
+    padding: 4px;
+}
+
+#userview-profile .admin-section .column {
+    float: left;
+    width: 30%;
+    margin-left: 10px;
+    margin-right: 5px;
+    height: 100%;
+}
+
+#userview-profile .admin-section .column h3 {
+    margin: 8px 0;
+    padding: 0;
+}
+
+#userview-profile .admin-section .column a {
+    display: block;
+    margin-bottom: 4px;
+}
+
+

@@ -1,0 +1,24 @@
+{% extends "profiles/base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Edit Profile</h1>
+
+    <div class="profile-wrap">
+    <form action="{% url profile.edit user_edit.id %}" method="post">
+        {{ form2.as_p }}
+        {{ form.as_p }}
+        <input type="submit" value="Edit User" />
+    </form>
+
+    </div>
+
+</div>
+{% endblock %}

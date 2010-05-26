@@ -1,0 +1,84 @@
+{% extends "profiles/base.html" %}
+{% load pagination_tags %}
+
+{% block title %}Search Page{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/site_media/static/css/articles.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h1>Users Search Page</h1>
+
+    <div class="back-to-search">
+    	<a href="/">&laquo; Homepage</a>
+        <a href="{% url profile.add %}">Add user</a>
+	</div>
+
+    {% autopaginate profiles 10 %}
+
+	<div class="articles-wrap">
+    {% for profile in profiles %}
+		<div class="article-wrap">
+
+
+			<div class="options">
+
+                <div class="dropdown-options">
+                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <ul>
+                        <li>Review Reports</li>
+                        <li>Optimize Meta Tags</li>
+                        <li>Attach Files</li>
+                        <li>View Revisions</li>
+                        <li>Delete</li>
+                    </ul>
+                </div>
+
+                <div class="quick-options">
+                    <ul>
+                        <li><a href="{% url profile.edit profile.user.id %}">Edit</a></li>
+						<li class="delete"><a href="{% url profile.delete profile.user.id %}">Delete</a></li>
+                    </ul>
+                </div>
+			</div>
+
+
+            <h2><a href="{% url profile profile.user.id %}">{{ profile.user.first_name }} {{ profile.user.last_name }}</a></h2>
+            <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
+			<div class="meta">
+            	<div class="submitted">Added on {{ profile.create_dt|date:"D d M Y P" }} by {{ profile.creator }}</div>
+            </div>
+
+            <!-- delete-article form -->
+            <form name="article-delete" method="POST" action="{% url profile.delete profile.user.id %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+
+		</div>
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block body_bottom %}
+
+	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_user = confirm('Permenantly delete user?');	// confirm
+				if(delete_user) $(this).parents('.article-wrap').find('form[name="article-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+{% endblock %}
