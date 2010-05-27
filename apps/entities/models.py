@@ -29,6 +29,6 @@ class Entity(AuditingBase):
         permissions = (("view_entity","Can view entity"),)
         
     def __unicode__(self):
-        return self.headline
+        return self.entity_name
 
 

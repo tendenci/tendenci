@@ -1,0 +1,61 @@
+{% extends "usergroups/base.html" %}
+{% load pagination_tags %}
+{% load base_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/usergroups.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>User Groups Search</h1>
+	<div><a href="{% url group_add %}">Add Group</a></div>
+
+    {% autopaginate groups 10 %}
+
+	<div class="groups-wrap">
+    {% for group in groups %}
+		<div class="group-wrap {% cycle row1,row2 as rowcolours %}">
+			<div class="options">
+
+                <div class="dropdown-options">
+                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <ul>
+                        <li>Review Reports</li>
+                        <li>Optimize Meta Tags</li>
+                        <li>Attach Files</li>
+                        <li>View Revisions</li>
+                    </ul>
+                </div>
+			</div>
+
+ 			<div class="quick-options">
+ 					<ul>
+					<li><a href="{% url group_edit group.slug %}">Edit</a></li> 
+					</ul>
+            </div>
+
+            <h2><a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+            <div class="content">{{ group.notes|striptags|truncatewords:20 }}</div>
+			<div class="meta">
+            	<div class="submitted">Created on {{ group.create_dt|date:"D d M Y P" }} by {{ group.creator }}</div>
+            </div>
+
+            
+		</div>
+		
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block body_bottom %}
+
+	
+{% endblock %}

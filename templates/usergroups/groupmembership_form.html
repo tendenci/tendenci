@@ -1,0 +1,20 @@
+{% extends "usergroups/base.html" %}
+
+{% block title %}Groups{% endblock %}
+
+{% block body %}
+
+{% block content %}
+<div><a href="{% url group_search %}">Groups</a></div>
+<h1>{% if groupmembership %}Edit{% else %}Add{% endif %} Users to Group</h1>
+<form method="post" action=".">
+
+{{ form.as_p }}
+
+<div class="submit-row">
+		<input type="submit" value="Save" class="default" />
+	</div>
+</form>
+{% endblock %}
+
+{% endblock %}

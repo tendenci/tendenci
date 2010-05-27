@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'base',
     'entities',
     'site_settings',
+    'usergroups',
 )
 
 # This is the number of days users will have to activate their
