@@ -156,7 +156,7 @@ class ProfileEditForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields= ('is_superuser', 'groups', 'user_permissions')
+        fields= ('is_superuser', 'user_permissions')
         
 class UserEditForm(forms.ModelForm):
     class Meta:

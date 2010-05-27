@@ -6,6 +6,18 @@ from django.conf import settings
 from timezones.fields import TimeZoneField
 from base.models import AuditingBase
 
+
+
+class ProfileManager(models.Manager):
+    def create_profile(self, user):
+        return self.create(user=user, 
+                           creator_id=user.id, 
+                           creator_username=user.username,
+                           owner_id=user.id, 
+                           owner_username=user.username, 
+                           email=user.email)
+        
+    
 class Profile(AuditingBase):
     # relations
     user = models.ForeignKey(User, unique=True, related_name="profile", verbose_name=_('user'))
@@ -77,5 +89,10 @@ class Profile(AuditingBase):
     submit_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     
+    objects = ProfileManager()
+    
     def __unicode__(self):
         return self.user.username
+    
+    def get_absolute_url(self):
+        return ('profile', [self.user.username])
