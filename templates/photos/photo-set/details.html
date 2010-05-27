@@ -7,27 +7,11 @@
 
 {% block title %}{{ photo_set.name }}{% endblock %}
 
-{% block head %}
+{% block extra_head %}
     <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
 {% endblock %}
 
 {% block body %}
-<style type="text/css">
-	div.gallery-photo-thumb {
-		margin: 0 5px 5px;
-	    float: left;
-		text-align: center;
-	}
-	div.gallery-photo-thumb img {
-		display: block;
-	}
-	div.gallery-photo-thumb img {
-		padding: 3px;
-		border: 1px solid black;
-		background-color: white;
-	}
-</style>
-
 <div class="t">
     <h1>{{ photo_set.name }}</h1>
 
@@ -43,13 +27,14 @@
         {% if photos %}
         {% autopaginate photos 28 %}
             <div class="thumb-row clearfix">
-            {% for photo in photos %}
-            <div class="gallery-photo-thumb">
-                <a href="{% url photo photo.id photo_set.id %}"><img src="{{ photo.get_small_crop_url }}" alt="{{ photo.title }}"/></a>
-                <div>From <a href="{# url profile_detail photo.member.username #}">{{ photo.member.username }}</a></div>
+            	{% for photo in photos %}
+                <div class="gallery-photo-thumb">
+                    <a href="{% url photo photo.id photo_set.id %}"><img src="{{ photo.get_small_crop_url }}" alt="{{ photo.title }}"/></a>
+                    <div>From <a href="{# url profile_detail photo.member.username #}">{{ photo.member.username }}</a></div>
+                </div>
+            	{% endfor %}
             </div>
-            {% endfor %}
-            </div>
+			<div style="clear:both;"></div>
             {% paginate %}
         {% else %}
             <p>{% trans "No photos were found." %}</p>

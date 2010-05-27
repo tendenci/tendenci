@@ -10,7 +10,7 @@
 {% block meta_description %}{{ photo.title|striptags|truncatewords:20 }}{% endblock %}
 {% block meta_keywords %}{{ photo.meta_keywords }}{% endblock %}
 {% block title %}{% firstof photo.title "Untitled" %} - {% blocktrans %}Photo{% endblocktrans %}{% endblock %}
-{% block head %}
+{% block extra_head %}
 <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
 {% endblock %}
 
@@ -56,70 +56,6 @@
             </ul>
         </div>
 	</div><!-- END .photo-instance -->
-
-    <div class="photo-sets-wrap">
-
-    	<div class="photo-set-wrap">
-        	<div class="photo-set-header">
-                <div class="photo-set-collapse">+</div>
-                <div class="photo-set-name">Photostream</div>
-            </div>
-
-            <div class="photo-set-belt-wrap" {% if photo_set_id == 0 %}style="display:block;"{% endif %} data-id="0">
-                <!-- root element for scrollable -->	            
-                <div class="photo-set-belt">
-                    <!-- root element for the items -->
-                    <div class="photo-set-images">
-                    </div>
-                </div>
-    
-                <div class="photo-set-nav">
-                    <div class="photo-set-browse"><a href="{% url photos %}">Browse</a></div>
-                    <!-- "previous page" action -->
-                    <div class="left-arrow prev">&larr;</div>
-                    <!-- "next page" action -->
-                    <div class="right-arrow next">&rarr;</div>
-                </div>
-                <div class="load-msg">
-                    Loading ...
-                </div>
-            </div>
-
-		</div>
-	</div>
-
-    <div class="photo-sets-wrap">
-    {% for photo_set in photo_sets %}
-    	<div class="photo-set-wrap">
-
-        	<div class="photo-set-header">
-                <div class="photo-set-collapse">+</div>
-                <div class="photo-set-name">{{ photo_set.name }}</div>
-            </div>
-
-            <div class="photo-set-belt-wrap" {% if photo_set.id == photo_set_id %}style="display:block;"{% endif %} data-id="{{ photo_set.id }}">
-				<!-- root element for scrollable -->	            
-            	<div class="photo-set-belt">
-					<!-- root element for the items -->
-                	<div class="photo-set-images">
-					</div>
-                </div>
-
-                <div class="photo-set-nav">
-					<div class="photo-set-browse"><a href="{{ photo_set.get_absolute_url }}">Browse</a></div>
-	                <!-- "previous page" action -->
-	                <div class="left-arrow prev">&larr;</div>
-                    <!-- "next page" action -->
-                	<div class="right-arrow next">&rarr;</div>
-                </div>
-				<div class="load-msg">
-                	Loading ...
-                </div>
-            </div>
-
-        </div>
-    {% endfor %}
-    </div>
 
 <!-- delete photo form -->
 <form name="photo-delete" method="POST" action="{% url photo_destroy photo.id %}">
