@@ -4,22 +4,14 @@ urlpatterns = patterns('',
 
     ## photos ##
 
-    # /photos/
-    url(r'^$', 'photos.views.photos', name="photos"),
     # /photos/details
     url(r'^details/(?P<id>\d+)/$', 'photos.views.details', name="photo_details"),
     # /photos/23
     url(r'^(?P<id>\d+)/$', 'photos.views.photo', name="photo"),
     # /photos/23/in/36
     url(r'^(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.photo', name="photo"),
-    # /photos/file-upload/
-    url(r'^file-upload/$', 'photos.views.file_upload', name="photo_file_upload"),
-    # /photos/upload/
-    url(r'^upload/$', 'photos.views.upload', name="photo_upload"),
     # /photos/delete/23/
     url(r'^delete/(?P<id>\d+)/$', 'photos.views.destroy', name='photo_destroy'),
-    # /photos/edit/23/
-    url(r'^edit/(?P<id>\d+)/$', 'photos.views.edit', name='photo_edit'),
     # /photos/edit/23/in/36
     url(r'^edit/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.edit', name='photo_edit'),
 
