@@ -14,8 +14,8 @@ class AuditingBase(models.Model):
     allow_user_edit = models.BooleanField()
     allow_member_edit = models.BooleanField()
     
-    creator = models.ForeignKey(User, related_name="%(class)s_creator")
-    creator_username = models.CharField(max_length=50)
+    creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False)
+    creator_username = models.CharField(max_length=50, editable=False)
     owner = models.ForeignKey(User, related_name="%(class)s_owner")    
     owner_username = models.CharField(max_length=50)
     status = models.BooleanField(default=True)
