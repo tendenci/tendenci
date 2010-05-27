@@ -17,10 +17,11 @@
         <a href="{% url profile.add %}">Add user</a>
 	</div>
 
-    {% autopaginate profiles 10 %}
+    {% autopaginate users 10 %}
 
 	<div class="articles-wrap">
-    {% for profile in profiles %}
+    {% for user in users %}
+    	{% with user.get_profile as profile %}
 		<div class="article-wrap">
 
 
@@ -39,27 +40,29 @@
 
                 <div class="quick-options">
                     <ul>
-                        <li><a href="{% url profile.edit profile.user.id %}">Edit</a></li>
-						<li class="delete"><a href="{% url profile.delete profile.user.id %}">Delete</a></li>
+                        <li><a href="{% url profile.edit user.id %}">Edit</a></li>
+						<li class="delete"><a href="{% url profile.delete user.id %}">Delete</a></li>
                     </ul>
                 </div>
 			</div>
 
 
-            <h2><a href="{% url profile profile.user.id %}">{{ profile.user.first_name }} {{ profile.user.last_name }}</a></h2>
+            <h2><a href="{% url profile user.username %}">{{ user.first_name }} {{ user.last_name }} ({{user.email}})</a></h2>
             <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Added on {{ profile.create_dt|date:"D d M Y P" }} by {{ profile.creator }}</div>
             </div>
 
             <!-- delete-article form -->
-            <form name="article-delete" method="POST" action="{% url profile.delete profile.user.id %}">
+            <form name="article-delete" method="POST" action="{% url profile.delete user.id %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 
 		</div>
+		{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>
+		
     {% endfor %}
 	</div>
 
