@@ -28,7 +28,7 @@ def save_settings_form(self):
         field_value = self.cleaned_data[setting.name]
         if setting.value != field_value:
             # delete the cache for all the settings to reset the context
-            key = [SETTING_PRE_KEY, 'all_settings']
+            key = [SETTING_PRE_KEY, 'all.settings']
             key = '.'.join(key)
             cache.delete(key)
             
