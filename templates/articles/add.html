@@ -14,9 +14,6 @@
     {% article_nav request.user %}
 
     <div class="article-wrap">
-    {% if MODULE_ARTICLES_ARTICLESADDSTATEMENT %}
-    	<p>{{ MODULE_ARTICLES_ARTICLESADDSTATEMENT }}</p>
-    {% endif %}
     <form action="{% url article.add %}" method="post">
         {{ form.as_p }}
         <input type="submit" value="Add Article" />

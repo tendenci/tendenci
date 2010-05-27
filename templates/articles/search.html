@@ -18,9 +18,6 @@
     {% autopaginate articles 10 %}
 	
 	<div class="articles-wrap">
-    {% if MODULE_ARTICLES_ARTICLESCUSTOMSEARCHSTATEMENT %}
-    	<p>{{ MODULE_ARTICLES_ARTICLESCUSTOMSEARCHSTATEMENT }}</p>
-    {% endif %}
     {% for article in articles %}
     	{% has_perm user articles.view_article article as can_view %}
     	{% if can_view %}
