@@ -1,0 +1,76 @@
+{% extends "photos/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load photo_tags %}
+
+{% block title %}{% blocktrans %}Latest Photo Sets{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+    <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    <div id="photo-sets-header-wrap">
+        <h1>{% trans "Latest Photo Sets" %}</h1>
+    </div>
+
+    <div class="photos-nav">
+    	<a href="/">&laquo; Homepage</a>
+    	<a href="{% url photoset_add %}">Add photoset</a>
+	</div>
+
+    {% autopaginate photo_sets %}
+
+    {% if photo_sets %}
+
+        {% for photo_set in photo_sets %}
+		<div class="photo-set">
+        	<table><tr>
+            	<td class="image">
+                	<a href="{{ photo_set.get_absolute_url }}"><img src="{{ photo_set.get_cover_photo }}" /></a>
+                </td>
+                <td class="info">
+                	<h2><a href="{{ photo_set.get_absolute_url }}">{{ photo_set.name }}</a></h2>
+					<div>{{ photo_set.image_set.count }} photo{{ photo_set.image_set.count|pluralize }} </div>
+                    <div class="description">{{ photo_set.description|striptags|truncatewords_html:25 }}</div>
+                    <div class="actions">
+						{% if perms.photos.change_photoset %}
+                            <a href="{% url photoset_edit photo_set.id %}">Edit Set</a> 
+						{% endif %}
+						{% if perms.photos.delete_photoset %}
+                            <a class="delete-set" href="{% url photoset_delete photo_set.id %}">Delete Set</a>
+						{% endif %}
+						{% if perms.photologue.add_photo %}
+                            <a href="{% url photos_batch_add photo_set.id %}">Add Photos</a>
+						{% endif %}
+						{% if perms.photologue.change_photo %}
+                            <a href="{% url photos_batch_edit photo_set.id %}">Edit Photos</a>
+						{% endif %}
+                    </div>
+                </td>
+			</tr></table>
+        </div>
+        {% endfor %}
+
+        {% paginate %}
+    {% else %}
+    <p>No photo sets were found.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}
+{% block body_bottom %}
+<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+
+	// photo: delete confirmation
+	$('.photo-set .info .actions .delete-set').click(function(){
+		var delete_photo = confirm('Permenantly delete photo set?'); // confirm
+		if(!delete_photo) return false; // do not delete
+	});
+
+</script>
+{% endblock %}

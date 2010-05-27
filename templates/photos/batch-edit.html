@@ -1,0 +1,122 @@
+{% extends "photos/base.html" %}
+
+{% load i18n %}
+{% load photo_tags %}
+{% load pagination_tags %}
+
+{% block title %}{% blocktrans %}Batch Edit Photos{% endblocktrans %}{% endblock %}
+{% block extra_head %}
+	<link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">{% endblock %}
+
+{% block body %}
+	<div class="t">
+	<h1>Bulk edit photos</h1>
+
+        <div class="photos-nav">
+            <a href="{% url photoset_details photo_set.id %}">&laquo; Back to album</a>
+        </div>
+
+        <form method="POST" action="">
+    
+            <div class="side-panel">
+        
+                <div class="float-anchor"><!-- ie7 fix --></div>
+                <div class="float-window">
+        
+                    <div class="photo-bulk-editor">
+                        <p>Replace all titles</p>
+                        <div><input class="title" type="text" /></div>
+                        <p>Replace all captions</p>
+                        <div><textarea class="caption"></textarea></div>
+                        <p>Replace all tags</p>
+                        <div><input class="tags" type="text" /></div>
+                    </div>
+        
+                    <div class="save-wrap">
+                        <input type="submit" value="Save all changes to these photos" />
+                    </div>
+                </div>
+            </div>
+    
+            {{ photo_formset.management_form }}
+                {% autopaginate photo_formset.forms 10 %}
+                {% for photo_form in photo_formset.forms %}
+        
+                <div class="edit-wrap">
+    
+                    {{ photo_form.id }}
+    
+                    {% for error in photo_form.errors %}
+                        <li><strong>{{ error|escape }}</strong></li>
+                    {% endfor %}
+    
+                    <div class="photo-wrap">
+                        <img src="{{ photo_form.instance.get_display_url }}" />
+                    </div>
+                    <div class="set-wrap">
+                        {{ photo_form.photoset }}
+                    </div>
+                    <div style="clear:both;"><!-- ie7 fix --></div>
+    
+                    <div class="title-wrap">
+                        <div class="label">{{ photo_form.title.label_tag }}</div>
+                        <div class="field">{{ photo_form.title }}</div>
+                    </div>
+                    <div class="caption-wrap">
+                        <div class="label">{{ photo_form.caption.label_tag }}</div>
+                        <div class="field">{{ photo_form.caption }}</div>
+                    </div>
+    
+                    <div style="position:relative;">
+                        <div class="tags-wrap">
+                            <div class="label">{{ photo_form.tags.label_tag }}</div>
+                            <div class="field">{{ photo_form.tags }}</div>
+                        </div>
+                        <div class="public-wrap">
+                            <div class="label">{{ photo_form.is_public.label_tag }}</div>
+                            <div class="field">{{ photo_form.is_public }}</div>
+                        </div>
+                        <div class="safetylevel-wrap">
+                            {{ photo_form.safetylevel }}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>All photos have been approved, nothing to see here.</p>
+            {% endfor %}
+        </form>
+        {% paginate %}
+
+	</div>
+
+{% endblock %}
+
+{% block body_bottom %}
+<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+
+	$(".photo-bulk-editor .title").keyup(function(event){
+		$('.title-wrap input').val($(this).val())
+	});
+	$(".photo-bulk-editor .caption").keyup(function(event){
+		$('.caption-wrap textarea').val($('.photo-bulk-editor .caption').val())
+	});
+	$(".photo-bulk-editor .tags").keyup(function(event){
+		$('.tags-wrap input').val($(this).val())
+	});
+
+
+	$(window).scroll(function(){
+		if  ($(window).scrollTop() > $(".float-anchor").offset().top){
+			$(".float-window").css("position", "fixed");
+			$(".float-window").css("top", "8px");
+		}
+		
+		if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
+			$(".float-window").css("position", "relative");
+			$(".float-window").css("top", $(".float-anchor").offset);
+		}
+	});
+
+</script>
+{% endblock %}

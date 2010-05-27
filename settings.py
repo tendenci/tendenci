@@ -60,12 +60,17 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'site_media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/site_media/'
+
+# URL that handles the media served from STATIC_ROOT. Make sure to use a
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/static/"
+STATIC_URL = '/site_media/static'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -84,6 +89,8 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
+#    'swfupload.middleware.MediaUploadMiddleware',
+    'swfupload.middleware.SWFUploadMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'pagination.middleware.PaginationMiddleware',
@@ -117,9 +124,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'django.contrib.humanize',
 
     # third party applications
     'pagination',
+    'photologue',
+    'tagging',
     'registration',
     
     # tendenci applications
@@ -130,6 +140,8 @@ INSTALLED_APPS = (
     'releases',
     'stories',
     'pages',
+    'photos',
+    'base',
     'entities',
     'site_settings',
 )
