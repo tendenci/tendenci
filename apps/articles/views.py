@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 
 from base.http import render_to_403
 from articles.models import Article
-from articles.forms import ArticleForm, ArticleEditForm
+from articles.forms import ArticleForm
 from perms.models import ObjectPermission
 
 def index(request, id=None, template_name="articles/view.html"):
@@ -34,7 +34,7 @@ def print_view(request, id, template_name="articles/print-view.html"):
         raise render_to_403()
     
 @login_required
-def edit(request, id, form_class=ArticleEditForm, template_name="articles/edit.html"):
+def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"):
     article = get_object_or_404(Article, pk=id)
     original_owner = article.owner
     
@@ -44,16 +44,13 @@ def edit(request, id, form_class=ArticleEditForm, template_name="articles/edit.h
             if form.is_valid():
                 article = form.save(commit=False)
                 article.save()
-                
-                # assign creator permissions
-                ObjectPermission.objects.assign(article.creator, article)   
 
-                # assign owner permissions
-                if article.owner != original_owner:  
-                    ObjectPermission.objects.assign(article.owner, article)  
-                    if original_owner != article.creator:
-                        ObjectPermission.objects.remove(original_owner, article)
-                               
+                # TODO: get the removal of permissions to work. 
+                # assign permissions for selected users
+                # user_perms = form.cleaned_data['user_perms']
+                # if user_perms:
+                #    ObjectPermission.objects.remove(user_perms, article)               
+                                               
                 return HttpResponseRedirect(reverse('article', args=[article.pk]))             
         else:
             form = form_class(request.user, instance=article)
@@ -68,16 +65,19 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
     if request.user.has_perm('articles.add_article'):
         if request.method == "POST":
             form = form_class(request.user, request.POST)
-            if form.is_valid():
+            if form.is_valid():           
                 article = form.save(commit=False)
-                
                 # set up the user information
                 article.creator = request.user
                 article.creator_username = request.user.username
                 article.owner = request.user
                 article.owner_username = request.user.username
-                
                 article.save()
+                
+                # assign permissions for selected users
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, article)
                 
                 # assign creator permissions
                 ObjectPermission.objects.assign(article.creator, article) 
