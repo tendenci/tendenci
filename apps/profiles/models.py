@@ -96,3 +96,6 @@ class Profile(AuditingBase):
     
     def get_absolute_url(self):
         return ('profile', [self.user.username])
+    
+    class Meta:
+        permissions = (("view_profile","Can view profile"),)
