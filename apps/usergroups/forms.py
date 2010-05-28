@@ -33,6 +33,7 @@ class GroupForm(forms.ModelForm):
                   'permissions',
                   )
         exclude = ('members',)
+        permissions = (("view_group","Can view group"),)
 
 
 class GroupMembershipForm(forms.ModelForm):

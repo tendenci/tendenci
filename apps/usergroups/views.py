@@ -1,12 +1,12 @@
 from django.shortcuts import get_object_or_404, render_to_response
-from django.core.paginator import QuerySetPaginator
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
-from django.db.models import Q
 from django.contrib.auth.models import User
 
 from usergroups.models import Group, GroupMembership
 from usergroups.forms import GroupForm, GroupMembershipForm
+
+from base.http import render_to_403
 
 def group_search(request, template_name="usergroups/group_search.html"):
     groups = Group.objects.all()
@@ -15,9 +15,11 @@ def group_search(request, template_name="usergroups/group_search.html"):
     
 def group_detail(request, group_slug, template_name="usergroups/group_detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
+    
+    if not request.user.has_perm('usergroups.view_group', group):raise render_to_403()
+
     members = group.members.all()
     count_members = len(members)
-
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
@@ -26,9 +28,11 @@ def group_add_edit(request, group_slug=None,
                    template_name="usergroups/group_form.html"):
     if group_slug:
         group = get_object_or_404(Group, slug=group_slug)
+        if not request.user.has_perm('usergroups.change_group', group):raise render_to_403()
         title = "Edit Group"
     else:
         group = None
+        if not request.user.has_perm('usergroups.add_group'):raise render_to_403()
         title = "Add Group"
 
     if request.method == 'POST':
@@ -58,8 +62,10 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
     if user_id:
         user = get_object_or_404(User, pk=user_id)
         groupmembership = get_object_or_404(GroupMembership, member=user, group=group)
+        if not request.user.has_perm('usergroups.change_groupmembership', groupmembership):raise render_to_403()
     else:
         groupmembership = None
+        if not request.user.has_perm('usergroups.add_groupmembership'):raise render_to_403()
 
     if request.method == 'POST':
         form = form_class(request.POST, instance=groupmembership)
@@ -84,6 +90,7 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
 def groupmembership_delete(request, groupmembership_id, template_name="usergroups/groupmembership_confirm_delete.html"):
 
     groupmembership = get_object_or_404(GroupMembership, pk=groupmembership_id)
+    if not request.user.has_perm('usergroups.delete_groupmembership', groupmembership):raise render_to_403()
 
     if request.method == 'POST':
         group = groupmembership.group
