@@ -1,15 +1,20 @@
 {% load i18n %}
+{% load users_showh %}
 
 <!DOCTYPE HTML>
 <html lang="en-US">
 <head>
 	<meta charset="UTF-8">
 	<title>Users {% block title %}{% endblock %}</title>
-{% block head %}{% endblock %}
+{% block head %}
+<link href="/site_media/static/css/tabs.css" rel="stylesheet" type="text/css">
+{% endblock %}
 </head>
 <body>
 
-{% block body %}{% endblock %}
+{% block body %}
+{% users_showh request.user user_this %}
+{% endblock %}
 {% block body_bottom %}{% endblock %}
 </body>
 </html>

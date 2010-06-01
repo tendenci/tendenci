@@ -3,16 +3,17 @@
 {% block title %}Edit Profile{% endblock %}
 
 {% block head %}
-
+{{ block.super }}
 {% endblock %}
 
 {% block body %}
+{{ block.super }}
 
 <div class="t">
     <h1>Edit Profile</h1>
 
     <div class="profile-wrap">
-    <form action="{% url profile.edit user_edit.id %}" method="post">
+    <form action="{% url profile.edit user_this.id %}" method="post">
         {{ form2.as_p }}
         {{ form.as_p }}
         <input type="submit" value="Edit User" />

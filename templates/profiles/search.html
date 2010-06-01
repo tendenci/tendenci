@@ -4,13 +4,14 @@
 {% block title %}Search Page{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="/site_media/static/css/articles.css">
+{{ block.super }}
+<link rel="stylesheet" href="/site_media/static/css/search_profiles.css">
 {% endblock %}
 
 {% block body %}
-
+{{ block.super }}
 <div class="t">
-    <h1>Users Search Page</h1>
+    <h1>Users Search</h1>
 
     <div class="back-to-search">
     	<a href="/">&laquo; Homepage</a>
@@ -19,12 +20,10 @@
 
     {% autopaginate users 10 %}
 
-	<div class="articles-wrap">
+	<div class="profiles-wrap">
     {% for user in users %}
     	{% with user.get_profile as profile %}
-		<div class="article-wrap">
-
-
+		<div class="profile-wrap">
 			<div class="options">
 
                 <div class="dropdown-options">
@@ -48,13 +47,13 @@
 
 
             <h2><a href="{% url profile user.username %}">{{ user.first_name }} {{ user.last_name }} ({{user.email}})</a></h2>
-            <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
+            <div class="content">{{ profile.body|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Added on {{ profile.create_dt|date:"D d M Y P" }} by {{ profile.creator }}</div>
             </div>
 
-            <!-- delete-article form -->
-            <form name="article-delete" method="POST" action="{% url profile.delete user.id %}">
+            <!-- delete-profile form -->
+            <form name="profile-delete" method="POST" action="{% url profile.delete user.id %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 
@@ -79,7 +78,7 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_user = confirm('Permenantly delete user?');	// confirm
-				if(delete_user) $(this).parents('.article-wrap').find('form[name="article-delete"]').submit() // delete: if OK
+				if(delete_user) $(this).parents('.profile-wrap').find('form[name="profile-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});

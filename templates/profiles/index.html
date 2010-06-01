@@ -1,22 +1,25 @@
 {% extends "profiles/base.html" %}
+{% load users_showh %}
 
 {% block title %}Profile View{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="/site_media/static/css/profiles.css">
+{{ block.super }}
+<link rel="stylesheet" href="/site_media/static/css/view_profiles.css">
 {% endblock %}
 
 {% block body %}
+{{ block.super }}
 
 <div class="t">
     <div id="userview-profile">
-	    <h1>{{ user_view.get_full_name }}({{ user_view.username }})</h1>
+	    <h1>{{ user_this.get_full_name }}({{ user_this.username }})</h1>
 	    	<div class="contact-info profile-selection">
 		    <h2>Contact Info</h2>
 		    	<table class="section-items">
-			    {% if user_view.email %}
+			    {% if user_this.email %}
 			    	<tr>
-			    	<td class="type">Email:</td> <td class="items">{{user_view.email}}</td>
+			    	<td class="type">Email:</td> <td class="items">{{user_this.email}}</td>
 			    	</tr>
 			    {%endif%}
 			    {% if profile.phone %}
