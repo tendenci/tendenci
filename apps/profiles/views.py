@@ -8,35 +8,37 @@ from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.models import User
 
 from profiles.models import Profile
-from profiles.forms import ProfileForm, ProfileEditForm, UserForm, UserEditForm
+from profiles.forms import ProfileForm, ProfileEditForm, UserForm, UserEditForm, UserPermissionForm
 
 from base.http import render_to_403
 
 # Create your views here.
-def profiles(request, template_name="profiles/profiles.html"):
-    return render_to_response(template_name, {}, 
-                              context_instance=RequestContext(request))
+#def profiles(request, template_name="profiles/profiles.html"):
+#    return render_to_response(template_name, {}, 
+#                              context_instance=RequestContext(request))
  
 # view profile  
 @login_required 
-def index(request, username, template_name="profiles/index.html"):
-    user_view = get_object_or_404(User, username=username)
+def index(request, username="", template_name="profiles/index.html"):
+    if not username:
+        username = request.user.username
+    user_this = get_object_or_404(User, username=username)
     
     try:
         #profile = Profile.objects.get(user=user)
-        profile = user_view.get_profile()
+        profile = user_this.get_profile()
         if not request.user.has_perm('profiles.view_profile', profile):raise render_to_403()
     except Profile.DoesNotExist:
-        profile = Profile.objects.create_profile(user=user_view)
+        profile = Profile.objects.create_profile(user=user_this)
         
-    return render_to_response(template_name, {"user_view":user_view, "profile":profile }, 
+    return render_to_response(template_name, {"user_this": user_this, "profile":profile }, 
                               context_instance=RequestContext(request))
  
 @login_required   
 def search(request, template_name="profiles/search.html"):
     users = User.objects.all()
    
-    return render_to_response(template_name, {'users':users}, 
+    return render_to_response(template_name, {'users':users, "user_this":None}, 
         context_instance=RequestContext(request))
 
 
@@ -63,7 +65,7 @@ def add(request, form_class=ProfileForm, form_class2=UserForm, template_name="pr
         form2 = form_class2()
         print form
 
-    return render_to_response(template_name, {'form':form, 'form2':form2}, 
+    return render_to_response(template_name, {'form':form, 'form2':form2, 'user_this':None}, 
         context_instance=RequestContext(request))
     
 
@@ -94,7 +96,7 @@ def edit(request, id, form_class=ProfileEditForm, form_class2=UserEditForm, temp
             user_edit.user_permissions = form2.cleaned_data['user_permissions']
             user_edit.save()
             
-            return HttpResponseRedirect(reverse('profile', args=[user_edit.pk]))
+            return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
     else:
         if profile:
             form = form_class(instance=profile)
@@ -102,7 +104,7 @@ def edit(request, id, form_class=ProfileEditForm, form_class2=UserEditForm, temp
             form = form_class()
         form2 = form_class2(instance=user_edit)
 
-    return render_to_response(template_name, {'user_edit':user_edit, 'profile':profile, 'form':form, 'form2':form2}, 
+    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form, 'form2':form2}, 
         context_instance=RequestContext(request))
     
 
@@ -124,4 +126,21 @@ def delete(request, id, template_name="profiles/delete.html"):
 
     return render_to_response(template_name, {'profile': profile}, 
         context_instance=RequestContext(request))
+    
+@login_required
+def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="profiles/edit_perms.html"):
+    user_edit = get_object_or_404(User, pk=id)
+    profile = user_edit.get_profile()
+    
+    if request.method == "POST":
+        form = form_class(request.POST, request.user, instance=user_edit)
+    else:
+        form = form_class(instance=user_edit)
+    if form.is_valid():
+        user_edit.is_superuser = form.cleaned_data['is_superuser']
+        user_edit.user_permissions = form.cleaned_data['user_permissions']
+        user_edit.save()
+        return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
    
+    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form}, 
+        context_instance=RequestContext(request))

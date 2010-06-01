@@ -161,5 +161,10 @@ class UserForm(forms.ModelForm):
 class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
-        fields= ('first_name', 'last_name', 'is_superuser', 'groups', 'user_permissions')
+        fields= ('first_name', 'last_name', 'is_superuser', 'user_permissions')
+        
+class UserPermissionForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields= ('is_superuser', 'user_permissions')
         
