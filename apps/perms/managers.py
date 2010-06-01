@@ -81,6 +81,16 @@ class ObjectPermissionManager(models.Manager):
                     }
                     self.get_or_create(**defaults)              
     
+    def remove_all(self, object):
+        """
+            Remove all permissions on object (instance)
+        """
+        content_type = ContentType.objects.get_for_model(object)
+        perms = self.filter(content_type=content_type,
+                            object_id=object.pk)
+        for perm in perms:
+            perm.delete()          
+            
     def remove(self, user_or_users, object, perms=None):
         """
             Remove permissions to user or multiple users
@@ -106,6 +116,7 @@ class ObjectPermissionManager(models.Manager):
                         content_type = ContentType.objects.get_for_model(object)
                         perm = self.objects.get(codename=codename,
                                                 content_type=content_type,
+                                                object_id=object.pk,
                                                 user=user)
                         perm.delete()                 
             else:
@@ -114,6 +125,7 @@ class ObjectPermissionManager(models.Manager):
                     content_type = ContentType.objects.get_for_model(object)
                     perm = self.objects.get(codename=codename,
                                             content_type=content_type,
+                                            object_id=object.pk,
                                             user=user_or_users)
                     perm.delete()
         else:
@@ -121,13 +133,15 @@ class ObjectPermissionManager(models.Manager):
                 for user in user_or_users:
                     content_type = ContentType.objects.get_for_model(object)
                     perms = self.filter(content_type=content_type,
-                                                user=user)
+                                        object_id=object.pk,
+                                        user=user)
                     for perm in perms:
                         perm.delete()
             else:
                 content_type = ContentType.objects.get_for_model(object)
                 perms = self.filter(content_type=content_type,
-                                            user=user_or_users)
+                                    object_id=object.pk,
+                                    user=user_or_users)
                 for perm in perms:
                     perm.delete()              
                     

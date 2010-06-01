@@ -1,9 +1,9 @@
 from django.db import models
 
 from timezones.fields import TimeZoneField
-from base.models import AuditingBase
+from perms.models import AuditingBaseModel
 
-class Release(AuditingBase):
+class Release(AuditingBaseModel):
     guid = models.CharField(max_length=50, unique=False, blank=True)
 
     timezone = TimeZoneField()
