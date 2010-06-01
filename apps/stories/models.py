@@ -1,9 +1,9 @@
 from django.db import models
 
-from base.models import AuditingBase
+from perms.models import AuditingBaseModel
 
 # Create your models here.
-class Story(AuditingBase):
+class Story(AuditingBaseModel):
     guid = models.CharField(max_length=50, unique=False, blank=True)
     title = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True)
