@@ -3,10 +3,10 @@ from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 
-from base.models import AuditingBase
+from perms.models import AuditingBaseModel
 from entities.models import Entity
 
-class Group(AuditingBase):
+class Group(AuditingBaseModel):
     name = models.CharField(_('Group Name'), max_length=255, unique=True)
     slug = models.SlugField(editable=False, unique=True)
     guid = models.CharField(max_length=50, editable=False)
