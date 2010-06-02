@@ -4,9 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 from timezones.fields import TimeZoneField
-from base.models import AuditingBase
-
-
+from perms.models import AuditingBaseModel
 
 class ProfileManager(models.Manager):
     def create_profile(self, user):
@@ -17,8 +15,8 @@ class ProfileManager(models.Manager):
                            owner_username=user.username, 
                            email=user.email)
         
-    
-class Profile(AuditingBase):
+
+class Profile(AuditingBaseModel):
     # relations
     user = models.ForeignKey(User, unique=True, related_name="profile", verbose_name=_('user'))
     

@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
 from base.http import render_to_403
@@ -36,8 +36,7 @@ def print_view(request, id, template_name="articles/print-view.html"):
 @login_required
 def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"):
     article = get_object_or_404(Article, pk=id)
-    original_owner = article.owner
-    
+
     if request.user.has_perm('articles.change_article', article):    
         if request.method == "POST":
             form = form_class(request.user, request.POST, instance=article)
@@ -45,12 +44,17 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                 article = form.save(commit=False)
                 article.save()
 
-                # TODO: get the removal of permissions to work. 
-                # assign permissions for selected users
-                # user_perms = form.cleaned_data['user_perms']
-                # if user_perms:
-                #    ObjectPermission.objects.remove(user_perms, article)               
-                                               
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(article)
+                
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, article)               
+ 
+                # assign creator permissions
+                ObjectPermission.objects.assign(article.creator, article) 
+                                                              
                 return HttpResponseRedirect(reverse('article', args=[article.pk]))             
         else:
             form = form_class(request.user, instance=article)
