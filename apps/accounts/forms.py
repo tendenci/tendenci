@@ -8,13 +8,13 @@ from registration.models import RegistrationProfile
 class RegistrationCustomForm(RegistrationForm):
     first_name = forms.CharField(max_length=100)
     last_name = forms.CharField(max_length=100)
-    company = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'size':'40'}))
-    phone = forms.CharField(max_length=50)
-    address = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'size':'40'}))
-    city = forms.CharField(max_length=50)
-    state = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'size':'10'}))
-    country = forms.CharField(max_length=50)
-    zipcode = forms.CharField(max_length=50)
+    company = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'size':'40'}), required=False)
+    phone = forms.CharField(max_length=50, required=False)
+    address = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'size':'40'}), required=False)
+    city = forms.CharField(max_length=50, required=False)
+    state = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'size':'10'}), required=False)
+    country = forms.CharField(max_length=50, required=False)
+    zipcode = forms.CharField(max_length=50, required=False)
     
     def save(self, profile_callback=None):
         new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
