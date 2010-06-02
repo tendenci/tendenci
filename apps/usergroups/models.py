@@ -11,7 +11,7 @@ class Group(AuditingBaseModel):
     slug = models.SlugField(editable=False, unique=True)
     guid = models.CharField(max_length=50, editable=False)
     label = models.CharField(_('Group Label'), max_length=255, blank=True)
-    entity = models.ForeignKey(Entity)
+    entity = models.ForeignKey(Entity, null=True, blank=True)
     type = models.CharField(max_length=75, blank=True, choices=(
                                                              ('distribution','Distribution'),
                                                              ('security','Security'),), default='distribution')
