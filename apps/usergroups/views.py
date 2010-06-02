@@ -16,7 +16,7 @@ def group_search(request, template_name="usergroups/group_search.html"):
 def group_detail(request, group_slug, template_name="usergroups/group_detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
     
-    if not request.user.has_perm('usergroups.view_group', group):raise render_to_403()
+    if not request.user.has_perm('usergroups.view_group', group): return render_to_403()
 
     members = group.members.all()
     count_members = len(members)
@@ -28,11 +28,11 @@ def group_add_edit(request, group_slug=None,
                    template_name="usergroups/group_form.html"):
     if group_slug:
         group = get_object_or_404(Group, slug=group_slug)
-        if not request.user.has_perm('usergroups.change_group', group):raise render_to_403()
+        if not request.user.has_perm('usergroups.change_group', group):return render_to_403()
         title = "Edit Group"
     else:
         group = None
-        if not request.user.has_perm('usergroups.add_group'):raise render_to_403()
+        if not request.user.has_perm('usergroups.add_group'):return render_to_403()
         title = "Add Group"
 
     if request.method == 'POST':
@@ -62,7 +62,7 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
     if user_id:
         user = get_object_or_404(User, pk=user_id)
         groupmembership = get_object_or_404(GroupMembership, member=user, group=group)
-        if not request.user.has_perm('usergroups.change_groupmembership', groupmembership):raise render_to_403()
+        if not request.user.has_perm('usergroups.change_groupmembership', groupmembership):return render_to_403()
     else:
         groupmembership = None
         if not request.user.has_perm('usergroups.add_groupmembership'):raise render_to_403()
@@ -90,7 +90,7 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
 def groupmembership_delete(request, groupmembership_id, template_name="usergroups/groupmembership_confirm_delete.html"):
 
     groupmembership = get_object_or_404(GroupMembership, pk=groupmembership_id)
-    if not request.user.has_perm('usergroups.delete_groupmembership', groupmembership):raise render_to_403()
+    if not request.user.has_perm('usergroups.delete_groupmembership', groupmembership):return render_to_403()
 
     if request.method == 'POST':
         group = groupmembership.group
