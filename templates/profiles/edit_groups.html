@@ -1,6 +1,6 @@
 {% extends "profiles/base.html" %}
 
-{% block title %}Edit User Permissions{% endblock %}
+{% block title %}Add/Remove User Groups{% endblock %}
 
 {% block head %}
 {{ block.super }}
@@ -11,7 +11,7 @@
 		$(document).ready(function(){
 			jQuery.each($("select[multiple]"), function () {  
 			// "Locations" can be any label you want  
-			 SelectFilter.init(this.id, "Permissions", 0, "/media/");  
+			 SelectFilter.init(this.id, "Groups", 0, "/media/");  
 			});
 
 		});
@@ -22,29 +22,23 @@
 {{ block.super }}
 
 <div class="t">
-    <h1>Add/Remove User Permissions for {{ user_this.username}}</h1>
+    <h1>Add/Remove User Groups for {{ user_this.username}}</h1>
 
     <div class="profile-wrap">
     <form action="" method="post">
-	       
+    
 	<div class="field-wrapper">
-		{% if form.is_superuser.errors %}
-			{{ form.is_superuser.errors }}
-		{% endif %}
-		<label for="id_is_superuser"><b>Is Super User:</b></label>
-		{{ form.is_superuser }}
-	</div>
-	
-	<div class="field-wrapper">
-		{% if form.user_permissions.errors %}
-			{{ form.user_permissions.errors }}
-		{% endif %}
-		<label for="id_user_permissions" style="float:left; padding-right: 1em;"><b>User Permissions:</b></label>
-		{{ form.user_permissions }}
+		<label for="id_user_groups" style="float:left; padding-right: 1em;"><b>Groups:</b></label>
+		<select multiple="multiple" name="user_groups" id="id_user_groups">
+		{% for g in groups %}
+		<option value="{{ g.id }}"{% if g in groups_joined %} selected="selected"{% endif %}>{{ g.label}}</option>
+		{% endfor %}
+		</select>
+		
 	</div>
 <div style="clear:left;"></div>
         <div style="display:block">
-        <input type="submit" value="Save" />
+        <input type="submit" name="submit" value="Save" />
         </div>
     </form>
 

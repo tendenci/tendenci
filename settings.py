@@ -60,17 +60,22 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'site_media')
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/site_media/'
+MEDIA_URL = '/site_media/media/'
 
 # URL that handles the media served from STATIC_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/static/"
 STATIC_URL = '/site_media/static'
+
+# Avatar default URL, no Gravatars
+AVATAR_GRAVATAR_BACKUP = False
+AVATAR_DEFAULT_URL = STATIC_URL + '/images/icons/default-user-80.jpg'
+AUTO_GENERATE_AVATAR_SIZES = (128, 80, 48,)
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -130,6 +135,7 @@ INSTALLED_APPS = (
     'photologue',
     'tagging',
     'registration',
+    'avatar',
     
     # tendenci applications
     'base',

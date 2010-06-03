@@ -15,16 +15,16 @@ class Group(AuditingBase):
     type = models.CharField(max_length=75, blank=True, choices=(
                                                              ('distribution','Distribution'),
                                                              ('security','Security'),), default='distribution')
-    emailrecipient = models.CharField(_('Email Recipient'), max_length=255, blank=True)
+    email_recipient = models.CharField(_('Email Recipient'), max_length=255, blank=True)
     
-    showasoption = models.BooleanField(_('Display Option'), default=1)
-    allowselfadd = models.BooleanField(_('Allow Self Add'), default=1)
-    allowselfremove = models.BooleanField(_('Allow Self Remove'), default=1)
+    show_as_option = models.BooleanField(_('Display Option'), default=1)
+    allow_self_add = models.BooleanField(_('Allow Self Add'), default=1)
+    allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=1)
     
     description = models.TextField(blank=True)
-    autorespond = models.BooleanField(_('Auto Responder'), default=0)
-    autorespondtemplate =  models.CharField(_('Auto Responder Template'), max_length=100, blank=True)
-    autorespondpriority = models.FloatField(_('Priority'), blank=True, default=0)
+    auto_respond = models.BooleanField(_('Auto Responder'), default=0)
+    auto_respond_template =  models.CharField(_('Auto Responder Template'), max_length=100, blank=True)
+    auto_respond_priority = models.FloatField(_('Priority'), blank=True, default=0)
     
     notes = models.TextField(blank=True)
     
@@ -52,8 +52,8 @@ class GroupMembership(models.Model):
     group = models.ForeignKey(Group)
     member = models.ForeignKey(User, related_name='group_member')
     
-    role = models.CharField(max_length=255)
-    sortorder =  models.IntegerField(_('Sort Order'), default=0, blank=True)
+    role = models.CharField(max_length=255, default="", blank=True)
+    sort_order =  models.IntegerField(_('Sort Order'), default=0, blank=True)
     
     creator_id = models.IntegerField(default=0, editable=False)
     creator_username = models.CharField(max_length=50, editable=False)
