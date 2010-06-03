@@ -44,7 +44,7 @@ class Profile(AuditingBaseModel):
     company = models.CharField(_('company') , max_length=100, blank=True)
     position_title = models.CharField(_('position title'), max_length=50, blank=True)
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)
-    sex = models.CharField(_('sex'), max_length=50, choices=(('male', u'Male'),('female', u'Female')))
+    sex = models.CharField(_('sex'), max_length=50, blank=True, choices=(('male', u'Male'),('female', u'Female')))
     address_type = models.CharField(_('address type'), max_length=50, blank=True)
     address = models.CharField(_('address'), max_length=150, blank=True)
     address2 = models.CharField(_('address2'), max_length=100, blank=True)
