@@ -1,5 +1,6 @@
 {% extends "user_groups/base.html" %}
 {% load pagination_tags %}
+{% load user_group_tags %}
 {% load base_tags %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
@@ -10,9 +11,10 @@
 
 {% block body %}
 <div class="t">
-    <h1>User Groups Search</h1>
-	<div><a href="{% url group_add %}">Add Group</a></div>
-
+    <h1>{{ MODULE_USER_GROUPS_LABEL }} Search</h1>
+	
+ {% user_group_nav request.user %}
+ 
     {% autopaginate groups 10 %}
 
 	<div class="groups-wrap">
@@ -32,9 +34,7 @@
 			</div>
 
  			<div class="quick-options">
- 					<ul>
-					<li><a href="{% url group_edit group.slug %}">Edit</a></li> 
-					</ul>
+ 					{% user_group_options request.user group %} 	
             </div>
 
             <h2><a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
