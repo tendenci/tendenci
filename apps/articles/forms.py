@@ -33,7 +33,10 @@ class ArticleForm(AuditingBaseForm):
         'status_detail',
         )
       
-    def __init__(self, user=None, *args, **kwargs):
+    def __init__(self, user=None, *args, **kwargs): 
+        self.user = user
         super(ArticleForm, self).__init__(user, *args, **kwargs)
+        
+        
         
         
