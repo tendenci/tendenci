@@ -98,6 +98,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'pagination.middleware.PaginationMiddleware',
+    'perms.middleware.ImpersonationMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
