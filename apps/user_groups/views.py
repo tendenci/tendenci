@@ -18,9 +18,10 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
     
     if not request.user.has_perm('user_groups.view_group', group): return render_to_403()
+    groupmemberships = GroupMembership.objects.filter(group=group).order_by('sort_order')
 
-    members = group.members.all()
-    count_members = len(members)
+    #members = group.members.all()
+    count_members = len(groupmemberships)
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
@@ -86,7 +87,7 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
         if not request.user.has_perm('user_groups.add_groupmembership'):raise render_to_403()
 
     if request.method == 'POST':
-        form = form_class(request.POST, instance=groupmembership)
+        form = form_class(None, user_id, request.POST, instance=groupmembership)
         if form.is_valid():
             groupmembership = form.save(commit=False)
             groupmembership.group = group
@@ -100,18 +101,18 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
             return HttpResponseRedirect(group.get_absolute_url())
     else:
 
-        form = form_class(instance=groupmembership)
+        form = form_class(group, user_id, instance=groupmembership)
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
-def groupmembership_delete(request, groupmembership_id, template_name="user_groups/groupmembership_confirm_delete.html"):
-
-    groupmembership = get_object_or_404(GroupMembership, pk=groupmembership_id)
+def groupmembership_delete(request, group_slug, user_id, template_name="user_groups/member_delete.html"):
+    group = get_object_or_404(Group, slug=group_slug)
+    user = get_object_or_404(User, pk=user_id)
+    groupmembership = get_object_or_404(GroupMembership, group=group, member=user)
     if not request.user.has_perm('user_groups.delete_groupmembership', groupmembership):return render_to_403()
-
+    print group
     if request.method == 'POST':
-        group = groupmembership.group
         groupmembership.delete()
         return HttpResponseRedirect(group.get_absolute_url())
     

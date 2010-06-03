@@ -1,5 +1,6 @@
 from django import forms
-from models import Group, GroupMembership
+from django.contrib.auth.models import User
+from user_groups.models import Group, GroupMembership
 
 class GroupForm(forms.ModelForm):
     emailrecipient = forms.CharField(label="Email Recipient", required=False, max_length=100, 
@@ -35,10 +36,22 @@ class GroupForm(forms.ModelForm):
        
 
 class GroupMembershipForm(forms.ModelForm):
-    
+    def __init__(self, mygroup=None, user_id=None, *args, **kwargs):
+        super(GroupMembershipForm, self).__init__(*args, **kwargs)
+        self.fields['member'].queryset = User.objects.filter(is_active=1)
+        if mygroup:
+            # exclude those already joined
+            exclude_userid = [user.id for user in mygroup.members.all()]
+            self.fields['member'].queryset = User.objects.all().exclude(id__in=exclude_userid)
+        else:
+            self.fields['member'].queryset = User.objects.all()
+        if user_id:
+            del self.fields["member"]
+            
+        
     class Meta:
         model = GroupMembership
-        #exclude = ('group',)
+        exclude = ('group',)
         
 class GroupPermissionForm(forms.ModelForm):
     class Meta:
