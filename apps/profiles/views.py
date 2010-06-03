@@ -24,7 +24,7 @@ def index(request, username="", template_name="profiles/index.html"):
     try:
         #profile = Profile.objects.get(user=user)
         profile = user_this.get_profile()
-        if not request.user.has_perm('profiles.view_profile', profile):raise render_to_403()
+        if not request.user.has_perm('profiles.view_profile', profile):return render_to_403()
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
         
@@ -42,7 +42,7 @@ def search(request, template_name="profiles/search.html"):
 
 @login_required
 def add(request, form_class=ProfileForm, form_class2=UserForm, template_name="profiles/add.html"):
-    if not request.user.has_perm('profiles.add_profile'):raise render_to_403()
+    if not request.user.has_perm('profiles.add_profile'):return render_to_403()
     
     if request.method == "POST":
         #form_user = form_class2(request.user, request.POST)
@@ -73,11 +73,10 @@ def edit(request, id, form_class=ProfileEditForm, form_class2=UserEditForm, temp
     
     try:
         profile = Profile.objects.get(user=user_edit)
-        if not request.user.has_perm('profiles.change_profile', profile):raise render_to_403()
-        
+        if not request.user.has_perm('profiles.change_profile', profile): return render_to_403()
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
-        if not request.user.has_perm('profiles.change_profile', profile):raise render_to_403()
+        if not request.user.has_perm('profiles.change_profile', profile): return render_to_403()
         
     if request.method == "POST":
         #form_user = form_class2(request.user, request.POST)
@@ -110,7 +109,7 @@ def delete(request, id, template_name="profiles/delete.html"):
     user = get_object_or_404(User, pk=id)
     profile = Profile.objects.get(user=user)
     
-    if not request.user.has_perm('profiles.delete_profile', profile):raise render_to_403()
+    if not request.user.has_perm('profiles.delete_profile', profile): return render_to_403()
 
     if request.method == "POST":
         #soft delete
