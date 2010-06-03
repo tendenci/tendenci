@@ -41,7 +41,7 @@ class Group(AuditingBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('group_detail', [self.slug])
+        return ('group.detail', [self.slug])
 
     def save(self, force_insert=False, force_update=False):
         if not self.id:

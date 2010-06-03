@@ -1,20 +1,20 @@
 {% extends "user_groups/base.html" %}
+{% load user_group_tags %}
 
 {% block title %}{{ group.name }} - Group{% endblock %}
 
-{% block body %}
-<div>
-<a href="{% url group_search %}">Groups List</a>
-</div>
-{% block content_title %}<h1>{{ group.name }}</h1>{% endblock %}
-
-{% block objecttools %}
-<ul class="object-tools">
-<li><a href="{% url group_adduser group.slug %}" class="editlink">Add new member</a></li>
-<li><a href="edit/" class="editlink">Edit group</a></li>
-</ul>
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/usergroups.css">
 {% endblock %}
-{% block content %}
+
+{% block body %}
+<div class="t">
+{% user_group_nav request.user %}
+
+<h1>{{ group.name }}</h1>
+<div class="quick-options">
+		{% user_group_options request.user group %} 	
+ </div>
 
 {% if not members %}
 <p>This group has no members</p>
@@ -28,7 +28,6 @@ This group currently has {{ count_members  }} member{{ count_members|pluralize }
 
 {% endif %}
 
-{% endblock %}
 
-
+</div>
 {% endblock %}

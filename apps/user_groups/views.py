@@ -9,12 +9,12 @@ from user_groups.forms import GroupForm, GroupMembershipForm, GroupPermissionFor
 
 from base.http import render_to_403
 
-def group_search(request, template_name="user_groups/group_search.html"):
+def group_search(request, template_name="user_groups/search.html"):
     groups = Group.objects.all()
     return render_to_response(template_name, {'groups':groups}, 
         context_instance=RequestContext(request))
     
-def group_detail(request, group_slug, template_name="user_groups/group_detail.html"):
+def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
     
     if not request.user.has_perm('user_groups.view_group', group): return render_to_403()
@@ -26,7 +26,7 @@ def group_detail(request, group_slug, template_name="user_groups/group_detail.ht
 
 def group_add_edit(request, group_slug=None, 
                    form_class=GroupForm, 
-                   template_name="user_groups/group_form.html"):
+                   template_name="user_groups/add_edit.html"):
     if group_slug:
         group = get_object_or_404(Group, slug=group_slug)
         if not request.user.has_perm('user_groups.change_group', group):return render_to_403()
@@ -73,7 +73,7 @@ def group_edit_perms(request, id, form_class=GroupPermissionForm, template_name=
 
 def groupmembership_add_edit(request, group_slug, user_id=None, 
                              form_class=GroupMembershipForm, 
-                             template_name="user_groups/groupmembership_form.html"):
+                             template_name="user_groups/member_add_edit.html"):
 
     group = get_object_or_404(Group, slug=group_slug)
    
