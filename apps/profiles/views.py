@@ -12,10 +12,7 @@ from profiles.forms import ProfileForm, ProfileEditForm, UserForm, UserEditForm,
 
 from base.http import render_to_403
 
-# Create your views here.
-#def profiles(request, template_name="profiles/profiles.html"):
-#    return render_to_response(template_name, {}, 
-#                              context_instance=RequestContext(request))
+from usergroups.models import Group, GroupMembership
  
 # view profile  
 @login_required 
@@ -31,7 +28,8 @@ def index(request, username="", template_name="profiles/index.html"):
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
         
-    return render_to_response(template_name, {"user_this": user_this, "profile":profile }, 
+    return render_to_response(template_name, {"user_this": user_this, "profile":profile,
+                                              "user_objs":{"user_this": user_this } }, 
                               context_instance=RequestContext(request))
  
 @login_required   
@@ -91,9 +89,9 @@ def edit(request, id, form_class=ProfileEditForm, form_class2=UserEditForm, temp
         
         if form.is_valid() and form2.is_valid():
             profile = form.save(request, user_edit)
-            user_edit.is_superuser = form2.cleaned_data['is_superuser']
-            user_edit.groups = form2.cleaned_data['groups']
-            user_edit.user_permissions = form2.cleaned_data['user_permissions']
+            #user_edit.is_superuser = form2.cleaned_data['is_superuser']
+            #user_edit.groups = form2.cleaned_data['groups']
+            #user_edit.user_permissions = form2.cleaned_data['user_permissions']
             user_edit.save()
             
             return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
@@ -144,3 +142,37 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
    
     return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form}, 
         context_instance=RequestContext(request))
+    
+    
+@login_required
+def edit_user_groups(request, id, template_name="profiles/edit_groups.html"):
+    user_edit = get_object_or_404(User, pk=id)
+    profile = user_edit.get_profile()
+    # a list of groups - need to figure out which ones to pull based on user's security level. 
+    groups = Group.objects.all()
+    # a list of groups this user in
+    groups_joined = user_edit.group_set.all()
+
+    if request.method == "POST":
+        selected_groups = request.POST.getlist("user_groups")    # list of ids
+        
+        selected_groups = [Group.objects.get(id=g) for g in selected_groups] # list of objects
+        groups_to_add = [g for g in selected_groups if g not in groups_joined]
+        for g in groups_to_add:
+            gm = GroupMembership(group=g, member=user_edit)
+            gm.creator_id = request.user.id
+            gm.creator_username = request.user.username
+            gm.owner_id = request.user.id
+            gm.owner_username = request.user.username
+            gm.save()    
+        # remove those not selected but already in GroupMembership  
+        groups_to_remove = [g for g in groups_joined if g not in selected_groups]
+        for g in groups_to_remove:
+            gm = GroupMembership.objects.get(group=g, member=user_edit)
+            gm.delete()
+        groups_joined = user_edit.group_set.all()
+        #print new_groups
+        #print request.POST 
+    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'groups':groups, 'groups_joined':groups_joined}, 
+        context_instance=RequestContext(request))
+

@@ -1,6 +1,6 @@
-{% extends "profiles/base.html" %}
+{% extends "usergroups/base.html" %}
 
-{% block title %}Edit User Permissions{% endblock %}
+{% block title %}Edit Group Permissions{% endblock %}
 
 {% block head %}
 {{ block.super }}
@@ -22,25 +22,17 @@
 {{ block.super }}
 
 <div class="t">
-    <h1>Add/Remove User Permissions for {{ user_this.username}}</h1>
+    <h1>Add/Remove Group Permissions for {{ group.label }}</h1>
 
     <div class="profile-wrap">
     <form action="" method="post">
-	       
-	<div class="field-wrapper">
-		{% if form.is_superuser.errors %}
-			{{ form.is_superuser.errors }}
-		{% endif %}
-		<label for="id_is_superuser"><b>Is Super User:</b></label>
-		{{ form.is_superuser }}
-	</div>
 	
 	<div class="field-wrapper">
-		{% if form.user_permissions.errors %}
-			{{ form.user_permissions.errors }}
+		{% if form.permissions.errors %}
+			{{ form.permissions.errors }}
 		{% endif %}
-		<label for="id_user_permissions" style="float:left; padding-right: 1em;"><b>User Permissions:</b></label>
-		{{ form.user_permissions }}
+		<label for="id_permissions" style="float:left; padding-right: 1em;"><b>Group Permissions:</b></label>
+		{{ form.permissions }}
 	</div>
 <div style="clear:left;"></div>
         <div style="display:block">
