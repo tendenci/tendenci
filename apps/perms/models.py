@@ -29,7 +29,7 @@ class AuditingBaseModel(models.Model):
         abstract = True 
         
 
-from usergroups.models import Group
+from user_groups.models import Group
 
 class ObjectPermission(models.Model):
     user = models.ForeignKey(User, null=True)

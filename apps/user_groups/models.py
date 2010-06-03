@@ -33,6 +33,9 @@ class Group(AuditingBaseModel):
     members = models.ManyToManyField(User, through='GroupMembership')
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
 
+    class Meta:
+        permissions = (("view_group","Can view group"),)
+        
     def __unicode__(self):
         return self.name
 
