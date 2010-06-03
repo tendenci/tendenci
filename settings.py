@@ -98,6 +98,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'pagination.middleware.PaginationMiddleware',
+    'perms.middleware.ImpersonationMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
@@ -162,8 +163,8 @@ LOGIN_REDIRECT_URL = '/'
 
 AUTH_PROFILE_MODULE = 'profiles.Profile'
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
     'perms.backend.ObjectPermBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 # -------------------------------------- #
