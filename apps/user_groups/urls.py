@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('usergroups.views',
+urlpatterns = patterns('user_groups.views',
     url(r'^$',                              'group_search',     name='groups'),
     url(r'^add/$',                          'group_add_edit', name='group_add'),
     url(r'^search/$',                       'group_search',   name='group_search'),

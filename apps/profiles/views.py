@@ -12,7 +12,7 @@ from profiles.forms import ProfileForm, ProfileEditForm, UserForm, UserEditForm,
 
 from base.http import render_to_403
 
-from usergroups.models import Group, GroupMembership
+from user_groups.models import Group, GroupMembership
  
 # view profile  
 @login_required 
