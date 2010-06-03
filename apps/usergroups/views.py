@@ -1,10 +1,11 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 
 from usergroups.models import Group, GroupMembership
-from usergroups.forms import GroupForm, GroupMembershipForm
+from usergroups.forms import GroupForm, GroupMembershipForm, GroupPermissionForm
 
 from base.http import render_to_403
 
@@ -52,6 +53,23 @@ def group_add_edit(request, group_slug=None,
       
     return render_to_response(template_name, {'form':form, 'titie':title, 'group':group}, context_instance=RequestContext(request))
 
+
+@login_required
+def group_edit_perms(request, id, form_class=GroupPermissionForm, template_name="usergroups/edit_perms.html"):
+    group_edit = get_object_or_404(Group, pk=id)
+    
+    if request.method == "POST":
+        form = form_class(request.POST, request.user, instance=group_edit)
+    else:
+        form = form_class(instance=group_edit)
+       
+    if form.is_valid():
+        group_edit.permissions = form.cleaned_data['permissions']
+        group_edit.save()
+        return HttpResponseRedirect(group_edit.get_absolute_url())
+   
+    return render_to_response(template_name, {'group':group_edit, 'form':form}, 
+        context_instance=RequestContext(request))
 
 def groupmembership_add_edit(request, group_slug, user_id=None, 
                              form_class=GroupMembershipForm, 

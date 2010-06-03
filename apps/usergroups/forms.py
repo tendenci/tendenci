@@ -12,10 +12,10 @@ class GroupForm(forms.ModelForm):
                   'label',
                   'entity',
                   'type',
-                  'emailrecipient',
-                  'showasoption',
-                  'allowselfadd',
-                  'allowselfremove',
+                  'email_recipient',
+                  'show_as_option',
+                  'allow_self_add',
+                  'allow_self_remove',
                   'description',
                   'allow_anonymous_view',
                   'allow_user_view',
@@ -23,9 +23,9 @@ class GroupForm(forms.ModelForm):
                   'allow_anonymous_edit',
                   'allow_user_edit',
                   'allow_member_edit',
-                  'autorespond',
-                  'autorespondtemplate',
-                  'autorespondpriority',
+                  'auto_respond',
+                  'auto_respond_template',
+                  'auto_respond_priority',
                   'notes',
                   'status',
                   
@@ -41,3 +41,8 @@ class GroupMembershipForm(forms.ModelForm):
     class Meta:
         model = GroupMembership
         #exclude = ('group',)
+        
+class GroupPermissionForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields= ('permissions',)
