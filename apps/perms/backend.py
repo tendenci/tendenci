@@ -3,6 +3,11 @@ from django.contrib.auth.models import User, Permission
 from perms.models import ObjectPermission
 
 class ObjectPermBackend(object):
+    """
+        Custom backend that supports tendenci's version of group permissions and 
+        row level permissions, most of the code is copied from django
+        with a few modifications
+    """
     supports_object_permissions = True
     supports_anonymous_user = True
 
