@@ -9,4 +9,5 @@ urlpatterns = patterns('user_groups.views',
     url(r'^(?P<group_slug>[-.\w]+)/edit/$', 'group_add_edit', name='group.edit'),
     url(r'^(?P<group_slug>[-.\w]+)/adduser/$', 'groupmembership_add_edit', name='group.adduser'),
     url(r'^(?P<group_slug>[-.\w]+)/edituser/(?P<user_id>\d+)/$', 'groupmembership_add_edit', name='group.edituser'),
+    url(r'^(?P<group_slug>[-.\w]+)/deleteuser/(?P<user_id>\d+)/$', 'groupmembership_delete', name='group.deleteuser'),
 )
