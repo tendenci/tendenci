@@ -23,7 +23,12 @@ urlpatterns = patterns('',
     (r'^stories/', include('stories.urls')),
     (r'^releases/', include('releases.urls')),
     (r'^settings/', include('site_settings.urls')),
+    (r'^files/', include('files.urls')),
     (r'^accounts/', include('accounts.urls')),
+#    (r'^media-files/', include('media_files.urls')),
+
+    # third party (inside environment)
+    (r'^tinymce/', include('tinymce.urls')),
 )
 
 # Local url patterns for development
