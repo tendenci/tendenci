@@ -13,9 +13,11 @@ class Story(AuditingBaseModel):
     start_dt = models.DateTimeField(null=True, blank=True)
     end_dt = models.DateTimeField(null=True, blank=True)
     ncsortorder = models.IntegerField(null=True, blank=True)
-    
+ 
+    class Meta:
+        permissions = (("view_story","Can view story"),)
+        verbose_name_plural = "stories"
+           
     def __unicode__(self):
         return self.title
-    
-    class Meta:
-        verbose_name_plural = "stories"
+        

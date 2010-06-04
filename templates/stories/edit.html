@@ -1,23 +1,19 @@
 {% extends "stories/base.html" %}
+{% load story_tags %}
 
-{% block title %}Edit Page{% endblock %}
+{% block title %}{{ block.super }}Edit{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/stories.css">
 {% endblock %}
 
 {% block body %}
-
 <div class="t">
-    <h1>Stories Edit Page</h1>
+    <h1>{{ MODULE_STORIES_LABEL }} Edit</h1>
     
-    <div class="back-to-search"><a href="{% url story.search %}">Search</a>
-    <a href="{% url story story.id %}">View</a>
-    <a href="{% url story.add %}">Add</a>
-    </div>
+    {% stories_nav request.user %}
 
     <div class="story-wrap">
-
     <form action="{% url story.edit story.id %}" method="post">
         {{ form.as_p }}
         <input type="submit" value="Save changes" />
