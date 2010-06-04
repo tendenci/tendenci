@@ -1,11 +1,9 @@
-html, body, form 
-{
-	margin: 0;
-	padding: 0;
-	width: 100%;
+a {
+	outline: none;
+}
 
-	font-family: Verdana;
-	font-size: 10pt;
+object {
+	outline: none;
 }
 
 .likeParent {
@@ -25,20 +23,6 @@ a.likeParent:hover
 	text-decoration: none;
 }
 
-div.title 
-{
-	width: auto;
-	background-color: #99BBE8;
-	border-bottom: solid 1px #000000;
-	padding: 2px;
-	margin-bottom: 15px;
-
-	font-family: Verdana;
-	font-size: 14pt;
-	color: #000000;
-	text-decoration: none;
-
-}
 div.content 
 {
 	margin: 10px;
@@ -93,10 +77,12 @@ fieldset.flash
 }
 
 .progressName {
+	font-size: 8pt;
 	font-weight: bold;
 	color: #555555;
 	
 	width: 323px;
+	height: 14px;
 	text-align: left;
 	white-space: nowrap;
 	overflow: hidden;
@@ -151,7 +137,7 @@ a.progressCancel:hover
 
 #flashUI #fsUploadProgress {
 	border: 1px solid #F7F7F7;
-	height: 250px;
+	height: 280px;
 	overflow: auto;
 }
 
@@ -195,18 +181,6 @@ div.footer-spacer {
 }
 
 
-
-
-
-
-
-
-
-#flashUI #fsUploadProgress {
-	border: 1px solid #F7F7F7;
-	height: 250px;
-	overflow: auto;
-}
 
 h1 {
 	margin:0;
@@ -261,49 +235,5 @@ div.simple-upload h2 {
 .swfupload {
 	position: absolute;
 	cursor: pointer;
-}
-
-
-
-/* batch add page
---------------------------------------------- */
-#swf-progress-wrap {
-	height: 250px;
-	background-color: white;
-	border: 1px solid gray;
-	position: relative;
-}
-#swf-progress-wrap #swf-progress-init {
-	height: 100%;
-	overflow: hidden;
-}
-#swf-progress-wrap #swf-progress-init div.even {
-	background-color: #EEE;
-	height: 30px;
-}
-#swf-progress-wrap #swf-progress-init div.odd {
-	background-color: white;
-	height: 30px;
-}
-#swf-progress {
-	height: 100%;
-	overflow: auto;
-}
-#swf-msg-mask {
-	cursor: pointer;
-	top:0; right:0; bottom:0; left:0;
-	position: absolute;
-}
-#swf-msg-mask div {
-	font-size: 5em;
-	text-align: center;
-	margin: 100px 0;
-	text-decoration: underline;
-}
-
-#SWFUpload_0 {
-	top: 0;
-	cursor: pointer;
-	position: absolute; /* swfupload already does this */
 }
 
