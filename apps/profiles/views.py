@@ -24,7 +24,7 @@ def index(request, username="", template_name="profiles/index.html"):
     try:
         #profile = Profile.objects.get(user=user)
         profile = user_this.get_profile()
-        if not request.user.has_perm('profiles.view_profile', profile):return render_to_403()
+        #if not request.user.has_perm('profiles.view_profile', profile):return render_to_403()
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
         
