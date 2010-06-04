@@ -1,0 +1,12 @@
+{% load base_tags %}
+<ul>   
+    {% has_perm user files.change_file file as can_edit %}
+    {% if can_edit %} 
+    	<li><a href="{% url file.edit file.id %}">Edit</a></li>
+    {% endif %}
+    
+    {% has_perm user files.delete_file file as can_delete %}
+    {% if can_delete %} 
+	<li class="delete"><a href="{% url file.delete file.id %}">Delete</a></li>
+	{% endif %}
+</ul>
