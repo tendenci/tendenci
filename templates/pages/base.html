@@ -1,12 +1,3 @@
-<!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-	<meta charset="UTF-8">
-	<title>Pages {% block title %}{% endblock %}</title>
-{% block extra_head %}{% endblock %}
-</head>
-<body>
-{% block body %}{% endblock %}
-{% block extra_body %}{% endblock %}
-</body>
-</html>
+{% extends "site_base.html" %}
+
+{% block title %}{{ MODULE_PAGES_LABEL }} - {% endblock %}

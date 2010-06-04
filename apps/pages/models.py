@@ -25,3 +25,9 @@ class Page(AuditingBaseModel):
     displaypagetemplate = models.CharField(max_length=50, blank=True)
 
     metacanonical = models.TextField(blank=True)
+
+    class Meta:
+        permissions = (("view_page","Can view page"),)
+        
+    def __unicode__(self):
+        return self.title
