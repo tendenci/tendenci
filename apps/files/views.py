@@ -68,7 +68,7 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
         return render_to_403()
 
     if request.method == "POST":
-        form = form_class(request.POST, request.FILES, instance=file)
+        form = form_class(request.user, request.POST, request.FILES, instance=file)
         if form.is_valid():
             file = form.save(commit=False)
             file.save()
@@ -99,7 +99,7 @@ def add(request, form_class=FileForm, template_name="files/add.html"):
         return render_to_403()
 
     if request.method == "POST":
-        form = form_class(request.POST, request.FILES)
+        form = form_class(request.user, request.POST, request.FILES)
         if form.is_valid():
             file = form.save(commit=False)
             

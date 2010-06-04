@@ -9,3 +9,7 @@ class FileForm(AuditingBaseForm):
         fields = (
         'file',
         )
+
+    def __init__(self, user=None, *args, **kwargs): 
+        self.user = user
+        super(FileForm, self).__init__(user, *args, **kwargs)
