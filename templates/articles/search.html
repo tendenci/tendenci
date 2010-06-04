@@ -51,6 +51,7 @@
             <form name="article-delete" method="POST" action="{% url article.delete article.id %}">
                 <input type="hidden" name="action" value="delete">
             </form>
+
 		</div>
 		{% endif %}
 	{% empty %}
@@ -62,7 +63,7 @@
 </div>
 {% endblock %}
 
-{% block body_bottom %}
+{% block extra_body %}
 
 	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript">
