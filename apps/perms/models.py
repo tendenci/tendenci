@@ -18,7 +18,7 @@ class AuditingBaseModel(models.Model):
     
     creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="%(class)s_owner", editable=False)    
+    owner = models.ForeignKey(User, related_name="%(class)s_owner")    
     owner_username = models.CharField(max_length=50)
     status = models.BooleanField(default=True)
     status_detail = models.CharField(max_length=50, choices=STATUS_CHOICES,
