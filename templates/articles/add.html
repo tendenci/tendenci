@@ -16,7 +16,7 @@
     <div class="article-wrap">
     <form action="{% url article.add %}" method="post">
         {{ form.as_p }}
-        <input type="submit" value="Add Article" />
+        <input type="submit" value="Add {{ MODULE_ARTICLES_LABEL }}" />
     </form>
 
     </div>
