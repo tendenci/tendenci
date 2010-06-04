@@ -7,24 +7,33 @@
 	margin: 0 auto 10px 0;
 }
 
-.t .releases-wrap {
+.t ul.files-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.files-nav li {
+	display: inline;
+}
+
+.t .files-wrap {
 	margin-bottom: 20px;
 }
 
-.t .releases-wrap .release-wrap {
+.t .files-wrap .file-wrap {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
 }
 
-.t .releases-wrap .release-wrap h2 {
+.t .files-wrap .file-wrap h2 {
 	width: 85%;
 }
-.t .releases-wrap .release-wrap .content {
+.t .files-wrap .file-wrap .content {
 	margin-bottom: 10px;
 }
-.t .releases-wrap .release-wrap .submitted {
+.t .files-wrap .file-wrap .submitted {
 	background-color: #EEE;
 }
 
@@ -65,15 +74,5 @@
 }
 .t .back-to-search {
 	margin-bottom: 20px;
-}
-
-
-.t ul.releases-nav {
-	margin: 0; padding: 0;
-	list-style-type: none;
-	margin-bottom: 20px;
-}
-.t ul.releases-nav li {
-	display: inline;
 }
 

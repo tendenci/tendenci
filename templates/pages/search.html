@@ -1,26 +1,27 @@
 {% extends "pages/base.html" %}
 {% load pagination_tags %}
+{% load page_tags %}
+{% load base_tags %}
 
 {% block title %}Search Page{% endblock %}
 
-{% block head %}
+{% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/pages.css">
 {% endblock %}
 
 {% block body %}
 
 <div class="t">
-    <h1>Pages Search Page</h1>
-    
-    <div class="back-to-search">
-    	<a href="/">&laquo; Homepage</a>
-        <a href="{% url page.add %}">Add page</a>
-	</div>
+    <h1>{{ MODULE_PAGES_LABEL }} Search</h1>
+
+	{% page_nav request.user %}
 
     {% autopaginate pages 10 %}
 
 	<div class="pages-wrap">
     {% for page in pages %}
+    	{% has_perm user pages.view_article page as can_view %}
+    	{% if can_view %}
 		<div class="page-wrap">
 
 
@@ -38,11 +39,7 @@
                 </div>
 
                 <div class="quick-options">
-                    <ul>
-                        <li><a href="{% url page.print_view page.id %}">Print</a></li>
-                        <li><a href="{% url page.edit page.id %}">Edit</a></li>
-						<li class="delete"><a href="{% url page.delete page.id %}">Delete</a></li>
-                    </ul>
+					{% page_options request.user page %}
                 </div>
 			</div>
 
@@ -59,6 +56,7 @@
             </form>
 
 		</div>
+        {% endif %}
 	{% empty %}
 		<div>0 Results Found</div>
     {% endfor %}
@@ -68,7 +66,7 @@
 </div>
 {% endblock %}
 
-{% block body_bottom %}
+{% block extra_body %}
 
 	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript">

@@ -1,0 +1,129 @@
+{% extends "files/base.html" %}
+{% load pagination_tags %}
+{% load file_tags %}
+{% load base_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/files.css">
+<style type="text/css">
+	.t .file-wrap .icon {
+		float: left;
+		margin-right: 10px;
+	}
+	.t .file-wrap h2 {
+		margin-bottom: 0;
+	}
+	.t .file-wrap .meta {
+		margin-top: 20px;
+	}
+	.t .file-wrap .meta .submitted {
+		padding: 5px;
+	}
+	.t .file-wrap h2 a.broken {
+		text-decoration: line-through;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>Files Search</h1>
+	
+    {% file_nav request.user %}
+
+    {% autopaginate files 10 %}
+	
+	<div class="files-wrap">
+    {% for file in files %}
+    	{% has_perm user files.view_file file as can_view %}
+    	{% if can_view %}
+		<div class="file-wrap">
+			<div class="options">
+
+                <div class="dropdown-options">
+                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <ul>
+                        <li>Review Reports</li>
+                        <li>Optimize Meta Tags</li>
+                        <li>Attach Files</li>
+                        <li>View Revisions</li>
+                        <li>Delete</li>
+                    </ul>
+                </div>
+
+                <div class="quick-options">
+					{% file_options request.user file %} 	       
+                </div>
+			</div>
+
+
+			{% if file.icon %}
+            <div class="icon"><img src="{{ file.icon }}" /></div>
+            {% endif %}
+
+            <h2><a href="{% url file file.id %}">{{ file.basename }}</a></h2>
+
+            {% if file.type == 'image' %}
+            <div class="download"><a href="{% url file file.id 'download' %}">Download this image</a></div>
+            {% endif %}
+
+            {% if file.type == 'pdf' %}
+            <div class="download"><a href="{% url file file.id 'download' %}">Download this PDF</a></div>
+            {% endif %}
+
+            {% if file.type == 'text' %}
+            <div class="download"><a href="{% url file file.id 'download' %}">Download this text file</a></div>
+            {% endif %}
+
+			<div class="meta">
+                <div class="submitted">Updated {{ file.update_dt|date:"D d M Y P" }} by {{ file.creator }}</div>
+            </div>
+
+            <!-- delete-file form -->
+            <form name="file-delete" method="POST" action="{% url file.delete file.id %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+		</div>
+		{% endif %}
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+
+	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// url exists
+			url_exists = function(url){
+				var http = new XMLHttpRequest();
+				http.open('HEAD', url, false);
+				http.send();
+				return http.status!=404;
+			}
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_file = confirm('Permenantly delete file?');	// confirm
+				if(delete_file) $(this).parents('.file-wrap').find('form[name="file-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+
+			// loop through files
+			$('.t .file-wrap h2 a').each(function(){
+				if(!url_exists(this.href)){
+					$(this).addClass('broken');
+				}
+			});
+
+		});
+    </script>
+{% endblock %}

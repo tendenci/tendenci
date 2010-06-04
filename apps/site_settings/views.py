@@ -6,7 +6,6 @@ from base.http import render_to_403
 from site_settings.models import Setting
 from site_settings.forms import build_settings_form
 
-# temporary
 def list(request, scope, scope_category, template_name="site_settings/list.html"):
     if not request.user.has_perm('site_settings.change_setting'):
         return render_to_403()
