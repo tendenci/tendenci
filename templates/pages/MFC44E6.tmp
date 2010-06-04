@@ -12,7 +12,7 @@
 {% block body %}
 
 <div class="t">
-    <h1>{{ MODULE_PAGES_LABEL }} Search</h1>
+    <h1>{{ MODULE_PAGES_LABEL }}</h1>
 
 	{% page_nav request.user %}
 

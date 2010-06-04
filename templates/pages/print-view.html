@@ -1,4 +1,5 @@
 {% extends "pages/base.html" %}
+{% load page_tags %}
 
 {% block title %}Print View Page{% endblock %}
 
@@ -9,9 +10,9 @@
 {% block body %}
 
 <div class="t">
-    <h1>Pages Print View Page</h1>
+    <h1>{{ MODULE_PAGES_LABEL }} Print</h1>
     
-    <div class="back-to-search"><a href="{% url page.search %}">&laquo; Back to pages search</a></div>
+    {% page_nav request.user %}
 
     <div class="page-wrap">
 
@@ -29,11 +30,7 @@
             </div>
 
             <div class="quick-options">
-                <ul>
-                    <li><a href="{% url page.print_view page.id %}">Print</a></li>
-                    <li><a href="{% url page.edit page.id %}">Edit</a></li>
-                    <li><a href="{% url page.delete page.id %}">Delete</a></li>
-                </ul>
+				{% page_options request.user page %}
             </div>
         </div>
 
