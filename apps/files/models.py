@@ -63,5 +63,8 @@ class File(AuditingBaseModel):
         # return image path
         return icons_dir + '/' + icons[self.type()]
 
+    class Meta:
+        permissions = (("view_file","Can view file"),)
+
     def __unicode__(self):
         return self.name
