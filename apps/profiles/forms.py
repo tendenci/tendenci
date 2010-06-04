@@ -141,7 +141,6 @@ class ProfileEditForm(forms.ModelForm):
                   'status', 
                   'status_detail', 
                   'owner',
-                
                 )
         
     def save(self, request, user_edit, *args, **kwargs):

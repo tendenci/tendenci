@@ -61,8 +61,7 @@ def add(request, form_class=ProfileForm, form_class2=UserForm, template_name="pr
     else:
         form = form_class()
         form2 = form_class2()
-        print form
-
+       
     return render_to_response(template_name, {'form':form, 'form2':form2, 'user_this':None}, 
         context_instance=RequestContext(request))
     
