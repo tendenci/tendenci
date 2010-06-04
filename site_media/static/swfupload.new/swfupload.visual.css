@@ -1,11 +1,13 @@
 html, body, form 
 {
+	/*
 	margin: 0;
 	padding: 0;
 	width: 100%;
 
 	font-family: Verdana;
 	font-size: 10pt;
+	*/
 }
 
 .likeParent {

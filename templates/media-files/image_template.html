@@ -1,0 +1,45 @@
+<div class="photo-wrapper">
+    <input type="hidden" name="image-id" value="[[ file.id ]]" />
+    <input type="hidden" name="src-original" value="[[ file.file.url ]]" />
+    <input type="hidden" name="src-thumbnail" value="[[ file.file.url_thumbnail ]]" />
+    <input type="hidden" name="src-medium" value="[[ file.file.url_medium ]]" />
+    <input type="hidden" name="src-large" value="[[ file.file.url_large ]]" />
+    <div class="photo">
+        <img style="width:75px; height:75px;" src="[[ file.file.url_thumbnail ]]" />
+    </div>
+    <div class="info">
+        <div style="width:100%;" class="title">[[ file.name ]]</div>
+        
+        
+        <div class="image-sizes">
+            <input style="width:13px" id="[[ file.id ]]_thumbnail" name="[[ file.id ]]_photo_size" type="radio" value="thumbnail" /><label for="[[ file.id ]]_thumbnail">Thumbnail</label>
+            <input style="width:13px" id="[[ file.id ]]_medium" name="[[ file.id ]]_photo_size" type="radio" value="medium" checked="yes"/><label for="[[ file.id ]]_medium">Medium</label>
+            <input style="width:13px" id="[[ file.id ]]_large" name="[[ file.id ]]_photo_size" type="radio" value="large" /><label for="[[ file.id ]]_large">Large</label>
+            <input style="width:13px" id="[[ file.id ]]_full_size" name="[[ file.id ]]_photo_size" type="radio" value="full-size" /><label for="[[ file.id ]]_full_size">Full Size</label>
+         </div>
+        <div class="image-actions">
+            <a class="insert-btn" onClick="ImageDialog.insert([[ file.id ]]);" href="javascript:;">Insert Image</a>  
+            <a class="delete-btn" onClick="ImageDialog.delete_image([[ file.id ]]);" href="#">Delete Image</a>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+    <div class="options">
+        <table>
+            <tr>
+                <td>Title: </td>
+                <td><input type="text" name="image_title" value="[[ file.name ]]" /></td>
+            </tr>
+            <tr>
+                <td>Alignment: </td>
+                <td>
+                    <select name="image_align">
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
+                    </select>&nbsp;&nbsp;
+                    V-Space: <input style="width:20px" type="text" name="image_vspace" value="3" />
+                    H-Space: <input style="width:20px" type="text" name="image_hspace" value="5" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
