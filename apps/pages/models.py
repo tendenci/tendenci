@@ -1,6 +1,7 @@
 from django.db import models
 
 from base.models import AuditingBase
+from tinymce import models as tinymce_models
 
 class Page(AuditingBase):
 
@@ -8,11 +9,11 @@ class Page(AuditingBase):
     guid = models.TextField(blank=True)
 
     title = models.CharField(max_length=500, blank=True)
-    content = models.TextField(blank=True)
+    content = tinymce_models.HTMLField()
 
     # meta information
-    page_title = models.TextField(blank=True)
-    meta_keywords = models.TextField(blank=True)
+    page_title = models.CharField(max_length=100, blank=True)
+    meta_keywords = models.CharField(max_length=250, blank=True)
     meta_description = models.TextField(blank=True)
 
     update_dt = models.DateTimeField(auto_now=True)
