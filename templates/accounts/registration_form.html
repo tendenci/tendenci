@@ -1,40 +1,21 @@
 {% extends "accounts/base.html" %}
+{% load i18n %}
 
-{% block head %}
- <style type="text/css">
- 	.field-wrapper label{
-        float: left;
-        width: 8em;
-        margin-right: 1em;
-        text-align:right;
-    }
-    .field-wrapper{
-        margin: 5px 0;
-    }
-    .clear-left{
-    	clear:left;
-    }
-    .submitbutton{
-        margin: 1em 0 1em 9em;
-    }
-    .errorlist{
-    	color: red;
-    	list-style: none;
-    	font-size: 0.8em;
-    	margin: 0 0 0 9em;
-    }
- </style>
+{% block title %}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/accounts.css">
 {% endblock %}
 
 {% block body %}
-<h2>Fill out the form below to create your account</h2>
+<h2>{% trans 'Fill out the form below to create your account' %}</h2>
 <form method="post" action="">
 
 <div class="field-wrapper">
 	{% if form.first_name.errors %}
 		{{ form.first_name.errors }}
 	{% endif %}
-	<label for="id_first_name">First Name:</label>
+	<label for="id_first_name">{% trans 'First Name:'%}</label>
 	{{ form.first_name }}
 </div>
 
@@ -42,14 +23,44 @@
 	{% if form.last_name.errors %}
 		{{ form.last_name.errors }}
 	{% endif %}
-	<label for="id_last_name">Last Name:</label>
+	<label for="id_last_name">{% trans 'Last Name:'%}</label>
 	{{ form.last_name }}
 </div>
 
 <div class="field-wrapper">
-	{{ form.email.errors }}
-	<label for="id_email">Email Address:</label>
-	{{ form.email }}
+	{% if form.address.errors %}
+		{{ form.address.errors }}
+	{% endif %}
+	<label for="id_address">{% trans 'Address:'%}</label>
+	{{ form.address }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+	{{ form.city.errors }}
+	<label for="id_city">{% trans 'City:'%}</label>
+	{{ form.city }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+	{{ form.state.errors }}
+	<label for="id_state">{% trans 'State:'%}</label>
+	{{ form.state }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+	{{ form.country.errors }}
+	<label for="id_country">{% trans 'Country:'%}</label>
+	{{ form.country }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+	{{ form.zipcode.errors }}
+	<label for="id_zipcode">{% trans 'Zipcode:'%}</label>
+	{{ form.zipcode }}
 </div>
 <div class="clear-left"></div>
 
@@ -57,8 +68,22 @@
 	{% if form.company.errors %}
 		{{ form.company.errors }}
 	{% endif %}
-	<label for="id_company">Company:</label>
+	<label for="id_company">{% trans 'Company:'%}</label>
 	{{ form.company }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+	{{ form.email.errors }}
+	<label for="id_email">{% trans 'Email Address:'%}</label>
+	{{ form.email }}
+</div>
+<div class="clear-left"></div>
+
+<div class="field-wrapper">
+	{{ form.phone.errors }}
+	<label for="id_phone">{% trans 'Phone:'%}</label>
+	{{ form.phone }}
 </div>
 <div class="clear-left"></div>
 

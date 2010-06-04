@@ -154,12 +154,21 @@ class ProfileEditForm(forms.ModelForm):
     
         
 class UserForm(forms.ModelForm):
+    is_superuser = forms.BooleanField(label=_("Is Admin"), 
+                                      help_text = _("If selected, this user has all permissions without explicitly assigning them."))
     class Meta:
         model = User
-        fields= ('is_superuser', 'groups', 'user_permissions')
+        fields= ('is_superuser', 'user_permissions')
         
 class UserEditForm(forms.ModelForm):
+    is_superuser = forms.BooleanField(label=_("Is Admin"), 
+                                      help_text = _("If selected, this user has all permissions without explicitly assigning them."))
     class Meta:
         model = User
-        fields= ('first_name', 'last_name', 'is_superuser', 'groups', 'user_permissions')
+        fields= ('first_name', 'last_name', 'is_superuser',)
+        
+class UserPermissionForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields= ('is_superuser', 'user_permissions',)
         

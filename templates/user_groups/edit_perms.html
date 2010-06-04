@@ -1,0 +1,55 @@
+{% extends "user_groups/base.html" %}
+{% load user_group_tags %}
+
+{% block title %}Edit Group Permissions{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/usergroups.css">
+
+<link rel="stylesheet" href="/site_media/static/css/admin/django-admin-widgets.css">
+<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="/site_media/static/js/admin/django-admin.multiselect.js"></script>
+<script type="text/javascript">
+		$(document).ready(function(){
+			jQuery.each($("select[multiple]"), function () {  
+			// "Locations" can be any label you want  
+			 SelectFilter.init(this.id, "Permissions", 0, "/media/");  
+			});
+
+		});
+	    </script>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% user_group_nav request.user %}
+
+<div class="t">
+    <h1>Add/Remove Group Permissions for {{ group.label }}</h1>
+    
+    <div class="quick-options">
+		{% user_group_options request.user group %} 	
+ 	</div>
+
+    <div class="profile-wrap" style="margin-top:1em;">
+    <form action="" method="post">
+	
+	<div class="field-wrapper">
+		{% if form.permissions.errors %}
+			{{ form.permissions.errors }}
+		{% endif %}
+		<label for="id_permissions" style="float:left; padding-right: 1em;"><b>Group Permissions:</b></label>
+		{{ form.permissions }}
+	</div>
+	<div style="clear:left;"></div>
+        <div style="display:block">
+        <input type="submit" value="Save" />
+        </div>
+    </form>
+
+    </div>
+
+</div>
+
+</div>
+{% endblock %}

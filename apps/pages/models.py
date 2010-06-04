@@ -1,8 +1,8 @@
 from django.db import models
 
-from base.models import AuditingBase
+from perms.models import AuditingBaseModel
 
-class Page(AuditingBase):
+class Page(AuditingBaseModel):
 
     # TODO: make unique=True (dependent on migration script)
     guid = models.TextField(blank=True)
