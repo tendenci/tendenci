@@ -1,27 +1,27 @@
-{% extends "articles/base.html" %}
+{% extends "news/base.html" %}
 {% load pagination_tags %}
-{% load article_tags %}
+{% load news_tags %}
 {% load base_tags %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/articles.css">
+<link rel="stylesheet" href="/site_media/static/css/news.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_ARTICLES_LABEL }} Search</h1>
+    <h1>{{ MODULE_NEWS_LABEL }} Search</h1>
 	
-    {% article_nav request.user %}
+    {% news_nav request.user %}
 
-    {% autopaginate articles 10 %}
+    {% autopaginate news 10 %}
 	
-	<div class="articles-wrap">
-    {% for article in articles %}
-    	{% has_perm user articles.view_article article as can_view %}
+	<div class="news-wrap">
+    {% for n in news %}
+    	{% has_perm user news.view_news n as can_view %}
     	{% if can_view %}
-		<div class="article-wrap">
+		<div class="news-wrap">
 			<div class="options">
 
                 <div class="dropdown-options">
@@ -36,22 +36,21 @@
                 </div>
 
                 <div class="quick-options">
-					{% article_options request.user article %} 	       
+					{% news_options request.user n %} 	       
                 </div>
 			</div>
 
 
-            <h2><a href="{% url article article.id %}">{{ article.headline }}</a></h2>
-            <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
+            <h2><a href="{% url news.view n.id %}">{{ n.headline }}</a></h2>
+            <div class="content">{{ n.body|striptags|truncatewords:20 }}</div>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
+            	<div class="submitted">Submitted on {{ n.create_dt|date:"D d M Y P" }} by {{ n.creator }}</div>
             </div>
 
             <!-- delete-article form -->
-            <form name="article-delete" method="POST" action="{% url article.delete article.id %}">
+            <form name="news-delete" method="POST" action="{% url news.delete n.id %}">
                 <input type="hidden" name="action" value="delete">
             </form>
-
 		</div>
 		{% endif %}
 	{% empty %}
@@ -63,14 +62,14 @@
 </div>
 {% endblock %}
 
-{% block extra_body %}
+{% block body_bottom %}
     <script type="text/javascript">
 		$(document).ready(function(){
 
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_article = confirm('Permenantly delete {{ MODULE_ARTICLES_LABEL }}?');	// confirm
-				if(delete_article) $(this).parents('.article-wrap').find('form[name="article-delete"]').submit() // delete: if OK
+				var delete_news = confirm('Permenantly delete {{ MODULE_NEWS_LABEL }}?');	// confirm
+				if(delete_news) $(this).parents('.news-wrap').find('form[name="news-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});

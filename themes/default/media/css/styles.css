@@ -1,3 +1,52 @@
 @charset "utf-8";
 /* CSS Document */
 
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #FFF;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+div#content {
+	margin: 0 auto;
+	width: 990px;
+	border: 2px solid #CCC;
+}
+
+div#body {
+	padding: 15px;
+	width: 100%;
+}
+
+div#header {
+	background-color: #940F00;
+	padding: 15px;
+	color: #FFF;
+}
+
+div#header div.logo  {
+	font-size: 3em;
+	font-weight: bold;
+	float: left;
+}
+
+div#header a {
+	text-decoration: none;
+	color: #FFF;
+}
+
+div#header a:hover {
+	text-decoration: underline;
+}
+
+div#header div.login {
+	float: right;
+	padding-top: 30px;
+}
+
+.clear {
+	clear: both;
+}
+
+

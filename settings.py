@@ -147,7 +147,7 @@ INSTALLED_APPS = (
     'perms',
     'profiles',
     'articles',
-    'releases',
+    'news',
     'stories',
     'pages',
     'photos',

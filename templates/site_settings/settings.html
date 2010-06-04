@@ -1,12 +1,15 @@
 {% extends "site_settings/base.html" %}
 
+{% load site_setting_tags %}
+
 {% block title %}Settings{% endblock %}
 
 {% block body %}
+{% settings_nav request.user %}
 
 {% regroup settings by scope_category as settings_list %}
 {% for settings in settings_list %}
-	<h2>{{ settings.grouper }}</h2>
+	<h2 id="id_{{ settings.grouper }}">{{ settings.grouper|capfirst }}</h2>
     <ul>
     	{% for setting in settings.list %}
     		{% if not setting.client_editable %}
