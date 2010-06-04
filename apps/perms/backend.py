@@ -59,16 +59,18 @@ class ObjectPermBackend(object):
         
         # object anonymous and use bits
         if perm_type == 'view':
-            if obj.allow_anonymous_view:
-                return True
-            if user.is_authenticated and obj.allow_user_view:
-                return True
+            if hasattr(obj, "allow_anonymous_view") and hasattr(obj, "allow_user_view"):
+                if obj.allow_anonymous_view:
+                    return True
+                if user.is_authenticated and obj.allow_user_view:
+                    return True
         if perm_type == 'change':
-            if obj.allow_anonymous_edit:
-                return True
-            if user.is_authenticated and obj.allow_user_edit:
-                return True
-        
+            if hasattr(obj, "allow_anonymous_edit") and hasattr(obj, "allow_user_edit"):
+                if obj.allow_anonymous_edit:
+                    return True
+                if user.is_authenticated and obj.allow_user_edit:
+                    return True
+            
         # no anonymous user currently... TODO: create one?   
         if not user.is_authenticated():
             return False
