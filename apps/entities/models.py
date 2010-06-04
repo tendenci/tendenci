@@ -1,8 +1,8 @@
 from django.db import models
 
-from base.models import AuditingBase
+from perms.models import AuditingBaseModel
 
-class Entity(AuditingBase):
+class Entity(AuditingBaseModel):
 
     # TODO: make unique=True (dependent on migration script)
     guid = models.CharField(max_length=50, unique=False, blank=True)
@@ -29,6 +29,6 @@ class Entity(AuditingBase):
         permissions = (("view_entity","Can view entity"),)
         
     def __unicode__(self):
-        return self.headline
+        return self.entity_name
 
 

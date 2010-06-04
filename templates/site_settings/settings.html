@@ -9,7 +9,7 @@
 	<h2>{{ settings.grouper }}</h2>
     <ul>
     	{% for setting in settings.list %}
-    		{% if setting.client_editable %}
+    		{% if not setting.client_editable %}
     			{% if user.is_superuser %}
         			<li><a href="{{ setting.get_absolute_url }}">{{ setting.label }}</a></li>
         		{% endif %}

@@ -1,9 +1,9 @@
 from django.db import models
 
 from timezones.fields import TimeZoneField
-from base.models import AuditingBase
+from perms.models import AuditingBaseModel
 
-class Article(AuditingBase):
+class Article(AuditingBaseModel):
 
     # TODO: make unique=True (dependent on migration script)
     guid = models.CharField(max_length=50, unique=False, blank=True)

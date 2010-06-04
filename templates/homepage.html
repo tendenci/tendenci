@@ -15,11 +15,19 @@
 
 {% block body %}
 	<h1>Admin</h1>
-	<a href="/admin/">Admin Panel</a>
+	<a href="/admin/">Admin Panel</a>&nbsp;&ndash;&nbsp;
+	{% if not user.is_authenticated %}
+		<a href="{% url registration_register %}">Register for an account</a>&nbsp;&ndash;&nbsp;
+	{% endif %}
+	{% if user.is_authenticated %}
+		<a href="{% url auth_logout %}">Log Out ({{user.username}})</a>
+	{% else %}
+		<a href="{% url auth_login %}">Log In</a>
+	{% endif %}
 	<h1>Modules</h1>
 	<ul>
-    	<li class="offline"><a href="javascript:;">Users</a></li>
-    	<li class="offline"><a href="javascript:;">Profiles</a></li>
+    	<li class="online"><a href="{% url profile.index %}">Users</a></li>
+    	<li class="online"><a href="{% url groups %}">Groups</a></li>
     	<li class="offline"><a href="javascript:;">Events</a></li>
     	<li class="online"><a href="{% url articles %}">Articles</a></li>
     	<li class="offline"><a href="javascript:;">Jobs</a></li>
@@ -29,6 +37,7 @@
     	<li class="online"><a href="{% url stories %}">Stories</a></li>
     	<li class="online"><a href="{% url pages %}">Pages</a></li>
      	<li class="online"><a href="{% url entities %}">Entities</a></li>
+     	<li class="online"><a href="{% url settings %}">Settings</a></li>
      	<li class="online"><a href="{% url settings %}">Settings</a></li>
     </ul>
 {% endblock %}

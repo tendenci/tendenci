@@ -4,9 +4,19 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 from timezones.fields import TimeZoneField
-from base.models import AuditingBase
+from perms.models import AuditingBaseModel
 
-class Profile(AuditingBase):
+class ProfileManager(models.Manager):
+    def create_profile(self, user):
+        return self.create(user=user, 
+                           creator_id=user.id, 
+                           creator_username=user.username,
+                           owner_id=user.id, 
+                           owner_username=user.username, 
+                           email=user.email)
+        
+
+class Profile(AuditingBaseModel):
     # relations
     user = models.ForeignKey(User, unique=True, related_name="profile", verbose_name=_('user'))
     
@@ -34,7 +44,7 @@ class Profile(AuditingBase):
     company = models.CharField(_('company') , max_length=100, blank=True)
     position_title = models.CharField(_('position title'), max_length=50, blank=True)
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)
-    sex = models.CharField(_('sex'), max_length=50, choices=(('male', u'Male'),('female', u'Female')))
+    sex = models.CharField(_('sex'), max_length=50, blank=True, choices=(('male', u'Male'),('female', u'Female')))
     address_type = models.CharField(_('address type'), max_length=50, blank=True)
     address = models.CharField(_('address'), max_length=150, blank=True)
     address2 = models.CharField(_('address2'), max_length=100, blank=True)
@@ -77,5 +87,13 @@ class Profile(AuditingBase):
     submit_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     
+    objects = ProfileManager()
+    
     def __unicode__(self):
         return self.user.username
+    
+    def get_absolute_url(self):
+        return ('profile', [self.user.username])
+    
+    class Meta:
+        permissions = (("view_profile","Can view profile"),)

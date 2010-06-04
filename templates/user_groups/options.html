@@ -1,0 +1,11 @@
+{% load base_tags %}
+<ul>	
+    {% has_perm user user_groups.change_group group as can_edit %}
+    {% if can_edit %} 
+    	<li><a href="{% url group.edit group.slug %}">Edit</a></li>
+    	<li><a href="{% url group.edit_perms group.id %}">Permissions</a></li>
+    	<li><a href="{% url group.adduser group.slug %}">Add New Member</a></li>
+    {% endif %}
+    
+    
+</ul>
