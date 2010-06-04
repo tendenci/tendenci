@@ -203,7 +203,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                 request.user.message_set.create(message=_("Successfully added photo set!") + '')
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))
     else:
-        photoset_form = form_class()
+        photoset_form = form_class(request.user)
 
     return render_to_response(template_name, {
         "photoset_form": photoset_form,
@@ -227,7 +227,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
                 
                 return HttpResponseRedirect(reverse('photoset_latest',))
     else:
-        photoset_form = form_class(instance=photo_set)
+        photoset_form = form_class(request.user, instance=photo_set)
 
     return render_to_response(template_name, {
         "photoset_form": photoset_form,

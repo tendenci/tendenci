@@ -32,7 +32,7 @@ class PhotoSet(models.Model):
     class Meta:
         verbose_name = _('photo set')
         verbose_name_plural = _('photo sets')
-        permissions = (('view_photoset','Can view photo set'),)
+        permissions = (("view_photoset","Can view photoset"),)
 
     def get_absolute_url(self):
         return ("photoset_details", [self.pk])
@@ -76,7 +76,7 @@ class Image(ImageModel):
     tags = TagField()
 
     class Meta:
-        permissions = (('view_image','Can view image'),)
+        permissions = (("view_photo","Can view photo"),)
 
     def save(self, *args, **kwargs):
         super(Image, self).save(*args, **kwargs)       
@@ -134,7 +134,7 @@ class Image(ImageModel):
         images = images.order_by('date_added')
         try: return Image.objects.get(id=max(images))
         except ValueError: return None
-        
+
     def __unicode__(self):
         return self.title
 
@@ -151,6 +151,7 @@ class Pool(models.Model):
 
     class Meta:
         # Enforce unique associations per object
+        permissions = (("view_photopool","Can view photopool"),)
         unique_together = (('photo', 'content_type', 'object_id'),)
         verbose_name = _('pool')
         verbose_name_plural = _('pools')
