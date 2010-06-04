@@ -17,7 +17,7 @@ def index(request, id=None, template_name="articles/view.html"):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
-        raise render_to_403()
+        return render_to_403()
 
 def search(request, template_name="articles/search.html"):
     articles = Article.objects.all()
@@ -31,7 +31,7 @@ def print_view(request, id, template_name="articles/print-view.html"):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
-        raise render_to_403()
+        return render_to_403()
     
 @login_required
 def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"):
@@ -62,7 +62,7 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
         return render_to_response(template_name, {'article': article, 'form':form}, 
             context_instance=RequestContext(request))
     else:
-        raise render_to_403()
+        return render_to_403()
 
 @login_required
 def add(request, form_class=ArticleForm, template_name="articles/add.html"):
@@ -93,7 +93,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
         return render_to_response(template_name, {'form':form}, 
             context_instance=RequestContext(request))
     else:
-        raise render_to_403()
+        return render_to_403()
     
 @login_required
 def delete(request, id, template_name="articles/delete.html"):
@@ -107,4 +107,4 @@ def delete(request, id, template_name="articles/delete.html"):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
-        raise render_to_403()
+        return render_to_403()

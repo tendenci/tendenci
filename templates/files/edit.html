@@ -1,0 +1,26 @@
+{% extends "files/base.html" %}
+{% load file_tags %}
+
+{% block title %}{{ block.super }}Edit{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/files.css">
+<script type="text/javascript" src="/site_media/static/tinymce/tiny_mce.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>Edit File</h1>
+    
+    {% file_nav request.user %}
+
+    <div class="file-wrap">
+    <form action="{% url file.edit file.id %}" method="post" enctype="multipart/form-data">
+        {{ form.as_p }}
+        <input type="submit" value="Save changes" />
+    </form>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "news/base.html" %}
+{% load news_tags %}
+
+{% block title %}{{ block.super }}{{ news.headline }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/news.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% news_nav request.user %}
+
+    <div class="news-wrap">
+
+        <div class="options">
+
+            <div class="dropdown-options">
+                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                <ul>
+                    <li>Review Reports</li>
+                    <li>Optimize Meta Tags</li>
+                    <li>Attach Files</li>
+                    <li>View Revisions</li>
+                    <li>Delete</li>
+                </ul>
+            </div>
+
+            <div class="quick-options">
+               {% news_options request.user news %}
+            </div>
+        </div>
+
+
+        <h2>{{ news.headline }}</h2>
+        <div class="content">{{ news.body|safe }}</div>
+        <div class="meta">
+            <div class="submitted">Submitted on {{ news.create_dt|date:"D d M Y P" }} by {{ news.creator }}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

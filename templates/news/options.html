@@ -1,0 +1,14 @@
+{% load base_tags %}
+<ul>	
+    <li><a href="{% url news.print_view news.id %}">Print</a></li>
+    
+    {% has_perm user news.change_news news as can_edit %}
+    {% if can_edit %} 
+    	<li><a href="{% url news.edit news.id %}">Edit</a></li>
+    {% endif %}
+    
+    {% has_perm user news.delete_news news as can_delete %}
+    {% if can_delete %} 
+	<li class="delete"><a href="{% url news.delete news.id %}">Delete</a></li>
+	{% endif %}
+</ul>
