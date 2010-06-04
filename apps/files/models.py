@@ -1,10 +1,10 @@
 import os, uuid
 from django.db import models
 from django.conf import settings
-from base.models import AuditingBase
+from perms.models import AuditingBaseModel
 from django.contrib.contenttypes.models import ContentType
 
-class File(AuditingBase):
+class File(AuditingBaseModel):
     file = models.FileField(upload_to='files')
     guid = models.CharField(max_length=200, default=uuid.uuid1)
     name = models.CharField(max_length=200, blank=True)
