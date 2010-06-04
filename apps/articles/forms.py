@@ -1,5 +1,7 @@
 from django import forms
+
 from articles.models import Article
+from tinymce.widgets import TinyMCE
 
 class ArticleForm(forms.ModelForm):
     class Meta:
@@ -36,6 +38,13 @@ class ArticleForm(forms.ModelForm):
         super(ArticleForm, self).__init__(*args, **kwargs)
 
 class ArticleEditForm(forms.ModelForm):
+
+    body = forms.CharField(required=False, max_length=10000, 
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Article._meta.app_label, 
+        'storme_model':Article._meta.module_name.lower()}))
+
+
     class Meta:
         model = Article
         fields = (
@@ -66,6 +75,13 @@ class ArticleEditForm(forms.ModelForm):
         'status_detail',
         )
       
+#    def __init__(self, user=None, *args, **kwargs):
+#        self.user = user 
+#        super(ArticleEditForm, self).__init__(*args, **kwargs)
+
     def __init__(self, user=None, *args, **kwargs):
-        self.user = user 
+        self.user = user
         super(ArticleEditForm, self).__init__(*args, **kwargs)
+
+        if self.instance.id: self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else: self.fields['body'].widget.mce_attrs['app_instance_id'] = "0"
