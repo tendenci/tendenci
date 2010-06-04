@@ -1,0 +1,36 @@
+{% extends "site_base.html" %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+	.offline a {
+		color: #DDD;
+	}
+	.online a {
+		color: #551A8B;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+	{% if user.is_staff %}
+	<h2>Admin</h2>
+	<a href="/admin/">Admin Panel (Developer only)</a>
+    {% endif %}
+	<h3>Modules</h3>
+	<ul>
+    	<li class="online"><a href="{% url profile.index %}">Users</a></li>
+    	<li class="online"><a href="{% url groups %}">Groups</a></li>
+    	<li class="offline"><a href="javascript:;">Events</a></li>
+    	<li class="online"><a href="{% url articles %}">{{ MODULE_ARTICLES_LABEL }}</a></li>
+    	<li class="offline"><a href="javascript:;">Jobs</a></li>
+    	<li class="online"><a href="{% url releases %}">Releases</a></li>
+    	<li class="offline"><a href="javascript:;">Directories</a></li>
+        <li class="online"><a href="{% url photoset_latest %}">Photo sets</a></li>
+    	<li class="online"><a href="{% url stories %}">Stories</a></li>
+    	<li class="online"><a href="{% url pages %}">Pages</a></li>
+     	<li class="online"><a href="{% url entities %}">Entities</a></li>
+     	<li class="online"><a href="{% url settings %}">Settings</a></li>
+    </ul>
+{% endblock %}
