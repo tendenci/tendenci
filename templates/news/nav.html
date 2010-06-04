@@ -1,0 +1,18 @@
+{% load base_tags %}
+
+<div class="back-to-search">
+    <a href="/">Homepage</a>
+    {% has_perm user news.add_news as can_add %}
+    
+    {% url news.search as search_url %}
+    {% if not search_url in request.path %}
+    	<a href="{{ search_url }}">Search {{ MODULE_NEWS_LABEL|lower }}</a>
+    {% endif %}
+    
+    {% url news.add as add_url %}
+    {% if not add_url in request.path %}
+    {% if can_add %}
+	    <a href="{{ add_url }}">Add {{ MODULE_NEWS_LABEL|lower }}</a>
+    {% endif %}
+    {% endif %}
+</div>
