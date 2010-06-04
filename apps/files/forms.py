@@ -1,14 +1,9 @@
 from django import forms
+
 from files.models import File
+from perms.forms import AuditingBaseForm
 
-class FileAddForm(forms.ModelForm):
-    class Meta:
-        model = File
-        fields = (
-        'file',
-        )
-
-class FileEditForm(forms.ModelForm):
+class FileForm(AuditingBaseForm):
     class Meta:
         model = File
         fields = (
