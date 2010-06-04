@@ -1,10 +1,9 @@
-from django.forms import ModelForm
 from stories.models import Story
+from perms.forms import AuditingBaseForm
 
-class StoryForm(ModelForm):
+class StoryForm(AuditingBaseForm):
     class Meta:
         model = Story
-        exclude = ('guid',)
         fields = (
         'title',
         'content',
@@ -12,9 +11,11 @@ class StoryForm(ModelForm):
         'start_dt',
         'end_dt',
         'ncsortorder',
-
         'syndicate',
-        'owner',
         'status',
         'status_detail',
         )
+      
+    def __init__(self, user=None, *args, **kwargs): 
+        self.user = user
+        super(StoryForm, self).__init__(user, *args, **kwargs)

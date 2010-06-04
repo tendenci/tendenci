@@ -2,6 +2,17 @@
 
 <div class="back-to-search">
     <a href="/">Homepage</a>
-    <a href="{% url file.search %}">Search files</a>
-    <a href="{% url file.add %}">Add file</a>
+    {% has_perm user files.add_file as can_add %}
+    
+    {% url file.search as search_url %}
+    {% if not search_url in request.path %}
+    	<a href="{{ search_url }}">Search {{ MODULE_MEDIA_LABEL|lower }}</a>
+    {% endif %}
+    
+    {% url file.add as add_url %}
+    {% if not add_url in request.path %}
+    {% if can_add %}
+	    <a href="{{ add_url }}">Add {{ MODULE_MEDIA_LABEL|lower }}</a>
+    {% endif %}
+    {% endif %}
 </div>

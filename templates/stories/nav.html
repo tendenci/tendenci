@@ -1,0 +1,18 @@
+{% load base_tags %}
+
+<div class="back-to-search">
+    <a href="/">Homepage</a>&nbsp;
+    {% has_perm user stories.add_story as can_add %}
+    
+    {% url story.search as search_url %}
+    {% if not search_url in request.path %}
+    	<a href="{{ search_url }}">Search {{ MODULE_STORIES_LABEL|lower }}</a>&nbsp;
+    {% endif %}
+    
+    {% url story.add as add_url %}
+    {% if not add_url in request.path %}
+    {% if can_add %}
+	    <a href="{{ add_url }}">Add {{ MODULE_STORIES_LABEL|lower }}</a>
+    {% endif %}
+    {% endif %}
+</div>
