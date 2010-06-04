@@ -76,17 +76,17 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
             # remove all permissions on the object
             ObjectPermission.objects.remove_all(file)
             
-            # assign new permissions
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms:
-                ObjectPermission.objects.assign(user_perms, file)               
+#            # assign new permissions
+#            user_perms = form.cleaned_data['user_perms']
+#            if user_perms:
+#                ObjectPermission.objects.assign(user_perms, file)               
     
             # assign creator permissions
             ObjectPermission.objects.assign(file.creator, file) 
                                                           
             return HttpResponseRedirect(reverse('file', args=[file.pk]))             
     else:
-        form = form_class(request.user, instance=file)
+        form = form_class(instance=file)
     
     return render_to_response(template_name, {'file': file, 'form':form}, 
         context_instance=RequestContext(request))
@@ -111,16 +111,16 @@ def add(request, form_class=FileForm, template_name="files/add.html"):
             
             file.save()
 
-            # assign permissions for selected users
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms: ObjectPermission.objects.assign(user_perms, file)
+#            # assign permissions for selected users
+#            user_perms = form.cleaned_data['user_perms']
+#            if user_perms: ObjectPermission.objects.assign(user_perms, file)
             
             # assign creator permissions
             ObjectPermission.objects.assign(file.creator, file) 
             
             return HttpResponseRedirect(reverse('file', args=[file.pk]))
     else:
-        form = form_class(request.user)
+        form = form_class()
        
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
