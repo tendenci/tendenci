@@ -1,30 +1,28 @@
-
-
 .t {
-	width: 60%;
+	width: 90%;
 }
 .t h2 {
 	margin: 0 auto 10px 0;
 }
 
-.t .releases-wrap {
+.t .news-wrap {
 	margin-bottom: 20px;
 }
 
-.t .releases-wrap .release-wrap {
+.t .news-wrap .news-wrap {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
 }
 
-.t .releases-wrap .release-wrap h2 {
+.t .news-wrap .news-wrap h2 {
 	width: 85%;
 }
-.t .releases-wrap .release-wrap .content {
+.t .news-wrap .news-wrap .content {
 	margin-bottom: 10px;
 }
-.t .releases-wrap .release-wrap .submitted {
+.t .news-wrap .news-wrap .submitted {
 	background-color: #EEE;
 }
 
@@ -68,12 +66,12 @@
 }
 
 
-.t ul.releases-nav {
+.t ul.news-nav {
 	margin: 0; padding: 0;
 	list-style-type: none;
 	margin-bottom: 20px;
 }
-.t ul.releases-nav li {
+.t ul.news-nav li {
 	display: inline;
 }
 

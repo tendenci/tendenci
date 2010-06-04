@@ -3,7 +3,7 @@ from django.db import models
 from timezones.fields import TimeZoneField
 from perms.models import AuditingBaseModel
 
-class Release(AuditingBaseModel):
+class News(AuditingBaseModel):
     guid = models.CharField(max_length=50, unique=False, blank=True)
 
     timezone = TimeZoneField()
