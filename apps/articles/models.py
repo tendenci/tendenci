@@ -2,6 +2,7 @@ from django.db import models
 
 from timezones.fields import TimeZoneField
 from base.models import AuditingBase
+from tinymce import models as tinymce_models
 
 class Article(AuditingBase):
 
@@ -10,7 +11,7 @@ class Article(AuditingBase):
     timezone = TimeZoneField()
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
-    body = models.TextField(blank=True)
+    body = tinymce_models.HTMLField()
     source = models.CharField(max_length=300, blank=True)
 
     # creator first name and lastname
