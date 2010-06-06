@@ -15,11 +15,11 @@
 			<li class="divider">
 			 <a href="{% url profile.edit_groups  user_this.id %}" class="usergroups">Edit Groups</a>
 			</li>
-			
+			{% if profile.is_admin %} 
 			<li>
 			<a href="{% url profile.edit_perms user_this.id %}" class="permissions">Permissions</a>
 			</li>
-			
+			{%endif%}
 			<li>               
 			 <a href="{% url auth_password_change %}" class="changepassword">Change Password</a>
 			</li> 

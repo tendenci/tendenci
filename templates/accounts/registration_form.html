@@ -11,7 +11,7 @@
 <h2>{% trans 'Fill out the form below to create your account' %}</h2>
 <form method="post" action="">
 
-<div class="field-wrapper">
+<div class="field-wrapper required">
 	{% if form.first_name.errors %}
 		{{ form.first_name.errors }}
 	{% endif %}
@@ -19,7 +19,7 @@
 	{{ form.first_name }}
 </div>
 
-<div class="field-wrapper">
+<div class="field-wrapper required">
 	{% if form.last_name.errors %}
 		{{ form.last_name.errors }}
 	{% endif %}
@@ -73,7 +73,7 @@
 </div>
 <div class="clear-left"></div>
 
-<div class="field-wrapper">
+<div class="field-wrapper required">
 	{{ form.email.errors }}
 	<label for="id_email">{% trans 'Email Address:'%}</label>
 	{{ form.email }}
@@ -88,7 +88,7 @@
 <div class="clear-left"></div>
 
 <p></p>
-<div class="field-wrapper">
+<div class="field-wrapper required">
 	{% if form.username.errors %}
 		{{ form.username.errors }}
 	{% endif %}
@@ -97,7 +97,7 @@
 </div>
 <div class="clear-left"></div>
 
-<div class="field-wrapper">
+<div class="field-wrapper required">
 	{{ form.password1.errors }}
 	<label for="id_password1">Password:</label>
 	{{ form.password1 }}
