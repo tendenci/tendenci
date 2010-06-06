@@ -1,20 +1,14 @@
-{% load i18n %}
+{% extends "site_base.html" %}
 {% load profile_tags %}
 
-<!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-	<meta charset="UTF-8">
-	<title>Users {% block title %}{% endblock %}</title>
+{% block title %}{{ MODULE_ARTICLES_LABEL }} - {% endblock %}
+
 {% block extra_head %}
 <link href="/site_media/static/css/tabs.css" rel="stylesheet" type="text/css">
 {% endblock %}
-</head>
-<body>
 
 {% block body %}
 {% users_nav request.user user_this %}
 {% endblock %}
+
 {% block extra_body %}{% endblock %}
-</body>
-</html>
