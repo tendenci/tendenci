@@ -1,1 +1,1 @@
-Please click here to activate your account: http://{{ site.domain }}/accounts/activate/{{ activation_key }}/. There are {{ expiration_days  }} days left to do it.
+Please click here to activate your account: {{ SITE_GLOBAL_SITEURL }}/accounts/activate/{{ activation_key }}/. There are {{ expiration_days  }} days left to do it.
