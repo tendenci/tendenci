@@ -40,7 +40,7 @@
 	    <div class="clear-right"></div>
 	    <div class="profile-left">
 	    <div class="profile-icon"><a href="{% url avatar_change %}">{% avatar user_this 128 %}</a></div>
-	    <small><a href="{% url avatar_change %}">Change Picture</a></small>
+	    <small><a href="{% url profile.change_avatar  user_this.id %}">Change Picture</a></small>
 	    </div>
 	    <div class="profile-right">
 	    	<div class="contact-info profile-section">
