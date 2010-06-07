@@ -52,7 +52,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 .selector .selector-available h2 {
-    background: white url(/media/img/admin/nav-bg.gif) bottom left repeat-x;
+    background: white url(/site_media/static/images/admin/nav-bg.gif) bottom left repeat-x;
     color: #666;
 }
 
@@ -79,7 +79,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     float: left;
     width: 22px;
     height: 50px;
-    background: url(/media/img/admin/chooser-bg.gif) top center no-repeat;
+    background: url(/site_media/static/images/admin/chooser-bg.gif) top center no-repeat;
     margin: 8em 3px 0 3px;
     padding: 0;
 }
@@ -103,12 +103,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 }
 
 .selector-add {
-    background: url(/media/img/admin/selector-add.gif) top center no-repeat;
+    background: url(/site_media/static/images/admin/selector-add.gif) top center no-repeat;
     margin-bottom: 2px;
 }
 
 .selector-remove {
-    background: url(/media/img/admin/selector-remove.gif) top center no-repeat;
+    background: url(/site_media/static/images/admin/selector-remove.gif) top center no-repeat;
 }
 
 a.selector-chooseall, a.selector-clearall {
@@ -128,11 +128,11 @@ a.selector-chooseall:hover, a.selector-clearall:hover {
 
 a.selector-chooseall {
     width: 7em;
-    background: url(/media/img/admin/selector-addall.gif) left center no-repeat;
+    background: url(/site_media/static/images/admin/selector-addall.gif) left center no-repeat;
 }
 
 a.selector-clearall {
-    background: url(/media/img/admin/selector-removeall.gif) left center no-repeat;
+    background: url(/site_media/static/images/admin/selector-removeall.gif) left center no-repeat;
 }
 
 
@@ -164,7 +164,7 @@ a.selector-clearall {
     height: 22px;
     width: 50px;
     margin: 0 0 3px 40%;
-    background: url(/media/img/admin/chooser_stacked-bg.gif) top center no-repeat;
+    background: url(/site_media/static/images/admin/chooser_stacked-bg.gif) top center no-repeat;
 }
 
 .stacked .selector-chooser li {
@@ -177,11 +177,11 @@ a.selector-clearall {
 }
 
 .stacked .selector-add {
-    background-image: url(/media/img/admin/selector_stacked-add.gif);
+    background-image: url(/site_media/static/images/admin/selector_stacked-add.gif);
 }
 
 .stacked .selector-remove {
-    background-image: url(/media/img/admin/selector_stacked-remove.gif);
+    background-image: url(/site_media/static/images/admin/selector_stacked-remove.gif);
 }
 
 
@@ -268,7 +268,7 @@ p.file-upload {
     color: #666;
     padding: 2px 3px;
     text-align: center;
-    background: #e1e1e1 url(/media/img/admin/nav-bg.gif) 0 50% repeat-x;
+    background: #e1e1e1 url(/site_media/static/images/admin/nav-bg.gif) 0 50% repeat-x;
     border-bottom: 1px solid #ddd;
 }
 
@@ -336,7 +336,7 @@ p.file-upload {
     position: absolute;
     font-weight: bold;
     font-size: 12px;
-    background: #C9DBED url(/media/img/admin/default-bg.gif) bottom left repeat-x;
+    background: #C9DBED url(/site_media/static/images/admin/default-bg.gif) bottom left repeat-x;
     padding: 1px 4px 2px 4px;
     color: white;
 }
@@ -359,7 +359,7 @@ p.file-upload {
     margin: 0 !important;
     padding: 0;
     font-size: 10px;
-    background: #e1e1e1 url(/media/img/admin/nav-bg.gif) 0 50% repeat-x;
+    background: #e1e1e1 url(/site_media/static/images/admin/nav-bg.gif) 0 50% repeat-x;
     border-top: 1px solid #ddd;
 }
 
@@ -396,7 +396,7 @@ ul.orderer li {
     border-width: 0 1px 1px 0;
     white-space: nowrap;
     overflow: hidden;
-    background: #e2e2e2 url(/media/img/admin/nav-bg-grabber.gif) repeat-y;
+    background: #e2e2e2 url(/site_media/static/images/admin/nav-bg-grabber.gif) repeat-y;
 }
 
 ul.orderer li:hover {
@@ -428,7 +428,7 @@ ul.orderer li.selected {
 }
 
 ul.orderer li.deleted {
-    background: #bbb url(/media/img/admin/deleted-overlay.gif);
+    background: #bbb url(/site_media/static/images/admin/deleted-overlay.gif);
 }
 
 ul.orderer li.deleted a:link, ul.orderer li.deleted a:visited {
@@ -436,7 +436,7 @@ ul.orderer li.deleted a:link, ul.orderer li.deleted a:visited {
 }
 
 ul.orderer li.deleted .inline-deletelink {
-    background-image: url(/media/img/admin/inline-restore.png);
+    background-image: url(/site_media/static/images/admin/inline-restore.png);
 }
 
 ul.orderer li.deleted:hover, ul.orderer li.deleted a.selector:hover {
@@ -448,7 +448,7 @@ ul.orderer li.deleted:hover, ul.orderer li.deleted a.selector:hover {
 .inline-deletelink {
     display: block;
     text-indent: -9999px;
-    background: transparent url(/media/img/admin/inline-delete.png) no-repeat;
+    background: transparent url(/site_media/static/images/admin/inline-delete.png) no-repeat;
     width: 15px;
     height: 15px;
     margin: 0.4em 0;
@@ -487,11 +487,11 @@ ul.orderer li.deleted:hover, ul.orderer li.deleted a.selector:hover {
 }
 
 .editinline tr.deleted {
-    background: #ddd url(/media/img/admin/deleted-overlay.gif);
+    background: #ddd url(/site_media/static/images/admin/deleted-overlay.gif);
 }
 
 .editinline tr.deleted .inline-deletelink {
-    background-image: url(/media/img/admin/inline-restore.png);
+    background-image: url(/site_media/static/images/admin/inline-restore.png);
 }
 
 .editinline tr.deleted td:hover {
@@ -522,13 +522,13 @@ ul.orderer li.deleted:hover, ul.orderer li.deleted a.selector:hover {
 .editinline-stacked .inline-splitter {
     float: left;
     width: 9px;
-    background: #f8f8f8 url(/media/img/admin/inline-splitter-bg.gif) 50% 50% no-repeat;
+    background: #f8f8f8 url(/site_media/static/images/admin/inline-splitter-bg.gif) 50% 50% no-repeat;
     border-right: 1px solid #ccc;
 }
 
 .editinline-stacked .controls {
     clear: both;
-    background: #e1e1e1 url(/media/img/admin/nav-bg.gif) top left repeat-x;
+    background: #e1e1e1 url(/site_media/static/images/admin/nav-bg.gif) top left repeat-x;
     padding: 3px 4px;
     font-size: 11px;
     border-top: 1px solid #ddd;

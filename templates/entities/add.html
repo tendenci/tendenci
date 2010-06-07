@@ -1,22 +1,22 @@
 {% extends "entities/base.html" %}
+{% load entity_tags %}
 
-{% block title %}Add Page{% endblock %}
+{% block title %}{{ block.super }}Add{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/entities.css">
 {% endblock %}
 
 {% block body %}
-
 <div class="t">
-    <h1>Entities Add Page</h1>
+    <h1>{{ MODULE_ENTITIES_LABEL }} Add</h1>
     
-    <div class="back-to-search"><a href="{% url entity.search %}">&laquo; Back to entities search</a></div>
+    {% entity_nav request.user %}
 
     <div class="entities-wrap">
     <form action="{% url entity.add %}" method="post">
         {{ form.as_p }}
-        <input type="submit" value="Add Entity" />
+        <input type="submit" value="Add {{ MODULE_ENTITIES_LABEL }}" />
     </form>
 
     </div>

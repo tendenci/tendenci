@@ -1,29 +1,27 @@
 {% extends "entities/base.html" %}
 {% load pagination_tags %}
+{% load entity_tags %}
+{% load base_tags %}
 
-{% block title %}Search Page{% endblock %}
+{% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/entities.css">
 {% endblock %}
 
 {% block body %}
-
 <div class="t">
-    <h1>Entities Search Page</h1>
-
-    <div class="back-to-search">
-    	<a href="/">&laquo; Homepage</a>
-        <a href="{% url entity.add %}">Add entity</a>
-	</div>
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_ENTITIES_LABEL }} Search</h1>
+	
+    {% entity_nav request.user %}
 
     {% autopaginate entities 10 %}
-
+	
 	<div class="entities-wrap">
     {% for entity in entities %}
+    	{% has_perm user entities.view_entity entity as can_view %}
+    	{% if can_view %}
 		<div class="entity-wrap">
-
-
 			<div class="options">
 
                 <div class="dropdown-options">
@@ -38,17 +36,13 @@
                 </div>
 
                 <div class="quick-options">
-                    <ul>
-                        <li><a href="{% url entity.print_view entity.id %}">Print</a></li>
-                        <li><a href="{% url entity.edit entity.id %}">Edit</a></li>
-						<li class="delete"><a href="{% url entity.delete entity.id %}">Delete</a></li>
-                    </ul>
+					{% entity_options request.user entity %} 	       
                 </div>
 			</div>
 
 
             <h2><a href="{% url entity entity.id %}">{{ entity.entity_name }}</a></h2>
-            <div class="content">{{ entity.summary|striptags|truncatewords:20 }}</div>
+            <div class="content">{{ entity.entity_name|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ entity.create_dt|date:"D d M Y P" }} by {{ entity.creator }}</div>
             </div>
@@ -59,6 +53,7 @@
             </form>
 
 		</div>
+		{% endif %}
 	{% empty %}
 		<div>0 Results Found</div>
     {% endfor %}
@@ -69,14 +64,12 @@
 {% endblock %}
 
 {% block extra_body %}
-
-	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
 
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_entity = confirm('Permenantly delete entity?');	// confirm
+				var delete_entity = confirm('Permenantly delete {{ MODULE_ENTITIES_LABEL }}?');	// confirm
 				if(delete_entity) $(this).parents('.entity-wrap').find('form[name="entity-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});

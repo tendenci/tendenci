@@ -5,7 +5,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from base.http import render_to_403
+from base.http import Http403
 from pages.models import Page
 from pages.forms import PageForm
 from perms.models import ObjectPermission
@@ -18,7 +18,7 @@ def index(request, id=None, template_name="pages/view.html"):
         return render_to_response(template_name, {'page': page}, 
             context_instance=RequestContext(request))
     else:
-        return render_to_403()
+        raise Http403
 
 def search(request, template_name="pages/search.html"):
     pages = Page.objects.all()
@@ -32,7 +32,7 @@ def print_view(request, id, template_name="pages/print-view.html"):
         return render_to_response(template_name, {'page': page}, 
             context_instance=RequestContext(request))
     else:
-        return render_to_403()
+        raise Http403
 
 @login_required
 def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
@@ -64,7 +64,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
         return render_to_response(template_name, {'page': page, 'form':form}, 
             context_instance=RequestContext(request))
     else:
-        return render_to_403()
+        raise Http403
 
 @login_required
 def add(request, form_class=PageForm, template_name="pages/add.html"):
@@ -96,7 +96,7 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
         return render_to_response(template_name, {'form':form}, 
             context_instance=RequestContext(request))
     else:
-        return render_to_403()
+        raise Http403
 
 @login_required
 def delete(request, id, template_name="pages/delete.html"):
@@ -110,4 +110,4 @@ def delete(request, id, template_name="pages/delete.html"):
         return render_to_response(template_name, {'page': page}, 
             context_instance=RequestContext(request))
     else:
-        return render_to_403()
+        raise Http403

@@ -20,6 +20,9 @@
 	.clear-right{
 		clear: right;
 	}
+	.clear-both{
+		clear: both;
+	}
 	.t{
 		width: 650px;
 	}
@@ -30,14 +33,14 @@
 {% block body %}
 <div class="t">
 {{ block.super }}
-
+	{% users_nav request.user user_this %}
     <div id="userview-profile">
     {% users_options request.user user_this %}
 	    <h1>{{ user_this.get_full_name }}({{ user_this.username }})</h1>
 	    <div class="clear-right"></div>
 	    <div class="profile-left">
 	    <div class="profile-icon"><a href="{% url avatar_change %}">{% avatar user_this 128 %}</a></div>
-	    <small><a href="{% url avatar_change %}">Change Picture</a></small>
+	    <small><a href="{% url profile.change_avatar  user_this.id %}">Change Picture</a></small>
 	    </div>
 	    <div class="profile-right">
 	    	<div class="contact-info profile-section">
@@ -76,7 +79,7 @@
 			    {%endif%}
 			    
 			  </table>
-			  
+			</div>  
 			  <div class="profile-addresses profile-section">
 			  <h2>Addresses</h2>
 		    	<div class="user-address">
@@ -128,7 +131,9 @@
 			    
 			  </table>
 			 </div>
+			 
 		</div>
+	<div class="clear-both"></div>
     </div>
 
 </div>

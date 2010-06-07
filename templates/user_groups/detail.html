@@ -1,4 +1,5 @@
 {% extends "user_groups/base.html" %}
+{% load base_tags %}
 {% load user_group_tags %}
 
 {% block title %}{{ group.name }} - Group{% endblock %}
@@ -36,22 +37,29 @@ This group currently has {{ count_members  }} member{{ count_members|pluralize }
 <th width="30%" align="left" class="thead">Role</th>
 <th width="40%" class="thead">&nbsp;</th>
 </tr>
-
+{% has_perm user user_groups.change_group group as can_edit %}
+{% has_perm user user_groups.delete_group group as can_delete %}
+   
 {% for gm in groupmemberships %}
 	<tr class="group-member-wrap{% cycle ' row1' ' row2' %}">
 	<td>
-      	<a href="{{ member.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }})</a>
+      	<a href="{{ gm.member.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }})</a>
    </td>
    <td>{{ gm.role }}</td>   	
       	
     <td> 
+    {% if can_edit %} 
       	<span class="edit"><a href="{% url group.edituser group.slug gm.member.id %}">Edit</a></span>
+     {% endif %}
+     
+     {% if can_delete %} 
       	<span class="delete"><a href="{% url group.deleteuser group.slug gm.member.id %}">Delete</a></span>
  
      <!-- delete-member form -->
 		<form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">
 			<input type="hidden" name="action" value="delete">
 		</form>
+	{% endif %}
 	</td> 
 	</tr>
 {% endfor %}

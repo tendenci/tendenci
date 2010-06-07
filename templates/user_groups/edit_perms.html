@@ -25,8 +25,8 @@
 {% user_group_nav request.user %}
 
 <div class="t">
-    <h1>Add/Remove Group Permissions for {{ group.label }}</h1>
-    
+    <h1>Add/Remove Permissions</h1>
+    <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
     <div class="quick-options">
 		{% user_group_options request.user group %} 	
  	</div>
