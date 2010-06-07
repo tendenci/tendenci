@@ -1,14 +1,3 @@
 {% extends "site_base.html" %}
-{% load profile_tags %}
 
-{% block title %}{{ MODULE_ARTICLES_LABEL }} - {% endblock %}
-
-{% block extra_head %}
-<link href="/site_media/static/css/tabs.css" rel="stylesheet" type="text/css">
-{% endblock %}
-
-{% block body %}
-{% users_nav request.user user_this %}
-{% endblock %}
-
-{% block extra_body %}{% endblock %}
+{% block title %}{{ MODULE_USERS_LABEL }} - {% endblock %}

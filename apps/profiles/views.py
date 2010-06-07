@@ -24,7 +24,7 @@ if 'friends' in settings.INSTALLED_APPS:
     from friends.models import Friendship
 
 from profiles.models import Profile
-from profiles.forms import ProfileForm, ProfileEditForm, UserForm, UserEditForm, UserPermissionForm
+from profiles.forms import ProfileForm, UserForm, UserEditForm, UserPermissionForm
 
 from base.http import render_to_403
 
