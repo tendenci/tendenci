@@ -252,3 +252,85 @@
 }
 
 
+
+.t {
+	width: 60%;
+	margin-top: 1em;
+}
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t ul.profiles-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.profiles-nav li {
+	display: inline;
+}
+
+.t .profiles-wrap {
+	margin-bottom: 20px;
+}
+
+.t .profiles-wrap .profile-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .profiles-wrap .profile-wrap h2 {
+	width: 85%;
+}
+.t .profiles-wrap .profile-wrap .content {
+	margin-bottom: 10px;
+}
+.t .profiles-wrap .profile-wrap .submitted {
+	background-color: #EEE;
+}
+
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	background-color: #EEE;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+.deleted{
+	color: red;
+}
+
+
