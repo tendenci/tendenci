@@ -12,8 +12,9 @@ from django.conf import settings
 # local
 from photologue.models import *
 from tagging.fields import TagField
+from perms.models import AuditingBaseModel
 
-class PhotoSet(models.Model):
+class PhotoSet(AuditingBaseModel):
     """
     A set of photos
     """
