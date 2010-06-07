@@ -18,6 +18,7 @@
 	<label for="id_first_name">{% trans 'First Name:'%}</label>
 	{{ form.first_name }}
 </div>
+<div class="clear-left"></div>
 
 <div class="field-wrapper required">
 	{% if form.last_name.errors %}
@@ -26,6 +27,7 @@
 	<label for="id_last_name">{% trans 'Last Name:'%}</label>
 	{{ form.last_name }}
 </div>
+<div class="clear-left"></div>
 
 <div class="field-wrapper">
 	{% if form.address.errors %}
