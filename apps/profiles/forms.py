@@ -130,7 +130,7 @@ class ProfileForm(forms.ModelForm):
             new_user.save()
             self.instance.user = new_user
             
-           # if not self.instance.owner:
+            # if not self.instance.owner:
             self.instance.owner = request.user
         else:
             user_edit.email = self.cleaned_data['email']

@@ -1,6 +1,5 @@
 from django import forms
 from registration.forms import RegistrationForm
-from django.utils.translation import ugettext_lazy as _
 from profiles.models import Profile
 from registration.models import RegistrationProfile
 
