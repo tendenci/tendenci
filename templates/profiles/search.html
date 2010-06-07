@@ -1,22 +1,20 @@
 {% extends "profiles/base.html" %}
 {% load pagination_tags %}
+{% load profile_tags %}
 
-{% block title %}Search Page{% endblock %}
+{% block title %}Users Search Page{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
 <link rel="stylesheet" href="/site_media/static/css/profiles.css">
 {% endblock %}
 
 {% block body %}
 {{ block.super }}
 <div class="t">
+{% users_nav request.user user_this %}
     <h1>Users Search</h1>
-
-    <div class="back-to-search">
-    	<a href="/">&laquo; Homepage</a>
-        <a href="{% url profile.add %}">Add user</a>
-	</div>
 
     {% autopaginate users 10 %}
 
@@ -24,41 +22,18 @@
     {% for user in users %}
     	{% with user.get_profile as profile %}
 		<div class="profile-wrap">
-			<div class="options">
-
-                <div class="dropdown-options">
-                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                    <ul>
-                        <li>Review Reports</li>
-                        <li>Optimize Meta Tags</li>
-                        <li>Attach Files</li>
-                        <li>View Revisions</li>
-                        <li>Delete</li>
-                    </ul>
-                </div>
-
-                <div class="quick-options">
-                    <ul>
-                    	{% if not user.is_active %}
-                    		{% if not profile or profile.status_detail == 'deleted' %}
-                    		 <li><a href="{% url profile.edit user.id %}" class="deleted">Deleted</a></li>
-                    		 {% else %}
-                    		 <li><a href="{% url profile.edit user.id %}">Inactive</a></li>
-                    		 {% endif %}
-                    	{% else %}
-                    		 <li><a href="{% url profile.edit user.id %}">Active</a></li>
-                    	{% endif %}
-                        <li><a href="{% url profile.edit user.id %}">Edit</a></li>
-                        {% if user.is_active %}
-							<li class="delete"><a href="{% url profile.delete user.id %}">Delete</a></li>
-						{% endif %}
-                    </ul>
-                </div>
-			</div>
-
-
+			 {% users_options request.user user %}
             <h2><a href="{% url profiles.views.index user.username %}">{{ user.first_name }} {{ user.last_name }} ({{user.email}})</a></h2>
-            <div class="content">{{ profile.body|striptags|truncatewords:20 }}</div>
+           <div class="clear-right"></div>
+           
+            <div class="content">
+            	{% if user.email %}
+            	<b>Email:</b> {{ user.email }}<br />
+            	{% endif %}
+            	{% if profile.company %}
+            	<b>Company:</b> {{ profile.company }}<br />
+            	{% endif %}
+            </div>
 			<div class="meta">
             	<div class="submitted">Added on {{ profile.create_dt|date:"D d M Y P" }} by {{ profile.creator }}</div>
             </div>
@@ -94,4 +69,13 @@
 			});
 		});
     </script>
+    <script type="text/javascript" src="/site_media/static/js/global/dropdown.js"></script>
+<script type="text/javascript">
+var iconrow = new dropdown({
+	container:	'more-options-wrap',
+	trigger:	'more-options-trigger',
+	target:		'more-options-target'
+});
+</script>
+    
 {% endblock %}
