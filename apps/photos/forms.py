@@ -37,7 +37,11 @@ class PhotoSetAddForm(AuditingBaseForm):
 
     class Meta:
         model = PhotoSet
-        exclude = ('author')
+        fields = (
+            'name',
+            'description',
+            'tags',
+        )
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
@@ -48,7 +52,11 @@ class PhotoSetEditForm(AuditingBaseForm):
 
     class Meta:
         model = PhotoSet
-        exclude = ('author', 'update_dt', 'create_dt')
+        fields = (
+            'name',
+            'description',
+            'tags',
+        )
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
