@@ -2,13 +2,13 @@ from django.shortcuts import render_to_response
 from django.http import Http404
 from django.template import RequestContext
 
-from base.http import render_to_403
+from base.http import Http403
 from site_settings.models import Setting
 from site_settings.forms import build_settings_form
 
 def list(request, scope, scope_category, template_name="site_settings/list.html"):
     if not request.user.has_perm('site_settings.change_setting'):
-        return render_to_403()
+        raise Http403
     
     settings = Setting.objects.filter(scope=scope, scope_category=scope_category)
     if not settings:
@@ -26,7 +26,7 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
 
 def index(request, template_name="site_settings/settings.html"):
     if not request.user.has_perm('site_settings.change_setting'):
-        return render_to_403()
+        raise Http403
     settings = Setting.objects.all().order_by('scope')
     return render_to_response(template_name, {'settings':settings}, context_instance=RequestContext(request))
     
