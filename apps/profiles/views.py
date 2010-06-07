@@ -62,28 +62,36 @@ def add(request, form_class=ProfileForm, form_class2=UserForm, template_name="pr
     
     if request.method == "POST":
         #form_user = form_class2(request.user, request.POST)
-        form = form_class(request.POST, request.user)
-        form2 = form_class2(request.POST, request.user)
+        form = form_class(None, request.POST, request.user)
+        #form2 = form_class2(request.POST, request.user)
         
-        if form.is_valid() and form2.is_valid():
-            profile = form.save(request)
+        if form.is_valid():
+            profile = form.save(request, None)
             new_user = profile.user
-            new_user.is_superuser = form2.cleaned_data['is_superuser']
-            new_user.groups = form2.cleaned_data['groups']
-            new_user.user_permissions = form2.cleaned_data['user_permissions']
+            security_level = form.cleaned_data['security_level']
+            if security_level == 'developer':
+                new_user.is_superuser = 1
+                new_user.is_staff = 1
+            elif security_level == 'admin':
+                new_user.is_superuser = 1
+                new_user.is_staff = 0
+            else:
+                new_user.is_superuser = 0
+                new_user.is_staff = 0
+           
             new_user.save()
             
             return HttpResponseRedirect(reverse('profile', args=[new_user.username]))
     else:
-        form = form_class()
-        form2 = form_class2()
+        form = form_class(None)
+        #form2 = form_class2()
        
-    return render_to_response(template_name, {'form':form, 'form2':form2, 'user_this':None}, 
+    return render_to_response(template_name, {'form':form, 'user_this':None}, 
         context_instance=RequestContext(request))
     
 
 @login_required
-def edit(request, id, form_class=ProfileEditForm, form_class2=UserEditForm, template_name="profiles/edit.html"):
+def edit(request, id, form_class=ProfileForm, form_class2=UserEditForm, template_name="profiles/edit.html"):
     user_edit = get_object_or_404(User, pk=id)
     
     try:
@@ -96,33 +104,48 @@ def edit(request, id, form_class=ProfileEditForm, form_class2=UserEditForm, temp
     if request.method == "POST":
         #form_user = form_class2(request.user, request.POST)
         if profile:
-            form = form_class(request.POST, request.user, instance=profile)
+            form = form_class(user_edit, request.POST, request.user, instance=profile)
         else:
-            form = form_class(request.POST, request.user)
-        form2 = form_class2(request.POST, request.user, instance=user_edit)
+            form = form_class(user_edit, request.POST, request.user )
+        #form2 = form_class2(request.POST, request.user, instance=user_edit)
         
-        if form.is_valid() and form2.is_valid():
+        if form.is_valid():
             profile = form.save(request, user_edit)
             #user_edit.is_superuser = form2.cleaned_data['is_superuser']
             #user_edit.groups = form2.cleaned_data['groups']
             #user_edit.user_permissions = form2.cleaned_data['user_permissions']
+            security_level = form.cleaned_data['security_level']
+            
+            if security_level == 'developer':
+                user_edit.is_superuser = 1
+                user_edit.is_staff = 1
+            elif security_level == 'admin':
+                user_edit.is_superuser = 1
+                user_edit.is_staff = 0
+            else:
+                user_edit.is_superuser = 0
+                user_edit.is_staff = 0
             user_edit.save()
             
             return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
     else:
         if profile:
-            form = form_class(instance=profile)
+            form = form_class(user_edit, instance=profile)
+            
         else:
-            form = form_class()
-        form2 = form_class2(instance=user_edit)
+            form = form_class(user_edit,)
+        #form2 = form_class2(instance=user_edit)
 
-    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form, 'form2':form2}, 
+    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form,}, 
         context_instance=RequestContext(request))
     
 
 def delete(request, id, template_name="profiles/delete.html"):
     user = get_object_or_404(User, pk=id)
-    profile = Profile.objects.get(user=user)
+    try:
+        profile = Profile.objects.get(user=user)
+    except:
+        profile = None
     
     if not request.user.has_perm('profiles.delete_profile', profile): return render_to_403()
 
@@ -130,8 +153,9 @@ def delete(request, id, template_name="profiles/delete.html"):
         #soft delete
         #profile.delete()
         #user.delete()
-        profile.status_detail = 'inactive'
-        profile.save()
+        if profile:
+            profile.status_detail = 'deleted'
+            profile.save()
         user.is_active = False
         user.save()
         return HttpResponseRedirect(reverse('profile.search'))
