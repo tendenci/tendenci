@@ -1,5 +1,3 @@
-from django import forms
-
 from articles.models import Article
 from perms.forms import AuditingBaseForm
 

@@ -1,17 +1,17 @@
 {% extends "entities/base.html" %}
+{% load entity_tags %}
 
-{% block title %}Print View Page{% endblock %}
+{% block title %}{{ block.super }}Print{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/entities.css">
 {% endblock %}
 
 {% block body %}
-
 <div class="t">
-    <h1>Entities Print View Page</h1>
+    <h1>{{ MODULE_ENTITIES_LABEL }} Print</h1>
     
-    <div class="back-to-search"><a href="{% url entity.search %}">&laquo; Back to entities search</a></div>
+    {% entity_nav request.user %}
 
     <div class="entities-wrap">
 
@@ -29,17 +29,13 @@
             </div>
 
             <div class="quick-options">
-                <ul>
-                    <li><a href="{% url entity.print_view entity.id %}">Print</a></li>
-                    <li><a href="{% url entity.edit entity.id %}">Edit</a></li>
-                    <li><a href="{% url entity.delete entity.id %}">Delete</a></li>
-                </ul>
+                {% entity_options request.user entity %}
             </div>
         </div>
 
 
-        <h2>{{ entity.headline }}</h2>
-        <div class="content">{{ entity.body|safe }}</div>
+        <h2>{{ entity.entity_name }}</h2>
+        <div class="content">{{ entity.entity_name|safe }}</div>
         <div class="meta">
             <div class="submitted">Submitted on {{ entity.create_dt|date:"D d M Y P" }} by {{ entity.creator }}</div>
         </div>
