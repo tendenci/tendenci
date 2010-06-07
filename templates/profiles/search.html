@@ -39,14 +39,25 @@
 
                 <div class="quick-options">
                     <ul>
+                    	{% if not user.is_active %}
+                    		{% if not profile or profile.status_detail == 'deleted' %}
+                    		 <li><a href="{% url profile.edit user.id %}" class="deleted">Deleted</a></li>
+                    		 {% else %}
+                    		 <li><a href="{% url profile.edit user.id %}">Inactive</a></li>
+                    		 {% endif %}
+                    	{% else %}
+                    		 <li><a href="{% url profile.edit user.id %}">Active</a></li>
+                    	{% endif %}
                         <li><a href="{% url profile.edit user.id %}">Edit</a></li>
-						<li class="delete"><a href="{% url profile.delete user.id %}">Delete</a></li>
+                        {% if user.is_active %}
+							<li class="delete"><a href="{% url profile.delete user.id %}">Delete</a></li>
+						{% endif %}
                     </ul>
                 </div>
 			</div>
 
 
-            <h2><a href="{% url profile user.username %}">{{ user.first_name }} {{ user.last_name }} ({{user.email}})</a></h2>
+            <h2><a href="{% url profiles.views.index user.username %}">{{ user.first_name }} {{ user.last_name }} ({{user.email}})</a></h2>
             <div class="content">{{ profile.body|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Added on {{ profile.create_dt|date:"D d M Y P" }} by {{ profile.creator }}</div>
