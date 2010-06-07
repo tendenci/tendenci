@@ -11,6 +11,7 @@ def users_nav(user_current, user_this):
             profile_this = None
     else:
         profile_this = None
+    
     return {"user":user_current, "user_this": user_this, "profile":profile_this}
 
 @register.inclusion_tag("profiles/options.html")

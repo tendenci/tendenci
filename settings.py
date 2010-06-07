@@ -96,12 +96,13 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-    'swfupload.middleware.SWFUploadMiddleware',
-    'swfupload.middleware.MediaUploadMiddleware',
+    #'swfupload.middleware.SWFUploadMiddleware',
+    #'swfupload.middleware.MediaUploadMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'perms.middleware.ImpersonationMiddleware',
+    'base.middleware.Http403Middleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'

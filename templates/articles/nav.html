@@ -1,12 +1,12 @@
 {% load base_tags %}
 
 <div class="back-to-search">
-    <a href="/">Homepage</a>
+    <a href="/">Homepage</a>&nbsp;
     {% has_perm user articles.add_article as can_add %}
     
     {% url article.search as search_url %}
     {% if not search_url in request.path %}
-    	<a href="{{ search_url }}">Search {{ MODULE_ARTICLES_LABEL|lower }}</a>
+    	<a href="{{ search_url }}">Search {{ MODULE_ARTICLES_LABEL|lower }}</a>&nbsp;
     {% endif %}
     
     {% url article.add as add_url %}

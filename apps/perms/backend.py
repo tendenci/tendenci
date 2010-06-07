@@ -1,5 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, Permission
+from django.db.models.base import Model
+
 from perms.models import ObjectPermission
 
 class ObjectPermBackend(object):
@@ -73,6 +75,9 @@ class ObjectPermBackend(object):
             
         # no anonymous user currently... TODO: create one?   
         if not user.is_authenticated():
+            return False
+        
+        if not isinstance(obj, Model):
             return False
         
         # check the permissions on the object level

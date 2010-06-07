@@ -4,6 +4,7 @@
 
 {% block extra_head %}
 {{ block.super }}
+
 {% endblock %}
 
 {% block body %}
@@ -14,7 +15,6 @@
 
     <div class="profile-wrap">
     <form action="{% url profile.edit user_this.id %}" method="post">
-        {{ form2.as_p }}
         {{ form.as_p }}
         <input type="submit" value="Edit User" />
     </form>
