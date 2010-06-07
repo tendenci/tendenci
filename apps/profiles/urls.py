@@ -10,5 +10,5 @@ urlpatterns = patterns('profiles.views',
     url(r'^edit_groups/(?P<id>\d+)/$',  'edit_user_groups', name="profile.edit_groups"),
     url(r'^avatar/(?P<id>\d+)/$',  'change_avatar', name="profile.change_avatar"),
     url(r'^delete/(?P<id>\d+)/$',   'delete', name="profile.delete"),
-    url(r'^(?P<username>[-.\w]+)/$',    'index', name='profile'),
+    url(r'^(?P<username>[+-.\w@]+)/$',    'index', name='profile'),
 )

@@ -6,6 +6,12 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404
 from django.contrib.auth.models import User
 
+# for password change
+from django.contrib.auth.forms import PasswordChangeForm
+from django.views.decorators.csrf import csrf_protect
+
+
+# for avatar
 from avatar.models import Avatar, avatar_file_path
 from avatar.forms import PrimaryAvatarForm
 from django.utils.translation import ugettext as _
@@ -33,6 +39,7 @@ from user_groups.models import Group, GroupMembership
 # view profile  
 @login_required 
 def index(request, username="", template_name="profiles/index.html"):
+    print username
     if not username:
         username = request.user.username
     user_this = get_object_or_404(User, username=username)
@@ -57,7 +64,7 @@ def search(request, template_name="profiles/search.html"):
 
 
 @login_required
-def add(request, form_class=ProfileForm, form_class2=UserForm, template_name="profiles/add.html"):
+def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
     if not request.user.has_perm('profiles.add_profile'):return render_to_403()
     
     if request.method == "POST":
@@ -91,7 +98,7 @@ def add(request, form_class=ProfileForm, form_class2=UserForm, template_name="pr
     
 
 @login_required
-def edit(request, id, form_class=ProfileForm, form_class2=UserEditForm, template_name="profiles/edit.html"):
+def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"):
     user_edit = get_object_or_404(User, pk=id)
     
     try:
@@ -154,13 +161,13 @@ def delete(request, id, template_name="profiles/delete.html"):
         #profile.delete()
         #user.delete()
         if profile:
-            profile.status_detail = 'deleted'
+            profile.status_detail = 'inactive'
             profile.save()
         user.is_active = False
         user.save()
         return HttpResponseRedirect(reverse('profile.search'))
 
-    return render_to_response(template_name, {'profile': profile}, 
+    return render_to_response(template_name, {'user_this':user, 'profile': profile}, 
         context_instance=RequestContext(request))
     
 @login_required
@@ -285,4 +292,28 @@ def change_avatar(request, id, extra_context={}, next_override=None):
               'next': next_override or _get_next(request), }
         )
     )
+    
+    
+@csrf_protect
+@login_required
+def password_change(request, id, template_name='registration/password_change_form.html',
+                    post_change_redirect=None, password_change_form=PasswordChangeForm):
+    user_edit = get_object_or_404(User, pk=id)
+    if post_change_redirect is None:
+        post_change_redirect = reverse('profiles.views.password_change_done', args=(id))
+    if request.method == "POST":
+        form = password_change_form(user=user_edit, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(post_change_redirect)
+    else:
+        form = password_change_form(user=user_edit)
+    return render_to_response(template_name, {
+        'user_this': user_edit,
+        'form': form,
+    }, context_instance=RequestContext(request))
 
+@login_required
+def password_change_done(request, id, template_name='registration/password_change_done.html'):
+    user_edit = get_object_or_404(User, pk=id)
+    return render_to_response(template_name, {'user_this': user_edit},  context_instance=RequestContext(request))
