@@ -1,35 +1,25 @@
 {% load base_tags %}
 
-<div class="t-iconrow">
+<ul>	
 	{% if user_this.id %}
 		{% has_perm user profiles.change_profile profile as can_edit_user %}
 			{% if can_edit_user %}
-		     	<a href="{% url profile.edit user_this.id %}" class="option-link edit">Edit</a>
+		     	<li><a href="{% url profile.edit user_this.id %}" class="option-link edit">Edit</a></li>
 			{% endif %}
 	{% endif %}
 
-  <div class="more-options-wrap">
-    <a href="javascript:;" class="more-options-trigger">More options <small>&#9660;</small></a>
-    <div class="more-options-target">
-        <ul>
-			<li class="divider">
-			 <a href="{% url profile.edit_groups  user_this.id %}" class="usergroups">Edit Groups</a>
-			</li>
-			{% if profile.is_admin %} 
-			<li>
-			<a href="{% url profile.edit_perms user_this.id %}" class="permissions">Permissions</a>
-			</li>
-			{%endif%}
-			<li>               
-			 <a href="{% url auth_password_change %}" class="changepassword">Change Password</a>
-			</li> 
-			
-			<li>               
-			 <a href="{% url profile.delete user_this.id %}" class="delete">Delete</a>
-			</li>
-			
-		 </ul>
-        </div>
-  </div>
-
-</div>
+	<li>
+	 <a href="{% url profile.edit_groups  user_this.id %}" class="usergroups">Edit Groups</a>
+	</li>
+	{% if profile.is_admin %} 
+	<li>
+	<a href="{% url profile.edit_perms user_this.id %}" class="permissions">Permissions</a>
+	</li>
+	{%endif%}
+	<li>               
+	 <a href="{% url auth_password_change %}" class="changepassword">Change Password</a>
+	</li> 
+	<li>               
+	 <a href="{% url profile.delete user_this.id %}" class="delete">Delete</a>
+	</li>
+</ul>
