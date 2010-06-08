@@ -2,6 +2,7 @@ from django.db import models
 
 from timezones.fields import TimeZoneField
 from perms.models import AuditingBaseModel
+from articles.managers import ArticleManager
 
 class Article(AuditingBaseModel):
 
@@ -44,13 +45,15 @@ class Article(AuditingBaseModel):
     meta_keywords = models.TextField(blank=True)
     meta_description = models.TextField(blank=True)
 
+    objects = ArticleManager()
+
     class Meta:
         permissions = (("view_article","Can view article"),)
 
     @models.permalink
     def get_absolute_url(self):
-        return ("article", [self.id])
-        
+        return ("article", [self.pk])
+
     def __unicode__(self):
         return self.headline
 
