@@ -1,14 +1,14 @@
 {% load base_tags %}
 <ul>	
-    <li><a href="{% url page.print_view page.id %}">Print</a></li>
+    <li><a href="{% url page.print_view page.pk %}">Print</a></li>
     
     {% has_perm user pages.change_page page as can_edit %}
     {% if can_edit %} 
-    	<li><a href="{% url page.edit page.id %}">Edit</a></li>
+    	<li><a href="{% url page.edit page.pk %}">Edit</a></li>
     {% endif %}
     
     {% has_perm user pages.delete_page page as can_delete %}
     {% if can_delete %} 
-	<li class="delete"><a href="{% url page.delete page.id %}">Delete</a></li>
+	<li class="delete"><a href="{% url page.delete page.pk %}">Delete</a></li>
 	{% endif %}
 </ul>

@@ -20,7 +20,14 @@ def index(request, id=None, template_name="stories/view.html"):
     
 
 def search(request, template_name="stories/search.html"):
-    stories = Story.objects.all()
+    if request.method == 'GET':
+        if 'q' in request.GET:
+            query = request.GET['q']
+        else:
+            query = None
+        stories = Story.objects.search(query)
+    else:
+        stories = Story.objects.search()
     return render_to_response(template_name, {'stories':stories}, 
         context_instance=RequestContext(request))
     

@@ -14,7 +14,14 @@ def index(request, id=None, template_name="news/view.html"):
         context_instance=RequestContext(request))
 
 def search(request, template_name="news/search.html"):
-    news = News.objects.all()
+    if request.method == 'GET':
+        if 'q' in request.GET:
+            query = request.GET['q']
+        else:
+            query = None
+        news = News.objects.search(query)
+    else:
+        news = News.objects.search()
     return render_to_response(template_name, {'news':news}, 
         context_instance=RequestContext(request))
 
@@ -31,7 +38,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
     if request.method == "POST":
         form = form_class(request.user, request.POST, instance=news)
         if form.is_valid():
-            release = form.save()
+            news = form.save()
 
             return HttpResponseRedirect(reverse('news.view', args=[news.pk])) 
 

@@ -74,3 +74,14 @@
 	margin-bottom: 20px;
 }
 
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}
+
