@@ -125,6 +125,33 @@
                         </div>
                 {% endifequal %}           
 
+ 				{# /*  STORY  */ #}
+			    {% ifequal result.model_name "story" %}    
+						{% reset result.object as story %}
+						{% image_preview story 100 as image_url %}
+                        {% if image_url %}
+                        <div class="story-image">
+                            <a title="{% firstof story.title "Untitled" %}" href="{{ story.get_absolute_url }}">
+                            <img class="story-image" alt="{{ story.title }}" src="{{ image_url }}" /></a>
+                            <a title="{{ story.creator }}" href="{% url profile story.creator %}">
+                            <img class="author-image" alt="{{ story.creator }}" src="{% avatar_url story.creator 40 %}" /></a>
+                        </div>
+                        {% endif %}
+                                
+                        <div class="story-info">
+                            <h3 style="margin-bottom:0;"><a title="{{ story.get_absolute_url }}" href="{{ story.get_absolute_url }}">{% firstof story.title "Untitled" %}</a></h3>
+                            <div> <!-- meta; priviledged options -->
+                                <a title="{{ story.creator }}" href="{% url profile story.creator %}">
+                                {% firstof story.creator.get_profile.name story.creator %}</a> on 
+                                {% if story.start_dt %}{{ story.start_dt }}{% endif %}
+                            </div>
+                            <div class="uniform-li-meta"> <!-- teaser -->
+                                {{ story.content|striptags|truncatewords:50 }}
+                                &nbsp;[{{ result.model_name }}]
+                            </div>
+                        </div>
+                {% endifequal %} 
+                
 				{# /*  IMAGES  */ #}
 			    {% ifequal result.model_name "image" %}    
 						{% reset result.object as photo %}

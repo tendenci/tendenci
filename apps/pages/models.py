@@ -1,6 +1,7 @@
 from django.db import models
 
 from perms.models import AuditingBaseModel
+from pages.managers import PageManager
 
 class Page(AuditingBaseModel):
 
@@ -26,6 +27,8 @@ class Page(AuditingBaseModel):
 
     metacanonical = models.TextField(blank=True)
 
+    objects = PageManager()
+    
     class Meta:
         permissions = (("view_page","Can view page"),)
 
