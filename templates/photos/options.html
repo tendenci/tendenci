@@ -1,19 +1,18 @@
 {% load base_tags %}
 
-{% has_perm user photoset.view_photoset as can_view %}
-{% has_perm user photoset.add_photoset as can_add %}
-{% has_perm user photoset.change_photoset as can_change %}
-{% has_perm user photoset.delete_photoset as can_delete %}
+{% has_perm user photo.view_image as can_view %}
+{% has_perm user photo.add_image as can_add %}
+{% has_perm user photo.change_image as can_change %}
+{% has_perm user photo.delete_image as can_delete %}
 
 {% if can_change %}
-<a href="{% url photoset_edit photo_set.id %}">Edit Set</a> 
-{% endif %}
+<ul>
+	{% if can_change %}
+    <li class="photo-edit" data-id="{{ photo.id }}"><a href="{% url photo_edit photo.id photo_set_id %}">Edit</a></li>
+    {% endif %}
 
-{% if can_delete %}
-<a class="delete-set" href="{% url photoset_delete photo_set.id %}">Delete Set</a>
+	{% if can_delete %}
+    <li class="photo-delete" data-id="{{ photo.id }}"><a href="{% url photo_destroy photo.id %}">Delete</a></li>
+	{% endif %}
+</ul>
 {% endif %}
-
-{% if can_add %}
-<a href="{% url photos_batch_add photo_set.id %}">Add Photos</a>
-{% endif %}
-<a href="{% url photos_batch_edit photo_set.id %}">Edit Photos</a>

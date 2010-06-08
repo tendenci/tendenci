@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from photos.models import Image, PhotoSet
 from perms.forms import AuditingBaseForm
 
-class PhotoUploadForm(forms.ModelForm):
+class PhotoUploadForm(AuditingBaseForm):
     
     class Meta:
         model = Image
@@ -20,7 +20,7 @@ class PhotoUploadForm(forms.ModelForm):
         self.user = user
         super(PhotoUploadForm, self).__init__(*args, **kwargs)
 
-class PhotoEditForm(forms.ModelForm):
+class PhotoEditForm(AuditingBaseForm):
     
     class Meta:
         model = Image

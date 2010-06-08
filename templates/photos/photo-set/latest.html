@@ -36,7 +36,7 @@
 					<div>{{ photo_set.image_set.count }} photo{{ photo_set.image_set.count|pluralize }} </div>
                     <div class="description">{{ photo_set.description|striptags|truncatewords_html:25 }}</div>
                     <div class="actions">
-						{% photo_options request.user photo_set %}
+						{% photo_set_options request.user photo_set %}
                     </div>
                 </td>
 			</tr></table>

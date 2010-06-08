@@ -1,0 +1,24 @@
+{% load base_tags %}
+
+{% has_perm user photoset.view_photoset as can_view %}
+{% has_perm user photoset.add_photoset as can_add %}
+{% has_perm user photoset.change_photoset as can_change %}
+{% has_perm user photoset.delete_photoset as can_delete %}
+
+{% if can_view %}
+<a href="{% url photoset_latest %}">&laquo; Back to albums</a>
+{% endif %}
+
+{% if can_change %}
+<a href="{% url photoset_edit photo_set.id %}">Edit album</a>
+{% endif %}
+
+{% if can_delete %}
+<a class="delete-photoset" href="{% url photoset_delete photo_set.id %}">Delete album</a>
+{% endif %}
+
+{% if can_add %}
+<a href="{% url photos_batch_add photo_set.id %}">Add photos</a>
+{% endif %}
+
+<a href="{% url photos_batch_edit photo_set.id %}">Edit photos</a>

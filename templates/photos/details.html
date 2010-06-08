@@ -21,9 +21,7 @@
             <h2>{% firstof photo.title "Untitled" %}</h2>
         </div>
         <div class="photo-nav">
-            {% if photo_set_id %}
-            <div class="photo-back"><a href="{% url photoset_details photo_set_id %}">&laquo; Browse photo set</a></div>
-            {% endif %}
+			{% photo_nav request.user %}
         </div>
         <div class="photo-traverse">
             <ul>
@@ -50,10 +48,7 @@
         </div>
         <div class="hr"></div>
         <div class="photo-options">
-            <ul>
-                <li class="photo-edit" data-id="{{ photo.id }}"><a href="{% url photo_edit photo.id photo_set_id %}">Edit</a></li>
-                <li class="photo-delete" data-id="{{ photo.id }}"><a href="{% url photo_destroy photo.id %}">Delete</a></li>
-            </ul>
+			{% photo_options request.user photo %}
         </div>
 	</div><!-- END .photo-instance -->
 
