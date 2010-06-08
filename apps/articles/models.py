@@ -46,6 +46,10 @@ class Article(AuditingBaseModel):
 
     class Meta:
         permissions = (("view_article","Can view article"),)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("article", [self.id])
         
     def __unicode__(self):
         return self.headline
