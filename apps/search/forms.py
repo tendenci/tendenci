@@ -27,7 +27,8 @@ class SearchForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.searchqueryset = kwargs.get('searchqueryset', None)
         self.load_all = kwargs.get('load_all', False)
-
+        self.user = kwargs.get('user', None)
+        
         if self.searchqueryset is None:
             self.searchqueryset = SearchQuerySet()
         
@@ -40,12 +41,31 @@ class SearchForm(forms.Form):
             del(kwargs['load_all'])
         except KeyError:
             pass
-        
+
+        try:
+            del(kwargs['user'])
+        except KeyError:
+            pass
+                
         super(SearchForm, self).__init__(*args, **kwargs)
     
     def search(self):
         self.clean()
-        sqs = self.searchqueryset.auto_query(self.cleaned_data['q'])
+
+        # check permissions and then query
+        if self.user:
+            if not self.user.is_authenticated():
+                sqs = self.searchqueryset.filter(content=self.cleaned_data['q'])
+                sqs = sqs.filter(allow_anonymous_view=True)
+            else:
+                if self.user.is_superuser:
+                    sqs = self.searchqueryset.auto_query(self.cleaned_data['q'])
+                else:
+                    sqs = self.searchqueryset.filter(content=self.cleaned_data['q'])
+                    sqs = sqs.filter(allow_user_view=True)
+                    sqs = sqs.filter_or(creator_username=self.user.username)            
+        else:
+            sqs = self.searchqueryset.auto_query(self.cleaned_data['q'])
         
         if self.load_all:
             sqs = sqs.load_all()

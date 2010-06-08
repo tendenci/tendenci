@@ -27,6 +27,7 @@ class SearchView(object):
         self.form_class = form_class
         self.context_class = context_class
         self.searchqueryset = searchqueryset
+        self.user = None
         if template:
             self.template = template
 
@@ -40,6 +41,7 @@ class SearchView(object):
         Relies on internal, overridable methods to construct the response.
         """
         self.request = request
+        self.user = self.request.user # to check for permissions
         
         self.form = self.build_form()
         self.query = self.get_query()
@@ -52,9 +54,9 @@ class SearchView(object):
         Instantiates the form the class should use to process the search query.
         """
         if self.searchqueryset is None:
-            return self.form_class(self.request.GET, load_all=self.load_all)
+            return self.form_class(self.request.GET, load_all=self.load_all, user=self.user)
         
-        return self.form_class(self.request.GET, searchqueryset=self.searchqueryset, load_all=self.load_all)
+        return self.form_class(self.request.GET, searchqueryset=self.searchqueryset, load_all=self.load_all, user=self.user)
     
     def get_query(self):
         """

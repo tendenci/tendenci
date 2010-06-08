@@ -2,10 +2,9 @@
 import Image as Pil
 
 # django
-from django.http import Http404, HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
-from django.conf import settings
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
