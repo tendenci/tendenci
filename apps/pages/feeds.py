@@ -8,11 +8,14 @@ class LatestEntriesFeed(Feed):
     link =  "/news/"
     description =  "Latest News by %s" % get_setting('site','global','sitedisplayname')
 
+    title_template = 'feeds/page_title.html'
+    description_template = 'feeds/page_description.html'
+
     def items(self):
         return Page.objects.order_by('-create_dt')[:20]
     
-    def item_title(self, item):
-        return item.title
-
-    def item_description(self, item):
-        return item.content
+#    def item_title(self, item):
+#        return item.title
+#
+#    def item_description(self, item):
+#        return item.content
