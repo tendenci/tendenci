@@ -22,7 +22,7 @@
 	 <div class="clear-right"></div>
 	<h2>User: <a href="{{ user_this.get_absolute_url }}">{{user_this.first_name }} {{ user_this.last_name }}</a></h2>
     <p>Current avatar: </p>
-    {% avatar user %}
+    {% avatar user_this %}
     {% if not avatars %}
         <p>You do not yet have an avatar.  Please upload one now.</p>
     {% else %}

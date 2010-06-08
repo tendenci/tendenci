@@ -30,7 +30,9 @@ def group_add_edit(request, group_slug=None,
                    template_name="user_groups/add_edit.html"):
     if group_slug:
         group = get_object_or_404(Group, slug=group_slug)
-        if not request.user.has_perm('user_groups.change_group', group):return render_to_403()
+       
+        if not request.user.has_perm('user_groups.change_group', group):
+            return render_to_403()
         title = "Edit Group"
     else:
         group = None
@@ -81,10 +83,12 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
     if user_id:
         user = get_object_or_404(User, pk=user_id)
         groupmembership = get_object_or_404(GroupMembership, member=user, group=group)
-        if not request.user.has_perm('user_groups.change_groupmembership', groupmembership):return render_to_403()
+        if not request.user.has_perm('user_groups.change_groupmembership', groupmembership):
+            return render_to_403()
     else:
         groupmembership = None
-        if not request.user.has_perm('user_groups.add_groupmembership'):raise render_to_403()
+        if not request.user.has_perm('user_groups.add_groupmembership'):
+            return render_to_403()
 
     if request.method == 'POST':
         form = form_class(None, user_id, request.POST, instance=groupmembership)
@@ -110,8 +114,9 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
     group = get_object_or_404(Group, slug=group_slug)
     user = get_object_or_404(User, pk=user_id)
     groupmembership = get_object_or_404(GroupMembership, group=group, member=user)
-    if not request.user.has_perm('user_groups.delete_groupmembership', groupmembership):return render_to_403()
-    print group
+    if not request.user.has_perm('user_groups.delete_groupmembership', groupmembership):
+        return render_to_403()
+    
     if request.method == 'POST':
         groupmembership.delete()
         return HttpResponseRedirect(group.get_absolute_url())
