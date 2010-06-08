@@ -1,0 +1,194 @@
+{% extends "search/base.html" %}
+
+{% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
+{% load avatar_tags %}
+{% load pagination_tags %}
+{% load smart_if %}
+
+{% block head_title %}{% blocktrans %}Search{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/search.css" /> 
+<link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form.css" /> 
+<link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form-generic.css" /> 
+{% endblock %}
+
+{% block body %}
+	  {# /*  NEEDED FOR PAGINATION  */ #}
+	  {% reset page as page_obj %}
+	  <form name="search" method="get" action=".">
+		<table class="search-table" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>{{ form.q }}</td>
+				<td><input class="search-table-submit" type="submit" value="Search"></td>
+			</tr>
+		</table>
+   
+		<div class="search-adv"><a href="#adv_search">Advanced Search</a></div>
+		<div class="search-adv-models">
+			<p class="search-adv-header">Search in:</p>
+			{{ form.models }}
+		</div>
+	 </form>
+    
+    {# /* UPPER PAGINATION */ #}
+    {% paginate %}
+    
+    {# /*  SEARCH RESULTS  */ #}
+    <div class="search-results">
+        
+        {% if page.object_list %}
+            <ul id="uniform-ul">
+            {% for result in page.object_list %}
+                <li>
+                {# /*  PAGES  */ #}
+                {% ifequal result.model_name "page" %}    
+                	{% reset result.object as page %}
+                    {% image_preview page 100 as image_url %}
+                    {% if image_url %}
+                    <div class="page-image">
+                        <a title="{% firstof page.title "Untitled" %}" href="{{ page.get_absolute_url }}">
+                        <img class="page-image" alt="{{ page.title }}" src="{{ image_url }}" /></a>
+                        <a title="Author {{ page.creator }}" href="{% url profile page.creator %}">
+                        <img class="author-image" alt="{{ page.creator }}" src="{% avatar_url page.creator 40 %}" /></a>
+                    </div>
+                    {% endif %}
+
+                    <div class="page-info">
+                        <h3 style="margin-bottom:0;"><a title="{{ page.get_absolute_url }}" href="{{ page.get_absolute_url }}">{% firstof page.title "Untitled" %}</a></h3>
+                        <div> <!-- meta; priviledged options -->
+                            <a title="Published by {{ page.author }}" href="{% url profile page.creator %}">
+                            {% firstof page.creator.get_profile.name page.creator %}</a> on 
+                            {{ page.update_dt }} 
+                        </div>
+                        <div class="uniform-li-meta"> <!-- teaser -->
+                            {{ page.content|striptags|truncatewords:50 }}
+                            &nbsp;[{{ result.model_name }}]
+                        </div>
+                    </div>
+                {% endifequal %}
+                
+                {# /*  ARTICLES  */ #}
+			    {% ifequal result.model_name "article" %}    
+						{% reset result.object as article %}
+                        {% image_preview article 100 as image_url %}
+                        {% if image_url %}
+                        <div class="article-image">
+                            <a title="{% firstof article.headline "Untitled" %}" href="{{ article.get_absolute_url }}">
+                            <img class="article-image" alt="{{ article.headline }}" src="{{ image_url }}" /></a>
+                            <a title="{{ article.creator }}" href="{% url profile article.creator %}">
+                            <img class="author-image" alt="{{ article.creator }}" src="{% avatar_url article.creator 40 %}" /></a>
+                        </div>
+                        {% endif %}
+                
+                
+                        <div class="article-info">
+                            <h3 style="margin-bottom:0;"><a title="{{ article.get_absolute_url }}" href="{{ article.get_absolute_url }}">{% firstof article.headline "Untitled" %}</a></h3>
+                            <div> <!-- meta; priviledged options -->
+                                <a title="{{ article.creator }}" href="{% url profile article.creator %}">
+                                {% firstof article.creator.get_profile.name article.creator %}</a>
+                                {% if article.release_dt %}on {{ article.release_dt }} {% endif %}
+                            </div>
+                            <div class="uniform-li-meta"> <!-- teaser -->
+                                {{ article.content|striptags|truncatewords:50 }}
+                                &nbsp;[{{ result.model_name }}]
+                            </div>
+                        </div>
+                {% endifequal %}                
+ 
+ 				{# /*  NEWS  */ #}
+			    {% ifequal result.model_name "news" %}    
+						{% reset result.object as n %}
+						{% image_preview n 100 as image_url %}
+                        {% if image_url %}
+                        <div class="news-image">
+                            <a title="{% firstof n.headline "Untitled" %}" href="{{ n.get_absolute_url }}">
+                            <img class="news-image" alt="{{ n.headline }}" src="{{ image_url }}" /></a>
+                            <a title="{{ n.creator }}" href="{% url profile n.creator %}">
+                            <img class="author-image" alt="{{ n.creator }}" src="{% avatar_url n.creator 40 %}" /></a>
+                        </div>
+                        {% endif %}
+                                
+                        <div class="news-info">
+                            <h3 style="margin-bottom:0;"><a title="{{ n.get_absolute_url }}" href="{{ n.get_absolute_url }}">{% firstof n.headline "Untitled" %}</a></h3>
+                            <div> <!-- meta; priviledged options -->
+                                <a title="{{ n.creator }}" href="{% url profile n.creator %}">
+                                {% firstof n.creator.get_profile.name n.creator %}</a> on 
+                                {% if n.release_dt %}{{ n.release_dt }}{% endif %}
+                            </div>
+                            <div class="uniform-li-meta"> <!-- teaser -->
+                                {{ n.body|striptags|truncatewords:50 }}
+                                &nbsp;[{{ result.model_name }}]
+                            </div>
+                        </div>
+                {% endifequal %}           
+
+				{# /*  IMAGES  */ #}
+			    {% ifequal result.model_name "image" %}    
+						{% reset result.object as photo %}
+                        <div class="event-info">
+                            <h3 style="margin-bottom:0;"><a title="{{ photo.get_absolute_url }}" href="{{ photo.get_absolute_url }}">{% firstof photo.title "Untitled" %}</a></h3>
+                            <div> <!-- meta; priviledged options -->
+                                <a title="{{ photo.member }}" href="{% url profile photo.member %}">
+                                {% firstof photo.member.get_profile.name photo.member %}</a>
+                                {% if perms.photologue.change_photo %}<a href="{% url photo_edit photo.id %}">edit</a>{% endif %}
+                            </div>
+                        	<div class="uniform-li-meta">
+                           	 <a href="{{ photo.get_absolute_url }}"><img border="0" src="{{ photo.get_small_url }}" alt="{{ photo.title }}" title="{{ photo.title }}" /></a>
+                             {{ event.caption|truncatewords:50 }}
+                            </div> 
+                        </div>
+                {% endifequal %}  
+ 
+ 
+ 				{# /*  PHOTOSETS  */ #}
+			    {% ifequal result.model_name "photoset" %}    
+						{% reset result.object as photoset %}
+                        <div class="event-info">
+                            <h3 style="margin-bottom:0;"><a title="{{ photoset.get_absolute_url }}" href="{{ photoset.get_absolute_url }}">{% firstof photoset.name "Untitled" %}</a></h3>
+                            <div> <!-- meta; priviledged options -->
+                                <a title="{{ photoset.author }}" href="{% url profile photoset.author %}">
+                                {% firstof photoset.author.get_profile.name photoset.author %}</a>
+                                {% if perms.photos.change_photoset %}<a href="{% url photoset_edit photoset.id %}">edit</a>{% endif %}
+                                {% if perms.photos.delete_photoset %}<a href="{% url photoset_delete photoset.id %}">delete</a>{% endif %}
+                            </div>
+                        	<div class="uniform-li-meta">
+                            {% for photo in photoset.image_set.all|slice:":5" %}
+                           	 <a href="{{ photo.get_absolute_url }}"><img border="0" src="{{ photo.get_thumbnail_url }}" alt="{{ photo.title }}" title="{{ photo.title }}" /></a>
+                            {% endfor %}
+                            <p>{{ photoset.description|truncatewords:50 }}</p>
+                            </div> 
+                        </div>
+                {% endifequal %}
+                                                           
+                <div style="clear:both;"></div>
+                </li>
+            {% endfor %}
+             </ul>
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+    </div>
+    
+    {# /*  LOWER PAGINATION  */ #}
+    {% paginate %}
+    
+{% endblock %}
+
+{% block extra_body %}
+	<script type="text/javascript">		
+		function toggle_adv_models() {
+			$('div.search-adv-models').toggle();
+		}
+
+		if (document.location.hash == "#adv_search") {
+			$('div.search-adv-models').css('display','block');
+		}
+		
+		$('div.search-adv a').click(function() {
+			toggle_adv_models();
+		});
+	</script>
+{% endblock %}

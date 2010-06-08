@@ -44,9 +44,14 @@ class Article(AuditingBaseModel):
     meta_keywords = models.TextField(blank=True)
     meta_description = models.TextField(blank=True)
 
+
     class Meta:
         permissions = (("view_article","Can view article"),)
-        
+ 
+    def get_absolute_url(self):
+        return ('article', [self.pk])
+    get_absolute_url = models.permalink(get_absolute_url)
+           
     def __unicode__(self):
         return self.headline
 
