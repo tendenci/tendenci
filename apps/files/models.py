@@ -66,5 +66,9 @@ class File(AuditingBaseModel):
     class Meta:
         permissions = (("view_file","Can view file"),)
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ("file", [self.id])
+
     def __unicode__(self):
         return self.name
