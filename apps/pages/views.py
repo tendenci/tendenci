@@ -21,7 +21,14 @@ def index(request, id=None, template_name="pages/view.html"):
         raise Http403
 
 def search(request, template_name="pages/search.html"):
-    pages = Page.objects.all()
+    if request.method == 'GET':
+        if 'q' in request.GET:
+            query = request.GET['q']
+        else:
+            query = None
+        pages = Page.objects.search(query)
+    else:
+        pages = Page.objects.search()
     return render_to_response(template_name, {'pages':pages}, 
         context_instance=RequestContext(request))
 
