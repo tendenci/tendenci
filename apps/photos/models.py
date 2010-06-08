@@ -58,7 +58,7 @@ class PhotoSet(AuditingBaseModel):
     def __unicode__(self):
         return self.name
 
-class Image(ImageModel):
+class Image(ImageModel, AuditingBaseModel):
     """
     A photo with its details
     """
@@ -77,7 +77,7 @@ class Image(ImageModel):
     tags = TagField()
 
     class Meta:
-        permissions = (("view_photo","Can view photo"),)
+        permissions = (("view_image","Can view image"),)
 
     def save(self, *args, **kwargs):
         super(Image, self).save(*args, **kwargs)       

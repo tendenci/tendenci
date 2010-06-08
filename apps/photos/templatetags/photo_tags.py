@@ -119,4 +119,17 @@ def photo_nav(context, user):
     })
     return context
 
+@register.inclusion_tag("photos/photo-set/options.html", takes_context=True)
+def photo_set_options(context, user, photo):
+    context.update({
+        "photo": photo,
+        "user": user
+    })
+    return context
 
+@register.inclusion_tag("photos/photo-set/nav.html", takes_context=True)
+def photo_set_nav(context, user):
+    context.update({
+        "user": user
+    })
+    return context
