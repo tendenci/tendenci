@@ -16,3 +16,7 @@ def stories_nav(context, user):
         "user": user
     })
     return context
+
+@register.inclusion_tag("stories/search-form.html", takes_context=True)
+def stories_search(context):
+    return context

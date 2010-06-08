@@ -1,5 +1,8 @@
 from django.template import Library, Node, Variable, TemplateSyntaxError
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from base.utils import url_exists
+
 from profiles.models import Profile
 
 register = Library()
@@ -164,3 +167,102 @@ def next_bit_for(bits, key, if_none=None, step=1):
         return if_none
 
 register.tag('get_or_create_profile_for', get_or_create_profile_for)
+
+class ResetNode(Node):
+    def __init__(self, variable, **kwargs):
+        # set the context var
+        self.variable = Variable(variable)
+            
+        # get the context vars
+        for k, v in kwargs.items():
+            if k == 'context':
+                self.context = v
+            
+    def render(self, context):
+        variable = self.variable.resolve(context)
+        context[self.context] = variable 
+        return ''
+
+@register.tag      
+def reset(parser, token):
+    """
+        Reset a context variable to another one
+        {% reset var as var1 %} 
+    """
+    bits = token.split_contents()
+
+    try:
+        variable = bits[1]
+    except:
+        raise TemplateSyntaxError, "'%s' requires at least three arguments." % bits[0]
+    
+    if bits[1] == 'as':
+        raise TemplateSyntaxError, "'%s' first argument must be a context var." % bits[0]
+    
+    # get the user
+    try:
+        variable = bits[bits.index('as')-1]
+        context = bits[bits.index('as')+1]
+    except:
+        variable = None
+        context = None
+    
+    if not variable and not context:
+        raise TemplateSyntaxError, "'%s' missing arguments. Syntax {% reset var1 as var2 %}" % bits[0]
+    
+    return ResetNode(variable, context=context)
+
+class ImagePreviewNode(Node):
+    def __init__(self, instance, size, **kwargs):
+        # set the context var
+        self.instance = Variable(instance)    
+        self.size = size
+        self.context = None
+        
+        # get the context vars
+        for k, v in kwargs.items():
+            if k == 'context':
+                self.context = v
+            
+    def render(self, context):
+        instance = self.instance.resolve(context)
+        
+        app_label = instance._meta.app_label
+        model = instance._meta.object_name.lower()
+        
+        url = reverse('image_preview', args=(app_label, model, instance.id, self.size))
+        if not url_exists(url):
+            url = None
+              
+        if self.context:
+            context[self.context] = url 
+        else:
+            context['image_preview'] = url
+        
+        return ''
+
+@register.tag      
+def image_preview(parser, token):
+    """
+        Gets the url for an image preview base
+        on model and model_id
+    """
+    bits = token.split_contents()
+    
+    try:
+        instance = bits[1]
+    except:
+        raise TemplateSyntaxError, "'%s' requires at least 2 arguments" % bits[0]
+        
+    try:
+        size = bits[2]
+    except:
+        raise TemplateSyntaxError, "'%s' requires at least 2 arguments" % bits[0]        
+         
+    try:
+        context = bits[4]
+    except:
+        context = "image_preview"
+        
+    return ImagePreviewNode(instance, size, context=context)
+

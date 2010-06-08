@@ -12,6 +12,7 @@ authority.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
     (r'^admin/', include(admin.site.urls)),
+    (r'^base/', include('base.urls')),
     (r'^avatar/', include('avatar.urls')),
     (r'^articles/', include('articles.urls')),
     (r'^entities/', include('entities.urls')),
@@ -25,7 +26,7 @@ urlpatterns = patterns('',
     (r'^settings/', include('site_settings.urls')),
     (r'^files/', include('files.urls')),
     (r'^accounts/', include('accounts.urls')),
-#    (r'^media-files/', include('media_files.urls')),
+    (r'^search/$', include('search.urls')),
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),

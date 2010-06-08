@@ -16,3 +16,7 @@ def article_nav(context, user):
         "user": user
     })
     return context
+
+@register.inclusion_tag("articles/search-form.html", takes_context=True)
+def article_search(context):
+    return context
