@@ -125,6 +125,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # tendenci context processors
     'theme.context_processors.theme',
     'site_settings.context_processors.settings',
+    'base.context_processors.static_url'
 )
 
 INSTALLED_APPS = (
@@ -142,6 +143,7 @@ INSTALLED_APPS = (
     'registration',
     'avatar',
     'tinymce',
+    'haystack',
     
     # tendenci applications
     'base',
@@ -207,6 +209,16 @@ TINYMCE_DEFAULT_CONFIG = {
 # -------------------------------------- #
 CACHE_DIR = PROJECT_ROOT + "/cache"
 CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800" # 7 days
+
+# --------------------------------------#
+# Hackstack Search
+# --------------------------------------#
+HAYSTACK_SITECONF = 'search'
+HAYSTACK_SEARCH_ENGINE = 'solr'
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
+HAYSTACK_SOLR_URL = 'http://127.0.0.1:8000/tendenci50/'
+HAYSTACK_SOLR_TIMEOUT = 60
+HAYSTACK_INCLUDED_APPS = ('article','page','news','story')
 
 # local settings for development
 try:

@@ -1,6 +1,7 @@
 from django.db import models
 
 from perms.models import AuditingBaseModel
+from stories.managers import StoryManager
 
 # Create your models here.
 class Story(AuditingBaseModel):
@@ -14,10 +15,16 @@ class Story(AuditingBaseModel):
     end_dt = models.DateTimeField(null=True, blank=True)
     ncsortorder = models.IntegerField(null=True, blank=True)
  
+    objects = StoryManager()
+    
     class Meta:
         permissions = (("view_story","Can view story"),)
         verbose_name_plural = "stories"
-           
+
+    def get_absolute_url(self):
+        return ('story', [self.pk])
+    get_absolute_url = models.permalink(get_absolute_url)
+               
     def __unicode__(self):
         return self.title
         
