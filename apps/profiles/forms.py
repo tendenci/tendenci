@@ -18,6 +18,8 @@ class ProfileForm(forms.ModelForm):
     security_level = forms.ChoiceField(initial="user", choices=(('user','User'),
                                                                 ('admin','Admin'),
                                                                 ('developer','Developer'),))
+    interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
+                                                          (0,'Not Interactive (no login)'),))
     class Meta:
         model = Profile
         fields = ('salutation', 
@@ -55,15 +57,17 @@ class ProfileForm(forms.ModelForm):
                   'student',
                   'direct_mail',
                   'notes',
-                  'allow_anonymous_view',
-                  'admin_notes',
-                  'security_level',
+                  'interactive', 
                   'status', 
                   'status_detail',
+                  'allow_anonymous_view',
+                  'admin_notes',
+                  'entity',
+                  'security_level',
                 
                 )
         
-    def __init__(self, user_this, *args, **kwargs):
+    def __init__(self, user_current=None, user_this=None, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)
 
         self.user_this = user_this
@@ -78,13 +82,19 @@ class ProfileForm(forms.ModelForm):
                 self.fields['security_level'].initial = "admin"
             else:
                 self.fields['security_level'].initial = "user"
+            if user_this.is_active == 1:
+                self.fields['interactive'].initial = 1
+            else:
+                self.fields['interactive'].initial = 0
+                
             del self.fields['password1']
             del self.fields['password2']
-            #if not user_current.is_superuser:
-            #    del self.fields['admin_notes']
-            #    del self.fields['security_level']
-            #    del self.fields['status']
-            #    del self.fields['status_detail']
+            
+            if not user_current.is_superuser:
+                del self.fields['admin_notes']
+                del self.fields['security_level']
+                del self.fields['status']
+                del self.fields['status_detail']
         
     def clean_username(self):
         """
@@ -125,71 +135,24 @@ class ProfileForm(forms.ModelForm):
             new_user = User.objects.create_user(username, email, password)
             new_user.first_name = self.cleaned_data['first_name']
             new_user.last_name = self.cleaned_data['last_name']
-            new_user.is_active = self.cleaned_data['status']
-            #new_user.is_superuser = self.cleaned_data['is_superuser']
+           
             new_user.save()
             self.instance.user = new_user
             
             # if not self.instance.owner:
             self.instance.owner = request.user
         else:
-            user_edit.email = self.cleaned_data['email']
-            user_edit.is_active = self.cleaned_data['status']
-            #new_user.is_superuser = self.cleaned_data['is_superuser']
+            user_edit.username = username
+            user_edit.email = email
+            user_edit.first_name = self.cleaned_data['first_name']
+            user_edit.last_name = self.cleaned_data['last_name']
+            
             user_edit.save()
             
         if not self.instance.id:
             self.instance.creator = request.user
             
         return super(ProfileForm, self).save(*args, **kwargs)
-    
-class ProfileEditForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ('salutation',
-                  'phone',
-                  'phone2',
-                  'fax',
-                  'work_phone',
-                  'home_phone',
-                  'mobile_phone',
-                  'email',
-                  'email2',
-                  'company',
-                  'position_title',
-                  'position_assignment',
-                  'sex',
-                  'address',
-                  'address2',
-                  'city',
-                  'state',
-                  'zipcode',
-                  'county',
-                  'country',
-                  'url',
-                  'url2',
-                  'dob',
-                  'ssn',
-                  'spouse',
-                  'department',
-                  'education',
-                  'student',
-                  'direct_mail',
-                  'notes',
-                  'allow_anonymous_view',
-                  'admin_notes',
-                  'status', 
-                  'status_detail', 
-                  'owner',
-                )
-        
-    def save(self, request, user_edit, *args, **kwargs):
-        user_edit.email = self.cleaned_data['email']
-        user_edit.is_active = self.cleaned_data['status']
-        #new_user.is_superuser = self.cleaned_data['is_superuser']
-        user_edit.save()
-        
-        return super(ProfileEditForm, self).save(*args, **kwargs)
     
         
 class UserForm(forms.ModelForm):
@@ -199,14 +162,9 @@ class UserForm(forms.ModelForm):
         model = User
         fields= ('is_superuser', 'user_permissions')
         
-class UserEditForm(forms.ModelForm):
+class UserPermissionForm(forms.ModelForm):
     is_superuser = forms.BooleanField(label=_("Is Admin"), 
                                       help_text = _("If selected, this user has all permissions without explicitly assigning them."))
-    class Meta:
-        model = User
-        fields= ('first_name', 'last_name', 'is_superuser',)
-        
-class UserPermissionForm(forms.ModelForm):
     class Meta:
         model = User
         fields= ('is_superuser', 'user_permissions',)

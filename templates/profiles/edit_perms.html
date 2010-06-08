@@ -40,8 +40,9 @@
 		{% if form.is_superuser.errors %}
 			{{ form.is_superuser.errors }}
 		{% endif %}
-		<label for="id_is_superuser"><b>Is Super User:</b></label>
+		 {{form.is_superuser.label_tag }}
 		{{ form.is_superuser }}
+		 {{form.is_superuser.help_text }}
 	</div>
 	
 	<div class="field-wrapper">
