@@ -28,7 +28,7 @@ def search(request, template_name="articles/search.html"):
         articles = Article.objects.search(query)
     else:
         articles = Article.objects.search()
-    
+        
     return render_to_response(template_name, {'articles':articles}, 
         context_instance=RequestContext(request))
 
