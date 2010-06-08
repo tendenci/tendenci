@@ -9,17 +9,22 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
 from django.conf import settings
+from django.core import serializers
 
 from photologue.models import *
 from photos.models import Image, Pool, PhotoSet
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
-from django.core import serializers
+from base.http import render_to_403
+from perms.models import ObjectPermission
 
 def details(request, id, set_id=0, template_name="photos/details.html"):
     """ show the photo details """
-    
     photo = get_object_or_404(Image, id=id)
     set_id = int(set_id)
+
+    # permissions
+    if not request.user.has_perm('photos.view_image', photo):
+        return render_to_403()
 
     # if not public
     if not photo.is_public:
@@ -28,11 +33,8 @@ def details(request, id, set_id=0, template_name="photos/details.html"):
             raise Http404
     
     photo_url = photo.get_large_url()
-    
-    if photo.member == request.user:
-        is_me = True
-    else:
-        is_me = False
+
+    is_me = (photo.member == request.user)
     
     return render_to_response(template_name, {
         "photo": photo,
@@ -46,6 +48,10 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
     photo = get_object_or_404(Image, id=id)
     photo_sets = []
     set_id = int(set_id)
+
+    # permissions
+    if not request.user.has_perm('photos.view_image', photo):
+        return render_to_403()
 
     # if private
     if not photo.is_public:
@@ -132,9 +138,9 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
     photo = get_object_or_404(Image, id=id)
     set_id = int(set_id)
 
-    # if no permission; raise 404 exception
-    if not photo.check_perm(request.user,'photos.change_image'):
-        raise Http404
+    # permissions
+    if not request.user.has_perm('photos.change_image', photo):
+        return render_to_403()
 
     # get available photo sets
     photo_sets = PhotoSet.objects.all()
@@ -144,35 +150,42 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
             request.user.message_set.create(message="You can't edit photos that aren't yours")
             return HttpResponseRedirect(reverse('photo', args=(photo.id, set_id)))
         if request.POST["action"] == "update":
-            photo_form = form_class(request.user, request.POST, instance=photo)
-            if photo_form.is_valid():
-                photoobj = photo_form.save()
+            form = form_class(request.user, request.POST, instance=photo)
+            if form.is_valid():
+                photo = form.save()
+
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(photo)
+                
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms: ObjectPermission.objects.assign(user_perms, photo)               
+ 
+                # assign creator permissions
+                ObjectPermission.objects.assign(photo.creator, photo) 
+
                 request.user.message_set.create(message=_("Successfully updated photo '%s'") % photo.title)
-                include_kwargs = {"id": photo.id, "set_id": set_id}
-                redirect_to = reverse("photo", kwargs=include_kwargs)
-                return HttpResponseRedirect(redirect_to)
+                return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
         else:
-            photo_form = form_class(instance=photo)
+            form = form_class(request.user, instance=photo)
 
     else:
-        photo_form = form_class(instance=photo)
+        form = form_class(request.user, instance=photo)
 
     return render_to_response(template_name, {
-        "photo_form": photo_form,
+        "photo_form": form,
         "photo": photo,
         "photo_sets": photo_sets,
     }, context_instance=RequestContext(request))
 
 @login_required
-def destroy(request, id):
+def delete(request, id):
     """ delete photo """
-
     photo = get_object_or_404(Image, id=id)
-    # if no permission; raise 404 exception
-    if not photo.check_perm(request.user,'photos.delete_image'):
-        raise Http404
 
-    print "request.method:", request.method
+    # permissions
+    if not request.user.has_perm('photos.delete_image', photo):
+        return render_to_403()
 
     if request.method == "POST":
         request.user.message_set.create(message=_("Successfully deleted photo '%s'") % photo.title)
@@ -187,26 +200,37 @@ def destroy(request, id):
 def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/photo-set/add.html"):
     """ Add a photo set """
 
-    # if no permission; raise 404 exception
+    # if no permission; permission exception
     if not request.user.has_perm('photos.add_photoset'):
-        raise Http404
+        return render_to_403()
 
     if request.method == "POST":
         if request.POST["action"] == "add":
 
-            photoset_form = form_class(request.user, request.POST)
-            if photoset_form.is_valid():
-                photo_set = photoset_form.save(commit=False)
+            form = form_class(request.user, request.POST)
+            if form.is_valid():
+                photo_set = form.save(commit=False)
+                photo_set.creator = request.user
+                photo_set.creator_username = request.user.username
+                photo_set.owner = request.user
+                photo_set.owner_username = request.user.username
                 photo_set.author = request.user
                 photo_set.save()
+
+                # assign permissions for selected users
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms: ObjectPermission.objects.assign(user_perms, photo_set)
+                
+                # assign creator permissions
+                ObjectPermission.objects.assign(photo_set.creator, photo_set) 
 
                 request.user.message_set.create(message=_("Successfully added photo set!") + '')
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))
     else:
-        photoset_form = form_class()
+        form = form_class(request.user)
 
     return render_to_response(template_name, {
-        "photoset_form": photoset_form,
+        "photoset_form": form,
     }, context_instance=RequestContext(request))
 
 
@@ -214,32 +238,43 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
 def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photos/photo-set/edit.html"):
     photo_set = get_object_or_404(PhotoSet, id=id)
 
-    # if no permission; raise 404 exception
-    if not photo_set.check_perm(request.user,'photos.change_photoset'):
-        raise Http404
+    # if no permission; permission exception
+    if not request.user.has_perm('photos.edit_photoset', photo_set):
+        return render_to_403()
     
     if request.method == "POST":
         if request.POST["action"] == "edit":
-            photoset_form = form_class(request.user, request.POST, instance=photo_set)
-            if photoset_form.is_valid():
-                photo_set = photoset_form.save()
+            form = form_class(request.user, request.POST, instance=photo_set)
+            if form.is_valid():
+                photo_set = form.save()
                 request.user.message_set.create(message=_("Successfully updated photo set! ") + '')
+
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(photo_set)
+                
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms: ObjectPermission.objects.assign(user_perms, photo_set)               
+ 
+                # assign creator permissions
+                ObjectPermission.objects.assign(photo_set.creator, photo_set) 
+
                 
                 return HttpResponseRedirect(reverse('photoset_latest',))
     else:
-        photoset_form = form_class(instance=photo_set)
+        form = form_class(request.user, instance=photo_set)
 
     return render_to_response(template_name, {
-        "photoset_form": photoset_form,
+        "photoset_form": form,
     }, context_instance=RequestContext(request))
 
 @login_required
 def photoset_delete(request, id, template_name="photos/photo_set/delete.html"):
     photo_set = get_object_or_404(PhotoSet, id=id)
 
-    # if no permission; raise 404 exception
-    if not photo_set.check_perm(request.user,'photos.delete_photoset'):
-        raise Http404
+    # if no permission; permission exception
+    if not request.user.has_perm('photos.delete_photoset', photo_set):
+        return render_to_403()
 
     photo_set.delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', None))
@@ -284,9 +319,9 @@ def photos_batch_add(request, photoset_id=0):
         photoset_id is passed via url
     """
 
-    # if no permission; raise 404 exception
-    if not request.user.has_perm('photos.view_image'):
-        raise Http404
+    # if no permission; permission exception
+    if not request.user.has_perm('photos.add_image'):
+        return render_to_403()
 
     if request.method == 'POST':
 
@@ -405,6 +440,9 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
 
     photo_set = get_object_or_404(PhotoSet, id=id)
     photos = photo_set.image_set.all().order_by('date_added', 'id')
+
+    if not request.user.has_perm('photos.view_photoset', photo_set):
+        return render_to_403()
 
     # if private; set private message
     if photo_set.publish_type == 2:
