@@ -28,6 +28,10 @@ class Page(AuditingBaseModel):
 
     class Meta:
         permissions = (("view_page","Can view page"),)
-        
+
+    def get_absolute_url(self):
+        return ('page', [self.pk])
+    get_absolute_url = models.permalink(get_absolute_url)
+          
     def __unicode__(self):
         return self.title

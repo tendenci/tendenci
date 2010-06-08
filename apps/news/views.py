@@ -31,7 +31,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
     if request.method == "POST":
         form = form_class(request.user, request.POST, instance=news)
         if form.is_valid():
-            release = form.save()
+            news = form.save()
 
             return HttpResponseRedirect(reverse('news.view', args=[news.pk])) 
 

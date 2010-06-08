@@ -34,3 +34,14 @@ class News(AuditingBaseModel):
     enclosure_url = models.CharField(max_length=500, blank=True)
 
     useautotimestamp = models.BooleanField()
+
+    class Meta:
+        permissions = (("view_news","Can view news"),)
+        verbose_name_plural = "news"
+
+    def get_absolute_url(self):
+        return ('news.view', [self.pk])
+    get_absolute_url = models.permalink(get_absolute_url)
+      
+    def __unicode__(self):
+        return self.headline
