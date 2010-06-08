@@ -15,6 +15,7 @@
 	
     {% article_nav request.user %}
 
+	{% article_search %}
     {% autopaginate articles 10 %}
 	
 	<div class="articles-wrap">
@@ -41,14 +42,14 @@
 			</div>
 
 
-            <h2><a href="{% url article article.id %}">{{ article.headline }}</a></h2>
+            <h2><a href="{% url article article.pk %}">{% firstof article.headline "Untitled" %}</a></h2>
             <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
+            	<div class="submitted">Released on {{ article.release_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
             </div>
 
             <!-- delete-article form -->
-            <form name="article-delete" method="POST" action="{% url article.delete article.id %}">
+            <form name="article-delete" method="POST" action="{% url article.delete article.pk %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 
