@@ -4,8 +4,9 @@
 {% load humanize %}
 {% load pagination_tags %}
 {% load tagging_tags %}
+{% load photo_tags %}
 
-{% block title %}{{ photo_set.name }}{% endblock %}
+{% block title %}{{ block.super }}{{ photo_set.name }}{% endblock %}
 
 {% block extra_head %}
     <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
@@ -16,11 +17,7 @@
     <h1>{{ photo_set.name }}</h1>
 
     <div class="photos-nav">
-    	<a href="{% url photoset_latest %}">&laquo; Back to albums</a>
-    	<a href="{% url photoset_edit photo_set.id %}">Edit album</a>
-    	<a class="delete-photoset" href="{% url photoset_delete photo_set.id %}">Delete album</a>
-    	<a href="{% url photos_batch_add photo_set.id %}">Add photos</a>
-    	<a href="{% url photos_batch_edit photo_set.id %}">Edit photos</a>
+		{% photo_set_nav request.user %}
 	</div>
 
 	<div id="photos-wrap">

@@ -2,8 +2,9 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from photos.models import Image, PhotoSet
+from perms.forms import AuditingBaseForm
 
-class PhotoUploadForm(forms.ModelForm):
+class PhotoUploadForm(AuditingBaseForm):
     
     class Meta:
         model = Image
@@ -19,7 +20,7 @@ class PhotoUploadForm(forms.ModelForm):
         self.user = user
         super(PhotoUploadForm, self).__init__(*args, **kwargs)
 
-class PhotoEditForm(forms.ModelForm):
+class PhotoEditForm(AuditingBaseForm):
     
     class Meta:
         model = Image
@@ -31,24 +32,32 @@ class PhotoEditForm(forms.ModelForm):
         self.user = user
         super(PhotoEditForm, self).__init__(*args, **kwargs)
 
-class PhotoSetAddForm(forms.ModelForm):
+class PhotoSetAddForm(AuditingBaseForm):
     """ Photo-Set Add-Form """
 
     class Meta:
         model = PhotoSet
-        exclude = ('author')
+        fields = (
+            'name',
+            'description',
+            'tags',
+        )
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
-        super(PhotoSetAddForm, self).__init__(*args, **kwargs)
+        super(PhotoSetAddForm, self).__init__(user, *args, **kwargs)
 
-class PhotoSetEditForm(forms.ModelForm):
+class PhotoSetEditForm(AuditingBaseForm):
     """ Photo-Set Edit-Form """
 
     class Meta:
         model = PhotoSet
-        exclude = ('author', 'update_dt', 'create_dt')
+        fields = (
+            'name',
+            'description',
+            'tags',
+        )
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
-        super(PhotoSetEditForm, self).__init__(*args, **kwargs)
+        super(PhotoSetEditForm, self).__init__(user, *args, **kwargs)
