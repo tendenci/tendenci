@@ -15,7 +15,8 @@
     <h1>{{ MODULE_STORIES_LABEL }} Search</h1>
 	
     {% stories_nav request.user %}
-
+    
+	{% stories_search %}
     {% autopaginate stories 10 %}
 	
 	<div class="stories-wrap">
@@ -42,14 +43,14 @@
 			</div>
 
 
-            <h2><a href="{% url story story.id %}">{{ story.title }}</a></h2>
+            <h2><a href="{% url story story.pk %}">{{ story.title }}</a></h2>
             <div class="content">{{ story.content|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ story.create_dt|date:"D d M Y P" }} by {{ story.creator }}</div>
             </div>
 
             <!-- delete-article form -->
-            <form name="story-delete" method="POST" action="{% url story.delete story.id %}">
+            <form name="story-delete" method="POST" action="{% url story.delete story.pk %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 

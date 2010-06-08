@@ -16,3 +16,7 @@ def news_nav(context, user):
         "user": user
     })
     return context
+
+@register.inclusion_tag("news/search-form.html", takes_context=True)
+def news_search(context):
+    return context

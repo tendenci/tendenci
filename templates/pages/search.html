@@ -16,7 +16,8 @@
     <h1>{{ MODULE_PAGES_LABEL }} Search</h1>
 
 	{% page_nav request.user %}
-
+	
+	{% page_search %}
     {% autopaginate pages 10 %}
 
 	<div class="pages-wrap">
@@ -45,14 +46,14 @@
 			</div>
 
 
-            <h2><a href="{% url page page.id %}">{{ page.title }}</a></h2>
+            <h2><a href="{% url page page.pk %}">{{ page.title }}</a></h2>
             <div class="content">{{ page.content|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ page.create_dt|date:"D d M Y P" }} by {{ page.creator }}</div>
             </div>
 
             <!-- delete-page form -->
-            <form name="page-delete" method="POST" action="{% url page.delete page.id %}">
+            <form name="page-delete" method="POST" action="{% url page.delete page.pk %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 

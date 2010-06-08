@@ -16,3 +16,7 @@ def page_nav(context, user):
         "user": user
     })
     return context
+
+@register.inclusion_tag("pages/search-form.html", takes_context=True)
+def page_search(context):
+    return context

@@ -1,6 +1,7 @@
 from django.db import models
 
 from perms.models import AuditingBaseModel
+from pages.managers import PageManager
 
 class Page(AuditingBaseModel):
 
@@ -26,12 +27,14 @@ class Page(AuditingBaseModel):
 
     metacanonical = models.TextField(blank=True)
 
+    objects = PageManager()
+    
     class Meta:
         permissions = (("view_page","Can view page"),)
 
     @models.permalink
     def get_absolute_url(self):
-        return ("page", [self.id])
-        
+        return ("page", [self.pk])
+
     def __unicode__(self):
         return self.title
