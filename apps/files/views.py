@@ -23,29 +23,21 @@ def index(request, id=None, download='', template_name="files/view.html"):
     try: data = file.file.read()
     except: raise Http404
 
-    types = { # list of uncommon mimetypes
-        'application/msword': ('.doc','.docx'),
-        'application/ms-powerpoint': ('.ppt','.pptx'),
-        'application/ms-excel': ('.xls','.xlsx'),
-        'video/x-ms-wmv': ('.wmv',),
-    }
-
-    # add mimetypes
-    for type in types:
-        for ext in types[type]:
-            mimetypes.add_type(type, ext)
-
-    mimetype = mimetypes.guess_type(file.file.name)[0]
-    response = HttpResponse(data, mimetype=mimetype)
+    if file.mime_type():
+        response = HttpResponse(data, mimetype=file.mime_type())
+    else: raise Http404
 
     if download: download = 'attachment;'
     response['Content-Disposition'] = '%s filename=%s'% (download, file.file.name)
 
-    if mimetype: return response
-    else: raise Http404
+    return response
 
 def search(request, template_name="files/search.html"):
-    files = File.objects.all().order_by('-create_dt')
+#    files = File.objects.all().order_by('-create_dt')
+
+    query = request.GET.get('q', None)
+    files = File.objects.search(query)
+
     return render_to_response(template_name, {'files':files}, 
         context_instance=RequestContext(request))
 
