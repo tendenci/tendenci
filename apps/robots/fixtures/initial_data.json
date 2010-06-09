@@ -1,0 +1,662 @@
+[
+    {
+        "pk": 1, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.google.com/bot.html", 
+            "status": true, 
+            "version": "2.1", 
+            "name": "Googlebot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://search.msn.com/msnbot.htm", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "msnbot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://help.yahoo.com/help/us/ysearch/slurp", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "Yahoo! Slurp", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.turnitin.com/robot/crawlerinfo.html", 
+            "status": true, 
+            "version": "2.1", 
+            "name": "TurnitinBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.cuill.com/twiceler/robot.html", 
+            "status": true, 
+            "version": "0.9", 
+            "name": "Twiceler", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.shopwiki.com/wiki/Help:Bot", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "ShopWiki", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://search.msn.com/msnbot.htm", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "msnbot-media", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.flatlandindustries.com/flatlandbot.php", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "flatlandbot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "0.01", 
+            "name": "Yeti", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://majestic12.co.uk/bot.php", 
+            "status": true, 
+            "version": "1.0.8", 
+            "name": "MJ12bot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.cazoodle.com", 
+            "status": true, 
+            "version": "0.9-dev", 
+            "name": "CazoodleBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.gigablast.com/spider.html", 
+            "status": true, 
+            "version": "3.0", 
+            "name": "Gigabot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.internetofficer.com/web-robot/geniebot/", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "genieBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.internetofficer.com/index.php?s=surveybot", 
+            "status": true, 
+            "version": "2.3", 
+            "name": "SurveyBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.picsearch.com/bot.html", 
+            "status": true, 
+            "version": "0.1", 
+            "name": "psbot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://irl.cs.tamu.edu/crawler", 
+            "status": true, 
+            "version": "3.0", 
+            "name": "IRLbot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.qihoo.com/", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "QihooBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.internetofficer.com/web-robot/accoona/", 
+            "status": true, 
+            "version": "1.1.2", 
+            "name": "Accoona-AI-Agent", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.blogbot.com/", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "BlogBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.accelobot.com", 
+            "status": true, 
+            "version": "1.12.0", 
+            "name": "heritrix", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.become.com/site_owners.html", 
+            "status": true, 
+            "version": "3.0", 
+            "name": "BecomeBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.yodao.com/help/webmaster/spider/", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "YodaoBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.yoriwa.com/", 
+            "status": true, 
+            "version": "0.1", 
+            "name": "Yoriwa", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://zaptxt.com", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "ZapTXT", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.omni-explorer.com", 
+            "status": true, 
+            "version": "6.9.2", 
+            "name": "OmniExplorer_Bot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.exabot.com/go/robot", 
+            "status": true, 
+            "version": "3.0", 
+            "name": "Exabot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "0.1", 
+            "name": "RB2B-bot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.snap.com", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "Snapbot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.webbot.ru/bot.html", 
+            "status": true, 
+            "version": "0.1", 
+            "name": "Webbot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.useragentstring.com/noxtrumbot1.0_id_1642.php", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "noxtrumbot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 31, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://about.zoominfo.com/About/NextGenSearchBot.aspx", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "NextGenSearchBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.searchme.com/support/", 
+            "status": true, 
+            "version": "1.0b", 
+            "name": "Charlotte", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 33, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.newsgator.com", 
+            "status": true, 
+            "version": "2.0", 
+            "name": "NewsGatorOnline", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.bloglines.com", 
+            "status": true, 
+            "version": "3.1", 
+            "name": "Bloglines", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 35, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.google.com/feedfetcher.html", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "Feedfetcher-Google", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 36, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "0.9", 
+            "name": "Tasapspider", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 37, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.zibb.com/crawler/", 
+            "status": true, 
+            "version": "0.1", 
+            "name": "zibber", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 38, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.baidu.com/search/spider_jp.html", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "Baiduspider", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 39, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://research.microsoft.com/research/sv/msrbot/", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "MSRBOT", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 40, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.entireweb.com/about/search_tech/speedy_spider/", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "Speedy", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 41, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.getapodcast.com", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "GetAPodcast", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 42, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.webalta.net/ru/about_webmaster.html", 
+            "status": true, 
+            "version": "2.0", 
+            "name": "WebAlta", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 43, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://iri-uk.com", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "3GSE", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 44, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "1.2", 
+            "name": "Xenu", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 45, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://ews.converasearch.com/crawl.htm", 
+            "status": true, 
+            "version": "0.9", 
+            "name": "ConveraCrawler", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 46, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.wrensoft.com", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "ZoomSpider", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 47, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "gsa-crawler", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 48, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.yanga.co.uk/", 
+            "status": true, 
+            "version": "1.1", 
+            "name": "Yanga", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 49, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://help.goo.ne.jp/door/crawler.html", 
+            "status": true, 
+            "version": "3.0", 
+            "name": "ichiro", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 50, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.wasalive.com", 
+            "status": true, 
+            "version": "1.4", 
+            "name": "Wasabot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 51, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "WebVac", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 52, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://spider.dealgates.com/bot.html", 
+            "status": true, 
+            "version": "1.1", 
+            "name": "DealGates", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 53, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.alexa.com/site/help/webmasters", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "ia_archiver", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 54, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://search.msn.com/msnbot.htm", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "librabot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 55, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "0.1", 
+            "name": "Plonebot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 56, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "Nutch", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 57, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.hanrss.com", 
+            "status": true, 
+            "version": "1.1", 
+            "name": "HanRSS", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 58, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "Dixero", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 59, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://feedparser.org/", 
+            "status": true, 
+            "version": "4.1", 
+            "name": "UniversalFeedParser", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 60, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "6.0", 
+            "name": "FAST Enterprise", 
+            "status_detail": "active"
+        }
+    }
+]
