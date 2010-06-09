@@ -1,10 +1,25 @@
 {% extends "accounts/base.html" %}
 
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/accounts.css">
+{% endblock %}
+
 {% block body %}
 <h2>Log In to the Site</h2>
+{% if user.is_authenticated %}
+    <p>
+       You are already logged in as {{ user }}.
+        <a href="{% url auth_logout %}">Logout?</a>
+    </p>
+{% else %}
+
 <form method="post" action="">{% csrf_token %}
- {{ form.as_p }}
+{{form.as_p}}
+
+<div class="submitbutton">
 <input type="submit" name="submit" value="Log in" />
+</div>
 </form>
 
 <h3>Forgot your password?</h3>
@@ -12,5 +27,7 @@
 
 <h3>Don't have an account?</h3>
 <p><a href="{% url registration_register %}">Register Now </a></p>
+
+{% endif %}
  
 {% endblock %}

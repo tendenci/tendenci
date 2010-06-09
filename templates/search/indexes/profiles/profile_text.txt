@@ -1,0 +1,9 @@
+{{ object.user.get_full_name }} 
+{{ object.user.username }}
+{{ object.email }}
+{{ object.company }}
+{{ object.phone }}
+{{ object.address }}
+{{ object.city }}
+{{ object.state }}
+{{ object.country }}

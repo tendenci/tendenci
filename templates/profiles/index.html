@@ -1,5 +1,6 @@
 {% extends "profiles/base.html" %}
 {% load avatar_tags %}
+{% load base_tags %}
 {% load profile_tags %}
 
 {% block title %}Profile View{% endblock %}
@@ -19,8 +20,11 @@
 	    <h1>{{ user_this.get_full_name }}({{ user_this.username }})</h1>
 	    <div class="clear-right"></div>
 	    <div class="profile-left">
-	    <div class="profile-icon"><a href="{% url avatar_change %}">{% avatar user_this 128 %}</a></div>
-	    <small><a href="{% url profile.change_avatar  user_this.id %}">Change Picture</a></small>
+	    <div class="profile-icon"><a href="{% url profile.change_avatar  user_this.id %}">{% avatar user_this 128 %}</a></div>
+	    {% assign can_edit_user profile|args:request.user|call:'allow_edit_by' %}
+	    {% if can_edit_user %}
+	    	<small><a href="{% url profile.change_avatar  user_this.id %}">Change Picture</a></small>
+	    {%endif%}
 	    </div>
 	    <div class="profile-right">
 	    	<div class="contact-info profile-section">
