@@ -19,8 +19,6 @@ class LatestAlbums(Feed):
 class LatestAlbumPhotos(Feed):
 
     def get_object(self, request, set_id):
-        photo_set = PhotoSet.objects.get(id=set_id)
-        
         return PhotoSet.objects.get(id=set_id)
 
     def title(self, album):
