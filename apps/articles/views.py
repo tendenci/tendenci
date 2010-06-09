@@ -20,15 +20,10 @@ def index(request, id=None, template_name="articles/view.html"):
         return render_to_403()
 
 def search(request, template_name="articles/search.html"):
-    if request.method == 'GET':
-        if 'q' in request.GET:
-            query = request.GET['q']
-        else:
-            query = None
-        articles = Article.objects.search(query)
-    else:
-        articles = Article.objects.search()
-        
+
+    query = request.GET.get('q', None)
+    articles = Article.objects.search(query)
+
     return render_to_response(template_name, {'articles':articles}, 
         context_instance=RequestContext(request))
 
