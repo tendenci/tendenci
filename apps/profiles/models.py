@@ -5,6 +5,7 @@ from django.conf import settings
 
 from timezones.fields import TimeZoneField
 from perms.models import AuditingBaseModel
+from entities.models import Entity
 
 class ProfileManager(models.Manager):
     def create_profile(self, user):
@@ -21,7 +22,7 @@ class Profile(AuditingBaseModel):
     user = models.ForeignKey(User, unique=True, related_name="profile", verbose_name=_('user'))
     
     guid = models.CharField(max_length=50)
-    entity_id = models.IntegerField(default=1)
+    entity = models.ForeignKey(Entity, default=1, blank=True, null=True)
     pl_id = models.IntegerField(default=1)
     member_number = models.CharField(_('member number'), max_length=50, blank=True)
     historical_member_number = models.CharField(_('historical member number'), max_length=50)
@@ -118,3 +119,37 @@ class Profile(AuditingBaseModel):
         else:
             setattr(self.user, 'is_developer', False)
             return False
+        
+    # if this profile allows view by user2_compare
+    def allow_view_by(self, user2_compare):
+        boo = False
+        if self.is_admin():
+            boo = True
+        else: 
+            if user2_compare == self.user:
+                boo = True
+            else:
+                if self.creator == user2_compare or self.owner == user2_compare:
+                    if self.status == 1:
+                        boo = True
+                else:
+                    if user2_compare.has_perm('profiles.view_profile', self):
+                        boo = True
+            return boo
+    
+    # if this profile allows edit by user2_compare
+    def allow_edit_by(self, user2_compare):
+        if user2_compare.is_superuser:
+            return True
+        else: 
+            if user2_compare == self.user:
+                return True
+            else:
+                if self.creator == user2_compare or self.owner == user2_compare:
+                    if self.status == 1:
+                        return True
+                else:
+                    if user2_compare.has_perm('profiles.change_profile', self):
+                        return True
+        return False
+            

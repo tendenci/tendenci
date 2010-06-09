@@ -16,19 +16,18 @@
 {% users_nav request.user user_this %}
     <h1>Users Search</h1>
 
-    {% autopaginate users 10 %}
+    {% autopaginate profiles 10 %}
 
 	<div class="profiles-wrap">
-    {% for user in users %}
-    	{% with user.get_profile as profile %}
+    {% for profile in profiles %}
 		<div class="profile-wrap">
-			 {% users_options request.user user %}
-            <h2><a href="{% url profiles.views.index user.username %}">{{ user.first_name }} {{ user.last_name }} ({{user.email}})</a></h2>
+			 {% users_options request.user profile.user %}
+            <h2><a href="{% url profiles.views.index user.username %}">{{ profile.user.first_name }} {{ profile.user.last_name }} ({{profile.user.email}})</a></h2>
            <div class="clear-right"></div>
            
             <div class="content">
-            	{% if user.email %}
-            	<b>Email:</b> {{ user.email }}<br />
+            	{% if profile.user.email %}
+            	<b>Email:</b> {{ profile.user.email }}<br />
             	{% endif %}
             	{% if profile.company %}
             	<b>Company:</b> {{ profile.company }}<br />
@@ -44,7 +43,7 @@
             </form>
 
 		</div>
-		{% endwith %}
+		
 	{% empty %}
 		<div>0 Results Found</div>
 		

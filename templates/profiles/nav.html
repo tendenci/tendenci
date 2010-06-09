@@ -14,7 +14,7 @@
 				<li>
 				<a href="/users/">Users:</a>
 				</li> 
-				{% has_perm user site_settings.change_setting as can_edit_setting %}
+				{% has_perm user_current site_settings.change_setting as can_edit_setting %}
 				{% if can_edit_setting %}
 					<li>	
 					<a href="{% url site_settings.views.list "module" "user" %}">Settings</a>
@@ -22,7 +22,7 @@
 				{% endif %}
 				
 						{% if user_this.id %}
-							{% has_perm user profiles.view_profile "profile" as can_view_user %}
+							{% has_perm user_current profiles.view_profile "profile" as can_view_user %}
 							{% if can_view_user %}
 								<li>
 									<a href="{% url profiles.views.index user_this.username %}">View</a>
@@ -31,7 +31,7 @@
 						{% endif %}
 						
 						{% if user_this.id %}
-							{% has_perm user profiles.change_profile "profile" as can_edit_user %}
+							{% has_perm user_current profiles.change_profile "profile" as can_edit_user %}
 							{% if can_edit_user %}
 							<li>
 							<a href="{% url profile.edit user_this.id %}">Edit</a>
@@ -43,13 +43,13 @@
 						<a href="{% url profile.search %}">Search</a>
 						</li>
 							
-						{% has_perm user profiles.add_profile "profile" as can_add_user %}
+						{% has_perm user_current profiles.add_profile "profile" as can_add_user %}
 						{% if can_add_user %}
 						<li>
 						<a href="{% url profile.add %}">Add</a>
 						</li>
 						{% endif %}
-					{% if user.is_authenticated %}
+					{% if user_current.is_authenticated %}
 					<li>
 					<a href="{% url auth_logout %}">Log Off</a>
 					</li> 
