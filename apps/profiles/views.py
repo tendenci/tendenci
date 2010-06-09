@@ -1,9 +1,9 @@
 # django
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 
 # for password change
@@ -25,12 +25,12 @@ except ImproperlyConfigured:
     notification = None
     
 friends = False
-if 'friends' in settings.INSTALLED_APPS:
-    friends = True
-    from friends.models import Friendship
+#if 'friends' in settings.INSTALLED_APPS:
+#    friends = True
+#    from friends.models import Friendship
 
 from profiles.models import Profile
-from profiles.forms import ProfileForm, UserForm, UserEditForm, UserPermissionForm
+from profiles.forms import ProfileForm, UserPermissionForm
 
 from base.http import render_to_403
 
@@ -39,11 +39,10 @@ from user_groups.models import Group, GroupMembership
 # view profile  
 @login_required 
 def index(request, username="", template_name="profiles/index.html"):
-    print username
     if not username:
         username = request.user.username
     user_this = get_object_or_404(User, username=username)
-    
+
     try:
         #profile = Profile.objects.get(user=user)
         profile = user_this.get_profile()
@@ -51,15 +50,21 @@ def index(request, username="", template_name="profiles/index.html"):
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
         
+    # security check    
+    if not profile.allow_view_by(request.user): return render_to_403()
+        
     return render_to_response(template_name, {"user_this": user_this, "profile":profile,
                                               "user_objs":{"user_this": user_this } }, 
                               context_instance=RequestContext(request))
- 
+   
 @login_required   
 def search(request, template_name="profiles/search.html"):
-    users = User.objects.all()
+    if request.user.is_superuser:
+        profiles = Profile.objects.all()
+    else:
+        profiles = Profile.objects.filter(status=1, status_detail='active')
    
-    return render_to_response(template_name, {'users':users, "user_this":None}, 
+    return render_to_response(template_name, {'profiles':profiles, "user_this":None}, 
         context_instance=RequestContext(request))
 
 
@@ -69,12 +74,14 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
     
     if request.method == "POST":
         #form_user = form_class2(request.user, request.POST)
-        form = form_class(None, request.POST, request.user)
+        form = form_class(request.user, None, request.POST, request.user)
         #form2 = form_class2(request.POST, request.user)
         
         if form.is_valid():
             profile = form.save(request, None)
             new_user = profile.user
+            
+            # security_levl
             security_level = form.cleaned_data['security_level']
             if security_level == 'developer':
                 new_user.is_superuser = 1
@@ -85,12 +92,19 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
             else:
                 new_user.is_superuser = 0
                 new_user.is_staff = 0
-           
+                
+            # interactive
+            interactive = form.cleaned_data['interactive']
+            if interactive == 1:
+                new_user.is_active = 1
+            else:
+                new_user.is_active = 0
+
             new_user.save()
             
             return HttpResponseRedirect(reverse('profile', args=[new_user.username]))
     else:
-        form = form_class(None)
+        form = form_class(request.user, None)
         #form2 = form_class2()
        
     return render_to_response(template_name, {'form':form, 'user_this':None}, 
@@ -103,17 +117,17 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
     
     try:
         profile = Profile.objects.get(user=user_edit)
-        if not request.user.has_perm('profiles.change_profile', profile): return render_to_403()
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
-        if not request.user.has_perm('profiles.change_profile', profile): return render_to_403()
         
+    if not request.user.has_perm('profiles.change_profile', profile): return render_to_403() 
+       
     if request.method == "POST":
         #form_user = form_class2(request.user, request.POST)
         if profile:
-            form = form_class(user_edit, request.POST, request.user, instance=profile)
+            form = form_class(request.user, user_edit, request.POST, request.user, instance=profile)
         else:
-            form = form_class(user_edit, request.POST, request.user )
+            form = form_class(request.user, user_edit, request.POST, request.user )
         #form2 = form_class2(request.POST, request.user, instance=user_edit)
         
         if form.is_valid():
@@ -132,15 +146,23 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
             else:
                 user_edit.is_superuser = 0
                 user_edit.is_staff = 0
+                
+            # interactive
+            interactive = form.cleaned_data['interactive']
+            if interactive == "1":
+                user_edit.is_active = 1
+            else:
+                user_edit.is_active = 0
+                
             user_edit.save()
             
             return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
     else:
         if profile:
-            form = form_class(user_edit, instance=profile)
+            form = form_class(request.user, user_edit, instance=profile)
             
         else:
-            form = form_class(user_edit,)
+            form = form_class(request.user, user_edit,)
         #form2 = form_class2(instance=user_edit)
 
     return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form,}, 
@@ -173,7 +195,13 @@ def delete(request, id, template_name="profiles/delete.html"):
 @login_required
 def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="profiles/edit_perms.html"):
     user_edit = get_object_or_404(User, pk=id)
-    profile = user_edit.get_profile()
+    try:
+        profile = Profile.objects.get(user=user_edit)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user_edit)
+   
+    # for now, only admin can grant/remove permissions
+    if not request.user.is_superuser: return render_to_403()
     
     if request.method == "POST":
         form = form_class(request.POST, request.user, instance=user_edit)
@@ -243,6 +271,13 @@ def _get_next(request):
 @login_required
 def change_avatar(request, id, extra_context={}, next_override=None):
     user_edit = get_object_or_404(User, pk=id)
+    try:
+        profile = Profile.objects.get(user=user_edit)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user_edit)
+        
+    if not request.user.has_perm('profiles.change_profile', profile): return render_to_403()
+    
     avatars = Avatar.objects.filter(user=user_edit).order_by('-primary')
     if avatars.count() > 0:
         avatar = avatars[0]
@@ -276,8 +311,8 @@ def change_avatar(request, id, extra_context={}, next_override=None):
                 message=_("Successfully updated your avatar."))
         if updated and notification:
             notification.send([request.user], "avatar_updated", {"user": user_edit, "avatar": avatar})
-            if friends:
-                notification.send((x['friend'] for x in Friendship.objects.friends_for_user(user_edit)), "avatar_friend_updated", {"user": user_edit, "avatar": avatar})
+            #if friends:
+            #    notification.send((x['friend'] for x in Friendship.objects.friends_for_user(user_edit)), "avatar_friend_updated", {"user": user_edit, "avatar": avatar})
         return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
         #return HttpResponseRedirect(next_override or _get_next(request))
     return render_to_response(

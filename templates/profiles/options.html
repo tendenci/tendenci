@@ -1,15 +1,20 @@
 {% load base_tags %}
 
 <div class="t-iconrow">
+{% get_or_create_profile_for user_this as "user_this_profile" %}
+{% assign can_edit_user user_this_profile|args:request.user|call:'allow_edit_by' %}
+
 	{% if user_this.id %}
-		{% has_perm user profiles.change_profile profile as can_edit_user %}
+		
 			{% if profile.status == 0 %}
 				<a href="{% url profile.edit user_this.id %}" title="Inactive" class="t-statusdetail"
 				 style="background-color:#FF0000;">Inactive</a>
 			{% else %}
-				{% if profile.status_detail|lower != 'active' %}
-					<a href="{% url profile.edit user_this.id %}" class="t-statusdetail" 
-					title="{{ profile.status_detail }}"  style="background-color:#52008F;">{{ profile.status_detail|title }}</a>
+				{% if profile.status_detail %}
+					{% if profile.status_detail|lower != 'active' %}
+						<a href="{% url profile.edit user_this.id %}" class="t-statusdetail" 
+						title="{{ profile.status_detail }}"  style="background-color:#52008F;">{{ profile.status_detail|title }}</a>
+					{% endif %}
 				{% endif %}
 			{% endif %}
 			
@@ -22,28 +27,32 @@
 			{% endif %}
 	{% endif %}
 
-  <div class="more-options-wrap">
-    <a href="javascript:;" class="more-options-trigger">More options <small>&#9660;</small></a>
-    <div class="more-options-target">
-        <ul>
-			<li class="divider">
-			 <a href="{% url profile.edit_groups  user_this.id %}" class="usergroups" title=="Edit Groups">Edit Groups</a>
-			</li>
-			
-			<li>
-			<a href="{% url profile.edit_perms user_this.id %}" class="permissions" title=="Edit Permissions">Permissions</a>
-			</li>
-			
-			<li>               
-			 <a href="{% url auth_password_change user_this.id %}" class="changepassword" title=="Change Password">Change Password</a>
-			</li> 
-			
-			<li>               
-			 <a href="{% url profile.delete user_this.id %}" class="delete" title=="Delete User">Delete</a>
-			</li>
-			
-		 </ul>
-        </div>
-  </div>
+ {% if can_edit_user %}
+	  <div class="more-options-wrap">
+	    <a href="javascript:;" class="more-options-trigger">More options <small>&#9660;</small></a>
+	    <div class="more-options-target">
+	        <ul>
+				<li class="divider">
+				 <a href="{% url profile.edit_groups  user_this.id %}" class="usergroups" title=="Edit Groups">Edit Groups</a>
+				</li>
+				
+				{% if user_current.is_superuser %}
+				<li>
+				<a href="{% url profile.edit_perms user_this.id %}" class="permissions" title=="Edit Permissions">Permissions</a>
+				</li>
+				{% endif %}
+				
+				<li>               
+				 <a href="{% url auth_password_change user_this.id %}" class="changepassword" title=="Change Password">Change Password</a>
+				</li> 
+				
+				<li>               
+				 <a href="{% url profile.delete user_this.id %}" class="delete" title=="Delete User">Delete</a>
+				</li>
+				
+			 </ul>
+	        </div>
+	  </div>
+  {% endif %}
 
 </div>
