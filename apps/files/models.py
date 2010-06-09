@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 from perms.models import AuditingBaseModel
 from django.contrib.contenttypes.models import ContentType
+from files.managers import FileManager
 
 class File(AuditingBaseModel):
     file = models.FileField(upload_to='files')
@@ -77,6 +78,8 @@ class File(AuditingBaseModel):
 
         # return image path
         return icons_dir + '/' + icons[self.type()]
+
+    objects = FileManager()
 
     class Meta:
         permissions = (("view_file","Can view file"),)
