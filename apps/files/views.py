@@ -33,7 +33,11 @@ def index(request, id=None, download='', template_name="files/view.html"):
     return response
 
 def search(request, template_name="files/search.html"):
-    files = File.objects.all().order_by('-create_dt')
+#    files = File.objects.all().order_by('-create_dt')
+
+    query = request.GET.get('q', None)
+    files = File.objects.search(query)
+
     return render_to_response(template_name, {'files':files}, 
         context_instance=RequestContext(request))
 
