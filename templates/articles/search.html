@@ -7,12 +7,13 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/articles.css">
+<link rel="alternate" type="application/rss+xml" title="Latest Articles" href="{% url article.feed %}" />
 {% endblock %}
 
 {% block body %}
 <div class="t">
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_ARTICLES_LABEL }} Search</h1>
-	
+
     {% article_nav request.user %}
 
 	{% article_search %}

@@ -7,6 +7,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/files.css">
+<link rel="alternate" type="application/rss+xml" title="Latest Files" href="{% url file.feed %}" />
 <style type="text/css">
 	.t .file-wrap .icon {
 		float: left;
@@ -33,10 +34,12 @@
 	
     {% file_nav request.user %}
 
+	{% file_search %}
     {% autopaginate files 10 %}
 	
 	<div class="files-wrap">
     {% for file in files %}
+    {% with file.object as file %}
     	{% has_perm user files.view_file file as can_view %}
     	{% if can_view %}
 		<div class="file-wrap">
@@ -63,18 +66,18 @@
             <div class="icon"><img src="{{ file.icon }}" /></div>
             {% endif %}
 
-            <h2><a href="{% url file file.id %}">{{ file.basename }}</a></h2>
+            <h2><a href="{% url file file.pk %}">{{ file.basename }}</a></h2>
 
             {% if file.type == 'image' %}
-            <div class="download"><a href="{% url file file.id 'download' %}">Download this image</a></div>
+            <div class="download"><a href="{% url file file.pk 'download' %}">Download this image</a></div>
             {% endif %}
 
             {% if file.type == 'pdf' %}
-            <div class="download"><a href="{% url file file.id 'download' %}">Download this PDF</a></div>
+            <div class="download"><a href="{% url file file.pk 'download' %}">Download this PDF</a></div>
             {% endif %}
 
             {% if file.type == 'text' %}
-            <div class="download"><a href="{% url file file.id 'download' %}">Download this text file</a></div>
+            <div class="download"><a href="{% url file file.pk 'download' %}">Download this text file</a></div>
             {% endif %}
 
 			<div class="meta">
@@ -82,11 +85,12 @@
             </div>
 
             <!-- delete-file form -->
-            <form name="file-delete" method="POST" action="{% url file.delete file.id %}">
+            <form name="file-delete" method="POST" action="{% url file.delete file.pk %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>
 		{% endif %}
+	{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>
     {% endfor %}

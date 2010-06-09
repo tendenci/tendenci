@@ -21,20 +21,18 @@ class News(AuditingBaseModel):
     create_dt = models.DateTimeField(auto_now_add=True)
     syndicate = models.BooleanField()
     design_notes = models.TextField(blank=True)
-
     # TODO: wonder if type and length are missing
     enclosure_url = models.CharField(max_length=500, blank=True)
     useautotimestamp = models.BooleanField()
-    
-    objects = NewsManager()
 
+    objects = NewsManager()
     class Meta:
         permissions = (("view_news","Can view news"),)
         verbose_name_plural = "news"
 
+    @models.permalink
     def get_absolute_url(self):
-        return ('news.view', [self.pk])
-    get_absolute_url = models.permalink(get_absolute_url)
-      
+        return ("news", [self.pk])
+
     def __unicode__(self):
         return self.headline

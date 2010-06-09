@@ -1,8 +1,9 @@
-import os, uuid
+import os, mimetypes, uuid
 from django.db import models
 from django.conf import settings
 from perms.models import AuditingBaseModel
 from django.contrib.contenttypes.models import ContentType
+from files.managers import FileManager
 
 class File(AuditingBaseModel):
     file = models.FileField(upload_to='files')
@@ -40,6 +41,21 @@ class File(AuditingBaseModel):
 
         return None
 
+    def mime_type(self):
+        types = { # list of uncommon mimetypes
+            'application/msword': ('.doc','.docx'),
+            'application/ms-powerpoint': ('.ppt','.pptx'),
+            'application/ms-excel': ('.xls','.xlsx'),
+            'video/x-ms-wmv': ('.wmv',),
+        }
+        # add mimetypes
+        for type in types:
+            for ext in types[type]:
+                mimetypes.add_type(type, ext)
+        # guess mimetype
+        mimetype = mimetypes.guess_type(self.file.name)[0]
+        return mimetype
+
     def icon(self):
 
         # if we don't know the type
@@ -63,8 +79,14 @@ class File(AuditingBaseModel):
         # return image path
         return icons_dir + '/' + icons[self.type()]
 
+    objects = FileManager()
+
     class Meta:
         permissions = (("view_file","Can view file"),)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("file", [self.id])
 
     def __unicode__(self):
         return self.name

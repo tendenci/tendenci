@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import patterns, url
+from articles.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('',                  
     url(r'^$', 'articles.views.index', name="articles"),
@@ -8,4 +9,5 @@ urlpatterns = patterns('',
     url(r'^add/$', 'articles.views.add', name="article.add"),
     url(r'^edit/(?P<id>\d+)/$', 'articles.views.edit', name="article.edit"),
     url(r'^delete/(?P<id>\d+)/$', 'articles.views.delete', name="article.delete"),
+    url(r'^feed/$', LatestEntriesFeed(), name='article.feed'),
 )

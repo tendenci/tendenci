@@ -16,3 +16,7 @@ def file_nav(context, user):
         "user": user
     })
     return context
+
+@register.inclusion_tag("files/search-form.html", takes_context=True)
+def file_search(context):
+    return context

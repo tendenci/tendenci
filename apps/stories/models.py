@@ -21,10 +21,10 @@ class Story(AuditingBaseModel):
         permissions = (("view_story","Can view story"),)
         verbose_name_plural = "stories"
 
+    @models.permalink
     def get_absolute_url(self):
-        return ('story', [self.pk])
-    get_absolute_url = models.permalink(get_absolute_url)
-               
+        return ("story", [self.pk])
+
     def __unicode__(self):
         return self.title
         
