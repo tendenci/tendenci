@@ -34,10 +34,6 @@ class PhotoSet(AuditingBaseModel):
         verbose_name = _('photo set')
         verbose_name_plural = _('photo sets')
         permissions = (("view_photoset","Can view photoset"),)
-
-    def get_absolute_url(self):
-        return ("photoset_details", [self.pk])
-    get_absolute_url = models.permalink(get_absolute_url)
     
     def get_cover_photo(self, *args, **kwargs):
         """ get latest thumbnail url """
@@ -54,6 +50,10 @@ class PhotoSet(AuditingBaseModel):
         if user == self.author or user.has_perm(permission):
             return True
         return False
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("photoset_details", [self.pk])
 
     def __unicode__(self):
         return self.name
@@ -95,9 +95,9 @@ class Image(ImageModel, AuditingBaseModel):
 #        caching.cache_delete(PHOTOS_KEYWORDS_CACHE)
 
     @models.permalink
-    def get_absolute_url(self, *args, **kwargs):
-        set_id = kwargs.get('set_id', 0)
-        return ("photo", [self.pk, set_id])
+    def get_absolute_url(self):
+        photo_set = self.photoset.all()[0]
+        return ("photo", [self.pk, photo_set.pk])
 
     def meta_keywords(self):
         pass
