@@ -35,3 +35,7 @@ def users_options(context, user_current, user_this):
     })
     return context
 
+@register.inclusion_tag("profiles/search-form.html", takes_context=True)
+def profile_search(context):
+    return context
+

@@ -16,13 +16,15 @@
 {% users_nav request.user user_this %}
     <h1>Users Search</h1>
 
+	{% profile_search %}
     {% autopaginate profiles 10 %}
 
 	<div class="profiles-wrap">
     {% for profile in profiles %}
+    {% with profile.object as profile %}
 		<div class="profile-wrap">
 			 {% users_options request.user profile.user %}
-            <h2><a href="{% url profiles.views.index user.username %}">{{ profile.user.first_name }} {{ profile.user.last_name }} ({{profile.user.email}})</a></h2>
+            <h2><a href="{% url profiles.views.index profile.user.username %}">{{ profile.user.first_name }} {{ profile.user.last_name }} ({{profile.user.email}})</a></h2>
            <div class="clear-right"></div>
            
             <div class="content">
@@ -38,12 +40,12 @@
             </div>
 
             <!-- delete-profile form -->
-            <form name="profile-delete" method="POST" action="{% url profile.delete user.id %}">
+            <form name="profile-delete" method="POST" action="{% url profile.delete user.pk %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 
 		</div>
-		
+	{% endwith %}	
 	{% empty %}
 		<div>0 Results Found</div>
 		

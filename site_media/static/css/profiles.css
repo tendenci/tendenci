@@ -3,6 +3,11 @@
 	margin-top: 1em;
 }
 
+.t form.search-form input[type="text"] {
+	margin-bottom:10px;
+	padding:5px;
+	width:60%;
+}
 .profile-icon img{
 	padding: 4px;
 	border: 1px solid silver;
