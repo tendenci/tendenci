@@ -22,11 +22,13 @@
     	<a href="{% url photoset_add %}">Add photoset</a>
 	</div>
 
+	{% photo_set_search %}
     {% autopaginate photo_sets %}
 
     {% if photo_sets %}
 
         {% for photo_set in photo_sets %}
+        {% with photo_set.object as photo_set %}
 		<div class="photo-set">
         	<table><tr>
             	<td class="image">
@@ -42,6 +44,7 @@
                 </td>
 			</tr></table>
         </div>
+        {% endwith %}
         {% endfor %}
 
         {% paginate %}
