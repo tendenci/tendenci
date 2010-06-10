@@ -11,9 +11,33 @@ class ArticleManager(Manager):
         from articles.models import Article
         sqs = SearchQuerySet()
         
-        if query: 
-            sqs = sqs.filter(content=sqs.query.clean(query))
+        if 'user' in kwargs:
+            user = kwargs['user']
         else:
-            sqs = sqs.all()
-        
+            user = None
+            
+        is_admin = user.is_superuser and user.is_active
+            
+        if query:
+            sqs = sqs.filter(content=sqs.query.clean(query)) 
+            if user:
+                if not is_admin:
+                    if not user.is_anonymous():
+                        sqs = sqs.filter(allow_user_view=True)
+                        sqs = sqs.filter_or(who_can_view__exact=user.username)
+                    else:
+                        sqs = sqs.filter(allow_anonymous_view=True)               
+            else:
+                sqs = sqs.filter(allow_anonymous_view=True) 
+        else:
+            if user:
+                if not is_admin:
+                    if not user.is_anonymous():
+                        sqs = sqs.filter(allow_user_view=True)
+                        sqs = sqs.filter_or(who_can_view__exact=user.username)
+                    else:
+                        sqs = sqs.filter(allow_anonymous_view=True)                
+            else:
+                sqs = sqs.filter(allow_anonymous_view=True) 
+    
         return sqs.models(Article)
