@@ -57,3 +57,4 @@ class GroupPermissionForm(forms.ModelForm):
     class Meta:
         model = Group
         fields= ('permissions',)
+        

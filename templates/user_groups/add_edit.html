@@ -4,6 +4,7 @@
 {% block title %}Groups Add{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
 <link rel="stylesheet" href="/site_media/static/css/usergroups.css">
 {% endblock %}
 
@@ -12,7 +13,7 @@
 <div class="t">
 {% user_group_nav request.user %}
 <h1>{% if group %}Edit{% else %}Create{% endif %} Group</h1>
-
+<div class="clear-right"></div>
 {% if group %}
 <div class="quick-options">
 		{% user_group_options request.user group %} 	

@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 from user_groups.models import Group, GroupMembership
 from user_groups.forms import GroupForm, GroupMembershipForm, GroupPermissionForm
@@ -72,6 +73,18 @@ def group_edit_perms(request, id, form_class=GroupPermissionForm, template_name=
         return HttpResponseRedirect(group_edit.get_absolute_url())
    
     return render_to_response(template_name, {'group':group_edit, 'form':form}, 
+        context_instance=RequestContext(request))
+    
+def group_delete(request, id, template_name="user_groups/delete.html"):
+    group = get_object_or_404(Group, pk=id)
+    
+    if not request.user.has_perm('user_groups.delete_group', group): return render_to_403()
+
+    if request.method == "POST":
+        group.delete()
+        return HttpResponseRedirect(reverse('group.search'))
+
+    return render_to_response(template_name, {'group':group}, 
         context_instance=RequestContext(request))
 
 def groupmembership_add_edit(request, group_slug, user_id=None, 
