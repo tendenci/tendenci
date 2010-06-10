@@ -5,6 +5,7 @@
 {% block title %}{{ group.name }} - Group{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
 <link rel="stylesheet" href="/site_media/static/css/usergroups.css">
 <style type="text/css">
 	.thead{
@@ -20,12 +21,12 @@
 {% block body %}
 <div class="t">
 {% user_group_nav request.user %}
-
+	<div class="quick-options">
+		{% user_group_options request.user group %} 
+	</div>
 <h1>{{ group.name }}</h1>
-<div class="quick-options">
-		{% user_group_options request.user group %} 	
- </div>
-
+ <div class="clear-right"></div>
+ 
 {% if not groupmemberships %}
 <p>This group has no members</p>
 {% else %}

@@ -24,7 +24,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
             return HttpResponseRedirect(redirect_to)
     else:
         form = form_class()
-    print form.errors.keys()
+    
     return render_to_response(template_name, {
         "form": form
     }, context_instance=RequestContext(request))

@@ -4,6 +4,7 @@
 {% block title %}Edit Group Permissions{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
 <link rel="stylesheet" href="/site_media/static/css/usergroups.css">
 
 <link rel="stylesheet" href="/site_media/static/css/admin/django-admin-widgets.css">
@@ -27,6 +28,7 @@
 <div class="t">
     <h1>Add/Remove Permissions</h1>
     <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+    <div class="clear-right"></div>
     <div class="quick-options">
 		{% user_group_options request.user group %} 	
  	</div>
