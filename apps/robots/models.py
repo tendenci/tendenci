@@ -1,5 +1,7 @@
 from django.db import models
 
+from robots.managers import RobotManager
+
 STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
 
 class Robot(models.Model):
@@ -8,3 +10,5 @@ class Robot(models.Model):
     version = models.CharField(max_length=50)
     status = models.BooleanField(default=True)
     status_detail = models.CharField(max_length=50, choices=STATUS_CHOICES,default='active')
+    
+    objects = RobotManager()
