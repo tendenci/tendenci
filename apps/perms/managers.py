@@ -4,6 +4,33 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
 class ObjectPermissionManager(models.Manager):
+    def who_has_perm(self, perm, instance):
+        """
+            Checks a permission against an model instance
+            and returns a list of users that have that
+            permission
+        """
+        # check codename, return false if its a malformed codename
+        try:
+            codename = perm.split('.')[1]
+        except IndexError:
+            return []
+        
+        # check the permissions on the object level
+        content_type = ContentType.objects.get_for_model(instance) 
+        filters = {
+            "content_type": content_type,
+            "object_id": instance.pk,
+            "codename": codename,
+        }
+        
+        permissions = self.select_related().filter(**filters).only('user')
+        if permissions:
+            users = [perm.user for perm in permissions]
+            return users
+        else:
+            return None
+            
     def assign(self, user_or_users, object, perms=None):
         """
             Assigns permissions to user or multiple users
