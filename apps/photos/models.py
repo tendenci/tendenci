@@ -13,6 +13,7 @@ from django.conf import settings
 from photologue.models import *
 from tagging.fields import TagField
 from perms.models import AuditingBaseModel
+from photos.managers import PhotoSetManager
 
 class PhotoSet(AuditingBaseModel):
     """
@@ -50,6 +51,8 @@ class PhotoSet(AuditingBaseModel):
         if user == self.author or user.has_perm(permission):
             return True
         return False
+
+    objects = PhotoSetManager()
 
     @models.permalink
     def get_absolute_url(self):

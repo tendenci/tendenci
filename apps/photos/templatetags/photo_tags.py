@@ -133,3 +133,8 @@ def photo_set_nav(context, user):
         "user": user
     })
     return context
+
+@register.inclusion_tag("photos/photo-set/search-form.html", takes_context=True)
+def photo_set_search(context):
+    return context
+
