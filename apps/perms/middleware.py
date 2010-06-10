@@ -1,3 +1,5 @@
+from django.contrib.auth.models import AnonymousUser
+
 class ImpersonationMiddleware(object):
     """
         Allows you to impersonate another user for
@@ -10,8 +12,11 @@ class ImpersonationMiddleware(object):
                 from django.contrib.auth.models import User
                 username = request.GET['impersonate']
                 try:
-                    user = User.objects.get(username=username)
-                    request.user = user
+                    if username == 'anonymous':
+                        request.user = AnonymousUser()
+                    else:
+                        user = User.objects.get(username=username)
+                        request.user = user
                 except:
                     user = None
                 
