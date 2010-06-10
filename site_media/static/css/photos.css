@@ -536,3 +536,16 @@ div.gallery-photo-thumb img {
 .photo-set table td.info div.actions a {
 	margin: 0 1px;
 }
+
+/*= photo-set search form
+-------------------------------- */
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}

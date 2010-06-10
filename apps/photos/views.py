@@ -281,21 +281,11 @@ def photoset_delete(request, id, template_name="photos/photo_set/delete.html"):
 
 def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     """ View latest photo set """
-    q = request.GET.get('q', '')
-#    q = SearchQuerySet().query.clean(q) # clean query
-#    photo_sets = SearchQuerySet().models(PhotoSet)
 
-    photo_sets = PhotoSet.objects.all()
-
-#    photo_sets = PhotoSet.objects.all()
-#    if q: photo_sets = photo_sets.filter(content=q)
-#    else: photo_sets = photo_sets.order_by('-photoset_create_dt')
-#
-#    # not authenticated; limit view
-#    if not request.user.has_perm('photos.view_photoset'):
-#        photo_sets = photo_sets.filter(publish_type=1) # public photo sets only
+    query = request.GET.get('q', None)
+    photo_sets = PhotoSet.objects.search(query)
         
-    return render_to_response(template_name, {"photo_sets": photo_sets, "q": q }, 
+    return render_to_response(template_name, {"photo_sets": photo_sets}, 
         context_instance=RequestContext(request))
 
 @login_required
