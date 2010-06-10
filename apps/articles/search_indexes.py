@@ -3,6 +3,7 @@ from django.utils.html import strip_tags, strip_entities
 from haystack import indexes
 from haystack import site
 from articles.models import Article
+from perms.models import ObjectPermission
 
 class ArticleIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
@@ -23,6 +24,18 @@ class ArticleIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
+    
+    who_can_view = indexes.CharField()
+    
+    def prepare_who_can_view(self, obj):
+        users = ObjectPermission.objects.who_has_perm('articles.view_article', obj)
+        user_list = []
+        if users:
+            for user in users:
+                user_list.append(user.username)
+            return ','.join(user_list)
+        else: 
+            return ''
     
     def prepare_body(self, obj):
         body = obj.body
