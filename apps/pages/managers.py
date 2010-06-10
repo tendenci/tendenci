@@ -8,7 +8,6 @@ class PageManager(Manager):
             Uses haystack to query pages. 
             Returns a SearchQuerySet
         """
-        from pages.models import Page
         sqs = SearchQuerySet()
         
         if query: 
@@ -16,4 +15,4 @@ class PageManager(Manager):
         else:
             sqs = sqs.all()
         
-        return sqs.models(Page)
+        return sqs.models(self.model)

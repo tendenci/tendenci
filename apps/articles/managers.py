@@ -8,7 +8,6 @@ class ArticleManager(Manager):
             Uses haystack to query articles. 
             Returns a SearchQuerySet
         """
-        from articles.models import Article
         sqs = SearchQuerySet()
         
         if 'user' in kwargs:
@@ -40,4 +39,4 @@ class ArticleManager(Manager):
             else:
                 sqs = sqs.filter(allow_anonymous_view=True) 
     
-        return sqs.models(Article)
+        return sqs.models(self.model)
