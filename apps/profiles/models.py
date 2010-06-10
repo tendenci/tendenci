@@ -7,15 +7,8 @@ from timezones.fields import TimeZoneField
 from perms.models import AuditingBaseModel
 from entities.models import Entity
 
-class ProfileManager(models.Manager):
-    def create_profile(self, user):
-        return self.create(user=user, 
-                           creator_id=user.id, 
-                           creator_username=user.username,
-                           owner_id=user.id, 
-                           owner_username=user.username, 
-                           email=user.email)
-        
+from profiles.managers import ProfileManager
+         
 
 class Profile(AuditingBaseModel):
     # relations
@@ -123,6 +116,7 @@ class Profile(AuditingBaseModel):
     # if this profile allows view by user2_compare
     def allow_view_by(self, user2_compare):
         boo = False
+       
         if self.is_admin():
             boo = True
         else: 
@@ -135,7 +129,8 @@ class Profile(AuditingBaseModel):
                 else:
                     if user2_compare.has_perm('profiles.view_profile', self):
                         boo = True
-            return boo
+            
+        return boo
     
     # if this profile allows edit by user2_compare
     def allow_edit_by(self, user2_compare):

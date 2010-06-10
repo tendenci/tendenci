@@ -50,8 +50,9 @@ def index(request, username="", template_name="profiles/index.html"):
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
         
-    # security check    
-    if not profile.allow_view_by(request.user): return render_to_403()
+    # security check 
+    if not profile.allow_view_by(request.user): 
+        return render_to_403()
         
     return render_to_response(template_name, {"user_this": user_this, "profile":profile,
                                               "user_objs":{"user_this": user_this } }, 
@@ -59,11 +60,22 @@ def index(request, username="", template_name="profiles/index.html"):
    
 @login_required   
 def search(request, template_name="profiles/search.html"):
-    if request.user.is_superuser:
-        profiles = Profile.objects.all()
+    if request.method == 'GET':
+        if 'q' in request.GET:
+            query = request.GET['q']
+        else:
+            query = None
+        if query:
+            profiles = Profile.objects.search(query)
+        else:
+            profiles = Profile.objects.search()
     else:
-        profiles = Profile.objects.filter(status=1, status_detail='active')
-   
+        profiles = Profile.objects.search()
+        
+    #if request.user.is_superuser:
+    #    profiles = Profile.objects.all()
+    #else:
+    #    profiles = Profile.objects.filter(status=1, status_detail='active')
     return render_to_response(template_name, {'profiles':profiles, "user_this":None}, 
         context_instance=RequestContext(request))
 
