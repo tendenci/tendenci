@@ -1,0 +1,61 @@
+{% extends "event_logs/base.html" %}
+{% load pagination_tags %}
+{% load event_log_tags %}
+{% load base_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/event-logs.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ MODULE_EVENT_LOGS_LABEL }} Search</h1>
+	
+    {% event_log_nav request.user %}
+
+	{% event_log_search %}
+    {% autopaginate event_logs 10 %}
+	
+	<div class="event-logs-wrap">
+    {% for event_log in event_logs %}
+		<div class="event-log-wrap">
+			<div class="options">
+
+                <div class="dropdown-options">
+                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <ul>
+                        <li>Review Reports</li>
+                        <li>Optimize Meta Tags</li>
+                        <li>Attach Files</li>
+                        <li>View Revisions</li>
+                        <li>Delete</li>
+                    </ul>
+                </div>
+
+                <div class="quick-options">
+					{% event_log_options request.user event_log %} 	       
+                </div>
+			</div>
+
+			
+            <h2><a href="{% url event_log event_log.pk %}">{% firstof event_log.event_data "Untitled" %}</a></h2>
+            <div class="content">
+            	<p>URL: {{ event_log.request_method }}&nbsp;{{ event_log.url }}</p>
+            	<p>Server IP Address: {{ event_log.server_ip_address }}</p>
+            	<p>IP Address: {{ event_log.user_ip_address }}</p>
+                <p>User Agent: {{ event_log.http_user_agent }}</p>
+            </div>
+			<div class="meta">
+            	<div class="submitted">Logged on {{ event_log.create_dt|date:"D d M Y P" }}</div>
+            </div>
+		</div>
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}

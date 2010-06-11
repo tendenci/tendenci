@@ -12,3 +12,6 @@ class Robot(models.Model):
     status_detail = models.CharField(max_length=50, choices=STATUS_CHOICES,default='active')
     
     objects = RobotManager()
+    
+    def __unicode__(self):
+        return self.name
