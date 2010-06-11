@@ -7,7 +7,7 @@ def settings(request):
     """
         Context processor for settings
     """
-    key = [SETTING_PRE_KEY, 'all.settings']
+    key = [SETTING_PRE_KEY, 'all']
     key = '.'.join(key)
     
     settings = cache.get(key)
