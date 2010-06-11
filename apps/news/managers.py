@@ -8,7 +8,6 @@ class NewsManager(Manager):
             Uses haystack to query news. 
             Returns a SearchQuerySet
         """
-        from news.models import News
         sqs = SearchQuerySet()
         
         if query: 
@@ -16,4 +15,4 @@ class NewsManager(Manager):
         else:
             sqs = sqs.all()
         
-        return sqs.models(News)
+        return sqs.models(self.model)
