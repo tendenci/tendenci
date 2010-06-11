@@ -11,15 +11,15 @@
 {% endif %}
 
 {% if can_change %}
-<a href="{% url photoset_edit photo_set.id %}">Edit album</a>
+<a href="{% url photoset_edit photo_set.pk %}">Edit album</a>
 {% endif %}
 
 {% if can_delete %}
-<a class="delete-photoset" href="{% url photoset_delete photo_set.id %}">Delete album</a>
+<a class="delete-photoset" href="{% url photoset_delete photo_set.pk %}">Delete album</a>
 {% endif %}
 
 {% if can_add %}
-<a href="{% url photos_batch_add photo_set.id %}">Add photos</a>
+<a href="{% url photos_batch_add photo_set.pk %}">Add photos</a>
 {% endif %}
 
-<a href="{% url photos_batch_edit photo_set.id %}">Edit photos</a>
+<a href="{% url photos_batch_edit photo_set.pk %}">Edit photos</a>

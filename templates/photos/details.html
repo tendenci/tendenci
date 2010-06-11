@@ -53,9 +53,9 @@
 	</div><!-- END .photo-instance -->
 
 <!-- delete photo form -->
-<form name="photo-delete" method="POST" action="{% url photo_destroy photo.id %}">
+<form name="photo-delete" method="POST" action="{% url photo_destroy photo.pk %}">
     <input type="hidden" name="action" value="delete">
-    <input type="hidden" name="delete_id" value="{{ photo.id }}" />
+    <input type="hidden" name="delete_id" value="{{ photo.pk }}" />
 </form>
     
 {% endblock %}
@@ -85,7 +85,7 @@ $(document).ready(function(){
 	});
 
 	var mini_slide = new MiniSlide({
-		photo_id: {{ photo.id }},
+		photo_id: {{ photo.pk }},
 		set_id: {{ photo_set_id }}
 	});
 
@@ -270,7 +270,7 @@ var MiniSlide = function(params){
 		if(self.photos[set_id] == undefined){
 			self.loading_msg_handler('show', set_id);
 			// get photos from database
-			self.photo_neighbor_client.read({id:{{ photo.id }}, set:set_id}, function(photos_list){
+			self.photo_neighbor_client.read({id:{{ photo.pk }}, set:set_id}, function(photos_list){
 				self.photos[set_id] = photos_list; // save photos
 				self.populate(set_id, self.photos[set_id]);
 				// hide loading message; half-a-second delay
@@ -334,7 +334,7 @@ var MiniSlide = function(params){
 		}
 		else{
 			$new_link.attr('href', photo.absolute_url );
-			$new_link.attr('data-id', photo.id);			
+			$new_link.attr('data-id', photo.pk);			
 			// make new image
 			$new_img = $('<img />');
 			$new_img.attr('src', photo.square_url );
