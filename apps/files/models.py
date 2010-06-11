@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from files.managers import FileManager
 
 class File(AuditingBaseModel):
-    file = models.FileField(upload_to='files')
+    file = models.FileField(max_length=260, upload_to='files')
     guid = models.CharField(max_length=200, default=uuid.uuid1)
     name = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
