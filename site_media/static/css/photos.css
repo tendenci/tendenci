@@ -515,6 +515,7 @@ div.gallery-photo-thumb img {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin: 10px 0;
+	background-color: white;
 }
 .photo-set table {
 	width: 100%;
@@ -528,7 +529,7 @@ div.gallery-photo-thumb img {
 .photo-set table td.image img {
 	padding: 5px;
 	margin: 0 10px 0 0;
-	border: 1px solid silver;
+	border: 1px solid gray;
 }
 .photo-set table td.info h2 {
 	margin: 0;
