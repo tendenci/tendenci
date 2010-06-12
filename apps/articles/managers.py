@@ -1,6 +1,7 @@
 from django.db.models import Manager
 
 from haystack.query import SearchQuerySet
+from perms.utils import is_admin
 
 class ArticleManager(Manager):
     def search(self, query=None, *args, **kwargs):
@@ -15,7 +16,7 @@ class ArticleManager(Manager):
         else:
             user = None
             
-        is_admin = user.is_superuser and user.is_active
+        is_admin = is_admin(user)
             
         if query:
             sqs = sqs.filter(content=sqs.query.clean(query)) 
@@ -39,4 +40,4 @@ class ArticleManager(Manager):
             else:
                 sqs = sqs.filter(allow_anonymous_view=True) 
     
-        return sqs.models(self.model)
+        return sqs.models(self.model).order_by('-create_dt')
