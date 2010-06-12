@@ -15,4 +15,4 @@ class PageManager(Manager):
         else:
             sqs = sqs.all()
         
-        return sqs.models(self.model)
+        return sqs.models(self.model).order_by('-create_dt')

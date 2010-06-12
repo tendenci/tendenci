@@ -16,4 +16,4 @@ class FileManager(Manager):
         else:
             sqs = sqs.all()
         
-        return sqs.models(File)
+        return sqs.models(File).order_by('-create_dt')
