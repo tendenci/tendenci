@@ -10,7 +10,8 @@ import authority
 authority.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
+    url(r'^$', direct_to_template, {"template": "homepage.html",}),
+    url(r'^dashboard/$', direct_to_template, {"template": "dashboard.html",}),
     (r'^admin/', include(admin.site.urls)),
     (r'^base/', include('base.urls')),
     (r'^avatar/', include('avatar.urls')),
