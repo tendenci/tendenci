@@ -15,7 +15,7 @@ class Profile(AuditingBaseModel):
     user = models.ForeignKey(User, unique=True, related_name="profile", verbose_name=_('user'))
     
     guid = models.CharField(max_length=50)
-    entity = models.ForeignKey(Entity, default=1, blank=True, null=True)
+    entity = models.ForeignKey(Entity, blank=True, null=True)
     pl_id = models.IntegerField(default=1)
     member_number = models.CharField(_('member number'), max_length=50, blank=True)
     historical_member_number = models.CharField(_('historical member number'), max_length=50)

@@ -9,10 +9,9 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_STORIES_LABEL }} Add</h1>
-    
-    {% stories_nav request.user %}
-
+ {% stories_nav request.user %}
+    <h1>{% firstof MODULE_STORIES_LABEL "Story" %} Add</h1>
+   
     <div class="article-wrap">
     <form action="{% url story.add %}" method="post">
         {{ form.as_p }}

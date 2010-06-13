@@ -1,6 +1,16 @@
 .t {
 	width: 90%;
 }
+.t-iconrow{
+	float: right;
+}
+.clear-right{
+	clear: right;
+}
+.clear-both{
+	clear: both;
+}
+
 .t h2 {
 	margin: 0 auto 10px 0;
 }
