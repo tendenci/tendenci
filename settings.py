@@ -159,7 +159,8 @@ INSTALLED_APPS = (
     'site_settings',
     'user_groups',
     'files',
-#    'media_files',
+    'event_logs',
+    'robots',
 )
 
 # This is the number of days users will have to activate their

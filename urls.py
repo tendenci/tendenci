@@ -27,7 +27,8 @@ urlpatterns = patterns('',
     (r'^settings/', include('site_settings.urls')),
     (r'^files/', include('files.urls')),
     (r'^accounts/', include('accounts.urls')),
-    (r'^search/$', include('search.urls')),
+    (r'^search/', include('search.urls')),
+    (r'^event-logs/', include('event_logs.urls')),
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
