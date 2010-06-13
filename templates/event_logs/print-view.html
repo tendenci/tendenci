@@ -1,0 +1,66 @@
+{% extends "event_logs/base.html" %}
+{% load event_log_tags %}
+
+{% block title %}{{ block.super }}Print{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/event-logs.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ MODULE_EVENT_LOGS_LABEL }} Print</h1>
+    
+    {% event_log_nav request.user %}
+
+    <div class="event-log-wrap">
+
+        <div class="options">
+
+            <div class="dropdown-options">
+                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                <ul>
+                    <li>Review Reports</li>
+                    <li>Optimize Meta Tags</li>
+                    <li>Attach Files</li>
+                    <li>View Revisions</li>
+                    <li>Delete</li>
+                </ul>
+            </div>
+
+            <div class="quick-options">
+                {% event_log_options request.user event_log %} 
+            </div>
+        </div>
+
+
+        <h2>{{ event_log.event_data }}</h2>
+        <div class="content">
+            <p>Event id : {{ event_log.event_id  }}</p>
+            <p>Event name : {{ event_log.event_name  }}</p>
+            <p>Event type : {{ event_log.event_type  }}</p>
+            <p>Event data : {{ event_log.event_data  }}</p>
+            <p>Category : {{ event_log.category  }}</p>
+            <p>Session id : {{ event_log.session_id  }}</p>
+            <p>User : {{ event_log.user  }}</p>
+            <p>Username : {{ event_log.username  }}</p>
+            <p>Email : {{ event_log.email  }}</p>
+            <p>User ip address : {{ event_log.user_ip_address  }}</p>
+            <p>Server ip address : {{ event_log.server_ip_address  }}</p>
+            <p>URL : {{ event_log.url  }}</p>
+            <p>HTTP referrer : {{ event_log.http_referrer  }}</p>
+            <p>Headline : {{ event_log.headline  }}</p>
+            <p>Description : {{ event_log.description  }}</p>
+            <p>HTTP user agent : {{ event_log.http_user_agent  }}</p>
+            <p>Request method : {{ event_log.request_method  }}</p>
+            <p>Query string : {{ event_log.query_string  }}</p>
+            <p>Robot : {{ event_log.robot  }}</p>
+            <p>Create dt : {{ event_log.create_dt  }}</p>        
+        </div>
+        <div class="meta">
+            <div class="submitted">Logged on {{ event_log.create_dt|date:"D d M Y P" }}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
