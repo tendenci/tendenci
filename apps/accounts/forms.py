@@ -58,7 +58,11 @@ class LoginForm(forms.Form):
         user = authenticate(username=self.cleaned_data["username"], password=self.cleaned_data["password"])
         
         if user:
-            profile = user.get_profile()
+            try:
+                profile = user.get_profile()
+            except Profile.DoesNotExist:
+                profile = Profile.objects.create_profile(user=user)
+           
             if user.is_active and profile.status==1 and profile.status_detail.lower()=='active':
                 self.user = user
             else:
