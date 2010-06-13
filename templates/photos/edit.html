@@ -23,23 +23,9 @@
 <form name="photo-edit" method="post" action="">
 
 	<div class="field-wrap">
-        <div class="title">
-        	<h2>{{ photo_form.title.label_tag }}</h2>
-        	{{ photo_form.title }}
-		</div>
-        <div class="caption">
-			<h2>{{ photo_form.caption.label_tag }}</h2>
-        	{{ photo_form.caption }}
-		</div>
-        <div class="tags">
-			<h2>{{ photo_form.tags.label_tag }}</h2>
-        	{{ photo_form.tags }}
-            {{ photo_form.tags.help_text }}
-		</div>
-		<div class="privacy-wrap">
-            <div class="safety">{{ photo_form.safetylevel }}</div>
-            <div class="public">{{ photo_form.is_public }} {{ photo_form.is_public.label_tag }}</div>
-        </div>
+
+		{{ photo_form.as_p }}
+
         <div class="submit">
             <input type="hidden" name="action" value="update" />
             <input type="submit" value="Save changes" />
