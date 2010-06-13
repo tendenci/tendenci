@@ -24,7 +24,6 @@ class AuditingBaseModel(models.Model):
     status_detail = models.CharField(max_length=50, choices=STATUS_CHOICES,
                                      default='active')
     
-    
     class Meta:
         abstract = True 
         
