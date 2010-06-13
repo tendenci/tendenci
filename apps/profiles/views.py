@@ -132,7 +132,8 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
         
-    if not request.user.has_perm('profiles.change_profile', profile): return render_to_403() 
+    #if not request.user.has_perm('profiles.change_profile', profile): return render_to_403() 
+    if not profile.allow_edit_by(request.user): return render_to_403()
        
     if request.method == "POST":
         #form_user = form_class2(request.user, request.POST)
@@ -288,7 +289,8 @@ def change_avatar(request, id, extra_context={}, next_override=None):
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
         
-    if not request.user.has_perm('profiles.change_profile', profile): return render_to_403()
+    #if not request.user.has_perm('profiles.change_profile', profile): return render_to_403()
+    if not profile.allow_edit_by(request.user): return render_to_403()
     
     avatars = Avatar.objects.filter(user=user_edit).order_by('-primary')
     if avatars.count() > 0:
