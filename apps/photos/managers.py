@@ -16,4 +16,4 @@ class PhotoSetManager(Manager):
         else:
             sqs = sqs.all()
         
-        return sqs.models(PhotoSet)
+        return sqs.models(PhotoSet).order_by('-create_dt')
