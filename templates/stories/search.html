@@ -7,16 +7,16 @@
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
 <link rel="stylesheet" href="/site_media/static/css/stories.css">
 <link rel="alternate" type="application/rss+xml" title="Latest Stories" href="{% url story.feed %}" />
 {% endblock %}
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_STORIES_LABEL }} Search</h1>
-	
-    {% stories_nav request.user %}
-    
+ {% stories_nav request.user %}
+    <h1>{% firstof MODULE_STORIES_LABEL "Story" %}  Search</h1>
+	 
 	{% stories_search %}
     {% autopaginate stories 10 %}
 	
@@ -25,26 +25,18 @@
     	{% has_perm user stories.view_story story as can_view %}
     	{% if can_view %}
 		<div class="story-wrap">
-			<div class="options">
-
-                <div class="dropdown-options">
-                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                    <ul>
-                        <li>Review Reports</li>
-                        <li>Optimize Meta Tags</li>
-                        <li>Attach Files</li>
-                        <li>View Revisions</li>
-                        <li>Delete</li>
-                    </ul>
-                </div>
-
                 <div class="quick-options">
-					{% stories_options request.user story %} 	       
-                </div>
-			</div>
-
+ 					{% stories_options request.user story %}
+			    </div>
 
             <h2><a href="{% url story story.pk %}">{{ story.title }}</a></h2>
+             <div class="clear-right"></div>
+             
+              {% with story.object.get_image_url as image_url %}
+        	{% if image_url %}
+        		<div class="story_image" style="margin: 1em 0;"><a href="{{ image_url }}"><img src="{{ image_url }}" border="0" /></a></div>
+         		{% endif %}
+         	{% endwith %}
             <div class="content">{{ story.content|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ story.create_dt|date:"D d M Y P" }} by {{ story.creator }}</div>

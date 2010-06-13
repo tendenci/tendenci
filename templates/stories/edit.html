@@ -1,7 +1,7 @@
 {% extends "stories/base.html" %}
 {% load story_tags %}
 
-{% block title %}{{ block.super }}Edit{% endblock %}
+{% block title %}{{ block.super }} Edit{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/stories.css">
@@ -9,10 +9,15 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_STORIES_LABEL }} Edit</h1>
-    
-    {% stories_nav request.user %}
-
+{% stories_nav request.user story %}
+    <h1>{% firstof MODULE_STORIES_LABEL "Story" %} Edit</h1>
+ <div>
+ <a href="{% url story.upload story.pk %}">Upload New Image</a>
+ {% if image_name %}
+ Current image: {{ image_name }}
+ {% endif %}
+  </div>
+ 
     <div class="story-wrap">
     <form action="{% url story.edit story.id %}" method="post">
         {{ form.as_p }}

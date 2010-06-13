@@ -1,43 +1,31 @@
 {% extends "stories/base.html" %}
 {% load story_tags %}
 
-{% block title %}{{ block.super }}{{ story.headline }}{% endblock %}
+{% block title %}{{ block.super }}{{ story.title }}{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
 <link rel="stylesheet" href="/site_media/static/css/stories.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
-    {% stories_nav request.user %}
-
-    <div class="story-wrap">
-
-        <div class="options">
-
-            <div class="dropdown-options">
-                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                <ul>
-                    <li>Review Reports</li>
-                    <li>Optimize Meta Tags</li>
-                    <li>Attach Files</li>
-                    <li>View Revisions</li>
-                    <li>Delete</li>
-                </ul>
-            </div>
-
-            <div class="quick-options">
-               {% stories_options request.user story %}
-            </div>
-        </div>
-
+    {% stories_nav request.user story %}
+    <div class="quick-options">
+ 	{% stories_options request.user story %}
+ 	</div>
 
         <h2>{{ story.title }}</h2>
+         <div class="clear-right"></div>
         <div class="content">{{ story.content|safe }}</div>
+        {% with story.get_image_url as image_url %}
+        {% if image_url %}
+        <div class="story_image" style="margin: 1em 0;"><a href="{{ image_url }}"><img src="{{ image_url }}" border="0" /></a></div>
+         {% endif %}
+         {% endwith %}
         <div class="meta">
             <div class="submitted">Submitted on {{ story.create_dt|date:"D d M Y P" }} by {{ story.creator }}</div>
         </div>
-    </div>
-
+  
 </div>
 {% endblock %}
