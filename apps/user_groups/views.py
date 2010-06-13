@@ -9,9 +9,13 @@ from user_groups.models import Group, GroupMembership
 from user_groups.forms import GroupForm, GroupMembershipForm, GroupPermissionForm
 
 from base.http import render_to_403
+from perms.utils import is_admin, is_developer
 
 def group_search(request, template_name="user_groups/search.html"):
-    groups = Group.objects.all()
+    if is_admin(request.user):
+        groups = Group.objects.all()
+    else:
+        groups = Group.objects.filter(show_as_option=1, allow_self_add=1, status=1)
     return render_to_response(template_name, {'groups':groups}, 
         context_instance=RequestContext(request))
     
