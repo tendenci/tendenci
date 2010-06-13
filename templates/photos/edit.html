@@ -3,7 +3,6 @@
 {% load i18n %}
 {% load humanize %}
 {% load tagging_tags %}
-
 {% load photo_tags %}
 
 {% load base_filters %}
@@ -16,6 +15,11 @@
 {% endblock %}
 
 {% block body %}
+
+<h1>Edit photo</h1>
+
+<div style="margin-bottom: 10px;">{% photo_nav request.user %}</div>
+
 <form name="photo-edit" method="post" action="">
 
 	<div class="field-wrap">

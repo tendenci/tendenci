@@ -176,6 +176,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
         "photo_form": form,
         "photo": photo,
         "photo_sets": photo_sets,
+        "set_id": set_id,
     }, context_instance=RequestContext(request))
 
 @login_required
