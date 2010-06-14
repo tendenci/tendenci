@@ -34,6 +34,8 @@ urlpatterns = patterns('',
     (r'^tinymce/', include('tinymce.urls')),
 )
 
+handler500 = 'base.views.custom_error'
+
 # Local url patterns for development
 try:
     from local_urls import MEDIA_PATTERNS
