@@ -185,7 +185,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
     }, context_instance=RequestContext(request))
 
 @login_required
-def delete(request, id):
+def delete(request, id, set_id=0):
     """ delete photo """
     photo = get_object_or_404(Image, id=id)
 
@@ -196,7 +196,8 @@ def delete(request, id):
     if request.method == "POST":
         request.user.message_set.create(message=_("Successfully deleted photo '%s'") % photo.title)
         photo.delete()
-        return HttpResponseRedirect(reverse("photoset_latest"))
+
+        return HttpResponseRedirect(reverse("photoset_details", args=[set_id]))
 
     return render_to_response("photos/delete.html", {
         "photo": photo,
@@ -265,8 +266,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
                 # assign creator permissions
                 ObjectPermission.objects.assign(photo_set.creator, photo_set) 
 
-                
-                return HttpResponseRedirect(reverse('photoset_latest',))
+                return HttpResponseRedirect(reverse('photoset_details', args=[photo_set.id]))
     else:
         form = form_class(request.user, instance=photo_set)
 
