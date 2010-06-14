@@ -1,4 +1,4 @@
-import os, mimetypes
+import os
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
@@ -11,6 +11,7 @@ from base.http import render_to_403
 from files.models import File
 from files.forms import FileForm
 from perms.models import ObjectPermission
+from event_logs.models import EventLog
 
 def index(request, id=None, download='', template_name="files/view.html"):
     if not id: return HttpResponseRedirect(reverse('file.search'))
@@ -33,7 +34,6 @@ def index(request, id=None, download='', template_name="files/view.html"):
     return response
 
 def search(request, template_name="files/search.html"):
-
     query = request.GET.get('q', None)
     files = File.objects.search(query)
 
@@ -64,7 +64,17 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
 
         if form.is_valid():
             file = form.save()
-    
+
+            log_defaults = {
+                'event_id' : 182000,
+                'event_data': '%s (%d) edited by %s' % (file._meta.object_name, file.pk, request.user),
+                'description': '%s edited' % file._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': file,
+            }
+            EventLog.objects.log(**log_defaults)
+                
             # remove all permissions on the object
             ObjectPermission.objects.remove_all(file)            
     
@@ -94,9 +104,19 @@ def add(request, form_class=FileForm, template_name="files/add.html"):
             file.creator = request.user
             file.creator_username = request.user.username
             file.owner = request.user
-            file.owner_username = request.user.username
-            
+            file.owner_username = request.user.username        
             file.save()
+
+            log_defaults = {
+                'event_id' : 181000,
+                'event_data': '%s (%d) added by %s' % (file._meta.object_name, file.pk, request.user),
+                'description': '%s added' % file._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': file,
+            }
+            EventLog.objects.log(**log_defaults)
+
 
 #            # assign permissions for selected users
 #            user_perms = form.cleaned_data['user_perms']
@@ -121,6 +141,16 @@ def delete(request, id, template_name="files/delete.html"):
         return render_to_403()
 
     if request.method == "POST":
+        log_defaults = {
+            'event_id' : 183000,
+            'event_data': '%s (%d) deleted by %s' % (file._meta.object_name, file.pk, request.user),
+            'description': '%s deleted' % file._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': file,
+        }
+        EventLog.objects.log(**log_defaults)
+
         file.delete()
         return HttpResponseRedirect(reverse('file.search'))
 
