@@ -2,7 +2,7 @@
 {% load perm_tags %}
 
 <div class="back-to-search">
-    <a href="/dashboard">&laquo; Dashboard</a>
+    <a href="{% url dashboard %}">&laquo; Dashboard</a>
     {% has_perm user files.add_file as can_add %}
     
     {% url file.search as search_url %}
