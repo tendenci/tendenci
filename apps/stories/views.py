@@ -6,17 +6,27 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from base.http import render_to_403
+from base.http import Http403
 from stories.models import Story
 from stories.forms import StoryForm, UploadStoryImageForm
 from perms.models import ObjectPermission
-
+from event_logs.models import EventLog
 
 def index(request, id=None, template_name="stories/view.html"):
     if not id: return HttpResponseRedirect(reverse('story.search'))
     story = get_object_or_404(Story, pk=id)
     
-    if not story.allow_view_by(request.user): return render_to_403()
+    if not story.allow_view_by(request.user): raise Http403
+
+    log_defaults = {
+        'event_id' : 1060500,
+        'event_data': '%s (%d) viewed by %s' % (story._meta.object_name, story.pk, request.user),
+        'description': '%s viewed' % story._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': story,
+    }
+    EventLog.objects.log(**log_defaults)
     
     return render_to_response(template_name, {'story': story}, 
         context_instance=RequestContext(request))
@@ -42,14 +52,18 @@ def get_latest_image_name(images_path):
     
 
 def search(request, template_name="stories/search.html"):
-    if request.method == 'GET':
-        if 'q' in request.GET:
-            query = request.GET['q']
-        else:
-            query = None
-        stories = Story.objects.search(query)
-    else:
-        stories = Story.objects.search()
+    query = request.GET.get('q', None)
+    stories = Story.objects.search(query)
+
+    log_defaults = {
+        'event_id' : 1060400,
+        'event_data': '%s searched by %s' % ('Story', request.user),
+        'description': '%s searched' % 'Story',
+        'user': request.user,
+        'request': request,
+    }
+    EventLog.objects.log(**log_defaults)
+    
     return render_to_response(template_name, {'stories':stories}, 
         context_instance=RequestContext(request))
     
@@ -57,7 +71,7 @@ def search(request, template_name="stories/search.html"):
 def add(request, form_class=StoryForm, template_name="stories/add.html"):
     # permission check
     story = Story()
-    if not story.allow_add_by(request.user): return render_to_403()
+    if not story.allow_add_by(request.user): raise Http403
     
     if request.method == "POST":
         form = form_class(request.user, request.POST)
@@ -70,6 +84,16 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
             story.owner = request.user
             story.owner_username = request.user.username
             story.save()
+
+            log_defaults = {
+                'event_id' : 1060100,
+                'event_data': '%s (%d) added by %s' % (story._meta.object_name, story.pk, request.user),
+                'description': '%s added' % story._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': story,
+            }
+            EventLog.objects.log(**log_defaults)
             
             # assign permissions for selected users
             user_perms = form.cleaned_data['user_perms']
@@ -90,7 +114,7 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
 def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
     story = get_object_or_404(Story, pk=id)
     # permission check
-    if not story.allow_edit_by(request.user): return render_to_403()
+    if not story.allow_edit_by(request.user): raise Http403
     # temporarily - need to use file module to store the image
     imagepath = os.path.join(settings.MEDIA_ROOT, 'stories/'+str(story.id))
     image_name = story.get_latest_image_name(imagepath)
@@ -100,6 +124,16 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
         if form.is_valid():
             story = form.save(commit=False)
             story.save()
+            
+            log_defaults = {
+                'event_id' : 1060200,
+                'event_data': '%s (%d) edited by %s' % (story._meta.object_name, story.pk, request.user),
+                'description': '%s edited' % story._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': story,
+            }
+            EventLog.objects.log(**log_defaults)
     
             # remove all permissions on the object
             ObjectPermission.objects.remove_all(story)
@@ -124,7 +158,7 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
 def delete(request, id, template_name="stories/delete.html"):
     story = get_object_or_404(Story, pk=id)
     # permission check
-    if not story.allow_edit_by(request.user): return render_to_403()
+    if not story.allow_edit_by(request.user): raise Http403
 
     if request.user.has_perm('stories.delete_stories'):   
         if request.method == "POST":
@@ -134,6 +168,16 @@ def delete(request, id, template_name="stories/delete.html"):
                 for file in os.listdir(imagepath):
                     os.remove(os.path.join(imagepath+'/' + file))
                 os.rmdir(imagepath)
+
+            log_defaults = {
+                'event_id' : 1060300,
+                'event_data': '%s (%d) deleted by %s' % (story._meta.object_name, story.pk, request.user),
+                'description': '%s deleted' % story._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': story,
+            }
+            EventLog.objects.log(**log_defaults)
             
             story.delete()
             
@@ -143,14 +187,14 @@ def delete(request, id, template_name="stories/delete.html"):
         return render_to_response(template_name, {'story': story}, 
             context_instance=RequestContext(request))
     else:
-        return render_to_403()
+        raise Http403
  
 @login_required   
 def upload(request, id, form_class=UploadStoryImageForm, 
                 template_name="stories/upload.html"):
     story = get_object_or_404(Story, pk=id)
     # permission check
-    if not story.allow_edit_by(request.user): return render_to_403()
+    if not story.allow_edit_by(request.user): raise Http403
     
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES)

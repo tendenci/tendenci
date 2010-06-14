@@ -11,6 +11,7 @@ authority.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
+    url(r'^dashboard/$', direct_to_template, {"template": "dashboard.html",}, name="dashboard"),
     (r'^admin/', include(admin.site.urls)),
     (r'^base/', include('base.urls')),
     (r'^avatar/', include('avatar.urls')),
@@ -32,6 +33,8 @@ urlpatterns = patterns('',
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
 )
+
+handler500 = 'base.views.custom_error'
 
 # Local url patterns for development
 try:
