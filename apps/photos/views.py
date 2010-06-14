@@ -332,15 +332,24 @@ def photos_batch_add(request, photoset_id=0):
             # get unicode and convert to type integer
             photoset_id = int(request.POST["photoset_id"])
 
-        photo_form = PhotoUploadForm(request.user, request.POST, request.FILES)
+            request.POST.update({
+                'owner': request.user.id,
+                'owner_username': str(request.user),
+                'creator_username': str(request.user),
+                'status_detail': 'active',
+            })
+            photo_form = PhotoUploadForm(request.user, request.POST, request.FILES)
 
         if photo_form.is_valid():
-
             # save photo
             photo = photo_form.save(commit=False)
+            photo.creator = request.user
             photo.member = request.user
             photo.safetylevel = 3
             photo.save()
+
+            # assign creator permissions
+            ObjectPermission.objects.assign(photo.creator, photo) 
 
             # add to photo set if photo set is specified
             if photoset_id:
@@ -353,6 +362,7 @@ def photos_batch_add(request, photoset_id=0):
             # response is for flash, not humans
             return HttpResponse(data, mimetype="text/plain")
         else:
+
             return HttpResponse("photo is not valid", mimetype="text/plain")
 
     else:

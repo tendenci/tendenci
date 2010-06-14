@@ -47,7 +47,7 @@
 		swfupload = new SWFUpload({
 		debug: false,
 		
-		upload_url: "{% url photos.views.photos_batch_add %}",
+		upload_url: "{% url photos.views.photos_batch_add photoset_id %}",
 		flash_url: "/site_media/static/swfupload/swfupload.swf",
 		post_params: {
 			"title" : "", 
