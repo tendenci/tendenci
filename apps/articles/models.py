@@ -1,6 +1,8 @@
 from django.db import models
 
+from tagging.fields import TagField
 from timezones.fields import TimeZoneField
+
 from perms.models import AuditingBaseModel
 from articles.managers import ArticleManager
 
@@ -32,6 +34,8 @@ class Article(AuditingBaseModel):
     # TODO: might go away with tags
     featured = models.BooleanField()
     design_notes = models.TextField(blank=True)
+
+    tags = TagField(blank=True)
 
     # for podcast feeds
     enclosure_url = models.CharField(max_length=500, blank=True)
