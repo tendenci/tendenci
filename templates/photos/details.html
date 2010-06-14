@@ -21,7 +21,7 @@
             <h2>{% firstof photo.title "Untitled" %}</h2>
         </div>
         <div class="photo-nav">
-			{% photo_nav request.user %}
+			<div class="photo-back"><a href="{% url photoset_details set_id %}">&laquo; Back to photo set</a></div>
         </div>
         <div class="photo-traverse">
             <ul>
