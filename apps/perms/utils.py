@@ -20,7 +20,7 @@ def is_admin(user):
             return False
         
 def is_developer(user):
-    if not user or not user.id:
+    if not user or not user.pk:
         return False
 
     if hasattr(user, 'is_developer'):

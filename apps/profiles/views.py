@@ -35,6 +35,7 @@ from profiles.forms import ProfileForm, UserPermissionForm
 from base.http import render_to_403
 
 from user_groups.models import Group, GroupMembership
+from perms.utils import is_admin
  
 # view profile  
 @login_required 
@@ -71,6 +72,10 @@ def search(request, template_name="profiles/search.html"):
             profiles = Profile.objects.search()
     else:
         profiles = Profile.objects.search()
+        
+    if not is_admin(request.user):
+        profiles = profiles.filter(status=1, status_detail='active')
+    #profiles = profiles.order_by('user')
         
     #if request.user.is_superuser:
     #    profiles = Profile.objects.all()

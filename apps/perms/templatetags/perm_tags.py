@@ -70,8 +70,6 @@ class IsAdminNode(Node):
         
     def render(self, context):
         user = self.resolve(self.user, context)
-        if self.var_name:
-            self.var_name = self.resolve(self.var_name, context)
         if isinstance(user, User):
             is_admin = utils.is_admin(user)
         else:
@@ -86,8 +84,8 @@ class IsAdminNode(Node):
 @register.tag
 def is_admin(parser, token):
     """
-        {% is_admin user as context}
-        {% is_admin user as context}
+        {% is_admin user as context %}
+        {% is_admin user as context %}
     """
     bits  = token.split_contents()
     
@@ -110,8 +108,7 @@ class IsDeveloperNode(Node):
         
     def render(self, context):
         user = self.resolve(self.user, context)
-        if self.var_name:
-            self.var_name = self.resolve(self.var_name, context)
+        
         if isinstance(user, User):
             is_developer = utils.is_developer(user)
         else:
@@ -126,11 +123,11 @@ class IsDeveloperNode(Node):
 @register.tag
 def is_developer(parser, token):
     """
-        {% is_admin user as context}
-        {% is_admin user as context}
+        {% is_developer user as context %}
+        {% is_developer user as context %}
     """
     bits  = token.split_contents()
-    
+   
     try: user = bits[1]
     except: user = None
     
