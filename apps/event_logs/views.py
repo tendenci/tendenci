@@ -1,8 +1,13 @@
-from django.contrib.auth.decorators import permission_required
+from os.path import join, isdir
+from os import mkdir
+from PIL import Image
+
+from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from base.http import render_to_403
 from event_logs.models import EventLog
@@ -20,15 +25,7 @@ def index(request, id=None, template_name="event_logs/view.html"):
 
 @permission_required('event_logs.view_eventlog')
 def search(request, template_name="event_logs/search.html"):
-    print "here"
-    if request.method == 'GET':
-        if 'q' in request.GET:
-            query = request.GET['q']
-        else:
-            query = None
-        event_logs = EventLog.objects.search(query)
-    else:
-        event_logs = EventLog.objects.search()
+    event_logs = EventLog.objects.search(request.GET)
         
     return render_to_response(template_name, {'event_logs':event_logs}, 
         context_instance=RequestContext(request))
@@ -42,3 +39,28 @@ def print_view(request, id, template_name="event_logs/print-view.html"):
             context_instance=RequestContext(request))
     else:
         return render_to_403()
+    
+@login_required
+def colored_image(request, color):
+    from webcolors import hex_to_rgb
+    
+    base_dir = join(settings.MEDIA_ROOT,'event_logs')
+    full_path = join(base_dir,'%s.png' % color)
+    
+    # make the dir if it doesn't exist
+    if not isdir(base_dir):
+        mkdir(base_dir)
+        
+    try:
+        f = open(full_path,'rb')
+        data = f.read()
+        f.close()
+    except:
+        rgb = hex_to_rgb('#%s' % color)
+        image = Image.new('RGB',(1,1),rgb)
+        image.save(full_path,"PNG")
+        f = open(full_path,'rb')
+        data = f.read()
+        f.close()
+
+    return HttpResponse(data, mimetype="image/png")
