@@ -68,6 +68,9 @@
             <div class="el-meta">
             	<div class="el-meta-request">{{ event_log.request_method }} - {{ event_log.http_user_agent }}</div>
                 <div class="el-meta-url">URL: <a href="{{ SITE_GLOBAL_SITEURL }}{{ event_log.url }}">{{ event_log.url }}</a></div>
+                {% if event_log.query_string %}
+               	 <div class="el-query-string">Query String: {{ event_log.query_string }}</div>
+                {% endif %}
                 {% if event_log.entity %}
                 	<div class="el-meta-entity">
                     	Entity: 
