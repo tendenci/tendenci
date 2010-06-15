@@ -44,7 +44,7 @@
         </div>
         {% endif %}
         <div class="photo-author-wrap">
-            Uploaded by {# firstof  photo.member.get_profile.name photo.member.username #}
+            Uploaded by {% firstof  photo.member.get_profile.display_name photo.member.username %}
         </div>
         <div class="hr"></div>
         <div class="photo-options">
@@ -53,7 +53,7 @@
 	</div><!-- END .photo-instance -->
 
 <!-- delete photo form -->
-<form name="photo-delete" method="POST" action="{% url photo_destroy photo.pk %}">
+<form name="photo-delete" method="POST" action="{% url photo_destroy photo.pk set_id %}">
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="delete_id" value="{{ photo.pk }}" />
 </form>

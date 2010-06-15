@@ -1,7 +1,7 @@
 {% load base_tags %}
 
 <div class="back-to-search">
-    <a href="/dashboard">&laquo; Dashboard</a>
+    <a href="{% url dashboard %}">&laquo; Dashboard</a>
     {% url event_log.search as search_url %}
     {% if not search_url in request.path %}
     	<a href="{{ search_url }}">Search {{ MODULE_EVENT_LOGS_LABEL|lower }}</a>&nbsp;
