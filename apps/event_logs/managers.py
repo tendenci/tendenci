@@ -1,7 +1,10 @@
+from time import strptime
+from datetime import datetime, timedelta
+
 from socket import gethostbyname, gethostname
 from django.db.models import Manager
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser
 
 from entities.models import Entity
 from robots.models import Robot
@@ -19,6 +22,7 @@ default_keyword_args = (
     'event_data',
     'description',
     'entity',
+    'source',
 )
     
 class EventLogManager(Manager):
@@ -29,8 +33,21 @@ class EventLogManager(Manager):
         """
         sqs = SearchQuerySet()
         
-        if query: 
-            sqs = sqs.filter(content=sqs.query.clean(query))
+        q = query.get('q',None)
+        range = query.get('range',None)
+            
+        if query:
+            if range:
+                try:
+                    date = datetime(*strptime(q,"%Y-%m-%d %H:%M:%S")[0:5])
+                    start_dt = date - timedelta(minutes=2)
+                    end_dt = date + timedelta(minutes=2)
+                    sqs = sqs.filter(create_dt__lte=end_dt)
+                    sqs = sqs.filter(create_dt__gte=start_dt)
+                except:
+                    sqs = sqs.filter(content=sqs.query.clean(q)) 
+            else:
+                sqs = sqs.filter(content=sqs.query.clean(q))
         else:
             sqs = sqs.all()
         
@@ -93,6 +110,7 @@ class EventLogManager(Manager):
             request = kwargs['request']
         if 'user' in kwargs:
             user = kwargs['user']
+                
         if 'instance' in kwargs:
             instance = kwargs['instance']
             
@@ -114,9 +132,12 @@ class EventLogManager(Manager):
         
         # set up the user information
         if user:
-            event_log.user = user
-            event_log.username = user.username
-            event_log.email = user.email
+            if isinstance(user,AnonymousUser):
+                event_log.username = 'anonymous'
+            else:    
+                event_log.user = user
+                event_log.username = user.username
+                event_log.email = user.email
     
         # setup request meta information
         if request:
