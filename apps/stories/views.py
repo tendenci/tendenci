@@ -61,6 +61,7 @@ def search(request, template_name="stories/search.html"):
         'description': '%s searched' % 'Story',
         'user': request.user,
         'request': request,
+        'source': 'stories'
     }
     EventLog.objects.log(**log_defaults)
     
