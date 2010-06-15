@@ -38,6 +38,7 @@ def search(request, template_name="entities/search.html"):
         'description': '%s searched' % 'Entity',
         'user': request.user,
         'request': request,
+        'source': 'entities'
     }
     EventLog.objects.log(**log_defaults)
     

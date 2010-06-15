@@ -25,15 +25,7 @@ def index(request, id=None, template_name="event_logs/view.html"):
 
 @permission_required('event_logs.view_eventlog')
 def search(request, template_name="event_logs/search.html"):
-    print "here"
-    if request.method == 'GET':
-        if 'q' in request.GET:
-            query = request.GET['q']
-        else:
-            query = None
-        event_logs = EventLog.objects.search(query)
-    else:
-        event_logs = EventLog.objects.search()
+    event_logs = EventLog.objects.search(request.GET)
         
     return render_to_response(template_name, {'event_logs':event_logs}, 
         context_instance=RequestContext(request))

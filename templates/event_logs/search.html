@@ -31,7 +31,7 @@
                             <a href="{{ event_log.get_absolute_url }}">
                                 {{ event_log.event_id }}
                             </a>
-                            <a href="#">()</a>
+                            <a href="{% url event_log.search %}?q={{ event_log.event_id }}">()</a>
                         </td>
                         <td class="el-sh-source">
                         	{% if event_log.source %}
@@ -42,7 +42,7 @@
                         </td>
                         <td class="el-sh-dt">
                             {{ event_log.create_dt }}
-                            <a href="#">()</a>
+                            <a href="{% url event_log.search %}?q={{ event_log.create_dt|urlencode }}&range=1">()</a>
                         </td>
                     </tr>
                     <tr>
