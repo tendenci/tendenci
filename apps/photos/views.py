@@ -358,6 +358,7 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
         'description': '%s searched' % 'PhotoSet',
         'user': request.user,
         'request': request,
+        'source': 'photos'
     }
     EventLog.objects.log(**log_defaults)
         
