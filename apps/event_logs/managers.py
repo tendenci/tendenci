@@ -1,7 +1,7 @@
 from socket import gethostbyname, gethostname
 from django.db.models import Manager
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AnonymousUser
 
 from entities.models import Entity
 from robots.models import Robot
@@ -93,6 +93,7 @@ class EventLogManager(Manager):
             request = kwargs['request']
         if 'user' in kwargs:
             user = kwargs['user']
+                
         if 'instance' in kwargs:
             instance = kwargs['instance']
             
@@ -114,9 +115,12 @@ class EventLogManager(Manager):
         
         # set up the user information
         if user:
-            event_log.user = user
-            event_log.username = user.username
-            event_log.email = user.email
+            if isinstance(user,AnonymousUser):
+                event_log.username = 'anonymous'
+            else:    
+                event_log.user = user
+                event_log.username = user.username
+                event_log.email = user.email
     
         # setup request meta information
         if request:
