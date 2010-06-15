@@ -13,18 +13,17 @@ from event_logs.models import EventLog
 def index(request, id=None, template_name="articles/view.html"):
     if not id: return HttpResponseRedirect(reverse('article.search'))
     article = get_object_or_404(Article, pk=id)
-
-    log_defaults = {
-        'event_id' : 435000,
-        'event_data': '%s (%d) viewed by %s' % (article._meta.object_name, article.pk, request.user),
-        'description': '%s viewed' % article._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': article,
-    }
-    EventLog.objects.log(**log_defaults)
     
     if request.user.has_perm('articles.view_article', article):
+        log_defaults = {
+            'event_id' : 435000,
+            'event_data': '%s (%d) viewed by %s' % (article._meta.object_name, article.pk, request.user),
+            'description': '%s viewed' % article._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': article,
+        }
+        EventLog.objects.log(**log_defaults)
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
@@ -34,6 +33,15 @@ def search(request, template_name="articles/search.html"):
     query = request.GET.get('q', None)
     articles = Article.objects.search(query)
 
+    log_defaults = {
+        'event_id' : 434000,
+        'event_data': '%s searched by %s' % ('Article', request.user),
+        'description': '%s searched' % 'Article',
+        'user': request.user,
+        'request': request,
+    }
+    EventLog.objects.log(**log_defaults)
+    
     return render_to_response(template_name, {'articles':articles}, 
         context_instance=RequestContext(request))
 

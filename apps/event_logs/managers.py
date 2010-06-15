@@ -125,7 +125,7 @@ class EventLogManager(Manager):
                 
             if hasattr(request,'META'):
                 event_log.user_ip_address = request.META.get('REMOTE_ADDR','')
-                event_log.http_referrer = request.META.get('HTTP_REFERER ','')
+                event_log.http_referrer = request.META.get('HTTP_REFERER','')
                 event_log.http_user_agent = request.META.get('HTTP_USER_AGENT','')
                 event_log.request_method = request.META.get('REQUEST_METHOD','')
                 event_log.query_string = request.META.get('QUERY_STRING','')
