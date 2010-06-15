@@ -14,5 +14,3 @@ class RobotManager(Manager):
             if robot.name.lower() in user_agent.lower():
                 return robot
         return None
-        
-        

@@ -9,26 +9,42 @@ from base.http import Http403
 from pages.models import Page
 from pages.forms import PageForm
 from perms.models import ObjectPermission
+from event_logs.models import EventLog
 
 def index(request, id=None, template_name="pages/view.html"):
     if not id: return HttpResponseRedirect(reverse('page.search'))
     page = get_object_or_404(Page, pk=id)
 
     if request.user.has_perm('pages.view_page', page):
+        log_defaults = {
+            'event_id' : 585000,
+            'event_data': '%s (%d) viewed by %s' % (page._meta.object_name, page.pk, request.user),
+            'description': '%s viewed' % page._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': page,
+        }
+        EventLog.objects.log(**log_defaults)        
+        
         return render_to_response(template_name, {'page': page}, 
             context_instance=RequestContext(request))
     else:
         raise Http403
 
 def search(request, template_name="pages/search.html"):
-    if request.method == 'GET':
-        if 'q' in request.GET:
-            query = request.GET['q']
-        else:
-            query = None
-        pages = Page.objects.search(query)
-    else:
-        pages = Page.objects.search()
+    query = request.GET.get('q', None)
+    pages = Page.objects.search(query)
+
+    log_defaults = {
+        'event_id' : 584000,
+        'event_data': '%s searched by %s' % ('Page', request.user),
+        'description': '%s searched' % 'Page',
+        'user': request.user,
+        'request': request,
+        'source': 'pages'
+    }
+    EventLog.objects.log(**log_defaults)
+    
     return render_to_response(template_name, {'pages':pages}, 
         context_instance=RequestContext(request))
 
@@ -36,6 +52,15 @@ def print_view(request, id, template_name="pages/print-view.html"):
     page = get_object_or_404(Page, pk=id)
 
     if request.user.has_perm('pages.view_page', page):
+        log_defaults = {
+            'event_id' : 585000,
+            'event_data': '%s (%d) viewed by %s' % (page._meta.object_name, page.pk, request.user),
+            'description': '%s viewed' % page._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': page,
+        }
+        EventLog.objects.log(**log_defaults)
         return render_to_response(template_name, {'page': page}, 
             context_instance=RequestContext(request))
     else:
@@ -52,6 +77,16 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
             if form.is_valid():
                 page = form.save(commit=False)
                 page.save()
+
+                log_defaults = {
+                    'event_id' : 582000,
+                    'event_data': '%s (%d) edited by %s' % (page._meta.object_name, page.pk, request.user),
+                    'description': '%s edited' % page._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': page,
+                }
+                EventLog.objects.log(**log_defaults)
 
                 # remove all permissions on the object
                 ObjectPermission.objects.remove_all(page)
@@ -87,7 +122,17 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                 page.owner = request.user
                 page.owner_username = request.user.username
                 page.save()
-                
+ 
+                log_defaults = {
+                    'event_id' : 581000,
+                    'event_data': '%s (%d) added by %s' % (page._meta.object_name, page.pk, request.user),
+                    'description': '%s added' % page._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': page,
+                }
+                EventLog.objects.log(**log_defaults)
+               
                 # assign permissions for selected users
                 user_perms = form.cleaned_data['user_perms']
                 if user_perms:
@@ -111,6 +156,15 @@ def delete(request, id, template_name="pages/delete.html"):
 
     if request.user.has_perm('pages.delete_page'):   
         if request.method == "POST":
+            log_defaults = {
+                'event_id' : 583000,
+                'event_data': '%s (%d) deleted by %s' % (page._meta.object_name, page.pk, request.user),
+                'description': '%s deleted' % page._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': page,
+            }
+            EventLog.objects.log(**log_defaults)
             page.delete()
             return HttpResponseRedirect(reverse('page.search'))
     

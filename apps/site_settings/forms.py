@@ -1,7 +1,7 @@
 from django import forms
 from django.core.cache import cache
 
-from site_settings.utils import delete_setting_cache, cache_setting
+from site_settings.utils import delete_setting_cache, cache_setting, delete_all_settings_cache
 from site_settings.cache import SETTING_PRE_KEY
 
 def clean_settings_form(self):
@@ -33,6 +33,7 @@ def save_settings_form(self):
             cache.delete(key)
             
             # delete and set cache for single key and save the value in the database
+            delete_all_settings_cache()
             delete_setting_cache(setting.scope, setting.scope_category, setting.name)
             setting.value = field_value
             setting.save()

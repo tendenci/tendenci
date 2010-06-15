@@ -20,37 +20,90 @@
 	
 	<div class="event-logs-wrap">
     {% for event_log in event_logs %}
-		<div class="event-log-wrap">
-			<div class="options">
-
-                <div class="dropdown-options">
-                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                    <ul>
-                        <li>Review Reports</li>
-                        <li>Optimize Meta Tags</li>
-                        <li>Attach Files</li>
-                        <li>View Revisions</li>
-                        <li>Delete</li>
-                    </ul>
-                </div>
-
-                <div class="quick-options">
-					{% event_log_options request.user event_log %} 	       
-                </div>
-			</div>
-
-			
-            <h2><a href="{% url event_log event_log.pk %}">{% firstof event_log.event_data "Untitled" %}</a></h2>
-            <div class="content">
-            	<p>URL: {{ event_log.request_method }}&nbsp;{{ event_log.url }}</p>
-            	<p>Server IP Address: {{ event_log.server_ip_address }}</p>
-            	<p>IP Address: {{ event_log.user_ip_address }}</p>
-                <p>User Agent: {{ event_log.http_user_agent }}</p>
+    	{% with event_log.object as event_log %}
+		<div class="event-log-search-wrap">
+        	<div class="el-search-header">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="el-sh-pk"><strong>{{ event_log.pk }}</strong></td>
+                        <td class="el-sh-elid">
+                        	<img border="0" src="{% url event_log.colored_image event_log.color %}" width="40" height="20" />
+                            <a href="{{ event_log.get_absolute_url }}">
+                                {{ event_log.event_id }}
+                            </a>
+                            <a href="{% url event_log.search %}?q={{ event_log.event_id }}">()</a>
+                        </td>
+                        <td class="el-sh-source">
+                        	{% if event_log.source %}
+                            	<a href="{% url event_log.search %}?q={{ event_log.source|urlencode }}">{{ event_log.source }}</a>
+                            {% else %}
+                            	&nbsp;
+                            {% endif %}
+                        </td>
+                        <td class="el-sh-dt">
+                            {{ event_log.create_dt }}
+                            <a href="{% url event_log.search %}?q={{ event_log.create_dt|urlencode }}&range=1">()</a>
+                        </td>
+                    </tr>
+                    <tr>
+                    	{% if event_log.user %}
+                    		<td class="el-sh-user" colspan="2">
+                            	User: <a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
+                                <a href="{% url event_log.search %}?q={{ event_log.username|urlencode }}">
+                                	<img border="0" src="{{ STATIC_URL }}tresources/en/images/icons/crosscheck12x12.gif" />
+                                </a>
+                            </td>
+                        {% else %}
+                        	<td class="el-sh-user" colspan="2">
+                            	User: {{ event_log.username }}
+                                <a href="{% url event_log.search %}?q=anonymous">
+                                    <img border="0" src="{{ STATIC_URL }}tresources/en/images/icons/crosscheck12x12.gif" />
+                                </a>
+                            </td>
+                       	{% endif %}
+                    	<td colspan="2">{{ event_log.description }}</td>
+                    </tr>
+           	   </table>
             </div>
-			<div class="meta">
-            	<div class="submitted">Logged on {{ event_log.create_dt|date:"D d M Y P" }}</div>
+            <div class="el-meta">
+            	<div class="el-meta-request">{{ event_log.request_method }} - {{ event_log.http_user_agent }}</div>
+                <div class="el-meta-url">URL: <a href="{{ SITE_GLOBAL_SITEURL }}{{ event_log.url }}">{{ event_log.url }}</a></div>
+                {% if event_log.query_string %}
+               	 <div class="el-query-string">Query String: {{ event_log.query_string }}</div>
+                {% endif %}
+                {% if event_log.entity %}
+                	<div class="el-meta-entity">
+                    	Entity: 
+                    	<a href="{% url event_log.search %}?q={{ event_log.entity.entity_name|urlencode }}">
+                        	{{ event_log.entity.pk }}
+                     	</a>
+                    </div>
+                {% endif %}
+                <div class="el-meta-ips">
+                	<table border="0" cellpadding="0" cellspacing="0">
+                    	<tr>
+                    	  <td>User IP: 
+                          	<a href="{% url event_log.search %}?q={{ event_log.user_ip_address|urlencode }}">
+                            	{{ event_log.user_ip_address }}
+                            </a>
+                          </td>
+                    	  <td>Server IP: 
+                          	<a href="{% url event_log.search %}?q={{ event_log.server_ip_address|urlencode }}">
+                            	{{ event_log.server_ip_address }}
+                            </a>
+                          </td>
+                    	</tr>
+                    </table>
+                </div>
+            </div>
+            <div class="el-event-data">
+            	{{ event_log.event_data }}
+                {% if event_log.content_type %}
+                	<a href="{{ SITE_GLOBAL_SITEURL }}{{ event_log.url }}">(view)</a>
+                {% endif %}
             </div>
 		</div>
+		{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>
     {% endfor %}

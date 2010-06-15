@@ -18,7 +18,7 @@ class PhotoUploadForm(AuditingBaseForm):
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
-        super(PhotoUploadForm, self).__init__(*args, **kwargs)
+        super(PhotoUploadForm, self).__init__(user, *args, **kwargs)
 
 class PhotoEditForm(AuditingBaseForm):
     
@@ -30,7 +30,7 @@ class PhotoEditForm(AuditingBaseForm):
         
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
-        super(PhotoEditForm, self).__init__(*args, **kwargs)
+        super(PhotoEditForm, self).__init__(user, *args, **kwargs)
 
 class PhotoSetAddForm(AuditingBaseForm):
     """ Photo-Set Add-Form """

@@ -1,6 +1,16 @@
 .t {
-	width: 60%;
+	width: 90%;
 }
+.t-iconrow{
+	float: right;
+}
+.clear-right{
+	clear: right;
+}
+.clear-both{
+	clear: both;
+}
+
 .t h2 {
 	margin: 0 auto 10px 0;
 }
@@ -14,6 +24,7 @@
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
+	background-color: white;
 }
 
 .t .stories-wrap .story-wrap h2 {
