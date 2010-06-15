@@ -27,7 +27,7 @@
                     <tr>
                         <td class="el-sh-pk"><strong>{{ event_log.pk }}</strong></td>
                         <td class="el-sh-elid">
-                        	<img src="{% url event_log.colored_image event_log.color %}" width="40" height="20" />
+                        	<img border="0" src="{% url event_log.colored_image event_log.color %}" width="40" height="20" />
                             <a href="{{ event_log.get_absolute_url }}">
                                 {{ event_log.event_id }}
                             </a>
@@ -50,14 +50,14 @@
                     		<td class="el-sh-user" colspan="2">
                             	User: <a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
                                 <a href="{% url event_log.search %}?q={{ event_log.username|urlencode }}">
-                                	<img src="{{ STATIC_URL }}tresources/en/images/icons/crosscheck12x12.gif" />
+                                	<img border="0" src="{{ STATIC_URL }}tresources/en/images/icons/crosscheck12x12.gif" />
                                 </a>
                             </td>
                         {% else %}
                         	<td class="el-sh-user" colspan="2">
                             	User: {{ event_log.username }}
                                 <a href="{% url event_log.search %}?q=anonymous">
-                                    <img src="{{ STATIC_URL }}tresources/en/images/icons/crosscheck12x12.gif" />
+                                    <img border="0" src="{{ STATIC_URL }}tresources/en/images/icons/crosscheck12x12.gif" />
                                 </a>
                             </td>
                        	{% endif %}
