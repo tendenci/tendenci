@@ -1,8 +1,6 @@
 from django.db import models
-
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-
 from perms.models import AuditingBaseModel
 from articles.managers import ArticleManager
 
@@ -60,5 +58,3 @@ class Article(AuditingBaseModel):
 
     def __unicode__(self):
         return self.headline
-
-

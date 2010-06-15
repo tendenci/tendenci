@@ -1,4 +1,9 @@
+{% load tagging_tags %}
 {% firstof object.headline "Untitled" %}
 by {{ object.creator }}
-by {{ object.object.creator.get_profile.name }}
+by {{ object.object.creator.get_profile.display_name }}
 {{ object.body }}
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+{{ tag }}{% if not forloop.last %}, {% endif %} 
+{% endfor %}
