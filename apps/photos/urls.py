@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     # /photos/23/in/36
     url(r'^(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.photo', name="photo"),
     # /photos/delete/23/
-    url(r'^delete/(?P<id>\d+)/$', 'photos.views.delete', name='photo_destroy'),
+    url(r'^delete/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.delete', name='photo_destroy'),
     # /photos/edit/23/in/36
     url(r'^edit/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.edit', name='photo_edit'),
 

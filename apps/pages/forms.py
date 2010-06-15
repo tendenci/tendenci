@@ -12,6 +12,7 @@ class PageForm(AuditingBaseForm):
         'page_title',
         'meta_keywords',
         'meta_description',
+        'tags',
         'allow_anonymous_view',
         'allow_user_view',
         'allow_member_view',

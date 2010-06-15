@@ -33,8 +33,11 @@ from profiles.models import Profile
 from profiles.forms import ProfileForm, UserPermissionForm
 from base.http import Http403
 from user_groups.models import Group, GroupMembership
+
+from perms.utils import is_admin
+
 from event_logs.models import EventLog
- 
+
 # view profile  
 @login_required 
 def index(request, username="", template_name="profiles/index.html"):
@@ -71,6 +74,9 @@ def index(request, username="", template_name="profiles/index.html"):
 def search(request, template_name="profiles/search.html"):
     query = request.GET.get('q', None)
     profiles = Profile.objects.search(query)
+    
+    if not is_admin(request.user):
+        profiles = profiles.filter(status=1, status_detail='active')
 
     log_defaults = {
         'event_id' : 124000,
