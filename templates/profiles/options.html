@@ -6,7 +6,16 @@
 {% assign can_edit_user user_this_profile|args:request.user|call:'allow_edit_by' %}
 
 	{% if user_this.id %}
-		
+		{% if can_edit_user %} 
+			{% is_developer user_this as is_developer %}
+			{% if is_developer %}
+				<span class="copyright body-copy-alerts"><em>DEVELOPER</em></span>
+			{% else %}
+				{% is_admin user_this as is_admin %}
+				{% if is_admin %}
+				<span class="copyright body-copy-alerts"><em>ADMINISTRATOR</em></span>
+				{% endif %}
+			{% endif %}
 			{% if profile.status == 0 %}
 				<a href="{% url profile.edit user_this.id %}" title="Inactive" class="t-statusdetail"
 				 style="background-color:#FF0000;">Inactive</a>
@@ -19,13 +28,14 @@
 				{% endif %}
 			{% endif %}
 			
-			{% if not user_this.is_active %}
-				<img class="non-interactive" src="/site_media/static/images/icons/answer_incorrect.gif" 
-				alt="Non-Interactive" title="Non-Interactive">
-			{% endif %}
-			{% if can_edit_user %}
+			
+				{% if not user_this.is_active %}
+					<img class="non-interactive" src="/site_media/static/images/icons/answer_incorrect.gif" 
+					alt="Non-Interactive" title="Non-Interactive">
+				{% endif %}
+			
 		     	<a href="{% url profile.edit user_this.id %}" class="option-link edit">Edit</a>
-			{% endif %}
+		{% endif %}
 	{% endif %}
 
  {% if can_edit_user %}
