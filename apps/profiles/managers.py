@@ -18,10 +18,11 @@ class ProfileManager(Manager):
         """
         from profiles.models import Profile
         sqs = SearchQuerySet()
-        
+       
         if query: 
             sqs = sqs.filter(content=sqs.query.clean(query))
         else:
             sqs = sqs.all()
+        #sqs = sqs.order_by('user')
         
         return sqs.models(Profile)
