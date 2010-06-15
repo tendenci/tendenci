@@ -158,6 +158,8 @@ INSTALLED_APPS = (
     'entities',
     'site_settings',
     'user_groups',
+    #'make_payments',
+    #'invoices',
     'files',
     'event_logs',
     'robots',
