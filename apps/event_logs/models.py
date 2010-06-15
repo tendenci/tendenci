@@ -40,7 +40,7 @@ class EventLog(models.Model):
  
     def color(self):
         return get_color(str(self.event_id))
-    
+        
     def get_absolute_url(self):
         return ('event_log', [self.pk])
     get_absolute_url = models.permalink(get_absolute_url)

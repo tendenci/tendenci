@@ -24,6 +24,7 @@ def group_search(request, template_name="user_groups/search.html"):
         'description': '%s searched' % 'Group',
         'user': request.user,
         'request': request,
+        'source': 'user_groups'
     }
     EventLog.objects.log(**log_defaults)
 

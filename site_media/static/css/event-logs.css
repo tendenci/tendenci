@@ -85,3 +85,60 @@
 	cursor: pointer;
 }
 
+/* event logs search */
+.t .event-log-search-wrap { margin-bottom: 25px; }
+.t .event-log-search-wrap a {
+	text-decoration: none;
+}
+
+.t div.el-search-header table {
+	width: 90%;
+}
+
+.t div.el-search-header table td {
+	text-align: left;
+	padding: 5px;
+}
+
+.t div.el-search-header table td.el-sh-pk {
+	width: 10%;
+	background-color: #EEE;
+}
+
+.t div.el-search-header table td.el-sh-elid {
+	width: 20%;
+	background-color: #EEE;
+}
+
+.t div.el-search-header table td.el-sh-elid img {
+	vertical-align:text-bottom;
+}
+
+.t div.el-search-header table td.el-sh-source {
+	width: 15%;
+	background-color: #EEE;
+}
+
+.t div.el-search-header table td.el-sh-dt {
+	text-align: right;
+	background-color: #EEE;
+}
+
+.t div.el-search-header table td.el-sh-user {
+	width: 20%;
+}
+
+.t div.el-meta {
+	width: 80%;
+	margin: 5px 0 5px 5px;
+	font-size: 14px;
+	color: #777;
+}
+
+.t div.el-meta table td {
+	width: 40%;
+}
+
+.t div.el-event-data {
+	margin: 5px 0 5px 5px;
+}

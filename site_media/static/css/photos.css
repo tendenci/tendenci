@@ -314,8 +314,10 @@ table.photo-form select {
 	border-top-left-radius: 8px;
 	border-top-right-radius: 8px;
 }
-.photo-wrap {
+
+.edit-wrap .photo-wrap {
 	margin-bottom: 5px;
+	float: left;
 }
 .set-wrap {
 	float: right;
