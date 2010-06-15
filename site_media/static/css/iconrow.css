@@ -105,3 +105,6 @@
 }
 
 .t-iconrow .more-options-target ul li:hover{background: #DFEBFF;}
+.body-copy-alerts{
+	color: red;
+}

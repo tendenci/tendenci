@@ -1,7 +1,7 @@
 from profiles.models import Profile
 
 def is_admin(user):
-    if not user:
+    if not user or not user.id:
         return False
     
     if hasattr(user, 'is_admin'):
@@ -20,7 +20,7 @@ def is_admin(user):
             return False
         
 def is_developer(user):
-    if not user:
+    if not user or not user.pk:
         return False
 
     if hasattr(user, 'is_developer'):

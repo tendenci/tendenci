@@ -1,3 +1,10 @@
-{% if photo_set_id %}
-<div class="photo-back"><a href="{% url photoset_details photo_set_id %}">&laquo; Browse photo set</a></div>
+
+
+
+{% if set_id %}
+    {% if id %}
+    	<div class="photo-back"><a href="{{ photo.get_absolute_url }}">&laquo; Back to photo</a></div>
+    {% else %}
+    	<div class="photo-back"><a href="{% url photoset_details set_id %}">&laquo; Back to photo set</a></div>
+    {% endif %}
 {% endif %}

@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from event_logs.managers import EventLogManager
 from entities.models import Entity
 from robots.models import Robot
+from event_logs.colors import get_color
 
 class EventLog(models.Model):
     content_type = models.ForeignKey(ContentType, null=True)
@@ -37,6 +38,9 @@ class EventLog(models.Model):
     class Meta:
         permissions = (("view_eventlog","Can view eventlog"),)
  
+    def color(self):
+        return get_color(str(self.event_id))
+        
     def get_absolute_url(self):
         return ('event_log', [self.pk])
     get_absolute_url = models.permalink(get_absolute_url)

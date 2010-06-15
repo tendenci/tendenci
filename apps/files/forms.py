@@ -10,4 +10,4 @@ class FileForm(forms.ModelForm):
 
     def __init__(self, user=None, *args, **kwargs): 
         self.user = user
-        super(FileForm, self).__init__(user, *args, **kwargs)
+        super(FileForm, self).__init__(*args, **kwargs)

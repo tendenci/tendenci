@@ -6,7 +6,8 @@ from profiles.models import Profile
 
 class ProfileIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-    user = indexes.CharField(model_attr='user')
+    user = indexes.CharField(model_attr='user', faceted=True)
+    #user_meta = indexes.CharField(model_attr='user', index_fieldname="user_meta", faceted=True)
     company = indexes.CharField(model_attr='company')
     address = indexes.CharField(model_attr='address')
     city = indexes.CharField(model_attr='city')
@@ -24,5 +25,11 @@ class ProfileIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
+    
+    def prepare_user(self, obj):
+        return "%s, %s (%s)" % (obj.user.last_name, obj.user.first_name, obj.user.username)
+    
+    def get_queryset(self):
+        return Profile.objects.all().order_by('user')
     
 site.register(Profile, ProfileIndex)

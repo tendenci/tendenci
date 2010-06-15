@@ -31,11 +31,13 @@ friends = False
 
 from profiles.models import Profile
 from profiles.forms import ProfileForm, UserPermissionForm
-
-from base.http import render_to_403
-
+from base.http import Http403
 from user_groups.models import Group, GroupMembership
- 
+
+from perms.utils import is_admin
+
+from event_logs.models import EventLog
+
 # view profile  
 @login_required 
 def index(request, username="", template_name="profiles/index.html"):
@@ -46,43 +48,53 @@ def index(request, username="", template_name="profiles/index.html"):
     try:
         #profile = Profile.objects.get(user=user)
         profile = user_this.get_profile()
-        #if not request.user.has_perm('profiles.view_profile', profile):return render_to_403()
+        #if not request.user.has_perm('profiles.view_profile', profile):raise Http403
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
         
     # security check 
     if not profile.allow_view_by(request.user): 
-        return render_to_403()
-        
+        raise Http403
+ 
+    log_defaults = {
+        'event_id' : 125000,
+        'event_data': '%s (%d) viewed by %s' % (profile._meta.object_name, profile.pk, request.user),
+        'description': '%s viewed' % profile._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': profile,
+    }
+    EventLog.objects.log(**log_defaults)
+       
     return render_to_response(template_name, {"user_this": user_this, "profile":profile,
                                               "user_objs":{"user_this": user_this } }, 
                               context_instance=RequestContext(request))
    
 @login_required   
 def search(request, template_name="profiles/search.html"):
-    if request.method == 'GET':
-        if 'q' in request.GET:
-            query = request.GET['q']
-        else:
-            query = None
-        if query:
-            profiles = Profile.objects.search(query)
-        else:
-            profiles = Profile.objects.search()
-    else:
-        profiles = Profile.objects.search()
-        
-    #if request.user.is_superuser:
-    #    profiles = Profile.objects.all()
-    #else:
-    #    profiles = Profile.objects.filter(status=1, status_detail='active')
+    query = request.GET.get('q', None)
+    profiles = Profile.objects.search(query)
+    
+    if not is_admin(request.user):
+        profiles = profiles.filter(status=1, status_detail='active')
+
+    log_defaults = {
+        'event_id' : 124000,
+        'event_data': '%s searched by %s' % ('Profile', request.user),
+        'description': '%s searched' % 'Profile',
+        'user': request.user,
+        'request': request,
+        'source': 'profiles'
+    }
+    EventLog.objects.log(**log_defaults)
+
     return render_to_response(template_name, {'profiles':profiles, "user_this":None}, 
         context_instance=RequestContext(request))
 
 
 @login_required
 def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
-    if not request.user.has_perm('profiles.add_profile'):return render_to_403()
+    if not request.user.has_perm('profiles.add_profile'):raise Http403
     
     if request.method == "POST":
         #form_user = form_class2(request.user, request.POST)
@@ -114,6 +126,16 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
 
             new_user.save()
             
+            log_defaults = {
+                'event_id' : 121000,
+                'event_data': '%s (%d) added by %s' % (new_user._meta.object_name, new_user.pk, request.user),
+                'description': '%s added' % new_user._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': new_user,
+            }
+            EventLog.objects.log(**log_defaults)
+           
             return HttpResponseRedirect(reverse('profile', args=[new_user.username]))
     else:
         form = form_class(request.user, None)
@@ -132,8 +154,8 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
         
-    #if not request.user.has_perm('profiles.change_profile', profile): return render_to_403() 
-    if not profile.allow_edit_by(request.user): return render_to_403()
+    #if not request.user.has_perm('profiles.change_profile', profile): raise Http403 
+    if not profile.allow_edit_by(request.user): raise Http403
        
     if request.method == "POST":
         #form_user = form_class2(request.user, request.POST)
@@ -168,6 +190,16 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 user_edit.is_active = 0
                 
             user_edit.save()
+
+            log_defaults = {
+                'event_id' : 122000,
+                'event_data': '%s (%d) edited by %s' % (user_edit._meta.object_name, user_edit.pk, request.user),
+                'description': '%s edited' % user_edit._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': user_edit,
+            }
+            EventLog.objects.log(**log_defaults)
             
             return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
     else:
@@ -189,7 +221,7 @@ def delete(request, id, template_name="profiles/delete.html"):
     except:
         profile = None
     
-    if not request.user.has_perm('profiles.delete_profile', profile): return render_to_403()
+    if not request.user.has_perm('profiles.delete_profile', profile): raise Http403
 
     if request.method == "POST":
         #soft delete
@@ -200,6 +232,18 @@ def delete(request, id, template_name="profiles/delete.html"):
             profile.save()
         user.is_active = False
         user.save()
+
+        log_defaults = {
+            'event_id' : 123000,
+            'event_data': '%s (%d) deleted by %s' % (user._meta.object_name, user.pk, request.user),
+            'description': '%s deleted' % user._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': user,
+        }
+        EventLog.objects.log(**log_defaults)
+        
+        
         return HttpResponseRedirect(reverse('profile.search'))
 
     return render_to_response(template_name, {'user_this':user, 'profile': profile}, 
@@ -214,7 +258,7 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         profile = Profile.objects.create_profile(user=user_edit)
    
     # for now, only admin can grant/remove permissions
-    if not request.user.is_superuser: return render_to_403()
+    if not request.user.is_superuser: raise Http403
     
     if request.method == "POST":
         form = form_class(request.POST, request.user, instance=user_edit)
@@ -289,8 +333,8 @@ def change_avatar(request, id, extra_context={}, next_override=None):
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
         
-    #if not request.user.has_perm('profiles.change_profile', profile): return render_to_403()
-    if not profile.allow_edit_by(request.user): return render_to_403()
+    #if not request.user.has_perm('profiles.change_profile', profile): raise Http403
+    if not profile.allow_edit_by(request.user): raise Http403
     
     avatars = Avatar.objects.filter(user=user_edit).order_by('-primary')
     if avatars.count() > 0:

@@ -6,8 +6,9 @@ from django.core.urlresolvers import reverse
 
 from news.models import News
 from news.forms import NewsForm
-from base.http import render_to_403
+from base.http import Http403
 from perms.models import ObjectPermission
+from event_logs.models import EventLog
 
 def index(request, id=None, template_name="news/view.html"):
     if not id: return HttpResponseRedirect(reverse('news.search'))
@@ -15,20 +16,35 @@ def index(request, id=None, template_name="news/view.html"):
 
     # check permission
     if not request.user.has_perm('news.view_news', news):
-        return render_to_403()
+        raise Http403
+
+    log_defaults = {
+        'event_id' : 305500,
+        'event_data': '%s (%d) viewed by %s' % (news._meta.object_name, news.pk, request.user),
+        'description': '%s viewed' % news._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': news,
+    }
+    EventLog.objects.log(**log_defaults)
 
     return render_to_response(template_name, {'news': news}, 
         context_instance=RequestContext(request))
 
 def search(request, template_name="news/search.html"):
-    if request.method == 'GET':
-        if 'q' in request.GET:
-            query = request.GET['q']
-        else:
-            query = None
-        news = News.objects.search(query)
-    else:
-        news = News.objects.search()
+    query = request.GET.get('q', None)
+    news = News.objects.search(query)
+
+    log_defaults = {
+        'event_id' : 305400,
+        'event_data': '%s searched by %s' % ('News', request.user),
+        'description': '%s searched' % 'News',
+        'user': request.user,
+        'request': request,
+        'source': 'news'
+    }
+    EventLog.objects.log(**log_defaults)
+
     return render_to_response(template_name, {'news':news}, 
         context_instance=RequestContext(request))
 
@@ -37,8 +53,18 @@ def print_view(request, id, template_name="news/print-view.html"):
 
     # check permission
     if not request.user.has_perm('news.view_news', news):
-        return render_to_403()
+        raise Http403
 
+    log_defaults = {
+        'event_id' : 305500,
+        'event_data': '%s (%d) viewed by %s' % (news._meta.object_name, news.pk, request.user),
+        'description': '%s viewed' % news._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': news,
+    }
+    EventLog.objects.log(**log_defaults)
+    
     return render_to_response(template_name, {'news': news}, 
         context_instance=RequestContext(request))
 
@@ -48,7 +74,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
 
     # check permission
     if not request.user.has_perm('news.change_news', news):  
-        return render_to_403()
+        raise Http403
 
     form = form_class(instance=news)
 
@@ -56,6 +82,16 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
         form = form_class(request.user, request.POST, instance=news)
         if form.is_valid():
             news = form.save()
+
+            log_defaults = {
+                'event_id' : 305200,
+                'event_data': '%s (%d) edited by %s' % (news._meta.object_name, news.pk, request.user),
+                'description': '%s edited' % news._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': news,
+            }
+            EventLog.objects.log(**log_defaults)
 
             # remove all permissions on the object
             ObjectPermission.objects.remove_all(news)
@@ -77,7 +113,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
 
     # check permission
     if not request.user.has_perm('news.add_news'):  
-        return render_to_403()
+        raise Http403
 
     if request.method == "POST":
         form = form_class(request.user, request.POST)
@@ -88,16 +124,25 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             news.creator = request.user
             news.creator_username = request.user.username
             news.owner = request.user
-            news.owner_username = request.user.username
-            
+            news.owner_username = request.user.username        
             news.save()
+
+            log_defaults = {
+                'event_id' : 305100,
+                'event_data': '%s (%d) added by %s' % (news._meta.object_name, news.pk, request.user),
+                'description': '%s added' % news._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': news,
+            }
+            EventLog.objects.log(**log_defaults)
 
             # assign permissions for selected users
             user_perms = form.cleaned_data['user_perms']
             if user_perms: ObjectPermission.objects.assign(user_perms, news)
             
             # assign creator permissions
-            ObjectPermission.objects.assign(file.creator, news)
+            ObjectPermission.objects.assign(news.creator, news)
             
             return HttpResponseRedirect(reverse('news.view', args=[news.pk]))
     else:
@@ -112,9 +157,18 @@ def delete(request, id, template_name="news/delete.html"):
 
     # check permission
     if not request.user.has_perm('news.delete_news'): 
-        return render_to_403()
+        raise Http403
 
     if request.method == "POST":
+        log_defaults = {
+            'event_id' : 305300,
+            'event_data': '%s (%d) deleted by %s' % (news._meta.object_name, news.pk, request.user),
+            'description': '%s deleted' % news._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': news,
+        }
+        EventLog.objects.log(**log_defaults)
         news.delete()
         return HttpResponseRedirect(reverse('news.search'))
 

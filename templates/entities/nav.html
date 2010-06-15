@@ -2,7 +2,7 @@
 {% load perm_tags %}
 
 <div class="back-to-search">
-    <a href="/">Homepage</a>&nbsp;
+    <a href="{% url dashboard %}">&laquo; Dashboard</a>
     {% has_perm user entities.add_entity as can_add %}
     
     {% url entity.search as search_url %}
