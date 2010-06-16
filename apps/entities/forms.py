@@ -11,7 +11,6 @@ class EntityForm(AuditingBaseForm):
         'fax',
         'email',
         'website',
-        'mission',
         'summary',
         'notes',
         'admin_notes',
