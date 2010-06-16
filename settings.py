@@ -161,6 +161,7 @@ INSTALLED_APPS = (
     'files',
     'event_logs',
     'robots',
+    'categories',
 )
 
 # This is the number of days users will have to activate their
