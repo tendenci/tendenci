@@ -158,6 +158,7 @@ INSTALLED_APPS = (
     'photos',
     'base',
     'entities',
+    'locations',
     'site_settings',
     'user_groups',
     #'make_payments',

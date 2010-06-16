@@ -18,7 +18,6 @@ class Entity(AuditingBaseModel):
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
 
-    mission = models.CharField(max_length=1000, blank=True)
     summary = models.TextField(blank=True)
 
     notes = models.TextField(blank=True)
