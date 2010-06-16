@@ -1,5 +1,3 @@
-from django import forms
-
 from pages.models import Page
 from perms.forms import AuditingBaseForm
 

@@ -125,7 +125,7 @@ def generate_meta_keywords(value):
                 next_search = one_word_pattern.search(value, search_start)
                 search_end = next_search.end()   
             else:
-                 # if no match, advance a word
+                # if no match, advance a word
                 s = one_word_pattern.search(value, search_end)
                 if s:
                     search_end = s.end()
