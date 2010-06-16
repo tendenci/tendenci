@@ -1,4 +1,4 @@
-from django.template import Library, Node, Variable, TemplateSyntaxError 
+from django.template import Library, Node 
 
 from site_settings.utils import get_setting as gs
 

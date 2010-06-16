@@ -17,7 +17,6 @@ from avatar.forms import PrimaryAvatarForm
 from django.utils.translation import ugettext as _
 from django.db.models import get_app
 from django.core.exceptions import ImproperlyConfigured
-from django.conf import settings
 
 try:
     notification = get_app('notification')
