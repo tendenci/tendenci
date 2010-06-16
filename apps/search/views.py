@@ -4,8 +4,6 @@ from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from search.forms import ModelSearchForm
-from django.http import HttpResponse
-
 
 RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
 

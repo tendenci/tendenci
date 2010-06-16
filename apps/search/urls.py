@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, url
 from search.views import SearchView
 
 urlpatterns = patterns('search.views',
