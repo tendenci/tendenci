@@ -32,7 +32,7 @@ class EventLogManager(Manager):
         """
         sqs = SearchQuerySet()
         
-        q = query.get('q',None)
+        q = query.get('q','')
         range = query.get('range',None)
             
         if query:
