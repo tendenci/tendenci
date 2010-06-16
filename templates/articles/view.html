@@ -1,5 +1,6 @@
 {% extends "articles/base.html" %}
 {% load article_tags %}
+{% load tagging_tags %}
 
 {% block title %}{{ block.super }}{{ article.headline }}{% endblock %}
 
@@ -8,6 +9,14 @@
 {% endblock %}
 
 {% block body %}
+
+{% tags_for_object article as tags %}
+
+{% for tag in tags %}
+	{{ tag }}
+{% endfor %}
+
+
 <div class="t">
     {% article_nav request.user %}
 
