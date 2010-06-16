@@ -4,6 +4,8 @@ from timezones.fields import TimeZoneField
 from perms.models import AuditingBaseModel
 from articles.managers import ArticleManager
 
+from categories.models import Category
+
 class Article(AuditingBaseModel):
 
     # TODO: make unique=True (dependent on migration script)
@@ -34,6 +36,7 @@ class Article(AuditingBaseModel):
     design_notes = models.TextField(blank=True)
 
     tags = TagField(blank=True)
+    category = models.ForeignKey(Category, blank=True, null=True)
 
     # for podcast feeds
     enclosure_url = models.CharField(max_length=500, blank=True)

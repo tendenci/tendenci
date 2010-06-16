@@ -1,39 +1,133 @@
 {% extends "site_base.html" %}
+{% load perm_tags %}
 
-{% block title %}Homepage{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block extra_head %}
-<style type="text/css">
-	.offline a {
-		color: #DDD;
-	}
-	.online a {
-		color: #551A8B;
-	}
-</style>
+<link rel="stylesheet" href="/site_media/static/css/dashboard.css">
 {% endblock %}
 
 {% block body %}
-	{% if user.is_staff %}
-	<h2>Admin</h2>
-	<a href="/admin/">Admin Panel (Developer only)</a>
-    {% endif %}
-	<h3>Modules</h3>
-	<ul>
-		<li class="online"><a href="{% url dashboard %}">Dashboard</a></li>
-    	<li class="online"><a href="{% url profile.index %}">{% firstof MODULE_USERS_LABEL "Users" %}</a></li>
-    	<li class="online"><a href="{% url groups %}">{% firstof MODULE_GROUPS_LABEL "Groups" %}</a></li>
-    	<li class="offline"><a href="javascript:;">{% firstof MODULE_EVENTS_LABEL "Events" %}</a></li>
-    	<li class="online"><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL "Articles" %}</a></li>
-    	<li class="offline"><a href="javascript:;">{% firstof MODULE_JOBS_LABEL "Jobs" %}</a></li>
-    	<li class="online"><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL "News" %}</a></li>
-    	<li class="offline"><a href="javascript:;">{% firstof MODULE_DIRECTORIES_LABEL "Directories" %}</a></li>
-        <li class="online"><a href="{% url photoset_latest %}">{% firstof MODULE_PHOTOSETS_LABEL "Photo Albums" %}</a></li>
-    	<li class="online"><a href="{% url stories %}">{% firstof MODULE_STORIES_LABEL "Stories" %}</a></li>
-    	<li class="online"><a href="{% url pages %}">{% firstof MODULE_PAGES_LABEL "Pages" %}</a></li>
-     	<li class="online"><a href="{% url entities %}">{% firstof MODULE_ENTITIES_LABEL "Entities" %}</a></li>
-     	<li class="online"><a href="{% url files %}">{% firstof MODULE_MEDIA_LABEL Files %}</a></li>
-     	<li class="online"><a href="{% url settings %}">Settings</a></li>
-        <li class="online"><a href="{% url event_logs %}">{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</a></li>
-    </ul>
+
+{% has_perm user events.view_event as view_events %}
+{% has_perm user articles.view_article as view_articles %}
+{% has_perm user jobs.view_article as view_jobs %}
+{% has_perm user news.view_news as view_news %}
+{% has_perm user directories.view_directory as view_directories %}
+{% has_perm user photos.view_image as view_photos %}
+{% has_perm user stories.view_story as view_stories %}
+{% has_perm user pages.view_page as view_pages %}
+{% has_perm user entities.view_entity as view_entities %}
+{% has_perm user files.view_file as view_files %}
+{% has_perm user locations.view_location as view_location %}
+{% has_perm user settings.view_setting as view_settings %}
+{% has_perm user eventlogs.view_eventlog as view_eventlogs %}
+{% is_developer user as is_developer %}
+
+	<div class="main-panel">
+		<div class="modules">
+	    <h3>Modules</h3>
+		<ul>
+	
+			{% if MODULE_USERS_ENABLED %}
+			{% if 1 %}
+	    	<li class="users"><a href="{% url profile.search %}"><span>{% firstof MODULE_USERS_LABEL "Users" %}</span></a></li>
+			{% endif %}
+			{% endif %}
+	
+			{% if 1 %}
+	    	<li class="groups"><a href="{% url group.search %}"><span>{% firstof MODULE_GROUPS_LABEL "Groups" %}</span></a></li>
+			{% endif %}
+	
+			{% if 1 %}
+	    	<li class="events"><a href="javascript:;"><span>{% firstof MODULE_EVENTS_LABEL "Events" %}</span></a></li>
+			{% endif %}
+	
+			{% if MODULE_ARTICLES_ENABLED %}
+			{% if view_articles %}
+	    	<li class="articles"><a href="{% url article.search %}"><span>{% firstof MODULE_ARTICLES_LABEL "Articles" %}</span></a></li>
+			{% endif %}
+			{% endif %}
+	
+			{% if view_jobs %}
+	    	<li class="jobs"><a href="javascript:;"><span>{% firstof MODULE_JOBS_LABEL "Jobs" %}</span></a></li>
+			{% endif %}
+	
+			{% if MODULE_NEWS_ENABLED %}
+			{% if view_news %}
+	    	<li class="news"><a href="{% url news.search %}"><span>{% firstof MODULE_NEWS_LABEL "News" %}</span></a></li>
+			{% endif %}
+			{% endif %}
+	
+			{% if 1 %}
+	    	<li class="directories"><a href="javascript:;"><span>{% firstof MODULE_DIRECTORIES_LABEL "Directories" %}</span></a></li>
+			{% endif %}
+	
+			{% if MODULE_PHOTOS_ENABLED %}
+			{% if view_photos %}
+	        <li class="photo-albums"><a href="{% url photoset_latest %}"><span>{% firstof MODULE_PHOTOSETS_LABEL "Albums" %}</span></a></li>
+			{% endif %}
+			{% endif %}
+	
+			{% if view_stories %}
+	    	<li class="stories"><a href="{% url story.search %}"><span>{% firstof MODULE_STORIES_LABEL "Stories" %}</span></a></li>
+			{% endif %}
+	
+			{% if MODULE_PAGES_ENABLED %}
+			{% if view_pages %}
+	    	<li class="pages"><a href="{% url page.search %}"><span>{% firstof MODULE_PAGES_LABEL "Pages" %}</span></a></li>
+			{% endif %}
+			{% endif %}
+	
+			{% if view_entities %}
+	     	<li class="entities"><a href="{% url entity.search %}"><span>{% firstof MODULE_ENTITIES_LABEL "Entities" %}</span></a></li>
+			{% endif %}
+	
+			{% if MODULE_MEDIA_ENABLED %}
+			{% if view_files %}
+	     	<li class="files"><a href="{% url file.search %}"><span>{% firstof MODULE_MEDIA_LABEL Files %}</span></a></li>
+			{% endif %}
+			{% endif %}
+	
+	     	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
+	        <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
+	
+			{% if view_location %}
+			<li class="locations"><a href="{% url location.search %}"><span>{% firstof MODULE_LOCATION_LABEL  "Locations" %}</span></a></li>
+			{% endif %}
+	    </ul>
+	    </div>
+	</div>
+	
+	<div class="side-panel">
+		{% if is_developer %}
+		<div class="admin-quick-links">
+	    <h3>Admin Quick Links</h3>
+		<ul>
+			{% if MODULE_PAGES_ENABLED %}
+	    	<li><a href="{% url page.add %}">Add a page</a></li>
+			{% endif %}
+			<li><a href="{% url entity.search %}">Search entities</a></li>
+	    	<li><a href="javascript:;">Edit navigation</a></li>
+	    	<li><a href="{% url event_log.search %}">Search event logs</a></li>
+	    	<li><a href="{% url profile.search %}">Search users</a></li>
+	    	<li><a href="javascript:;">Make a newsletter</a></li>
+	    	<li><a href="javascript:;">Change website settings</a></li>
+	    	<li><a href="javascript:;">Enable/Disable modules</a></li>
+	    	<li><a href="javascript:;">Update SEM</a></li>
+	        <li><a href="/admin/">Admin Panel</a></li>
+	    </ul>
+	    </div>
+	
+		<div class="theme-management">
+	    <h3>Appearance</h3>
+		<ul>
+	    	<li><a href="{% url theme_editor %}">Update Theme</a></li>
+	    	<li><a href="javascript:;">Update Navigation</a></li>
+	    	<li><a href="{% url event_log.search %}">Update Footer</a></li>
+	    </ul>
+	    </div>
+	    {% endif %}
+	</div>
+    
 {% endblock %}

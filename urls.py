@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, url, include
 from django.views.generic.simple import direct_to_template
 
 # Django admin
@@ -11,12 +11,13 @@ authority.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
-    url(r'^dashboard/$', direct_to_template, {"template": "dashboard.html",}, name="dashboard"),
     (r'^admin/', include(admin.site.urls)),
     (r'^base/', include('base.urls')),
     (r'^avatar/', include('avatar.urls')),
+    (r'^dashboard/', include('dashboard.urls')),
     (r'^articles/', include('articles.urls')),
     (r'^entities/', include('entities.urls')),
+    (r'^locations/', include('locations.urls')),
     (r'^pages/', include('pages.urls')),
     (r'^users/', include('profiles.urls')),
     (r'^photos/', include('photos.urls')),
@@ -31,6 +32,7 @@ urlpatterns = patterns('',
     (r'^accounts/', include('accounts.urls')),
     (r'^search/', include('search.urls')),
     (r'^event-logs/', include('event_logs.urls')),
+    (r'^theme-editor/', include('theme_editor.urls')),
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
