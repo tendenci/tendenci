@@ -1,0 +1,16 @@
+{% extends "payments/base.html" %}
+
+{% block body %}
+<form action="{{ post_url }}" method="POST" name="myform99">
+    {{ form.as_p }}
+    
+    <br><br><br><br>
+    If you are not redirected within 45 secs,<br>
+    please click the button below to submit your payment. Thank you.
+    <br><br><br>
+    <input type="submit" value="Submit Payment" />
+    <script language="javascript">
+    	document.myform99.submit();
+    </script>
+</form>
+{% endblock %}
