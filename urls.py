@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, url, include
 from django.views.generic.simple import direct_to_template
 
 # Django admin
@@ -24,12 +24,14 @@ urlpatterns = patterns('',
     (r'^profiles/', include('profiles.urls')),
     (r'^groups/', include('user_groups.urls')),
     (r'^stories/', include('stories.urls')),
+    #(r'^py/', include('make_payments.urls')),
     (r'^news/', include('news.urls')),
     (r'^settings/', include('site_settings.urls')),
     (r'^files/', include('files.urls')),
     (r'^accounts/', include('accounts.urls')),
     (r'^search/', include('search.urls')),
     (r'^event-logs/', include('event_logs.urls')),
+    (r'^theme-editor/', include('theme_editor.urls')),
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
