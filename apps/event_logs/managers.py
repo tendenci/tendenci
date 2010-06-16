@@ -6,7 +6,6 @@ from django.db.models import Manager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 
-from entities.models import Entity
 from robots.models import Robot
 
 from haystack.query import SearchQuerySet
@@ -33,7 +32,7 @@ class EventLogManager(Manager):
         """
         sqs = SearchQuerySet()
         
-        q = query.get('q',None)
+        q = query.get('q','')
         range = query.get('range',None)
             
         if query:

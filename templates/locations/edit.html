@@ -1,0 +1,25 @@
+{% extends "locations/base.html" %}
+{% load locations_tags %}
+
+{% block title %}{{ block.super }}Edit{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/locations.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ MODULE_PHYICALLOCATIONS_LABEL }} Edit</h1>
+    
+    {% location_nav request.user %}
+
+    <div class="location-wrap">
+    <form action="{% url location.edit location.id %}" method="post">
+        {{ form.as_p }}
+        <input type="submit" value="Save changes" />
+    </form>
+
+    </div>
+
+</div>
+{% endblock %}
