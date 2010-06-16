@@ -30,6 +30,7 @@ urlpatterns = patterns('',
     (r'^accounts/', include('accounts.urls')),
     (r'^search/', include('search.urls')),
     (r'^event-logs/', include('event_logs.urls')),
+    (r'^theme-editor/', include('theme_editor.urls')),
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
