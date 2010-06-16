@@ -7,7 +7,6 @@ ul { /* remove bullets and spacing */
 	width: 70%;
 }
 .modules li {
-	font-size: .8em;
 	width: 80px;
 	height: 80px;
 	float: left;
@@ -71,25 +70,34 @@ ul { /* remove bullets and spacing */
 .modules li.event-logs {
 	background-image: url('');
 }
-.admin-quick-links {
-	width: 175px;
-	background-color: #F7F7F7;
+
+.side-panel {
 	float: right;
+}
+
+.admin-quick-links {
+	width: 185px;
+	background-color: #F7F7F7;
 	margin: 0 30px 10px 0;
 	padding: 0 20px 20px;
 	border: 1px solid silver;
+}
+.admin-quick-links h3 {
+	margin-top: 10px;
 }
 .admin-quick-links li {
 	padding: 3px 0 ;
 }
 
 .theme-management {
-	width: 175px;
+	width: 185px;
 	background-color: #F7F7F7;
-	float: right;
 	margin-right: 30px;
 	padding: 0 20px 20px;
 	border: 1px solid silver;
+}
+.theme-management h3 {
+	margin-top: 10px;
 }
 .theme-management li {
 	padding: 3px 0 ;
