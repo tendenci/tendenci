@@ -68,6 +68,13 @@ colors = {
     '163000':'339999', # delete
     '164000':'339999', # search 
     '165000':'339999', # view    
+
+    # locations
+    '831000':'669966', # add
+    '832000':'66CC66', # edit
+    '833000':'66CC00', # delete
+    '834000':'66CC33', # search 
+    '835000':'66CC99', # view    
 }
 
 def get_color(event_id):

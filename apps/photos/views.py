@@ -129,7 +129,7 @@ def memberphotos(request, username, template_name="photos/memberphotos.html", gr
     
     photos = Image.objects.filter(
         member__username = username,
-        is_public = True,
+        is_public = True
     )
     
     if group:

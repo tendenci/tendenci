@@ -8,7 +8,7 @@ sys.path.insert(0, APPS_PATH)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-SITE_THEME = "default"
+SITE_THEME = "tendenci"
 
 ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
@@ -57,6 +57,8 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
+
+THEME_ROOT = os.path.join(PROJECT_ROOT, 'themes', SITE_THEME)
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
@@ -148,6 +150,7 @@ INSTALLED_APPS = (
     # tendenci applications
     'base',
     'perms',
+    'dashboard',
     'profiles',
     'articles',
     'news',
@@ -156,6 +159,7 @@ INSTALLED_APPS = (
     'photos',
     'base',
     'entities',
+    'locations',
     'site_settings',
     'user_groups',
     'make_payments',
@@ -163,6 +167,8 @@ INSTALLED_APPS = (
     'files',
     'event_logs',
     'robots',
+    'categories',
+    'theme_editor',
 )
 
 # This is the number of days users will have to activate their
