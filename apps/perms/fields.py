@@ -10,7 +10,7 @@ __ALL__ = ('UserPermissionField','users_with_perms','user_perm_queryset',)
 
 user_perm_options = {
     'label':'People',
-    'help_text':'People who have permissions on this article',
+    'help_text':'People who have permissions',
     'required':False,
     'queryset': User.objects.filter(is_active=True),                   
 }

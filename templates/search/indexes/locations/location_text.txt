@@ -1,0 +1,4 @@
+{% firstof object.location_name "Untitled" %}
+by {{ object.creator }}
+by {{ object.object.creator.get_profile.display_name }}
+{{ object.description }}
