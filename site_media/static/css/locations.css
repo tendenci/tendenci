@@ -1,7 +1,5 @@
-
-
 .t {
-	width: 60%;
+	width: 90%;
 }
 .t h2 {
 	margin: 0 auto 10px 0;
@@ -83,4 +81,49 @@
 .t ul.location-nav li {
 	display: inline;
 }
+
+/* form */
+div.forms div.form-field div#id_city input {
+	width: 30%;
+}
+
+div.forms div.form-field div#id_state input {
+	width: 18%;
+}
+
+div.forms div.form-field div#id_zipcode input {
+	width: 10%;
+}
+
+div.forms div.form-field div#id_country input {
+	width: 45%;
+}
+
+div.forms div.form-field div#id_phone input {
+	width: 18%;
+}
+
+div.forms div.form-field div#id_fax input {
+	width: 18%;
+}
+
+div.forms div.form-field div#id_longitude input {
+	width: 8%;
+}
+
+
+div.forms div.form-field div#id_latitude input {
+	width: 8%;
+}
+
+div.forms div.form-field div#id_entityid input {
+	width: 8%;
+}
+
+div.forms div.form-field div#id_entityownerid input {
+	width: 8%;
+}
+
+
+
 

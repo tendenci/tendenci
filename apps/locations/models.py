@@ -1,6 +1,5 @@
 from django.db import models
-from tagging.fields import TagField
-from timezones.fields import TimeZoneField
+
 from perms.models import AuditingBaseModel
 from locations.managers import LocationManager
 
@@ -26,13 +25,13 @@ class Location(AuditingBaseModel):
     website = models.CharField(max_length=300, blank=True)
     
     # TODO - figure out if these stay
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
 
     hq = models.BooleanField()
     
-    entityid = models.IntegerField()
-    entityownerid = models.IntegerField()
+    entityid = models.IntegerField(blank=True, null=True)
+    entityownerid = models.IntegerField(blank=True, null=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
         
