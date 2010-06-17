@@ -4,6 +4,7 @@
 {% block title %}{{ block.super }}Edit{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
 <link rel="stylesheet" href="/site_media/static/css/locations.css">
 {% endblock %}
 
@@ -14,12 +15,37 @@
     {% location_nav request.user %}
 
     <div class="location-wrap">
-    <form action="{% url location.edit location.id %}" method="post">
-        {{ form.as_p }}
-        <input type="submit" value="Save changes" />
-    </form>
-
+    	<form action="{% url location.add %}" method="post">
+    	<div class="forms">
+            {% for field in form %}
+            {% if field.is_hidden %}
+            	{{ field }}
+            {% else %}
+                <div class="form-field">
+                	<div id="{{ field.auto_id }}">
+                        <div class="label{% if field.field.required %} required{% endif %}">
+                            {{ field.label_tag }}
+                        </div>
+                        {% if field.errors %}
+                        <div class="error">
+                            {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}   
+                        <div class="field">
+                            {{ field }}
+                        </div>  
+                        {% if field.help_text %}
+                        <div class="help-text">{{ field.help_text }}</div>   
+                        {% endif %}
+                     </div>       
+                </div>
+            {% endif %}
+            {% endfor %}   
+        	<input type="submit" value="Add {{ MODULE_LOCATIONS_LABEL }}" />
+		</div>
+        </form>
     </div>
-
 </div>
 {% endblock %}
