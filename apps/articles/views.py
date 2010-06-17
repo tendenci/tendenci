@@ -32,7 +32,7 @@ def index(request, id=None, template_name="articles/view.html"):
 def search(request, template_name="articles/search.html"):
     query = request.GET.get('q', None)
     articles = Article.objects.search(query)
-
+    
     log_defaults = {
         'event_id' : 434000,
         'event_data': '%s searched by %s' % ('Article', request.user),

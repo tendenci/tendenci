@@ -28,7 +28,7 @@ class MakePaymentForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super(MakePaymentForm, self).__init__(*args, **kwargs)
         # populate the user fields
-        if user:
+        if user and user.id:
             self.fields['first_name'].initial = user.first_name
             self.fields['last_name'].initial = user.last_name
             self.fields['email'].initial = user.email

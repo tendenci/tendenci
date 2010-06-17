@@ -162,8 +162,8 @@ INSTALLED_APPS = (
     'locations',
     'site_settings',
     'user_groups',
-    #'make_payments',
-    #'invoices',
+    'make_payments',
+    'invoices',
     'files',
     'event_logs',
     'robots',
@@ -234,4 +234,12 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+#---------------------------------------------------------------
+# payment gateway settings - LOGIN and KEY need to be moved to local_urls.py later
+#---------------------------------------------------------------
+AUTHNET_POST_URL = ""
+AUTHNET_TEST_POST_URL = "https://test.authorize.net/gateway/transact.dll"
+
+
 
