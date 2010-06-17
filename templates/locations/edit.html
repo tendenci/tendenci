@@ -16,7 +16,7 @@
     {% location_nav request.user %}
 
     <div class="location-wrap">
-    	<form action="{% url location.add %}" method="post">
+    	<form action="{% url location.edit location.pk %}" method="post">
     	<div class="forms">
         	{{ form|styled_form }}
             <input type="submit" value="Save Changes" />
