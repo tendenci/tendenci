@@ -15,6 +15,7 @@
 {% endblock %}
 
 {% block body %}
+{% tags_for_object photo as tags %}
 
 	<div class="photo-instance">
         <div class="photo-title-wrap">
@@ -38,11 +39,9 @@
         <div class="photo-caption-wrap">
             {{ photo.caption }}
         </div>
-        {% if photo.tags %}
         <div class="photo-tags">
-            Tags: {{ photo.tags }}
+            Tags: {% for tag in tags %} {{ tag }} {% endfor %}
         </div>
-        {% endif %}
         <div class="photo-author-wrap">
             Uploaded by {% firstof  photo.member.get_profile.display_name photo.member.username %}
         </div>

@@ -86,3 +86,14 @@
 	cursor: pointer;
 }
 
+/* Article View
+ ------------------------- */
+.t .article-wrap .meta {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F7F7F7;
+	margin-top: 10px;
+}
+.t .article-wrap .meta .tags {
+	margin-bottom: 5px;
+}
