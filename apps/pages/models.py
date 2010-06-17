@@ -16,7 +16,7 @@ class Page(AuditingBaseModel):
     create_dt = models.DateTimeField(auto_now_add=True)
     view_contact_form = models.BooleanField()
     design_notes = models.TextField(_('Design Notes'), blank=True)
-    syndicate = models.BooleanField(_('Add to RSS feed'))
+    syndicate = models.BooleanField(_('Include in RSS feed'))
     displaypagetemplate = models.CharField(_('Template'), max_length=50, blank=True)
     metacanonical = models.TextField(_('Meta Canonical'), blank=True)
     tags = TagField(blank=True)

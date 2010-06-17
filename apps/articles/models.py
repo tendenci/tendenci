@@ -31,7 +31,7 @@ class Article(AuditingBaseModel):
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
     create_dt = models.DateTimeField(auto_now_add=True)
 
-    syndicate = models.BooleanField(_('Add to RSS feed'),)
+    syndicate = models.BooleanField(_('Include in RSS feed'),)
 
     # TODO: might go away with tags
     featured = models.BooleanField()
