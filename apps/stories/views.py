@@ -53,7 +53,7 @@ def get_latest_image_name(images_path):
 
 def search(request, template_name="stories/search.html"):
     query = request.GET.get('q', None)
-    stories = Story.objects.search(query)
+    stories = Story.objects.search(query, user=request.user)
 
     log_defaults = {
         'event_id' : 1060400,

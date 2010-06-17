@@ -12,7 +12,7 @@ class FileManager(Manager):
         sqs = SearchQuerySet()
         
         if query: 
-            sqs = sqs.filter(content=sqs.query.clean(query))
+            sqs = sqs.auto_query(sqs.query.clean(query))
         else:
             sqs = sqs.all()
         

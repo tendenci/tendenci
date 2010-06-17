@@ -22,6 +22,14 @@ def settings(request):
         context_key = [setting.scope, setting.scope_category,
                        setting.name]
         context_key = '_'.join(context_key)
-        contexts[context_key.upper()] = setting.value
+
+        value = setting.value
+        if setting.data_type == 'boolean':
+            value = value[0].lower() == 't'
+        if setting.data_type == 'int':
+            if value.strip(): value = int(value.strip())
+            else: value = 0 # default to 0
+
+        contexts[context_key.upper()] = value
         
     return contexts
