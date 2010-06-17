@@ -93,3 +93,24 @@
 .t .news-wrap .meta .tags {
 	margin-bottom: 5px;
 }
+
+/* form */
+div.forms div.form-field div.id_first_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_last_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_release_dt .field input {
+	width: 30%;
+}

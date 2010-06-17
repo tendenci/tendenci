@@ -1,11 +1,13 @@
 {% extends "profiles/base.html" %}
 {% load profile_tags %}
+{% load styled_forms %}
 
 {% block title %}Add User{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
 <link rel="stylesheet" href="/site_media/static/css/profiles.css">
 {% endblock %}
 
@@ -17,12 +19,13 @@
     <h1>Add User</h1>
 
     <div class="profile-wrap">
-    <form action="{% url profile.add %}" method="post">
-        {{ form.as_p }}
-        {{ form2.as_p }}
-        <input type="submit" value="Add User" />
-    </form>
-
+    	<form action="{% url profile.add %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+            {{ form2|styled_form }}
+        	<input type="submit" value="Add User" />
+		</div>
+        </form>
     </div>
 
 </div>

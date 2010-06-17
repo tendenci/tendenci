@@ -171,6 +171,7 @@ INSTALLED_APPS = (
     'robots',
     'categories',
     'theme_editor',
+    'styled_forms',
 )
 
 # This is the number of days users will have to activate their
