@@ -117,7 +117,7 @@ class Profile(AuditingBaseModel):
     def allow_view_by(self, user2_compare):
         boo = False
        
-        if self.is_admin():
+        if user2_compare.is_superuser():
             boo = True
         else: 
             if user2_compare == self.user:
