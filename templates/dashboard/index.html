@@ -20,6 +20,7 @@
 {% has_perm user pages.view_page as view_pages %}
 {% has_perm user entities.view_entity as view_entities %}
 {% has_perm user files.view_file as view_files %}
+{% has_perm user contributions.view_contribution as view_contributions %}
 {% has_perm user locations.view_location as view_locations %}
 {% has_perm user settings.view_setting as view_settings %}
 {% has_perm user eventlogs.view_eventlog as view_eventlogs %}
@@ -99,6 +100,10 @@
 
 		{% if view_files %}
 		<li class="files"><a href="{% url file.search %}"><span>{% firstof MODULE_MEDIA_LABEL  "Files" %}</span></a></li>
+		{% endif %}
+
+		{% if view_contributions %}
+		<li class="contributions"><a href="{% url contribution.search %}"><span>{% firstof MODULE_CONTRIBUTION_LABEL  "Contributions" %}</span></a></li>
 		{% endif %}
 
      	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
