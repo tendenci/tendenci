@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 from tagging.fields import TagField
 from perms.models import AuditingBaseModel
 from pages.managers import PageManager
@@ -8,16 +9,16 @@ class Page(AuditingBaseModel):
     guid = models.CharField(max_length=200, default=uuid.uuid1)
     title = models.CharField(max_length=500, blank=True)
     content = models.TextField(blank=True)
-    page_title = models.TextField(blank=True) # meta info (maybe meta_title)
-    meta_keywords = models.TextField(blank=True) # meta info
-    meta_description = models.TextField(blank=True) # meta info
+    page_title = models.TextField(_('Page Title'), blank=True) # meta info (maybe meta_title)
+    meta_keywords = models.TextField(_('Meta Keywords'), blank=True) # meta info
+    meta_description = models.TextField(_('Meta Description'), blank=True) # meta info
     update_dt = models.DateTimeField(auto_now=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     view_contact_form = models.BooleanField()
-    design_notes = models.TextField(blank=True)
-    syndicate = models.BooleanField()
-    displaypagetemplate = models.CharField(max_length=50, blank=True)
-    metacanonical = models.TextField(blank=True)
+    design_notes = models.TextField(_('Design Notes'), blank=True)
+    syndicate = models.BooleanField(_('Include in RSS feed'))
+    displaypagetemplate = models.CharField(_('Template'), max_length=50, blank=True)
+    metacanonical = models.TextField(_('Meta Canonical'), blank=True)
     tags = TagField(blank=True)
     objects = PageManager()
 
