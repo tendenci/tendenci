@@ -1,6 +1,7 @@
 import os.path
 from django.db import models
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 from perms.models import AuditingBaseModel
 from stories.managers import StoryManager
@@ -11,11 +12,11 @@ class Story(AuditingBaseModel):
     guid = models.CharField(max_length=50, unique=False, blank=True)
     title = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True)
-    syndicate = models.BooleanField()
+    syndicate = models.BooleanField(_('Include in RSS feed'))
     create_dt = models.DateTimeField(auto_now_add=True)
-    fullstorylink = models.CharField(max_length=300, blank=True)
-    start_dt = models.DateTimeField(null=True, blank=True)
-    end_dt = models.DateTimeField(null=True, blank=True)
+    fullstorylink = models.CharField(_('Full Story Link'), max_length=300, blank=True)
+    start_dt = models.DateTimeField(_('Start Date/Time'), null=True, blank=True)
+    end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     ncsortorder = models.IntegerField(null=True, blank=True)
  
     objects = StoryManager()
