@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from perms.models import AuditingBaseModel
 from locations.managers import LocationManager
@@ -8,7 +9,7 @@ class Location(AuditingBaseModel):
     # TODO: make unique=True (dependent on migration script)
     guid = models.CharField(max_length=50, unique=False, blank=True)
  
-    location_name = models.CharField(max_length=200, blank=True)
+    location_name = models.CharField(_('Name'), max_length=200, blank=True)
     description = models.TextField(blank=True)
 
     # contact/location information 
@@ -17,7 +18,7 @@ class Location(AuditingBaseModel):
     address2 = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=50, blank=True)
-    zipcode = models.CharField(max_length=50, blank=True)   
+    zipcode = models.CharField(_('Zip Code'), max_length=50, blank=True)   
     country = models.CharField(max_length=100, blank=True)      
     phone = models.CharField(max_length=50, blank=True)
     fax = models.CharField(max_length=50, blank=True)
@@ -30,8 +31,8 @@ class Location(AuditingBaseModel):
 
     hq = models.BooleanField()
     
-    entityid = models.IntegerField(blank=True, null=True)
-    entityownerid = models.IntegerField(blank=True, null=True)
+    entityid = models.IntegerField(_('Entity ID'),blank=True, null=True)
+    entityownerid = models.IntegerField(_('Entity Owner ID'), blank=True, null=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
         
