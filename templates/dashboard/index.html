@@ -112,8 +112,43 @@
         <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
  		<div style="clear: both"><!-- IE7 --></div>
     </ul>
+    </div> <!-- modules -->
+
+
+    <div class="rss-feeds">
+        <div class="rss-feed">
+        	<h3>Tendenci Blog</h3>
+            {% cache 86400 tendenci_blog_rss %}
+                {% get_rss "http://blog.tendenci.com/feed/" as rss %}
+                <ul>
+                {% for entry in rss.entries|slice:":3" %}
+                    <li>
+                        <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
+                        <div class="rss-pubdate">{{ entry.updated }}</div>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% endcache %}
+        </div>
+        
+        <div class="rss-feed">
+        	<h3>Tendenci Help</h3>
+            {% cache 86400 tendenci_help_rss %}
+                {% get_rss "http://www.tendenci.com/en/rss/helpfiles/" as rss %}
+                <ul>
+                {% for entry in rss.entries|slice:":3" %}
+                    <li>
+                        <div class="rss-title"><a href="{{ entry.link }}">{{ entry.title }}</a></div>
+                        <div class="rss-pubdate">{{ entry.updated }}</div>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% endcache %}
+        </div>
     </div>
-</div>
+	
+
+</div> <!-- main-panel -->
 
 
 <div class="side-panel">
@@ -147,5 +182,7 @@
     </div>
     {% endif %}
 </div>
+
+<div style="clear:both;"></div>
     
 {% endblock %}
