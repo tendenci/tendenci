@@ -1,7 +1,12 @@
+import uuid
+# guid = str(uuid.uuid1()) # based on the host ID and current time
+#guid = str(uuid.uuid4())) # make a random UUID
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Manager
+from perms.utils import is_admin
 
 class InvoiceManager(Manager):
     def create_invoice(self, user, **kwargs):
@@ -69,7 +74,7 @@ class Invoice(models.Model):
     project = models.CharField(max_length=50, blank=True, null=True)   
     other = models.CharField(max_length=120, blank=True, null=True)
     message = models.CharField(max_length=150, blank=True, null=True)
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    subtotal = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
     shipping = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     shipping_surcharge =models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     box_and_packing = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
@@ -79,19 +84,119 @@ class Invoice(models.Model):
     taxable = models.BooleanField(default=0)
     tax = models.DecimalField(max_digits=6, decimal_places=4, blank=True)
     variance = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
-    total = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
-    payments_credits = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    total = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
+    payments_credits = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
+    balance = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
     estimate = models.BooleanField(default=1)
     disclaimer = models.CharField(max_length=150, blank=True, null=True)
     variance_notes = models.CharField(max_length=1000, blank=True, null=True)
     admin_notes = models.TextField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
-    creator = models.ForeignKey(User, related_name="invoices_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="invoice_creator",  null=True)
     creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="invoices_owner", null=True)
+    owner = models.ForeignKey(User, related_name="invoice_owner", null=True)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='estimate')
     status = models.BooleanField(default=True)
     
     objects = InvoiceManager()
+    
+    def __unicode__(self):
+        return u'Invoice: %s' % (self.title)
+    
+    def save(self):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save()
+    
+    @property
+    def is_tendered(self):
+        boo = False
+        if self.id > 0:
+            if self.status_detail.lower() == 'tendered':
+                boo = True
+        return boo
+    
+    def tender(self):
+        """ mark it as tendered if we have records """ 
+        if not self.is_tendered:
+            self.estimate = False
+            self.status_detail = 'tendered'
+            self.status = 1
+            self.tender_dt = datetime.now()
+            self.save()
+        return True
+            
+    
+    # if this invoice allows view by user2_compare
+    def allow_view_by(self, user2_compare, guid=''):
+        boo = False
+       
+        if is_admin(user2_compare):
+            boo = True
+        else: 
+            if user2_compare and user2_compare.id > 0:
+                if self.creator == user2_compare or self.owner == user2_compare:
+                    if self.status == 1:
+                        boo = True
+            else: 
+                # anonymous user
+                if self.guid and self.guid == guid:
+                    boo = True
+            
+        return boo
+    
+    # if this invoice allows edit by user2_compare
+    def allow_edit_by(self, user2_compare, guid=''):
+        boo = False
+        if user2_compare.is_superuser:
+            boo = True
+        else:
+            if user2_compare and user2_compare.id > 0: 
+                if self.creator == user2_compare or self.owner == user2_compare:
+                    if self.status == 1:
+                        # user can only edit a non-tendered invoice
+                        if not self.is_tendered:
+                            boo = True
+            else:
+                if self.guid and self.guid == guid: # for anonymous user
+                    if self.status == 1 and not self.is_tendered:  
+                        boo = True
+        return boo
+    
+    def assign_make_payment_info(self, user, make_payment, **kwargs):
+        self.title = "Make Payment Invoice"
+        self.invoice_date = datetime.now()
+        self.bill_to = make_payment.first_name + ' ' + make_payment.last_name
+        self.bill_to_first_name = make_payment.first_name
+        self.bill_to_last_name = make_payment.last_name
+        self.bill_to_company = make_payment.company
+        self.bill_to_address = make_payment.address
+        self.bill_to_city = make_payment.city
+        self.bill_to_state = make_payment.state
+        self.bill_to_zip_code = make_payment.zip_code
+        self.bill_to_country = make_payment.country
+        self.bill_to_phone = make_payment.phone
+        self.bill_to_fax = make_payment.fax
+        self.bill_to_email = make_payment.email
+        self.ship_to = make_payment.first_name + ' ' + make_payment.last_name
+        self.ship_to_first_name = make_payment.first_name
+        self.ship_to_last_name = make_payment.last_name
+        self.ship_to_company = make_payment.company
+        self.ship_to_address = make_payment.address
+        self.ship_to_city = make_payment.city
+        self.ship_to_state = make_payment.state
+        self.ship_to_zip_code = make_payment.zip_code
+        self.ship_to_country = make_payment.country
+        self.ship_to_phone = make_payment.phone
+        self.ship_to_fax = make_payment.fax
+        self.ship_to_email =make_payment.email
+        self.terms = "Due on Receipt"
+        self.due_date = datetime.now()
+        self.ship_date = datetime.now()
+        self.message = 'Thank You.'
+        self.status = True
+        
+        
+        
