@@ -1,6 +1,7 @@
 {% extends "payments/base.html" %}
 
 {% block body %}
+{% if form %}
 <form action="{{ post_url }}" method="POST" name="myform99">
     {{ form.as_p }}
     
@@ -13,4 +14,7 @@
     	document.myform99.submit();
     </script>
 </form>
+{% else %}
+<p>The online payment is not setup for the site. Check out later.</p>
+{% endif %}
 {% endblock %}

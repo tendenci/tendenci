@@ -16,7 +16,7 @@ def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
 def prepare_authorizenet_sim_form(request, payment):
     x_fp_timestamp = str(int(time.time()))
     x_amount = "%.2f" % payment.amount
-    x_fp_hash = get_fingerprint(payment.id, x_fp_timestamp, x_amount)
+    x_fp_hash = get_fingerprint(str(payment.id), x_fp_timestamp, x_amount)
     
     params = {
               'x_fp_sequence':payment.id,
@@ -35,21 +35,21 @@ def prepare_authorizenet_sim_form(request, payment):
               'x_first_name':payment.first_name,
               'x_last_name':payment.last_name,
               'x_company':payment.company,
-              'x_address':payment.x_address,
-              'x_city':payment.x_city,
-              'x_state':payment.x_state,
-              'x_zip':payment.x_zip,
-              'x_country':payment.x_country,
-              'x_ship_to_first_name':payment.x_ship_to_first_name,
-              'x_ship_to_last_name':payment.x_ship_to_last_name,
-              'x_ship_to_company':payment.x_ship_to_company,
-              'x_ship_to_address':payment.x_ship_to_address,
-              'x_ship_to_city':payment.x_ship_to_city,
-              'x_ship_to_state':payment.x_ship_to_state,
-              'x_ship_to_zip':payment.x_ship_to_zip,
-              'x_ship_to_country':payment.x_ship_to_country,
-              'x_fax':payment.x_fax,
-              'x_phone':payment.x_phone,
+              'x_address':payment.address,
+              'x_city':payment.city,
+              'x_state':payment.state,
+              'x_zip':payment.zip,
+              'x_country':payment.country,
+              'x_ship_to_first_name':payment.ship_to_first_name,
+              'x_ship_to_last_name':payment.ship_to_last_name,
+              'x_ship_to_company':payment.ship_to_company,
+              'x_ship_to_address':payment.ship_to_address,
+              'x_ship_to_city':payment.ship_to_city,
+              'x_ship_to_state':payment.ship_to_state,
+              'x_ship_to_zip':payment.ship_to_zip,
+              'x_ship_to_country':payment.ship_to_country,
+              'x_fax':payment.fax,
+              'x_phone':payment.phone,
               'x_show_form':'payment_form',
               #'x_logo_URL':getSetting("global", "MerchantLogo"),
         }
