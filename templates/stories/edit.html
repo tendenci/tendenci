@@ -1,9 +1,11 @@
 {% extends "stories/base.html" %}
 {% load story_tags %}
+{% load styled_forms %}
 
 {% block title %}{{ block.super }} Edit{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
 <link rel="stylesheet" href="/site_media/static/css/stories.css">
 {% endblock %}
 
@@ -19,11 +21,12 @@
   </div>
  
     <div class="story-wrap">
-    <form action="{% url story.edit story.id %}" method="post">
-        {{ form.as_p }}
-        <input type="submit" value="Save changes" />
-    </form>
-
+    	<form action="{% url story.edit story.pk %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Save Changes" />
+		</div>
+        </form>
     </div>
 
 </div>

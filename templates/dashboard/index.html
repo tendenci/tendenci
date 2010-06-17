@@ -1,6 +1,8 @@
 {% extends "site_base.html" %}
+{% load cache %}
 {% load dashboard_tags %}
 {% load perm_tags %}
+{% load base_tags %}
 
 {% block title %}Dashboard{% endblock %}
 
@@ -108,9 +110,11 @@
 
      	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
         <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
+ 		<div style="clear: both"><!-- IE7 --></div>
     </ul>
     </div>
 </div>
+
 
 <div class="side-panel">
 	{% if is_developer %}
@@ -131,7 +135,7 @@
         <li><a href="/admin/">Admin Panel</a></li>
     </ul>
     </div>
-
+    	
 	<div class="theme-management">
     <h3>Update Theme</h3>
 	<ul>

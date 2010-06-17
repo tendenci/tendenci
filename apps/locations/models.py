@@ -1,6 +1,6 @@
 from django.db import models
-from tagging.fields import TagField
-from timezones.fields import TimeZoneField
+from django.utils.translation import ugettext_lazy as _
+
 from perms.models import AuditingBaseModel
 from locations.managers import LocationManager
 
@@ -9,7 +9,7 @@ class Location(AuditingBaseModel):
     # TODO: make unique=True (dependent on migration script)
     guid = models.CharField(max_length=50, unique=False, blank=True)
  
-    location_name = models.CharField(max_length=200, blank=True)
+    location_name = models.CharField(_('Name'), max_length=200, blank=True)
     description = models.TextField(blank=True)
 
     # contact/location information 
@@ -18,7 +18,7 @@ class Location(AuditingBaseModel):
     address2 = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=50, blank=True)
-    zipcode = models.CharField(max_length=50, blank=True)   
+    zipcode = models.CharField(_('Zip Code'), max_length=50, blank=True)   
     country = models.CharField(max_length=100, blank=True)      
     phone = models.CharField(max_length=50, blank=True)
     fax = models.CharField(max_length=50, blank=True)
@@ -26,13 +26,13 @@ class Location(AuditingBaseModel):
     website = models.CharField(max_length=300, blank=True)
     
     # TODO - figure out if these stay
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
 
     hq = models.BooleanField()
     
-    entityid = models.IntegerField()
-    entityownerid = models.IntegerField()
+    entityid = models.IntegerField(_('Entity ID'),blank=True, null=True)
+    entityownerid = models.IntegerField(_('Entity Owner ID'), blank=True, null=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
         

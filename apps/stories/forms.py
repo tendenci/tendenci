@@ -4,7 +4,7 @@ from stories.models import Story
 from perms.forms import AuditingBaseForm
 
 class StoryForm(AuditingBaseForm):
-    fullstorylink = forms.CharField(label=_("Full story Link"), required=False, max_length=300)
+    fullstorylink = forms.CharField(label=_("Full Story Link"), required=False, max_length=300)
     class Meta:
         model = Story
         fields = (

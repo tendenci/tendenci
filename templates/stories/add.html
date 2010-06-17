@@ -1,9 +1,11 @@
 {% extends "stories/base.html" %}
 {% load story_tags %}
+{% load styled_forms %}
 
 {% block title %}{{ block.super }}Add{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
 <link rel="stylesheet" href="/site_media/static/css/stories.css">
 {% endblock %}
 
@@ -13,11 +15,12 @@
     <h1>{% firstof MODULE_STORIES_LABEL "Story" %} Add</h1>
    
     <div class="article-wrap">
-    <form action="{% url story.add %}" method="post">
-        {{ form.as_p }}
-        <input type="submit" value="Add {{ MODULE_STORIES_LABEL }}" />
-    </form>
-
+    	<form action="{% url story.add %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Add {{ MODULE_STORIES_LABEL }}" />
+		</div>
+        </form>
     </div>
 
 </div>

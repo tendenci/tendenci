@@ -101,14 +101,18 @@ class Payment(models.Model):
     creator_username = models.CharField(max_length=50, null=True)
     owner = models.ForeignKey(User, related_name="payment_owner", null=True)
     owner_username = models.CharField(max_length=50, null=True)
-    status_detail = models.CharField(max_length=50, default='estimate')
+    status_detail = models.CharField(max_length=50, default='')
     status = models.BooleanField(default=True)
 
     objects = PaymentManager()
 
     @property
     def is_approved(self):
-        return self.response_code=='1'
+        return self.response_code=='1' and self.response_reason_code=='1' and self.trans_id <> ''
+    
+    def mark_as_paid(self):
+        self.status=1
+        self.status_detail = 'approved'
 
     def __unicode__(self):
         return u"response_code: %s, trans_id: %s, amount: %.2f" % (self.response_code, self.trans_id, self.amount)
