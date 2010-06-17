@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRespons
 from django.core.urlresolvers import reverse
 
 import simplejson as json
-from base.http import render_to_403
+from base.http import Http403
 from files.models import File
 from files.forms import FileForm
 from perms.models import ObjectPermission
@@ -19,7 +19,7 @@ def index(request, id=None, download='', template_name="files/view.html"):
 
     # check permission
     if not request.user.has_perm('files.view_file', file):
-        return render_to_403()
+        raise Http403
 
     try: data = file.file.read()
     except: raise Http404
@@ -45,7 +45,7 @@ def print_view(request, id, template_name="files/print-view.html"):
 
     # check permission
     if not request.user.has_perm('files.view_file', file):
-        return render_to_403()
+        raise Http403
 
     return render_to_response(template_name, {'file': file}, 
         context_instance=RequestContext(request))
@@ -56,7 +56,7 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
 
     # check permission
     if not request.user.has_perm('files.change_file', file):  
-        return render_to_403()
+        raise Http403
 
     if request.method == "POST":
 
@@ -93,7 +93,7 @@ def add(request, form_class=FileForm, template_name="files/add.html"):
 
     # check permission
     if not request.user.has_perm('files.add_file'):  
-        return render_to_403()
+        raise Http403
 
     if request.method == "POST":
         form = form_class(request.user, request.POST, request.FILES)
@@ -138,7 +138,7 @@ def delete(request, id, template_name="files/delete.html"):
 
     # check permission
     if not request.user.has_perm('files.delete_file'): 
-        return render_to_403()
+        raise Http403
 
     if request.method == "POST":
         log_defaults = {

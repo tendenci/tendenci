@@ -3,12 +3,14 @@ from django.utils.html import strip_tags, strip_entities
 from haystack import indexes
 from haystack import site
 from news.models import News
+from perms.models import ObjectPermission
 
 class NewsIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     headline = indexes.CharField(model_attr='headline')
     body = indexes.CharField(model_attr='body')
     release_dt = indexes.DateTimeField(model_attr='release_dt', null=True)
+    create_dt = indexes.DateTimeField(model_attr='create_dt')
 
     # authority fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
@@ -23,7 +25,19 @@ class NewsIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
-       
+ 
+    who_can_view = indexes.CharField()
+    
+    def prepare_who_can_view(self, obj):
+        users = ObjectPermission.objects.who_has_perm('news.view_news', obj)
+        user_list = []
+        if users:
+            for user in users:
+                user_list.append(user.username)
+            return ','.join(user_list)
+        else: 
+            return ''
+              
     def prepare_body(self, obj):
         body = obj.body
         body = strip_tags(body)
