@@ -20,8 +20,7 @@ class MakePayment(models.Model):
     comments = models.TextField(blank=True, null=True)
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_count = models.IntegerField(blank=True, null=True)
-    payment_method = models.CharField(max_length=50, default='cc', choices=(('check', 'Check'), 
-                                                              ('cc', 'Make Online Payment'),))
+    payment_method = models.CharField(max_length=50, default='cc')
     invoice_id = models.IntegerField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True,  related_name="make_payment_creator")

@@ -9,6 +9,7 @@ sys.path.insert(0, APPS_PATH)
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 SITE_THEME = "tendenci"
+#SITE_THEME = "default"
 
 ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
@@ -164,6 +165,7 @@ INSTALLED_APPS = (
     'user_groups',
     'make_payments',
     'invoices',
+    'payments',
     'files',
     'event_logs',
     'robots',
