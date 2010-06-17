@@ -20,7 +20,7 @@
 {% has_perm user pages.view_page as view_pages %}
 {% has_perm user entities.view_entity as view_entities %}
 {% has_perm user files.view_file as view_files %}
-{% has_perm user locations.view_location as view_location %}
+{% has_perm user locations.view_location as view_locations %}
 {% has_perm user settings.view_setting as view_settings %}
 {% has_perm user eventlogs.view_eventlog as view_eventlogs %}
 {% is_developer user as is_developer %}
@@ -93,12 +93,16 @@
 		{% endif %}
 		{% endif %}
 
-     	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
-        <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
-
-		{% if view_location %}
+		{% if view_locations %}
 		<li class="locations"><a href="{% url location.search %}"><span>{% firstof MODULE_LOCATION_LABEL  "Locations" %}</span></a></li>
 		{% endif %}
+
+		{% if view_files %}
+		<li class="files"><a href="{% url file.search %}"><span>{% firstof MODULE_MEDIA_LABEL  "Files" %}</span></a></li>
+		{% endif %}
+
+     	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
+        <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
     </ul>
     </div>
 </div>
