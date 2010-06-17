@@ -1,5 +1,6 @@
 {% extends "pages/base.html" %}
 {% load page_tags %}
+{% load tagging_tags %}
 
 {% block title %}View Page{% endblock %}
 
@@ -8,6 +9,7 @@
 {% endblock %}
 
 {% block body %}
+{% tags_for_object page as tags %}
 
 <div class="t">
     <h1>Pages View Page</h1>
@@ -38,7 +40,15 @@
         <h2>{{ page.title }}</h2>
         <div class="content">{{ page.content|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ page.create_dt|date:"D d M Y P" }} by {{ page.creator }}</div>
+			<div class="tags">
+				Tags: 
+				{% for tag in tags %}
+					<a href="{% url page.search %}?q={{ tag }}">{{ tag }}</a>
+				{% endfor %}
+			</div>
+            <div class="submitted">Submitted on {{ page.create_dt|date:"D d M Y P" }} 
+			by {% firstof page.creator.get_profile.display_name page.creator %}</div>
+
         </div>
     </div>
 
