@@ -50,7 +50,7 @@ def index(request, username="", template_name="profiles/index.html"):
         #if not request.user.has_perm('profiles.view_profile', profile):raise Http403
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
-        
+    print request.user    
     # security check 
     if not profile.allow_view_by(request.user): 
         raise Http403
