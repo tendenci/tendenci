@@ -205,6 +205,14 @@ class Invoice(models.Model):
         self.ship_date = datetime.now()
         self.message = 'Thank You.'
         self.status = True
+     
+    # this function is to make accounting entries    
+    def make_payment(self, amount):
+        if self.is_tendered:
+            self.balance -= amount
+            self.payments_credits += amount
+            self.save()
+            # Make the accounting entries here
         
         
         
