@@ -1,12 +1,7 @@
-from django import forms
-
 from locations.models import Location
 from perms.forms import AuditingBaseForm
 
 class LocationForm(AuditingBaseForm):
-#    city = forms.CharField(required=False, max_length=50)
-#    state = forms.CharField(required=False, max_length=50)
-#    state = forms.CharField(required=False, max_length=100)
     class Meta:
         model = Location
         fields = (
