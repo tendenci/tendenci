@@ -32,19 +32,5 @@ class SIMPaymentForm(forms.Form):
     x_version = forms.CharField(max_length=10, widget=forms.HiddenInput, initial="3.1")
     x_fp_timestamp = forms.CharField(max_length=55, widget=forms.HiddenInput)
     x_fp_hash = forms.CharField(max_length=55, widget=forms.HiddenInput)
-    
 
-TEST_CARD_NUMBERS = [
-     "4007000000027",
-     "370000000000002",
-     "6011000000000012",
-     "4012888818888",
-     "3088000000000017",
-     "38000000000006",
-]
-
-def get_test_exp_date():
-    from datetime import date, timedelta
-    test_date = date.today() + timedelta(days=365)
-    return test_date.strftime('%m%y')
 

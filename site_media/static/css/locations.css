@@ -1,7 +1,5 @@
-
-
 .t {
-	width: 60%;
+	width: 90%;
 }
 .t h2 {
 	margin: 0 auto 10px 0;
@@ -83,4 +81,47 @@
 .t ul.location-nav li {
 	display: inline;
 }
+
+/* form */
+div.forms div.form-field div.id_city .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_state .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_zipcode .field input {
+	width: 10%;
+}
+
+div.forms div.form-field div.id_country .field input {
+	width: 45%;
+}
+
+div.forms div.form-field div.id_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_longitude .field input {
+	width: 8%;
+}
+
+div.forms div.form-field div.id_latitude .field input {
+	width: 8%;
+}
+
+div.forms div.form-field div.id_entityid .field input {
+	width: 8%;
+}
+
+div.forms div.form-field div.id_entityownerid .field input {
+	width: 8%;
+}
+
+
 
