@@ -1,15 +1,4 @@
-{% load i18n %}
+{% extends "site_base.html" %}
 
-<!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-	<meta charset="UTF-8">
-	<title>Users {% block title %}{% endblock %}</title>
-{% block head %}{% endblock %}
-</head>
-<body>
+{% block title %}{{ MODULE_USERS_LABEL }} - {% endblock %}
 
-{% block body %}{% endblock %}
-{% block body_bottom %}{% endblock %}
-</body>
-</html>

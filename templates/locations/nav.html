@@ -1,0 +1,17 @@
+{% load perm_tags %}
+<div class="back-to-search">
+    <a href="{% url dashboard %}">&laquo; Dashboard</a>
+    {% has_perm user locations.add_location as can_add %}
+    
+    {% url location.search as search_url %}
+    {% if not search_url in request.path %}
+    	<a href="{{ search_url }}">Search {{ MODULE_LOCATIONS_LABEL|lower }}</a>&nbsp;
+    {% endif %}
+    
+    {% url location.add as add_url %}
+    {% if not add_url in request.path %}
+    {% if can_add %}
+	    <a href="{{ add_url }}">Add {{ MODULE_LOCATIONS_LABEL|lower }}</a>
+    {% endif %}
+    {% endif %}
+</div>

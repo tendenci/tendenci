@@ -1,24 +1,27 @@
 {% extends "entities/base.html" %}
+{% load entity_tags %}
+{% load styled_forms %}
 
-{% block title %}Edit Page{% endblock %}
+{% block title %}{{ block.super }}Edit{% endblock %}
 
-{% block head %}
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
 <link rel="stylesheet" href="/site_media/static/css/entities.css">
 {% endblock %}
 
 {% block body %}
-
 <div class="t">
-    <h1>Entities Edit Page</h1>
+    <h1>{{ MODULE_ENTITIES_LABEL }} Edit</h1>
     
-    <div class="back-to-search"><a href="{% url entity.search %}">&laquo; Back to entities search</a></div>
+    {% entity_nav request.user %}
 
-    <div class="entity-wrap">
-    <form action="{% url entity.edit entity.id %}" method="post">
-        {{ form.as_p }}
-        <input type="submit" value="Save changes" />
-    </form>
-
+    <div class="entities-wrap">
+    	<form action="{% url entity.edit entity.pk %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Save Changes" />
+		</div>
+        </form>
     </div>
 
 </div>

@@ -1,7 +1,5 @@
-
-
 .t {
-	width: 60%;
+	width: 90%;
 }
 .t h2 {
 	margin: 0 auto 10px 0;
@@ -25,6 +23,7 @@
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
+	background-color: white;
 }
 
 .t .articles-wrap .article-wrap h2 {
@@ -33,10 +32,6 @@
 .t .articles-wrap .article-wrap .content {
 	margin-bottom: 10px;
 }
-.t .articles-wrap .article-wrap .submitted {
-	background-color: #EEE;
-}
-
 .t .options {
 	text-align: right;
 	position: absolute;
@@ -76,3 +71,46 @@
 	margin-bottom: 20px;
 }
 
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}
+
+/* Article View
+ ------------------------- */
+.t .article-wrap .meta {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F7F7F7;
+	margin-top: 10px;
+}
+.t .article-wrap .meta .tags {
+	margin-bottom: 5px;
+}
+
+/* form */
+div.forms div.form-field div.id_release_dt .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_first_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_last_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+	width: 18%;
+}

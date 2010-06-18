@@ -1,0 +1,50 @@
+{% extends "articles/base.html" %}
+{% load pagination_tags %}
+{% load contribution_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/contribution.css">
+<link rel="alternate" type="application/rss+xml" title="Latest Contributions" href="{% url contribution.feed %}" />
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_CONTRIBUTION_LABEL 'Contributions' %} Search</h1>
+
+    {% contribution_nav request.user %}
+
+	{% contribution_search %}
+    {% autopaginate contributions 10 %}
+	
+	<div class="contributions-wrap">
+    {% for contribution in contributions %}
+		{% with contribution.object as contribution %}
+    	{% has_perm user contributions.view_contribution contribution as can_view %}
+    	{% if can_view %}
+		<div class="contribution-wrap">
+            <h2>
+            	{{ contribution.content_type }}: 
+				<a href="{{ contribution.object.get_absolute_url }}">{% firstof contribution.title "Untitled" %}</a>
+			</h2>
+			<div class="meta">
+            	<div class="submitted">Updated on {{ contribution.update_dt|date:"D d M Y P" }} 
+				by {{ contribution.creator }}</div>
+            </div>
+		</div>
+		{% endif %}
+		{% endwith %}
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{% endblock %}

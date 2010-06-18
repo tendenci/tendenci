@@ -1,7 +1,14 @@
 # Ignore all local development files
 local_settings.py
 local_urls.py
+schema.xml
+themes/
+
+# Ignore media files
+site_media/photologue
+site_media/files
 site_media/media
+site_media/static/tresources
 cache
 
 # Ignore all dotfiles...
@@ -9,6 +16,7 @@ cache
 
 # Ignore all pyc file
 *.pyc
+
 
 # except for .gitignore
 !.gitignore

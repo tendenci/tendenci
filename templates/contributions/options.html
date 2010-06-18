@@ -1,0 +1,15 @@
+{% load base_tags %}
+{% load perm_tags %}
+<ul>	
+    <li><a href="{% url contribution.print_view contribution.pk %}">Print</a></li>
+    
+    {% has_perm user contributions.change_contribution contribution as can_edit %}
+    {% if can_edit %} 
+    	<li><a href="{% url contribution.edit contribution.pk %}">Edit</a></li>
+    {% endif %}
+    
+    {% has_perm user contributions.delete_contribution contribution as can_delete %}
+    {% if can_delete %} 
+	<li class="delete"><a href="{% url contribution.delete contribution.pk %}">Delete</a></li>
+	{% endif %}
+</ul>

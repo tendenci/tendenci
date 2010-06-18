@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import patterns, url
+from files.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('files',                  
     url(r'^$', 'views.index', name="files"),
@@ -8,8 +9,9 @@ urlpatterns = patterns('files',
     url(r'^add/$', 'views.add', name="file.add"),
     url(r'^edit/(?P<id>\d+)/$', 'views.edit', name="file.edit"),
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="file.delete"),
+    url(r'^feed/$', LatestEntriesFeed(), name='file.feed'),
 
-    url(r'^tinymce/$', 'views.tinymce', name="file.tinymce"),
-    url(r'^swfupload/$', 'views.swfupload', name="file.swfupload"),
+#    url(r'^tinymce/$', 'views.tinymce', name="file.tinymce"),
+#    url(r'^swfupload/$', 'views.swfupload', name="file.swfupload"),
 
 )

@@ -1,4 +1,4 @@
-import os, mimetypes
+import os
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
@@ -7,126 +7,156 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpRespons
 from django.core.urlresolvers import reverse
 
 import simplejson as json
-from base.http import render_to_403
+from base.http import Http403
 from files.models import File
-from files.forms import FileAddForm, FileEditForm
+from files.forms import FileForm
 from perms.models import ObjectPermission
+from event_logs.models import EventLog
 
 def index(request, id=None, download='', template_name="files/view.html"):
     if not id: return HttpResponseRedirect(reverse('file.search'))
-
     file = get_object_or_404(File, pk=id)
+
+    # check permission
+    if not request.user.has_perm('files.view_file', file):
+        raise Http403
+
     try: data = file.file.read()
     except: raise Http404
 
-    types = { # list of uncommon mimetypes
-        'application/msword': ('.doc','.docx'),
-        'application/ms-powerpoint': ('.ppt','.pptx'),
-        'application/ms-excel': ('.xls','.xlsx'),
-        'video/x-ms-wmv': ('.wmv',),
-    }
-
-    # add mimetypes
-    for type in types:
-        for ext in types[type]:
-            mimetypes.add_type(type, ext)
-
-    mimetype = mimetypes.guess_type(file.file.name)[0]
-    response = HttpResponse(data, mimetype=mimetype)
+    if file.mime_type():
+        response = HttpResponse(data, mimetype=file.mime_type())
+    else: raise Http404
 
     if download: download = 'attachment;'
     response['Content-Disposition'] = '%s filename=%s'% (download, file.file.name)
 
-    if mimetype: return response
-    else: raise Http404
+    return response
 
 def search(request, template_name="files/search.html"):
-    files = File.objects.all().order_by('-create_dt')
+    query = request.GET.get('q', None)
+    files = File.objects.search(query)
+
     return render_to_response(template_name, {'files':files}, 
         context_instance=RequestContext(request))
 
 def print_view(request, id, template_name="files/print-view.html"):
     file = get_object_or_404(File, pk=id)
-     
-    if request.user.has_perm('files.view_file', file):
-        return render_to_response(template_name, {'file': file}, 
-            context_instance=RequestContext(request))
-    else:
-        raise render_to_403()
+
+    # check permission
+    if not request.user.has_perm('files.view_file', file):
+        raise Http403
+
+    return render_to_response(template_name, {'file': file}, 
+        context_instance=RequestContext(request))
     
 @login_required
-def edit(request, id, form_class=FileEditForm, template_name="files/edit.html"):
+def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
     file = get_object_or_404(File, pk=id)
-    original_owner = file.owner
-    
-    if request.user.has_perm('files.change_file', file):    
-        if request.method == "POST":
-            form = form_class(request.POST, request.FILES, instance=file)
-            if form.is_valid():
-                file = form.save(commit=False)
-                file.save()
 
-                print request.FILES
+    # check permission
+    if not request.user.has_perm('files.change_file', file):  
+        raise Http403
+
+    if request.method == "POST":
+
+        form = form_class(request.user, request.POST, request.FILES, instance=file)
+
+        if form.is_valid():
+            file = form.save()
+
+            log_defaults = {
+                'event_id' : 182000,
+                'event_data': '%s (%d) edited by %s' % (file._meta.object_name, file.pk, request.user),
+                'description': '%s edited' % file._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': file,
+            }
+            EventLog.objects.log(**log_defaults)
                 
-                # assign creator permissions
-                ObjectPermission.objects.assign(file.creator, file)   
-
-                # assign owner permissions
-                if file.owner != original_owner:  
-                    ObjectPermission.objects.assign(file.owner, file)  
-                    if original_owner != file.creator:
-                        ObjectPermission.objects.remove(original_owner, file)
-                               
-                return HttpResponseRedirect(reverse('file', args=[file.pk]))             
-        else:
-            form = form_class(instance=file)
-
-        return render_to_response(template_name, {'file': file, 'form':form}, 
-            context_instance=RequestContext(request))
+            # remove all permissions on the object
+            ObjectPermission.objects.remove_all(file)            
+    
+            # assign creator permissions
+            ObjectPermission.objects.assign(file.creator, file) 
+                                                          
+            return HttpResponseRedirect(reverse('file', args=[file.pk]))             
     else:
-        raise render_to_403()
+        form = form_class(request.user, instance=file)
+    
+    return render_to_response(template_name, {'file': file, 'form':form}, 
+        context_instance=RequestContext(request))
 
 @login_required
-def add(request, form_class=FileAddForm, template_name="files/add.html"):
-    if request.user.has_perm('files.add_file'):
-        if request.method == "POST":
-            form = form_class(request.POST, request.FILES)
-            if form.is_valid():
-                file = form.save(commit=False)
-                
-                # set up the user information
-                file.creator = request.user
-                file.creator_username = request.user.username
-                file.owner = request.user
-                file.owner_username = request.user.username
-                
-                file.save()
+def add(request, form_class=FileForm, template_name="files/add.html"):
 
-                # assign creator permissions
-                ObjectPermission.objects.assign(file.creator, file) 
-                
-                return HttpResponseRedirect(reverse('file', args=[file.pk]))
-        else:
-            form = form_class()
-           
-        return render_to_response(template_name, {'form':form}, 
-            context_instance=RequestContext(request))
+    # check permission
+    if not request.user.has_perm('files.add_file'):  
+        raise Http403
+
+    if request.method == "POST":
+        form = form_class(request.user, request.POST, request.FILES)
+        if form.is_valid():
+            file = form.save(commit=False)
+            
+            # set up the user information
+            file.creator = request.user
+            file.creator_username = request.user.username
+            file.owner = request.user
+            file.owner_username = request.user.username        
+            file.save()
+
+            log_defaults = {
+                'event_id' : 181000,
+                'event_data': '%s (%d) added by %s' % (file._meta.object_name, file.pk, request.user),
+                'description': '%s added' % file._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': file,
+            }
+            EventLog.objects.log(**log_defaults)
+
+
+#            # assign permissions for selected users
+#            user_perms = form.cleaned_data['user_perms']
+#            if user_perms: ObjectPermission.objects.assign(user_perms, file)
+            
+            # assign creator permissions
+            ObjectPermission.objects.assign(file.creator, file) 
+            
+            return HttpResponseRedirect(reverse('file', args=[file.pk]))
     else:
-        raise render_to_403()
+        form = form_class()
+       
+    return render_to_response(template_name, {'form':form}, 
+        context_instance=RequestContext(request))
     
 @login_required
 def delete(request, id, template_name="files/delete.html"):
     file = get_object_or_404(File, pk=id)
 
-    if request.user.has_perm('files.delete_file'):   
-        if request.method == "POST":
-            file.delete()
-            return HttpResponseRedirect(reverse('file.search'))
-    
-        return render_to_response(template_name, {'file': file}, 
-            context_instance=RequestContext(request))
-    else:
-        raise render_to_403()
+    # check permission
+    if not request.user.has_perm('files.delete_file'): 
+        raise Http403
+
+    if request.method == "POST":
+        log_defaults = {
+            'event_id' : 183000,
+            'event_data': '%s (%d) deleted by %s' % (file._meta.object_name, file.pk, request.user),
+            'description': '%s deleted' % file._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': file,
+        }
+        EventLog.objects.log(**log_defaults)
+
+        file.delete()
+        return HttpResponseRedirect(reverse('file.search'))
+
+    return render_to_response(template_name, {'file': file}, 
+        context_instance=RequestContext(request))
+
 
 @login_required
 def tinymce(request, template_name="media-files/tinymce.html"):
@@ -184,7 +214,7 @@ def swfupload(request):
             request.POST.update({'application_id': 3, })
             request.POST.update({'app_instance_id': 123, })
 
-        form = FileAddForm(request.POST, request.FILES)
+        form = FileForm(request.POST, request.FILES)
 
         if form.is_valid():
             

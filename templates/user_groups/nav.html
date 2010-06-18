@@ -1,0 +1,72 @@
+{% load base_tags %}
+{% load perm_tags %}
+<div id="showh">
+		<ul id="primary">
+		
+		<li>		
+		<a href="/" title="Tendenci Home Page">
+			<img border="0" src="/site_media/static/images/tendenci34x15.gif" 
+			alt="Tendenci User Home" align="top" width="34" height="15"></a>
+		</li>
+		
+		<li><a href="{% url profile.search %}">Users</a></li>
+		
+		<li>
+			<span>User Groups</span>
+			<ul id="secondary">
+				<li>
+				<a href="/groups/">User Groups:</a>
+				</li> 
+				{% has_perm user site_settings.change_setting as can_edit_setting %}
+				{% if can_edit_setting %}
+					<li>	
+					<a href="{% url site_settings.views.list "module" "group" %}">Settings</a>
+					</li>
+				{% endif %}
+				
+						{% if group.id %}
+							{% has_perm user user_groups.view_group "group" as can_view %}
+							{% if can_view %}
+								<li>
+									<a href="{{ group.get_absolute_url }}">View</a>
+								</li>
+							{% endif %}
+						{% endif %}
+						
+						{% if group.id %}
+							{% has_perm user user_groups.change_group "group" as can_edit %}
+							{% if can_edit %}
+							<li>
+							<a href="{% url group.edit group.slug %}">Edit</a>
+							</li>
+							{% endif %}
+						{% endif %}
+						
+						<li>
+						<a href="{% url group.search %}">Search</a>
+						</li>
+							
+						{% has_perm user user_groups.add_group "group" as can_add %}
+						{% if can_add %}
+						<li>
+						<a href="{% url group.add %}">Add</a>
+						</li>
+						{% endif %}
+					{% if user_current.is_authenticated %}
+					<li>
+					<a href="{% url auth_logout %}">Log Off</a>
+					</li> 
+					{% endif %}
+			</ul>
+			
+		</li>
+		
+			<li><a href="{% url news.search %}">Releases</a></li>
+		<li>
+		<a href="/en/rss/index/" title="RSS Feeds for this Tendenci site">
+		<img border="0" src="/site_media/static/images/feed-icon-12x12.gif" 
+		 width="12" height="12"  align="absbottom"></a>
+		</li>		
+		
+		</ul>
+		</div>

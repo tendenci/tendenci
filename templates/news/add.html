@@ -1,0 +1,28 @@
+{% extends "news/base.html" %}
+{% load news_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Add{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
+<link rel="stylesheet" href="/site_media/static/css/news.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ MODULE_NEWS_LABEL }} Add</h1>
+    
+    {% news_nav request.user %}
+
+    <div class="news-wrap">
+    	<form action="{% url news.add %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Add {{ MODULE_NEWS_LABEL }}" />
+		</div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
