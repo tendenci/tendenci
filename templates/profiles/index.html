@@ -2,6 +2,7 @@
 {% load avatar_tags %}
 {% load base_tags %}
 {% load profile_tags %}
+{% load contribution_tags %}
 
 {% block title %}Profile View{% endblock %}
 
@@ -13,7 +14,6 @@
 
 {% block body %}
 <div class="t">
-{{ block.super }}
 	{% users_nav request.user user_this %}
     <div id="userview-profile">
     {% users_options request.user user_this %}
@@ -119,6 +119,21 @@
 		</div>
 	<div class="clear-both"></div>
     </div>
+
+	{% latest_contributions user_this as contributions %}
+	<div class="latest-contributions">
+		<h3>Latest Contributions</h3>
+			{% for contribution in contributions %}
+			<div class="contribution">
+				<div class="content-type">{{ contribution.content_type.name|capfirst }}</div>
+				<div class="contrib-title">
+					<a href="{{ contribution.object.get_absolute_url }}">{{ contribution.title }}</a>
+				</div>
+				<div class="contrib-create-dt">{{ contribution.create_dt|date:"D d M Y P" }}</div>
+				<div style="clear:both;"></div>
+			</div>
+			{% endfor %}
+	</div>
 
 </div>
 
