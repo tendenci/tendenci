@@ -1,0 +1,25 @@
+.field-wrapper .field-label{
+      float: left;
+      width: 10em;
+      margin-right: 1em;
+      text-align:right;
+  }
+  .field-wrapper{
+      margin: 5px 0;
+  }
+  .clear-left{
+  	clear:left;
+  }
+  .submitbutton{
+      margin: 1em 0 1em 10em;
+  }
+  .errorlist{
+  	color: red;
+  	list-style: none;
+  	font-size: 0.8em;
+  	margin: 0 0 0 11em;
+  }
+  .required{
+  	font-weight: bold;
+  }
+	
