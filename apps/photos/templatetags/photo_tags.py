@@ -107,29 +107,31 @@ register = Library()
 @register.inclusion_tag("photos/options.html", takes_context=True)
 def photo_options(context, user, photo):
     context.update({
-        "photo": photo,
+        "opt_object": photo,
         "user": user
     })
     return context
 
 @register.inclusion_tag("photos/nav.html", takes_context=True)
-def photo_nav(context, user):
+def photo_nav(context, user, photo=None):
     context.update({
+        "nav_object": photo,            
         "user": user
     })
     return context
 
 @register.inclusion_tag("photos/photo-set/options.html", takes_context=True)
-def photo_set_options(context, user, photo):
+def photo_set_options(context, user, photo_set):
     context.update({
-        "photo": photo,
+        "opt_object": photo_set,
         "user": user
     })
     return context
 
 @register.inclusion_tag("photos/photo-set/nav.html", takes_context=True)
-def photo_set_nav(context, user):
+def photo_set_nav(context, user, photo_set=None):
     context.update({
+        "nav_object": photo_set,
         "user": user
     })
     return context

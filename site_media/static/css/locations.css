@@ -5,11 +5,11 @@
 	margin: 0 auto 10px 0;
 }
 
-.t .location-wrap {
+.t .locations-wrap {
 	margin-bottom: 20px;
 }
 
-.t .location-wrap .location-wrap {
+.t .locations-wrap .location-wrap {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -17,19 +17,19 @@
 	background-color: white;
 }
 
-.t .location-wrap .location-wrap h2 {
+.t .locations-wrap .location-wrap h2 {
 	width: 85%;
 }
-.t .location-wrap .location-wrap .summary {
+.t .locations-wrap .location-wrap .summary {
 	margin-bottom: 10px;
 }
-.t .location-wrap .location-wrap .mission {
+.t .locations-wrap .location-wrap .mission {
 	margin-bottom: 10px;
 }
-.t .location-wrap .location-wrap .contact_name {
+.t .locations-wrap .location-wrap .contact_name {
 	margin-bottom: 10px;
 }
-.t .location-wrap .location-wrap .submitted {
+.t .locations-wrap .location-wrap .submitted {
 	background-color: #EEE;
 }
 
