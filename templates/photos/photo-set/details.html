@@ -4,23 +4,21 @@
 {% load humanize %}
 {% load pagination_tags %}
 {% load tagging_tags %}
+{% load photo_tags %}
 
-{% block title %}{{ photo_set.name }}{% endblock %}
+{% block title %}{{ block.super }}{{ photo_set.name }}{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
+<link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
+<link rel="alternate" type="application/rss+xml" title="Latest photos in this album" href="{% url photo.feed.latest-album-photos photo_set.pk %}" />
 {% endblock %}
 
 {% block body %}
-<div class="t">
+<div class="t" style="width:100%;">
     <h1>{{ photo_set.name }}</h1>
 
     <div class="photos-nav">
-    	<a href="{% url photoset_latest %}">&laquo; Back to albums</a>
-    	<a href="{% url photoset_edit photo_set.id %}">Edit album</a>
-    	<a class="delete-photoset" href="{% url photoset_delete photo_set.id %}">Delete album</a>
-    	<a href="{% url photos_batch_add photo_set.id %}">Add photos</a>
-    	<a href="{% url photos_batch_edit photo_set.id %}">Edit photos</a>
+		{% photo_set_nav request.user %}
 	</div>
 
 	<div id="photos-wrap">
@@ -29,7 +27,7 @@
             <div class="thumb-row clearfix">
             	{% for photo in photos %}
                 <div class="gallery-photo-thumb">
-                    <a href="{% url photo photo.id photo_set.id %}"><img src="{{ photo.get_small_crop_url }}" alt="{{ photo.title }}"/></a>
+                    <a href="{% url photo photo.pk photo_set.pk %}"><img src="{{ photo.get_small_crop_url }}" alt="{{ photo.title }}"/></a>
                     <div>From <a href="{# url profile_detail photo.member.username #}">{{ photo.member.username }}</a></div>
                 </div>
             	{% endfor %}
@@ -43,13 +41,13 @@
 </div>
 
 <!-- delete form -->
-<form name="delete-photo-set" method="POST" action="{% url photoset_delete photo_set.id %}">
+<form name="delete-photo-set" method="POST" action="{% url photoset_delete photo_set.pk %}">
     <input type="hidden" name="action" value="delete">
 </form>
 
 {% endblock %}
 
-{% block body_bottom %}
+{% block extra_body %}
 	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){

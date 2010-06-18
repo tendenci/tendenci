@@ -1,12 +1,6 @@
-<!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-	<meta charset="UTF-8">
-	<title>{% block title %}{% endblock %}</title>
-{% block head %}{% endblock %}
-</head>
-<body>
+{% extends "site_base.html" %}
+
+{% block title %}{% endblock %}
+{% block extra_head %}{% endblock %}
 {% block body %}{% endblock %}
-{% block body_bottom %}{% endblock %}
-</body>
-</html>
+{% block extra_body %}{% endblock %}

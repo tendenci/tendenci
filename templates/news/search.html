@@ -1,0 +1,80 @@
+{% extends "news/base.html" %}
+{% load pagination_tags %}
+{% load news_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/news.css">
+<link rel="alternate" type="application/rss+xml" title="Latest News" href="{% url news.feed %}" />
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_NEWS_LABEL }} Search</h1>
+	
+    {% news_nav request.user %}
+
+	{% news_search %}
+    {% autopaginate news 10 %}
+	
+	<div class="news-wrap">
+    {% for n in news %}
+    	{% has_perm user news.view_news n as can_view %}
+    	{% if can_view %}
+		<div class="news-wrap">
+			<div class="options">
+
+                <div class="dropdown-options">
+                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <ul>
+                        <li>Review Reports</li>
+                        <li>Optimize Meta Tags</li>
+                        <li>Attach Files</li>
+                        <li>View Revisions</li>
+                        <li>Delete</li>
+                    </ul>
+                </div>
+
+                <div class="quick-options">
+					{% news_options request.user n %} 	       
+                </div>
+			</div>
+
+
+            <h2><a href="{% url news.view n.pk %}">{{ n.headline }}</a></h2>
+            <div class="content">{{ n.body|striptags|truncatewords:20 }}</div>
+			<div class="meta">
+            	<div class="submitted">Submitted on {{ n.create_dt|date:"D d M Y P" }} by {{ n.creator }}</div>
+            </div>
+
+            <!-- delete-article form -->
+            <form name="news-delete" method="POST" action="{% url news.delete n.pk %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+		</div>
+		{% endif %}
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_news = confirm('Permenantly delete {{ MODULE_NEWS_LABEL }}?');	// confirm
+				if(delete_news) $(this).parents('.news-wrap').find('form[name="news-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+{% endblock %}

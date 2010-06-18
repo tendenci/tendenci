@@ -1,15 +1,37 @@
 <!DOCTYPE HTML>
 <html lang="en-US">
 <head>
-	<meta charset="UTF-8">
 	<title>{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {% block title %}{% endblock %}</title>
+   	<meta charset="UTF-8">
+    <meta name="description" content="{% block meta_description %}Tendenci 5.0{% endblock %}"> 
+    <meta name="keywords" content="{% block meta_keywords %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}"> 
 	<link rel="stylesheet" href="{{ THEME_URL }}media/css/styles.css" />
+	<link href="/site_media/static/css/tabs.css" rel="stylesheet" type="text/css">
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-{% block body %}
-
-{% endblock %}
+<div id="content">
+    <div id="header">
+    	<div class="logo"><a href="/" alt="Tendenci 5.0" title="Tenenci 5.0">Tendenci 5.0</a></div>
+        <div class="login">
+            {% if not user.is_authenticated %}
+                <a href="{% url registration_register %}">Register for an account</a>&nbsp;&ndash;&nbsp;
+            {% endif %}
+            {% if user.is_authenticated %}
+                <a href="{% url auth_logout %}">Log Out ({{user.username}})</a>
+            {% else %}
+                <a href="{% url auth_login %}">Log In</a>
+            {% endif %}
+        </div> 
+        <div class="clear"><!-- IE7 FIX --></div>     
+    </div>
+    <div id="body">
+    {% block body %}
+    
+    {% endblock %}
+    </div>
+</div>
 </body>
+<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
 {% block extra_body %}{% endblock %}
 </html>

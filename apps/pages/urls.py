@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import patterns, url
+from pages.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('',                  
     url(r'^$', 'pages.views.index', name="pages"),
@@ -8,4 +9,5 @@ urlpatterns = patterns('',
     url(r'^add/$', 'pages.views.add', name="page.add"),
     url(r'^edit/(?P<id>\d+)/$', 'pages.views.edit', name="page.edit"),
     url(r'^delete/(?P<id>\d+)/$', 'pages.views.delete', name="page.delete"),
+    url(r'^feed/$', LatestEntriesFeed(), name='page.feed'),
 )

@@ -1,8 +1,16 @@
-
-
 .t {
-	width: 60%;
+	width: 90%;
 }
+.t-iconrow{
+	float: right;
+}
+.clear-right{
+	clear: right;
+}
+.clear-both{
+	clear: both;
+}
+
 .t h2 {
 	margin: 0 auto 10px 0;
 }
@@ -16,6 +24,7 @@
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
+	background-color: white;
 }
 
 .t .stories-wrap .story-wrap h2 {
@@ -47,6 +56,17 @@
 }
 .t .quick-options ul li {
 	display: inline;
+}
+
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
 }
 
 .t .dropdown-options {
@@ -85,5 +105,14 @@
 .story-wrap .delete-prompt{
 	font-size: 1.2em;
 	color: red;
+}
+
+/* form */
+div.forms div.form-field div.id_start_dt .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_end_dt .field input {
+	width: 30%;
 }
 

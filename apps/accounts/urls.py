@@ -1,9 +1,11 @@
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns, url
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth import views as auth_views
 
 from registration.views import activate
 from registration.views import register
+
+from profiles.views import password_change, password_change_done
 
 from accounts.forms import RegistrationCustomForm
 
@@ -18,18 +20,18 @@ urlpatterns = patterns('',
                            {'template_name': 'accounts/activate.html'},
                            name='registration_activate'),
                        url(r'^login/$',
-                           auth_views.login,
+                           'accounts.views.login',
                            {'template_name': 'accounts/login.html'},
                            name='auth_login'),
                        url(r'^logout/$',
                            auth_views.logout,
                            {'template_name': 'accounts/logout.html'},
                            name='auth_logout'),
-                       url(r'^password/change/$',
-                           auth_views.password_change,
+                       url(r'^password/change/(?P<id>\d+)/$',
+                           password_change,
                            name='auth_password_change'),
-                       url(r'^password/change/done/$',
-                           auth_views.password_change_done,
+                       url(r'^password/change/done/(?P<id>\d+)/$',
+                           password_change_done,
                            name='auth_password_change_done'),
                        url(r'^password/reset/$',
                            auth_views.password_reset,

@@ -1,19 +1,17 @@
-# python
-from datetime import datetime
-
 # django
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
-from django.conf import settings
 
 # local
 from photologue.models import *
 from tagging.fields import TagField
+from perms.models import AuditingBaseModel
+from photos.managers import PhotoSetManager
 
-class PhotoSet(models.Model):
+class PhotoSet(AuditingBaseModel):
     """
     A set of photos
     """
@@ -32,11 +30,7 @@ class PhotoSet(models.Model):
     class Meta:
         verbose_name = _('photo set')
         verbose_name_plural = _('photo sets')
-        permissions = (('view_photoset','Can view photo set'),)
-
-    def get_absolute_url(self):
-        return ("photoset_details", [self.pk])
-    get_absolute_url = models.permalink(get_absolute_url)
+        permissions = (("view_photoset","Can view photoset"),)
     
     def get_cover_photo(self, *args, **kwargs):
         """ get latest thumbnail url """
@@ -54,10 +48,16 @@ class PhotoSet(models.Model):
             return True
         return False
 
+    objects = PhotoSetManager()
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("photoset_details", [self.pk])
+
     def __unicode__(self):
         return self.name
 
-class Image(ImageModel):
+class Image(ImageModel, AuditingBaseModel):
     """
     A photo with its details
     """
@@ -76,7 +76,7 @@ class Image(ImageModel):
     tags = TagField()
 
     class Meta:
-        permissions = (('view_image','Can view image'),)
+        permissions = (("view_image","Can view image"),)
 
     def save(self, *args, **kwargs):
         super(Image, self).save(*args, **kwargs)       
@@ -94,9 +94,9 @@ class Image(ImageModel):
 #        caching.cache_delete(PHOTOS_KEYWORDS_CACHE)
 
     @models.permalink
-    def get_absolute_url(self, *args, **kwargs):
-        set_id = kwargs.get('set_id', 0)
-        return ("photo", [self.pk, set_id])
+    def get_absolute_url(self):
+        photo_set = self.photoset.all()[0]
+        return ("photo", [self.pk, photo_set.pk])
 
     def meta_keywords(self):
         pass
@@ -134,7 +134,7 @@ class Image(ImageModel):
         images = images.order_by('date_added')
         try: return Image.objects.get(id=max(images))
         except ValueError: return None
-        
+
     def __unicode__(self):
         return self.title
 
@@ -151,6 +151,7 @@ class Pool(models.Model):
 
     class Meta:
         # Enforce unique associations per object
+        permissions = (("view_photopool","Can view photopool"),)
         unique_together = (('photo', 'content_type', 'object_id'),)
         verbose_name = _('pool')
         verbose_name_plural = _('pools')

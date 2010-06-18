@@ -2,19 +2,22 @@
 {% load pagination_tags %}
 {% load article_tags %}
 {% load base_tags %}
+{% load perm_tags %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/articles.css">
+<link rel="alternate" type="application/rss+xml" title="Latest Articles" href="{% url article.feed %}" />
 {% endblock %}
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_ARTICLES_LABEL }} Search</h1>
-	
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_ARTICLES_LABEL }} Search</h1>
+
     {% article_nav request.user %}
 
+	{% article_search %}
     {% autopaginate articles 10 %}
 	
 	<div class="articles-wrap">
@@ -41,16 +44,17 @@
 			</div>
 
 
-            <h2><a href="{% url article article.id %}">{{ article.headline }}</a></h2>
+            <h2><a href="{% url article article.pk %}">{% firstof article.headline "Untitled" %}</a></h2>
             <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
+            	<div class="submitted">Released on {{ article.release_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
             </div>
 
             <!-- delete-article form -->
-            <form name="article-delete" method="POST" action="{% url article.delete article.id %}">
+            <form name="article-delete" method="POST" action="{% url article.delete article.pk %}">
                 <input type="hidden" name="action" value="delete">
             </form>
+
 		</div>
 		{% endif %}
 	{% empty %}
@@ -62,15 +66,13 @@
 </div>
 {% endblock %}
 
-{% block body_bottom %}
-
-	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+{% block extra_body %}
     <script type="text/javascript">
 		$(document).ready(function(){
 
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_article = confirm('Permenantly delete article?');	// confirm
+				var delete_article = confirm('Permenantly delete {{ MODULE_ARTICLES_LABEL }}?');	// confirm
 				if(delete_article) $(this).parents('.article-wrap').find('form[name="article-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});

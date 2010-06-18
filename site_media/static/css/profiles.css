@@ -1,3 +1,28 @@
+.t {
+	width: 90%;
+	margin-top: 1em;
+}
+
+.t form.search-form input[type="text"] {
+	margin-bottom:10px;
+	padding:5px;
+	width:60%;
+}
+.profile-icon img{
+	padding: 4px;
+	border: 1px solid silver;
+}
+.t-iconrow{
+	float: right;
+}
+.clear-right{
+	clear: right;
+}
+.clear-both{
+	clear: both;
+}
+
+
 #userview-profile {
     padding-top: 10px;
 }
@@ -249,6 +274,179 @@
 #userview-profile .admin-section .column a {
     display: block;
     margin-bottom: 4px;
+}
+
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t ul.profiles-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.profiles-nav li {
+	display: inline;
+}
+
+.t .profiles-wrap {
+	margin-bottom: 20px;
+}
+
+.t .profiles-wrap .profile-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .profiles-wrap .profile-wrap h2 {
+	width: 85%;
+}
+.t .profiles-wrap .profile-wrap .content {
+	margin: 0 0 10px 1em;
+}
+.t .profiles-wrap .profile-wrap .submitted {
+	background-color: #EEE;
+}
+
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	background-color: #EEE;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+.deleted{
+	color: red;
+}
+
+/* form */
+
+div.forms div.form-field div.id_first_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_last_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_username .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_password1 .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_password2 .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_phone2 .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_work_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_home_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_mobile_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_sex .field select {
+	width: 10%;
+}
+
+div.forms div.form-field div.id_city .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_state .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_zipcode .field input {
+	width: 10%;
+}
+
+div.forms div.form-field div.id_county .field input {
+	width: 45%;
+}
+
+div.forms div.form-field div.id_country .field input {
+	width: 45%;
+}
+
+div.forms div.form-field div.id_dob .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_ssn .field input {
+	width: 20%;
+}
+
+.t .contribution {
+	border-bottom: 1px solid #DDD;
+	padding: 10px;
+	margin: 10px 0;
+}
+.t .contribution .content-type {
+	width: 9%;
+	float: left;
+}
+.t .contribution .contrib-title {
+	float: left;
+	width: 70%;		
+}
+.t .contribution .contrib-create-dt {
+	float: right;		
 }
 
 
