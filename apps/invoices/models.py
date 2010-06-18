@@ -32,6 +32,7 @@ class Invoice(models.Model):
     title = models.CharField(max_length=150, blank=True, null=True)
     invoice_date = models.DateTimeField(auto_now_add=True)
     tender_date = models.DateTimeField(null=True)
+    #session_id = models.CharField(max_length=40, null=True) # used to replace rmid in T4
     # priceasofdate and invoice_number seem like not being used in T4
     #priceasofdate = models.DateTimeField(null=True)
     #invoice_number = models.IntegerField(null=True)
@@ -130,7 +131,7 @@ class Invoice(models.Model):
             self.estimate = False
             self.status_detail = 'tendered'
             self.status = 1
-            self.tender_dt = datetime.now()
+            self.tender_date = datetime.now()
             self.save()
         return True
             
