@@ -167,6 +167,7 @@ INSTALLED_APPS = (
     'event_logs',
     'robots',
     'theme_editor',
+    'jobs',
 )
 
 # This is the number of days users will have to activate their

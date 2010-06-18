@@ -1,0 +1,19 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+<div class="back-to-search">
+    <a href="{% url dashboard %}">&laquo; Dashboard</a>
+    {% has_perm user jobs.add_job as can_add %}
+    
+    {% url job.search as search_url %}
+    {% if not search_url in request.path %}
+    	<a href="{{ search_url }}">Search {{ MODULE_JOBS_LABEL|lower }}</a>&nbsp;
+    {% endif %}
+    
+    {% url job.add as add_url %}
+    {% if not add_url in request.path %}
+    {% if can_add %}
+	    <a href="{{ add_url }}">Add {{ MODULE_JOBS_LABEL|lower }}</a>
+    {% endif %}
+    {% endif %}
+</div>
