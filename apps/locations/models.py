@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from perms.models import AuditingBaseModel
 from locations.managers import LocationManager
+from entities.models import Entity
 
 class Location(AuditingBaseModel):
 
@@ -29,10 +30,9 @@ class Location(AuditingBaseModel):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
 
-    hq = models.BooleanField()
+    hq = models.BooleanField(_('Headquarters'))
     
-    entityid = models.IntegerField(_('Entity ID'),blank=True, null=True)
-    entityownerid = models.IntegerField(_('Entity Owner ID'), blank=True, null=True)
+    entity = models.ForeignKey(Entity, null=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
         

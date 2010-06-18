@@ -1,0 +1,45 @@
+{% extends "jobs/base.html" %}
+{% load job_tags %}
+
+{% block title %}{{ block.super }}Print{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/jobs.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ MODULE_JOBS_LABEL }} Print</h1>
+    
+    {% job_nav request.user %}
+
+    <div class="job-wrap">
+
+        <div class="options">
+
+            <div class="dropdown-options">
+                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                <ul>
+                    <li>Review Reports</li>
+                    <li>Optimize Meta Tags</li>
+                    <li>Attach Files</li>
+                    <li>View Revisions</li>
+                    <li>Delete</li>
+                </ul>
+            </div>
+
+            <div class="quick-options">
+                {% job_options request.user job %}
+            </div>
+        </div>
+
+
+        <h2>{{ job.title }}</h2>
+        <div class="content">{{ job.description|safe }}</div>
+        <div class="meta">
+            <div class="submitted">Submitted on {{ job.create_dt|date:"D d M Y P" }} by {{ job.creator }}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

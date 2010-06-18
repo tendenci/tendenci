@@ -138,6 +138,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.humanize',
+    'django.contrib.sitemaps',
 
     # third party applications
     'pagination',
@@ -172,6 +173,7 @@ INSTALLED_APPS = (
     'categories',
     'contributions',
     'theme_editor',
+    'jobs',
     'styled_forms',
 )
 

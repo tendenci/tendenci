@@ -5,14 +5,15 @@ register = Library()
 @register.inclusion_tag("pages/options.html", takes_context=True)
 def page_options(context, user, page):
     context.update({
-        "page": page,
+        "opt_object": page,
         "user": user
     })
     return context
 
 @register.inclusion_tag("pages/nav.html", takes_context=True)
-def page_nav(context, user):
+def page_nav(context, user, page=None):
     context.update({
+        'nav_object': page,
         "user": user
     })
     return context
