@@ -23,8 +23,6 @@ def search(request, template_name="contributions/search.html"):
     query = request.GET.get('q', None)
     contributions = Contribution.objects.search(query, user=request.user)
 
-    
-    
     return render_to_response(template_name, {'contributions':contributions}, 
         context_instance=RequestContext(request))
 

@@ -15,6 +15,11 @@ class Contribution(AuditingBaseModel):
 
     objects = ContributionManager()
 
+    def object(self):
+        content_type = ContentType.objects.get(id=self.content_type.pk)
+        object = content_type.get_object_for_this_type(id=self.object_id)
+        return object
+
     class Meta:
         permissions = (("view_contribution","Can view contribution"),)
 
