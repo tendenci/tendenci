@@ -26,38 +26,14 @@
     	{% has_perm user contributions.view_contribution contribution as can_view %}
     	{% if can_view %}
 		<div class="contribution-wrap">
-			<div class="options">
-
-                <div class="dropdown-options">
-                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                    <ul>
-                        <li>Review Reports</li>
-                        <li>Optimize Meta Tags</li>
-                        <li>Attach Files</li>
-                        <li>View Revisions</li>
-                        <li>Delete</li>
-                    </ul>
-                </div>
-
-                <div class="quick-options">
-					{# contribution_options request.user contribution #} 	       
-                </div>
-			</div>
-
-
             <h2>
-            	{{ contribution.content_type }}: {% firstof contribution.title "Untitled" %}
+            	{{ contribution.content_type }}: 
+				<a href="{{ contribution.object.get_absolute_url }}">{% firstof contribution.title "Untitled" %}</a>
 			</h2>
 			<div class="meta">
-            	<div class="submitted">Released on {{ contribution.release_dt|date:"D d M Y P" }} 
+            	<div class="submitted">Updated on {{ contribution.update_dt|date:"D d M Y P" }} 
 				by {{ contribution.creator }}</div>
             </div>
-
-            <!-- delete-contribution form -->
-            <form name="contribution-delete" method="POST" action="{# url contribution.delete contribution.pk #}">
-                <input type="hidden" name="action" value="delete">
-            </form>
-
 		</div>
 		{% endif %}
 		{% endwith %}
@@ -71,15 +47,4 @@
 {% endblock %}
 
 {% block extra_body %}
-    <script type="text/javascript">
-		$(document).ready(function(){
-
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_contribution = confirm('Permenantly delete {{ MODULE_contributionS_LABEL }}?');	// confirm
-				if(delete_contribution) $(this).parents('.contribution-wrap').find('form[name="contribution-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
 {% endblock %}
