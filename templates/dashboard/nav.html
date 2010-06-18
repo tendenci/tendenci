@@ -10,7 +10,7 @@
 		<ul id="primary">
 		
 		<li>		
-		<a href="{% url home %}" title="Tendenci Home Page">
+		<a href="{% url dashboard %}" title="Tendenci Home Page">
 			<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
 			alt="Tendenci User Home" align="top" width="34" height="15"></a>
 		</li>
@@ -18,9 +18,9 @@
 		<li>
 			<span>Users</span>
 			<ul id="secondary">
-				<li><a href="{% url profile.search %}">Users:</a></li> 
+				<li><a href="{% url profile.search %}">{{ MODULE_USERS_LABEL }}:</a></li> 
 				{% if can_edit_setting %}
-					<li><a href="{% url settings %}">Settings</a></li>
+					<li><a href="{% url settings.index "module" "users" %}">Settings</a></li>
 				{% endif %}
 				<li><a href="{% url profile.index %}">View</a></li>
 				<li><a href="{% url profile.edit user.pk %}">Edit</a></li>
@@ -35,8 +35,11 @@
 			
 		</li>
 		<li><a href="{% url groups %}">Groups</a></li>
-		<li><a href="{% url article.search %}">Articles</a></li>
-		<li><a href="{% url page.search %}">Pages</a></li>	
-		
+		{% if MODULE_ARTICLES_ENABLED %}
+		<li><a href="{% url article.search %}">{{ MODULE_ARTICLES_LABEL }}</a></li>
+		{% endif %}
+		{% if MODULE_PAGES_ENABLED %}
+		<li><a href="{% url page.search %}">{{ MODULE_PAGES_LABEL }}</a></li>	
+		{% endif %}	
 		</ul>
 	</div>

@@ -432,6 +432,21 @@ div.forms div.form-field div.id_ssn .field input {
 	width: 20%;
 }
 
-
+.t .contribution {
+	border-bottom: 1px solid #DDD;
+	padding: 10px;
+	margin: 10px 0;
+}
+.t .contribution .content-type {
+	width: 9%;
+	float: left;
+}
+.t .contribution .contrib-title {
+	float: left;
+	width: 70%;		
+}
+.t .contribution .contrib-create-dt {
+	float: right;		
+}
 
 

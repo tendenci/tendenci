@@ -18,7 +18,7 @@
     <h1>{{ photo_set.name }}</h1>
 
     <div class="photos-nav">
-		{% photo_set_nav request.user %}
+		{% photo_set_nav request.user photo_set %}
 	</div>
 
 	<div id="photos-wrap">
