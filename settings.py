@@ -170,6 +170,7 @@ INSTALLED_APPS = (
     'event_logs',
     'robots',
     'categories',
+    'contributions',
     'theme_editor',
     'styled_forms',
 )
