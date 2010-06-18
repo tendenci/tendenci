@@ -36,7 +36,7 @@ class News(AuditingBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("news", [self.pk])
+        return ("news.view", [self.pk])
 
     def __unicode__(self):
         return self.headline
