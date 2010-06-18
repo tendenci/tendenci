@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from invoices.models import Invoice
+from site_settings.utils import get_setting
 
 RESPONSE_CODE_CHOICES = (
     ('1', 'This transaction has been approved'),
@@ -117,10 +118,10 @@ class Payment(models.Model):
     def __unicode__(self):
         return u"response_code: %s, trans_id: %s, amount: %.2f" % (self.response_code, self.trans_id, self.amount)
     
-    def payments_pop_by_invoice_user(self, user, inv, guid='', **kwargs):
+    def payments_pop_by_invoice_user(self, user, inv, session_id='', **kwargs):
         from django.core.urlresolvers import reverse
         boo = False
-        if inv.allow_payment_by(user, guid):
+        if inv.allow_payment_by(user, session_id):
             boo = True
             self.first_name = inv.bill_to_first_name
             self.last_name = inv.bill_to_last_name
@@ -160,9 +161,10 @@ class Payment(models.Model):
             self.save()
             
             # site_url - need to use site setting here
-            site_url = "http://tendenci5.schipul.net"
-            #merchant_account = getSetting("global", "MerchantAccount")
-            merchant_account = "authorizenet"
+            #site_url = "http://tendenci5.schipul.net"
+            #merchant_account = "authorizenet"
+            site_url = get_setting('site', 'global', 'siteurl')
+            merchant_account = get_setting('site', "global", "merchantaccount")
             if merchant_account == "authorizenet":
                 self.response_page = site_url + reverse('authorizenet.sim_thank_you', args=[self.id])
             else:

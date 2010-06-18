@@ -12,9 +12,9 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_USER_GROUPS_LABEL }} Search</h1>
-	
+ 	
  {% user_group_nav request.user %}
+ <h1>{{ MODULE_USER_GROUPS_LABEL }} Search</h1>
  
     {% autopaginate groups 10 %}
 

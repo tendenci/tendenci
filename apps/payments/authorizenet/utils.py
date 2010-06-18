@@ -4,6 +4,7 @@ from django.conf import settings
 from forms import SIMPaymentForm
 from payments.models import Payment
 from payments.utils import payment_processing_object_updates
+from site_settings.utils import get_setting
 
 def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
     msg = '^'.join([settings.AUTHNET_LOGIN,
@@ -19,6 +20,7 @@ def prepare_authorizenet_sim_form(request, payment):
     x_fp_timestamp = str(int(time.time()))
     x_amount = "%.2f" % payment.amount
     x_fp_hash = get_fingerprint(str(payment.id), x_fp_timestamp, x_amount)
+    x_logo_URL = get_setting("site", "global", "MerchantLogo")
     
     params = {
               'x_fp_sequence':payment.id,
@@ -53,7 +55,7 @@ def prepare_authorizenet_sim_form(request, payment):
               'x_fax':payment.fax,
               'x_phone':payment.phone,
               'x_show_form':'payment_form',
-              #'x_logo_URL':getSetting("global", "MerchantLogo"),
+              'x_logo_URL':x_logo_URL,
         }
     form = SIMPaymentForm(initial=params)
     
