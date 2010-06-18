@@ -34,6 +34,7 @@ urlpatterns = patterns('',
     (r'^event-logs/', include('event_logs.urls')),
     (r'^contributions/', include('contributions.urls')),
     (r'^theme-editor/', include('theme_editor.urls')),
+    (r'^sitemap.xml', include('sitemaps.urls')),
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
