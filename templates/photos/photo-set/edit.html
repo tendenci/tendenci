@@ -6,7 +6,7 @@
 {% block head_title %}{% blocktrans %}Edit Photo Set{% endblocktrans %}{% endblock %}
         
 {% block body %}
-	<h1>{{ MODULE_PHOTOS_LABEL }} Edit</h1>
+	<h1>{{ MODULE_PHOTOS_LABEL }} Set Edit</h1>
     <form method="POST" action="">
         {{ photoset_form.as_p }}
         <input type="hidden" name="action" value="edit" />

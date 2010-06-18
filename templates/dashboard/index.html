@@ -89,18 +89,14 @@
      	<li class="entities"><a href="{% url entity.search %}"><span>{% firstof MODULE_ENTITIES_LABEL "Entities" %}</span></a></li>
 		{% endif %}
 
-		{% if MODULE_MEDIA_ENABLED %}
+		{% if MODULE_FILES_ENABLED %}
 		{% if view_files %}
-     	<li class="files"><a href="{% url file.search %}"><span>{% firstof MODULE_MEDIA_LABEL Files %}</span></a></li>
+     	<li class="files"><a href="{% url file.search %}"><span>{% firstof MODULE_FILES_LABEL Files %}</span></a></li>
 		{% endif %}
 		{% endif %}
 
 		{% if view_locations %}
 		<li class="locations"><a href="{% url location.search %}"><span>{% firstof MODULE_LOCATION_LABEL  "Locations" %}</span></a></li>
-		{% endif %}
-
-		{% if view_files %}
-		<li class="files"><a href="{% url file.search %}"><span>{% firstof MODULE_MEDIA_LABEL  "Files" %}</span></a></li>
 		{% endif %}
 
 		{% if view_contributions %}

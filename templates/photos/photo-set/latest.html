@@ -17,10 +17,7 @@
         <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
     </div>
 
-    <div class="photos-nav">
-    	<a href="{% url dashboard %}">&laquo; Dashboard</a>
-    	<a href="{% url photoset_add %}">Add photoset</a>
-	</div>
+    {% photo_set_nav user %}
 
 	{% photo_set_search %}
     {% autopaginate photo_sets %}

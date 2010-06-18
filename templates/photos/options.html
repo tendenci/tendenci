@@ -9,11 +9,11 @@
 {% if can_change %}
 <ul>
 	{% if can_change %}
-    <li class="photo-edit" data-id="{{ photo.pk }}"><a href="{% url photo_edit photo.pk photo_set_id %}">Edit</a></li>
+    <li class="photo-edit" data-id="{{ opt_object.pk }}"><a href="{% url photo_edit opt_object.pk photo_set_id %}">Edit</a></li>
     {% endif %}
 
 	{% if can_delete %}
-    <li class="photo-delete" data-id="{{ photo.pk }}"><a href="{% url photo_destroy photo.pk photo_set_id %}">Delete</a></li>
+    <li class="photo-delete" data-id="{{ opt_object.pk }}"><a href="{% url photo_destroy opt_object.pk photo_set_id %}">Delete</a></li>
 	{% endif %}
 </ul>
 {% endif %}

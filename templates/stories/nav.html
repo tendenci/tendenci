@@ -1,63 +1,56 @@
 {% load base_tags %}
 {% load perm_tags %}
-<div id="showh">
-		<ul id="primary">
-		
-		<li>		
-		<a href="/" title="Tendenci Home Page">
-			<img border="0" src="/site_media/static/images/tendenci34x15.gif" 
-			alt="Tendenci User Home" align="top" width="34" height="15"></a>
-		</li>
 
-		<li>
-			<span>Stories</span>
-			<ul id="secondary">
-				<li>
-				<a href="{% url stories %}">Stories:</a>
-				</li>
-						{% if story_this %}
-							{% has_perm request.user stories.view_story story_this as can_view %}
-							{% if can_view %}
-								<li>
-									<a href="{% url stories.views.index story_this.id %}">View</a>
-								</li>
-							{% endif %}
-						{% endif %}
-						
-						{% if story_this %}
-							{% has_perm request.user stories.change_story story_this as can_edit %}
-							{% if can_edit %}
-							<li>
-							<a href="{% url story.edit story_this.id %}">Edit</a>
-							</li>
-							{% endif %}
-						{% endif %}
-						
-						<li>
-						<a href="{% url story.search %}">Search</a>
-						</li>
-							
-						{% has_perm request.user stories.add_story "story" as can_add %}
-						{% if can_add %}
-						<li>
-						<a href="{% url story.add %}">Add</a>
-						</li>
-						{% endif %}
-					{% if user_current.is_authenticated %}
-					<li>
-					<a href="{% url auth_logout %}">Log Off</a>
-					</li> 
-					{% endif %}
-			</ul>
-			
-		</li>
-			<li><a href="{% url articles %}">Articles</a></li>
-			<li><a href="{% url news %}">Releases</a></li>
-		<li>
-		<a href="/en/rss/index/" title="RSS Feeds for this Tendenci site">
-		<img border="0" src="/site_media/static/images/feed-icon-12x12.gif" 
-		 width="12" height="12"  align="absbottom"></a>
-		</li>		
-		
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user stories.add_story as can_add_story %}
+
+{% if nav_object %}
+	{% has_perm user stories.view_story nav_object as can_view_story %}
+	{% has_perm user stories.change_story nav_object as can_edit_story %}
+{% else %}
+	{% has_perm user stories.view_story as can_view_story %}
+	{% has_perm user stories.change_story as can_edit_story %}
+{% endif %}
+
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>{{ MODULE_STORIES_LABEL }}</span>
+		<ul id="secondary">
+			<li><a href="{% url stories %}">{{ MODULE_STORIES_LABEL }}:</a></li> 
+			{% if can_edit_setting %}
+				<li><a href="{% url settings.index "module" "stories" %}">Settings</a></li>
+			{% endif %}
+			{% if nav_object %}
+				{% if can_view_story %}
+				<li><a href="{% url story nav_object.pk %}">View</a></li>
+				{% endif %}
+				{% if can_edit_story %}
+				<li><a href="{% url story.edit nav_object.pk %}">Edit</a></li>
+				{% endif %}
+			{% endif %}
+			<li><a href="{% url story.search %}">Search</a></li>
+			{% if can_add_story %}
+			<li><a href="{% url story.add %}">Add</a></li>
+			{% endif %}
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
 		</ul>
-		</div>
+		
+	</li>
+	{% if MODULE_ARTICLES_ENABLED %}
+	<li><a href="{% url articles %}">{{ MODULE_ARTICLES_LABEL }}</a></li>
+	{% endif %}
+	{% if MODULE_NEWS_ENABLED %}
+	<li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}</a></li>
+	{% endif %}
+	</ul>
+</div>
