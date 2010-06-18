@@ -4,7 +4,7 @@
 		<ul id="primary">
 		
 		<li>		
-		<a href="/" title="Tendenci Home Page">
+		<a href="{% url dashboard %}" title="Tendenci Home Page">
 			<img border="0" src="/site_media/static/images/tendenci34x15.gif" 
 			alt="Tendenci User Home" align="top" width="34" height="15"></a>
 		</li>
@@ -58,14 +58,8 @@
 			</ul>
 			
 		</li>
-			<li><a href="{% url groups %}">Groups</a></li>
-		
-			<li><a href="{% url articles %}">Articles</a></li>
-		<li>
-		<a href="/en/rss/index/" title="RSS Feeds for this Tendenci site">
-		<img border="0" src="/site_media/static/images/feed-icon-12x12.gif" 
-		 width="12" height="12"  align="absbottom"></a>
-		</li>		
+		<li><a href="{% url groups %}">Groups</a></li>
+		<li><a href="{% url articles %}">Articles</a></li>
 		
 		</ul>
 		</div>

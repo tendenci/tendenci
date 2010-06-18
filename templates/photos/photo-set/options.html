@@ -7,14 +7,14 @@
 {% has_perm user photoset.delete_photoset as can_delete %}
 
 {% if can_change %}
-<a href="{% url photoset_edit photo_set.pk %}">Edit Set</a> 
+<a href="{% url photoset_edit opt_object.pk %}">Edit Set</a> 
 {% endif %}
 
 {% if can_delete %}
-<a class="delete-set" href="{% url photoset_delete photo_set.pk %}">Delete Set</a>
+<a class="delete-set" href="{% url photoset_delete opt_object.pk %}">Delete Set</a>
 {% endif %}
 
 {% if can_add %}
-<a href="{% url photos_batch_add photo_set.pk %}">Add Photos</a>
+<a href="{% url photos_batch_add opt_object.pk %}">Add Photos</a>
 {% endif %}
-<a href="{% url photos_batch_edit photo_set.pk %}">Edit Photos</a>
+<a href="{% url photos_batch_edit opt_object.pk %}">Edit Photos</a>

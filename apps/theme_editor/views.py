@@ -21,7 +21,7 @@ DEFAULT_FILE = 'templates/nav.html'
 @permission_required('theme_editor.change_themefileversion')
 def edit_file(request, form_class=FileForm, template_name="theme_editor/index.html"):
 
-    # if no permission; raise 404 exception
+    # if no permission; raise 403 exception
     if not request.user.has_perm('theme_editor.view_themefileversion'):
         raise Http403  
 

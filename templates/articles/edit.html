@@ -1,9 +1,11 @@
 {% extends "articles/base.html" %}
 {% load article_tags %}
+{% load styled_forms %}
 
 {% block title %}{{ block.super }}Edit{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
 <link rel="stylesheet" href="/site_media/static/css/articles.css">
 {% endblock %}
 
@@ -14,12 +16,12 @@
     {% article_nav request.user %}
 
     <div class="article-wrap">
-    <form action="{% url article.edit article.id %}" method="post">
-        {{ form.as_p }}
-        <input type="submit" value="Save changes" />
-    </form>
-
+    	<form action="{% url article.edit article.pk %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Save Changes" />
+		</div>
+        </form>
     </div>
-
 </div>
 {% endblock %}

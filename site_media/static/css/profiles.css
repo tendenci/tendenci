@@ -1,5 +1,5 @@
 .t {
-	width: 650px;
+	width: 90%;
 	margin-top: 1em;
 }
 
@@ -299,6 +299,7 @@
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
+	background-color: white;
 }
 
 .t .profiles-wrap .profile-wrap h2 {
@@ -353,5 +354,99 @@
 	color: red;
 }
 
+/* form */
+
+div.forms div.form-field div.id_first_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_last_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_username .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_password1 .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_password2 .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_phone2 .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_work_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_home_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_mobile_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_sex .field select {
+	width: 10%;
+}
+
+div.forms div.form-field div.id_city .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_state .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_zipcode .field input {
+	width: 10%;
+}
+
+div.forms div.form-field div.id_county .field input {
+	width: 45%;
+}
+
+div.forms div.form-field div.id_country .field input {
+	width: 45%;
+}
+
+div.forms div.form-field div.id_dob .field input {
+	width: 20%;
+}
+
+div.forms div.form-field div.id_ssn .field input {
+	width: 20%;
+}
+
+.t .contribution {
+	border-bottom: 1px solid #DDD;
+	padding: 10px;
+	margin: 10px 0;
+}
+.t .contribution .content-type {
+	width: 9%;
+	float: left;
+}
+.t .contribution .contrib-title {
+	float: left;
+	width: 70%;		
+}
+.t .contribution .contrib-create-dt {
+	float: right;		
+}
 
 

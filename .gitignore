@@ -18,9 +18,6 @@ cache
 *.pyc
 
 
-# Ignore payments temporarily
-payments
-
 # except for .gitignore
 !.gitignore
 

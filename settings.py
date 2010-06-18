@@ -9,6 +9,7 @@ sys.path.insert(0, APPS_PATH)
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 SITE_THEME = "tendenci"
+#SITE_THEME = "default"
 
 ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
@@ -137,6 +138,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.humanize',
+    'django.contrib.sitemaps',
 
     # third party applications
     'pagination',
@@ -150,6 +152,7 @@ INSTALLED_APPS = (
     # tendenci applications
     'base',
     'perms',
+    'dashboard',
     'profiles',
     'articles',
     'news',
@@ -161,13 +164,17 @@ INSTALLED_APPS = (
     'locations',
     'site_settings',
     'user_groups',
-    #'make_payments',
-    #'invoices',
+    'make_payments',
+    'invoices',
+    'payments',
     'files',
     'event_logs',
     'robots',
+    'categories',
+    'contributions',
     'theme_editor',
     'jobs',
+    'styled_forms',
 )
 
 # This is the number of days users will have to activate their
@@ -228,9 +235,22 @@ HAYSTACK_SOLR_URL = 'http://127.0.0.1:8000/tendenci50/'
 HAYSTACK_SOLR_TIMEOUT = 60
 HAYSTACK_INCLUDED_APPS = ('article','page','news','story')
 
+#---------------------------------------------------------------
+# payment gateway settings - LOGIN and KEY need to be moved to local_urls.py later
+#---------------------------------------------------------------
+AUTHNET_POST_URL = ""
+AUTHNET_TEST_POST_URL = "https://test.authorize.net/gateway/transact.dll"
+# the AUTHNET_LOGIN and AUTHNET_KEY are specified in local_settings
+AUTHNET_LOGIN = ""
+AUTHNET_KEY = ""
+
 # local settings for development
 try:
     from local_settings import *
 except ImportError:
     pass
+
+
+
+
 

@@ -1,5 +1,6 @@
 {% extends "news/base.html" %}
 {% load news_tags %}
+{% load tagging_tags %}
 
 {% block title %}{{ block.super }}{{ news.headline }}{% endblock %}
 
@@ -8,8 +9,10 @@
 {% endblock %}
 
 {% block body %}
+{% tags_for_object news as tags %}
+
 <div class="t">
-    {% news_nav request.user %}
+    {% news_nav request.user news %}
 
     <div class="news-wrap">
 
@@ -35,8 +38,16 @@
         <h2>{{ news.headline }}</h2>
         <div class="content">{{ news.body|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ news.create_dt|date:"D d M Y P" }} by {{ news.creator }}</div>
+			<div class="tags">
+				Tags: 
+				{% for tag in tags %}
+					<a href="{% url news.search %}?q={{ tag }}">{{ tag }}</a>
+				{% endfor %}
+			</div>
+            <div class="submitted">Submitted on {{ news.create_dt|date:"D d M Y P" }} 
+			by {% firstof news.creator.get_profile.display_name news.creator %}</div>
         </div>
+
     </div>
 
 </div>
