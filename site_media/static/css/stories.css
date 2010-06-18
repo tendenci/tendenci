@@ -107,3 +107,12 @@
 	color: red;
 }
 
+/* form */
+div.forms div.form-field div.id_start_dt .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_end_dt .field input {
+	width: 30%;
+}
+

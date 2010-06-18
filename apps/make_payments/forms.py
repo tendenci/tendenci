@@ -5,6 +5,11 @@ from make_payments.models import MakePayment
 class MakePaymentForm(forms.ModelForm):
     payment_method = forms.CharField(widget=forms.RadioSelect(choices=(('check-paid', 'Paid by Check'), 
                                                               ('cc', 'Make Online Payment'),)), initial='cc', )
+    company = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'size':'30'}))
+    address = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'size':'35'}))
+    state = forms.CharField(max_length=50, required=False,  widget=forms.TextInput(attrs={'size':'5'}))
+    zip_code = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'10'}))
+    referral_source = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'size':'40'}))
     
     class Meta:
         model = MakePayment
@@ -28,7 +33,7 @@ class MakePaymentForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super(MakePaymentForm, self).__init__(*args, **kwargs)
         # populate the user fields
-        if user:
+        if user and user.id:
             self.fields['first_name'].initial = user.first_name
             self.fields['last_name'].initial = user.last_name
             self.fields['email'].initial = user.email

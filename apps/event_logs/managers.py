@@ -32,7 +32,7 @@ class EventLogManager(Manager):
         """
         sqs = SearchQuerySet()
         
-        q = query.get('q',None)
+        q = query.get('q','')
         range = query.get('range',None)
             
         if query:
@@ -44,9 +44,9 @@ class EventLogManager(Manager):
                     sqs = sqs.filter(create_dt__lte=end_dt)
                     sqs = sqs.filter(create_dt__gte=start_dt)
                 except:
-                    sqs = sqs.filter(content=sqs.query.clean(q)) 
+                    sqs = sqs.auto_query(sqs.query.clean(q)) 
             else:
-                sqs = sqs.filter(content=sqs.query.clean(q))
+                sqs = sqs.auto_query(sqs.query.clean(q)) 
         else:
             sqs = sqs.all()
         

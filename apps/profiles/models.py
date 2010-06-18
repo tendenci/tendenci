@@ -52,7 +52,7 @@ class Profile(AuditingBaseModel):
     fax = models.CharField(_('fax'), max_length=50, blank=True)
     work_phone = models.CharField(_('work phone'), max_length=50, blank=True)
     home_phone = models.CharField(_('home phone'), max_length=50, blank=True)
-    mobile_phone = models.CharField(_('phone2'), max_length=50, blank=True)
+    mobile_phone = models.CharField(_('mobile phone'), max_length=50, blank=True)
     email = models.CharField(_('email'), max_length=200,  blank=True)
     email2 = models.CharField(_('email2'), max_length=200,  blank=True)
     url = models.CharField(_('url'), max_length=100, blank=True)
@@ -117,7 +117,7 @@ class Profile(AuditingBaseModel):
     def allow_view_by(self, user2_compare):
         boo = False
        
-        if self.is_admin():
+        if user2_compare.is_superuser:
             boo = True
         else: 
             if user2_compare == self.user:

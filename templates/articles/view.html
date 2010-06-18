@@ -1,5 +1,6 @@
 {% extends "articles/base.html" %}
 {% load article_tags %}
+{% load tagging_tags %}
 
 {% block title %}{{ block.super }}{{ article.headline }}{% endblock %}
 
@@ -8,8 +9,10 @@
 {% endblock %}
 
 {% block body %}
+{% tags_for_object article as tags %}
+
 <div class="t">
-    {% article_nav request.user %}
+    {% article_nav request.user article %}
 
     <div class="article-wrap">
 
@@ -35,7 +38,16 @@
         <h2>{{ article.headline }}</h2>
         <div class="content">{{ article.body|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
+
+			<div class="tags">
+				Tags: 
+				{% for tag in tags %}
+					<a href="{% url article.search %}?q={{ tag }}">{{ tag }}</a>
+				{% endfor %}
+			</div>
+
+            <div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} 
+			by {% firstof article.creator.get_profile.display_name article.creator %}</div>
         </div>
     </div>
 

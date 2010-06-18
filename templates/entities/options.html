@@ -1,15 +1,15 @@
 {% load base_tags %}
 {% load perm_tags %}
 <ul>	
-    <li><a href="{% url entity.print_view entity.id %}">Print</a></li>
+    <li><a href="{% url entity.print_view opt_object.pk %}">Print</a></li>
     
     {% has_perm user entities.change_entity entity as can_edit %}
     {% if can_edit %} 
-    	<li><a href="{% url entity.edit entity.id %}">Edit</a></li>
+    	<li><a href="{% url entity.edit opt_object.pk %}">Edit</a></li>
     {% endif %}
     
     {% has_perm user entities.delete_entity entity as can_delete %}
     {% if can_delete %} 
-	<li class="delete"><a href="{% url entity.delete entity.id %}">Delete</a></li>
+	<li class="delete"><a href="{% url entity.delete opt_object.pk %}">Delete</a></li>
 	{% endif %}
 </ul>

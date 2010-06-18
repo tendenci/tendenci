@@ -19,7 +19,7 @@ class LocationManager(Manager):
         is_an_admin = is_admin(user)
             
         if query:
-            sqs = sqs.filter(content=sqs.query.clean(query)) 
+            sqs = sqs.auto_query(sqs.query.clean(query)) 
             if user:
                 if not is_an_admin:
                     if not user.is_anonymous():
@@ -31,12 +31,14 @@ class LocationManager(Manager):
                 sqs = sqs.filter(allow_anonymous_view=True) 
         else:
             if user:
-                if not is_an_admin:
+                if is_an_admin:
+                    sqs = sqs.all()
+                else:
                     if not user.is_anonymous():
                         sqs = sqs.filter(allow_user_view=True)
                         sqs = sqs.filter_or(who_can_view__exact=user.username)
                     else:
-                        sqs = sqs.filter(allow_anonymous_view=True)                
+                        sqs = sqs.filter(allow_anonymous_view=True)               
             else:
                 sqs = sqs.filter(allow_anonymous_view=True) 
     
