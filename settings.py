@@ -243,6 +243,8 @@ AUTHNET_TEST_POST_URL = "https://test.authorize.net/gateway/transact.dll"
 # the AUTHNET_LOGIN and AUTHNET_KEY are specified in local_settings
 AUTHNET_LOGIN = ""
 AUTHNET_KEY = ""
+MERCHANT_LOGIN = ""
+MERCHANT_TXN_KEY = ""
 
 # local settings for development
 try:
