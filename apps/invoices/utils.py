@@ -46,7 +46,7 @@ def invoice_makepayments_display(request, invoice, **kwargs):
         mystr += "<div class=\"invoice-view-box\">"   
         mystr += "<div class=\"invoice-view-payonline\">"
         mystr += "<a href=\"" + reverse('payments.views.pay_online', args=[invoice.id, invoice.guid])
-        mystr += "\" class=\"body_copy_yellow\">Pay Online Now</a>"
+        mystr += "\" class=\"body_copy_yellow\" title=\"Pay Online\">Pay Online Now</a>"
         mystr += "</div>"
         mystr += "<div class=\"clear-right\"></div>"
         mystr += "</div>"
@@ -71,8 +71,9 @@ def invoice_makepayments_user_info(invoice, make_payment, **kwargs):
     # make 3 blocks in the first box
     mystr += "<div class=\"invoice-view-detail-left\">"
     # block #1 - make_payment_id
-    if mp:
-        mystr += "<a href=\"link to view make_payment\">%d</a>" % (mp.id)
+    if mp: 
+        mystr += "<a href=\"%s\" title=\"View Make Payment\">%d</a>" % \
+                (reverse('make_payment.view', args=[invoice.invoice_object_type_id]), mp.id)
     else:
         mystr += str(invoice.invoice_object_type_id)
     mystr += "</div>"
@@ -142,7 +143,7 @@ def payment_row_display(payment, **kwargs):
     # make 3 blocks in the payment box
     mystr += "<div class=\"invoice-view-detail-left\">"
     # block #1 - make_payment_id
-    mystr += "<a href=\"link to view payment\">%d</a>" % (payment.id)
+    mystr += "<a href=\"link to view payment\" title=\"View Payment\">%d</a>" % (payment.id)
     mystr += "</div>"
     
     # block #2 - payment transaction details
