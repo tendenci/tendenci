@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -29,4 +30,16 @@ class MakePayment(models.Model):
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='estimate')
     status = models.BooleanField(default=True)
+    
+    def save(self, user=None):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            if user and user.id:
+                self.creator=user
+                self.creator_username=user.username
+        if user and user.id:
+            self.owner=user
+            self.owner_username=user.username
+            
+        super(self.__class__, self).save()
     
