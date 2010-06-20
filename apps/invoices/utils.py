@@ -86,7 +86,8 @@ def invoice_makepayments_user_info(invoice, make_payment, **kwargs):
     if mp.company:
         mystr += "<div class=\"invoice-item\">Company: %s</div>" % mp.company
     if mp.address or mp.address or mp.city or mp.state or mp.zip_code:
-        mystr += "<div class=\"invoice-item\">Address: %s %s %s %s %s</div>" % (mp.address, mp.address2, mp.city, mp.state, mp.zip_code)
+        mystr += "<div class=\"invoice-item\">Address: %s %s %s %s %s</div>" % \
+                (mp.address, mp.address2, mp.city, mp.state, mp.zip_code)
     mystr += "</div>"
     
     # block #3 - amount
@@ -143,7 +144,8 @@ def payment_row_display(payment, **kwargs):
     # make 3 blocks in the payment box
     mystr += "<div class=\"invoice-view-detail-left\">"
     # block #1 - make_payment_id
-    mystr += "<a href=\"link to view payment\" title=\"View Payment\">%d</a>" % (payment.id)
+    mystr += "<a href=\"%s\" title=\"View Payment\">%d</a>" % \
+            (reverse('payment.view', args=[payment.id]), payment.id)
     mystr += "</div>"
     
     # block #2 - payment transaction details
@@ -168,7 +170,7 @@ def payment_row_display(payment, **kwargs):
     mystr += "<div class=\"invoice-view-detail-right\">"
     mystr += "<div class=\"invoice-item\">%s</div>" % (payment.create_dt.strftime('%b %d, %Y %H:%M %p'))
     mystr += "<div class=\"invoice-item\">Invoice: <a href=\"%s\">%d</a></div>" % \
-            (reverse('invoices.view', args=[payment.invoice.id]), payment.invoice.id)
+            (reverse('invoice.view', args=[payment.invoice.id]), payment.invoice.id)
 
     if not payment.status_detail or  payment.status_detail == '':
         if not payment.verified:
