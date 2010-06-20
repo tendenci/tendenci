@@ -7,6 +7,7 @@ from make_payments.forms import MakePaymentForm
 from make_payments.utils import make_payment_inv_add
 from make_payments.models import MakePayment
 from site_settings.utils import get_setting
+from base.http import Http403
 from base.utils import tcurrency
 
 
@@ -53,6 +54,8 @@ def add_confirm(request, id, template_name="make_payments/add_confirm.html"):
 
 def view(request, id=None, template_name="make_payments/view.html"):
     mp = get_object_or_404(MakePayment, pk=id)
+    if not mp.allow_view_by(request.user): return Http403
+    
     mp.payment_amount = tcurrency(mp.payment_amount)
     return render_to_response(template_name, {'mp':mp}, 
         context_instance=RequestContext(request))

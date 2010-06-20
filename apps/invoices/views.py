@@ -22,3 +22,8 @@ def view(request, id, guid=None, template_name="invoices/view.html"):
                                               'notify': notify, 
                                               'invoice_display':invoice_display}, 
         context_instance=RequestContext(request))
+    
+def search(request, template_name="invoices/search.html"):
+    invoices = Invoice.objects.all()
+    return render_to_response(template_name, {'invoices': invoices}, 
+        context_instance=RequestContext(request))

@@ -5,6 +5,7 @@ from payments.models import Payment
 from payments.authorizenet.utils import prepare_authorizenet_sim_form
 from invoices.models import Invoice
 from base.http import Http403
+from base.utils import tcurrency
 
 from site_settings.utils import get_setting
 
@@ -38,6 +39,15 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
     return render_to_response(template_name, 
                               {'form':form, 'post_url':post_url}, 
                               context_instance=RequestContext(request))
+    
+def view(request, id, guid=None, template_name="payments/view.html"):
+    payment = get_object_or_404(Payment, pk=id)
+
+    if not payment.allow_view_by(request.user, guid): return Http403
+    payment.amount = tcurrency(payment.amount)
+    
+    return render_to_response(template_name, {'payment':payment}, 
+        context_instance=RequestContext(request))
 
         
 

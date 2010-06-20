@@ -3,6 +3,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+from perms.utils import is_admin
+
 class MakePayment(models.Model):
     guid = models.CharField(max_length=50)
     user = models.ForeignKey(User, null=True)
@@ -42,4 +44,16 @@ class MakePayment(models.Model):
             self.owner_username=user.username
             
         super(self.__class__, self).save()
+        
+    def allow_view_by(self, user2_compare):
+        boo = False
+        if is_admin(user2_compare):
+            boo = True
+        else: 
+            if user2_compare and user2_compare.id > 0:
+                if self.creator == user2_compare or self.owner == user2_compare:
+                    if self.status == 1:
+                        boo = True
+            
+        return boo
     
