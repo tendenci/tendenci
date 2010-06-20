@@ -5,7 +5,7 @@ from contributions.models import Contribution
 from articles.models import Article
 from pages.models import Page
 from news.models import News
-from jobs.models import Jobs
+from jobs.models import Job
 from photos.models import PhotoSet, Image
 from stories.models import Story
 from files.models import File
@@ -40,7 +40,7 @@ def save_contribution(sender, **kwargs):
 post_save.connect(save_contribution, sender=Article, weak=False)
 post_save.connect(save_contribution, sender=Page, weak=False)
 post_save.connect(save_contribution, sender=News, weak=False)
-post_save.connect(save_contribution, sender=Jobs, weak=False)
+post_save.connect(save_contribution, sender=Job, weak=False)
 post_save.connect(save_contribution, sender=PhotoSet, weak=False)
 post_save.connect(save_contribution, sender=Image, weak=False)
 post_save.connect(save_contribution, sender=Story, weak=False)

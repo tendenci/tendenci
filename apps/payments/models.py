@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from invoices.models import Invoice
@@ -106,14 +107,30 @@ class Payment(models.Model):
     status = models.BooleanField(default=True)
 
     objects = PaymentManager()
+    
+    def save(self, user=None):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            if user and user.id:
+                self.creator=user
+                self.creator_username=user.username
+        if user and user.id:
+            self.owner=user
+            self.owner_username=user.username
+            
+        super(self.__class__, self).save()
 
     @property
     def is_approved(self):
-        return self.response_code=='1' and self.response_reason_code=='1' and self.trans_id <> ''
+        return self.response_code=='1' and self.response_reason_code=='1'
     
     def mark_as_paid(self):
         self.status=1
         self.status_detail = 'approved'
+        
+    @property    
+    def is_paid(self):
+        return self.response_code=='1' and self.response_reason_code=='1' and self.status_detail == 'approved'
 
     def __unicode__(self):
         return u"response_code: %s, trans_id: %s, amount: %.2f" % (self.response_code, self.trans_id, self.amount)
@@ -158,7 +175,7 @@ class Payment(models.Model):
                 self.description = 'Tendenci Invoice %d Payment.' % (inv.id)
                 
             # save the payment because we need the payment id below
-            self.save()
+            self.save(user)
             
             # site_url - need to use site setting here
             #site_url = "http://tendenci5.schipul.net"
