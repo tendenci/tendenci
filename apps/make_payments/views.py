@@ -4,11 +4,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from make_payments.forms import MakePaymentForm
 from make_payments.utils import make_payment_inv_add
-#from site_settings.utils import get_setting
+from site_settings.utils import get_setting
 
 
 def add(request, form_class=MakePaymentForm, template_name="make_payments/add.html"):
-    print  request.COOKIES.get('sessionid','')
     if request.method == "POST":
         form = form_class(request.user, request.POST)
         
@@ -29,10 +28,12 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
             else:
                 return HttpResponseRedirect(reverse('make_payment.add_confirm', args=[mp.id]))
     else:
+        currency_symbol = get_setting("site", "global", "currencysymbol")
+        if not currency_symbol: currency_symbol = "$"
         form = form_class(request.user)
         #form2 = form_class2()
        
-    return render_to_response(template_name, {'form':form}, 
+    return render_to_response(template_name, {'form':form, 'currency_symbol': currency_symbol}, 
         context_instance=RequestContext(request))
     
 def add_confirm(request, id, template_name="make_payments/add_confirm.html"):
