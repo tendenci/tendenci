@@ -41,7 +41,7 @@ def invoice_makepayments_display(request, invoice, **kwargs):
     mystr += invoice_totals_info(invoice)
     mystr += "</div>"
     
-    if invoice.balance > 0 and settings.MERCHANT_LOGIN:
+    if invoice.balance > 0 and hasattr(settings, 'MERCHANT_LOGIN') and settings.MERCHANT_LOGIN:
         # link to payonline
         mystr += "<div class=\"invoice-view-box\">"   
         mystr += "<div class=\"invoice-view-payonline\">"
