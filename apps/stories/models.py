@@ -1,4 +1,4 @@
-import os.path
+import os.path, uuid
 from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -9,7 +9,7 @@ from perms.utils import is_admin
 
 # Create your models here.
 class Story(AuditingBaseModel):
-    guid = models.CharField(max_length=50, unique=False, blank=True)
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     title = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'))

@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
@@ -9,7 +10,7 @@ from tinymce import models as tinymce_models
 from uuid import uuid1 
 
 class Job(AuditingBaseModel):
-    guid = models.CharField(max_length=40, default=uuid1)
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     title = models.CharField(max_length=250)
     description = tinymce_models.HTMLField()
     list_type = models.CharField(max_length=50) #premium or regular

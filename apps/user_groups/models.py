@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
@@ -9,7 +10,7 @@ from entities.models import Entity
 class Group(AuditingBaseModel):
     name = models.CharField(_('Group Name'), max_length=255, unique=True)
     slug = models.SlugField(editable=False, unique=True)
-    guid = models.CharField(max_length=50, editable=False)
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     label = models.CharField(_('Group Label'), max_length=255, blank=True)
     entity = models.ForeignKey(Entity, null=True, blank=True)
     type = models.CharField(max_length=75, blank=True, choices=(
