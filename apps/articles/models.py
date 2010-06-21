@@ -5,6 +5,7 @@ from tagging.fields import TagField
 from timezones.fields import TimeZoneField
 from perms.models import AuditingBaseModel
 from articles.managers import ArticleManager
+from tinymce import models as tinymce_models
 
 from categories.models import Category
 
@@ -15,7 +16,7 @@ class Article(AuditingBaseModel):
     timezone = TimeZoneField(_('Time Zone'))
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
-    body = models.TextField(blank=True)
+    body = tinymce_models.HTMLField()
     source = models.CharField(max_length=300, blank=True)
 
     # creator first name and lastname
