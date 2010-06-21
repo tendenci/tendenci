@@ -1,0 +1,29 @@
+{% extends "invoices/base.html" %}
+{% load pagination_tags %}
+
+{% block title %}{{ block.super }}Invoice Search{% endblock %}
+
+{% block extra_head %}
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice Search</h1>
+
+{% autopaginate invoices 10 %}
+<div class="invoices-wrap">
+    {% for invoice in invoices %}
+		{{ invoice }}
+		
+		
+	{% empty %}
+		<div>0 Results Found</div>
+	{% endfor %}
+</div>
+
+
+ {% paginate %}
+</div>
+
+{% endblock %}
