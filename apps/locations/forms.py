@@ -21,8 +21,7 @@ class LocationForm(AuditingBaseForm):
         'latitude',
         'longitude',
         'hq',
-        'entityid',
-        'entityownerid',
+        'entity',
         'status',
         'status_detail',
         )
