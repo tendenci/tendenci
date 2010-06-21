@@ -32,7 +32,7 @@ class Location(AuditingBaseModel):
 
     hq = models.BooleanField(_('Headquarters'))
     
-    entity = models.ForeignKey(Entity, null=True)
+    entity = models.ForeignKey(Entity, null=True, blank=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
         
