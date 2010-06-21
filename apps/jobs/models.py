@@ -4,15 +4,16 @@ from timezones.fields import TimeZoneField
 from perms.models import AuditingBaseModel
 from jobs.managers import JobManager
 from entities.models import Entity
+from tinymce import models as tinymce_models
 
 from uuid import uuid1 
 
 class Job(AuditingBaseModel):
     guid = models.CharField(max_length=40, default=uuid1)
-    title = models.CharField(max_length=250) #title of job listing
-    description = models.TextField(blank=True) #description of job
+    title = models.CharField(max_length=250)
+    description = tinymce_models.HTMLField()
     list_type = models.CharField(max_length=50) #premium or regular
- 
+
     code = models.CharField(max_length=50) # internal job-code
     location = models.CharField(max_length=500) #cannot be foreign, needs to be open 'Texas' 'All 50 States' 'US and International'
     skills = models.TextField(blank=True)

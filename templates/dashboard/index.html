@@ -14,7 +14,7 @@
 
 {% has_perm user events.view_event as view_events %}
 {% has_perm user articles.view_article as view_articles %}
-{% has_perm user jobs.view_article as view_jobs %}
+{% has_perm user jobs.view_job as view_jobs %}
 {% has_perm user news.view_news as view_news %}
 {% has_perm user directories.view_directory as view_directories %}
 {% has_perm user photos.view_image as view_photos %}
@@ -56,7 +56,7 @@
 		{% endif %}
 
 		{% if view_jobs %}
-    	<li class="jobs"><a href="javascript:;"><span>{% firstof MODULE_JOBS_LABEL "Jobs" %}</span></a></li>
+    	<li class="jobs"><a href="{% url job.search %}"><span>{% firstof MODULE_JOBS_LABEL "Jobs" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_NEWS_ENABLED %}
