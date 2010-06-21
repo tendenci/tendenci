@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -5,17 +6,16 @@ from tagging.fields import TagField
 from timezones.fields import TimeZoneField
 from perms.models import AuditingBaseModel
 from articles.managers import ArticleManager
+from tinymce import models as tinymce_models
 
 from categories.models import Category
 
 class Article(AuditingBaseModel):
-
-    # TODO: make unique=True (dependent on migration script)
-    guid = models.CharField(max_length=50, unique=False, blank=True)
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     timezone = TimeZoneField(_('Time Zone'))
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
-    body = models.TextField(blank=True)
+    body = tinymce_models.HTMLField()
     source = models.CharField(max_length=300, blank=True)
 
     # creator first name and lastname

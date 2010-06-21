@@ -77,6 +77,9 @@ ul { /* remove bullets and spacing */
 .modules li.files {
 	background-image: url('/site_media/static/images/icons/files-bw-64x64.png');
 }
+.modules li.contributions {
+	background-image: url('/site_media/static/images/icons/contributions-bw-64x64.png');
+}
 .modules li.settings {
 	background-image: url('/site_media/static/images/icons/settings-bw-64x64.png');
 }
