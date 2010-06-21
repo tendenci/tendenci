@@ -7,11 +7,11 @@ class JobForm(AuditingBaseForm):
         fields = (
         'title',
         'description',
-        'position_title',
+#        'position_title',
         'list_type',
-        'position_title',
+#        'position_title',
         'code',
-        'timezone',
+#        'timezone',
         'location',
         'skills',
         'experience',
@@ -35,8 +35,8 @@ class JobForm(AuditingBaseForm):
         'page_title',
         'meta_keywords',
         'meta_description',
-        'entity_id',
-        'entityownerid',
+#        'entity_id',
+#        'entityownerid',
         'contact_company',
         'contact_name',
         'contact_address',
@@ -49,7 +49,7 @@ class JobForm(AuditingBaseForm):
         'contact_fax',
         'contact_email',
         'contact_website',
-        'create_dt',
+#        'create_dt',
         'allow_anonymous_view',
         'allow_user_view',
         'allow_member_view',
@@ -85,9 +85,6 @@ class JobForm(AuditingBaseForm):
     #is_offsite
     #language
 
- 
- 
-      
     def __init__(self, user=None, *args, **kwargs): 
         self.user = user
         super(JobForm, self).__init__(user, *args, **kwargs)
