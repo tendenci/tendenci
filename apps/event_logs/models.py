@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
@@ -8,6 +9,7 @@ from robots.models import Robot
 from event_logs.colors import get_color
 
 class EventLog(models.Model):
+    guid = models.CharField(max_length=40, default=uuid.uuid1) 
     content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.IntegerField(null=True)
     source = models.CharField(max_length=50, null=True)

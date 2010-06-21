@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -10,9 +11,7 @@ from tinymce import models as tinymce_models
 from categories.models import Category
 
 class Article(AuditingBaseModel):
-
-    # TODO: make unique=True (dependent on migration script)
-    guid = models.CharField(max_length=50, unique=False, blank=True)
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     timezone = TimeZoneField(_('Time Zone'))
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
