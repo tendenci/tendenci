@@ -10,6 +10,7 @@ from articles.forms import ArticleForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
 
+
 def index(request, id=None, template_name="articles/view.html"):
     if not id: return HttpResponseRedirect(reverse('article.search'))
     article = get_object_or_404(Article, pk=id)
