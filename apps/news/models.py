@@ -5,13 +5,16 @@ from tagging.fields import TagField
 from timezones.fields import TimeZoneField
 from perms.models import AuditingBaseModel
 from news.managers import NewsManager
+from tinymce import models as tinymce_models
 
 class News(AuditingBaseModel):
-    guid = models.CharField(max_length=200, default=uuid.uuid1)
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     timezone = TimeZoneField(_('Time Zone'))
     headline = models.CharField(max_length=200, blank=True)
     summary = models.TextField(blank=True)
-    body = models.TextField(blank=True)
+
+    body = tinymce_models.HTMLField()
+
     source = models.CharField(max_length=300, blank=True)
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)

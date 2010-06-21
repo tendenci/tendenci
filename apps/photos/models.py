@@ -1,10 +1,10 @@
+import uuid
 # django
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
-
 # local
 from photologue.models import *
 from tagging.fields import TagField
@@ -19,6 +19,7 @@ class PhotoSet(AuditingBaseModel):
         (1, _('Private')),
         (2, _('Public')),
     )
+    guid = models.CharField(max_length=40, default=uuid.uuid1) 
     name = models.CharField(_('name'), max_length=200)
     description = models.TextField(_('description'), blank=True)
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
@@ -65,6 +66,7 @@ class Image(ImageModel, AuditingBaseModel):
         (1, _('Safe')),
         (2, _('Not Safe')),
     )
+    guid = models.CharField(max_length=40, default=uuid.uuid1) 
     title = models.CharField(_('title'), max_length=200)
     title_slug = models.SlugField(_('slug'))
     caption = models.TextField(_('caption'), blank=True)

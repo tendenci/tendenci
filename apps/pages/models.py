@@ -4,11 +4,12 @@ from django.utils.translation import ugettext_lazy as _
 from tagging.fields import TagField
 from perms.models import AuditingBaseModel
 from pages.managers import PageManager
+from tinymce import models as tinymce_models
 
 class Page(AuditingBaseModel):
-    guid = models.CharField(max_length=200, default=uuid.uuid1)
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     title = models.CharField(max_length=500, blank=True)
-    content = models.TextField(blank=True)
+    content = tinymce_models.HTMLField()
     page_title = models.TextField(_('Page Title'), blank=True) # meta info (maybe meta_title)
     meta_keywords = models.TextField(_('Meta Keywords'), blank=True) # meta info
     meta_description = models.TextField(_('Meta Description'), blank=True) # meta info
