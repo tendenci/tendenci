@@ -38,7 +38,7 @@
 	{% if form.payment_amount.errors %}
 		{{ form.payment_amount.errors }}
 	{% endif %}
-	<label for="id_payment_amount" class="field-label">{% trans 'Payment Amount:'%}</label>
+	<label for="id_payment_amount" class="field-label">{% trans 'Payment Amount'%} ({{currency_symbol}}):</label>
 	{{ form.payment_amount }}
 </div>
 <div class="clear-left"></div>

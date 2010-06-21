@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import timedelta
 
 from django.conf import settings
+from site_settings.utils import get_setting
 
 STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'among','an','and','any','are','as','at','be','because',
@@ -37,6 +38,22 @@ def localize_date(date, from_tz=None, to_tz=None):
         to_tz=settings.UI_TIME_ZONE
         
     return adjust_datetime_to_timezone(date,from_tz=from_tz,to_tz=to_tz)
+
+def tcurrency(mymoney):
+    """
+        format currency - GJQ
+        ex: 30000.232 -> $30,000.23
+            -30000.232 -> $(30,000.23)
+    """
+    import locale
+    locale.setlocale(locale.LC_ALL, '')
+    currency_symbol = get_setting("site", "global", "currencysymbol")
+    if not currency_symbol: currency_symbol = "$"
+    
+    if mymoney >= 0:
+        return currency_symbol + locale.format('%.2f', mymoney, True)
+    else:
+        return currency_symbol + '(%s)' % (locale.format('%.2f', abs(mymoney), True)) 
 
 def generate_meta_keywords(value):
     """ 

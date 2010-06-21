@@ -1,53 +1,9 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from invoices.models import Invoice
-
-RESPONSE_CODE_CHOICES = (
-    ('1', 'This transaction has been approved'),
-    ('2', 'This transaction has been declined'),
-    ('3', 'There has been an error processing this transaction'),
-    ('4', 'This transaction is being held for review'),
-)
-
-AVS_RESPONSE_CODE_CHOICES = (
-    ('A', 'Address (Street) matches, ZIP does not'),
-    ('B', 'Address information not provided for AVS check'),
-    ('E', 'AVS error'),
-    ('G', 'Non-U.S. Card Issuing Bank'),
-    ('N', 'No Match on Address (Street) or ZIP'),
-    ('P', 'AVS not applicable for this transaction'),
-    ('R', 'Retry - System unavailable or timed out'),
-    ('S', 'Service not supported by issuer'),
-    ('U', 'Address information is unavailable'),
-    ('W', 'Nine digit ZIP matches, Address (Street) does not'),
-    ('X', 'Address (Street) and nine digit ZIP match'),
-    ('Y', 'Address (Street) and five digit ZIP match'),
-    ('Z', 'Five digit ZIP matches, Address (Street) does not'),
-)
-
-METHOD_CHOICES = (
-    ('CC', 'Credit Card'),
-    ('ECHECK', 'eCheck'),
-)
-
-TYPE_CHOICES = (
-    ('auth_capture', 'Authorize and Capture'),
-    ('auth_only', 'Authorize only'),
-    ('credit', 'Credit'),
-    ('prior_auth_capture', 'Prior capture'),
-    ('void', 'Void'),
-)
-
-
-class PaymentManager(models.Manager):
-    def create_from_dict(self, params):
-        kwargs=dict(map(lambda x: (str(x[0][2:]), x[1]), params.items()))
-        return self.create(**kwargs)
-
-    def create_from_list(self, items):
-        kwargs=dict(zip(map(lambda x: x.name, Payment._meta.fields)[1:], items))
-        return self.create(**kwargs)
-
+from site_settings.utils import get_setting
+from perms.utils import is_admin
 
 class Payment(models.Model):
     guid = models.CharField(max_length=50)
@@ -103,24 +59,54 @@ class Payment(models.Model):
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='')
     status = models.BooleanField(default=True)
-
-    objects = PaymentManager()
+    
+    def save(self, user=None):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            if user and user.id:
+                self.creator=user
+                self.creator_username=user.username
+        if user and user.id:
+            self.owner=user
+            self.owner_username=user.username
+            
+        super(self.__class__, self).save()
 
     @property
     def is_approved(self):
-        return self.response_code=='1' and self.response_reason_code=='1' and self.trans_id <> ''
+        return self.response_code=='1' and self.response_reason_code=='1'
     
     def mark_as_paid(self):
         self.status=1
         self.status_detail = 'approved'
+        
+    @property    
+    def is_paid(self):
+        return self.response_code=='1' and self.response_reason_code=='1' and self.status_detail == 'approved'
 
     def __unicode__(self):
         return u"response_code: %s, trans_id: %s, amount: %.2f" % (self.response_code, self.trans_id, self.amount)
     
-    def payments_pop_by_invoice_user(self, user, inv, guid='', **kwargs):
+    def allow_view_by(self, user2_compare, guid=''):
+        boo = False
+        if is_admin(user2_compare):
+            boo = True
+        else: 
+            if user2_compare and user2_compare.id > 0:
+                if self.creator == user2_compare or self.owner == user2_compare:
+                    if self.status == 1:
+                        boo = True
+            else: 
+                # anonymous user
+                if self.guid and self.guid == guid:
+                    boo = True
+            
+        return boo
+    
+    def payments_pop_by_invoice_user(self, user, inv, session_id='', **kwargs):
         from django.core.urlresolvers import reverse
         boo = False
-        if inv.allow_payment_by(user, guid):
+        if inv.allow_payment_by(user, session_id):
             boo = True
             self.first_name = inv.bill_to_first_name
             self.last_name = inv.bill_to_last_name
@@ -157,12 +143,13 @@ class Payment(models.Model):
                 self.description = 'Tendenci Invoice %d Payment.' % (inv.id)
                 
             # save the payment because we need the payment id below
-            self.save()
+            self.save(user)
             
             # site_url - need to use site setting here
-            site_url = "http://tendenci5.schipul.net"
-            #merchant_account = getSetting("global", "MerchantAccount")
-            merchant_account = "authorizenet"
+            #site_url = "http://tendenci5.schipul.net"
+            #merchant_account = "authorizenet"
+            site_url = get_setting('site', 'global', 'siteurl')
+            merchant_account = get_setting('site', "global", "merchantaccount")
             if merchant_account == "authorizenet":
                 self.response_page = site_url + reverse('authorizenet.sim_thank_you', args=[self.id])
             else:
