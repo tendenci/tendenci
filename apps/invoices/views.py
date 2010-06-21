@@ -17,13 +17,15 @@ def view(request, id, guid=None, template_name="invoices/view.html"):
     
     invoice_display = invoice_html_display(request, invoice)
     notify = request.GET.get('notify', '')
+    if guid==None: guid=''
     
-    return render_to_response(template_name, {'invoice': invoice, 
+    return render_to_response(template_name, {'invoice': invoice,
+                                              'guid':guid, 
                                               'notify': notify, 
                                               'invoice_display':invoice_display}, 
         context_instance=RequestContext(request))
     
 def search(request, template_name="invoices/search.html"):
-    invoices = Invoice.objects.all()
+    invoices = Invoice.objects.all().order_by('-create_dt')
     return render_to_response(template_name, {'invoices': invoices}, 
         context_instance=RequestContext(request))

@@ -1,5 +1,4 @@
 {% extends "invoices/base.html" %}
-{% load invoice_tags %}
 
 {% block title %}{{ block.super }}Invoice View{% endblock %}
 
@@ -9,7 +8,6 @@
 
 {% block body %}
 <div class="t">
- {% invoice_nav  invoice %}
 <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice View</h1>
 <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ SITE_GLOBAL_SITEMAILINGADDRESS }}</div>
 <div>{{ SITE_GLOBAL_NONPROFITSTATEMENT }}</div>
@@ -17,17 +15,6 @@
 <div>{{ notify }}</div>
 <div class="invoice-view-display">
 {{ invoice_display|safe }}
-
-<br />
-<div class="">
-<a href="{% url invoice.print_view invoice.id guid%}">Click here for a printer friendly version of this invoice.</a>
-</div>
-
-<br />
-<div class="">
-<a href="">View accounting entries associated with this invoice.</a>
-</div>
-</div>
 
 </div>
 {% endblock %}
