@@ -167,6 +167,7 @@ INSTALLED_APPS = (
     'make_payments',
     'invoices',
     'payments',
+    'accountings',
     'files',
     'event_logs',
     'robots',

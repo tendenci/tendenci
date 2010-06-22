@@ -4,7 +4,7 @@ from payments.authorizenet.utils import authorizenet_thankyou_processing
 from payments.utils import payment_processing_thankyou_display
 
 def sim_thank_you(request, payment_id, template_name='payments/authorizenet/thankyou.html'):
-    payment = authorizenet_thankyou_processing(dict(request.POST.items()))
+    payment = authorizenet_thankyou_processing(request.user, dict(request.POST.items()))
     html_display = payment_processing_thankyou_display(payment)
     
     
