@@ -90,7 +90,7 @@ class Invoice(models.Model):
     balance = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     estimate = models.BooleanField(default=1)
     disclaimer = models.CharField(max_length=150, blank=True, null=True)
-    variance_notes = models.CharField(max_length=1000, blank=True, null=True)
+    variance_notes = models.TextField(max_length=1000, blank=True, null=True)
     admin_notes = models.TextField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, related_name="invoice_creator",  null=True)
@@ -104,6 +104,10 @@ class Invoice(models.Model):
     
     def __unicode__(self):
         return u'Invoice: %s' % (self.title)
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ('invoice.view', [self.id])
     
     def save(self, user=None):
         if not self.id:
@@ -125,9 +129,13 @@ class Invoice(models.Model):
                 boo = True
         return boo
     
-    def tender(self):
+    def tender(self, user):
+        from accountings.utils import make_acct_entries
         """ mark it as tendered if we have records """ 
         if not self.is_tendered:
+            # make accounting entry
+            make_acct_entries(user, self, self.total)
+            
             self.estimate = False
             self.status_detail = 'tendered'
             self.status = 1
@@ -208,12 +216,14 @@ class Invoice(models.Model):
         self.status = True
      
     # this function is to make accounting entries    
-    def make_payment(self, amount):
+    def make_payment(self, user, amount):
+        from accountings.utils import make_acct_entries
         if self.is_tendered:
             self.balance -= amount
             self.payments_credits += amount
             self.save()
             # Make the accounting entries here
+            make_acct_entries(user, self, amount)
         
         
         
