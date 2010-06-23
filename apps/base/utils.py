@@ -47,7 +47,9 @@ def tcurrency(mymoney):
     """
     import locale
     locale.setlocale(locale.LC_ALL, '')
-    currency_symbol = get_setting("site", "global", "currencysymbol")
+    #currency_symbol = get_setting("site", "global", "currencysymbol")
+    # get_setting is slow, so i hard coded the currency symbol here until the slowness gets fixed
+    currency_symbol = "$"
     if not currency_symbol: currency_symbol = "$"
     
     if mymoney >= 0:

@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -13,8 +14,7 @@ from profiles.managers import ProfileManager
 class Profile(AuditingBaseModel):
     # relations
     user = models.ForeignKey(User, unique=True, related_name="profile", verbose_name=_('user'))
-    
-    guid = models.CharField(max_length=50)
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     entity = models.ForeignKey(Entity, blank=True, null=True)
     pl_id = models.IntegerField(default=1)
     member_number = models.CharField(_('member number'), max_length=50, blank=True)

@@ -1,0 +1,64 @@
+.invoice-view-display{
+	width: 650px;
+}
+.invoice-view-wrap{
+	/*font-family: arial, Helvetica, sans-serif;*/
+	font-size: 12px;
+	border: 1px solid #ccc;
+	padding: 5px;
+	width: 100%;
+	margin: 1em 0;
+}
+.invoice-view-payment-wrap{
+	/*font-family: arial, Helvetica, sans-serif;*/
+	font-size: 12px;
+	border: 1px solid #FF6666;
+	width: 100%;
+	margin-top: 1em;
+	padding: 3px;
+}
+.invoice-view-box{
+	border: 2px solid #666;
+	margin-bottom: 1em;
+	padding: 3px;
+}
+.invoice-view-detail-left{
+	float: left;
+	width: 3em;
+}
+.invoice-view-detail-middle{
+	float: left;
+}
+.invoice-view-detail-right{
+	float: right;
+	text-align: right;
+}
+.invoice-view-totals{
+	float: right;
+	text-align: right;
+}
+.invoice-view-payonline{
+	float: right;
+}
+.clear-both{
+	clear: both;
+}
+.clear-right{
+	clear: right;
+}
+.clear-left{
+	clear: left;
+}
+.invoice-item{
+	padding-bottom: 2px;
+}
+.body_copy_yellow, .body-copy-yellow{
+	/*background-color: #F9FF9A;*/
+	background-color: yellow;
+}
+.body_copy_gray{
+	background-color: gray;
+}
+.body_copy_alerts{
+	color: red;
+}

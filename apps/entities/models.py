@@ -1,12 +1,11 @@
+import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from perms.models import AuditingBaseModel
 
 class Entity(AuditingBaseModel):
-
-    # TODO: make unique=True (dependent on migration script)
-    guid = models.CharField(max_length=50, unique=False, blank=True)
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     entity_name = models.CharField(_('Name'), max_length=200, blank=True)
     entitytype = models.CharField(_('Type'), max_length=200, blank=True)
     entityownerid = models.IntegerField(_('Owner ID'), default=0)
