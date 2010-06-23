@@ -37,6 +37,9 @@
 	float: right;
 	text-align: right;
 }
+.invoice-view-totals .amounts{
+	float:right;width:6em;
+}
 .invoice-view-payonline{
 	float: right;
 }
@@ -52,6 +55,11 @@
 .invoice-item{
 	padding-bottom: 2px;
 }
+.invoice-view-totals td{
+	padding: 0;
+	margin: 0;
+}
+
 .body_copy_yellow, .body-copy-yellow{
 	/*background-color: #F9FF9A;*/
 	background-color: yellow;
@@ -62,3 +70,6 @@
 .body_copy_alerts{
 	color: red;
 }
+.errorlist{
+		color: red;
+	}

@@ -4,7 +4,7 @@
 {% has_perm request.user site_settings.change_setting as can_edit_setting %}
 
 {% if nav_object %}
-	{% has_perm request.user invoices.view_invoice nav_object as can_view %}
+	{% has_perm request.user make_payments.view_make_payment nav_object as can_view %}
 {% endif %}
 
 <div id="showh">
@@ -17,16 +17,17 @@
 	</li>
 
 	<li>
-		<span>Invoices</span>
+		<span>Make Payments</span>
 		<ul id="secondary">
-			<li><a href="{% url invoice.search %}">Invoices:</a></li> 
+			<li><a href="{% url make_payment.add %}">Make Payments:</a></li> 
 			{% if can_edit_setting %}
 				<li><a href="{% url settings.index "module" "invoices" %}">Settings</a></li>
 			{% endif %}
 			{% if nav_object %}
-				<li><a href="{% url invoice.view nav_object.pk %}">View</a></li>
+				<li><a href="{% url make_payment.view nav_object.pk %}">View</a></li>
 			{% endif %}
-			<li><a href="{% url invoice.search %}">Search</a></li>
+			<li><a href="{% url make_payment.add %}">Add</a></li>
+			
 			
 			{% if user.is_authenticated %}
 			<li><a href="{% url auth_logout %}">Log Off</a></li> 
@@ -34,8 +35,8 @@
 		</ul>
 		
 	</li>
-	{% if MODULE_ARTICLES_ENABLED %}
-	<li><a href="{% url articles %}">{{ MODULE_ARTICLES_LABEL }}</a></li>
+	{% if MODULE_INVOICES_ENABLED %}
+	<li><a href="{% url invoices %}">{{ MODULE_INVOICES_LABEL }}</a></li>
 	{% endif %}
 	{% if MODULE_NEWS_ENABLED %}
 	<li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}</a></li>
