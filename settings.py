@@ -16,6 +16,8 @@ ADMINS = (
 	('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jennifer Ulmer', 'julmer@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
+    ('Ed Schipul', 'eschipul@schipul.com'),
+    ('Ed Schipul2', 'eschipul@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -167,6 +169,7 @@ INSTALLED_APPS = (
     'make_payments',
     'invoices',
     'payments',
+    'accountings',
     'files',
     'event_logs',
     'robots',

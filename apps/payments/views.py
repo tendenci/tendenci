@@ -16,7 +16,7 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
     
     # tender the invoice
     if not invoice.is_tendered:
-        invoice.tender()
+        invoice.tender(request.user)
       
     # generate the payment
     payment = Payment()
