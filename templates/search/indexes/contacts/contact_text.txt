@@ -1,0 +1,4 @@
+{% load tagging_tags %}
+{{ object.first_name }}
+{{ object.last_name }}
+{{ object.message }}

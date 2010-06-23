@@ -30,16 +30,19 @@ urlpatterns = patterns('',
     (r'^news/', include('news.urls')),
     (r'^settings/', include('site_settings.urls')),
     (r'^files/', include('files.urls')),
+    (r'^contacts/', include('contacts.urls')),
     (r'^accounts/', include('accounts.urls')),
     (r'^search/', include('search.urls')),
     (r'^event-logs/', include('event_logs.urls')),
     (r'^contributions/', include('contributions.urls')),
     (r'^theme-editor/', include('theme_editor.urls')),
     (r'^jobs/', include('jobs.urls')),
+#    url(r'^contact/$', direct_to_template, {"template": "contact-form.html",}, name="contact-form"),
+    (r'^contact/', include('form_builder.urls')),
     (r'^sitemap.xml', include('sitemaps.urls')),
-
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
+    (r'^captcha/', include('captcha.urls')),
 )
 
 handler500 = 'base.views.custom_error'

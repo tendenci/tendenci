@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     'avatar',
     'tinymce',
     'haystack',
+    'captcha',
     
     # tendenci applications
     'base',
@@ -168,6 +169,7 @@ INSTALLED_APPS = (
     'invoices',
     'payments',
     'files',
+    'contacts',
     'event_logs',
     'robots',
     'categories',
@@ -175,6 +177,7 @@ INSTALLED_APPS = (
     'theme_editor',
     'jobs',
     'styled_forms',
+    'form_builder',
 )
 
 # This is the number of days users will have to activate their

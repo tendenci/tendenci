@@ -1,0 +1,29 @@
+{% extends "contacts/base.html" %}
+{% load contact_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Add{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
+<link rel="stylesheet" href="/site_media/static/css/contacts.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    {% contact_nav request.user %}
+
+    <h1>Add {% firstof MODULE_CONTACTS_LABEL 'Conacts' %}</h1>
+
+    <div class="contact-wrap">
+    	<form action="{% url contact.add %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Add {{ MODULE_CONTACTS_LABEL }}" />
+		</div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
