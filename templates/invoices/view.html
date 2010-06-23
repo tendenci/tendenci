@@ -1,78 +1,15 @@
 {% extends "invoices/base.html" %}
+{% load invoice_tags %}
 
 {% block title %}{{ block.super }}Invoice View{% endblock %}
 
 {% block extra_head %}
-<style>
-.invoice-view-display{
-	width: 650px;
-}
-.invoice-view-wrap{
-	/*font-family: arial, Helvetica, sans-serif;*/
-	font-size: 12px;
-	border: 1px solid #ccc;
-	padding: 5px;
-	width: 100%;
-	margin: 1em 0;
-}
-.invoice-view-payment-wrap{
-	/*font-family: arial, Helvetica, sans-serif;*/
-	font-size: 12px;
-	border: 1px solid #666;
-	width: 100%;
-	margin-top: 1em;
-	padding: 3px;
-}
-.invoice-view-box{
-	border: 2px solid #666;
-	margin-bottom: 1em;
-	padding: 3px;
-}
-.invoice-view-detail-left{
-	float: left;
-	width: 3em;
-}
-.invoice-view-detail-middle{
-	float: left;
-}
-.invoice-view-detail-right{
-	float: right;
-	text-align: right;
-}
-.invoice-view-totals{
-	float: right;
-	text-align: right;
-}
-.invoice-view-payonline{
-	float: right;
-}
-.clear-both{
-	clear: both;
-}
-.clear-right{
-	clear: right;
-}
-.clear-left{
-	clear: left;
-}
-.invoice-item{
-	padding-bottom: 2px;
-}
-.body_copy_yellow{
-	background-color: #F9FF9A;
-}
-.body_copy_gray{
-	background-color: gray;
-}
-.body_copy_alerts{
-	color: red;
-}
-</style>
-
+<link rel="stylesheet" href="/site_media/static/css/invoices.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
+ {% invoice_nav  invoice %}
 <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice View</h1>
 <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ SITE_GLOBAL_SITEMAILINGADDRESS }}</div>
 <div>{{ SITE_GLOBAL_NONPROFITSTATEMENT }}</div>
@@ -80,6 +17,29 @@
 <div>{{ notify }}</div>
 <div class="invoice-view-display">
 {{ invoice_display|safe }}
+
+<br />
+<div class="">
+<a href="{% url invoice.print_view invoice.id guid%}">Click here for a printer friendly version of this invoice.</a>
 </div>
+
+<br />
+<div class="">
+<a href="">View accounting entries associated with this invoice.</a>
+</div>
+
+{% if form %}
+{# admin notes form #}
+<div style="margin-top: 1em;">
+<form method="post" action=".">
+<div><label for="id_admin_notes" class="field-label">Admin Notes:</label></div>
+<div>{{ form.admin_notes }}</div>
+<input type="submit" name="submit" value="Add/Update Notes" />
+</form>
+</div>
+{% endif %}
+
+</div>
+
 </div>
 {% endblock %}

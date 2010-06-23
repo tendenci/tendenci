@@ -16,6 +16,8 @@ ADMINS = (
 	('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jennifer Ulmer', 'julmer@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
+    ('Ed Schipul', 'eschipul@schipul.com'),
+    ('Ed Schipul2', 'eschipul@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -167,6 +169,7 @@ INSTALLED_APPS = (
     'make_payments',
     'invoices',
     'payments',
+    'accountings',
     'files',
     'event_logs',
     'robots',
@@ -200,7 +203,7 @@ TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
 
 TINYMCE_DEFAULT_CONFIG = {
-    'plugins': "stormeimage,table,paste,searchreplace,inlinepopups,tabfocus,fullscreen,media,spellchecker",
+    'plugins': "table,paste,searchreplace,inlinepopups,tabfocus,fullscreen,media,spellchecker",
     'gecko_spellcheck': False,
     'theme': "advanced",
     'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,|,image,|,pagebreak,fullscreen,code",
@@ -216,8 +219,6 @@ TINYMCE_DEFAULT_CONFIG = {
     'urlconverter_callback': 'tinymce_urlconverter',
     'apply_source_formatting' : False,
 }
-
-
 
 # -------------------------------------- #
 # CACHING

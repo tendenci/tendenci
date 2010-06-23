@@ -7,7 +7,7 @@ from files.managers import FileManager
 
 class File(AuditingBaseModel):
     file = models.FileField(max_length=260, upload_to='files')
-    guid = models.CharField(max_length=200, default=uuid.uuid1)
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     name = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
