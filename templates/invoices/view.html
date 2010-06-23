@@ -27,6 +27,18 @@
 <div class="">
 <a href="">View accounting entries associated with this invoice.</a>
 </div>
+
+{% if form %}
+{# admin notes form #}
+<div style="margin-top: 1em;">
+<form method="post" action=".">
+<div><label for="id_admin_notes" class="field-label">Admin Notes:</label></div>
+<div>{{ form.admin_notes }}</div>
+<input type="submit" name="submit" value="Add/Update Notes" />
+</form>
+</div>
+{% endif %}
+
 </div>
 
 </div>
