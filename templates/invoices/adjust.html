@@ -3,7 +3,7 @@
 {% load invoice_tags %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}Invoice Adjustment{% endblock %}
+{% block title %}{{ block.super }}{% trans 'Invoice Adjustment'%}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/invoices.css">
@@ -23,12 +23,12 @@
 {% block body %}
 <div class="t">
  {% invoice_nav  invoice %}
-<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice Adjustment</h1>
+<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans 'Invoice Adjustment'%}</h1>
 
 <div class="invoice-adjust">
 	
 	<div class="field-wrapper required">
-		<div class="field-label">Billing Information:</div>
+		<div class="field-label">{% trans 'Billing Information:'%}</div>
 		<div style="float:left;">
 			{{invoice.bill_to}}<br />
 			{{invoice.bill_to_phone}}<br />
@@ -40,21 +40,25 @@
 	</div>
 	<div class="clear-left"></div>
 	
-	<div><b>Current Invoice Totals</b></div>
-	<div class="field-wrapper required">
-		<div class="field-label">Total:</div>
+	<div class="field-wrapper">
+	<div class="field-label"><b>{% trans 'Current Invoice Totals'%}</b></div>
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		<div class="field-label">{% trans 'Total:'%}</div>
 		<div>{{invoice.total|format_currency }}</div>
 	</div>
 	<div class="clear-left"></div>
 	
-	<div class="field-wrapper required">
-		<div class="field-label">Payments/Credits:</div>
+	<div class="field-wrapper">
+		<div class="field-label">{% trans 'Payments/Credits:'%}</div>
 		<div>{{invoice.payments_credits|format_currency }}</div>
 	</div>
 	<div class="clear-left"></div>
 	
-	<div class="field-wrapper required">
-		<div class="field-label">Balance:</div>
+	<div class="field-wrapper">
+		<div class="field-label">{% trans 'Balance:'%}</div>
 		<div>{{invoice.balance|format_currency }}</div>
 	</div>
 	<div class="clear-left"></div>

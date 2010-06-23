@@ -68,7 +68,47 @@ def make_acct_entries_general_sale(user, acct_entry, amount, object_type, **kwar
     else: acct_number = 400100
         
     acct = Acct.objects.get(account_number=acct_number)
-    AcctTran.objects.create_acct_tran(user, acct_entry, acct, amount*(-1))  
+    AcctTran.objects.create_acct_tran(user, acct_entry, acct, amount*(-1)) 
+    
+    
+def make_acct_entries_discount(user, invoice, acct_entry, d, **kwargs):
+    """ Payment has now been received and we want to update the accounting entries
+    
+       ***in this case the original accounting entry is different than the current
+        current invoice total - adjust the discount accounts accordingly
+    
+            DEBIT Discount Account (L) 
+            CREDIT Accounts Receviable (A) 
+        
+       NOTE - For the purpose of storing the amounts in tendenci, all credits will be
+        a negative number.
+    """
+    myamount = d['original_invoice_total'] - invoice.total
+    
+    if d['original_invoice_balance'] <= 0:
+        # the invoice has been paid and we need to adjust the specific account
+        discount_number = d['discount_account_number']
+        reverse_sale = True
+    else:
+        discount_number = '220000'  #   unearned revenue
+        reverse_sale = False
+        
+    #  DEBIT DISCOUNT ACCOUNT  
+    acct = Acct.objects.get(account_number=discount_number)
+    AcctTran.objects.create_acct_tran(user, acct_entry, acct, myamount)    
+    
+    # CREDIT ACCOUNTS RECEIVABLE    
+    acct = Acct.objects.get(account_number=120000)
+    AcctTran.objects.create_acct_tran(user, acct_entry, acct, myamount*(-1))
+    
+    if reverse_sale:
+        # DEBIT ACCOUNTS RECEIVABLE
+        acct = Acct.objects.get(account_number=120000)
+        AcctTran.objects.create_acct_tran(user, acct_entry, acct, myamount) 
+        
+        # CREDIT CHECKING
+        acct = Acct.objects.get(account_number=106000)
+        AcctTran.objects.create_acct_tran(user, acct_entry, acct, myamount*(-1))
       
     
     

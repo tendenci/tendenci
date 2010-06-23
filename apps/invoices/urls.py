@@ -7,5 +7,6 @@ urlpatterns = patterns('invoices.views',
         {'template_name': 'invoices/print_view.html'}, 
         name="invoice.print_view"),
     url(r'^adjust/(?P<id>\d+)/$', 'adjust', name="invoice.adjust"),
+    url(r'^detail/(?P<id>\d+)/$', 'detail', name="invoice.detail"),
     url(r'^search/$', 'search', name="invoice.search"),
 )
