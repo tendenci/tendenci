@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from make_payments.models import MakePayment
 
 class MakePaymentForm(forms.ModelForm):
+    # get the payment_method choices from settings
     payment_method = forms.CharField(widget=forms.RadioSelect(choices=(('check-paid', 'Paid by Check'), 
                                                               ('cc', 'Make Online Payment'),)), initial='cc', )
     company = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'size':'30'}))
