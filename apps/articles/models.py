@@ -29,7 +29,6 @@ class Article(TendenciBaseModel ):
 
     # release dates do not have to be set
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
-    create_dt = models.DateTimeField(auto_now_add=True)
 
     syndicate = models.BooleanField(_('Include in RSS feed'),)
 

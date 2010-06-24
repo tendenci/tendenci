@@ -1,9 +1,9 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from stories.models import Story
-from perms.forms import AuditingBaseForm
+from perms.forms import TendenciBaseForm
 
-class StoryForm(AuditingBaseForm):
+class StoryForm(TendenciBaseForm):
     fullstorylink = forms.CharField(label=_("Full Story Link"), required=False, max_length=300)
     class Meta:
         model = Story

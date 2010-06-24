@@ -1,9 +1,9 @@
 from articles.models import Article
-from perms.forms import AuditingBaseForm
+from perms.forms import TendenciBaseForm
 from django import forms
 from tinymce.widgets import TinyMCE
 
-class ArticleForm(AuditingBaseForm):
+class ArticleForm(TendenciBaseForm):
     class Meta:
         model = Article
         fields = (
