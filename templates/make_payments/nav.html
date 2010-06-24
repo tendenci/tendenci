@@ -1,0 +1,45 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm request.user site_settings.change_setting as can_edit_setting %}
+
+{% if nav_object %}
+	{% has_perm request.user make_payments.view_make_payment nav_object as can_view %}
+{% endif %}
+
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>Make Payments</span>
+		<ul id="secondary">
+			<li><a href="{% url make_payment.add %}">Make Payments:</a></li> 
+			{% if can_edit_setting %}
+				<li><a href="{% url settings.index "module" "invoices" %}">Settings</a></li>
+			{% endif %}
+			{% if nav_object %}
+				<li><a href="{% url make_payment.view nav_object.pk %}">View</a></li>
+			{% endif %}
+			<li><a href="{% url make_payment.add %}">Add</a></li>
+			
+			
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
+		</ul>
+		
+	</li>
+	{% if MODULE_INVOICES_ENABLED %}
+	<li><a href="{% url invoices %}">{{ MODULE_INVOICES_LABEL }}</a></li>
+	{% endif %}
+	{% if MODULE_NEWS_ENABLED %}
+	<li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}</a></li>
+	{% endif %}
+	</ul>
+</div>

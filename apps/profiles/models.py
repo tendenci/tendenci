@@ -5,13 +5,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 from timezones.fields import TimeZoneField
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel
 from entities.models import Entity
 
 from profiles.managers import ProfileManager
          
 
-class Profile(AuditingBaseModel):
+class Profile(TendenciBaseModel):
     # relations
     user = models.ForeignKey(User, unique=True, related_name="profile", verbose_name=_('user'))
     guid = models.CharField(max_length=40, default=uuid.uuid1)
@@ -75,11 +75,6 @@ class Profile(AuditingBaseModel):
     hide_phone = models.BooleanField(default=0)   
     first_responder = models.BooleanField(_('first responder'), default=0)
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=0)
-    
-    # date fields
-    create_dt = models.DateTimeField(auto_now_add=True)
-    submit_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
     
     objects = ProfileManager()
     

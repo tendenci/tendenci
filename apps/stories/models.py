@@ -3,18 +3,17 @@ from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel
 from stories.managers import StoryManager
 from perms.utils import is_admin
 
 # Create your models here.
-class Story(AuditingBaseModel):
+class Story(TendenciBaseModel):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     title = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'))
-    create_dt = models.DateTimeField(auto_now_add=True)
-    fullstorylink = models.CharField(_('Full Story Link'), max_length=300, blank=True)
+    full_story_link = models.CharField(_('Full Story Link'), max_length=300, blank=True)
     start_dt = models.DateTimeField(_('Start Date/Time'), null=True, blank=True)
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     ncsortorder = models.IntegerField(null=True, blank=True)

@@ -1,0 +1,94 @@
+{% extends "invoices/base.html" %}
+{% load i18n %}
+{% load invoice_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Invoice Adjustment'%}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/invoices.css">
+<style>
+	.invoice-adjust .field-wrapper .field-label{
+		float: left;
+		text-align: right;
+		width: 15em;
+		padding-right: 1em;
+	}
+	.invoice-adjust #adjust-sumit-button{
+		margin: 1em 0 0 15em;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ {% invoice_nav  invoice %}
+<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans 'Invoice Adjustment'%}</h1>
+
+<div class="invoice-adjust">
+	
+	<div class="field-wrapper required">
+		<div class="field-label">{% trans 'Billing Information:'%}</div>
+		<div style="float:left;">
+			{{invoice.bill_to}}<br />
+			{{invoice.bill_to_phone}}<br />
+			{{invoice.bill_to_email}}<br />
+			{{invoice.bill_to_address}} {{invoice.bill_to_city}} {{invoice.bill_to_state}}
+			{{invoice.bill_to_zip_code}}
+			{{invoice.bill_to_country}}<br />
+		</div>
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+	<div class="field-label"><b>{% trans 'Current Invoice Totals'%}</b></div>
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		<div class="field-label">{% trans 'Total:'%}</div>
+		<div>{{invoice.total|format_currency }}</div>
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		<div class="field-label">{% trans 'Payments/Credits:'%}</div>
+		<div>{{invoice.payments_credits|format_currency }}</div>
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		<div class="field-label">{% trans 'Balance:'%}</div>
+		<div>{{invoice.balance|format_currency }}</div>
+	</div>
+	<div class="clear-left"></div>
+	<p>&nbsp;</p>
+
+	<form method="post" action=".">
+	<div class="field-wrapper required">
+		{% if form.variance.errors %}
+			{{ form.variance.errors }}
+		{% endif %}
+		<label for="id_variance" class="field-label">{% trans 'Adjustment Amount(+/-)'%} ({{SITE_GLOBAL_CURRENCYSYMBOL}}):</label>
+			{{ form.variance }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.variance_notes.errors %}
+			{{ form.variance_notes.errors }}
+		{% endif %}
+		<label for="id_variance_notes" class="field-label">{% trans 'Notes/Comments:'%}:</label>
+			{{ form.variance_notes }}
+	</div>
+	<div class="clear-left"></div>
+
+	<input type="submit" name="submit" value="Submit" id="adjust-sumit-button" />
+	</form>
+
+
+
+</div>
+
+</div>
+{% endblock %}
