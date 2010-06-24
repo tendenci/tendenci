@@ -5,12 +5,16 @@
 
 #from django.conf import settings
 from django.template import RequestContext
+from django.conf import settings
+from django.core.exceptions import PermissionDenied
 
 from base.http import Http403, render_to_403
 
 class Http403Middleware(object):
     def process_exception(self,request,exception):
         if isinstance(exception,Http403):
+            if settings.DEBUG:
+                raise PermissionDenied
             return render_to_403(context_instance=RequestContext(request))     
 
 #class ProfileMiddleware(object):

@@ -1,25 +1,16 @@
 {% extends "payments/base.html" %}
 {% load i18n %}
+{% load invoice_tags %}
 
 {% block title %}View a Payment{% endblock %}
 
 {% block extra_head %}
-<style>
-.payment-view-block .label{
-	text-align: right;
-}
-.payment-view{
-	width: 620px;
-}
-.payment-view-block table{
-	border: 1px solid #ccc;
-	padding: 5px;
-}
-</style>
+<link rel="stylesheet" href="/site_media/static/css/payments.css">
 {% endblock %}
 
 {% block body %}
 <div class="t payment-view">
+ {% invoice_nav  payment.invoice %}
 <h1>View a Payment</h1>
 <p class="payment-view-intro">
 Payments are created with <a href="{% url invoice.search%}">invoices</a>. 
@@ -43,7 +34,9 @@ the payment entries in the general ledger for accounting purposes.
 
 <tr>
 <td width="30%"><div class="label">Invoice ID:</div></td>
-<td width="20%"><a href="{% url invoices.views.view payment.invoice.id %}">{{ payment.invoice.id }}</a></td>
+<td width="20%"><a href="{% url invoices.views.view payment.invoice.id %}">{{ payment.invoice.id }}</a>
+<span class="body-copy-yellow"><a href="{% url invoices.views.detail payment.invoice.id %}">accounting</a></span>
+</td>
 <td class="label" width="30%">Status:</td>
 <td width="20%">{% if payment.status%}1{% else %}0{% endif %}</td>
 </tr>

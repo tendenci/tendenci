@@ -8,10 +8,10 @@ from django.utils.translation import ugettext_lazy as _
 # local
 from photologue.models import *
 from tagging.fields import TagField
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel
 from photos.managers import PhotoSetManager
 
-class PhotoSet(AuditingBaseModel):
+class PhotoSet(TendenciBaseModel):
     """
     A set of photos
     """
@@ -25,8 +25,6 @@ class PhotoSet(AuditingBaseModel):
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
     tags = TagField() # blank = True
     author = models.ForeignKey(User)
-    update_dt = models.DateTimeField(auto_now=True)
-    create_dt = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = _('photo set')
@@ -58,7 +56,7 @@ class PhotoSet(AuditingBaseModel):
     def __unicode__(self):
         return self.name
 
-class Image(ImageModel, AuditingBaseModel):
+class Image(ImageModel, TendenciBaseModel):
     """
     A photo with its details
     """

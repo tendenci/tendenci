@@ -76,21 +76,21 @@ class Invoice(models.Model):
     other = models.CharField(max_length=120, blank=True, null=True)
     message = models.CharField(max_length=150, blank=True, null=True)
     subtotal = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
-    shipping = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    shipping_surcharge =models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    box_and_packing = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+    shipping = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    shipping_surcharge =models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    box_and_packing = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     tax_exempt =models.BooleanField(default=1)
     tax_exemptid = models.CharField(max_length=50, blank=True, null=True)  
     tax_rate = models.FloatField(blank=True, default=0)
     taxable = models.BooleanField(default=0)
-    tax = models.DecimalField(max_digits=6, decimal_places=4, blank=True, null=True)
-    variance = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True)
+    tax = models.DecimalField(max_digits=6, decimal_places=4, default=0)
+    variance = models.DecimalField(max_digits=10, decimal_places=4, default=0)
     total = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
     payments_credits = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     balance = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     estimate = models.BooleanField(default=1)
     disclaimer = models.CharField(max_length=150, blank=True, null=True)
-    variance_notes = models.CharField(max_length=1000, blank=True, null=True)
+    variance_notes = models.TextField(max_length=1000, blank=True, null=True)
     admin_notes = models.TextField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, related_name="invoice_creator",  null=True)
@@ -104,6 +104,10 @@ class Invoice(models.Model):
     
     def __unicode__(self):
         return u'Invoice: %s' % (self.title)
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ('invoice.view', [self.id])
     
     def save(self, user=None):
         if not self.id:
@@ -125,9 +129,13 @@ class Invoice(models.Model):
                 boo = True
         return boo
     
-    def tender(self):
+    def tender(self, user):
+        from accountings.utils import make_acct_entries
         """ mark it as tendered if we have records """ 
         if not self.is_tendered:
+            # make accounting entry
+            make_acct_entries(user, self, self.total)
+            
             self.estimate = False
             self.status_detail = 'tendered'
             self.status = 1
@@ -208,12 +216,14 @@ class Invoice(models.Model):
         self.status = True
      
     # this function is to make accounting entries    
-    def make_payment(self, amount):
+    def make_payment(self, user, amount):
+        from accountings.utils import make_acct_entries
         if self.is_tendered:
             self.balance -= amount
             self.payments_credits += amount
             self.save()
             # Make the accounting entries here
+            make_acct_entries(user, self, amount)
         
         
         

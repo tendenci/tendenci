@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url, include
+from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 
 # Django admin
@@ -27,6 +27,7 @@ urlpatterns = patterns('',
     (r'^invoices/', include('invoices.urls')),
     (r'^py/', include('make_payments.urls')),
     (r'^payments/', include('payments.urls')),
+    (r'^accountings/', include('accountings.urls')),
     (r'^news/', include('news.urls')),
     (r'^settings/', include('site_settings.urls')),
     (r'^files/', include('files.urls')),

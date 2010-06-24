@@ -3,16 +3,14 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from contributions.managers import ContributionManager
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel
 from entities.models import Entity
 
-class Contribution(AuditingBaseModel):
+class Contribution(TendenciBaseModel):
     guid = models.CharField(max_length=40, default=uuid.uuid1) 
     content_type = models.ForeignKey(ContentType, verbose_name=_('content type'))
     object_id = models.PositiveIntegerField(_('object id'), db_index=True)
     title = models.CharField(max_length=500, blank=True)
-    create_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
 
     objects = ContributionManager()
 
