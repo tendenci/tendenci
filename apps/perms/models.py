@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from perms.managers import ObjectPermissionManager
 
 # Abstract base class for authority fields
-class AuditingBaseModel(models.Model):
+class TendenciBaseModel(models.Model):
     STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
     
     # authority fields
@@ -16,6 +16,8 @@ class AuditingBaseModel(models.Model):
     allow_user_edit = models.BooleanField()
     allow_member_edit = models.BooleanField()
     
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False)
     creator_username = models.CharField(max_length=50)
     owner = models.ForeignKey(User, related_name="%(class)s_owner")    

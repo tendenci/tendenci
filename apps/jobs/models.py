@@ -2,14 +2,14 @@ import uuid
 from django.db import models
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel 
 from jobs.managers import JobManager
 from entities.models import Entity
 from tinymce import models as tinymce_models
 
 from uuid import uuid1 
 
-class Job(AuditingBaseModel):
+class Job(TendenciBaseModel ):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     title = models.CharField(max_length=250)
     description = tinymce_models.HTMLField()
@@ -65,8 +65,6 @@ class Job(AuditingBaseModel):
     contact_email = models.CharField(max_length=300)
     contact_website = models.CharField(max_length=300)
     
-    create_dt = models.DateTimeField(auto_now_add=True)
-
     #TO DO - FIGURE OUT CATEGORY
     #category_id = models.IntegerField(null=True, blank=True)
           

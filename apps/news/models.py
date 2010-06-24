@@ -3,11 +3,11 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel
 from news.managers import NewsManager
 from tinymce import models as tinymce_models
 
-class News(AuditingBaseModel):
+class News(TendenciBaseModel):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     timezone = TimeZoneField(_('Time Zone'))
     headline = models.CharField(max_length=200, blank=True)
@@ -23,13 +23,12 @@ class News(AuditingBaseModel):
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
-    create_dt = models.DateTimeField(auto_now_add=True)
     syndicate = models.BooleanField(_('Include in RSS feed'))
     design_notes = models.TextField(_('Design Notes'), blank=True)
     enclosure_url = models.CharField(_('Enclosure URL'), max_length=500, blank=True) # for podcast feeds
     enclosure_type = models.CharField(_('Enclosure Type'),max_length=120, blank=True) # for podcast feeds
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0) # for podcast feeds
-    useautotimestamp = models.BooleanField(_('Auto Timestamp'))
+    use_auto_timestamp = models.BooleanField(_('Auto Timestamp'))
     tags = TagField(blank=True)
 
     objects = NewsManager()

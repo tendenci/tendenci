@@ -7,8 +7,6 @@ from perms.models import ObjectPermission
 
 class ContributionIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-    update_dt = indexes.DateTimeField(model_attr='update_dt')
-    create_dt = indexes.DateTimeField(model_attr='create_dt')
 
     # authority fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')

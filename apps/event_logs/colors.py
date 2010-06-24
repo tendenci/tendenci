@@ -74,7 +74,21 @@ colors = {
     '832000':'66CC66', # edit
     '833000':'66CC00', # delete
     '834000':'66CC33', # search 
-    '835000':'66CC99', # view    
+    '835000':'66CC99', # view
+
+    # contacts
+    '587100':'33FFE6', # add
+    '587200':'33FFCC', # edit
+    '587300':'33FFB3', # delete
+    '587400':'33FF99', # search 
+    '587500':'33FF80', # view
+
+    # jobs
+    '251000':'669900', # add
+    '252000':'666600', # edit
+    '253000':'66FF66', # delete
+    '254000':'66FF33', # search 
+    '255000':'00CC66', # view    
 }
 
 def get_color(event_id):
@@ -84,6 +98,9 @@ def get_color(event_id):
     """
     if event_id in colors:
         return colors[event_id]
+    else:
+        return 'FFFFFF'
+    
     return ''
     
     
