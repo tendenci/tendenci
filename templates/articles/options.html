@@ -6,6 +6,7 @@
     {% has_perm user articles.change_article opt_object as can_edit %}
     {% if can_edit %} 
     	<li><a href="{% url article.edit opt_object.pk %}">Edit</a></li>
+		<li><a href="{% url article.edit.meta opt_object.pk %}">Meta</a></li>
     {% endif %}
     
     {% has_perm user articles.delete_article opt_object as can_delete %}

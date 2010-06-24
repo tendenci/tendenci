@@ -1,0 +1,82 @@
+{% extends "contacts/base.html" %}
+{% load pagination_tags %}
+{% load contact_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/contacts.css">
+<link rel="alternate" type="application/rss+xml" title="Latest Articles" href="{% url contact.feed %}" />
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_CONTACTS_LABEL 'Conacts' %} Search</h1>
+
+    {% contact_nav request.user %}
+
+	{% contact_search %}
+    {% autopaginate contacts 10 %}
+	
+	<div class="contacts-wrap">
+    {% for contact in contacts %}
+		{% with contact.object as contact %}
+    	{% has_perm user contacts.view_contact contact as can_view %}
+    	{% if can_view %}
+		<div class="contact-wrap">
+			<div class="options">
+
+                <div class="dropdown-options">
+                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <ul>
+                        <li>Review Reports</li>
+                        <li>Optimize Meta Tags</li>
+                        <li>Attach Files</li>
+                        <li>View Revisions</li>
+                        <li>Delete</li>
+                    </ul>
+                </div>
+
+                <div class="quick-options">
+					{# contact_options user contact #}       
+                </div>
+			</div>
+
+            <h2><a href="{% url contact contact.pk %}">{% firstof contact "No Name" %}</a></h2>
+            <div class="content">{{ contact.message }}</div>
+			<div class="meta">
+            	<div class="submitted">Submitted on {{ contact.create_dt|date:"D d M Y P" }}</div>
+            </div>
+
+            <!-- delete-contact form -->
+            <form name="contact-delete" method="POST" action="{% url contact.delete contact.pk %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+
+		</div>
+		{% endif %}
+	{% endwith %}
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_contact = confirm('Permenantly delete {{ MODULE_CONTACTS_LABEL }}?');	// confirm
+				if(delete_contact) $(this).parents('.contact-wrap').find('form[name="contact-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+{% endblock %}

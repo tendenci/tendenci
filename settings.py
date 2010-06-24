@@ -16,8 +16,6 @@ ADMINS = (
 	('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jennifer Ulmer', 'julmer@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
-    ('Ed Schipul', 'eschipul@schipul.com'),
-    ('Ed Schipul2', 'eschipul@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -150,6 +148,7 @@ INSTALLED_APPS = (
     'avatar',
     'tinymce',
     'haystack',
+    'captcha',
     
     # tendenci applications
     'base',
@@ -172,6 +171,7 @@ INSTALLED_APPS = (
     'accountings',
     'emails',
     'files',
+    'contacts',
     'event_logs',
     'robots',
     'categories',
@@ -179,6 +179,8 @@ INSTALLED_APPS = (
     'theme_editor',
     'jobs',
     'styled_forms',
+    'form_builder',
+    'meta',
 )
 
 # This is the number of days users will have to activate their
@@ -247,6 +249,12 @@ AUTHNET_LOGIN = ""
 AUTHNET_KEY = ""
 MERCHANT_LOGIN = ""
 MERCHANT_TXN_KEY = ""
+
+# --------------------------------------#
+# CAPTCHA SETTINGS
+# --------------------------------------#
+CAPTCHA_FONT_SIZE = 50
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
 
 # local settings for development
 try:

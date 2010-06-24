@@ -4,13 +4,14 @@ from django.utils.translation import ugettext_lazy as _
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel 
 from articles.managers import ArticleManager
 from tinymce import models as tinymce_models
+from meta.models import Meta as MetaTags
 
 from categories.models import Category
 
-class Article(AuditingBaseModel):
+class Article(TendenciBaseModel ):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     timezone = TimeZoneField(_('Time Zone'))
     headline = models.CharField(max_length=200, blank=True)
@@ -18,7 +19,6 @@ class Article(AuditingBaseModel):
     body = tinymce_models.HTMLField()
     source = models.CharField(max_length=300, blank=True)
 
-    # creator first name and lastname
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
 
@@ -27,30 +27,27 @@ class Article(AuditingBaseModel):
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
 
-    # release dates do not have to be set
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
-    create_dt = models.DateTimeField(auto_now_add=True)
 
     syndicate = models.BooleanField(_('Include in RSS feed'),)
-
     # TODO: might go away with tags
     featured = models.BooleanField()
     design_notes = models.TextField(_('Design Notes'), blank=True)
 
     tags = TagField(blank=True)
     category = models.ForeignKey(Category, blank=True, null=True)
-
     # for podcast feeds
     enclosure_url = models.CharField(_('Enclosure URL'), max_length=500, blank=True)
     enclosure_type = models.CharField(_('Enclosure Type'), max_length=120, blank=True)
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0)
 
     not_official_content = models.BooleanField(_('Official Content'), blank=True)
-
     # meta information
     page_title = models.TextField(_('Page Title'), blank=True)
     meta_keywords = models.TextField(_('Meta Keywords'), blank=True)
     meta_description = models.TextField(_('Meta Description'), blank=True)
+    # html-meta tags
+    meta = models.OneToOneField(MetaTags, null=True)
 
     objects = ArticleManager()
 

@@ -4,10 +4,10 @@ from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel
 from entities.models import Entity
 
-class Group(AuditingBaseModel):
+class Group(TendenciBaseModel):
     name = models.CharField(_('Group Name'), max_length=255, unique=True)
     slug = models.SlugField(editable=False, unique=True)
     guid = models.CharField(max_length=40, default=uuid.uuid1)
@@ -17,20 +17,14 @@ class Group(AuditingBaseModel):
                                                              ('distribution','Distribution'),
                                                              ('security','Security'),), default='distribution')
     email_recipient = models.CharField(_('Email Recipient'), max_length=255, blank=True)
-    
     show_as_option = models.BooleanField(_('Display Option'), default=1)
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=1)
     allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=1)
-    
     description = models.TextField(blank=True)
     auto_respond = models.BooleanField(_('Auto Responder'), default=0)
     auto_respond_template =  models.CharField(_('Auto Responder Template'), max_length=100, blank=True)
     auto_respond_priority = models.FloatField(_('Priority'), blank=True, default=0)
-    
     notes = models.TextField(blank=True)
-    
-    create_dt = models.DateTimeField(auto_now_add=True)
-    
     members = models.ManyToManyField(User, through='GroupMembership')
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
 

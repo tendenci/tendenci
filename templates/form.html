@@ -1,0 +1,23 @@
+{% extends "site_base.html" %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }} Contact Us{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>Contact Us</h1>
+
+    <div class="contact-form-wrap">
+    	<form action="{% url form %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Contact {{ SITE_GLOBAL_SITEDISPLAYNAME|capfirst }}" />
+		</div>
+        </form>
+    </div>
+</div>
+{% endblock %}

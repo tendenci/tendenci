@@ -1,0 +1,8 @@
+<h1>{% firstof MODULE_CONTACTS_LABEL 'Conacts' %} Index Page</h1>
+
+<ul>
+	<li><a href="{% url contact.search %}">Search</a></li>
+	<li><a href="{% url contact.view %}">View</a></li>
+	<li><a href="{% url contact.print_view %}">Print View</a></li>
+	<li><a href="{% url contact.delete %}">Delete</a></li>
+</ul>
