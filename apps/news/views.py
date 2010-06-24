@@ -9,6 +9,8 @@ from news.forms import NewsForm
 from base.http import Http403
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
+from meta.models import Meta as MetaTags
+from meta.forms import MetaForm
 
 def index(request, id=None, template_name="news/view.html"):
     if not id: return HttpResponseRedirect(reverse('news.search'))
@@ -104,6 +106,36 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
             ObjectPermission.objects.assign(news.creator, news)
 
             return HttpResponseRedirect(reverse('news.view', args=[news.pk])) 
+
+    return render_to_response(template_name, {'news': news, 'form':form}, 
+        context_instance=RequestContext(request))
+
+@login_required
+def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.html"):
+
+    # check permission
+    news = get_object_or_404(News, pk=id)
+    if not request.user.has_perm('news.change_news', news):
+        raise Http403
+
+    if not news.meta:
+        # TODO: replace this place-holder
+        # with dynamic meta information
+        defaults = {
+            'title': 'Optimized title',
+            'description': 'Optimized description',
+            'keywords': 'optimized, keywords, go, here',
+        }
+        news.meta = MetaTags(**defaults)
+
+    if request.method == "POST":
+        form = form_class(request.POST, instance=news.meta)
+        if form.is_valid():
+            news.meta = form.save() # save meta
+            news.save() # save relationship
+            return HttpResponseRedirect(reverse('news.view', args=[news.pk]))
+    else:
+        form = form_class(instance=news.meta)
 
     return render_to_response(template_name, {'news': news, 'form':form}, 
         context_instance=RequestContext(request))

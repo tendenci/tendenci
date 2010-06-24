@@ -6,6 +6,7 @@
     {% has_perm user jobs.change_job job as can_edit %}
     {% if can_edit %} 
     	<li><a href="{% url job.edit job.pk %}">Edit</a></li>
+    	<li><a href="{% url job.edit.meta opt_object.pk %}">Meta</a></li>
     {% endif %}
     
     {% has_perm user jobs.delete_job job as can_delete %}

@@ -6,6 +6,7 @@
     {% has_perm user pages.change_page opt_object as can_edit %}
     {% if can_edit %} 
     	<li><a href="{% url page.edit opt_object.pk %}">Edit</a></li>
+    	<li><a href="{% url page.edit.meta opt_object.pk %}">Meta</a></li>
     {% endif %}
     
     {% has_perm user pages.delete_page opt_object as can_delete %}

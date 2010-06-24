@@ -35,8 +35,7 @@ class JobForm(TendenciBaseForm):
         'page_title',
         'meta_keywords',
         'meta_description',
-#        'entity_id',
-#        'entityownerid',
+        'entity_id',
         'contact_company',
         'contact_name',
         'contact_address',
@@ -71,7 +70,7 @@ class JobForm(TendenciBaseForm):
     #override_price
     #override_userid
     
-    #TO DO - FIGURE OUT CATEGORY
+    #TODO: FIGURE OUT CATEGORY
     #category_id
   
     #don't need
