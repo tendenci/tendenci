@@ -6,6 +6,7 @@ from perms.models import TendenciBaseModel
 from jobs.managers import JobManager
 from entities.models import Entity
 from tinymce import models as tinymce_models
+from meta.models import Meta as MetaTags
 
 from uuid import uuid1 
 
@@ -64,8 +65,11 @@ class Job(TendenciBaseModel ):
     contact_fax = models.CharField(max_length=50)
     contact_email = models.CharField(max_length=300)
     contact_website = models.CharField(max_length=300)
-    
-    #TO DO - FIGURE OUT CATEGORY
+ 
+     # html-meta tags
+    meta = models.OneToOneField(MetaTags, null=True)
+   
+    #TODO: FIGURE OUT CATEGORY
     #category_id = models.IntegerField(null=True, blank=True)
           
     #integrate with payment (later)
