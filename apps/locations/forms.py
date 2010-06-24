@@ -1,7 +1,7 @@
 from locations.models import Location
-from perms.forms import AuditingBaseForm
+from perms.forms import TendenciBaseForm
 
-class LocationForm(AuditingBaseForm):
+class LocationForm(TendenciBaseForm):
     class Meta:
         model = Location
         fields = (

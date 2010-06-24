@@ -1,7 +1,7 @@
 from news.models import News
-from perms.forms import AuditingBaseForm
+from perms.forms import TendenciBaseForm
 
-class NewsForm(AuditingBaseForm):
+class NewsForm(TendenciBaseForm):
     class Meta:
         model = News
         fields = (

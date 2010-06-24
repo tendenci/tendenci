@@ -65,8 +65,6 @@ class Job(TendenciBaseModel ):
     contact_email = models.CharField(max_length=300)
     contact_website = models.CharField(max_length=300)
     
-    create_dt = models.DateTimeField(auto_now_add=True)
-
     #TO DO - FIGURE OUT CATEGORY
     #category_id = models.IntegerField(null=True, blank=True)
           
