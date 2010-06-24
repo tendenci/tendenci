@@ -50,9 +50,8 @@ class Job(TendenciBaseModel ):
     meta_description = models.TextField(blank=True)
 
     entity = models.ForeignKey(Entity,null=True)
-    entity_owner_id = models.IntegerField(blank=True)
            
-    #TO DO - foreign
+    #TODO: foreign
     contact_company = models.CharField(max_length=300)
     contact_name = models.CharField(max_length=150)
     contact_address = models.CharField(max_length=50)
@@ -66,7 +65,7 @@ class Job(TendenciBaseModel ):
     contact_email = models.CharField(max_length=300)
     contact_website = models.CharField(max_length=300)
  
-     # html-meta tags
+    # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
    
     #TODO: FIGURE OUT CATEGORY
@@ -103,5 +102,5 @@ class Job(TendenciBaseModel ):
         return ("job", [self.pk])
 
     def __unicode__(self):
-        return self.headline
+        return self.title
 
