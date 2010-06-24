@@ -1,7 +1,7 @@
 from jobs.models import Job
-from perms.forms import AuditingBaseForm
+from perms.forms import TendenciBaseForm
 
-class JobForm(AuditingBaseForm):
+class JobForm(TendenciBaseForm):
     class Meta:
         model = Job
         fields = (
@@ -49,7 +49,6 @@ class JobForm(AuditingBaseForm):
         'contact_fax',
         'contact_email',
         'contact_website',
-#        'create_dt',
         'allow_anonymous_view',
         'allow_user_view',
         'allow_member_view',

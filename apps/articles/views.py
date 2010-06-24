@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -9,6 +10,8 @@ from articles.models import Article
 from articles.forms import ArticleForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
+from meta.models import Meta as MetaTags
+from meta.forms import MetaForm
 
 
 def index(request, id=None, template_name="articles/view.html"):
@@ -106,6 +109,37 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
             context_instance=RequestContext(request))
     else:
         raise Http403
+
+@login_required
+def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-meta.html"):
+
+    # check permission
+    article = get_object_or_404(Article, pk=id)
+    if not request.user.has_perm('articles.change_article', article):
+        raise Http403
+
+    if not article.meta:
+        article.meta = MetaTags()
+
+    if request.method == "POST":
+        form = form_class(request.POST, instance=article.meta)
+        if form.is_valid():
+            article.meta = form.save() # save meta
+            article.save() # save relationship
+            return HttpResponseRedirect(reverse('article', args=[article.pk]))
+    else:
+        # TODO: replace this place-holder
+        # with dynamic meta information
+        defaults = {
+            'title': 'Optimized title',
+            'description': 'Optimized description',
+            'keywords': 'optimized, keywords, go, here',
+        }
+    
+        form = form_class(initial=defaults, instance=article.meta)        
+
+    return render_to_response(template_name, {'meta': article.meta, 'form':form}, 
+        context_instance=RequestContext(request))
 
 @login_required
 def add(request, form_class=ArticleForm, template_name="articles/add.html"):

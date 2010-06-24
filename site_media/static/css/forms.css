@@ -78,3 +78,7 @@ div.forms div.checkbox .help-text {
 .required {
 	font-weight: bold;
 }
+
+img.captcha {
+	display: block;
+}

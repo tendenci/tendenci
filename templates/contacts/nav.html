@@ -1,0 +1,50 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user contacts.add_contact as can_add_contact %}
+
+{% if nav_object %}
+	{% has_perm user contacts.view_contact nav_object as can_view_contact %}
+{% else %}
+	{% has_perm user contacts.view_contact as can_view_contact %}
+{% endif %}
+
+
+
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>{% firstof MODULE_CONTACTS_LABEL 'Conacts' %}</span>
+		<ul id="secondary">
+			<li><a href="{% url contact.search %}">{% firstof MODULE_CONTACTS_LABEL 'Conacts' %}:</a></li> 
+			{% if can_edit_setting %}
+				<li><a href="{% url settings.index "module" "contacts" %}">Settings</a></li>
+			{% endif %}
+			{% if nav_object %}
+				{% if can_view_contact %}
+				<li><a href="{% url contact nav_object.pk %}">View</a></li>
+				{% endif %}
+			{% endif %}
+			<li><a href="{% url contact.search %}">Search</a></li>
+			{% if can_add_contact %}
+			<li><a href="{% url contact.add %}">Add</a></li>
+			{% endif %}
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
+		</ul>
+		
+	</li>
+	{% if MODULE_NEWS_ENABLED %}
+	<li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}</a></li>
+	{% endif %}
+	</ul>
+</div>

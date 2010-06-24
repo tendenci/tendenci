@@ -2,7 +2,7 @@ from django.forms import ModelForm
 
 from perms.fields import UserPermissionField, user_perm_queryset, users_with_perms
 
-class AuditingBaseForm(ModelForm):
+class TendenciBaseForm(ModelForm):
     """
         Base form that adds user permission fields
     """
@@ -10,7 +10,7 @@ class AuditingBaseForm(ModelForm):
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user 
-        super(AuditingBaseForm, self).__init__(*args, **kwargs)
+        super(TendenciBaseForm, self).__init__(*args, **kwargs)
         if 'instance' in kwargs:
             instance = kwargs['instance']
             # pull all users except for the creator and the owner
