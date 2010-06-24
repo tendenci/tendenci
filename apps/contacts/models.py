@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel
 from timezones.fields import TimeZoneField
 from contacts.managers import ContactManager
 
@@ -40,7 +40,7 @@ class Comment(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     create_dt = models.DateTimeField(auto_now_add=True)
 
-class Contact(AuditingBaseModel):
+class Contact(TendenciBaseModel):
     """
     Contact records are created when someone fills out a form.
     The form creates the contact with a message.
@@ -62,8 +62,6 @@ class Contact(AuditingBaseModel):
     companies = models.ManyToManyField(Company, blank=True)
 
     message = models.TextField()
-
-    create_dt = models.DateTimeField(auto_now_add=True)
 
     # TODO: consider attachments
 
