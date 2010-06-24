@@ -2,11 +2,11 @@
 {% load perm_tags %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
-{% has_perm user emails.add_email as can_add %}
+{% has_perm user email_blocks.add_email_block as can_add %}
 
 {% if nav_object %}
-	{% has_perm user emails.view_email nav_object as can_view %}
-	{% has_perm user emails.change_email nav_object as can_edit %}
+	{% has_perm user email_blocks.view_email_block nav_object as can_view %}
+	{% has_perm user email_blocks.changeemail_block nav_object as can_edit %}
 {% endif %}
 
 <div id="showh">
@@ -21,21 +21,22 @@
 	<li>
 		<span>Emails</span>
 		<ul id="secondary">
-			<li><a href="{% url emails %}">Emails:</a></li> 
+			<li><a href="{% url email.search %}">Emails:</a></li> 
+			<li><a href="{% url email_block.search %}">Email Blocks:</a></li> 
 			{% if can_edit_setting %}
 				<li><a href="{% url settings.index "module" "emails" %}">Settings</a></li>
 			{% endif %}
 			{% if nav_object %}
 				{% if can_view %}
-				<li><a href="{% url email.view nav_object.pk %}">View</a></li>
+				<li><a href="{% url email_block.view nav_object.pk %}">View</a></li>
 				{% endif %}
 				{% if can_edit %}
-				<li><a href="{% url email.edit nav_object.pk %}">Edit</a></li>
+				<li><a href="{% url email_block.edit nav_object.pk %}">Edit</a></li>
 				{% endif %}
 			{% endif %}
-			<li><a href="{% url email.search %}">Search</a></li>
+			<li><a href="{% url email_block.search %}">Search</a></li>
 			{% if can_add %}
-			<li><a href="{% url email.add %}">Add</a></li>
+			<li><a href="{% url email_block.add %}">Add</a></li>
 			{% endif %}
 			{% if user.is_authenticated %}
 			<li><a href="{% url auth_logout %}">Log Off</a></li> 

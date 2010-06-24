@@ -1,0 +1,34 @@
+{% extends "email_blocks/base.html" %}
+{% load i18n %}
+{% load email_block_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Email Block View'%}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+<link rel="stylesheet" href="/site_media/static/css/email_blocks.css">
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% email_blocks_nav email_block %}
+
+<div class="quick-options">
+	{% email_block_options email_block%}
+</div>
+<h1>{% trans 'Email Block View'%}</h1>
+<div class="clear-right"></div>
+
+<p>
+<div><a href="{% url email_block.view email_block.pk %}">{% if email_block.email %}{{ email_block.email }}{% else %}{{ email_block.email_domain }}{% endif %}</a></div>
+<div class="content"><b>Reason:</b> {{ email_block.reason }}</div>
+<br />
+<div class="meta">
+<small>Created on {{ email_block.create_dt|date:"D d M Y P" }} by <a href="{% url profile email_block.creator.id %}">{{ email_block.creator }}</a></small>
+ </div></p>
+
+
+</div>
+{% endblock %}
