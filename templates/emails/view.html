@@ -1,0 +1,36 @@
+{% extends "emails/base.html" %}
+{% load i18n %}
+{% load email_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'E-mail View'%}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+<link rel="stylesheet" href="/site_media/static/css/emails.css">
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% emails_nav email %}
+
+<div class="quick-options">
+	{% emails_options email %}
+</div>
+<h1>{% trans 'E-mail View'%}</h1>
+<div class="clear-right"></div>
+
+<p>
+<div class="email-view-item"><b>Sender:</b> {{email.sender}} Reply To: {{ email.reply_to }}</div>
+<div class="email-view-item">Content Type: <b>{{email.content_type}}</b> Created on: <b>{{ email.create_dt|date:'N j, Y h:i a' }}</b></div>
+<div class="email-view-item">Subject: <b>{{email.subject}}</b> </div>
+<div class="email-view-item"><a href="{% url email.viewbody email.id %}" class="body-copy-yellow" target="_blank">Click here to view the entire e-mail body in the new window </a></div>
+<div class="email-view-item">Recipient: {{email.recipient}}</div>
+<div class="email-view-item">Recipient cc: {{email.recipient_cc}}</div>
+<div class="email-view-item">Creator: <a href="{% url profile email.creator.username %}">{{email.creator.username}}</a></div>
+</p>
+
+
+</div>
+{% endblock %}
