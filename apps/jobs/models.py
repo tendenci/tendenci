@@ -6,6 +6,7 @@ from perms.models import TendenciBaseModel
 from jobs.managers import JobManager
 from entities.models import Entity
 from tinymce import models as tinymce_models
+from meta.models import Meta as MetaTags
 
 from uuid import uuid1 
 
@@ -49,9 +50,8 @@ class Job(TendenciBaseModel ):
     meta_description = models.TextField(blank=True)
 
     entity = models.ForeignKey(Entity,null=True)
-    entity_owner_id = models.IntegerField(blank=True)
            
-    #TO DO - foreign
+    #TODO: foreign
     contact_company = models.CharField(max_length=300)
     contact_name = models.CharField(max_length=150)
     contact_address = models.CharField(max_length=50)
@@ -64,8 +64,11 @@ class Job(TendenciBaseModel ):
     contact_fax = models.CharField(max_length=50)
     contact_email = models.CharField(max_length=300)
     contact_website = models.CharField(max_length=300)
-    
-    #TO DO - FIGURE OUT CATEGORY
+ 
+    # html-meta tags
+    meta = models.OneToOneField(MetaTags, null=True)
+   
+    #TODO: FIGURE OUT CATEGORY
     #category_id = models.IntegerField(null=True, blank=True)
           
     #integrate with payment (later)
@@ -99,5 +102,5 @@ class Job(TendenciBaseModel ):
         return ("job", [self.pk])
 
     def __unicode__(self):
-        return self.headline
+        return self.title
 
