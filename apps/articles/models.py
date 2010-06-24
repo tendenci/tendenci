@@ -4,13 +4,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel 
 from articles.managers import ArticleManager
 from tinymce import models as tinymce_models
 
 from categories.models import Category
 
-class Article(AuditingBaseModel):
+class Article(TendenciBaseModel ):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     timezone = TimeZoneField(_('Time Zone'))
     headline = models.CharField(max_length=200, blank=True)
