@@ -34,6 +34,7 @@
 				{% endif %}
 				{% if can_edit_page %}
 				<li><a href="{% url page.edit nav_object.pk %}">Edit</a></li>
+				<li><a href="{% url page.edit.meta nav_object.pk %}">Edit Meta</a></li>
 				{% endif %}
 			{% endif %}
 			<li><a href="{% url page.search %}">Search</a></li>
