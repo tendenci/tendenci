@@ -178,6 +178,7 @@ INSTALLED_APPS = (
     'jobs',
     'styled_forms',
     'form_builder',
+    'meta',
 )
 
 # This is the number of days users will have to activate their
