@@ -138,7 +138,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
     
         form = form_class(initial=defaults, instance=article.meta)        
 
-    return render_to_response(template_name, {'meta': article.meta, 'form':form}, 
+    return render_to_response(template_name, {'article': article, 'form':form}, 
         context_instance=RequestContext(request))
 
 @login_required
