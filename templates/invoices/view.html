@@ -25,7 +25,7 @@
 
 <br />
 <div class="">
-<a href="">View accounting entries associated with this invoice.</a>
+<a href="{% url invoice.detail invoice.id%}">View accounting entries associated with this invoice.</a>
 </div>
 
 {% if form %}

@@ -1,5 +1,6 @@
 {% extends "make_payments/base.html" %}
 {% load i18n %}
+{% load make_payment_tags %}
 
 {% block title %}Make a Payment{% endblock %}
 
@@ -23,6 +24,8 @@
 
 {% block body %}
 <div class="t">
+ {% make_payment_nav mp %}
+
 <h1>View a Payment</h1>
 <div class="make-payment-view">
 <div class="label">Payment Amount:</div><div>{{ mp.payment_amount }}</div>
