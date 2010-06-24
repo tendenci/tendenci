@@ -170,6 +170,7 @@ INSTALLED_APPS = (
     'payments',
     'accountings',
     'emails',
+    'email_blocks',
     'files',
     'contacts',
     'event_logs',

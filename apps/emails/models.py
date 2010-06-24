@@ -1,10 +1,10 @@
 import uuid
 from django.db import models
 
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel
 from perms.utils import is_admin
 
-class Email(AuditingBaseModel):
+class Email(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     priority = models.IntegerField(default=0)
     subject =models.CharField(max_length=255)
@@ -20,7 +20,7 @@ class Email(AuditingBaseModel):
     attachments = models.CharField(max_length=500, blank=True, default='')
     content_type = models.CharField(max_length=255, default='text/html', choices=(('text/html','text/html'),('text','text'),))
     
-    create_dt = models.DateTimeField(auto_now_add=True)
+    #create_dt = models.DateTimeField(auto_now_add=True)
     #status = models.BooleanField(default=True, choices=((True,'Active'),(False,'Inactive'),))
     
     @models.permalink

@@ -24,7 +24,7 @@ def add(request, form_class=EmailForm, template_name="emails/edit.html"):
                                    'reply_to': request.user.email})
 
        
-    return render_to_response(template_name, {'form':form}, 
+    return render_to_response(template_name, {'form':form, 'email':None}, 
         context_instance=RequestContext(request))
     
     
@@ -43,7 +43,7 @@ def edit(request, id, form_class=EmailForm, template_name="emails/edit.html"):
     if not email.allow_edit_by(request.user): raise Http403
     
     if request.method == "POST":
-        form = form_class(request.POST)
+        form = form_class(request.POST, instance=email)
         
         if form.is_valid():
             email = form.save(request.user)

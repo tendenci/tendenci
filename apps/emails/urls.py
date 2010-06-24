@@ -1,13 +1,14 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import patterns, url, include
 
-urlpatterns = patterns('emails.views',                  
-    url(r'^$', 'search', name="emails"),
-    url(r'^(?P<id>\d+)/$', 'view', name="email.view"),
-    url(r'^viewbody/(?P<id>\d+)/$', 'view', 
+urlpatterns = patterns('',                  
+    url(r'^$', 'emails.views.search', name="emails"),
+    url(r'^search/$', 'emails.views.search', name="email.search"),
+    url(r'^(?P<id>\d+)/$', 'emails.views.view', name="email.view"),
+    url(r'^viewbody/(?P<id>\d+)/$', 'emails.views.view', 
         {'template_name': 'emails/viewbody.html'}, 
         name="email.viewbody"),
-    url(r'^search/$', 'search', name="email.search"),
-    url(r'^add/$', 'add', name="email.add"),
-    url(r'^edit/(?P<id>\d+)/$', 'edit', name="email.edit"),
-    url(r'^delete/(?P<id>\d+)/$', 'delete', name="email.delete"),
+    url(r'^add/$', 'emails.views.add', name="email.add"),
+    url(r'^edit/(?P<id>\d+)/$', 'emails.views.edit', name="email.edit"),
+    url(r'^delete/(?P<id>\d+)/$', 'emails.views.delete', name="email.delete"),
+    (r'^blocks/', include('email_blocks.urls')),
 )
