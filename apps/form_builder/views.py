@@ -67,7 +67,7 @@ def index(request, form_class=ContactForm, template_name="form.html"):
             return render_to_response(template_name, {'form': form}, 
                 context_instance=RequestContext(request))
 
-    form = form_class(initial={'first_name':'Eloy', 'email':'ezuniga@schipul.com', 'message':'I want Tendenci'})
+    form = form_class()
     return render_to_response(template_name, {'form': form}, 
         context_instance=RequestContext(request))
 
