@@ -119,7 +119,14 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
         raise Http403
 
     if not article.meta:
-        article.meta = MetaTags()
+        # TODO: replace this place-holder
+        # with dynamic meta information
+        defaults = {
+            'title': 'Optimized title',
+            'description': 'Optimized description',
+            'keywords': 'optimized, keywords, go, here',
+        }
+        article.meta = MetaTags(**defaults)
 
     if request.method == "POST":
         form = form_class(request.POST, instance=article.meta)
@@ -128,15 +135,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
             article.save() # save relationship
             return HttpResponseRedirect(reverse('article', args=[article.pk]))
     else:
-        # TODO: replace this place-holder
-        # with dynamic meta information
-        defaults = {
-            'title': 'Optimized title',
-            'description': 'Optimized description',
-            'keywords': 'optimized, keywords, go, here',
-        }
-    
-        form = form_class(initial=defaults, instance=article.meta)        
+        form = form_class(instance=article.meta)
 
     return render_to_response(template_name, {'article': article, 'form':form}, 
         context_instance=RequestContext(request))
