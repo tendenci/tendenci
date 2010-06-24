@@ -1,0 +1,28 @@
+{% extends "pages/base.html" %}
+{% load page_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Edit Meta Information{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
+<link rel="stylesheet" href="/site_media/static/css/pages.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    {% page_nav user %}
+    <h1>{{ MODULE_PAGES_LABEL }} Meta Information</h1>
+
+    <div class="page-wrap">
+    	<form action="{% url page.edit.meta page.pk %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Save Changes" />
+			 or <a href="javascript:history.go(-1);">Cancel</a>
+		</div>
+        </form>
+    </div>
+</div>
+{% endblock %}

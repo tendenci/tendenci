@@ -9,6 +9,8 @@ from jobs.models import Job
 from jobs.forms import JobForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
+from meta.models import Meta as MetaTags
+from meta.forms import MetaForm
 
 def index(request, id=None, template_name="jobs/view.html"):
     if not id: return HttpResponseRedirect(reverse('job.search'))
@@ -105,6 +107,36 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
+
+@login_required
+def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.html"):
+
+    # check permission
+    job = get_object_or_404(Job, pk=id)
+    if not request.user.has_perm('jobs.change_job', job):
+        raise Http403
+
+    if not job.meta:
+        # TODO: replace this place-holder
+        # with dynamic meta information
+        defaults = {
+            'title': 'Optimized title',
+            'description': 'Optimized description',
+            'keywords': 'optimized, keywords, go, here',
+        }
+        job.meta = MetaTags(**defaults)
+
+    if request.method == "POST":
+        form = form_class(request.POST, instance=job.meta)
+        if form.is_valid():
+            job.meta = form.save() # save meta
+            job.save() # save relationship
+            return HttpResponseRedirect(reverse('job', args=[job.pk]))
+    else:
+        form = form_class(instance=job.meta)
+
+    return render_to_response(template_name, {'job': job, 'form':form}, 
+        context_instance=RequestContext(request))
 
 @login_required
 def add(request, form_class=JobForm, template_name="jobs/add.html"):
