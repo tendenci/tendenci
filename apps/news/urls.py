@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     url(r'^print-view/(?P<id>\d+)/$', 'news.views.print_view', name="news.print_view"),
     url(r'^add/$', 'news.views.add', name="news.add"),
     url(r'^edit/(?P<id>\d+)/$', 'news.views.edit', name="news.edit"),
-    url(r'^edit/meta/(?P<id>\d+)/$', 'views.edit_meta', name="news.edit.meta"),
+    url(r'^edit/meta/(?P<id>\d+)/$', 'news.views.edit_meta', name="news.edit.meta"),
     url(r'^delete/(?P<id>\d+)/$', 'news.views.delete', name="news.delete"),
     url(r'^feed/$', LatestEntriesFeed(), name='news.feed'),
 )

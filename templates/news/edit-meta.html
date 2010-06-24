@@ -1,0 +1,28 @@
+{% extends "news/base.html" %}
+{% load news_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Edit Meta Information{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
+<link rel="stylesheet" href="/site_media/static/css/news.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    {% news_nav user %}
+    <h1>{{ MODULE_NEWS_LABEL }} Meta Information</h1>
+
+    <div class="article-wrap">
+    	<form action="{% url news.edit.meta news.pk %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Save Changes" />
+			 or <a href="javascript:history.go(-1);">Cancel</a>
+		</div>
+        </form>
+    </div>
+</div>
+{% endblock %}
