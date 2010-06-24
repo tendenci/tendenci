@@ -1,11 +1,11 @@
 import os, mimetypes, uuid
 from django.db import models
 from django.conf import settings
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel
 from django.contrib.contenttypes.models import ContentType
 from files.managers import FileManager
 
-class File(AuditingBaseModel):
+class File(TendenciBaseModel):
     file = models.FileField(max_length=260, upload_to='files')
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     name = models.CharField(max_length=200, blank=True)
@@ -13,8 +13,6 @@ class File(AuditingBaseModel):
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
-    update_dt = models.DateTimeField(auto_now=True)
-    create_dt = models.DateTimeField(auto_now_add=True)
 
     def basename(self):
         return os.path.basename(str(self.file))
