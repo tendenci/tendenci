@@ -248,6 +248,12 @@ AUTHNET_KEY = ""
 MERCHANT_LOGIN = ""
 MERCHANT_TXN_KEY = ""
 
+# --------------------------------------#
+# CAPTCHA SETTINGS
+# --------------------------------------#
+CAPTCHA_FONT_SIZE = 50
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+
 # local settings for development
 try:
     from local_settings import *
