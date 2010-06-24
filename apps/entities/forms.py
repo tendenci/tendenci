@@ -1,7 +1,7 @@
 from entities.models import Entity
-from perms.forms import AuditingBaseForm
+from perms.forms import TendenciBaseForm
 
-class EntityForm(AuditingBaseForm):
+class EntityForm(TendenciBaseForm):
     class Meta:
         model = Entity
         fields = (

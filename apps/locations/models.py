@@ -2,11 +2,11 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from perms.models import AuditingBaseModel
+from perms.models import TendenciBaseModel 
 from locations.managers import LocationManager
 from entities.models import Entity
 
-class Location(AuditingBaseModel):
+class Location(TendenciBaseModel ):
     guid = models.CharField(max_length=40, default=uuid.uuid1) 
     location_name = models.CharField(_('Name'), max_length=200, blank=True)
     description = models.TextField(blank=True)
@@ -31,8 +31,6 @@ class Location(AuditingBaseModel):
     hq = models.BooleanField(_('Headquarters'))
     
     entity = models.ForeignKey(Entity, null=True, blank=True)
-
-    create_dt = models.DateTimeField(auto_now_add=True)
         
     objects = LocationManager()
 

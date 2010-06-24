@@ -2,9 +2,9 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from photos.models import Image, PhotoSet
-from perms.forms import AuditingBaseForm
+from perms.forms import TendenciBaseForm
 
-class PhotoUploadForm(AuditingBaseForm):
+class PhotoUploadForm(TendenciBaseForm):
     
     class Meta:
         model = Image
@@ -20,7 +20,7 @@ class PhotoUploadForm(AuditingBaseForm):
         self.user = user
         super(PhotoUploadForm, self).__init__(user, *args, **kwargs)
 
-class PhotoEditForm(AuditingBaseForm):
+class PhotoEditForm(TendenciBaseForm):
     
     class Meta:
         model = Image
@@ -32,7 +32,7 @@ class PhotoEditForm(AuditingBaseForm):
         self.user = user
         super(PhotoEditForm, self).__init__(user, *args, **kwargs)
 
-class PhotoSetAddForm(AuditingBaseForm):
+class PhotoSetAddForm(TendenciBaseForm):
     """ Photo-Set Add-Form """
 
     class Meta:
@@ -47,7 +47,7 @@ class PhotoSetAddForm(AuditingBaseForm):
         self.user = user
         super(PhotoSetAddForm, self).__init__(user, *args, **kwargs)
 
-class PhotoSetEditForm(AuditingBaseForm):
+class PhotoSetEditForm(TendenciBaseForm):
     """ Photo-Set Edit-Form """
 
     class Meta:

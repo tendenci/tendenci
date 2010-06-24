@@ -1,7 +1,7 @@
 from pages.models import Page
-from perms.forms import AuditingBaseForm
+from perms.forms import TendenciBaseForm
 
-class PageForm(AuditingBaseForm):
+class PageForm(TendenciBaseForm):
     class Meta:
         model = Page
         fields = (

@@ -2,14 +2,12 @@ from django.utils.html import strip_tags, strip_entities
 
 from haystack import indexes
 from haystack import site
-from articles.models import Article
+from contacts.models import Contact
 from perms.models import ObjectPermission
 
-class ArticleIndex(indexes.RealTimeSearchIndex):
+class ContactIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-    headline = indexes.CharField(model_attr='headline')
-    body = indexes.CharField(model_attr='body')
-    release_dt = indexes.DateTimeField(model_attr='release_dt', null=True)
+    create_dt = indexes.DateTimeField(model_attr='create_dt')
     
     # authority fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
@@ -28,7 +26,7 @@ class ArticleIndex(indexes.RealTimeSearchIndex):
     who_can_view = indexes.CharField()
     
     def prepare_who_can_view(self, obj):
-        users = ObjectPermission.objects.who_has_perm('articles.view_article', obj)
+        users = ObjectPermission.objects.who_has_perm('contacts.view_contact', obj)
         user_list = []
         if users:
             for user in users:
@@ -37,10 +35,4 @@ class ArticleIndex(indexes.RealTimeSearchIndex):
         else: 
             return ''
     
-    def prepare_body(self, obj):
-        body = obj.body
-        body = strip_tags(body)
-        body = strip_entities(body)
-        return body
-    
-site.register(Article, ArticleIndex)
+site.register(Contact, ContactIndex)
