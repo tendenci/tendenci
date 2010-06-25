@@ -1,3 +1,6 @@
+from django.core.urlresolvers import reverse
+from site_settings.utils import get_setting
+siteurl = get_setting('site', 'global', 'siteurl')
 
 # update the object
 def payment_processing_object_updates(payment, **kwargs):
@@ -23,7 +26,8 @@ def payment_processing_status_text(payment, **kwargs):
         msg += "<b>" + '\n'
         msg += "DO NOT press the back button in your browser."  + '\n'
         msg += "</b>" + '\n'
-        msg += "<a href=\"link to invoice here\">Try Making Payment Again</a>" + '\n'
+        msg += "<a href=\"%s%s\">Try Making Payment Again</a>\n" % \
+                (siteurl,reverse('invoice.view', args=[payment.invoice.id]))
     else:
         msg += "<b>" + '\n'
         msg += "DO NOT press the back button in your browser, or your credit card will be charged twice." + '\n'
@@ -44,13 +48,13 @@ def payment_processing_status_text(payment, **kwargs):
 def payment_processing_payment_invoice_callstoaction(payment, **kwargs):
     if not payment.is_approved:
         msg = "<p>" + '\n'
-        msg += "<a href=\"link to invoice here\">Try Making Payment Again</a>" + '\n'
+        msg += "<a href=\"%s%s\">Try Making Payment Again</a>\n"  % (siteurl,reverse('invoice.view', args=[payment.invoice.id]))
         msg += "</p>" + '\n'
     else:
         msg = "<p>" + '\n'
         msg += "<a href="">Print Friendly Invoice.</a>" + '\n'
         msg += "</p>" + '\n'
-        msg += "<p><a href=\"link to invoice here\">View my Invoice</a></p>" + '\n'
+        msg += "<p><a href=\"%s%s\">View my Invoice</a></p>\n" % (siteurl, reverse('invoice.view', args=[payment.invoice.id]))
         msg += "<p>Thank you for your payment!</p>"  + '\n'
    
     msg += "<p>&nbsp;</p>"  + '\n'
