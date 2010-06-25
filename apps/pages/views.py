@@ -10,6 +10,8 @@ from pages.models import Page
 from pages.forms import PageForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
+from meta.models import Meta as MetaTags
+from meta.forms import MetaForm
 
 def index(request, id=None, template_name="pages/view.html"):
     if not id: return HttpResponseRedirect(reverse('page.search'))
@@ -107,6 +109,36 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
+
+@login_required
+def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.html"):
+
+    # check permission
+    page = get_object_or_404(Page, pk=id)
+    if not request.user.has_perm('pages.change_page', page):
+        raise Http403
+
+    if not page.meta:
+        # TODO: replace this place-holder
+        # with dynamic meta information
+        defaults = {
+            'title': 'Optimized title',
+            'description': 'Optimized description',
+            'keywords': 'optimized, keywords, go, here',
+        }
+        page.meta = MetaTags(**defaults)
+
+    if request.method == "POST":
+        form = form_class(request.POST, instance=page.meta)
+        if form.is_valid():
+            page.meta = form.save() # save meta
+            page.save() # save relationship
+            return HttpResponseRedirect(reverse('page', args=[page.pk]))
+    else:
+        form = form_class(instance=page.meta)
+
+    return render_to_response(template_name, {'page': page, 'form':form}, 
+        context_instance=RequestContext(request))
 
 @login_required
 def add(request, form_class=PageForm, template_name="pages/add.html"):

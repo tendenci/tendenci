@@ -1,0 +1,64 @@
+{% extends "email_blocks/base.html" %}
+{% load pagination_tags %}
+{% load email_block_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+<link rel="stylesheet" href="/site_media/static/css/email_blocks.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% email_blocks_nav %}
+    <h1>Email Blocks  Search</h1>
+
+    {% autopaginate email_blocks 10 %}
+	
+	<div class="email_blocks-wrap">
+    {% for email_block in email_blocks %}
+    	{% has_perm user email_blocks.view_email_block email_block as can_view %}
+    	{% if can_view %}
+		<div class="email_block-wrap">
+                <div class="quick-options">
+ 					{% email_block_options email_block %}
+			    </div>
+
+            <div><a href="{% url email_block.view email_block.pk %}">{% if email_block.email %}{{ email_block.email }}{% else %}{{email_block.email_domain }}{% endif %}</a></div>
+            <div class="clear-right"></div>
+           
+            <div class="content"><b>Reason:</b> {{ email_block|striptags|truncatewords:40 }}</div>
+			<div class="meta">
+            	<div class="submitted">Created on {{ email_block.create_dt|date:"D d M Y P" }} by <a href="{% url profile email_block.creator.id %}">{{ email_block.creator }}</a></div>
+            </div>
+
+            <!-- delete-email form -->
+            <form name="email_block-delete" method="POST" action="{% url email_block.delete email_block.pk %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+
+		</div>
+		{% endif %}
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_email_block = confirm('Permenantly delete email block?');	// confirm
+				if(delete_email_block) $(this).parents('.email_block-wrap').find('form[name="email_block-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+{% endblock %}
