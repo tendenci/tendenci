@@ -6,6 +6,7 @@ from perms.models import TendenciBaseModel
 from pages.managers import PageManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
+from entities.models import Entity
 
 class Page(TendenciBaseModel):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
@@ -17,6 +18,7 @@ class Page(TendenciBaseModel):
     template = models.CharField(_('Template'), max_length=50, blank=True)
     tags = TagField(blank=True)
     objects = PageManager()
+    entity = models.ForeignKey(Entity,null=True)
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 
