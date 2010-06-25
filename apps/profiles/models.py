@@ -75,6 +75,7 @@ class Profile(TendenciBaseModel):
     hide_phone = models.BooleanField(default=0)   
     first_responder = models.BooleanField(_('first responder'), default=0)
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=0)
+    original_username = models.CharField(max_length=50)
     
     objects = ProfileManager()
     
