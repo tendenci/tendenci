@@ -24,7 +24,7 @@
                         <a href="{% url invoice.view invoice.id %}" class="links"><img src="/site_media/static/images/icons/tendered65x12.gif" border="0" width="65"  height="12" alt="Tendered {{ invoice.tender_date|date:'N j, Y h:i a'}}"></a>&nbsp;
                      {% endif %} 
                     {% if isadmin %}
-                        <a href="link to invoice detail" class="links">
+                        <a href="{% url invoice.detail invoice.id %}" class="links">
                         <img src="/site_media/static/images/icons/accounting12x12.gif"
                                border="0" width="12" height="12" alt="View Accounting Entries"></a>
                      {% endif %}
