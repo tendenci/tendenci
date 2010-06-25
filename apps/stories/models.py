@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from perms.models import TendenciBaseModel
 from stories.managers import StoryManager
 from perms.utils import is_admin
+from entities.models import Entity
 
 # Create your models here.
 class Story(TendenciBaseModel):
@@ -17,7 +18,8 @@ class Story(TendenciBaseModel):
     start_dt = models.DateTimeField(_('Start Date/Time'), null=True, blank=True)
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     ncsortorder = models.IntegerField(null=True, blank=True)
- 
+    entity = models.ForeignKey(Entity,null=True)
+     
     objects = StoryManager()
     
     class Meta:

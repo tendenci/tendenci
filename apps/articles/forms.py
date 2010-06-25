@@ -34,4 +34,4 @@ class ArticleForm(TendenciBaseForm):
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user 
-        super(ArticleForm, self).__init__(*args, **kwargs)
+        super(ArticleForm, self).__init__(user, *args, **kwargs)

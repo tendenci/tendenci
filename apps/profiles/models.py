@@ -82,6 +82,7 @@ class Profile(TendenciBaseModel):
     def __unicode__(self):
         return self.user.username
     
+    @models.permalink
     def get_absolute_url(self):
         return ('profile', [self.user.username])
     

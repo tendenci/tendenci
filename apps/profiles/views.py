@@ -50,7 +50,7 @@ def index(request, username="", template_name="profiles/index.html"):
         #if not request.user.has_perm('profiles.view_profile', profile):raise Http403
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
-    print request.user    
+        
     # security check 
     if not profile.allow_view_by(request.user): 
         raise Http403
@@ -118,6 +118,11 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                 
             # interactive
             interactive = form.cleaned_data['interactive']
+            try:
+                interactive = int(interactive)
+            except:
+                interactive = 0
+                
             if interactive == 1:
                 new_user.is_active = 1
             else:
@@ -183,7 +188,11 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 
             # interactive
             interactive = form.cleaned_data['interactive']
-            if interactive == "1":
+            try:
+                interactive = int(interactive)
+            except:
+                interactive = 0
+            if interactive == 1:
                 user_edit.is_active = 1
             else:
                 user_edit.is_active = 0

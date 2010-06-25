@@ -82,7 +82,9 @@
 		{% endif %}
 
 		{% if view_entities %}
+		{% if MODULE_ENTITIES_ENABLED %}
      	<li class="entities"><a href="{% url entity.search %}"><span>{% firstof MODULE_ENTITIES_LABEL "Entities" %}</span></a></li>
+		{% endif %}
 		{% endif %}
 
 		{% if MODULE_FILES_ENABLED %}
@@ -92,7 +94,9 @@
 		{% endif %}
 
 		{% if view_locations %}
+		{% if MODULE_LOCATIONS_ENABLED %}
 		<li class="locations"><a href="{% url location.search %}"><span>{% firstof MODULE_LOCATION_LABEL  "Locations" %}</span></a></li>
+		{% endif %}
 		{% endif %}
 
 		{% if view_contributions %}
