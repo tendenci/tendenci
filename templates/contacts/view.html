@@ -34,10 +34,9 @@
 
 
         <h2>{{ contact }}</h2>
-        <div class="content">{{ contact.body|safe }}</div>
+        <div class="content">{{ contact.message }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ contact.create_dt|date:"D d M Y P" }} 
-			by {% firstof contact.creator.get_profile.display_name contact.creator %}</div>
+            <div class="submitted">Submitted on {{ contact.create_dt|date:"D d M Y P" }}</div>
         </div>
     </div>
 

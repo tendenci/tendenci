@@ -4,11 +4,6 @@ register = Library()
 
 @register.inclusion_tag("contacts/options.html", takes_context=True)
 def contact_options(context, user, contact):
-
-    print 'context', context
-    print 'user', user
-    print 'contact', contact
-
     context.update({
         "opt_object": contact,
         "user": user
