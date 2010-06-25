@@ -1,0 +1,129 @@
+{% extends "emails/base.html" %}
+{% load i18n %}
+{% load email_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'E-mail Record '%}{% if email.id %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}{% endblock %}
+
+{% block extra_head %}
+
+
+<style>
+.field-wrapper{
+	margin: 5px 0;
+}
+.field-wrapper .field-label{
+	float: left;
+	width: 9em;
+	text-align: right;
+	padding-right: 1em;
+}
+.submitbutton{
+	margin-left: 10em;
+}
+
+.clear-left{
+	clear: left;
+}
+.errorlist{
+	color: red;
+}
+
+</style>
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% emails_nav email %}
+<h1>{% trans 'E-mail Record '%}{% if email %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}</h1>
+
+<form method="post" action=".">
+	<div class="field-wrapper">
+		{% if form.content_type.errors %}
+			{{ form.content_type.errors }}
+		{% endif %}
+		<label for="id_content_type" class="field-label">{% trans 'Content Type'%} :</label>
+		{{ form.content_type }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.subject.errors %}
+			{{ form.subject.errors }}
+		{% endif %}
+		<label for="id_subject" class="field-label">{% trans 'Subject'%} :</label>
+		{{ form.subject }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.body.errors %}
+			{{ form.body.errors }}
+		{% endif %}
+		<label for="id_body" class="field-label">{% trans 'Body'%} :</label>
+		{{ form.body }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.sender.errors %}
+			{{ form.sender.errors }}
+		{% endif %}
+		<label for="id_sender" class="field-label">{% trans 'Sender'%} :</label>
+		{{ form.sender }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.sender_display.errors %}
+			{{ form.sender_display.errors }}
+		{% endif %}
+		<label for="id_sender_display" class="field-label">{% trans 'Sender Display'%} :</label>
+		{{ form.sender_display }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.reply_to.errors %}
+			{{ form.reply_to.errors }}
+		{% endif %}
+		<label for="id_reply_to" class="field-label">{% trans 'Reply To'%} :</label>
+		{{ form.reply_to }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.recipient.errors %}
+			{{ form.recipient.errors }}
+		{% endif %}
+		<label for="id_recipient" class="field-label">{% trans 'recipient'%} :</label>
+		{{ form.recipient }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.status_detail.errors %}
+			{{ form.status_detail.errors }}
+		{% endif %}
+		<label for="id_status_detail" class="field-label">{% trans 'Status Detail'%} :</label>
+		{{ form.status_detail }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.status.errors %}
+			{{ form.status.errors }}
+		{% endif %}
+		<label for="id_status" class="field-label">{% trans 'Status'%} :</label>
+		{{ form.status }}
+	</div>
+	<div class="clear-left"></div>
+
+	<div class="submitbutton">
+	<input type="submit" name="submit" value="Save" id="email-submit-button" />
+	</div>
+</form>
+
+</div>
+{% endblock %}

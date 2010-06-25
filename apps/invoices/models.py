@@ -30,7 +30,6 @@ class Invoice(models.Model):
     invoice_object_type_id = models.IntegerField(blank=True, null=True)
     job_id = models.IntegerField(null=True)
     title = models.CharField(max_length=150, blank=True, null=True)
-    invoice_date = models.DateTimeField(auto_now_add=True)
     tender_date = models.DateTimeField(null=True)
     #session_id = models.CharField(max_length=40, null=True) # used to replace rmid in T4
     # priceasofdate and invoice_number seem like not being used in T4
@@ -93,6 +92,7 @@ class Invoice(models.Model):
     variance_notes = models.TextField(max_length=1000, blank=True, null=True)
     admin_notes = models.TextField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="invoice_creator",  null=True)
     creator_username = models.CharField(max_length=50, null=True)
     owner = models.ForeignKey(User, related_name="invoice_owner", null=True)
