@@ -53,6 +53,7 @@ class Payment(models.Model):
     verified = models.BooleanField(blank=True, default=False)
     submit_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="payment_creator",  null=True)
     creator_username = models.CharField(max_length=50, null=True)
     owner = models.ForeignKey(User, related_name="payment_owner", null=True)

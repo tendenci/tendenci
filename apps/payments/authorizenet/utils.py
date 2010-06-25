@@ -63,7 +63,7 @@ def prepare_authorizenet_sim_form(request, payment):
 
 def authorizenet_thankyou_processing(user, response_d, **kwargs):
     from django.shortcuts import get_object_or_404
-    
+
     x_invoice_num = response_d.get('x_invoice_num', 0)
     try:
         x_invoice_num = int(x_invoice_num)

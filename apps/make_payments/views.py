@@ -54,7 +54,7 @@ def add_confirm(request, id, template_name="make_payments/add_confirm.html"):
 
 def view(request, id=None, template_name="make_payments/view.html"):
     mp = get_object_or_404(MakePayment, pk=id)
-    if not mp.allow_view_by(request.user): return Http403
+    if not mp.allow_view_by(request.user): raise Http403
     
     mp.payment_amount = tcurrency(mp.payment_amount)
     return render_to_response(template_name, {'mp':mp}, 
