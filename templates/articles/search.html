@@ -13,9 +13,8 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_ARTICLES_LABEL }} Search</h1>
-
-    {% article_nav request.user %}
+{% article_nav request.user %}
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_ARTICLES_LABEL }} Search</h1>  
 
 	{% article_search %}
     {% autopaginate articles 10 %}
