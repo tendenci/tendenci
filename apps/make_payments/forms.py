@@ -11,6 +11,8 @@ class MakePaymentForm(forms.ModelForm):
     state = forms.CharField(max_length=50, required=False,  widget=forms.TextInput(attrs={'size':'5'}))
     zip_code = forms.CharField(max_length=20, required=False, widget=forms.TextInput(attrs={'size':'10'}))
     referral_source = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'size':'40'}))
+    email = forms.EmailField(help_text='A valid e-mail address, please.')
+    email_receipt = forms.BooleanField(initial=True)
     
     class Meta:
         model = MakePayment
@@ -27,6 +29,7 @@ class MakePaymentForm(forms.ModelForm):
                   'country',
                   'phone',
                   'email',
+                  'email_receipt',
                   'referral_source',
                   'comments',
                   )

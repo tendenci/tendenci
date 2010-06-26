@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.models import User
 from make_payments.forms import MakePaymentForm
-from make_payments.utils import make_payment_inv_add
+from make_payments.utils import make_payment_inv_add, make_payment_email_user
 from make_payments.models import MakePayment
 from site_settings.utils import get_setting
 from base.http import Http403
@@ -18,12 +18,15 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
         if form.is_valid():
             mp = form.save(commit=False)
             # we might need to create a user record if not exist
-            try:
-                user = User.objects.get(email=mp.email)
-            except:
+            if request.user.is_authenticated():
                 user = request.user
+            else:
+                try:
+                    user = User.objects.get(email=mp.email)
+                except:
+                    user = request.user
 
-            if user and user.id:
+            if not user.is_anonymous():
                 mp.user = user
                 mp.creator = user
                 mp.creator_username = user.username
@@ -36,6 +39,9 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
             
             # email to admin - later
             # email to user - later
+            email_receipt = form.cleaned_data['email_receipt']
+            if email_receipt:
+                make_payment_email_user(request, mp, invoice)
             
             # redirect to online payment or confirmation page
             if mp.payment_method == 'cc' or mp.payment_method == 'credit card':
