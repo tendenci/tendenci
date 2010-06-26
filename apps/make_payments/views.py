@@ -22,15 +22,17 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
                 user = User.objects.get(email=mp.email)
             except:
                 user = request.user
-            mp.user = user
-            mp.creator = request.user
-            mp.creator_username = request.user.username
-            mp.save(request.user)
+
+            if user and user.id:
+                mp.user = user
+                mp.creator = user
+                mp.creator_username = user.username
+            mp.save(user)
             
             # create invoice
-            invoice = make_payment_inv_add(request, mp)
+            invoice = make_payment_inv_add(user, mp)
             # updated the invoice_id for mp, so save again
-            mp.save(request.user)
+            mp.save(user)
             
             # email to admin - later
             # email to user - later
