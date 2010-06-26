@@ -185,14 +185,16 @@ def invoice_totals_info(request, invoice, **kwargs):
     #mystr += "<div class=\"clear-right\"></div>"
     if invoice.balance <= 0:
         if invoice.payment_set:
-            payment = invoice.payment_set.order_by('-id')[0]
-            mystr += "<tr>" 
-            #mystr += "<div class=\"invoice-item\">Payment method: <div class=\"amounts\">%s</div></div>" % \
-            #        (payment.method)
-            mystr += "<td>Payment method:</td> <td>%s</td></div>" % \
-                    (payment.method)
-            mystr += "</tr>"
-            #mystr += "<div class=\"clear-right\"></div>"
+            payment_set = invoice.payment_set.order_by('-id')
+            if payment_set:
+                payment = payment_set[0]
+                mystr += "<tr>" 
+                #mystr += "<div class=\"invoice-item\">Payment method: <div class=\"amounts\">%s</div></div>" % \
+                #        (payment.method)
+                mystr += "<td>Payment method:</td> <td>%s</td></div>" % \
+                        (payment.method)
+                mystr += "</tr>"
+                #mystr += "<div class=\"clear-right\"></div>"
             
     mystr += "</table>"
             
