@@ -34,9 +34,6 @@
 				{% endif %}
 			{% endif %}
 			<li><a href="{% url contact.search %}">Search</a></li>
-			{% if can_add_contact %}
-			<li><a href="{% url contact.add %}">Add</a></li>
-			{% endif %}
 			{% if user.is_authenticated %}
 			<li><a href="{% url auth_logout %}">Log Off</a></li> 
 			{% endif %}
