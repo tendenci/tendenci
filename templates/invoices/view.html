@@ -1,5 +1,6 @@
 {% extends "invoices/base.html" %}
 {% load invoice_tags %}
+{% load perm_tags %}
 
 {% block title %}{{ block.super }}Invoice View{% endblock %}
 
@@ -23,10 +24,13 @@
 <a href="{% url invoice.print_view invoice.id guid%}">Click here for a printer friendly version of this invoice.</a>
 </div>
 
+{% is_admin request.user as isadmin %}
+{% if isadmin %}
 <br />
 <div class="">
 <a href="{% url invoice.detail invoice.id%}">View accounting entries associated with this invoice.</a>
 </div>
+{% endif %}
 
 {% if form %}
 {# admin notes form #}
