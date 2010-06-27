@@ -12,7 +12,7 @@ from site_settings.utils import get_setting
 def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.html"):
     # check if they have the right to view the invoice
     invoice = get_object_or_404(Invoice, pk=invoice_id)
-    if not invoice.allow_view_by(request.user, guid): return Http403
+    if not invoice.allow_view_by(request.user, guid): raise Http403
     
     # tender the invoice
     if not invoice.is_tendered:
@@ -43,7 +43,7 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
 def view(request, id, guid=None, template_name="payments/view.html"):
     payment = get_object_or_404(Payment, pk=id)
 
-    if not payment.allow_view_by(request.user, guid): return Http403
+    if not payment.allow_view_by(request.user, guid): raise Http403
     payment.amount = tcurrency(payment.amount)
     
     return render_to_response(template_name, {'payment':payment}, 

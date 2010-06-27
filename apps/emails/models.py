@@ -55,6 +55,8 @@ class Email(TendenciBaseModel):
                                recipient_bcc_list,
                                headers={'Reply-To':self.reply_to,
                                         'content_type':self.content_type} )
+            if self.content_type == 'html' or self.content_type == 'text/html':
+                msg.content_subtype = 'html'
             msg.send(fail_silently=False)
     
     def save(self, user=None):

@@ -144,6 +144,16 @@
 <div class="clear-left"></div>
 
 <div class="field-wrapper">
+	{% if form.email_receipt.errors %}
+		{{ form.email_receipt.errors }}
+	{% endif %}
+	<label for="id_email_receipt" class="field-label">{% trans 'Email Receipt?'%}</label>
+	{{ form.email_receipt }} 
+</div>
+<div class="clear-left"></div>
+
+
+<div class="field-wrapper">
 	{% if form.referral_source.errors %}
 		{{ form.referral_source.errors }}
 	{% endif %}

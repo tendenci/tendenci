@@ -9,6 +9,7 @@ from articles.managers import ArticleManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from articles.module_meta import ArticleMeta
+from entities.models import Entity
 
 from categories.models import Category
 
@@ -43,10 +44,9 @@ class Article(TendenciBaseModel ):
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0)
 
     not_official_content = models.BooleanField(_('Official Content'), blank=True)
-    # meta information
-    page_title = models.TextField(_('Page Title'), blank=True)
-    meta_keywords = models.TextField(_('Meta Keywords'), blank=True)
-    meta_description = models.TextField(_('Meta Description'), blank=True)
+
+    entity = models.ForeignKey(Entity, null=True)
+    
     # html-meta tags
     meta = models.OneToOneField(MetaTags, related_name='object', null=True)
 
@@ -69,21 +69,3 @@ class Article(TendenciBaseModel ):
 
     def __unicode__(self):
         return self.headline
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
