@@ -8,6 +8,7 @@ from perms.models import TendenciBaseModel
 from articles.managers import ArticleManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
+from articles.module_meta import ArticleMeta
 from entities.models import Entity
 
 from categories.models import Category
@@ -44,15 +45,23 @@ class Article(TendenciBaseModel ):
 
     not_official_content = models.BooleanField(_('Official Content'), blank=True)
 
-    entity = models.ForeignKey(Entity,null=True)
+    entity = models.ForeignKey(Entity, null=True)
     
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, related_name='object', null=True)
 
     objects = ArticleManager()
 
     class Meta:
         permissions = (("view_article","Can view article"),)
+
+    def get_meta(self, name):
+        """
+        This method is standard across all models that are
+        related to the Meta model.  Used to generate dynamic
+        meta information niche to this model.
+        """
+        return ArticleMeta().get_meta(self, name)
 
     @models.permalink
     def get_absolute_url(self):
