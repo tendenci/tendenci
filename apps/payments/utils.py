@@ -35,12 +35,12 @@ def payment_processing_status_text(payment, **kwargs):
     msg += "</p>" + '\n'
     msg += "<p>&nbsp;</p>" + '\n'
     msg += "<p>Status of transaction (with reason if declined):</p>" + '\n'
-    msg += "<b>" + '\n'
-    msg += payment.response_reason_text + '\n'
+    if payment.response_code <> '1' and payment.response_reason_code <> '1':
+        msg += "<b>Not approved -</b> "
+    msg += "<b>" 
+    msg += payment.response_reason_text 
     msg += "</b>"  + '\n'
-    msg += "<b>"  + '\n'
-    msg += payment.response_reason_text  + '\n'
-    msg += "</b>"  + '\n'
+    
     msg += "<p>&nbsp;</p>"  + '\n'
     
     return msg

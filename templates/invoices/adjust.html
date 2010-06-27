@@ -30,12 +30,14 @@
 	<div class="field-wrapper required">
 		<div class="field-label">{% trans 'Billing Information:'%}</div>
 		<div style="float:left;">
-			{{invoice.bill_to}}<br />
-			{{invoice.bill_to_phone}}<br />
-			{{invoice.bill_to_email}}<br />
-			{{invoice.bill_to_address}} {{invoice.bill_to_city}} {{invoice.bill_to_state}}
-			{{invoice.bill_to_zip_code}}
-			{{invoice.bill_to_country}}<br />
+			{% if invoice.bill_to %}{{invoice.bill_to}}<br />{% endif %}
+			{% if invoice.bill_to_phone %}{{invoice.bill_to_phone}}<br />{% endif %}
+			{% if invoice.bill_to_email %}{{invoice.bill_to_email}}<br />{% endif %}
+			{% if invoice.bill_to_address %}{{invoice.bill_to_address}}{% endif %}
+			{% if invoice.bill_to_city %}{{invoice.bill_to_city}}{% endif %}
+			{% if invoice.bill_to_state %}{{invoice.bill_to_state}}{% endif %}
+			{% if invoice.bill_to_zip_code %}{{invoice.bill_to_zip_code}}{% endif %}
+			{% if invoice.bill_to_country %}{{invoice.bill_to_country}}{% endif %}<br />
 		</div>
 	</div>
 	<div class="clear-left"></div>
