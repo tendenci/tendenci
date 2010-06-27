@@ -8,6 +8,29 @@ from profiles.models import Profile
 register = Library()
 
 
+@register.inclusion_tag("base/fb_like_iframe.html")
+def fb_like_button_iframe(url, show_faces='false', width=400, height=30):
+    from site_settings.utils import get_setting
+    site_url = get_setting('site', 'global', 'siteurl')
+    url = site_url + url
+    if show_faces.lower() == 'true':
+        show_faces = 'true'
+    else:
+        show_faces = 'false'
+    try:
+        width = int(width) 
+    except:
+        width = 400
+    try:
+        height = int(height) 
+    except:
+        height = 400
+        
+    return {'url': url, 
+            'width': width,
+            'height': height,
+            'show_faces':show_faces}
+
 def callMethod(obj, methodName):
     """
         callMethod and args are used so that we can call a method with parameters in template

@@ -35,7 +35,10 @@ def make_payment_email_user(request, make_payment, invoice, **kwargs):
     recipient = make_payment.email
     msg = EmailMessage(subject, body, sender, [recipient])
     msg.content_subtype = 'html'
-    msg.send()
+    try:
+        msg.send()
+    except:
+        pass
     
     
     

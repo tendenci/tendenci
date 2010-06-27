@@ -1,6 +1,7 @@
 {% extends "articles/base.html" %}
 {% load article_tags %}
 {% load tagging_tags %}
+{% load base_tags %}
 
 {% block title %}{{ block.super }}{{ article.headline }}{% endblock %}
 
@@ -49,6 +50,10 @@
             <div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} 
 			by {% firstof article.creator.get_profile.display_name article.creator %}</div>
         </div>
+        
+		<br />
+        {% url article article.pk as the_url %}
+        <p>{% fb_like_button_iframe the_url %}</p>
     </div>
 
 </div>

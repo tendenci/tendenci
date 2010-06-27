@@ -1,6 +1,7 @@
 {% extends "news/base.html" %}
 {% load news_tags %}
 {% load tagging_tags %}
+{% load base_tags %}
 
 {% block title %}{{ block.super }}{{ news.headline }}{% endblock %}
 
@@ -48,6 +49,9 @@
 			by {% firstof news.creator.get_profile.display_name news.creator %}</div>
         </div>
 
+		<br />
+        {% url news.view news.pk as the_url %}
+        <p>{% fb_like_button_iframe the_url %}</p>
     </div>
 
 </div>
