@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from base.http import Http403
 from articles.models import Article
 from articles.forms import ArticleForm
+from articles.module_meta import ArticleMeta
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
@@ -122,9 +123,9 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
         # TODO: replace this place-holder
         # with dynamic meta information
         defaults = {
-            'title': 'Optimized title',
-            'description': 'Optimized description',
-            'keywords': 'optimized, keywords, go, here',
+            'title': ArticleMeta().get_meta(article, 'title'),
+            'description': ArticleMeta().get_meta(article, 'description'),
+            'keywords': ArticleMeta().get_meta(article, 'keywords'),
         }
         article.meta = MetaTags(**defaults)
 
