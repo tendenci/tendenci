@@ -2,7 +2,9 @@
 {% load article_tags %}
 {% load tagging_tags %}
 
-{% block title %}{{ block.super }}{{ article.headline }}{% endblock %}
+{% block title %}{{ block.super }}{{ article.meta.get_title }}{% endblock %}
+{% block meta_description %}{{ article.meta.get_description }}{% endblock %}
+{% block meta_keywords %}{{ article.meta.get_keywords }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/articles.css">

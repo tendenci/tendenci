@@ -8,6 +8,7 @@ from perms.models import TendenciBaseModel
 from articles.managers import ArticleManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
+from articles.module_meta import ArticleMeta
 
 from categories.models import Category
 
@@ -47,12 +48,20 @@ class Article(TendenciBaseModel ):
     meta_keywords = models.TextField(_('Meta Keywords'), blank=True)
     meta_description = models.TextField(_('Meta Description'), blank=True)
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, null=True)
+    meta = models.OneToOneField(MetaTags, related_name='object', null=True)
 
     objects = ArticleManager()
 
     class Meta:
         permissions = (("view_article","Can view article"),)
+
+    def get_meta(self, name):
+        """
+        This method is standard across all models that are
+        related to the Meta model.  Used to generate dynamic
+        meta information niche to this model.
+        """
+        return ArticleMeta().get_meta(self, name)
 
     @models.permalink
     def get_absolute_url(self):
@@ -60,3 +69,21 @@ class Article(TendenciBaseModel ):
 
     def __unicode__(self):
         return self.headline
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
