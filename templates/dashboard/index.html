@@ -107,6 +107,9 @@
 
      	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
         <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
+         {% if request.user.is_authenticated %}
+         <li class="invoices"><a href="{% url invoice.search %}"><span>{% firstof MODULE_INVOICES_LABEL  "Invoices" %}</span></a></li>
+ 		{% endif %}
  		<div style="clear: both"><!-- IE7 --></div>
     </ul>
     </div> <!-- modules -->
