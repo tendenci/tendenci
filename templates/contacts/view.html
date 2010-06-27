@@ -34,7 +34,7 @@
 
 
         <h2>{{ contact }}</h2>
-        <div class="content">{{ contact.message }}</div>
+        <div class="content">{{ contact.message|linebreaks }}</div>
         <div class="meta">
             <div class="submitted">Submitted on {{ contact.create_dt|date:"D d M Y P" }}</div>
         </div>
