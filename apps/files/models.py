@@ -1,19 +1,18 @@
-import os, uuid
+import os, mimetypes, uuid
 from django.db import models
 from django.conf import settings
-from base.models import AuditingBase
+from perms.models import TendenciBaseModel
 from django.contrib.contenttypes.models import ContentType
+from files.managers import FileManager
 
-class File(AuditingBase):
-    file = models.FileField(upload_to='files')
-    guid = models.CharField(max_length=200, default=uuid.uuid1)
+class File(TendenciBaseModel):
+    file = models.FileField(max_length=260, upload_to='files')
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     name = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
-    update_dt = models.DateTimeField(auto_now=True)
-    create_dt = models.DateTimeField(auto_now_add=True)
 
     def basename(self):
         return os.path.basename(str(self.file))
@@ -40,6 +39,21 @@ class File(AuditingBase):
 
         return None
 
+    def mime_type(self):
+        types = { # list of uncommon mimetypes
+            'application/msword': ('.doc','.docx'),
+            'application/ms-powerpoint': ('.ppt','.pptx'),
+            'application/ms-excel': ('.xls','.xlsx'),
+            'video/x-ms-wmv': ('.wmv',),
+        }
+        # add mimetypes
+        for type in types:
+            for ext in types[type]:
+                mimetypes.add_type(type, ext)
+        # guess mimetype
+        mimetype = mimetypes.guess_type(self.file.name)[0]
+        return mimetype
+
     def icon(self):
 
         # if we don't know the type
@@ -62,6 +76,15 @@ class File(AuditingBase):
 
         # return image path
         return icons_dir + '/' + icons[self.type()]
+
+    objects = FileManager()
+
+    class Meta:
+        permissions = (("view_file","Can view file"),)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("file", [self.id])
 
     def __unicode__(self):
         return self.name

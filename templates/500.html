@@ -1,0 +1,9 @@
+{% extends "site_base.html" %}
+
+{% block title %}{{ block.super }}Error{% endblock%}
+
+{% block body %}
+    <h1>Oops {% if user.is_authenticated %}{{ user.username }}{% endif %}, we caused a problem  </h1>
+    <p>We have been notified of this and will be working on it quickly.</p>
+    <p>You may want to <a href="{{ request.get_full_path }}">try this page again</a> in a little bit.</p>
+{% endblock %}

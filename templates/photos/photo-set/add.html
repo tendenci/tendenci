@@ -1,21 +1,19 @@
 {% extends "photos/base.html" %}
+{% load photo_tags %}
 
 {% load i18n %}
 
 {% block title %}{% blocktrans %}Add Photo Set{% endblocktrans %}{% endblock %}
         
 {% block body %}
-    <form id="add-photoset" method="POST" action="">
-        <fieldset class="inlineLabels">
-            {{ photoset_form.as_p }}
-            <div class="form_block">
-            <input type="hidden" name="action" value="add" />
-            <input type="submit" value="{% trans "Add" %}"/>
-            </div>
-        </fieldset>
+	<h1>{{ MODULE_PHOTOS_LABEL }} Set Add</h1>
+    <form method="POST" action="">
+        {{ photoset_form.as_p }}
+        <input type="hidden" name="action" value="add" />
+        <input type="submit" value="{% trans "Add" %}"/>
     </form>  
 {% endblock %}
 
-{% block body_bottom %}
+{% block extra_body %}
 
 {% endblock %}

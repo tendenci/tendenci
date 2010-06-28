@@ -101,4 +101,42 @@ def public_pool_photos(parser, token):
     return public_photos(parser, token, use_pool=True)
 
 
+from django.template import Library
+register = Library()
+
+@register.inclusion_tag("photos/options.html", takes_context=True)
+def photo_options(context, user, photo):
+    context.update({
+        "opt_object": photo,
+        "user": user
+    })
+    return context
+
+@register.inclusion_tag("photos/nav.html", takes_context=True)
+def photo_nav(context, user, photo=None):
+    context.update({
+        "nav_object": photo,            
+        "user": user
+    })
+    return context
+
+@register.inclusion_tag("photos/photo-set/options.html", takes_context=True)
+def photo_set_options(context, user, photo_set):
+    context.update({
+        "opt_object": photo_set,
+        "user": user
+    })
+    return context
+
+@register.inclusion_tag("photos/photo-set/nav.html", takes_context=True)
+def photo_set_nav(context, user, photo_set=None):
+    context.update({
+        "nav_object": photo_set,
+        "user": user
+    })
+    return context
+
+@register.inclusion_tag("photos/photo-set/search-form.html", takes_context=True)
+def photo_set_search(context):
+    return context
 

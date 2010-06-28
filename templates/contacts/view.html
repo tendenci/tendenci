@@ -1,0 +1,44 @@
+{% extends "contacts/base.html" %}
+{% load contact_tags %}
+
+{% block title %}{{ block.super }}{{ contact }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/contacts.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    {% contact_nav request.user contact %}
+
+    <div class="contact-wrap">
+
+        <div class="options">
+
+            <div class="dropdown-options">
+                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                <ul>
+                    <li>Review Reports</li>
+                    <li>Optimize Meta Tags</li>
+                    <li>Attach Files</li>
+                    <li>View Revisions</li>
+                    <li>Delete</li>
+                </ul>
+            </div>
+
+            <div class="quick-options">
+               {% contact_options request.user contact %}
+            </div>
+        </div>
+
+
+        <h2>{{ contact }}</h2>
+        <div class="content">{{ contact.message|linebreaks }}</div>
+        <div class="meta">
+            <div class="submitted">Submitted on {{ contact.create_dt|date:"D d M Y P" }}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

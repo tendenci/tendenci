@@ -1,0 +1,88 @@
+{% extends "user_groups/base.html" %}
+{% load base_tags %}
+{% load user_group_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ group.name }} - Group{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+<link rel="stylesheet" href="/site_media/static/css/usergroups.css">
+<style type="text/css">
+	.thead{
+		border-bottom: 1px dotted #ccc;
+	}
+	.gm-table{
+		border: 1px solid #ccc;
+		margin-top: 1em;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% user_group_nav request.user %}
+	<div class="quick-options">
+		{% user_group_options request.user group %} 
+	</div>
+<h1>{{ group.name }}</h1>
+ <div class="clear-right"></div>
+ 
+{% if not groupmemberships %}
+<p>This group has no members</p>
+{% else %}
+This group currently has {{ count_members  }} member{{ count_members|pluralize }}.
+
+<table width="100%" class="gm-table">
+<tr>
+<th width="30%" align="left" class="thead">Member</th>
+<th width="30%" align="left" class="thead">Role</th>
+<th width="40%" class="thead">&nbsp;</th>
+</tr>
+{% has_perm user user_groups.change_group group as can_edit %}
+{% has_perm user user_groups.delete_group group as can_delete %}
+   
+{% for gm in groupmemberships %}
+	<tr class="group-member-wrap{% cycle ' row1' ' row2' %}">
+	<td>
+      	<a href="{{ gm.member.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }})</a>
+   </td>
+   <td>{{ gm.role }}</td>   	
+      	
+    <td> 
+    {% if can_edit %} 
+      	<span class="edit"><a href="{% url group.edituser group.slug gm.member.id %}">Edit</a></span>
+     {% endif %}
+     
+     {% if can_delete %} 
+      	<span class="delete"><a href="{% url group.deleteuser group.slug gm.member.id %}">Delete</a></span>
+ 
+     <!-- delete-member form -->
+		<form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">
+			<input type="hidden" name="action" value="delete">
+		</form>
+	{% endif %}
+	</td> 
+	</tr>
+{% endfor %}
+
+</table>
+
+
+{% endif %}
+
+</div>
+
+<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_member = confirm('Remove this member from the group?');	// confirm
+				if(delete_member) $(this).parents('.group-member-wrap').find('form[name="member-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+{% endblock %}

@@ -1,15 +1,3 @@
-{% load i18n %}
+{% extends "site_base.html" %}
 
-<!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-	<meta charset="UTF-8">
-	<title>Stories {% block title %}{% endblock %}</title>
-{% block head %}{% endblock %}
-</head>
-<body>
-
-{% block body %}{% endblock %}
-{% block body_bottom %}{% endblock %}
-</body>
-</html>
+{% block title %}{% firstof MODULE_STORIES_LABEL "Story" %} - {% endblock %}

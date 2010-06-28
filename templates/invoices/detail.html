@@ -1,0 +1,85 @@
+{% extends "invoices/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+{% load invoice_tags %}
+{% load accounting_tags %}
+
+
+{% block title %}{{ block.super }}{% trans 'Invoice Accounting Entries View'%}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/invoices.css">
+<style>
+.entry1 {
+	background-color: #ccc;
+}
+.entry2 {
+	background-color: #fff;
+}
+#total-by-account{
+	margin-top: 1em;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+	 {% invoice_nav  invoice %}
+	<h1>Accounting Entries View for Invoice {{ invoice.id }}</h1>
+	
+	<div class="invoice-detail">
+		<p>A summary of the accounting entries for invoice {{ invoice.id }} is below.</p>
+	
+		<div>Invoice: <a href="{% url invoice.view invoice.id %}">{{ invoice.id  }}</a></div>
+		{% if acct_entries %}
+			<table width="550px">
+			<tr>
+			<th width="10%"><b>Account</b></th>
+			<th width="10%"><b>Debit</b></th>
+			<th width="10%"><b>Credit</b></th>
+			<th width="30%"><b>DateTime</b></th>
+			<th width="40%"><b>Description</b></th>
+			</tr>
+			{% for acct_entry in acct_entries%}
+				{# bad unused div here, but i want to pass the entry_class to acct_entry_item #}
+				<div class="{% cycle 'entry1' 'entry2' as entry_class %}" style="display:none;"></div>
+				{% acct_entry_item acct_entry entry_class %}
+			{% endfor %}
+			
+			<tr><td colspan="5">&nbsp;</td></tr>
+			
+			<tr>
+			<td width="10%"><b>Total:</b></td>
+			<td width="10%" align="right"><b>{{ total_debit }}</b></td>
+			<td width="10%" align="right"><b>{{ total_credit }}</b></td>
+			<td colspan="2">&nbsp;</td>
+			</tr>
+			
+			</table>
+			
+		{% endif %}
+		
+		<div id="total-by-account">
+			<b>Total by Account:</b><br />
+			<table width="550px">
+			<tr>
+			<td width="20%"><b>Account</b></td>
+			<td width="60%">&nbsp;</td>
+			<td width="20%"><b>Total</b></td>
+			</tr>
+			{% for acctnum in account_numbers %}
+				<tr>
+				<td width="20%">{{ acctnum.account_number }}</td>
+				<td width="60%">{{ acctnum.description }}</td>
+				<td width="20%">{{ acctnum.total|format_currency }}</td>
+				</tr>
+			{% endfor %}
+			
+			</table>
+		</div>
+		
+		<div style="margin-top: 1em;"><a href="{% url accounting.account_numbers %}">View All Account Numbers</a></div>
+	</div>
+
+</div>
+{% endblock %}

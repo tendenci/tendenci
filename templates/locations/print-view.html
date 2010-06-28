@@ -1,0 +1,44 @@
+{% extends "locations/base.html" %}
+
+{% block title %}{{ block.super }}Print{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/locations.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ MODULE_LOCATIONS_LABEL }} Print</h1>
+    
+    {% location_nav request.user location %}
+
+    <div class="location-wrap">
+
+        <div class="options">
+
+            <div class="dropdown-options">
+                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                <ul>
+                    <li>Review Reports</li>
+                    <li>Optimize Meta Tags</li>
+                    <li>Attach Files</li>
+                    <li>View Revisions</li>
+                    <li>Delete</li>
+                </ul>
+            </div>
+
+            <div class="quick-options">
+                {% location_options request.user location %}
+            </div>
+        </div>
+
+
+        <h2>{{ location.location_name }}</h2>
+        <div class="content">{{ location.description|safe }}</div>
+        <div class="meta">
+            <div class="submitted">Submitted on {{ location.create_dt|date:"D d M Y P" }} by {{ location.creator }}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

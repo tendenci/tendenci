@@ -1,0 +1,99 @@
+{% extends "email_blocks/base.html" %}
+{% load i18n %}
+{% load email_block_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}{% trans 'Email Block Record '%}{% if email_block.id %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}{% endblock %}
+
+{% block extra_head %}
+
+
+<style>
+.field-wrapper{
+	margin: 5px 0;
+}
+.field-wrapper .field-label{
+	float: left;
+	width: 9em;
+	text-align: right;
+	padding-right: 1em;
+}
+.submitbutton{
+	margin-left: 10em;
+}
+
+.clear-left{
+	clear: left;
+}
+.errorlist{
+	color: red;
+}
+
+</style>
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% email_blocks_nav email_block %}
+<h1>{% if email %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}{% trans ' an Email Block'%}</h1>
+<p>Please enter Email or Email Domain, but not both.</p>
+<form method="post" action=".">
+	<div class="field-wrapper">
+		{% if form.email.errors %}
+			{{ form.email.errors }}
+		{% endif %}
+		<label for="id_email" class="field-label">{% trans 'Email'%} :</label>
+		{{ form.email }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		<div class="field-label">{% trans 'OR'%}</div>
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.email_domain.errors %}
+			{{ form.email_domain.errors }}
+		{% endif %}
+		<label for="id_email_domain" class="field-label">{% trans 'Email Domain'%} :</label>
+		{{ form.email_domain }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.reason.errors %}
+			{{ form.reason.errors }}
+		{% endif %}
+		<label for="id_reason" class="field-label">{% trans 'Reason'%} :</label>
+		{{ form.reason }}
+	</div>
+	<div class="clear-left"></div>
+	
+	
+	<div class="field-wrapper">
+		{% if form.status_detail.errors %}
+			{{ form.status_detail.errors }}
+		{% endif %}
+		<label for="id_status_detail" class="field-label">{% trans 'Status Detail'%} :</label>
+		{{ form.status_detail }}
+	</div>
+	<div class="clear-left"></div>
+	
+	<div class="field-wrapper">
+		{% if form.status.errors %}
+			{{ form.status.errors }}
+		{% endif %}
+		<label for="id_status" class="field-label">{% trans 'Status'%} :</label>
+		{{ form.status }}
+	</div>
+	<div class="clear-left"></div>
+
+	<div class="submitbutton">
+	<input type="submit" name="submit" value="Save" id="email-submit-button" />
+	</div>
+</form>
+
+</div>
+{% endblock %}

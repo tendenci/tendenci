@@ -1,4 +1,4 @@
-from django.template import Library, Node, Variable, TemplateSyntaxError 
+from django.template import Library, Node 
 
 from site_settings.utils import get_setting as gs
 
@@ -36,3 +36,18 @@ def get_setting(parser, token):
     except: context_var = None
     
     return GetSettingNode(scope, scope_category, name, context_var=context_var)
+
+@register.inclusion_tag("site_settings/options.html", takes_context=True)
+def settings_options(context, user, setting):
+    context.update({
+        "setting": setting,
+        "user": user
+    })
+    return context
+
+@register.inclusion_tag("site_settings/nav.html", takes_context=True)
+def settings_nav(context, user):
+    context.update({
+        "user": user
+    })
+    return context

@@ -1,4 +1,5 @@
 {% extends "photos/base.html" %}
+{% load photo_tags %}
 
 {% load i18n %}
 {% load photo_tags %}
@@ -9,11 +10,11 @@
 	<link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">{% endblock %}
 
 {% block body %}
-	<div class="t">
+	<div class="t" style="width: 105%;">
 	<h1>Bulk edit photos</h1>
 
         <div class="photos-nav">
-            <a href="{% url photoset_details photo_set.id %}">&laquo; Back to album</a>
+            {% photo_set_nav request.user %}
         </div>
 
         <form method="POST" action="">
@@ -79,6 +80,13 @@
                         <div class="safetylevel-wrap">
                             {{ photo_form.safetylevel }}
                         </div>
+
+                        <div>
+                            {{ photo_form.owner }}
+                            {{ photo_form.owner_username }}
+                            {{ photo_form.creator_username }}
+                            {{ photo_form.status_detail }}
+                        </div>
                     </div>
                 </div>
             {% empty %}
@@ -91,7 +99,7 @@
 
 {% endblock %}
 
-{% block body_bottom %}
+{% block extra_body %}
 <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript">
 

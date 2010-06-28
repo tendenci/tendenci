@@ -1,27 +1,26 @@
 {% extends "stories/base.html" %}
+{% load story_tags %}
+{% load styled_forms %}
 
-{% load i18n %}
+{% block title %}{{ block.super }}Add{% endblock %}
 
-{% block title %}Add a Story{% endblock %}
-
-{% block head %}
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/forms.css">
 <link rel="stylesheet" href="/site_media/static/css/stories.css">
 {% endblock %}
 
 {% block body %}
-
 <div class="t">
-    <h1>Add a Story</h1>
-    
-    <div class="back-to-search"><a href="{% url story.search %}">&laquo; Back to stories search</a></div>
-
-    <div class="story-wrap">
-
-    <form action="{% url story.add %}" method="post">
-        {{ form.as_p }}
-        <input type="submit" value="Save changes" />
-    </form>
-
+ {% stories_nav request.user %}
+    <h1>{% firstof MODULE_STORIES_LABEL "Story" %} Add</h1>
+   
+    <div class="article-wrap">
+    	<form action="{% url story.add %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Add {{ MODULE_STORIES_LABEL }}" />
+		</div>
+        </form>
     </div>
 
 </div>

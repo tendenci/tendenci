@@ -10,12 +10,12 @@
 
 {% block body %}
 <div class="t">
-    <h1>Edit File</h1>
+    <h1>{{ MODULE_MEDIA_LABEL }} Edit</h1>
     
     {% file_nav request.user %}
 
     <div class="file-wrap">
-    <form action="{% url file.edit file.id %}" method="post" enctype="multipart/form-data">
+    <form action="{% url file.edit file.pk %}" method="post" enctype="multipart/form-data">
         {{ form.as_p }}
         <input type="submit" value="Save changes" />
     </form>

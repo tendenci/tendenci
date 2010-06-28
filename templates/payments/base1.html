@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<title>{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {% block title %}{% endblock %}</title>
+   	<meta charset="UTF-8">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<div id="content">
+  
+    <div id="body">
+    {% block body %}
+    
+    {% endblock %}
+    </div>
+</div>
+</body>
+{% block extra_body %}{% endblock %}
+</html>

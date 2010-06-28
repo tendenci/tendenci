@@ -1,17 +1,22 @@
 {% extends "pages/base.html" %}
+{% load page_tags %}
+{% load tagging_tags %}
 
-{% block title %}View Page{% endblock %}
+{% block title %}{{ block.super }}{{ page.meta.get_title }}{% endblock %}
+{% block meta_description %}{{ page.meta.get_description }}{% endblock %}
+{% block meta_keywords %}{{ page.meta.get_keywords }}{% endblock %}
 
-{% block head %}
+{% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/pages.css">
 {% endblock %}
 
 {% block body %}
+{% tags_for_object page as tags %}
 
 <div class="t">
     <h1>Pages View Page</h1>
     
-    <div class="back-to-search"><a href="{% url page.search %}">&laquo; Back to pages search</a></div>
+    {% page_nav request.user page %}
 
     <div class="page-wrap">
 
@@ -29,11 +34,7 @@
             </div>
 
             <div class="quick-options">
-                <ul>
-                    <li><a href="{% url page.print_view page.id %}">Print</a></li>
-                    <li><a href="{% url page.edit page.id %}">Edit</a></li>
-                    <li><a href="{% url page.delete page.id %}">Delete</a></li>
-                </ul>
+				{% page_options request.user page %}
             </div>
         </div>
 
@@ -41,7 +42,15 @@
         <h2>{{ page.title }}</h2>
         <div class="content">{{ page.content|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ page.create_dt|date:"D d M Y P" }} by {{ page.creator }}</div>
+			<div class="tags">
+				Tags: 
+				{% for tag in tags %}
+					<a href="{% url page.search %}?q={{ tag }}">{{ tag }}</a>
+				{% endfor %}
+			</div>
+            <div class="submitted">Submitted on {{ page.create_dt|date:"D d M Y P" }} 
+			by {% firstof page.creator.get_profile.display_name page.creator %}</div>
+
         </div>
     </div>
 

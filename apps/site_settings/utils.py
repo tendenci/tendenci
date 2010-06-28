@@ -5,6 +5,11 @@ from django.core.cache import cache
 from site_settings.models import Setting
 from site_settings.cache import SETTING_PRE_KEY
 
+def delete_all_settings_cache():
+    keys = [SETTING_PRE_KEY, 'all']
+    key = '.'.join(keys) 
+    cache.delete(key)
+    
 def cache_setting(scope, scope_category, name, value):
     """
         Caches a single setting within a scope
@@ -47,7 +52,7 @@ def delete_setting_cache(scope, scope_category, name):
     keys = [SETTING_PRE_KEY, scope, 
             scope_category, 
             name]
-    key = '.'.join(keys)   
+    key = '.'.join(keys) 
     cache.delete(key)
     
 def delete_settings_cache(scope, scope_category):

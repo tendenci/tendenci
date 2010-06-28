@@ -5,14 +5,19 @@ register = Library()
 @register.inclusion_tag("articles/options.html", takes_context=True)
 def article_options(context, user, article):
     context.update({
-        "article": article,
+        "opt_object": article,
         "user": user
     })
     return context
 
 @register.inclusion_tag("articles/nav.html", takes_context=True)
-def article_nav(context, user):
+def article_nav(context, user, article=None):
     context.update({
+        "nav_object" : article,
         "user": user
     })
+    return context
+
+@register.inclusion_tag("articles/search-form.html", takes_context=True)
+def article_search(context):
     return context

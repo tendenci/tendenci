@@ -1,27 +1,42 @@
+import uuid
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from tagging.fields import TagField
+from perms.models import TendenciBaseModel
+from pages.managers import PageManager
+from tinymce import models as tinymce_models
+from meta.models import Meta as MetaTags
+from entities.models import Entity
+from pages.module_meta import PageMeta
 
-from base.models import AuditingBase
-
-class Page(AuditingBase):
-
-    # TODO: make unique=True (dependent on migration script)
-    guid = models.TextField(blank=True)
-
+class Page(TendenciBaseModel):
+    guid = models.CharField(max_length=40, default=uuid.uuid1)
     title = models.CharField(max_length=500, blank=True)
-    content = models.TextField(blank=True)
-
-    # meta information
-    page_title = models.TextField(blank=True)
-    meta_keywords = models.TextField(blank=True)
-    meta_description = models.TextField(blank=True)
-
-    update_dt = models.DateTimeField(auto_now=True)
-    create_dt = models.DateTimeField(auto_now_add=True)
-
+    content = tinymce_models.HTMLField()
     view_contact_form = models.BooleanField()
-    design_notes = models.TextField(blank=True)
+    design_notes = models.TextField(_('Design Notes'), blank=True)
+    syndicate = models.BooleanField(_('Include in RSS feed'))
+    template = models.CharField(_('Template'), max_length=50, blank=True)
+    tags = TagField(blank=True)
+    objects = PageManager()
+    entity = models.ForeignKey(Entity,null=True)
+    # html-meta tags
+    meta = models.OneToOneField(MetaTags, null=True)
 
-    syndicate = models.BooleanField()
-    displaypagetemplate = models.CharField(max_length=50, blank=True)
+    class Meta:
+        permissions = (("view_page","Can view page"),)
 
-    metacanonical = models.TextField(blank=True)
+    def get_meta(self, name):
+        """
+        This method is standard across all models that are
+        related to the Meta model.  Used to generate dynamic
+        meta information niche to this model.
+        """
+        return PageMeta().get_meta(self, name)
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ("page", [self.pk])
+
+    def __unicode__(self):
+        return self.title

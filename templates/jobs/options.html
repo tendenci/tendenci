@@ -1,0 +1,16 @@
+{% load base_tags %}
+{% load perm_tags %}
+<ul>	
+    <li><a href="{% url job.print_view job.pk %}">Print</a></li>
+    
+    {% has_perm user jobs.change_job job as can_edit %}
+    {% if can_edit %} 
+    	<li><a href="{% url job.edit job.pk %}">Edit</a></li>
+    	<li><a href="{% url job.edit.meta opt_object.pk %}">Meta</a></li>
+    {% endif %}
+    
+    {% has_perm user jobs.delete_job job as can_delete %}
+    {% if can_delete %} 
+	<li class="delete"><a href="{% url job.delete job.pk %}">Delete</a></li>
+	{% endif %}
+</ul>

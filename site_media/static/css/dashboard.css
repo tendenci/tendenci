@@ -1,0 +1,146 @@
+ul { /* remove bullets and spacing */
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+
+
+.main-panel {
+	width: 70%;
+	float: left;
+}
+.modules {
+	margin-bottom: 20px;
+}
+.modules li {
+	width: 100px;
+	height: 100px;
+	float: left;
+	margin: 5px;
+	background: no-repeat 20px 5px white;
+	position: relative;
+}
+.modules li a {
+	position: absolute;
+	text-align: center;
+	top:0; right:0; bottom:0; left:0;
+}
+.modules li a:hover {
+	background-color: rgba(175,175,175,.3);
+}
+.modules li a span {
+	position: absolute;
+	left:0; bottom:10px;
+	width: 100%;
+}
+.modules li.users {
+	background-image: url('/site_media/static/tresources/icons/user.gif');
+	background-image: url('/site_media/static/images/icons/users-bw-64x64.png');
+}
+.modules li.groups {
+	background-image: url('/site_media/static/images/icons/groups-bw-64x64.png');
+}
+.modules li.events {
+	background-image: url('/site_media/static/tresources/icons/calendar.gif');
+	background-image: url('/site_media/static/images/icons/events-bw-64x64.png');
+}
+.modules li.articles {
+	background-image: url('/site_media/static/tresources/icons/articles.gif');
+	background-image: url('/site_media/static/images/icons/articles-bw-64x64.png');
+}
+.modules li.jobs {
+	background-image: url('/site_media/static/tresources/icons/jobs.gif');
+	background-image: url('/site_media/static/images/icons/jobs-bw-64x64.png');
+}
+.modules li.news {
+	background-image: url('/site_media/static/tresources/icons/press.gif');
+	background-image: url('/site_media/static/images/icons/news-bw-64x64.png');
+}
+.modules li.directories {
+	background-image: url('/site_media/static/tresources/icons/directories.gif');
+	background-image: url('/site_media/static/images/icons/directories-bw-64x64.png');
+}
+.modules li.photo-albums {
+	background-image: url('/site_media/static/tresources/icons/photos.jpg');
+	background-image: url('/site_media/static/images/icons/photo-albums-bw-64x64.png');
+}
+.modules li.stories {
+	background-image: url('/site_media/static/tresources/icons/calendar.gif');
+	background-image: url('/site_media/static/images/icons/stories-bw-64x64.png');
+}
+.modules li.pages {
+	background-image: url('/site_media/static/tresources/icons/cms.gif');
+	background-image: url('/site_media/static/images/icons/pages-bw-64x64.png');
+}
+.modules li.entities {
+	background-image: url('/site_media/static/images/icons/entities-bw-64x64.png');
+}
+.modules li.files {
+	background-image: url('/site_media/static/images/icons/files-bw-64x64.png');
+}
+.modules li.contributions {
+	background-image: url('/site_media/static/images/icons/contributions-bw-64x64.png');
+}
+.modules li.contacts {
+	background-image: url('/site_media/static/images/icons/contacts-bw-64x64.png');
+}
+.modules li.settings {
+	background-image: url('/site_media/static/images/icons/settings-bw-64x64.png');
+}
+.modules li.event-logs {
+	background-image: url('/site_media/static/images/icons/event-logs-bw-64x64.png');
+}
+.modules li.locations {
+	background-image: url('/site_media/static/images/icons/locations-bw-64x64.png');
+}
+.modules li.invoices {
+	background-image: url('/site_media/static/images/icons/invoicing-bw-64x64.png');
+}
+
+.side-panel {
+	float: right;
+}
+
+.admin-quick-links {
+	width: 185px;
+	background-color: #F7F7F7;
+	margin: 0 30px 10px 0;
+	padding: 0 20px 20px;
+	border: 1px solid silver;
+}
+.admin-quick-links h3 {
+	margin-top: 10px;
+}
+.admin-quick-links li {
+	padding: 3px 0 ;
+}
+
+.theme-management {
+	width: 185px;
+	background-color: #F7F7F7;
+	margin-right: 30px;
+	padding: 0 20px 20px;
+	border: 1px solid silver;
+}
+.theme-management h3 {
+	margin-top: 10px;
+}
+.theme-management li {
+	padding: 3px 0 ;
+}
+
+.rss-feeds {
+	border-top: 1px solid #DDD;
+}
+.rss-feed {
+	float: left;
+	width: 40%;
+	margin: 10px;
+	padding: 5px;
+}
+.rss-feed li {
+	margin: 7px 0;
+	overflow: hidden;
+}
+
+
+

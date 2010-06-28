@@ -1,0 +1,19 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user photo.view_image as can_view %}
+{% has_perm user photo.add_image as can_add %}
+{% has_perm user photo.change_image as can_change %}
+{% has_perm user photo.delete_image as can_delete %}
+
+{% if can_change %}
+<ul>
+	{% if can_change %}
+    <li class="photo-edit" data-id="{{ opt_object.pk }}"><a href="{% url photo_edit opt_object.pk photo_set_id %}">Edit</a></li>
+    {% endif %}
+
+	{% if can_delete %}
+    <li class="photo-delete" data-id="{{ opt_object.pk }}"><a href="{% url photo_destroy opt_object.pk photo_set_id %}">Delete</a></li>
+	{% endif %}
+</ul>
+{% endif %}

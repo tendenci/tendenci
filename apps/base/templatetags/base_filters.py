@@ -51,6 +51,14 @@ def stripentities(value):
     from django.utils.html import strip_entities
     return strip_entities(value)
 stripentities.is_safe = True
+
+@register.filter     
+def format_currency(value):
+    """format currency"""
+    from base.utils import tcurrency
+    print value
+    return tcurrency(value)
+format_currency.is_safe = True
     
     
     

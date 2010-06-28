@@ -8,7 +8,8 @@ sys.path.insert(0, APPS_PATH)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-SITE_THEME = "default"
+SITE_THEME = "tendenci"
+#SITE_THEME = "default"
 
 ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
@@ -31,7 +32,9 @@ DATABASES = {
 }
 # email
 EMAIL_HOST = '4.78.3.131'
+#EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
+#EMAIL_PORT = 1025
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
@@ -58,14 +61,16 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
+THEME_ROOT = os.path.join(PROJECT_ROOT, 'themes', SITE_THEME)
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'site_media')
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = '/site_media/'
+MEDIA_URL = '/site_media/media/'
 
 # Absolute path to the directory that holds static media.
 STATIC_ROOT = os.path.join(MEDIA_ROOT, 'static')
@@ -73,6 +78,11 @@ STATIC_ROOT = os.path.join(MEDIA_ROOT, 'static')
 # URL that handles the media served from STATIC_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 STATIC_URL = '/site_media/static/'
+
+# Avatar default URL, no Gravatars
+AVATAR_GRAVATAR_BACKUP = False
+AVATAR_DEFAULT_URL = STATIC_URL + '/images/icons/default-user-80.jpg'
+AUTO_GENERATE_AVATAR_SIZES = (128, 80, 48,)
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -92,10 +102,12 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'swfupload.middleware.SWFUploadMiddleware',
-    'swfupload.middleware.MediaUploadMiddleware',
+    #'swfupload.middleware.MediaUploadMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'pagination.middleware.PaginationMiddleware',
+    'perms.middleware.ImpersonationMiddleware',
+    'base.middleware.Http403Middleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
@@ -118,6 +130,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # tendenci context processors
     'theme.context_processors.theme',
     'site_settings.context_processors.settings',
+    'base.context_processors.static_url'
 )
 
 INSTALLED_APPS = (
@@ -127,28 +140,50 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.humanize',
+    'django.contrib.sitemaps',
 
     # third party applications
     'pagination',
     'photologue',
     'tagging',
     'registration',
+    'avatar',
     'tinymce',
+    'haystack',
+    'captcha',
     
     # tendenci applications
     'base',
     'perms',
+    'dashboard',
     'profiles',
     'articles',
-    'releases',
+    'news',
     'stories',
     'pages',
     'photos',
     'base',
     'entities',
+    'locations',
     'site_settings',
+    'user_groups',
+    'make_payments',
+    'invoices',
+    'payments',
+    'accountings',
+    'emails',
+    'email_blocks',
     'files',
-#    'media_files',
+    'contacts',
+    'event_logs',
+    'robots',
+    'categories',
+    'contributions',
+    'theme_editor',
+    'jobs',
+    'styled_forms',
+    'form_builder',
+    'meta',
 )
 
 # This is the number of days users will have to activate their
@@ -157,12 +192,12 @@ INSTALLED_APPS = (
 #be deleted by maintenance scripts provided in django-registration.
 ACCOUNT_ACTIVATION_DAYS = 7 
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/dashboard'
 
 AUTH_PROFILE_MODULE = 'profiles.Profile'
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
     'perms.backend.ObjectPermBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 # -------------------------------------- #
@@ -174,7 +209,7 @@ TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
 
 TINYMCE_DEFAULT_CONFIG = {
-    'plugins': "stormeimage,table,paste,searchreplace,inlinepopups,tabfocus,fullscreen,media,spellchecker",
+    'plugins': "table,paste,searchreplace,inlinepopups,tabfocus,fullscreen,media,spellchecker",
     'gecko_spellcheck': False,
     'theme': "advanced",
     'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,|,image,|,pagebreak,fullscreen,code",
@@ -191,17 +226,46 @@ TINYMCE_DEFAULT_CONFIG = {
     'apply_source_formatting' : False,
 }
 
-
-
 # -------------------------------------- #
 # CACHING
 # -------------------------------------- #
 CACHE_DIR = PROJECT_ROOT + "/cache"
 CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800" # 7 days
 
+# --------------------------------------#
+# Hackstack Search
+# --------------------------------------#
+HAYSTACK_SITECONF = 'search'
+HAYSTACK_SEARCH_ENGINE = 'solr'
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
+HAYSTACK_SOLR_URL = 'http://127.0.0.1:8000/tendenci50/'
+HAYSTACK_SOLR_TIMEOUT = 60
+HAYSTACK_INCLUDED_APPS = ('article','page','news','story')
+
+#---------------------------------------------------------------
+# payment gateway settings - LOGIN and KEY need to be moved to local_urls.py later
+#---------------------------------------------------------------
+AUTHNET_POST_URL = ""
+AUTHNET_TEST_POST_URL = "https://test.authorize.net/gateway/transact.dll"
+# the AUTHNET_LOGIN and AUTHNET_KEY are specified in local_settings
+AUTHNET_LOGIN = ""
+AUTHNET_KEY = ""
+MERCHANT_LOGIN = ""
+MERCHANT_TXN_KEY = ""
+
+# --------------------------------------#
+# CAPTCHA SETTINGS
+# --------------------------------------#
+CAPTCHA_FONT_SIZE = 50
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+
 # local settings for development
 try:
     from local_settings import *
 except ImportError:
     pass
+
+
+
+
 

@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import url, patterns
+from photos.feeds import LatestAlbums, LatestAlbumPhotos
 
 urlpatterns = patterns('',
 
@@ -11,7 +12,7 @@ urlpatterns = patterns('',
     # /photos/23/in/36
     url(r'^(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.photo', name="photo"),
     # /photos/delete/23/
-    url(r'^delete/(?P<id>\d+)/$', 'photos.views.destroy', name='photo_destroy'),
+    url(r'^delete/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.delete', name='photo_destroy'),
     # /photos/edit/23/in/36
     url(r'^edit/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.edit', name='photo_edit'),
 
@@ -38,4 +39,7 @@ urlpatterns = patterns('',
     url(r'^set/latest/$', 'photos.views.photoset_view_latest', name='photoset_latest'),
     # /photos/set/23/
     url(r'^set/(?P<id>\d+)/$', 'photos.views.photoset_details', name="photoset_details"),
+
+    url(r'^feeds/latest-albums/$', LatestAlbums(), name='photo.feed.latest-albums'),
+    url(r'^feeds/latest-album-photos/(?P<set_id>\d+)/$', LatestAlbumPhotos(), name='photo.feed.latest-album-photos'),
 )

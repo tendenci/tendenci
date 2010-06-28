@@ -1,0 +1,58 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user entities.add_entity as can_add_entity %}
+
+{% if nav_object %}
+	{% has_perm user entities.view_entity nav_object as can_view_entity %}
+	{% has_perm user entities.change_entity nav_object as can_edit_entity %}
+{% else %}
+	{% has_perm user entities.view_entity as can_view_entity %}
+	{% has_perm user entities.change_entity as can_edit_entity %}
+{% endif %}
+
+
+
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>{{ MODULE_ENTITIES_LABEL }}</span>
+		<ul id="secondary">
+			<li><a href="{% url entities %}">{{ MODULE_ENTITIES_LABEL }}:</a></li> 
+			{% if can_edit_setting %}
+				<li><a href="{% url settings.index "module" "entities" %}">Settings</a></li>
+			{% endif %}
+			{% if nav_object %}
+				{% if can_view_entity %}
+				<li><a href="{% url entity nav_object.pk %}">View</a></li>
+				{% endif %}
+				{% if can_edit_entity %}
+				<li><a href="{% url entity.edit nav_object.pk %}">Edit</a></li>
+				{% endif %}
+			{% endif %}
+			<li><a href="{% url entity.search %}">Search</a></li>
+			{% if can_add_entity %}
+			<li><a href="{% url entity.add %}">Add</a></li>
+			{% endif %}
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
+		</ul>
+		
+	</li>
+	{% if MODULE_USERS_ENABLED %}
+	<li><a href="{% url profile.search %}">{{ MODULE_USERS_LABEL }}</a></li>
+	{% endif %}
+	{% if MODULE_LOCATIONS_ENABLED %}
+	<li><a href="{% url locations %}">{{ MODULE_LOCATIONS_LABEL }}</a></li>
+	{% endif %}
+	</ul>
+</div>

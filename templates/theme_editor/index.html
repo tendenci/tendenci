@@ -1,0 +1,106 @@
+{% extends "theme_editor/base.html" %}
+
+{% load i18n %}
+{% load humanize %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}Theme Editor{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
+{% endblock %}
+        
+{% block body %}
+<h1 class="file-editor-header">{% trans "Theme Editor" %}</h1>
+<div class="file_attrs"><big><b><span id="file_type">{{ file_dict.type }}</span></b> (<span id="file_name">{{ file_dict.name }}</span>)</big></div>
+        <table width="100%">
+        <tr>
+        	<td width="70%">
+            <form class="uniForm" method="POST" name="edit" action="">
+                {% if file_form.content.errors %}<div>{{ file_form.content.errors }}</div>{% endif %}
+					 <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
+   					{{ file_form.rf_path }}
+				
+    				<div id="fileupdatemessage"></div>
+    				<div class="form_block">
+    					<input type="hidden" name="action" value="edit" />
+                    	<input type="submit" value="Update" class="button"/>
+                    </div>
+            </form>
+        
+        	<div id="file_version_box">
+            	<h2>Versions</h2>
+            	{% if archives %}
+                	<div id="file_versions">
+                    	{% for archive in archives %}
+                    		<div data-string="{{ archive.file_name }} versioned on {{ archive.create_dt }} {{ archive.create_dt }} by {{ archive.author}}" title="Click to open in the text area above" class="archived_file archived_file_{{ archive.id }}" onclick="open_archive({{ archive.id }}); return false;">
+                    			<a href="#">{{ archive.file_name }}  versioned on {{ archive.create_dt }} {{ archive.create_dt }} by {{ archive.author}}</a>
+                    		</div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                	<p>No versions available.</p>
+                {% endif %}
+            </div>
+        </td>
+        <td width="30%" valign="top">
+       		<div id="right_files_list">
+       			<h3>Styles</h3>
+                <ul class="files_list">
+                    {% for afile in files_list.styles %}
+                        <li>{{ afile|safe }}</li>
+                    {% endfor %}
+                </ul>  
+                <h3>Templates</h3>
+                <ul class="files_list">   
+                    {% for afile in files_list.templates %}
+                        <li>{{ afile|safe }}</li>
+                    {% endfor %}
+               </ul>
+           </div>
+      </td>
+      </tr>
+      </table>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script src="{{ STATIC_URL }}codemirror/js/codemirror.js" type="text/javascript"></script>
+<script type="text/javascript">
+var editor;
+$(document).ready(function(){
+	editor = CodeMirror.fromTextArea('id_content', {
+    height: "350px",
+    parserfile: {% ifequal file_dict.type "Stylesheet"%}"parsecss.js"{%else%}"parsexml.js"{%endifequal%},
+    stylesheet: {% ifequal file_dict.type "Stylesheet"%}"{{ STATIC_URL }}codemirror/css/csscolors.css"{%else%}"{{ STATIC_URL }}codemirror/css/xmlcolors.css"{%endifequal%},
+    path: "{{ STATIC_URL }}codemirror/js/",
+    continuousScanning: 500,
+    lineNumbers: true,
+    textWrapping: false
+  });
+
+})
+
+function open_archive(id)
+{
+	var classname = ".archived_file_" + id;
+	if (confirm("Open " + $(classname).attr('data-string') + "?"))
+	{
+		var myurl = "/theme-editor/get-version/" + id + "/";
+		var mydata = {};
+		mydata["id"] =id;
+        $.ajax({
+           type: "POST",
+           url: myurl,
+           data: mydata,
+           dataType: "html", 
+           success: function(filecontent){
+		   	 $("#id_content").val(filecontent);
+			  editor.setCode(filecontent);
+           }
+         });
+	}
+	
+}
+</script>
+{% endblock %}

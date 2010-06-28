@@ -1,0 +1,19 @@
+{% extends "site_base.html" %}
+
+{% block title %}{{ block.super }}404 NOT FOUND{% endblock%}
+
+{% block body %}
+    <h1>The page was not found</h1>
+    <p>Possible reasons</p>
+    <ul>
+    	<li>The page moved from {{ request.get_full_path }} to another path like /cool-stuff/</li>
+        <li>If you came from another site they may have linked this page incorrectly</li>
+        <li>The link expired and the search engine has not updated its database.</li>
+        <li>It just doesn't exist</li>
+    </ul>
+    <p>You may be able to find what your looking for by</p>
+    <ul>
+    	<li><a href="{% url home %}">Visiting the Home Page</a></li>
+        <li><a href="#">Searching the site</a></li>
+    </ul>   
+{% endblock %}

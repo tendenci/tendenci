@@ -1,22 +1,38 @@
 {% extends "profiles/base.html" %}
+{% load avatar_tags %}
+{% load base_tags %}
+{% load profile_tags %}
+{% load contribution_tags %}
 
 {% block title %}Profile View{% endblock %}
 
-{% block head %}
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
 <link rel="stylesheet" href="/site_media/static/css/profiles.css">
 {% endblock %}
 
 {% block body %}
-
 <div class="t">
+	{% users_nav request.user user_this %}
     <div id="userview-profile">
-	    <h1>{{ user_view.get_full_name }}({{ user_view.username }})</h1>
-	    	<div class="contact-info profile-selection">
+    {% users_options request.user user_this %}
+	    <h1>{{ user_this.get_full_name }}({{ user_this.username }})</h1>
+	    <div class="clear-right"></div>
+	    <div class="profile-left">
+	    <div class="profile-icon"><a href="{% url profile.change_avatar  user_this.id %}">{% avatar user_this 128 %}</a></div>
+	    {% assign can_edit_user profile|args:request.user|call:'allow_edit_by' %}
+	    {% if can_edit_user %}
+	    	<small><a href="{% url profile.change_avatar  user_this.id %}">Change Picture</a></small>
+	    {%endif%}
+	    </div>
+	    <div class="profile-right">
+	    	<div class="contact-info profile-section">
 		    <h2>Contact Info</h2>
 		    	<table class="section-items">
-			    {% if user_view.email %}
+			    {% if user_this.email %}
 			    	<tr>
-			    	<td class="type">Email:</td> <td class="items">{{user_view.email}}</td>
+			    	<td class="type">Email:</td> <td class="items">{{user_this.email}}</td>
 			    	</tr>
 			    {%endif%}
 			    {% if profile.phone %}
@@ -24,6 +40,7 @@
 			    	<td class="type">Phone:</td> <td class="items"> {{profile.phone}} </td>
 			    	</tr>
 			    {%endif%}
+			    
 			    {% if profile.phone2 %}
 			    	<tr>
 			    	<td class="type">&nbsp;</td> <td class="items"> {{profile.phone2}} </td>
@@ -46,8 +63,8 @@
 			    {%endif%}
 			    
 			  </table>
-			  
-			  <div class="profile-addresses profile-selection">
+			</div>  
+			  <div class="profile-addresses profile-section">
 			  <h2>Addresses</h2>
 		    	<div class="user-address">
 		    	{% if profile.mailing_name %}
@@ -76,7 +93,7 @@
 			  </div>
 			  
 			  
-			<div class="work-info profile-selection">
+			<div class="work-info profile-section">
 		    <h2>Work Info</h2>
 		    	<table class="section-items">
 			    {% if profile.company %}
@@ -97,11 +114,35 @@
 			   
 			    
 			  </table>
-			  
-			  
-			  
 			 </div>
+			 
+		</div>
+	<div class="clear-both"></div>
     </div>
 
+	{% latest_contributions user_this as contributions %}
+	<div class="latest-contributions">
+		<h3>Latest Contributions</h3>
+			{% for contribution in contributions %}
+			<div class="contribution">
+				<div class="content-type">{{ contribution.content_type.name|capfirst }}</div>
+				<div class="contrib-title">
+					<a href="{{ contribution.object.get_absolute_url }}">{{ contribution.title }}</a>
+				</div>
+				<div class="contrib-create-dt">{{ contribution.create_dt|date:"D d M Y P" }}</div>
+				<div style="clear:both;"></div>
+			</div>
+			{% endfor %}
+	</div>
+
 </div>
+
+<script type="text/javascript" src="/site_media/static/js/global/dropdown.js"></script>
+<script type="text/javascript">
+var iconrow = new dropdown({
+	container:	'more-options-wrap',
+	trigger:	'more-options-trigger',
+	target:		'more-options-target'
+});
+</script>
 {% endblock %}

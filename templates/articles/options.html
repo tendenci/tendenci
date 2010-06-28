@@ -1,14 +1,16 @@
 {% load base_tags %}
+{% load perm_tags %}
 <ul>	
-    <li><a href="{% url article.print_view article.id %}">Print</a></li>
+    <li><a href="{% url article.print_view opt_object.pk %}">Print</a></li>
     
-    {% has_perm user articles.change_article article as can_edit %}
+    {% has_perm user articles.change_article opt_object as can_edit %}
     {% if can_edit %} 
-    	<li><a href="{% url article.edit article.id %}">Edit</a></li>
+    	<li><a href="{% url article.edit opt_object.pk %}">Edit</a></li>
+		<li><a href="{% url article.edit.meta opt_object.pk %}">Meta</a></li>
     {% endif %}
     
-    {% has_perm user articles.delete_article article as can_delete %}
+    {% has_perm user articles.delete_article opt_object as can_delete %}
     {% if can_delete %} 
-	<li class="delete"><a href="{% url article.delete article.id %}">Delete</a></li>
+	<li class="delete"><a href="{% url article.delete opt_object.pk %}">Delete</a></li>
 	{% endif %}
 </ul>
