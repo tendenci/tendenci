@@ -7,6 +7,7 @@ from jobs.managers import JobManager
 from entities.models import Entity
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
+from jobs.module_meta import JobMeta
 
 from uuid import uuid1 
 
@@ -96,6 +97,14 @@ class Job(TendenciBaseModel ):
 
     class Meta:
         permissions = (("view_job","Can view job"),)
+
+    def get_meta(self, name):
+        """
+        This method is standard across all models that are
+        related to the Meta model.  Used to generate dynamic
+        meta information niche to this model.
+        """
+        return JobMeta().get_meta(self, name)
 
     @models.permalink
     def get_absolute_url(self):
