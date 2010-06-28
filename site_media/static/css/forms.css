@@ -1,0 +1,84 @@
+div.forms {
+	width: 90%;
+}
+
+div.forms .errors {
+	color: #990000;
+	margin: 10px 0 10px 0;
+	font-weight: bold;
+}
+
+div.forms .form-field {
+	margin-bottom: 15px;
+}
+
+div.forms .form-field .label {
+	font-size: 16px;
+	margin-bottom: 2px;
+	color: #555;
+}
+
+div.forms .form-field .error {
+	color: #990000;
+}
+
+div.forms .form-field .help-text {
+	color: #777;
+}
+
+div.forms .form-field .field input[type="text"] {
+	padding: 3px;
+	font-size: 16px;
+	width: 70%;
+	color: #777;
+}
+
+div.forms .form-field .field input[type="password"] {
+	padding: 3px;
+	font-size: 16px;
+	width: 70%;
+	color: #777;
+}
+
+div.forms .form-field .field select {
+	padding: 3px;
+	font-size: 16px;
+	width: 50%;	
+	color: #777;
+}
+
+div.forms .form-field .field textarea {
+	width: 70%;
+	font-size: 16px;
+	color: #777;
+}
+
+div.forms input[type="submit"] {
+	padding: 5px;
+	cursor: pointer;
+}
+
+div.forms div.checkbox {
+	float: left;
+}
+
+div.forms div.checkbox .field {
+	float: left;
+}
+
+div.forms div.checkbox .label {
+	float: left;	
+	margin-left: 5px;
+}
+
+div.forms div.checkbox .help-text {
+	clear: both;
+}
+
+.required {
+	font-weight: bold;
+}
+
+img.captcha {
+	display: block;
+}

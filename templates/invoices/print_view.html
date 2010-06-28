@@ -1,0 +1,20 @@
+{% extends "invoices/base.html" %}
+
+{% block title %}{{ block.super }}Invoice View{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/invoices.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice View</h1>
+<div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ SITE_GLOBAL_SITEMAILINGADDRESS }}</div>
+<div>{{ SITE_GLOBAL_NONPROFITSTATEMENT }}</div>
+
+<div>{{ notify }}</div>
+<div class="invoice-view-display">
+{{ invoice_display|safe }}
+
+</div>
+{% endblock %}

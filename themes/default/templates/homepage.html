@@ -1,0 +1,39 @@
+{% extends "site_base.html" %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+	.offline a {
+		color: #DDD;
+	}
+	.online a {
+		color: #551A8B;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+	{% if user.is_staff %}
+	<h2>Admin</h2>
+	<a href="/admin/">Admin Panel (Developer only)</a>
+    {% endif %}
+	<h3>Modules</h3>
+	<ul>
+		<li class="online"><a href="{% url dashboard %}">Dashboard</a></li>
+    	<li class="online"><a href="{% url profile.index %}">{% firstof MODULE_USERS_LABEL "Users" %}</a></li>
+    	<li class="online"><a href="{% url groups %}">{% firstof MODULE_GROUPS_LABEL "Groups" %}</a></li>
+    	<li class="offline"><a href="javascript:;">{% firstof MODULE_EVENTS_LABEL "Events" %}</a></li>
+    	<li class="online"><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL "Articles" %}</a></li>
+    	<li class="offline"><a href="javascript:;">{% firstof MODULE_JOBS_LABEL "Jobs" %}</a></li>
+    	<li class="online"><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL "News" %}</a></li>
+    	<li class="offline"><a href="javascript:;">{% firstof MODULE_DIRECTORIES_LABEL "Directories" %}</a></li>
+        <li class="online"><a href="{% url photoset_latest %}">{% firstof MODULE_PHOTOSETS_LABEL "Pages" %}</a></li>
+    	<li class="online"><a href="{% url stories %}">{% firstof MODULE_STORIES_LABEL "Pages" %}</a></li>
+    	<li class="online"><a href="{% url pages %}">{% firstof MODULE_PAGES_LABEL "Pages" %}</a></li>
+     	<li class="online"><a href="{% url entities %}">{% firstof MODULE_ENTITIES_LABEL "Entities" %}</a></li>
+     	<li class="online"><a href="{% url files %}">{% firstof MODULE_MEDIA_LABEL Files %}</a></li>
+     	<li class="online"><a href="{% url settings %}">Settings</a></li>
+        <li class="online"><a href="{% url event_logs %}">{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</a></li>
+    </ul>
+{% endblock %}

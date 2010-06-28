@@ -15,15 +15,14 @@
 {% endblock %}
 
 {% block body %}
+{% tags_for_object photo as tags %}
 
 	<div class="photo-instance">
         <div class="photo-title-wrap">
             <h2>{% firstof photo.title "Untitled" %}</h2>
         </div>
         <div class="photo-nav">
-            {% if photo_set_id %}
-            <div class="photo-back"><a href="{% url photoset_details photo_set_id %}">&laquo; Browse photo set</a></div>
-            {% endif %}
+			<div class="photo-back"><a href="{% url photoset_details set_id %}">&laquo; Back to photo set</a></div>
         </div>
         <div class="photo-traverse">
             <ul>
@@ -40,33 +39,28 @@
         <div class="photo-caption-wrap">
             {{ photo.caption }}
         </div>
-        {% if photo.tags %}
         <div class="photo-tags">
-            Tags: {{ photo.tags }}
+            Tags: {% for tag in tags %} {{ tag }} {% endfor %}
         </div>
-        {% endif %}
         <div class="photo-author-wrap">
-            Uploaded by {# firstof  photo.member.get_profile.name photo.member.username #}
+            Uploaded by {% firstof  photo.member.get_profile.display_name photo.member.username %}
         </div>
         <div class="hr"></div>
         <div class="photo-options">
-            <ul>
-                <li class="photo-edit" data-id="{{ photo.id }}"><a href="{% url photo_edit photo.id photo_set_id %}">Edit</a></li>
-                <li class="photo-delete" data-id="{{ photo.id }}"><a href="{% url photo_destroy photo.id %}">Delete</a></li>
-            </ul>
+			{% photo_options request.user photo %}
         </div>
 	</div><!-- END .photo-instance -->
 
 <!-- delete photo form -->
-<form name="photo-delete" method="POST" action="{% url photo_destroy photo.id %}">
+<form name="photo-delete" method="POST" action="{% url photo_destroy photo.pk set_id %}">
     <input type="hidden" name="action" value="delete">
-    <input type="hidden" name="delete_id" value="{{ photo.id }}" />
+    <input type="hidden" name="delete_id" value="{{ photo.pk }}" />
 </form>
     
 {% endblock %}
 
 
-{% block body_bottom %}
+{% block extra_body %}
 <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="/site_media/static/js/tendenci5.api.client.js"></script>
 <script type="text/javascript" src="/site_media/static/js/jquery.tools.min.js"></script>
@@ -90,7 +84,7 @@ $(document).ready(function(){
 	});
 
 	var mini_slide = new MiniSlide({
-		photo_id: {{ photo.id }},
+		photo_id: {{ photo.pk }},
 		set_id: {{ photo_set_id }}
 	});
 
@@ -275,7 +269,7 @@ var MiniSlide = function(params){
 		if(self.photos[set_id] == undefined){
 			self.loading_msg_handler('show', set_id);
 			// get photos from database
-			self.photo_neighbor_client.read({id:{{ photo.id }}, set:set_id}, function(photos_list){
+			self.photo_neighbor_client.read({id:{{ photo.pk }}, set:set_id}, function(photos_list){
 				self.photos[set_id] = photos_list; // save photos
 				self.populate(set_id, self.photos[set_id]);
 				// hide loading message; half-a-second delay
@@ -339,7 +333,7 @@ var MiniSlide = function(params){
 		}
 		else{
 			$new_link.attr('href', photo.absolute_url );
-			$new_link.attr('data-id', photo.id);			
+			$new_link.attr('data-id', photo.pk);			
 			// make new image
 			$new_img = $('<img />');
 			$new_img.attr('src', photo.square_url );

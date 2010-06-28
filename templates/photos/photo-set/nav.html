@@ -1,0 +1,55 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user photoset.add_photoset as can_add_photoset %}
+
+{% if nav_object %}
+	{% has_perm user photoset.view_photoset nav_object as can_view_photoset %}
+	{% has_perm user photoset.change_photoset nav_object as can_edit_photoset %}
+{% else %}
+	{% has_perm user photoset.view_photoset as can_view_photoset %}
+	{% has_perm user photoset.change_photoset as can_edit_photoset %}
+{% endif %}
+
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>{{ MODULE_PHOTOS_LABEL }}</span>
+		<ul id="secondary">
+			<li><a href="{% url photoset_latest %}">{{ MODULE_PHOTOS_LABEL }}:</a></li> 
+			{% if can_edit_setting %}
+				<li><a href="{% url settings.index "module" "photos" %}">Settings</a></li>
+			{% endif %}
+			{% if nav_object %}
+				{% if can_view_photoset %}
+				<li><a href="{% url photoset_details nav_object.pk %}">View Set</a></li>
+				{% endif %}
+				{% if can_edit_photoset %}
+				<li><a href="{% url photoset_edit nav_object.pk %}">Edit Set</a></li>
+				{% endif %}
+			{% endif %}
+			<li><a href="{% url photoset_latest %}">Search Sets</a></li>
+			{% if can_add_photoset %}
+				<li><a href="{% url photoset_add %}">Add Photo Set</a></li>
+			{% endif %}
+			{% if nav_object %}
+				{% if can_add_photoset %}
+				<li><a href="{% url photos_batch_add nav_object.pk %}">Add Photos to Set</a></li>
+				{% endif %}
+			{% endif %}
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
+		</ul>
+		
+	</li>
+	</ul>
+</div>

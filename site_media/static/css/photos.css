@@ -1,7 +1,7 @@
 
 
 .t {
-	width: 1000px;
+	width: 90%;
 }
 .t h1 {
 	margin: 0;
@@ -314,9 +314,10 @@ table.photo-form select {
 	border-top-left-radius: 8px;
 	border-top-right-radius: 8px;
 }
-.photo-wrap {
-	float: left;
+
+.edit-wrap .photo-wrap {
 	margin-bottom: 5px;
+	float: left;
 }
 .set-wrap {
 	float: right;
@@ -515,6 +516,7 @@ div.gallery-photo-thumb img {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin: 10px 0;
+	background-color: white;
 }
 .photo-set table {
 	width: 100%;
@@ -528,11 +530,24 @@ div.gallery-photo-thumb img {
 .photo-set table td.image img {
 	padding: 5px;
 	margin: 0 10px 0 0;
-	border: 1px solid silver;
+	border: 1px solid gray;
 }
 .photo-set table td.info h2 {
 	margin: 0;
 }
 .photo-set table td.info div.actions a {
 	margin: 0 1px;
+}
+
+/*= photo-set search form
+-------------------------------- */
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
 }

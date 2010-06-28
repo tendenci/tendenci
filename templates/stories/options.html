@@ -1,0 +1,14 @@
+{% load base_tags %}
+{% load perm_tags %}
+<div class="t-iconrow">
+<ul>	
+    {% has_perm request.user stories.change_stories opt_object as can_edit %}
+    {% if can_edit %} 
+    	<li><a href="{% url story.edit opt_object.pk  %}" title="Edit Story" class="option-link edit">Edit</a></li>
+    	<li><a href="{% url story.upload opt_object.pk  %}" title="Upload Story" class="option-link upload">Upload</a></li>
+    	<li><a href="{% url story.delete opt_object.pk  %}" class="option-link delete" title="Delete Story">Delete</a></li>
+    {% endif %}
+    
+    
+</ul>
+</div>

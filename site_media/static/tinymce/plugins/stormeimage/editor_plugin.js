@@ -25,8 +25,8 @@
 					
 				ed.windowManager.open({
 					//file : url + '/image.html',
-					file : '/media-files/tinymce/?app_label='+ app_label +'&model='+ model +'&instance_id='+ instance_id,
 					file : '/files/tinymce/?app_label='+ app_label +'&model='+ model +'&instance_id='+ instance_id,
+
 					width : 480 + parseInt(ed.getLang('stormeimage.delta_width', 0)),
 					height : 385 + parseInt(ed.getLang('stormeimage.delta_height', 0)),
 					inline : 1

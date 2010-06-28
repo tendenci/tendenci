@@ -1,0 +1,81 @@
+{% extends "jobs/base.html" %}
+{% load pagination_tags %}
+{% load job_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/jobs.css">
+<link rel="alternate" type="application/rss+xml" title="Latest Jobs" href="{% url job.feed %}" />
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_JOBS_LABEL }} Search</h1>
+
+    {% job_nav request.user %}
+
+	{% job_search %}
+    {% autopaginate jobs 10 %}
+	
+	<div class="jobs-wrap">
+    {% for job in jobs %}
+    	{% has_perm user jobs.view_job job as can_view %}
+    	{% if can_view %}
+		<div class="job-wrap">
+			<div class="options">
+
+                <div class="dropdown-options">
+                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <ul>
+                        <li>Review Reports</li>
+                        <li>Optimize Meta Tags</li>
+                        <li>Attach Files</li>
+                        <li>View Revisions</li>
+                        <li>Delete</li>
+                    </ul>
+                </div>
+
+                <div class="quick-options">
+					{% job_options request.user job %} 	       
+                </div>
+			</div>
+
+
+            <h2><a href="{% url job job.pk %}">{% firstof job.title "Untitled" %}</a></h2>
+            <div class="content">{{ job.description|striptags|truncatewords:20 }}</div>
+			<div class="meta">
+            	<div class="submitted">Released on {{ job.release_dt|date:"D d M Y P" }} by {{ job.creator }}</div>
+            </div>
+
+            <!-- delete-job form -->
+            <form name="job-delete" method="POST" action="{% url job.delete job.pk %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+
+		</div>
+		{% endif %}
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_job = confirm('Permenantly delete {{ MODULE_JOBS_LABEL }}?');	// confirm
+				if(delete_job) $(this).parents('.job-wrap').find('form[name="job-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+{% endblock %}

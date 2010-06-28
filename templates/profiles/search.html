@@ -1,65 +1,69 @@
 {% extends "profiles/base.html" %}
 {% load pagination_tags %}
+{% load avatar_tags %}
+{% load profile_tags %}
+{% load perm_tags %}
 
-{% block title %}Search Page{% endblock %}
+{% block title %}Users Search Page{% endblock %}
 
-{% block head %}
-<link rel="stylesheet" href="/site_media/static/css/articles.css">
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+<link rel="stylesheet" href="/site_media/static/css/profiles.css">
 {% endblock %}
 
 {% block body %}
-
+{{ block.super }}
 <div class="t">
-    <h1>Users Search Page</h1>
+{% users_nav request.user user_this %}
+    <h1>Users Search</h1>
 
-    <div class="back-to-search">
-    	<a href="/">&laquo; Homepage</a>
-        <a href="{% url profile.add %}">Add user</a>
-	</div>
-
+	{% profile_search %}
     {% autopaginate profiles 10 %}
 
-	<div class="articles-wrap">
+	<div class="profiles-wrap">
     {% for profile in profiles %}
-		<div class="article-wrap">
-
-
-			<div class="options">
-
-                <div class="dropdown-options">
-                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                    <ul>
-                        <li>Review Reports</li>
-                        <li>Optimize Meta Tags</li>
-                        <li>Attach Files</li>
-                        <li>View Revisions</li>
-                        <li>Delete</li>
-                    </ul>
-                </div>
-
-                <div class="quick-options">
-                    <ul>
-                        <li><a href="{% url profile.edit profile.user.id %}">Edit</a></li>
-						<li class="delete"><a href="{% url profile.delete profile.user.id %}">Delete</a></li>
-                    </ul>
-                </div>
-			</div>
-
-
-            <h2><a href="{% url profile profile.user.id %}">{{ profile.user.first_name }} {{ profile.user.last_name }}</a></h2>
-            <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
+    {% with profile.object as profile %}
+    
+		<div class="profile-wrap">
+			 {% users_options request.user profile.user %}
+            <h2><a href="{% url profiles.views.index profile.user.username %}">{{ profile.user.last_name }}{%if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{profile.user.email}})</a></h2>
+           <div class="clear-right"></div>
+           
+           <div class="profile-avatar-left" style="float: left; padding-right:1em;">
+    			{% avatar user_this 56 %}
+    		</div>
+           
+          
+            <div class="content" style="float: left; margin-left:5px;">
+            	{% if profile.user.email %}
+            	<b>Email:</b> {{ profile.user.email }}<br />
+            	{% endif %}
+            	{% if profile.phone %}
+            	<b>Phone:</b> {{ profile.phone }}<br />
+            	{% endif %}
+            	{% if profile.company %}
+            	<b>Company:</b> {{ profile.company }}<br />
+            	{% endif %}
+            </div>
+            
+            <div class="clear-left" style="clear: left;"></div>
+            
 			<div class="meta">
-            	<div class="submitted">Added on {{ profile.create_dt|date:"D d M Y P" }} by {{ profile.creator }}</div>
+            	<div class="submitted"><small>Added on {{ profile.create_dt|date:"D d M Y P" }} by {{ profile.creator }}</small></div>
             </div>
 
-            <!-- delete-article form -->
-            <form name="article-delete" method="POST" action="{% url profile.delete profile.user.id %}">
+            <!-- delete-profile form -->
+            <form name="profile-delete" method="POST" action="{% url profile.delete user.pk %}">
                 <input type="hidden" name="action" value="delete">
             </form>
-
-		</div>
+            
+            </div>
+		
+	{% endwith %}	
 	{% empty %}
 		<div>0 Results Found</div>
+		
     {% endfor %}
 	</div>
 
@@ -67,7 +71,7 @@
 </div>
 {% endblock %}
 
-{% block body_bottom %}
+{% block extra_body %}
 
 	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript">
@@ -76,9 +80,18 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_user = confirm('Permenantly delete user?');	// confirm
-				if(delete_user) $(this).parents('.article-wrap').find('form[name="article-delete"]').submit() // delete: if OK
+				if(delete_user) $(this).parents('.profile-wrap').find('form[name="profile-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});
     </script>
+    <script type="text/javascript" src="/site_media/static/js/global/dropdown.js"></script>
+<script type="text/javascript">
+var iconrow = new dropdown({
+	container:	'more-options-wrap',
+	trigger:	'more-options-trigger',
+	target:		'more-options-target'
+});
+</script>
+    
 {% endblock %}

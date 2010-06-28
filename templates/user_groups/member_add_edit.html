@@ -1,0 +1,33 @@
+{% extends "user_groups/base.html" %}
+{% load user_group_tags %}
+
+{% block title %}Groups{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+<link rel="stylesheet" href="/site_media/static/css/usergroups.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+{% user_group_nav request.user %}
+<div class="quick-options">
+		{% user_group_options request.user group %} 
+	</div>
+
+<h1>{% if groupmembership %}Edit Member <a href="{{ groupmembership.member.get_absolute_url }}">{{groupmembership.member}}</a> in{% else %}Add Member to{% endif %} Group</h1>
+<div class="clear-right"></div>
+ <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+
+<form method="post" action=".">
+
+{{ form.as_p }}
+
+<div class="submit-row">
+		<input type="submit" value="Save" class="default" />
+	</div>
+</form>
+
+</div>
+{% endblock %}

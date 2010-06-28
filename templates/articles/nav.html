@@ -1,18 +1,64 @@
 {% load base_tags %}
+{% load perm_tags %}
 
-<div class="back-to-search">
-    <a href="/">Homepage</a>
-    {% has_perm user articles.add_article as can_add %}
-    
-    {% url article.search as search_url %}
-    {% if not search_url in request.path %}
-    	<a href="{{ search_url }}">Search {{ MODULE_ARTICLES_LABEL|lower }}</a>
-    {% endif %}
-    
-    {% url article.add as add_url %}
-    {% if not add_url in request.path %}
-    {% if can_add %}
-	    <a href="{{ add_url }}">Add {{ MODULE_ARTICLES_LABEL|lower }}</a>
-    {% endif %}
-    {% endif %}
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user articles.add_article as can_add_article %}
+
+{% if nav_object %}
+	{% has_perm user articles.view_article nav_object as can_view_article %}
+	{% has_perm user articles.change_article nav_object as can_edit_article %}
+	{% has_perm user articles.delete_article nav_object as can_delete_article %}
+{% else %}
+	{% has_perm user articles.view_article as can_view_article %}
+	{% has_perm user articles.change_article as can_edit_article %}
+	{% has_perm user articles.delete_article as can_delete_article %}
+{% endif %}
+
+
+
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>{{ MODULE_ARTICLES_LABEL }}</span>
+		<ul id="secondary">
+			<li><a href="{% url articles %}">{{ MODULE_ARTICLES_LABEL }}:</a></li> 
+			{% if can_edit_setting %}
+				<li><a href="{% url settings.index "module" "articles" %}">Settings</a></li>
+			{% endif %}
+			{% if nav_object %}
+				{% if can_view_article %}
+				<li><a href="{% url article nav_object.pk %}">View</a></li>
+				{% endif %}
+				{% if can_edit_article %}
+				<li><a href="{% url article.edit nav_object.pk %}">Edit</a></li>
+				<li><a href="{% url article.edit.meta nav_object.pk %}">Edit Meta</a></li>
+				{% endif %}
+
+				{% if can_delete_article %}
+				<li><a class="delete" href="{% url article.delete nav_object.pk %}">Delete</a></li>
+				{% endif %}
+
+			{% endif %}
+			<li><a href="{% url article.search %}">Search</a></li>
+			{% if can_add_article %}
+			<li><a href="{% url article.add %}">Add</a></li>
+			{% endif %}
+
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
+		</ul>
+		
+	</li>
+	{% if MODULE_NEWS_ENABLED %}
+	<li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}</a></li>
+	{% endif %}
+	</ul>
 </div>

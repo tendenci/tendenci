@@ -1,0 +1,57 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user pages.add_page as can_add_page %}
+
+{% if nav_object %}
+	{% has_perm user pages.view_page nav_object as can_view_page %}
+	{% has_perm user pages.change_page nav_object as can_edit_page %}
+{% else %}
+	{% has_perm user pages.view_page as can_view_page %}
+	{% has_perm user pages.change_page as can_edit_page %}
+{% endif %}
+
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>{{ MODULE_PAGES_LABEL }}</span>
+		<ul id="secondary">
+			<li><a href="{% url pages %}">{{ MODULE_PAGES_LABEL }}:</a></li> 
+			{% if can_edit_setting %}
+				<li><a href="{% url settings.index "module" "pages" %}">Settings</a></li>
+			{% endif %}
+			{% if nav_object %}
+				{% if can_view_page %}
+				<li><a href="{% url page nav_object.pk %}">View</a></li>
+				{% endif %}
+				{% if can_edit_page %}
+				<li><a href="{% url page.edit nav_object.pk %}">Edit</a></li>
+				<li><a href="{% url page.edit.meta nav_object.pk %}">Edit Meta</a></li>
+				{% endif %}
+			{% endif %}
+			<li><a href="{% url page.search %}">Search</a></li>
+			{% if can_add_page %}
+			<li><a href="{% url page.add %}">Add</a></li>
+			{% endif %}
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
+		</ul>
+		
+	</li>
+	{% if MODULE_ARTICLES_ENABLED %}
+	<li><a href="{% url articles %}">{{ MODULE_ARTICLES_LABEL }}</a></li>
+	{% endif %}
+	{% if MODULE_NEWS_ENABLED %}
+	<li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}</a></li>
+	{% endif %}
+	</ul>
+</div>

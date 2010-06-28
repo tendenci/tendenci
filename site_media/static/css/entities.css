@@ -1,7 +1,7 @@
 
 
 .t {
-	width: 60%;
+	width: 90%;
 }
 .t h2 {
 	margin: 0 auto 10px 0;
@@ -16,6 +16,7 @@
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
+	background-color: white;
 }
 
 .t .entities-wrap .entity-wrap h2 {
@@ -81,5 +82,17 @@
 }
 .t ul.entities-nav li {
 	display: inline;
+}
+
+div.forms div.form-field div.id_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_contact_name .field input {
+	width: 30%;
 }
 

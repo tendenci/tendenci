@@ -1,0 +1,47 @@
+{% extends "invoices/base.html" %}
+{% load pagination_tags %}
+{% load invoice_tags %}
+
+{% block title %}{{ block.super }}Invoice Search{% endblock %}
+
+{% block extra_head %}
+<style>
+.invoice-row{
+	width: 620px;
+	border: 1.5px solid #333;
+	padding: .5px 1px 1px .5px;
+	margin-bottom: 1em;
+}
+.invoice-row-inner{
+	border: 1.5px solid #333;
+}
+.body-copy-yellow{
+	background-color: yellow;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ {% invoice_nav  %}
+<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice Search</h1>
+
+{% autopaginate invoices 10 %}
+<div class="invoices-wrap">
+    {% for invoice in invoices %}
+    	<div class="invoice-row">
+	    	<div class="invoice-row-inner">
+				{% invoices_search_results_line request invoice %}
+			</div>
+		</div>
+		
+	{% empty %}
+		<div>0 Results Found</div>
+	{% endfor %}
+</div>
+
+
+ {% paginate %}
+</div>
+
+{% endblock %}
