@@ -209,7 +209,7 @@ TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
 
 TINYMCE_DEFAULT_CONFIG = {
-    'plugins': "table,paste,searchreplace,inlinepopups,tabfocus,fullscreen,media,spellchecker",
+    'plugins': "stormeimage,table,paste,searchreplace,inlinepopups,tabfocus,fullscreen,media,spellchecker",
     'gecko_spellcheck': False,
     'theme': "advanced",
     'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,|,image,|,pagebreak,fullscreen,code",
