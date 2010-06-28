@@ -19,4 +19,4 @@ class ContactForm(forms.Form):
     url = forms.URLField(label=_('URL'), max_length=200, required=False)
 
     message = forms.CharField(widget=forms.Textarea)
-    #captcha = CaptchaField()
+    captcha = CaptchaField()
