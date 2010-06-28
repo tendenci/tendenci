@@ -92,6 +92,9 @@ ul { /* remove bullets and spacing */
 .modules li.locations {
 	background-image: url('/site_media/static/images/icons/locations-bw-64x64.png');
 }
+.modules li.invoices {
+	background-image: url('/site_media/static/images/icons/invoicing-bw-64x64.png');
+}
 
 .side-panel {
 	float: right;
