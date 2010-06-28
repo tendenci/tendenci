@@ -7,6 +7,7 @@ from perms.models import TendenciBaseModel
 from news.managers import NewsManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
+from news.module_meta import NewsMeta
 from entities.models import Entity
 
 class News(TendenciBaseModel):
@@ -42,6 +43,14 @@ class News(TendenciBaseModel):
     class Meta:
         permissions = (("view_news","Can view news"),)
         verbose_name_plural = "news"
+
+    def get_meta(self, name):
+        """
+        This method is standard across all models that are
+        related to the Meta model.  Used to generate dynamic
+        meta information niche to this model.
+        """
+        return NewsMeta().get_meta(self, name)
 
     @models.permalink
     def get_absolute_url(self):

@@ -1,7 +1,9 @@
 {% extends "jobs/base.html" %}
 {% load job_tags %}
 
-{% block title %}{{ block.super }}{{ job.headline }}{% endblock %}
+{% block title %}{{ block.super }}{{ job.meta.get_title }}{% endblock %}
+{% block meta_description %}{{ job.meta.get_description }}{% endblock %}
+{% block meta_keywords %}{{ job.meta.get_keywords }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/jobs.css">
