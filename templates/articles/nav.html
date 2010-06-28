@@ -7,9 +7,11 @@
 {% if nav_object %}
 	{% has_perm user articles.view_article nav_object as can_view_article %}
 	{% has_perm user articles.change_article nav_object as can_edit_article %}
+	{% has_perm user articles.delete_article nav_object as can_delete_article %}
 {% else %}
 	{% has_perm user articles.view_article as can_view_article %}
 	{% has_perm user articles.change_article as can_edit_article %}
+	{% has_perm user articles.delete_article as can_delete_article %}
 {% endif %}
 
 
@@ -38,11 +40,17 @@
 				<li><a href="{% url article.edit nav_object.pk %}">Edit</a></li>
 				<li><a href="{% url article.edit.meta nav_object.pk %}">Edit Meta</a></li>
 				{% endif %}
+
+				{% if can_delete_article %}
+				<li><a class="delete" href="{% url article.delete nav_object.pk %}">Delete</a></li>
+				{% endif %}
+
 			{% endif %}
 			<li><a href="{% url article.search %}">Search</a></li>
 			{% if can_add_article %}
 			<li><a href="{% url article.add %}">Add</a></li>
 			{% endif %}
+
 			{% if user.is_authenticated %}
 			<li><a href="{% url auth_logout %}">Log Off</a></li> 
 			{% endif %}
