@@ -2,14 +2,14 @@
 local_settings.py
 local_urls.py
 schema.xml
-themes/
+/themes/
 
 # Ignore media files
 site_media/photologue
 site_media/files
 site_media/media
 site_media/static/tresources
-cache
+/cache
 
 # Ignore all dotfiles...
 .*
