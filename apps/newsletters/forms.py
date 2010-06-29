@@ -1,6 +1,9 @@
+import datetime
 from django import forms
 from actions.models import Action
+from django.forms.extras.widgets import SelectDateWidget
 
+THIS_YEAR = datetime.date.today().year
 DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
                 (14,'14'), (30,'30'), (60,'60'), (90,'90'),
                 (120,'120'), (0,'ALL'),
@@ -16,8 +19,8 @@ class NewsletterAddForm(forms.ModelForm):
     include_login = forms.BooleanField()
     jump_links = forms.ChoiceField(initial='1', choices=INCLUDE_CHOICES)
     events =  forms.ChoiceField(initial='1', choices=INCLUDE_CHOICES)
-    event_start_dt = forms.DateField(required=False)
-    event_end_dt = forms.DateField(required=False)
+    event_start_dt = forms.DateField(required=False, widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))
+    event_end_dt = forms.DateField(required=False, widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))
     articles = forms.ChoiceField(initial='1', choices=INCLUDE_CHOICES)
     articles_days = forms.ChoiceField(initial=60, choices=DAYS_CHOICES)
     news = forms.ChoiceField(initial='1', choices=INCLUDE_CHOICES)
@@ -26,7 +29,7 @@ class NewsletterAddForm(forms.ModelForm):
     jobs_days = forms.ChoiceField(initial=30, choices=DAYS_CHOICES)
     pages = forms.ChoiceField(initial='0', choices=INCLUDE_CHOICES)
     pages_days = forms.ChoiceField(initial=7, choices=DAYS_CHOICES)
-    template_name = forms.CharField(max_length=150)
+    template = forms.CharField(max_length=250)
     format = forms.CharField(widget=forms.RadioSelect(choices=(('detailed', 'Detailed - original format'), 
                                                               ('simplified', 'Simplified - removes AUTHOR, '+\
                                                                'POSTED BY, RELEASES DATE, etc from the detailed format'),)), 
@@ -53,6 +56,6 @@ class NewsletterAddForm(forms.ModelForm):
                   'jobs_days',
                   'pages',
                   'pages_days',
-                  'template_name',
+                  'template',
                   'format',
                   )
