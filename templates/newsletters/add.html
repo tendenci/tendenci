@@ -1,0 +1,168 @@
+{% extends "newsletters/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans 'Tendenci Newsletter Generator'%}
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/newsletters.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ <div id="t-newsletters">
+   <div id="t-add">
+		<h1>{% trans 'Generate Tendenci Newsletter '%}</h1>
+		<p>This form will create a Tendenci newsletter for you with the following information.</p>
+		<div class="yellow-highlight" style="margin-bottom: 12px;">You will still have the ability to make edits before sending.</div> 
+
+		<form name="newsletteraddform" id="newsletteraddform" method="post" action=".">
+			<p class="headers" title="This field is required.">
+                &nbsp;<label>Send To:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
+            </p> 
+		 	<div class="input-wrapper">
+                <p><strong>Send to Members Only?</strong> {{ form.member_only }} If checked, skip user group</p>
+                <p><strong>User group</strong> {{ form.group }}</p>
+			    <p>Include email2? {{ form.send_to_email2 }} 
+			    Yes, send to user's second email address
+                </p>
+            </div>
+            
+            
+              <p class="headers" title="This field is required.">
+                &nbsp;<label id="title">Subject:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
+            </p>    
+
+            <div class="input-wrapper">
+                {{ form.subject }}
+                <p>Personalize Subject? {{ form.personalize_subject_first_name }} First Name
+                   {{ form.personalize_subject_last_name }}  Last Name 
+                </p>
+            </div>
+            
+          <div id="module-content" class="module-content">
+	            <div style="float:right;"><a href="#" onclick="javascript:clearModuleContent(this);return false;">Do not include Module Content</a></div>
+	            <h2>Module Content</h2>
+            
+            
+			 <div id="module-options">
+	            <p>Include Login Information? {{ form.include_login }} </p>
+	            <table border="0">
+	                    <tr >
+	                      <td ><strong>Include Jump Links</strong></td>
+	                      <td colspan="2" >{{ form.jump_links }}   
+	                        Nav at the top or specified location of email</td>
+	                      </tr>
+	                    <tr >
+	                      <td colspan="3">&nbsp;</td>
+	                    </tr>
+	                    <tr >
+	                      <td width="119" nowrap ><strong>Calendar Events </strong></td>
+	                      <td width="157" >
+	                        {{ form.events }}                      </td>
+	                      <td width="210">&nbsp;</td>
+	                    </tr>
+	                    <tr >
+	                      <td colspan="3" >Include <strong>Calendar Events</strong> for what date range? </td>
+	                    </tr>
+	                    <tr >
+	                      <td > - Start Date Time </td>
+	                      <td colspan="2" >{{ form.event_start_dt }}</td>
+	                      </tr>
+	                    
+	                    <tr >
+	                      <td > - End Date Time</td>
+	                      <td colspan="2" >{{ form.event_end_dt }}</td>
+	                      </tr>
+	                    <tr >
+	                      <td colspan="3">&nbsp;</td>
+	                    </tr>
+	                    <tr >
+	                      <td>Module</td>
+	                      <td>Add to Newsletter? </td>
+	                      <td>Past ? Days </td>
+	                    </tr>
+	                    <tr >
+	                      <td ><strong>Articles</strong></td>
+	                      <td >
+	                        {{ form.articles }}                     </td>
+	                      <td>{{ form.articles_days }}					</td>
+	                    </tr>
+	                    <tr >
+	                      <td ><strong>News</strong></td>
+	                      <td >
+	                        {{ form.news }}                     </td>
+	                      <td> {{ form.news_days }}  </td>
+	                    </tr>
+	                   
+	                    <tr >
+	                      <td ><strong>Jobs</strong></td>
+	                      <td >
+	                       {{ form.jobs }}                     </td>
+	                      <td>{{ form.jobs_days }} </td>
+	                    </tr>
+	                    
+	                    <tr >
+	                      <td colspan="3" >Include links to recently edited pages?</td>
+	                      </tr>
+	                    <tr >
+	                      <td ><strong>Page</strong></td>
+	                      <td >{{ form.pages }} </td>
+	                      <td >{{ form.pages_days }}                                                          </select></td>
+	                    </tr>
+	                  
+	                    
+	                    </table>
+	                  </div>
+	            </div>
+			
+				<p><strong>Template Selection?</strong></p>
+		
+		
+		
+	
+		<p><strong>Format?</strong></p>
+		<div id="format-list">
+       	 {{ form.format }} 
+        </div>                  
+
+      <div class="yellow-highlight">You will still have the ability to make edits before sending.</div> 
+
+
+		 	<div class="newsletter-submit">
+             <input name="Submit" type="submit" value="Continue to Step 2">
+           </div>
+		</form>
+
+   </div>
+ </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script>
+function clearModuleContent(o){
+    var newsletteradd = document.getElementById("newsletteraddform");
+    newsletteradd.jump_links.options[1].selected = true;
+    newsletteradd.events.options[1].selected = true;
+    newsletteradd.articles.options[1].selected = true;
+    newsletteradd.news.options[1].selected = true;
+    newsletteradd.jobs.options[1].selected = true;
+    newsletteradd.pages.options[1].selected = true;
+    var opts = document.getElementById("module-options");
+    if (opts.style.display != 'none') {
+        opts.style.display = 'none';
+        o.innerHTML = "Show Module Content options";
+    }
+    else {
+        opts.style.display = 'block';
+        o.innerHTML = "Do not include Module Content";
+    }
+}
+
+</script>
+
+{% endblock %}

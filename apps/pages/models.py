@@ -7,6 +7,7 @@ from pages.managers import PageManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from entities.models import Entity
+from pages.module_meta import PageMeta
 
 class Page(TendenciBaseModel):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
@@ -25,6 +26,14 @@ class Page(TendenciBaseModel):
     class Meta:
         permissions = (("view_page","Can view page"),)
 
+    def get_meta(self, name):
+        """
+        This method is standard across all models that are
+        related to the Meta model.  Used to generate dynamic
+        meta information niche to this model.
+        """
+        return PageMeta().get_meta(self, name)
+    
     @models.permalink
     def get_absolute_url(self):
         return ("page", [self.pk])

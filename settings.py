@@ -192,7 +192,7 @@ INSTALLED_APPS = (
 #be deleted by maintenance scripts provided in django-registration.
 ACCOUNT_ACTIVATION_DAYS = 7 
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/dashboard'
 
 AUTH_PROFILE_MODULE = 'profiles.Profile'
 AUTHENTICATION_BACKENDS = (
