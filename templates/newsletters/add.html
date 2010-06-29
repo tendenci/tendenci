@@ -108,7 +108,7 @@
 	                      <td colspan="3" >Include links to recently edited pages?</td>
 	                      </tr>
 	                    <tr >
-	                      <td ><strong>Page</strong></td>
+	                      <td ><strong>Pages</strong></td>
 	                      <td >{{ form.pages }} </td>
 	                      <td >{{ form.pages_days }}                                                          </select></td>
 	                    </tr>
@@ -117,12 +117,35 @@
 	                    </table>
 	                  </div>
 	            </div>
-			
-				<p><strong>Template Selection?</strong></p>
+		<p>&nbsp;</p>	
+		<p><strong>Template Selection?</strong></p>
 		
+		{% if templates %}
+			<h2>Templates for {{ SITE_GLOBAL_SITEDISPLAYNAME }}</h2>
+			<div class="template_list">
+				<ul>
+				{% for template in templates %}
+					<li>
+					<input name="template" value="{{ template }}" type="radio" />
+					<a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
+					</li>
+				{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
 		
+		<h2>Tendenci Default Templates</h2>
+		<div class="template_list">
+			<ul>
+			{% for template in default_templates %}
+				<li>
+				<input name="template" value="{{ template }}" type="radio" />
+				<a href="{% url newsletter.view_default_template template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
+				</li>
+			{% endfor %}
+			</ul>
+		</div>
 		
-	
 		<p><strong>Format?</strong></p>
 		<div id="format-list">
        	 {{ form.format }} 
