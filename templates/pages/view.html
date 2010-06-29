@@ -2,7 +2,9 @@
 {% load page_tags %}
 {% load tagging_tags %}
 
-{% block title %}View Page{% endblock %}
+{% block title %}{{ block.super }}{{ page.meta.get_title }}{% endblock %}
+{% block meta_description %}{{ page.meta.get_description }}{% endblock %}
+{% block meta_keywords %}{{ page.meta.get_keywords }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/pages.css">

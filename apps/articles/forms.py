@@ -22,7 +22,6 @@ class ArticleForm(TendenciBaseForm):
         'category',
         'tags',
         'allow_anonymous_view',
-        'allow_anonymous_edit',
         'allow_user_view',
         'allow_user_edit',
         'syndicate',

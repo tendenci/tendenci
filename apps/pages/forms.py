@@ -7,9 +7,6 @@ class PageForm(TendenciBaseForm):
         fields = (
         'title',
         'content',
-        'page_title',
-        'meta_keywords',
-        'meta_description',
         'tags',
         'allow_anonymous_view',
         'allow_user_view',
@@ -17,7 +14,7 @@ class PageForm(TendenciBaseForm):
         'allow_user_edit',
         'allow_member_edit',
         'syndicate',
-        'displaypagetemplate',
+        'template',
         'status',
         'status_detail',
         )
