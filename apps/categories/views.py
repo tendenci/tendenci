@@ -4,13 +4,14 @@ from django.template import RequestContext
 from django.contrib.contenttypes.models import ContentType
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 
 from base.http import Http403
 from categories.forms import CategoryForm
 from categories.models import Category
 
 @login_required
-def add(request, app_label, model, pk, form_class=CategoryForm, template_name="categories/update.html"):
+def update(request, app_label, model, pk, form_class=CategoryForm, template_name="categories/update.html"):
     # get the content type
     try: content_type = ContentType.objects.get(app_label=app_label,model=model)
     except: raise Http404
@@ -56,6 +57,11 @@ def add(request, app_label, model, pk, form_class=CategoryForm, template_name="c
                 else: # remove
                     Category.objects.remove(object,'sub_category')  
             
+            # kind of a bummer, but save the object to update the search index.
+            # TODO: find a better way to update the index if a category has been changed
+            object.save()
+            
+            messages.add_message(request, messages.INFO, 'Successfully updated %s categories.' % model)
             return HttpResponseRedirect(reverse('category.update', 
                                          args=[form.cleaned_data['app_label'],
                                                form.cleaned_data['model'],
