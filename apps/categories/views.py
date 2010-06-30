@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
+from base.http import Http403
 from categories.forms import CategoryForm
 from categories.models import Category
 
@@ -17,6 +18,11 @@ def add(request, app_label, model, pk, form_class=CategoryForm, template_name="c
     # get the object
     try: object = content_type.get_object_for_this_type(pk=pk)
     except: raise Http404
+    
+    # check permissions
+    perm_tuple = (object._meta.app_label, object._meta.module_name)
+    if not request.user.has_perm('%s.change_%s' % perm_tuple):
+        raise Http403
     
     category = Category.objects.get_for_object(object,'category')
     sub_category = Category.objects.get_for_object(object,'sub_category')
