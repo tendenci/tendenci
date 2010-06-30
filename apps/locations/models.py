@@ -30,7 +30,7 @@ class Location(TendenciBaseModel ):
 
     hq = models.BooleanField(_('Headquarters'))
     
-    entity = models.ForeignKey(Entity,null=True)
+    entity = models.ForeignKey(Entity,null=True, blank=True)
         
     objects = LocationManager()
 
