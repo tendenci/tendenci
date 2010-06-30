@@ -39,19 +39,21 @@
 			<div class="categories">
 				{% get_category_for_object article as category %}
 				{% if category %}
-					Category:&nbsp;<a href="{% url article.search %}?q={{ category }}">{{ category }}</a>&nbsp;
+					Category:&nbsp;<a href="{% url article.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
 				{% endif %}
 				{% get_sub_category_for_object article as sub_category %}
 				{% if sub_category %}
-					Sub Category:&nbsp;<a href="{% url article.search %}?q={{ sub_category }}">{{ sub_category }}</a>&nbsp;
+					Sub Category:&nbsp;<a href="{% url article.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
 				{% endif %}				
 			</div>
 			
 			<div class="tags">
-				Tags: 
-				{% for tag in tags %}
-					<a href="{% url article.search %}?q={{ tag }}">{{ tag }}</a>
-				{% endfor %}
+				{% if tags %}
+					Tags: 
+					{% for tag in tags %}
+						<a href="{% url article.search %}?q={{ tag }}">{{ tag }}</a>
+					{% endfor %}
+				{% endif %}
 			</div>
 
             <div class="submitted">Submitted on {{ article.create_dt|date:"D d M Y P" }} 
