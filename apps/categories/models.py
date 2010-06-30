@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Manager, Q
+from django.db.models import Manager
 
 from categories.utils import prep_category
 
