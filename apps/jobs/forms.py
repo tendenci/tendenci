@@ -42,6 +42,7 @@ class JobForm(TendenciBaseForm):
         'contact_fax',
         'contact_email',
         'contact_website',
+        'tags',        
         'allow_anonymous_view',
         'allow_user_view',
         'allow_member_view',
