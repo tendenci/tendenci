@@ -76,3 +76,10 @@ All CSS for /en/newsletters/add.asp
 #t-newsletters #format-list ul li{
 	list-style: none;
 }
+#t-newsletters .template_list ul li{
+	list-style: none;
+}
+ul.errorlist li{
+		list-style: none;
+		color: red;
+}

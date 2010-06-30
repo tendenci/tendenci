@@ -17,7 +17,7 @@ class Action(TendenciBaseModel):
     group = models.ForeignKey(Group, blank=True, null=True)
     member_only = models.BooleanField(default=False)
     send_to_email2 = models.BooleanField(default=False)
-    category = models.CharField(max_length=50)
+    category = models.CharField(max_length=50, default='', null=True)
     start_dt = models.DateTimeField(auto_now_add=True)
     finish_dt = models.DateTimeField(null=True)
     due_dt = models.DateTimeField(null=True)
