@@ -7,7 +7,10 @@ colors = {
     '123000':'3366FF', # delete
     '124000':'3366FF', # search 
     '125000':'3399FF', # view
-    
+
+    # login
+    '125200':'66CCFF',
+        
     # articles
     '431000':'CC9966', # add
     '432000':'CCCC66', # edit
