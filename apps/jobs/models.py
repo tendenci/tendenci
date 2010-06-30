@@ -68,7 +68,9 @@ class Job(TendenciBaseModel ):
  
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
-   
+ 
+    tags = TagField(blank=True)
+       
     #TODO: FIGURE OUT CATEGORY
     #category_id = models.IntegerField(null=True, blank=True)
           
