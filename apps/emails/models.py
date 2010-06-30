@@ -5,7 +5,7 @@ from perms.models import TendenciBaseModel
 from perms.utils import is_admin
 
 class Email(TendenciBaseModel):
-    guid = models.CharField(max_length=50)
+    guid = models.CharField(max_length=50, default=uuid.uuid1)
     priority = models.IntegerField(default=0)
     subject =models.CharField(max_length=255)
     body = models.TextField()
@@ -61,11 +61,10 @@ class Email(TendenciBaseModel):
     
     def save(self, user=None):
         if not self.id:
-            self.guid = str(uuid.uuid1())
-            if user and user.id:
+            if user and not user.is_anonymous():
                 self.creator=user
                 self.creator_username=user.username
-        if user and user.id:
+        if user and not user.is_anonymous():
             self.owner=user
             self.owner_username=user.username
             
@@ -104,4 +103,42 @@ class Email(TendenciBaseModel):
                         if self.status:
                             boo = True
         return boo
+    
+    
+    def template_body(self, email_d):
+        """ 
+            build the email body from the template and variables passed in by a dictionary
+        """
+        import os.path
+        from django.template.loader import render_to_string
+        from django.conf import settings
+        
+        template = email_d.get('template_path_name', '')
+        
+        # check if this template exists
+        boo = False
+        for dir in settings.TEMPLATE_DIRS:
+            if os.path.isfile(os.path.join(dir, template)):
+                boo = True
+                break
+        
+        if not boo:
+            # log an event
+            # notify admin of missing template
+            pass
+        else:
+            self.body = render_to_string(template) 
+            for key in email_d.keys():
+                # need to convert [blah] to %5Bblah%5D for replace line
+                tmp_value = "%5B" + key[1:-1] + "%5D"
+                if email_d[key] <> None:
+                    self.body = self.body.replace(key, email_d[key])
+                    self.body = self.body.replace(tmp_value, email_d[key])
+                else:
+                    self.body = self.body.replace(key, '')
+                    self.body = self.body.replace(tmp_value, '')
+                
+        return boo
+            
+        
             
