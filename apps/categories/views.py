@@ -75,6 +75,7 @@ def update(request, app_label, model, pk, form_class=CategoryForm, template_name
         'object':object,
         'form':form,
         'app_label': app_label,
+        'model': model,
     }
     
     return render_to_response(template_name, response_data, 

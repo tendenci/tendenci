@@ -20,7 +20,7 @@
     </ul>
     {% endif %}
     <h1>{{ MODULE_CATEGORIES_LABEL }} Update</h1>
-    <h3>{{ app_label|capfirst }} - {{ object }}</h3>
+    <p>{{ model|capfirst }} - <a href="{{ object.get_absolute_url }}">{{ object }}</a></p>
     <div class="article-wrap">
     	<form action="." method="post">
     	<div class="forms">
