@@ -64,6 +64,16 @@ format_currency.is_safe = True
 def scope(object):
     return dir(object)
 
+@register.filter
+def first_chars(string, arg):
+    """ returns the first x characters from a string """
+    string = str(string)
+    if arg:
+        if not arg.isdigit(): return string
+        return string[:int(arg)]
+    else:
+        return string
+    return string
     
     
     
