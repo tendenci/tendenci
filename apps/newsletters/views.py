@@ -25,9 +25,11 @@ def add(request, form_class=NewsletterAddForm, template_name="newsletters/add.ht
     template_selected = ''
     if request.method == "POST":
         form = form_class(request.POST)
+        template_selected = request.POST.get('template', '')
         
         if form.is_valid():
-            pass
+            form.save(request)
+           
             #email = form.save(request.user)
             
             #return HttpResponseRedirect(reverse('email.view', args=[email.id]))
@@ -52,6 +54,7 @@ def add(request, form_class=NewsletterAddForm, template_name="newsletters/add.ht
     
     if os.path.isdir(default_dir):
         default_templates = os.listdir(default_dir)
+        default_templates = ['default/'+ t for t in default_templates]
         
     # get a list of site specific templates
     templates = []

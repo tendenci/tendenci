@@ -17,7 +17,9 @@
 		<h1>{% trans 'Generate Tendenci Newsletter '%}</h1>
 		<p>This form will create a Tendenci newsletter for you with the following information.</p>
 		<div class="yellow-highlight" style="margin-bottom: 12px;">You will still have the ability to make edits before sending.</div> 
-
+		{% if form.non_field_errors %}
+			{{ form.non_field_errors }}
+		{% endif %}
 		<form name="newsletteraddform" id="newsletteraddform" method="post" action=".">
 			<p class="headers" title="This field is required.">
                 &nbsp;<label>Send To:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
@@ -30,7 +32,9 @@
                 </p>
             </div>
             
-            
+            {% if form.subject.errors %}
+				{{ form.subject.errors }}
+			{% endif %}
               <p class="headers" title="This field is required.">
                 &nbsp;<label id="title">Subject:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
             </p>    
@@ -120,13 +124,17 @@
 		<p>&nbsp;</p>	
 		<p><strong>Template Selection?</strong></p>
 		
+		{% if form.template.errors %}
+				{{ form.template.errors }}
+		{% endif %}
+		
 		{% if templates %}
 			<h2>Templates for {{ SITE_GLOBAL_SITEDISPLAYNAME }}</h2>
 			<div class="template_list">
 				<ul>
 				{% for template in templates %}
 					<li>
-					<input name="template" value="{{ template }}" type="radio" />
+					<input name="template" value="{{ template }}" type="radio"  {% if template = template_selected %}checked="checked" {% endif %} />
 					<a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
 					</li>
 				{% endfor %}
@@ -139,8 +147,8 @@
 			<ul>
 			{% for template in default_templates %}
 				<li>
-				<input name="template" value="{{ template }}" type="radio" />
-				<a href="{% url newsletter.view_default_template template %}" target="_blank">{{ template|upper|cut:".HTML" }}</a>
+				<input name="template" value="{{ template }}" type="radio" {% if template = template_selected %}checked="checked" {% endif %} />
+				<a href="{% url newsletter.view_template template %}" target="_blank">{{ template|upper|cut:".HTML"|cut:"DEFAULT/" }}</a>
 				</li>
 			{% endfor %}
 			</ul>
