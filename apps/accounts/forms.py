@@ -25,6 +25,7 @@ class RegistrationCustomForm(RegistrationForm):
         new_user.save()
         
         new_profile = Profile(user=new_user, 
+                              email=self.cleaned_data['email'],
                               company=self.cleaned_data['company'],
                               phone=self.cleaned_data['phone'],
                               address=self.cleaned_data['address'],
