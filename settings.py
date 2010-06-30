@@ -224,7 +224,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'theme_advanced_resize_horizontal': True,
     'dialog_type': "modal",
     'tab_focus': ":prev, :next",
-    'urlconverter_callback': 'tinymce_urlconverter',
+    #'urlconverter_callback': 'tinymce_urlconverter',
     'apply_source_formatting' : False,
 }
 
