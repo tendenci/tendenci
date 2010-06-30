@@ -3,7 +3,15 @@ from django.utils.text import unescape_entities
 from meta.utils import generate_meta_keywords
 
 class ArticleMeta():
-
+    """
+    SEO specific tags carefully constructed follow.  These must *NOT* be perfect
+    but rather should be strong. - ES
+    
+    create a search engine friendly html TITLE tag for the page
+    - we want similar phrases but NOT the exact same between TITLE and META tags
+    - It MUST produce the exact same result if the spider returns but must also differ
+    by site for sites that feed from the same central data
+    """ 
     def get_title(self):
         return self.object.headline
 
@@ -36,3 +44,6 @@ class ArticleMeta():
             return self.get_keywords()
 
         return ''
+    
+
+
