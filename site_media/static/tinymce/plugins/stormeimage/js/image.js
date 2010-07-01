@@ -149,25 +149,18 @@ var ImageDialog = {
 		var icon_url = $(item_wrap).find("input[name='icon_url']").val();
 		var filename = $(item_wrap).find("input[name='filename']").val();
 		var file_url = $(item_wrap).find("input[name='file_url']").val();
+		var file_width = $(item_wrap).find("input[name='file_width']").val();
 
-		// image object
-		var image = new Image();
-		image.src = file_url;
-		var width = image.width;
+		var width = file_width;
+		if(width > 400) width = 400
 
 		// default img attributes
 		tinymce.extend(args, {
 			src : file_url,
 			title : filename,
-			alt : filename
+			alt : filename,
+			width: width
 		});
-
-		// set nice starting width
-		if (image.width > 400) {
-			tinymce.extend(args, {
-				width : 400
-			});
-		}
 
 		ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {skip_undo : true});
 		ed.dom.setAttribs('__mce_tmp', args);

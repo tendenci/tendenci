@@ -108,6 +108,7 @@
 										<input type="hidden" name="filename" value="{{ file.name }}" />
 										<input type="hidden" name="file_url" value="{{ file.get_absolute_url }}" />
 										<input type="hidden" name="file_download_url" value="{{ file.get_absolute_download_url }}" />
+										<input type="hidden" name="file_width" value="{{ file.image_dimensions|first }}" />
 
 										<div class="badge">
 											<div class="icon"><img src="{{ file.icon }}" /></div>
