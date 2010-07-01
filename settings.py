@@ -102,9 +102,9 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'swfupload.middleware.SWFUploadMiddleware',
-    #'swfupload.middleware.MediaUploadMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
@@ -126,6 +126,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
     'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
     
     # tendenci context processors
     'theme.context_processors.theme',
@@ -141,6 +142,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.humanize',
     'django.contrib.sitemaps',
+    'django.contrib.messages',
 
     # third party applications
     'pagination',
@@ -259,6 +261,9 @@ MERCHANT_TXN_KEY = ""
 # --------------------------------------#
 CAPTCHA_FONT_SIZE = 50
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+
+# Django Messaging system
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # local settings for development
 try:
