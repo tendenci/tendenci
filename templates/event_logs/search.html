@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load event_log_tags %}
 {% load base_tags %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
@@ -14,7 +15,6 @@
     <h1>{{ MODULE_EVENT_LOGS_LABEL }} Search</h1>
 	
     {% event_log_nav request.user %}
-
 	{% event_log_search %}
     {% autopaginate event_logs 10 %}
 	
@@ -25,13 +25,13 @@
         	<div class="el-search-header">
                 <table border="0" cellpadding="0" cellspacing="0">
                     <tr>
-                        <td class="el-sh-pk"><strong>{{ event_log.pk }}</strong></td>
+                        <td class="el-sh-pk"><strong><a href="{{ event_log.get_absolute_url }}">{{ event_log.pk }}</a></strong></td>
                         <td class="el-sh-elid">
-                        	<img border="0" src="{% url event_log.colored_image event_log.color %}" width="40" height="20" />
-                            <a href="{{ event_log.get_absolute_url }}">
+                        	<a href="{% url event_log.search %}?q={{ event_log.event_id }}">
+                        		<img border="0" src="{% url event_log.colored_image event_log.color %}" width="40" height="20" />&nbsp; 
                                 {{ event_log.event_id }}
-                            </a>
-                            <a href="{% url event_log.search %}?q={{ event_log.event_id }}">()</a>
+                      		</a>
+                      		<a href="{% url event_log.search %}?q={{ event_log.event_id|first_chars:"3" }}">()</a>
                         </td>
                         <td class="el-sh-source">
                         	{% if event_log.source %}
@@ -47,21 +47,28 @@
                     </tr>
                     <tr>
                     	{% if event_log.user %}
-                    		<td class="el-sh-user" colspan="2">
+                    		<td class="el-sh-user">
                             	User: <a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
                                 <a href="{% url event_log.search %}?q={{ event_log.username|urlencode }}">
                                 	<img border="0" src="{{ STATIC_URL }}tresources/en/images/icons/crosscheck12x12.gif" />
                                 </a>
                             </td>
                         {% else %}
-                        	<td class="el-sh-user" colspan="2">
+                        	<td class="el-sh-user">
                             	User: {{ event_log.username }}
-                                <a href="{% url event_log.search %}?q=anonymous">
+                                <a href="{% url event_log.search %}?q={{ event_log.username }}">
                                     <img border="0" src="{{ STATIC_URL }}tresources/en/images/icons/crosscheck12x12.gif" />
                                 </a>
                             </td>
                        	{% endif %}
-                    	<td colspan="2">{{ event_log.description }}</td>
+                    	<td>{{ event_log.description }}</td>
+                        <td colspan="2">
+                          	{% if event_log.user %}
+                                User ID: <a href="{% url event_log.search %}?q={{ event_log.user.pk }}">{{ event_log.user.pk }}</a>
+                            {% else %}
+                                User ID: <a href="{% url event_log.search %}?q={{ event_log.username }}">0</a>
+                            {% endif %}                      
+                        </td>
                     </tr>
            	   </table>
             </div>
@@ -82,6 +89,42 @@
                 <div class="el-meta-ips">
                 	<table border="0" cellpadding="0" cellspacing="0">
                     	<tr>
+                        	{% if event_log.user %}
+                        		<td colspan="2">
+                                	Creator: <a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
+                                    <a href="{% url event_log.search %}?q={{ event_log.user.pk }}">{{ event_log.user.pk }}</a>
+                                </td>
+                            {% else %}
+                        		<td colspan="2">
+                                	Creator: {{ event_log.username }}
+                                    <a href="{% url event_log.search %}?q={{ event_log.username }}">0</a>
+                                </td>
+                            {% endif %}
+                            <td>
+                            	{% if event_log.entity %}
+                                	Entity: <a href="{% url entity event_log.entity.pk %}">{{ event_log.entity.pk }}</a>
+                                {% else %}
+                                	Entity: N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                    	<tr>
+                     	  <td>
+                     	  	<img height="12" width="12" alt="Cookie" src="{{ STATIC_URL }}/tresources/en/images/icons/cookie12x12.gif">
+                            {% if event_log.session_id %}
+                          	<a href="{% url event_log.search %}?q={{ event_log.session_id }}">
+                            	{{ event_log.session_id }}
+                            </a>
+                            {% else %}
+                            	{% if event_log.username == 'anonymous' %}
+                                    <a href="{% url event_log.search %}?q={{ event_log.username }}">
+                                    {{ event_log.username }}
+                                    </a>                          	
+                                {% else %}
+                                	No session available
+                                {% endif %}
+                            {% endif %}
+                          </td>                   	
                     	  <td>User IP: 
                           	<a href="{% url event_log.search %}?q={{ event_log.user_ip_address|urlencode }}">
                             	{{ event_log.user_ip_address }}
@@ -97,6 +140,9 @@
                 </div>
             </div>
             <div class="el-event-data">
+            	{% if event_log.headline %}
+            		<p>Headline: {{ event_log.headline }}</p>
+                {% endif %}
             	{{ event_log.event_data }}
                 {% if event_log.content_type %}
                 	<a href="{{ SITE_GLOBAL_SITEURL }}{{ event_log.url }}">(view)</a>

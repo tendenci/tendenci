@@ -56,9 +56,12 @@ stripentities.is_safe = True
 def format_currency(value):
     """format currency"""
     from base.utils import tcurrency
-    print value
     return tcurrency(value)
 format_currency.is_safe = True
+
+@register.filter
+def scope(object):
+    return dir(object)
 
 @register.filter     
 def date_diff(value, date_to_compare=None):
@@ -70,12 +73,17 @@ def date_diff(value, date_to_compare=None):
     if not isinstance(date_to_compare, datetime.datetime):
         date_to_compare = datetime.datetime.now()
     
-    return (date_to_compare-value).days
+    return (date_to_compare-value).days
 
 @register.filter
-def scope(object):
-    return dir(object)
+def first_chars(string, arg):
+    """ returns the first x characters from a string """
+    string = str(string)
+    if arg:
+        if not arg.isdigit(): return string
+        return string[:int(arg)]
+    else:
+        return string
+    return string
 
-    
-    
     
