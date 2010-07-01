@@ -33,7 +33,7 @@ class News(TendenciBaseModel):
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0) # for podcast feeds
     use_auto_timestamp = models.BooleanField(_('Auto Timestamp'))
     tags = TagField(blank=True)
-    
+        
     entity = models.ForeignKey(Entity,null=True)
         
     # html-meta tags
