@@ -1,16 +1,39 @@
 {% load base_tags %}
 {% load perm_tags %}
-<ul>	
-    <li><a href="{% url job.print_view job.pk %}">Print</a></li>
-    
-    {% has_perm user jobs.change_job job as can_edit %}
-    {% if can_edit %} 
-    	<li><a href="{% url job.edit job.pk %}">Edit</a></li>
-    	<li><a href="{% url job.edit.meta opt_object.pk %}">Meta</a></li>
-    {% endif %}
-    
-    {% has_perm user jobs.delete_job job as can_delete %}
-    {% if can_delete %} 
-	<li class="delete"><a href="{% url job.delete job.pk %}">Delete</a></li>
+
+{% has_perm user jobs.change_job opt_object as can_edit %}
+{% has_perm user jobs.delete_job opt_object as can_delete %}
+
+<div class="t-iconrow">
+		<a class="option-link print" href="{% url job.print_view opt_object.pk %}">Print</a>
+	{% if can_edit %}
+		<a class="option-link edit" href="{% url job.edit opt_object.pk %}">Edit</a>
 	{% endif %}
-</ul>
+
+ {% if can_edit %}
+	  <div class="more-options-wrap">
+	    <a href="javascript:;" class="more-options-trigger">More options <small>&#9660;</small></a>
+	    <div class="more-options-target">
+	        <ul>
+				<li class="divider">
+				  <a href="{% url job.edit.meta opt_object.pk %}">Edit Meta</a>
+				</li>
+				
+				<li>
+				{% if opt_object.object %}
+					<a href="{% url category.update opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk %}">Edit Categories</a>
+				{% else %}
+					<a href="{% url category.update opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">Edit Categories</a>
+				{% endif %}
+				</li>
+				
+				{% if can_delete %}
+					<li>
+						<a class="option-link delete" href="{% url job.delete opt_object.pk %}">Delete</a>
+					</li>				
+				{% endif %}
+			 </ul>
+	        </div>
+	  </div>
+  {% endif %}
+</div>
