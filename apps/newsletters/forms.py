@@ -73,13 +73,18 @@ class NewsletterAddForm(forms.ModelForm):
         from django.template.loader import render_to_string
         from django.template import RequestContext
         from emails.models import Email
-        from newsletters.utils import newsletter_articles_list
+        from newsletters.utils import newsletter_articles_list, newsletter_news_list, \
+                            newsletter_pages_list, newsletter_jobs_list
         from site_settings.utils import get_setting
         
         # converted from function newsletters_generate_processor
         opening_text = render_to_string('newsletters/opening_text.txt', 
                                         context_instance=RequestContext(request))
         simplified = self.cleaned_data['format']
+        try:
+            simplified = int(simplified)
+        except:
+            simplified = 0
         
         # articles
         art_content = ""
@@ -95,17 +100,21 @@ class NewsletterAddForm(forms.ModelForm):
         # news
         news_content = ""
         if self.cleaned_data['news']:
-            pass
+            news_days = self.cleaned_data['news_days']
+            news_content = newsletter_news_list(request, news_days, simplified)
+            
         
         # jobs
         job_content = ""
         if self.cleaned_data['jobs']:
-            pass
+            jobs_days = self.cleaned_data['jobs_days']
+            job_content = newsletter_jobs_list(request, jobs_days, simplified)
         
         # pages
         page_content = ""
         if self.cleaned_data['pages']:
-            pass
+            pages_days = self.cleaned_data['pages_days']
+            page_content = newsletter_pages_list(request, pages_days, simplified)
         
         # jumplink
         jumplink_content = ""
@@ -123,6 +132,8 @@ class NewsletterAddForm(forms.ModelForm):
         
         
         email_d = {}
+        # store all content in email_d["[content]"]
+        # will be used to replace [content] in the template
         email_d["[content]"] = opening_text
         
         # get the newsletter template now
@@ -138,6 +149,8 @@ class NewsletterAddForm(forms.ModelForm):
                 
         email_d["[content]"] += "%s%s%s%s%s%s" % (login_content, event_content, art_content,
                                 news_content, job_content, page_content)
+        
+        
         email_d["[jumplinks]"] = jumplink_content
         email_d["[articles]"] = art_content
         email_d["[calendarevents]"] = event_content
