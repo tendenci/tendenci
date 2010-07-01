@@ -173,6 +173,7 @@ INSTALLED_APPS = (
     'accountings',
     'emails',
     'email_blocks',
+    'actions',
     'files',
     'contacts',
     'event_logs',
@@ -222,7 +223,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'theme_advanced_resize_horizontal': True,
     'dialog_type': "modal",
     'tab_focus': ":prev, :next",
-    'urlconverter_callback': 'tinymce_urlconverter',
+    #'urlconverter_callback': 'tinymce_urlconverter',
     'apply_source_formatting' : False,
 }
 

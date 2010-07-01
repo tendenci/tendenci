@@ -4,9 +4,12 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.http import Http404
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from newsletters.forms import NewsletterAddForm
 #from user_groups.models import Group
 from site_settings.utils import get_setting
+from base.http import Http403
 
 
 def view_template(request, template_name='', template_path='newsletters/templates/'):
@@ -22,17 +25,17 @@ def view_template(request, template_name='', template_path='newsletters/template
 
 @login_required 
 def add(request, form_class=NewsletterAddForm, template_name="newsletters/add.html"):
+    if not request.user.has_perm('actions.add_action'): raise Http403
+    
     template_selected = ''
     if request.method == "POST":
         form = form_class(request.POST)
         template_selected = request.POST.get('template', '')
         
         if form.is_valid():
-            form.save(request)
-           
-            #email = form.save(request.user)
+            action  = form.save(request)
             
-            #return HttpResponseRedirect(reverse('email.view', args=[email.id]))
+            return HttpResponseRedirect(reverse('action.step4', args=[action.id]))
     else:
         import datetime
         now = datetime.datetime.now()

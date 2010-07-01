@@ -42,12 +42,12 @@ class Category(models.Model):
         return self.get_separator().join(p_list)
     _parents_repr.short_description = "Tag parents"
     
-    def save(self):
+    def save(self, *args, **kwargs):
         p_list = self._recurse_for_parents(self)
         if self.name in p_list:
 #            raise validators.ValidationError("You must not save a category in itself!")
             print 'broken'
-        super(Category, self).save()
+        super(Category, self).save(*args, **kwargs)
 
 #class Category(models.Model):
 #    """

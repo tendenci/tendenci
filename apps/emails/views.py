@@ -39,21 +39,24 @@ def view(request, id, template_name="emails/view.html"):
 @login_required 
 def edit(request, id, form_class=EmailForm, template_name="emails/edit.html"):
     email = get_object_or_404(Email, pk=id)
-    
     if not email.allow_edit_by(request.user): raise Http403
     
+    next = request.REQUEST.get("next", "")
     if request.method == "POST":
         form = form_class(request.POST, instance=email)
         
         if form.is_valid():
             email = form.save(request.user)
             
-            return HttpResponseRedirect(reverse('email.view', args=[email.id]))
+            if not next or ' ' in next:
+                next = reverse('email.view', args=[email.id])
+            
+            return HttpResponseRedirect(next)
     else:
         form = form_class(instance=email)
 
        
-    return render_to_response(template_name, {'form':form, 'email':email}, 
+    return render_to_response(template_name, {'form':form, 'email':email, 'next':next}, 
         context_instance=RequestContext(request))
     
 def search(request, template_name="emails/search.html"):

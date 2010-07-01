@@ -124,9 +124,18 @@ class NewsletterAddForm(forms.ModelForm):
         
         email_d = {}
         email_d["[content]"] = opening_text
-        if jumplink_content:
-            email_d["[content]"] += "[jumplinks]"
         
+        # get the newsletter template now
+        template = 'newsletters/templates/%s' % (self.cleaned_data['template'])
+        email_d['template_path_name'] = template
+        
+        #check if we have [jumplink] in the email template, if not, 
+        #include the jumplinks at the top of the newsletter
+        template_content = render_to_string(template)
+        if jumplink_content:
+            if template_content.find("[jumplinks]") == -1:
+                email_d["[content]"] += jumplink_content
+                
         email_d["[content]"] += "%s%s%s%s%s%s" % (login_content, event_content, art_content,
                                 news_content, job_content, page_content)
         email_d["[jumplinks]"] = jumplink_content
@@ -151,9 +160,7 @@ class NewsletterAddForm(forms.ModelForm):
         email_d["[currentday]"] = today.strftime("%d")                       
         email_d["[currentmonthname]"] = today.strftime("%B")
         
-        # get the newsletter template now
-        template = 'newsletters/templates/%s' % (self.cleaned_data['template'])
-        email_d['template_path_name'] = template
+        
         
         email = Email()
         is_valid = email.template_body(email_d)
@@ -180,6 +187,28 @@ class NewsletterAddForm(forms.ModelForm):
         
         email.save(request.user)
         
-        # action
+        # action object - these 3 already included on the form: member_only, group and send_to_emails
+        now = datetime.datetime.now()
+        self.instance.email = email
+        self.instance.name = email.subject
+        self.instance.type = 'Distribution E-mail'
+        self.instance.name = email.subject
+        self.instance.description = '%s Electronic Newsletter: generated %s' % \
+                            (get_setting('site', "global", "sitedisplayname"), 
+                             now.strftime('%d-%b-%y %I:%M:%S %p'))
+        self.instance.category = 'marketing'
+        self.instance.due_dt = now
+        try:
+            entity = (request.user.get_profile()).entity
+        except:
+            entity = None
+        if entity:
+            self.instance.entity = entity
+        self.instance.status = 1
+        self.instance.status_detail = 'open'
+        self.instance.save(request.user)
+        
+        return self.instance
+
         
         
