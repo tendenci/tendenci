@@ -1,0 +1,41 @@
+{% extends "actions/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans 'Tendenci Newsletter Send Confirmation'%}
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/newsletters.css">
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ <div id="t-newsletters">
+<div id="t-add">
+<h1>Send Marketing Action/Newsletter Confirmation</h1>
+<p>
+Your newsletter has been scheduled to send within the next 10 minutes. 
+Please note that it may take several hours to complete the process depending 
+on the size of your user group. You will receive an email notification when it's done.
+</p>  
+
+<p><a href="{% url action.view action.id %}">Click here to check the status of your e-mail.</a></p>   
+{% if action.article %}
+<p><a href="{% url article action.article.id %}">Click here to edit the related article.</a></p> 
+{% endif %} 
+
+<p>
+Thanks!
+<br />
+<br />
+The Schipul Family
+</p>                 
+                               
+ </div>
+
+</div>
+</div>
+{% endblock %}

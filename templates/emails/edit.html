@@ -6,7 +6,7 @@
 {% block title %}{{ block.super }}{% trans 'E-mail Record '%}{% if email.id %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}{% endblock %}
 
 {% block extra_head %}
-
+<script type="text/javascript" src="/site_media/static/tinymce/tiny_mce.js"></script>
 
 <style>
 .field-wrapper{
@@ -121,6 +121,7 @@
 	<div class="clear-left"></div>
 
 	<div class="submitbutton">
+	<input type="hidden" name="next" value="{{ next }}" />
 	<input type="submit" name="submit" value="Save" id="email-submit-button" />
 	</div>
 </form>

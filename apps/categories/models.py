@@ -80,7 +80,7 @@ class CategoryManager(Manager):
         
 class Category(models.Model):
     name = models.CharField(max_length=255, db_index=True, unique=True)
-    
+
     objects = CategoryManager()
 
 class CategoryItem(models.Model):
