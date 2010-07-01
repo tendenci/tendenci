@@ -25,7 +25,15 @@ class TendenciBaseModel(models.Model):
     status = models.BooleanField(default=True)
     status_detail = models.CharField(max_length=50, choices=STATUS_CHOICES,
                                      default='active')
-    
+
+    @property
+    def opt_app_label(self):
+        return self._meta.app_label
+
+    @property
+    def opt_module_name(self):
+        return self._meta.module_name
+                
     class Meta:
         abstract = True 
         
