@@ -3,12 +3,14 @@ from django.db import models
 
 from perms.models import TendenciBaseModel
 from perms.utils import is_admin
+from tinymce import models as tinymce_models
 
 class Email(TendenciBaseModel):
     guid = models.CharField(max_length=50, default=uuid.uuid1)
     priority = models.IntegerField(default=0)
     subject =models.CharField(max_length=255)
-    body = models.TextField()
+    body = tinymce_models.HTMLField()
+    #body = models.TextField()
     sender = models.CharField(max_length=255)
     sender_display = models.CharField(max_length=255)
     reply_to = models.CharField(max_length=255)
@@ -124,7 +126,9 @@ class Email(TendenciBaseModel):
         
         if not boo:
             # log an event
+            
             # notify admin of missing template
+            
             pass
         else:
             self.body = render_to_string(template) 

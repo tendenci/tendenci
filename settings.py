@@ -175,6 +175,7 @@ INSTALLED_APPS = (
     'accountings',
     'emails',
     'email_blocks',
+    'actions',
     'files',
     'contacts',
     'event_logs',
