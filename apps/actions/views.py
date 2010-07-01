@@ -59,13 +59,13 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
                 #category = Category.objects.get_or_create(name='Newsletter',
                 #                                          defaults={'slug':'newsletter',
                 #                                                    'description':''})
-                try:
-                    category = Category.objects.get(name='Newsletter')
-                except Category.DoesNotExist:
-                    category = Category.objects.create(name='Newsletter',
-                                            slug='newsletter',
-                                            description='')
-                art.category = category
+                #try:
+                #    category = Category.objects.get(name='Newsletter')
+                #except Category.DoesNotExist:
+                #    category = Category.objects.create(name='Newsletter',
+                #                            slug='newsletter',
+                #                            description='')
+                #art.category = category
                 art.summary = ""
                 art.body = action.email.body
                 art.sourct = request.user.get_full_name()
