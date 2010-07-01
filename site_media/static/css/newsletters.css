@@ -1,6 +1,6 @@
 /* 
 
-All CSS for /en/newsletters/add.asp
+All CSS for newsletters and actions
 
 */
 
@@ -82,4 +82,29 @@ All CSS for /en/newsletters/add.asp
 ul.errorlist li{
 		list-style: none;
 		color: red;
+}
+
+.body-copy-yellow{
+	background-color: yellow;
+}
+.body-copy-alerts{
+	color: red;
+}
+.step-wrap{
+	margin: 1em 0;
+}
+.step-wrap .step-label{
+	float: left;
+	width: 3em;
+	padding-right: 1em;
+}
+.step-wrap .step-desc{
+	float: left;
+	width: 35em;
+}
+.clear-left{
+	clear: left;
+}
+.clear-both{
+	clear: both;
 }
