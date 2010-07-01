@@ -1,45 +1,89 @@
 {% extends "jobs/base.html" %}
 {% load job_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load category_tags %}
 
 {% block title %}{{ block.super }}{{ job.meta.get_title }}{% endblock %}
 {% block meta_description %}{{ job.meta.get_description }}{% endblock %}
 {% block meta_keywords %}{{ job.meta.get_keywords }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/jobs.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/messages.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
 {% endblock %}
 
 {% block body %}
+{% tags_for_object job as tags %}
+
 <div class="t">
     {% job_nav request.user job %}
 
     <div class="job-wrap">
-
-        <div class="options">
-
-            <div class="dropdown-options">
-                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                <ul>
-                    <li>Review Reports</li>
-                    <li>Optimize Meta Tags</li>
-                    <li>Attach Files</li>
-                    <li>View Revisions</li>
-                    <li>Delete</li>
-                </ul>
-            </div>
-
-            <div class="quick-options">
-               {% job_options request.user job %}
-            </div>
-        </div>
-
-
-        <h2>{{ job.title}}</h2>
-        <div class="content">{{ job.body|safe }}</div>
+		<div class="options">
+             <div class="quick-options">
+				{% job_options request.user job %} 	       
+             </div>
+		</div>
+			
+        <h2>{{ job.title }}</h2>
+        <div class="content">{{ job.description|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ job.create_dt|date:"D d M Y P" }} by {{ job.creator }}</div>
+			<div class="categories">
+				{% get_category_for_object job as category %}
+				{% if category %}
+					Category:&nbsp;<a href="{% url job.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
+				{% endif %}
+				{% get_sub_category_for_object job as sub_category %}
+				{% if sub_category %}
+					Sub Category:&nbsp;<a href="{% url job.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
+				{% endif %}				
+			</div>
+			
+			<div class="tags">
+				{% if tags %}
+					Tags: 
+					{% for tag in tags %}
+						<a href="{% url job.search %}?q={{ tag }}">{{ tag }}</a>
+					{% endfor %}
+				{% endif %}
+			</div>
+
+            <div class="submitted">Submitted on {{ job.create_dt|date:"D d M Y P" }} 
+			by {% firstof job.creator.get_profile.display_name job.creator %}</div>
         </div>
+        
+		<br />
+        {% url job job.pk as the_url %}
+        <p>{% fb_like_button_iframe the_url %}</p>
     </div>
 
+    <!-- delete-job form -->
+    <form name="job-delete" method="POST" action="{% url job.delete job.pk %}">
+        <input type="hidden" name="action" value="delete">
+    </form>
+
 </div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_job = confirm('Permenantly delete {{ MODULE_JOBS_LABEL }}?');	// confirm
+				if(delete_job) $('.t').find('form[name="job-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+	var iconrow = new dropdown({
+		container:	'more-options-wrap',
+		trigger:	'more-options-trigger',
+		target:		'more-options-target'
+	});
+	</script>
 {% endblock %}

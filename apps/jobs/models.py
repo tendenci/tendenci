@@ -70,10 +70,7 @@ class Job(TendenciBaseModel ):
     meta = models.OneToOneField(MetaTags, null=True)
  
     tags = TagField(blank=True)
-       
-    #TODO: FIGURE OUT CATEGORY
-    #category_id = models.IntegerField(null=True, blank=True)
-          
+                 
     #integrate with payment (later)
     #invoice_id = models.ForeignKey(Invoice, blank=True, null=True)   
     #payment_method = models.CharField(max_length=50)

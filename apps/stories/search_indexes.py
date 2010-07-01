@@ -4,6 +4,7 @@ from haystack import indexes
 from haystack import site
 from stories.models import Story
 from perms.models import ObjectPermission
+from categories.models import Category
 
 class StoryIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
@@ -25,6 +26,19 @@ class StoryIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
+
+    category = indexes.CharField()
+    sub_category = indexes.CharField()
+
+    def prepare_category(self, obj):
+        category = Category.objects.get_for_object(obj, 'category')
+        if category: return category.name
+        return ''
+    
+    def prepare_sub_category(self, obj):
+        category = Category.objects.get_for_object(obj, 'sub_category')
+        if category: return category.name
+        return ''      
 
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('stories.view_story', obj)
