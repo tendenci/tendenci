@@ -1,5 +1,6 @@
 {% extends "stories/base.html" %}
 {% load story_tags %}
+{% load category_tags %}
 
 {% block title %}{{ block.super }}{{ story.title }}{% endblock %}
 
@@ -24,6 +25,17 @@
          {% endif %}
          {% endwith %}
         <div class="meta">
+			<div class="categories">
+				{% get_category_for_object story as category %}
+				{% if category %}
+					Category:&nbsp;<a href="{% url story.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
+				{% endif %}
+				{% get_sub_category_for_object story as sub_category %}
+				{% if sub_category %}
+					Sub Category:&nbsp;<a href="{% url story.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
+				{% endif %}				
+			</div>
+
             <div class="submitted">Submitted on {{ story.create_dt|date:"D d M Y P" }} by {{ story.creator }}</div>
         </div>
   

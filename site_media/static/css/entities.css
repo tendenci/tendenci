@@ -1,5 +1,3 @@
-
-
 .t {
 	width: 90%;
 }
@@ -7,11 +5,26 @@
 	margin: 0 auto 10px 0;
 }
 
-.t .entities-wrap {
+.t ul.entitys-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.entitys-nav li {
+	display: inline;
+}
+
+.t .entitys-wrap {
 	margin-bottom: 20px;
 }
 
-.t .entities-wrap .entity-wrap {
+.t .entity-wrap {
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .entities-wrap .entity-wrap-search {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -22,24 +35,13 @@
 .t .entities-wrap .entity-wrap h2 {
 	width: 85%;
 }
-.t .entities-wrap .entity-wrap .summary {
+.t .entities-wrap .entity-wrap .content {
 	margin-bottom: 10px;
 }
-.t .entities-wrap .entity-wrap .mission {
-	margin-bottom: 10px;
-}
-.t .entities-wrap .entity-wrap .contact_name {
-	margin-bottom: 10px;
-}
-.t .entities-wrap .entity-wrap .submitted {
-	background-color: #EEE;
-}
-
 .t .options {
 	text-align: right;
 	position: absolute;
 	top: 0; right: 0;
-	background-color: #EEE;
 	padding: 5px;
 	white-space: nowrap;
 }
@@ -51,9 +53,6 @@
 .t .quick-options ul {
 	margin: 0; padding: 0;
 	list-style-type: none;
-}
-.t .quick-options ul li {
-	display: inline;
 }
 
 .t .dropdown-options {
@@ -74,25 +73,24 @@
 	margin-bottom: 20px;
 }
 
-
-.t ul.entities-nav {
-	margin: 0; padding: 0;
-	list-style-type: none;
-	margin-bottom: 20px;
-}
-.t ul.entities-nav li {
-	display: inline;
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
 }
 
-div.forms div.form-field div.id_phone .field input {
-	width: 18%;
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
 }
 
-div.forms div.form-field div.id_fax .field input {
-	width: 18%;
+/* Entity View
+ ------------------------- */
+.t .entity-wrap .meta, .t .entity-wrap-search .meta {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F7F7F7;
+	margin-top: 10px;
 }
-
-div.forms div.form-field div.id_contact_name .field input {
-	width: 30%;
-}
-
+.t .entity-wrap .meta .tags {
+	margin-bottom: 5px;
