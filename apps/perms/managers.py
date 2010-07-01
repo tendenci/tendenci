@@ -24,10 +24,18 @@ class ObjectPermissionManager(models.Manager):
             "codename": codename,
         }
         
-        permissions = self.select_related().filter(**filters).only('user')
+        permissions = self.select_related().filter(**filters)
+        users = []
         if permissions:
-            users = [perm.user for perm in permissions]
-            return users
+            # setup up list of permissions
+            for perm in permissions:
+                if perm.user:
+                    users.append(perm.user)
+            
+                if perm.group:
+                    for user in perm.group.members.all():
+                        users.append(user)
+            return list(set(users))
         else:
             return None
  
