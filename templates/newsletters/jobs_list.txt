@@ -1,0 +1,63 @@
+{% load base_filters %}
+
+{% if jobs %}
+	<font face="Arial" size="3"><b>
+	<font color=#000000>
+	{# named area for jump links #}
+	<a name="jobs" id="jobs"></a>
+	{% if start_dt %}
+		Jobs for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}
+	{% else %}
+		All Jobs
+	{% endif %}
+	
+	</font></b></font>							   
+							   
+	{% for job in jobs %}
+		
+		{# leverage the functions in the object #}
+				
+		<table width="100%"  border="0" cellpadding="0" cellspacing="0" class="body_copy">
+		<tr><td>&nbsp;</td></tr>
+		<tr><td align="left" valign="top">
+		<a href="{{ SITE_GLOBAL_SITEURL }}{% url job job.id %}" >
+		<font face="Arial" size="2"><b> {{job.title}}
+		</b></font></a>
+		
+	{% if job.activation_dt|date_diff < 7 %}
+		<span style="FONT-SIZE: 8pt; COLOR: red; BACKGROUND-COLOR: yellow"><b>--new</b></span>
+	{% endif %}
+	
+		</td></tr>
+		
+		<tr><td align="left" valign="top"><font face="Arial" size="2" color="#000000">
+		<b>Company:</b> {{ job.contact_company }} </font></td></tr>
+		
+		{% if not simplified  %}
+			<tr><td align="left"><font face="Arial" size="2" color="#000000">
+			<b>Date Activated:</b> {{ job.activation_dt|date:"l d-M-Y h:i A" }} </font> 
+			</td></tr>
+		{% endif %}
+		
+		<tr><td align="left" valign="top"><div>
+		<font face="Arial" size="2" color="#000000">
+
+		{{job.description|striptags|truncatewords:60 }}
+		 <a href="{{ SITE_GLOBAL_SITEURL }}{% url job job.id %}">[More Info]</a>
+		</font>
+		
+		{#  posted by #}
+		{% if not simplified  %}
+			<font face="Arial" size="2" color="#000000">
+			<br><b>Posted by</b>: 
+			{{ job.owner.first_name }} {{job.owner.last_name }}
+			</font>
+		{% endif %}
+		<br>
+
+		</div></td></tr>
+		</table>
+
+	{% endfor %}
+	<hr>
+{% endif %}

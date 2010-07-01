@@ -52,6 +52,7 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
                 # add an article
                 from articles.models import Article
                 from categories.models import Category
+                from perms.models import ObjectPermission
                 
                 art = Article()
                 art.headline = action.email.subject
@@ -66,7 +67,7 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
                 art.email = profile.email
                 art.website = get_setting('site', 'global', 'siteurl')
                 art.release_dt = datetime.datetime.now()
-                # user group - need to assign the permission
+                
                 if action.member_only:
                     art.allow_anonymous_view = 1
                     art.allow_user_view = 1
@@ -82,6 +83,10 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
                 art.owner = request.user
                 art.owner_username = request.user.username
                 art.save()
+                
+                # user group - assign the permission to view this article
+                #if action.group:
+                #    ObjectPermission.objects.assign_group(action.group, art)
                 
                 # update category
                 category = Category.objects.update(art, 'Newsletter', 'category')
