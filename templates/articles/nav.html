@@ -14,8 +14,6 @@
 	{% has_perm user articles.delete_article as can_delete_article %}
 {% endif %}
 
-
-
 <div id="showh">
 	<ul id="primary">
 	
@@ -39,6 +37,7 @@
 				{% if can_edit_article %}
 				<li><a href="{% url article.edit nav_object.pk %}">Edit</a></li>
 				<li><a href="{% url article.edit.meta nav_object.pk %}">Edit Meta</a></li>
+				<li><a href="{% url category.update nav_object.opt_app_label nav_object.opt_module_name nav_object.pk %}">Edit Categories</a></li>
 				{% endif %}
 
 				{% if can_delete_article %}

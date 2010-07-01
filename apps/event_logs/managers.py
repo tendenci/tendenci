@@ -122,8 +122,14 @@ class EventLogManager(Manager):
             event_log.event_type = kwargs['event_type']       
         if 'source' in kwargs:
             event_log.source = kwargs['source']   
+            
         if 'entity' in kwargs:
             event_log.entity = kwargs['entity'] 
+        if request:
+            try:
+                event_log.entity = request.user.get_profile().entity
+            except:
+                pass
         
         if not event_log.category: event_log.category = 'application'
         if not event_log.event_name: event_log.event_name = 'application'
@@ -166,6 +172,7 @@ class EventLogManager(Manager):
             event_log.content_type = ct
             event_log.object_id = instance.pk
             event_log.source = ct.app_label
+            event_log.headline = unicode(instance)
         
         if not event_log.source: event_log.source = ''
         
