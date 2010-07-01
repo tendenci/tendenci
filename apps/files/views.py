@@ -164,7 +164,7 @@ def delete(request, id, template_name="files/delete.html"):
 
 
 @login_required
-def tinymce(request, template_name="media-files/tinymce.html"):
+def tinymce(request, template_name="files/templates/tinymce.html"):
     """
     TinyMCE Insert/Edit images [Window]
     Passes in a list of files associated w/ "this" object
@@ -181,15 +181,10 @@ def tinymce(request, template_name="media-files/tinymce.html"):
         try: # get content type
             contenttype = ContentType.objects.get(app_label=params['app_label'], model=params['model'])
 
-            print 'contenttype', contenttype
-            print 'instance id', params['instance_id']
-
             if params['instance_id'] == 'undefined':
                 params['instance_id'] = 0
 
             files = File.objects.filter(content_type=contenttype, object_id=params['instance_id'])
-
-            print 'files', files
 
             for media_file in files:
                 file, ext = os.path.splitext(media_file.file.url)
