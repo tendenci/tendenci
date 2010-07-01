@@ -1,4 +1,5 @@
 from profiles.models import Profile
+from django.contrib.auth.models import User
 
 def is_admin(user):
     if not user or user.is_anonymous():
@@ -38,3 +39,7 @@ def is_developer(user):
         else:
             setattr(user, 'is_developer', False)
             return False
+
+def get_administrators():
+    return User.objects.filter(is_active=True,is_staff=True)
+    
