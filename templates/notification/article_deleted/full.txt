@@ -1,7 +1,0 @@
-{{ user.username }},
-
-The following article has been deleted:
-
-Headline: {{ object.headline }}
-
-Thanks!
