@@ -80,13 +80,6 @@ class CategoryManager(Manager):
         
 class Category(models.Model):
     name = models.CharField(max_length=255, db_index=True, unique=True)
-    
-    def save(self, *args, **kwargs):
-        p_list = self._recurse_for_parents(self)
-        if self.name in p_list:
-#            raise validators.ValidationError("You must not save a category in itself!")
-            print 'broken'
-        super(Category, self).save(*args, **kwargs)
 
     objects = CategoryManager()
 
