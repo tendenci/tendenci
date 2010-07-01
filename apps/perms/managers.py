@@ -30,15 +30,91 @@ class ObjectPermissionManager(models.Manager):
             return users
         else:
             return None
+ 
+    def assign_group(self, group_or_groups, object, perms=None):
+        """
+            Assigns permissions to group or multiple groups
+            assign_group(self, group_or_groups, object, perms=None)
             
+            - group_or_groups: can be a single group object, list, or queryset
+            - object: is the instance of a model
+            - perms: are if you want to assign individual permissions
+            ie. ['change','add','view']
+        """    
+        multi_group = False  
+        
+        if isinstance(group_or_groups,list):
+            multi_group = True
+        if isinstance(group_or_groups,QuerySet):
+            multi_group = True
+            
+        if perms:
+            if multi_group:
+                for group in group_or_groups:
+                    for perm in perms:
+                        codename = '%s_%s' % (perm, object._meta.object_name.lower())
+                        content_type = ContentType.objects.get_for_model(object)
+                        
+                        perm = Permission.objects.get(codename=codename,
+                                                      content_type=content_type)
+                        
+                        defaults = {
+                            "codename":codename,
+                            "object_id":object.pk,
+                            "content_type":perm.content_type,
+                            "group": group,    
+                        }
+                        self.get_or_create(**defaults)                       
+            else:
+                for perm in perms:
+                    codename = '%s_%s' % (perm, object._meta.object_name.lower())
+                    content_type = ContentType.objects.get_for_model(object)
+                    
+                    perm = Permission.objects.get(codename=codename,
+                                                  content_type=content_type)
+                    defaults = {
+                        "codename":codename,
+                        "object_id":object.pk,
+                        "content_type":perm.content_type,
+                        "group": group_or_groups,    
+                    }
+                    self.get_or_create(**defaults)   
+        else:
+            if multi_group:
+                for group in group_or_groups:
+                    # auto add all the available permissions
+                    content_type = ContentType.objects.get_for_model(object)
+                    perms = Permission.objects.filter(content_type=content_type)
+                    for perm in perms:
+                        defaults = {
+                            "codename":perm.codename,
+                            "object_id":object.pk,
+                            "content_type":content_type,
+                            "group":group,    
+                        }
+                        self.get_or_create(**defaults)
+            else:
+                # auto add all the available permissions
+                content_type = ContentType.objects.get_for_model(object)
+                perms = Permission.objects.filter(content_type=content_type)
+                for perm in perms:
+                    defaults = {
+                        "codename":perm.codename,
+                        "object_id":object.pk,
+                        "content_type":content_type,
+                        "group":group_or_groups,
+                                
+                    }
+                    self.get_or_create(**defaults)  
+                   
     def assign(self, user_or_users, object, perms=None):
         """
             Assigns permissions to user or multiple users
             assign(self, user_or_users, object, perms=None)
             
-            user_or_users can be a single users object, list, or queryset
-            object is the instance of a model
-            perms are if you want to assign individual permissions
+            - user_or_users: can be a single users object, list, or queryset
+            - object: is the instance of a model
+            - perms: are if you want to assign individual permissions
             ie. ['change','add','view']
         """
         multi_user = False
