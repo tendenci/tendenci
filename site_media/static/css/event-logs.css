@@ -92,7 +92,7 @@
 }
 
 .t div.el-search-header table {
-	width: 90%;
+	width: 98%;
 }
 
 .t div.el-search-header table td {
@@ -129,7 +129,7 @@
 }
 
 .t div.el-meta {
-	width: 80%;
+	width: 98%;
 	margin: 5px 0 5px 5px;
 	font-size: 14px;
 	color: #777;
@@ -141,4 +141,13 @@
 
 .t div.el-event-data {
 	margin: 5px 0 5px 5px;
+}
+
+.t div.el-meta-ips table {
+	width: 98%;
+	margin: 5px 0 5px 0;
+}
+
+.t div.el-meta-ips table td {
+	margin: 2px 0 2px 0;
 }

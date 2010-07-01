@@ -18,7 +18,13 @@
 	margin-bottom: 20px;
 }
 
-.t .articles-wrap .article-wrap {
+.t .article-wrap {
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .articles-wrap .article-wrap-search {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -36,7 +42,6 @@
 	text-align: right;
 	position: absolute;
 	top: 0; right: 0;
-	background-color: #EEE;
 	padding: 5px;
 	white-space: nowrap;
 }
@@ -48,9 +53,6 @@
 .t .quick-options ul {
 	margin: 0; padding: 0;
 	list-style-type: none;
-}
-.t .quick-options ul li {
-	display: inline;
 }
 
 .t .dropdown-options {
@@ -84,7 +86,7 @@
 
 /* Article View
  ------------------------- */
-.t .article-wrap .meta {
+.t .article-wrap .meta, .t .article-wrap-search .meta {
 	border: 1px solid silver;
 	padding: 10px;
 	background-color: #F7F7F7;

@@ -4,8 +4,8 @@
 {% block title %}{{ block.super }}Add{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/messages.css">
-<link rel="stylesheet" href="/site_media/static/css/forms.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/messages.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 {% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

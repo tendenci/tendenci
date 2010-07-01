@@ -160,14 +160,7 @@ function togglePhase(phase, queueCount) {
 			// change width of flash browse-prompt button
 			$('.swfupload').attr({width: '200'});
 
-			// other settings
-			//linkChoose.style.display = '';
 			linkChosenPhotos.style.display = '';
-			//linkAddMore.style.display = 'none';
-			//linkRemoveChosen.style.display = 'none';
-			//linkUploadPhotos.style.display = 'none';
-			//linkStopUpload.style.display = 'none';
-			//photoQueue.innerHTML = queueCount;
 			break;
 
 		case 2:
@@ -175,14 +168,7 @@ function togglePhase(phase, queueCount) {
 			// change width of flash browse-prompt button
 			$('.swfupload').attr({width: '200'});
 
-			// other settings
-			//linkChoose.style.display = '';
 			linkChosenPhotos.style.display = '';
-			//linkAddMore.style.display = '';
-			//linkRemoveChosen.style.display = '';
-			//linkUploadPhotos.style.display = '';
-			//linkStopUpload.style.display = 'none';
-			//photoQueue.innerHTML = queueCount;
 			break;
 
 		case 3:
@@ -190,14 +176,7 @@ function togglePhase(phase, queueCount) {
 			// change width of flash browse-prompt button
 			$('.swfupload').attr({width: '200'});
 
-			// other settings
-			//linkChoose.style.display = 'none';
 			linkChosenPhotos.style.display = '';
-			//linkAddMore.style.display = 'none';
-			//linkRemoveChosen.style.display = 'none';
-			//linkUploadPhotos.style.display = 'none';
-			//linkStopUpload.style.display = '';
-			//photoQueue.innerHTML = queueCount;
 			break;
 
 		default:
@@ -205,14 +184,7 @@ function togglePhase(phase, queueCount) {
 			// change width of flash browse-prompt button
 			$('.swfupload').attr({width: '200'});
 
-			// other settings
-			//linkChoose.style.display = '';
 			linkChosenPhotos.style.display = '';
-			//linkAddMore.style.display = 'none';
-			//linkRemoveChosen.style.display = 'none';
-			//linkUploadPhotos.style.display = 'none';
-			//linkStopUpload.style.display = 'none';
-			//photoQueue.innerHTML = queueCount;
 			break;
 	}
 
@@ -447,14 +419,7 @@ FileProgress.prototype.SetComplete = function() {
 
 	$el = $(this.fileProgressElement);
 	var oSelf = this;
-	$.get("/media-files/tinymce/template/image/", function(template){
-		template = template.replace("[[ file.id ]]", oSelf.data.id, "gi");
-		template = template.replace("[[ file.name ]]", oSelf.data.name, "gi");
-		template = template.replace("[[ file.file.url ]]", oSelf.data.url, "gi");
-		template = template.replace("[[ file.file.url_thumbnail ]]", oSelf.data.url_thumbnail, "gi");
-		template = template.replace("[[ file.file.url_medium ]]", oSelf.data.url_medium, "gi");
-		template = template.replace("[[ file.file.url_large ]]", oSelf.data.url_large, "gi");
-
+	$.get("/files/tinymce/template/"+ oSelf.data.id +"/", function(template){
 		$el.slideUp("fast", function(){
 			$(this).html(template);
 			$(this).slideDown("fast");

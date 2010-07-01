@@ -85,8 +85,8 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
                 art.save()
                 
                 # user group - assign the permission to view this article
-                #if action.group:
-                #    ObjectPermission.objects.assign_group(action.group, art)
+                if action.group:
+                    ObjectPermission.objects.assign_group(action.group, art)
                 
                 # update category
                 category = Category.objects.update(art, 'Newsletter', 'category')

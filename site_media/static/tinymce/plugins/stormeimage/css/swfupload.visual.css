@@ -137,7 +137,7 @@ a.progressCancel:hover
 
 #flashUI #fsUploadProgress {
 	border: 1px solid #F7F7F7;
-	height: 280px;
+	height: 240px;
 	overflow: auto;
 }
 
@@ -208,6 +208,7 @@ span.select-photos a#choose-photos {
 
 span.select-photos {
 	float: left;
+	margin-bottom: 10px;
 }
 span.queue-actions {
 	float: right;
@@ -235,5 +236,41 @@ div.simple-upload h2 {
 .swfupload {
 	position: absolute;
 	cursor: pointer;
+}
+
+.badge {
+	position: relative;
+}
+.badge .icon {
+	position: absolute;
+	top:0; left:0;
+}
+.badge .details {
+	margin-left: 50px;
+}
+.badge .details .title {
+	margin-bottom: 5px;
+}
+.actions {
+	margin: 15px 0 10px;
+	padding-top: 20px;
+	text-align: right;
+	width: 98%;
+	border-top: 1px solid #CEE2F2;
+}
+.actions a {
+	border: 1px solid silver;
+	background-color: #F7F7F7;
+	padding: 5px;
+	margin: 5px 1px;
+	text-decoration: none;
+}
+.actions a.insert-btn {
+	background-color: #D7F9DB;
+	border: 1px solid #569F6B;
+}
+.actions a.delete-btn {
+	background-color: #F7DEDE;
+	border: 1px solid #DC6E6E;
 }
 
