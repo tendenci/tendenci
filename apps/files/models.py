@@ -84,7 +84,11 @@ class File(TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("file", [self.id])
+        return ("file", [self.pk])
+
+    @models.permalink
+    def get_absolute_download_url(self):        
+        return ("file", [self.pk, 'download'])
 
     def __unicode__(self):
         return self.name
