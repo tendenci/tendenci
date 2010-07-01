@@ -15,7 +15,6 @@
     <h1>{{ MODULE_EVENT_LOGS_LABEL }} Search</h1>
 	
     {% event_log_nav request.user %}
-
 	{% event_log_search %}
     {% autopaginate event_logs 10 %}
 	
