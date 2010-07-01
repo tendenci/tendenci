@@ -1,13 +1,16 @@
 {% extends "pages/base.html" %}
 {% load page_tags %}
 {% load tagging_tags %}
+{% load category_tags %}
 
 {% block title %}{{ block.super }}{{ page.meta.get_title }}{% endblock %}
 {% block meta_description %}{{ page.meta.get_description }}{% endblock %}
 {% block meta_keywords %}{{ page.meta.get_keywords }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/pages.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/messages.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
 {% endblock %}
 
 {% block body %}
@@ -42,12 +45,26 @@
         <h2>{{ page.title }}</h2>
         <div class="content">{{ page.content|safe }}</div>
         <div class="meta">
-			<div class="tags">
-				Tags: 
-				{% for tag in tags %}
-					<a href="{% url page.search %}?q={{ tag }}">{{ tag }}</a>
-				{% endfor %}
+			<div class="categories">
+				{% get_category_for_object page as category %}
+				{% if category %}
+					Category:&nbsp;<a href="{% url page.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
+				{% endif %}
+				{% get_sub_category_for_object page as sub_category %}
+				{% if sub_category %}
+					Sub Category:&nbsp;<a href="{% url page.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
+				{% endif %}				
 			</div>
+			
+			<div class="tags">
+				{% if tags %}
+					Tags: 
+					{% for tag in tags %}
+						<a href="{% url page.search %}?q={{ tag }}">{{ tag }}</a>
+					{% endfor %}
+				{% endif %}
+			</div>
+
             <div class="submitted">Submitted on {{ page.create_dt|date:"D d M Y P" }} 
 			by {% firstof page.creator.get_profile.display_name page.creator %}</div>
 
@@ -55,4 +72,26 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_page = confirm('Permenantly delete page?');	// confirm
+				if(delete_page) $(this).parents('.page-wrap').find('form[name="page-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+	var iconrow = new dropdown({
+		container:	'more-options-wrap',
+		trigger:	'more-options-trigger',
+		target:		'more-options-target'
+	});
+	</script>
 {% endblock %}
