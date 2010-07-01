@@ -14,7 +14,6 @@ class PageForm(TendenciBaseForm):
         'allow_user_edit',
         'allow_member_edit',
         'syndicate',
-        'template',
         'status',
         'status_detail',
         )

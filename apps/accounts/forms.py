@@ -5,7 +5,6 @@ from registration.forms import RegistrationForm
 from profiles.models import Profile
 from registration.models import RegistrationProfile
 
-
 class RegistrationCustomForm(RegistrationForm):
     first_name = forms.CharField(max_length=100)
     last_name = forms.CharField(max_length=100)
@@ -26,6 +25,7 @@ class RegistrationCustomForm(RegistrationForm):
         new_user.save()
         
         new_profile = Profile(user=new_user, 
+                              email=self.cleaned_data['email'],
                               company=self.cleaned_data['company'],
                               phone=self.cleaned_data['phone'],
                               address=self.cleaned_data['address'],
@@ -39,7 +39,7 @@ class RegistrationCustomForm(RegistrationForm):
         new_profile.owner = new_user
         new_profile.owner_username = new_user.username
         new_profile.save()
-        
+                    
         return new_user
     
     
