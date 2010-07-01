@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% with opt_object.object as opt_object %}
 <ul>	
     <li><a href="{% url article.print_view opt_object.pk %}">Print</a></li>
     
@@ -7,6 +8,7 @@
     {% if can_edit %} 
     	<li><a href="{% url article.edit opt_object.pk %}">Edit</a></li>
 		<li><a href="{% url article.edit.meta opt_object.pk %}">Meta</a></li>
+		<li><a href="{% url category.update opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">Categories</a></li>
     {% endif %}
     
     {% has_perm user articles.delete_article opt_object as can_delete %}
@@ -14,3 +16,4 @@
 	<li class="delete"><a href="{% url article.delete opt_object.pk %}">Delete</a></li>
 	{% endif %}
 </ul>
+{% endwith %}

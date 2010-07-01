@@ -59,7 +59,11 @@ def format_currency(value):
     print value
     return tcurrency(value)
 format_currency.is_safe = True
-    
+
+@register.filter
+def scope(object):
+    return dir(object)
+
     
     
     
