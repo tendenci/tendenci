@@ -55,17 +55,6 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
                 
                 art = Article()
                 art.headline = action.email.subject
-                #art.category = "Newsletter"
-                #category = Category.objects.get_or_create(name='Newsletter',
-                #                                          defaults={'slug':'newsletter',
-                #                                                    'description':''})
-                #try:
-                #    category = Category.objects.get(name='Newsletter')
-                #except Category.DoesNotExist:
-                #    category = Category.objects.create(name='Newsletter',
-                #                            slug='newsletter',
-                #                            description='')
-                #art.category = category
                 art.summary = ""
                 art.body = action.email.body
                 art.sourct = request.user.get_full_name()
@@ -93,6 +82,9 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
                 art.owner = request.user
                 art.owner_username = request.user.username
                 art.save()
+                
+                # update category
+                category = Category.objects.update(art, 'Newsletter', 'category')
                 
                 action.article = art
                 
