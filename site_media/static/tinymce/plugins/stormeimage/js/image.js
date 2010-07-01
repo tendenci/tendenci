@@ -76,19 +76,17 @@ var ImageDialog = {
 		tinyMCEPopup.close();
 	},
 
-	delete_image : function(image_id) {
-		var ed = tinyMCEPopup.editor, f = document.forms[0], nl = f.elements, v, args = {};
-		var dom = ed.dom, n = ed.selection.getNode();
-		var $img_wrap = $("input[name='"+ image_id +"_photo_size']:checked").parent().parent().parent();
+	delete_image : function(obj, image_id) {
+		var item_wrap = $(obj).parents('.photo-wrapper')[0]
 
-
-		$img_wrap.parent().parent().slideUp("fast", function(){$(this).remove();});
-		$("#photo-queue").html($("#fsUploadProgress").children().length-1);
+		$(item_wrap).parent().parent().slideUp("fast", function(){$(this).remove();});
+		$("#photo-queue").html($("#fsUploadProgress").children().length-1); // decrement count on screen
 
 		$.ajax({
-			type: "GET",
+			type: "POST",
 			cache: false,
-			url: "/media-files/delete/"+ image_id +"/",
+			data: ({ajax : 1}),
+			url: "/files/delete/"+ image_id +"/",
 			complete: function(XMLHttpRequest, textStatus){
 				// do something after complete
 			}
@@ -97,6 +95,7 @@ var ImageDialog = {
 
 	update : function() {
 		var ed = tinyMCEPopup.editor, f = document.forms[0], nl = f.elements, v, args = {};
+		var n = ed.selection.getNode();
 
 		var img_src = $(".edit_src").attr("src");
 		var img_title = nl.edit_title.value;
@@ -118,89 +117,55 @@ var ImageDialog = {
 		});
 		
 		if(args.src.length > 0){
-			ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {skip_undo : 1});
-			ed.dom.setAttribs('__mce_tmp', args);
-			ed.dom.setAttrib('__mce_tmp', 'id', '');
+			ed.dom.setAttribs(n, args);
 			ed.undoManager.add();
+			ed.execCommand('mceRepaint');
+			n = ed.selection.select(n);
 		}
-
-		tinyMCEPopup.close();
 	},
 
-	insert : function(image_id, img_element) {
-		var ed = tinyMCEPopup.editor, f = document.forms[0], nl = f.elements, v, args = {}, el;
-		args = {}
+	insert : function(obj, file_id) {
+		var ed = tinyMCEPopup.editor, args = {};
+		var item_wrap = $(obj).parents('.photo-wrapper')[0]
 
-		var $img_wrap = $("input[name='"+ image_id +"_photo_size']:checked").parent().parent().parent();
-		var img_size = $img_wrap.find("input[name='"+ image_id +"_photo_size']:checked").val();
-		var img_src = $img_wrap.find("img").attr("src");
+		var icon_url = $(item_wrap).find("input[name='icon_url']").val();
+		var filename = $(item_wrap).find("input[name='filename']").val();
+		var file_url = $(item_wrap).find("input[name='file_url']").val();
+		var file_download_url = $(item_wrap).find("input[name='file_download_url']").val();
 
-		var img_title = $img_wrap.find("input[name='image_title']").val();
-		var img_description = $img_wrap.find("input[name='image_description']").val();
-		var img_align = $img_wrap.find("select[name='image_align']").val();
-		var img_vspace = $img_wrap.find("input[name='image_vspace']").val();
-		var img_hspace = $img_wrap.find("input[name='image_hspace']").val();
-		var width, height;
+		var file_element = '<div class="t5_file"> '+ 
+			'<a href="'+ file_download_url +'">'+
+			'<img src="'+ icon_url +'" /> ' + '</a> ' +
+			'<a href="'+ file_download_url +'">'+ filename +'</a> </div>';
 
-		switch(img_size) {
-			case "thumbnail":
-				img_src = $img_wrap.find("input[name='src-thumbnail']").val();
-				break;
-			case "medium":
-				img_src = $img_wrap.find("input[name='src-medium']").val();
-				break;
-			case "large":
-				img_src = $img_wrap.find("input[name='src-large']").val();
-				break;
-			case "full-size":
-				img_src = $img_wrap.find("input[name='src-original']").val();
-				break;
-		}
+		ed.execCommand('mceInsertContent', false, file_element);
+		ed.undoManager.add();
+	},
 
+	insert_image : function(obj, file_id) {
+		var ed = tinyMCEPopup.editor, args = {}, width;
+		var item_wrap = $(obj).parents('.photo-wrapper')[0]
+
+		var icon_url = $(item_wrap).find("input[name='icon_url']").val();
+		var filename = $(item_wrap).find("input[name='filename']").val();
+		var file_url = $(item_wrap).find("input[name='file_url']").val();
+		var file_width = $(item_wrap).find("input[name='file_width']").val();
+
+		var width = file_width;
+		if(width > 400) width = 400
+
+		// default img attributes
 		tinymce.extend(args, {
-			src : img_src,
-			title : img_title,
-			alt : img_title,
-			longdesc : img_description,
-			vspace : img_vspace,
-			hspace : img_hspace,
-			align : img_align,
-			width: width,
-			height: height
+			src : file_url,
+			title : filename,
+			alt : filename,
+			width: width
 		});
-		
-		ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {skip_undo : 1});
+
+		ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {skip_undo : true});
 		ed.dom.setAttribs('__mce_tmp', args);
 		ed.dom.setAttrib('__mce_tmp', 'id', '');
 		ed.undoManager.add();
-		tinyMCEPopup.close();
-	},
-
-	xinsert : function(file, title) {
-		var ed = tinyMCEPopup.editor, t = this, f = document.forms[0];
-
-		if (f.media_src.value === '') {
-			if (ed.selection.getNode().nodeName == 'IMG') {
-				ed.dom.remove(ed.selection.getNode());
-				ed.execCommand('mceRepaint');
-			}
-
-			tinyMCEPopup.close();
-			return;
-		}
-
-		if (tinyMCEPopup.getParam("accessibility_warnings", 1)) {
-			if (!f.alt.value) {
-				tinyMCEPopup.confirm(tinyMCEPopup.getLang('stormeimage_dlg.missing_alt'), function(s) {
-					if (s)
-						t.insertAndClose();
-				});
-
-				return;
-			}
-		}
-
-		t.insertAndClose();
 	},
 
 	insertAndClose : function() {
@@ -264,71 +229,6 @@ var ImageDialog = {
 			ed.dom.setAttrib('__mce_tmp', 'id', '');
 			ed.undoManager.add();
 		}
-	},
-
-	xinsertAndClose : function() {
-		var ed = tinyMCEPopup.editor, f = document.forms[0], nl = f.elements, v, args = {}, el;
-
-		tinyMCEPopup.restoreSelection();
-
-		// Fixes crash in Safari
-		if (tinymce.isWebKit)
-			ed.getWin().focus();
-
-		if (!ed.settings.inline_styles) {
-			args = {
-				vspace : nl.vspace.value,
-				hspace : nl.hspace.value,
-				border : nl.border.value,
-				align : getSelectValue(f, 'align')
-			};
-		} else {
-			// Remove deprecated values
-			args = {
-				vspace : '',
-				hspace : '',
-				border : '',
-				align : ''
-			};
-		}
-
-		tinymce.extend(args, {
-			src : nl.media_src.value,
-			width : nl.width.value,
-			height : nl.height.value,
-			alt : nl.alt.value,
-			title : nl.title.value,
-			'class' : getSelectValue(f, 'class_list'),
-			style : nl.style.value,
-			id : nl.id.value,
-			dir : nl.dir.value,
-			lang : nl.lang.value,
-			usemap : nl.usemap.value,
-			longdesc : nl.longdesc.value
-		});
-
-		args.onmouseover = args.onmouseout = '';
-
-		if (f.onmousemovecheck.checked) {
-			if (nl.onmouseoversrc.value)
-				args.onmouseover = "this.src='" + nl.onmouseoversrc.value + "';";
-
-			if (nl.onmouseoutsrc.value)
-				args.onmouseout = "this.src='" + nl.onmouseoutsrc.value + "';";
-		}
-
-		el = ed.selection.getNode();
-
-		if (el && el.nodeName == 'IMG') {
-			ed.dom.setAttribs(el, args);
-		} else {
-			ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {skip_undo : 1});
-			ed.dom.setAttribs('__mce_tmp', args);
-			ed.dom.setAttrib('__mce_tmp', 'id', '');
-			ed.undoManager.add();
-		}
-
-		tinyMCEPopup.close();
 	},
 
 	getAttrib : function(e, at) {

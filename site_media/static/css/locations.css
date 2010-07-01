@@ -5,11 +5,26 @@
 	margin: 0 auto 10px 0;
 }
 
+.t ul.locations-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.locations-nav li {
+	display: inline;
+}
+
 .t .locations-wrap {
 	margin-bottom: 20px;
 }
 
-.t .locations-wrap .location-wrap {
+.t .location-wrap {
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .locations-wrap .location-wrap-search {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -20,24 +35,13 @@
 .t .locations-wrap .location-wrap h2 {
 	width: 85%;
 }
-.t .locations-wrap .location-wrap .summary {
+.t .locations-wrap .location-wrap .content {
 	margin-bottom: 10px;
 }
-.t .locations-wrap .location-wrap .mission {
-	margin-bottom: 10px;
-}
-.t .locations-wrap .location-wrap .contact_name {
-	margin-bottom: 10px;
-}
-.t .locations-wrap .location-wrap .submitted {
-	background-color: #EEE;
-}
-
 .t .options {
 	text-align: right;
 	position: absolute;
 	top: 0; right: 0;
-	background-color: #EEE;
 	padding: 5px;
 	white-space: nowrap;
 }
@@ -49,9 +53,6 @@
 .t .quick-options ul {
 	margin: 0; padding: 0;
 	list-style-type: none;
-}
-.t .quick-options ul li {
-	display: inline;
 }
 
 .t .dropdown-options {
@@ -72,56 +73,25 @@
 	margin-bottom: 20px;
 }
 
-
-.t ul.location-nav {
-	margin: 0; padding: 0;
-	list-style-type: none;
-	margin-bottom: 20px;
-}
-.t ul.location-nav li {
-	display: inline;
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
 }
 
-/* form */
-div.forms div.form-field div.id_city .field input {
-	width: 30%;
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
 }
 
-div.forms div.form-field div.id_state .field input {
-	width: 18%;
+/* Location View
+ ------------------------- */
+.t .location-wrap .meta, .t .location-wrap-search .meta {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F7F7F7;
+	margin-top: 10px;
 }
-
-div.forms div.form-field div.id_zipcode .field input {
-	width: 10%;
+.t .location-wrap .meta .tags {
+	margin-bottom: 5px;
 }
-
-div.forms div.form-field div.id_country .field input {
-	width: 45%;
-}
-
-div.forms div.form-field div.id_phone .field input {
-	width: 18%;
-}
-
-div.forms div.form-field div.id_fax .field input {
-	width: 18%;
-}
-
-div.forms div.form-field div.id_longitude .field input {
-	width: 8%;
-}
-
-div.forms div.form-field div.id_latitude .field input {
-	width: 8%;
-}
-
-div.forms div.form-field div.id_entityid .field input {
-	width: 8%;
-}
-
-div.forms div.form-field div.id_entityownerid .field input {
-	width: 8%;
-}
-
-
-
