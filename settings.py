@@ -102,6 +102,7 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'swfupload.middleware.SWFUploadMiddleware',
+    'swfupload.middleware.MediaUploadMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -175,6 +176,7 @@ INSTALLED_APPS = (
     'accountings',
     'emails',
     'email_blocks',
+    'actions',
     'files',
     'contacts',
     'event_logs',
@@ -211,9 +213,11 @@ TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
 
 TINYMCE_DEFAULT_CONFIG = {
-    'plugins': "table,paste,searchreplace,inlinepopups,tabfocus,fullscreen,media,spellchecker",
+    'plugins': "stormeimage,table,paste,searchreplace,inlinepopups,tabfocus,fullscreen,media,spellchecker",
     'gecko_spellcheck': False,
     'theme': "advanced",
+
+    # theme options
     'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,|,image,|,pagebreak,fullscreen,code",
     'theme_advanced_buttons2': "formatselect,underline,justifyfull,forecolor,|,pastetext,pasteword,removeformat,media,charmap,|,outdent,indent,|,undo,redo",
     'theme_advanced_buttons3': "",
@@ -221,10 +225,12 @@ TINYMCE_DEFAULT_CONFIG = {
     'theme_advanced_toolbar_align': "left",
     'theme_advanced_statusbar_location': "bottom",
     'theme_advanced_resizing' : True,
+
     'theme_advanced_resize_horizontal': True,
     'dialog_type': "modal",
     'tab_focus': ":prev, :next",
-    #'urlconverter_callback': 'tinymce_urlconverter',
+    'apply_source_formatting' : True,
+    'convert_urls' : False,
     'apply_source_formatting' : False,
 }
 
