@@ -152,7 +152,12 @@ def delete(request, id, template_name="files/delete.html"):
         EventLog.objects.log(**log_defaults)
 
         file.delete()
-        return HttpResponseRedirect(reverse('file.search'))
+
+        if request.POST['ajax']:
+            return HttpResponse('Ok')
+        else:
+            return HttpResponseRedirect(reverse('file.search'))
+        
 
     return render_to_response(template_name, {'file': file}, 
         context_instance=RequestContext(request))
@@ -161,9 +166,9 @@ def delete(request, id, template_name="files/delete.html"):
 @login_required
 def tinymce(request, template_name="media-files/tinymce.html"):
     """
-        TinyMCE Insert/Edit images [Window]
-        Passes in a list of files associated w/ "this" object
-        Examples of "this": Articles, Pages, Releases module
+    TinyMCE Insert/Edit images [Window]
+    Passes in a list of files associated w/ "this" object
+    Examples of "this": Articles, Pages, Releases module
     """
     from django.contrib.contenttypes.models import ContentType
     params = {'app_label': 0, 'model': 0, 'instance_id':0}
@@ -176,10 +181,15 @@ def tinymce(request, template_name="media-files/tinymce.html"):
         try: # get content type
             contenttype = ContentType.objects.get(app_label=params['app_label'], model=params['model'])
 
+            print 'contenttype', contenttype
+            print 'instance id', params['instance_id']
+
             if params['instance_id'] == 'undefined':
                 params['instance_id'] = 0
 
             files = File.objects.filter(content_type=contenttype, object_id=params['instance_id'])
+
+            print 'files', files
 
             for media_file in files:
                 file, ext = os.path.splitext(media_file.file.url)
@@ -192,78 +202,43 @@ def tinymce(request, template_name="media-files/tinymce.html"):
 
 
 def swfupload(request):
+
     from django.contrib.contenttypes.models import ContentType
     import re
 
     if request.method == "POST":
 
-        for file in request.FILES:
-            uploaded_file = request.FILES[file]
+        form = FileForm(request.user, request.POST, request.FILES)
 
-            # use file to get create title
-            clean_filename = os.path.splitext(uploaded_file.name)[0]
+        if not form.is_valid():
+            return HttpResponseServerError(
+                str(form._errors), mimetype="text/plain")
 
-            # get POST data
-            app_label = request.POST['storme_app_label']
-            model = unicode(request.POST['storme_model']).lower()
-            app_instance_id = request.POST['storme_instance_id']
+        app_label = request.POST['storme_app_label']
+        model = unicode(request.POST['storme_model']).lower()
+        object_id = request.POST['storme_instance_id']
 
-            # update POST dict
-            request.POST.update({'name': clean_filename, })
-            request.POST.update({'user_id': 3, })
-            request.POST.update({'application_id': 3, })
-            request.POST.update({'app_instance_id': 123, })
+        try:
+            file = form.save(commit=False)
+            file.name = re.sub(r'[^a-zA-Z0-9._]+', '-', request.FILES['file'].name)
+            file.content_type = ContentType.objects.get(app_label=app_label, model=model)
+            file.object_id = object_id
+            file.owner = request.user
+            file.creator = request.user
+            file.save()
+        except Exception, e:
+            print e
 
-        form = FileForm(request.POST, request.FILES)
+        d = {
+            "id" : file.id,
+            "name" : file.name,
+            "url" : file.file.url,
+        }
 
-        if form.is_valid():
-            
-            app_label = request.POST['storme_app_label']
-            model = unicode(request.POST['storme_model']).lower()
+        return HttpResponse(json.dumps([d]), mimetype="text/plain")
 
-            try: media_file = form.save(commit=False)
-            except:
-                import traceback
-                traceback.print_exc()
-
-            try: 
-                media_file.name = re.sub(r'[^a-zA-Z0-9._]+', '-', request.FILES['file'].name)
-                media_file.user = request.user
-                media_file.application = ContentType.objects.get(app_label=app_label, model=model)
-                media_file.application_instance_id = app_instance_id
-                media_file.owner_id = 1
-                media_file.creator_id = 1
-                media_file.save()
-
-                url_file, url_ext = os.path.splitext(media_file.file.url)
-                url_thumbnail = (url_file + '_thumbnail' + url_ext)
-                url_medium = (url_file + '_medium' + url_ext)
-                url_large = (url_file + '_large' + url_ext)
-    
-    
-    
-#                media_file.copy_image([75, 75], hook='_thumbnail', crop=True)
-#                media_file.copy_image([240, 240], hook='_medium')
-#                media_file.copy_image([500, 500], hook='_large')
-    
-                d = {
-                    "id" : media_file.id,
-                    "name" : media_file.name,
-                    "url" : media_file.file.url,
-                    "url_thumbnail" : url_thumbnail,
-                    "url_medium" : url_medium,
-                    "url_large" : url_large            
-                }
-    
-                print json.dumps([d])
-
-            except: 
-                import traceback
-                traceback.print_exc()
-
-            return HttpResponse(json.dumps([d]), mimetype="text/plain")
-        else:
-            return HttpResponseServerError(str(form._errors), mimetype="text/plain")
-
-    else: # if not POST
-        return HttpResponse("not good", mimetype="text/plain")
+@login_required
+def tinymce_upload_template(request, id, template_name="files/templates/tinymce_upload.html"):
+    file = get_object_or_404(File, pk=id)
+    return render_to_response(template_name, {'file': file}, 
+        context_instance=RequestContext(request))
