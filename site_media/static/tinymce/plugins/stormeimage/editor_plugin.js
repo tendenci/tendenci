@@ -39,8 +39,8 @@
 			// Register buttons
 			ed.addButton('image', {
 				title : 'stormeimage.desc',
-				cmd : 'mceStormImage'
-				//image : url + '/img/sample.gif'
+				cmd : 'mceStormImage',
+				image : url + '/img/attachment.gif'
 			});
 
 
