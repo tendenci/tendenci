@@ -1,0 +1,99 @@
+{% extends "actions/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans 'Add Marketing Action Step 4'%}
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/newsletters.css">
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ <div id="t-newsletters">
+   <div id="t-add">
+<h1>Marketing Action Step 4 of 5</h1>
+{{ form.sla.errors }}
+
+	<div class="step-wrap">
+	   	<div class="step-label">&nbsp;</div>
+	   	<div class="step-desc">
+	   		{{ request.user.get_full_name }} / {{ request.user.username }}
+	   		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ request.user.email }}
+	   	</div>
+   </div>  
+   <div class="clear-left"></div> 
+
+   <div class="step-wrap">
+	   	<div class="step-label"><a href="#link-to-step1">Step1</a></div>
+	   	<div class="step-desc">Specify Action Name and General Properties.<br />
+	   	{{ action.name }} <br />
+	   	Include email2: {% if action.send_to_email2 %}Yes{% else %}No{% endif %}
+	   	</div>
+   </div>  
+   <div class="clear-left"></div> 
+   
+   
+   <div class="step-wrap">
+	   	<div class="step-label"><a href="#link-to-step2">Step2</a></div>
+	   	<div class="step-desc">E-mail to bind to this Marketing Action.<br />
+	   	Sender: <a href="mailto:{{ action.email.sender }}">{{ action.email.sender }}</a>
+	   	<div style="float:right;">
+	   	<a href="{% url email.view action.email.id %}" class="body-copy-yellow" target="_blank">View Email</a>
+	   	 &nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url email.edit action.email.id %}?next={% url action.step4 action.id %}" class="body-copy-yellow" target="_blank">Edit Email</a>
+	   	</div>
+	   
+	   	Email Subject: {{ action.email.subject }}<br />
+	   	
+	   	</div>
+   </div>  
+   <div class="clear-both"></div> 
+   
+   <div class="step-wrap">
+	   	<div class="step-label"><a href="#link-to-step2">Step3</a></div>
+	   	<div class="step-desc">Select a user group.
+		<div align="right" style="float: right;">
+	   	<a href="{% url group.detail action.group.slug %}" class="body-copy-yellow" target="_blank">View User Group</a>
+	  	</div> 
+	   	{{ action.group.name }} 
+	   	</div>
+   </div>  
+   <div class="clear-both"></div> 
+   
+   <div class="step-wrap">
+	   	<div class="step-label">Step4</div>
+	   	<div class="step-desc">
+			<div class="body-copy-yellow">Confirm acceptance of site policies and common sense.</div>
+			<div class="body-copy-alerts">
+				I agree that I have permission from all users of the
+				<b>{{ action.group.name }}  </b> user group 
+				to send them e-mail. I understand that by sending this e-mail the transaction, 
+				including my IP address, is recorded. Furthermore I am legally bound by 
+				common courtesy, common sense, and the acceptable use 
+				policy (aup) 
+				and privacy policy of this site.
+				
+			</div>        
+	   	</div>
+   </div>  
+   <div class="clear-left"></div>  
+   
+    <div class="step-wrap">
+	   	<div class="step-label body-copy-yellow">&nbsp;</div>
+	   	<div class="step-desc">
+	   		<form method="post" action=".">
+			{{ form.sla }} I Agree 
+			<input type="submit" name="Submit" value="Accept Software License Agreement" > 
+			</form>  
+	   	</div>
+   </div>  
+   <div class="clear-left"></div>                       
+                               
+ </div>
+ </div>
+</div>
+
+{% endblock %}
