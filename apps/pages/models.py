@@ -18,6 +18,7 @@ class Page(TendenciBaseModel):
     syndicate = models.BooleanField(_('Include in RSS feed'))
     template = models.CharField(_('Template'), max_length=50, blank=True)
     tags = TagField(blank=True)
+    
     objects = PageManager()
     entity = models.ForeignKey(Entity,null=True)
     # html-meta tags

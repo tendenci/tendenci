@@ -172,7 +172,7 @@ class EventLogManager(Manager):
             event_log.content_type = ct
             event_log.object_id = instance.pk
             event_log.source = ct.app_label
-            event_log.headline = unicode(instance)
+            event_log.headline = unicode(instance)[:50]
         
         if not event_log.source: event_log.source = ''
         
