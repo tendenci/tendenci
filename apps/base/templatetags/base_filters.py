@@ -60,6 +60,18 @@ def format_currency(value):
     return tcurrency(value)
 format_currency.is_safe = True
 
+@register.filter     
+def date_diff(value, date_to_compare=None):
+    """Compare two dates and return the difference in days"""
+    import datetime
+    if not isinstance(value, datetime.datetime):
+        return 0
+    
+    if not isinstance(date_to_compare, datetime.datetime):
+        date_to_compare = datetime.datetime.now()
+    
+    return (date_to_compare-value).days
+
 @register.filter
 def scope(object):
     return dir(object)
