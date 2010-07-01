@@ -4,7 +4,7 @@
 	{# named area for jump links #}
 	<a name="articles" id="articles"></a>
 	{% if start_dt %}
-		Articles for {{ start_dt }} to {{ end_dt }}
+		Articles for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}
 	{% else %}
 		All Articles
 	{% endif %}
@@ -19,7 +19,7 @@
 		<tr><td>&nbsp;</td></tr>
 		<tr><td align="left" valign="top">
 		<a href="{{ SITE_GLOBAL_SITEURL }}{% url article article.id %}" >
-		<font face="Arial" size="2"><b>" {{article.headline}}
+		<font face="Arial" size="2"><b> {{article.headline}}
 		</b></font></a>
 		
 		{# show member icon if not allowanonymousview/allowsiteuserview #}
@@ -41,8 +41,8 @@
 		<tr><td align="left" valign="top"><div>
 		<font face="Arial" size="2" color="#000000">
 
-		{{ article.body|striptags|truncatewords:20 }}
-		... <a href="{{ SITE_GLOBAL_SITEURL }}{% url article article.id %}" />[More Info]</a>
+		{{ article.body|striptags|truncatewords:60 }}
+		 <a href="{{ SITE_GLOBAL_SITEURL }}{% url article article.id %}">[More Info]</a>
 		</font>
 		
 		{#  posted by #}

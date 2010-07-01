@@ -6,6 +6,7 @@ from perms.models import TendenciBaseModel
 from entities.models import Entity
 from emails.models import Email
 from user_groups.models import Group
+from articles.models import Article
 
 class Action(TendenciBaseModel):
     guid = models.CharField(max_length=50, default=uuid.uuid1)
@@ -15,6 +16,7 @@ class Action(TendenciBaseModel):
     email = models.ForeignKey(Email, blank=True, null=True)
     entity = models.ForeignKey(Entity, blank=True, null=True)
     group = models.ForeignKey(Group, blank=True, null=True)
+    article = models.ForeignKey(Article, blank=True, null=True)
     member_only = models.BooleanField(default=False)
     send_to_email2 = models.BooleanField(default=False)
     category = models.CharField(max_length=50, default='', null=True)
@@ -37,3 +39,14 @@ class Action(TendenciBaseModel):
 
     def __unicode__(self):
         return self.name
+    
+    def save(self, user=None):
+        if not self.id:
+            if user and not user.is_anonymous():
+                self.creator=user
+                self.creator_username=user.username
+        if user and not user.is_anonymous():
+            self.owner=user
+            self.owner_username=user.username
+            
+        super(self.__class__, self).save()
