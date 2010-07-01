@@ -11,8 +11,6 @@ from meta.models import Meta as MetaTags
 from articles.module_meta import ArticleMeta
 from entities.models import Entity
 
-from categories.models import Category
-
 class Article(TendenciBaseModel ):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     timezone = TimeZoneField(_('Time Zone'))
@@ -37,7 +35,7 @@ class Article(TendenciBaseModel ):
     design_notes = models.TextField(_('Design Notes'), blank=True)
 
     tags = TagField(blank=True)
-    category = models.ForeignKey(Category, blank=True, null=True)
+    
     # for podcast feeds
     enclosure_url = models.CharField(_('Enclosure URL'), max_length=500, blank=True)
     enclosure_type = models.CharField(_('Enclosure Type'), max_length=120, blank=True)
