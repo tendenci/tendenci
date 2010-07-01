@@ -64,9 +64,6 @@ class JobForm(TendenciBaseForm):
     #override_price
     #override_userid
     
-    #TODO: FIGURE OUT CATEGORY
-    #category_id
-  
     #don't need
     #contactcompanyindustry
     #duration

@@ -19,7 +19,7 @@ class Story(TendenciBaseModel):
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     ncsortorder = models.IntegerField(null=True, blank=True)
     entity = models.ForeignKey(Entity,null=True)
-     
+    
     objects = StoryManager()
     
     class Meta:

@@ -19,7 +19,6 @@ class ArticleForm(TendenciBaseForm):
         'phone',
         'fax',
         'email',
-        'category',
         'tags',
         'allow_anonymous_view',
         'allow_user_view',

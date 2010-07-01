@@ -18,7 +18,13 @@
 	margin-bottom: 20px;
 }
 
-.t .jobs-wrap .job-wrap {
+.t .job-wrap {
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .jobs-wrap .job-wrap-search {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -32,15 +38,10 @@
 .t .jobs-wrap .job-wrap .content {
 	margin-bottom: 10px;
 }
-.t .jobs-wrap .job-wrap .submitted {
-	background-color: #EEE;
-}
-
 .t .options {
 	text-align: right;
 	position: absolute;
 	top: 0; right: 0;
-	background-color: #EEE;
 	padding: 5px;
 	white-space: nowrap;
 }
@@ -52,9 +53,6 @@
 .t .quick-options ul {
 	margin: 0; padding: 0;
 	list-style-type: none;
-}
-.t .quick-options ul li {
-	display: inline;
 }
 
 .t .dropdown-options {
@@ -86,3 +84,13 @@
 	cursor: pointer;
 }
 
+/* Job View
+ ------------------------- */
+.t .job-wrap .meta, .t .job-wrap-search .meta {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F7F7F7;
+	margin-top: 10px;
+}
+.t .job-wrap .meta .tags {
+	margin-bottom: 5px;

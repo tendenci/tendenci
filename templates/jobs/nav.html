@@ -35,6 +35,7 @@
 				{% if can_edit_job %}
 				<li><a href="{% url job.edit nav_object.pk %}">Edit</a></li>
 				<li><a href="{% url job.edit.meta nav_object.pk %}">Edit Meta</a></li>
+				<li><a href="{% url category.update nav_object.opt_app_label nav_object.opt_module_name nav_object.pk %}">Edit Categories</a></li>
 				{% endif %}
 			{% endif %}
 			<li><a href="{% url job.search %}">Search</a></li>
