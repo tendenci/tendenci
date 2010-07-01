@@ -3,12 +3,12 @@ from django.views.generic.simple import direct_to_template
 from django.contrib.auth import views as auth_views
 
 from registration.views import activate
-from registration.views import register
+
 
 from profiles.views import password_change, password_change_done
 
 from accounts.forms import RegistrationCustomForm
-
+from accounts.views import register
 
 urlpatterns = patterns('',
                        # Activation keys get matched by \w+ instead of the more specific

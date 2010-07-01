@@ -12,7 +12,7 @@ register = Library()
 def fb_like_button_iframe(url, show_faces='false', width=400, height=30):
     from site_settings.utils import get_setting
     site_url = get_setting('site', 'global', 'siteurl')
-    url = site_url + url
+    url = '%s%s' % (site_url,url)
     if show_faces.lower() == 'true':
         show_faces = 'true'
     else:
