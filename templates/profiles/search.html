@@ -26,7 +26,7 @@
     {% with profile.object as profile %}
     
 		<div class="profile-wrap">
-			 {% users_options request.user profile.user %}
+			{% users_options request.user profile.user %}
             <h2><a href="{% url profiles.views.index profile.user.username %}">{{ profile.user.last_name }}{%if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{profile.user.email}})</a></h2>
            <div class="clear-right"></div>
            
@@ -72,8 +72,6 @@
 {% endblock %}
 
 {% block extra_body %}
-
-	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
 
@@ -85,13 +83,13 @@
 			});
 		});
     </script>
-    <script type="text/javascript" src="/site_media/static/js/global/dropdown.js"></script>
-<script type="text/javascript">
-var iconrow = new dropdown({
-	container:	'more-options-wrap',
-	trigger:	'more-options-trigger',
-	target:		'more-options-target'
-});
-</script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+	var iconrow = new dropdown({
+		container:	'more-options-wrap',
+		trigger:	'more-options-trigger',
+		target:		'more-options-target'
+	});
+	</script>
     
 {% endblock %}
