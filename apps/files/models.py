@@ -1,12 +1,17 @@
-import os, mimetypes, uuid
+import os, mimetypes, uuid, Image
 from django.db import models
 from django.conf import settings
 from perms.models import TendenciBaseModel
 from django.contrib.contenttypes.models import ContentType
 from files.managers import FileManager
 
+def file_directory(instance, filename):
+    new_filename = '%s%s' % (instance.pk, os.path.splitext(filename)[1])
+    return 'files/%s/%s/%s' % (instance.content_type, instance.object_id, new_filename)
+    
+
 class File(TendenciBaseModel):
-    file = models.FileField(max_length=260, upload_to='files')
+    file = models.FileField(max_length=260, upload_to=file_directory)
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     name = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
@@ -78,6 +83,14 @@ class File(TendenciBaseModel):
         return icons_dir + '/' + icons[self.type()]
 
     objects = FileManager()
+
+    def image_dimensions(self):
+        try:
+            im = Image.open(self.file.file)
+            return im.size;
+        except Exception, e:
+            return (0,0)
+        
 
     class Meta:
         permissions = (("view_file","Can view file"),)
