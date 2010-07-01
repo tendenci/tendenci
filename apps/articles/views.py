@@ -109,7 +109,11 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                 
                 # send notification to administrators
                 if notification:
-                    notification.send(get_administrators(),'article_edited', {'object':article})
+                    extra_context = {
+                        'object': article,
+                        'request': request,
+                    }
+                    notification.send(get_administrators(),'article_edited', extra_context)
                                                                              
                 return HttpResponseRedirect(reverse('article', args=[article.pk]))             
         else:
@@ -184,7 +188,11 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 
                 # send notification to administrators
                 if notification:
-                    notification.send(get_administrators(),'article_added', {'object':article})
+                    extra_context = {
+                        'object': article,
+                        'request': request,
+                    }
+                    notification.send(get_administrators(),'article_added', extra_context)
                     
                 return HttpResponseRedirect(reverse('article', args=[article.pk]))
         else:
@@ -214,7 +222,11 @@ def delete(request, id, template_name="articles/delete.html"):
 
             # send notification to administrators
             if notification:
-                notification.send(get_administrators(),'article_delted', {'object':article})
+                extra_context = {
+                    'object': article,
+                    'request': request,
+                }
+                notification.send(get_administrators(),'article_delted', extra_context)
                             
             article.delete()
                                     
