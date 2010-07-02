@@ -7,7 +7,6 @@ from django.contrib import messages
 
 from news.models import News
 from news.forms import NewsForm
-from news.module_meta import NewsMeta
 from base.http import Http403
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
@@ -122,13 +121,12 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
     if not request.user.has_perm('news.change_news', news):
         raise Http403
 
-    if not news.meta:
-        defaults = {
-            'title': NewsMeta().get_meta(news, 'title'),
-            'description': NewsMeta().get_meta(news, 'description'),
-            'keywords': NewsMeta().get_meta(news, 'keywords'),
-        }
-        news.meta = MetaTags(**defaults)
+    defaults = {
+        'title': news.get_title(),
+        'description': news.get_description(),
+        'keywords': news.get_keywords(),
+    }
+    news.meta = MetaTags(**defaults)
 
     if request.method == "POST":
         form = form_class(request.POST, instance=news.meta)

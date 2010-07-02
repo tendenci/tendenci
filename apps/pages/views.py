@@ -8,7 +8,6 @@ from django.contrib import messages
 
 from base.http import Http403
 from pages.models import Page
-from pages.module_meta import PageMeta
 from pages.forms import PageForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
@@ -122,13 +121,12 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
     if not request.user.has_perm('pages.change_page', page):
         raise Http403
 
-    if not page.meta:
-        defaults = {
-            'title': PageMeta().get_meta(page, 'title'),
-            'description': PageMeta().get_meta(page, 'description'),
-            'keywords': PageMeta().get_meta(page, 'keywords'),
-        }
-        page.meta = MetaTags(**defaults)
+    defaults = {
+        'title': page.get_title(),
+        'description': page.get_description(),
+        'keywords': page.get_keywords(),
+    }
+    page.meta = MetaTags(**defaults)
 
     if request.method == "POST":
         form = form_class(request.POST, instance=page.meta)
