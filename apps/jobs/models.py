@@ -1,6 +1,10 @@
 import uuid
+
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+
 from tagging.fields import TagField
+from base.fields import SlugField
 from timezones.fields import TimeZoneField
 from perms.models import TendenciBaseModel 
 from jobs.managers import JobManager
@@ -14,6 +18,7 @@ from uuid import uuid1
 class Job(TendenciBaseModel ):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     title = models.CharField(max_length=250)
+    slug = SlugField(_('URL Path'), unique=True)  
     description = tinymce_models.HTMLField()
     list_type = models.CharField(max_length=50) #premium or regular
 
@@ -107,7 +112,7 @@ class Job(TendenciBaseModel ):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("job", [self.pk])
+        return ("job", [self.slug])
 
     def __unicode__(self):
         return self.title

@@ -13,9 +13,9 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
-def index(request, id=None, template_name="jobs/view.html"):
-    if not id: return HttpResponseRedirect(reverse('job.search'))
-    job = get_object_or_404(Job, pk=id)
+def index(request, slug=None, template_name="jobs/view.html"):
+    if not slug: return HttpResponseRedirect(reverse('job.search'))
+    job = get_object_or_404(Job, slug=slug)
     
     if request.user.has_perm('jobs.view_job', job):
         log_defaults = {
@@ -49,8 +49,8 @@ def search(request, template_name="jobs/search.html"):
     return render_to_response(template_name, {'jobs':jobs}, 
         context_instance=RequestContext(request))
 
-def print_view(request, id, template_name="jobs/print-view.html"):
-    job = get_object_or_404(Job, pk=id)    
+def print_view(request, slug, template_name="jobs/print-view.html"):
+    job = get_object_or_404(Job, slug=slug)    
 
     log_defaults = {
         'event_id' : 255000,
@@ -102,7 +102,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % job)
                 
-                return HttpResponseRedirect(reverse('job', args=[job.pk]))
+                return HttpResponseRedirect(reverse('job', args=[job.slug]))
         else:
             form = form_class(request.user)
            
@@ -145,7 +145,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % job)
                                                               
-                return HttpResponseRedirect(reverse('job', args=[job.pk]))             
+                return HttpResponseRedirect(reverse('job', args=[job.slug]))             
         else:
             form = form_class(request.user, instance=job)
 
@@ -175,16 +175,15 @@ def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.ht
         if form.is_valid():
             job.meta = form.save() # save meta
             job.save() # save relationship
-            
+
             messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % job)
             
-            return HttpResponseRedirect(reverse('job', args=[job.pk]))
+            return HttpResponseRedirect(reverse('job', args=[job.slug]))
     else:
         form = form_class(instance=job.meta)
 
     return render_to_response(template_name, {'job': job, 'form':form}, 
         context_instance=RequestContext(request))
-
 
 @login_required
 def delete(request, id, template_name="jobs/delete.html"):
