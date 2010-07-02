@@ -155,15 +155,17 @@ class ArticleMeta():
 
         self.object = object
         self.name = name
-        
-        if self.name == 'title':
-            return self.get_title()
-        elif self.name == 'description':
-            return self.get_description()
-        elif self.name =='keywords':
-            return self.get_keywords()
 
+        if name == 'title':
+            if object.meta: return object.meta.get_title()
+            else: return self.get_title()
+        elif name == 'description':
+            if object.meta: return object.meta.get_description()
+            else: return self.get_description()
+        elif name =='keywords':
+            if object.meta: return object.meta.get_keywords()
+            else: return self.get_keywords()
         return ''
     
-
-
+    
+    
