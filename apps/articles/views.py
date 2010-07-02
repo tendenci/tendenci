@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 
 from base.http import Http403
 from articles.models import Article
@@ -105,6 +106,8 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                 # assign creator permissions
                 ObjectPermission.objects.assign(article.creator, article) 
                 
+                messages.add_message(request, messages.INFO, 'Successfully updated %s' % article)
+                
                 # send notification to administrators
                 if notification:
                     extra_context = {
@@ -142,6 +145,9 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
         if form.is_valid():
             article.meta = form.save() # save meta
             article.save() # save relationship
+            
+            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % article)
+             
             return HttpResponseRedirect(reverse('article', args=[article.slug]))
     else:
         form = form_class(instance=article.meta)
@@ -181,6 +187,8 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 # assign creator permissions
                 ObjectPermission.objects.assign(article.creator, article) 
                 
+                messages.add_message(request, messages.INFO, 'Successfully added %s' % article)
+                
                 # send notification to administrators
                 if notification:
                     extra_context = {
@@ -214,6 +222,8 @@ def delete(request, id, template_name="articles/delete.html"):
             }
             
             EventLog.objects.log(**log_defaults)
+
+            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % article)
 
             # send notification to administrators
             if notification:
