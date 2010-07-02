@@ -4,21 +4,11 @@
 {% block title %}{{ block.super }}Add{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/messages.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 {% endblock %}
 
-{% block messages %}{{ block.super }}{% endblock %}
-
 {% block body %}
 <div class="t">
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
     <h1>{{ MODULE_CATEGORIES_LABEL }} Update</h1>
     <p>{{ model|capfirst }} - <a href="{{ object.get_absolute_url }}">{{ object }}</a></p>
     <div class="article-wrap">

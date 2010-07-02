@@ -32,7 +32,7 @@
 			{% endif %}
 			{% if nav_object %}
 				{% if can_view_article %}
-				<li><a href="{% url article nav_object.pk %}">View</a></li>
+				<li><a href="{% url article nav_object.slug %}">View</a></li>
 				{% endif %}
 				{% if can_edit_article %}
 				<li><a href="{% url article.edit nav_object.pk %}">Edit</a></li>
