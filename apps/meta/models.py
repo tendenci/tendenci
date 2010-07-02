@@ -58,3 +58,22 @@ def add_methods(sender, instance, signal, *args, **kwargs):
         instance.add_accessor_methods()
 # connect the add_accessor_methods function to the post_init signal
 post_init.connect(add_methods, sender=Meta)
+
+
+def get_meta_template(object, meta_label):
+    return object.get_meta(meta_label)
+
+def add_remote_methods(sender, instance, signal, *args, **kwargs):
+    """
+    A listener that calls 'add_accessor_method' on
+    post-init signal
+    """
+    if hasattr(instance, 'meta'):
+        for meta_label in ('keywords','title','description'):
+            setattr(instance,'get_%s' % meta_label, curry(get_meta_template, instance, meta_label))
+# connect the add_accessor_methods function to the post_init signal
+post_init.connect(add_remote_methods)
+
+
+
+

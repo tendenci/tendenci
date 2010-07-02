@@ -14,6 +14,7 @@ class ArticleForm(TendenciBaseForm):
         model = Article
         fields = (
         'headline',
+        'slug',
         'summary',
         'body',
         'source',

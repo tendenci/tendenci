@@ -5,14 +5,13 @@
 {% block title %}{{ block.super }}Add{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}articles.css">
 <script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
 {% endblock %}
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_ARTICLES_LABEL }} Add</h1>
+    <h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} Add</h1>
     
     {% article_nav request.user %}
 
@@ -20,10 +19,23 @@
     	<form action="{% url article.add %}" method="post">
     	<div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Add {{ MODULE_ARTICLES_LABEL }}" />
+        	<input type="submit" value="Add {% firstof MODULE_ARTICLES_LABEL 'Article' %}" />
 		</div>
         </form>
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_body %}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+	<script type="text/javascript">
+		var slugit = new Slugify({
+			input_element : 'input#id_headline',
+			slug_element : 'input#id_slug',
+			submit_element : 'input[type="submit"]',
+			help: false,
+			limit : 150
+		});
+	</script>
 {% endblock %}
