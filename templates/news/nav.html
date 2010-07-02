@@ -30,7 +30,7 @@
 			{% endif %}
 			{% if nav_object %}
 				{% if can_view_news %}
-				<li><a href="{% url news.view nav_object.slug %}">View</a></li>
+				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
 				{% endif %}
 				{% if can_edit_news %}
 				<li><a href="{% url news.edit nav_object.pk %}">Edit</a></li>

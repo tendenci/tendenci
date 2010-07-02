@@ -14,6 +14,7 @@ class PageForm(TendenciBaseForm):
         model = Page
         fields = (
         'title',
+        'slug',
         'content',
         'tags',
         'allow_anonymous_view',

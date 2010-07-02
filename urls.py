@@ -48,6 +48,9 @@ urlpatterns = patterns('',
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
+    
+    # page view
+    url(r'^(?P<slug>[\w\-\/]+)/$', 'pages.views.index', name="page"),
 )
 
 handler500 = 'base.views.custom_error'
