@@ -1,4 +1,4 @@
 {% block body %}
-<h1>Files Delete Page</h1>
+<h1>{% firstof MODULE_FILES_LABEL 'Files' %} Delete Page</h1>
 <div class="back-to-search"><a href="{% url file.search %}">&laquo; Back to files search</a></div>
 {% endblock %}
