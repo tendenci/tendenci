@@ -28,8 +28,8 @@
    <div class="step-wrap">
 	   	<div class="step-label">Step1</div>
 	   	<div class="step-desc">Specify Action Name and General Properties.<br />
-	   	{{ action.name }} <br />
-	   	Include email2: {% if action.send_to_email2 %}Yes{% else %}No{% endif %}
+	   	<b>{{ action.name }}</b> <br />
+	   	Include email2: <b>{% if action.send_to_email2 %}Yes{% else %}No{% endif %}</b>
 	   	</div>
    </div>  
    <div class="clear-left"></div> 
@@ -38,16 +38,13 @@
    <div class="step-wrap">
 	   	<div class="step-label">Step2</div>
 	   	<div class="step-desc">E-mail to bind to this Marketing Action.<br />
-	   	Sender: <a href="mailto:{{ action.email.sender }}">{{ action.email.sender }}</a>
-	   	<div style="float:right;">
+	   		<div style="float:right;">
 	   	<a href="{% url email.view action.email.id %}" class="body-copy-yellow" target="_blank">View Email</a>
-	   	 {% if action.article %}
-	   	 &nbsp;&nbsp;&nbsp;&nbsp;
-	   	 <a href="{% url article action.article.id %}" class="body-copy-yellow" target="_blank">View Article</a>
-	   	 {% endif %}
+	   	 &nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url email.edit action.email.id %}?next={% url action.step4 action.id %}" class="body-copy-yellow" target="_blank">Edit Email</a>
 	   	</div>
+	   	Sender: <a href="mailto:{{ action.email.sender }}">{{ action.email.sender }}</a><br />
 	   
-	   	Email Subject: {{ action.email.subject }}<br />
+	   <b>{{ action.email.subject }}</b><br />
 	   	
 	   	</div>
    </div>  
@@ -55,12 +52,20 @@
    
    <div class="step-wrap">
 	   	<div class="step-label">Step3</div>
-	   	<div class="step-desc">Select a user group.
+	   	<div class="step-desc">
+	   	{% if action.group %}
+	   	Select a user group<br />
 		<div align="right" style="float: right;">
 	   	<a href="{% url group.detail action.group.slug %}" class="body-copy-yellow" target="_blank">View User Group</a>
 	  	</div> 
-	   	{{ action.group.name }} 
+	   	<b>{{ action.group.name }}</b>
+	   	{% with action.group.members.count as count_members %}
+            ({{ count_members  }} member{{count_members|pluralize }})
+            {% endwith %} 
 	   	</div>
+	   	{% else %}
+	   		Members Only
+	   	{% endif %}
    </div>  
    <div class="clear-both"></div> 
    
