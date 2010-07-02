@@ -8,7 +8,6 @@ from django.contrib import messages
 from base.http import Http403
 from jobs.models import Job
 from jobs.forms import JobForm
-from jobs.module_meta import JobMeta
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
@@ -163,13 +162,12 @@ def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.ht
     if not request.user.has_perm('jobs.change_job', job):
         raise Http403
 
-    if not job.meta:
-        defaults = {
-            'title': JobMeta().get_meta(job, 'title'),
-            'description': JobMeta().get_meta(job, 'description'),
-            'keywords': JobMeta().get_meta(job, 'keywords'),
-        }
-        job.meta = MetaTags(**defaults)
+    defaults = {
+        'title': job.get_title(),
+        'description': job.get_description(),
+        'keywords': job.get_keywords(),
+    }
+    job.meta = MetaTags(**defaults)
 
 
     if request.method == "POST":

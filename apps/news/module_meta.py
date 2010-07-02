@@ -10,7 +10,7 @@ class NewsMeta():
     def get_description(self):
         if self.object.summary:
             return_value = self.object.summary
-        elif self.object.body:
+        else:
             return_value = self.object.body
 
         return_value = strip_tags(return_value)
@@ -29,12 +29,12 @@ class NewsMeta():
         self.name = name
         
         if name == 'title':
-            if object.meta: return object.meta.get_title()
+            if object.meta and object.meta.title: return object.meta.title
             else: return self.get_title()
         elif name == 'description':
-            if object.meta: return object.meta.get_description()
+            if object.meta and object.meta.description: return object.meta.description
             else: return self.get_description()
         elif name =='keywords':
-            if object.meta: return object.meta.get_keywords()
+            if object.meta and object.meta.keywords: return object.meta.keywords
             else: return self.get_keywords()
-        return ''    
+        return ''

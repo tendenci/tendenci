@@ -11,26 +11,10 @@
 <div class="t">
     <h1>{% firstof MODULE_JOBS_LABEL 'Jobs' %} Print</h1>
     
-    {% job_nav request.user %}
-
-    <div class="job-wrap">
+     <div class="job-wrap">
 
         <div class="options">
 
-            <div class="dropdown-options">
-                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                <ul>
-                    <li>Review Reports</li>
-                    <li>Optimize Meta Tags</li>
-                    <li>Attach Files</li>
-                    <li>View Revisions</li>
-                    <li>Delete</li>
-                </ul>
-            </div>
-
-            <div class="quick-options">
-                {% job_options request.user job %}
-            </div>
         </div>
 
 

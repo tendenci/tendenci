@@ -11,26 +11,10 @@
 <div class="t">
     <h1>{% firstof MODULE_ENTITIES_LABEL 'Entity' %} Print</h1>
     
-    {% entity_nav request.user entity %}
-
     <div class="entities-wrap">
 
         <div class="options">
 
-            <div class="dropdown-options">
-                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                <ul>
-                    <li>Review Reports</li>
-                    <li>Optimize Meta Tags</li>
-                    <li>Attach Files</li>
-                    <li>View Revisions</li>
-                    <li>Delete</li>
-                </ul>
-            </div>
-
-            <div class="quick-options">
-                {% entity_options request.user entity %}
-            </div>
         </div>
 
 
