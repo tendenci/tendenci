@@ -4,13 +4,11 @@
 {% load base_tags %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{{ job.meta.get_title }}{% endblock %}
-{% block meta_description %}{{ job.meta.get_description }}{% endblock %}
-{% block meta_keywords %}{{ job.meta.get_keywords }}{% endblock %}
+{% block title %}{{ block.super }}{{ job.get_title }}{% endblock %}
+{% block meta_description %}{{ job.get_description }}{% endblock %}
+{% block meta_keywords %}{{ job.get_keywords }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/messages.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
 {% endblock %}
 
@@ -72,7 +70,7 @@
 		$(document).ready(function(){
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_job = confirm('Permenantly delete {{ MODULE_JOBS_LABEL }}?');	// confirm
+				var delete_job = confirm('Permenantly delete {% firstof MODULE_JOBS_LABEL 'Job' %}?');	// confirm
 				if(delete_job) $('.t').find('form[name="job-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});

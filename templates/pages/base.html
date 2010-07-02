@@ -1,3 +1,5 @@
 {% extends "site_base.html" %}
 
-{% block title %}{{ MODULE_PAGES_LABEL }} - {% endblock %}
+{% block title %}{% firstof MODULE_PAGES_LABEL 'Pages' %} - {% endblock %}
+
+{% block messages %}{{ block.super }}{% endblock %}

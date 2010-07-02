@@ -5,13 +5,12 @@
 {% block title %}{{ block.super }}Add{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/forms.css">
 <link rel="stylesheet" href="/site_media/static/css/entities.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_ENTITIES_LABEL }} Add</h1>
+    <h1>{% firstof MODULE_ENTITIES_LABEL 'Entity' %}  Add</h1>
     
     {% entity_nav request.user %}
 
@@ -19,7 +18,7 @@
     	<form action="{% url entity.add %}" method="post">
     	<div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Add {{ MODULE_ENTITIES_LABEL }}" />
+        	<input type="submit" value="Add {% firstof MODULE_ENTITIES_LABEL 'Entity' %}" />
 		</div>
         </form>
     </div>

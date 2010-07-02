@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 
 from base.http import Http403
 from pages.models import Page
@@ -13,9 +14,9 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
-def index(request, id=None, template_name="pages/view.html"):
-    if not id: return HttpResponseRedirect(reverse('page.search'))
-    page = get_object_or_404(Page, pk=id)
+def index(request, slug=None, template_name="pages/view.html"):
+    if not slug: return HttpResponseRedirect(reverse('page.search'))
+    page = get_object_or_404(Page, slug=slug)
 
     if request.user.has_perm('pages.view_page', page):
         log_defaults = {
@@ -50,8 +51,8 @@ def search(request, template_name="pages/search.html"):
     return render_to_response(template_name, {'pages':pages}, 
         context_instance=RequestContext(request))
 
-def print_view(request, id, template_name="pages/print-view.html"):
-    page = get_object_or_404(Page, pk=id)
+def print_view(request, slug, template_name="pages/print-view.html"):
+    page = get_object_or_404(Page, pk=slug)
 
     if request.user.has_perm('pages.view_page', page):
         log_defaults = {
@@ -100,8 +101,10 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
  
                 # assign creator permissions
                 ObjectPermission.objects.assign(page.creator, page) 
+                
+                messages.add_message(request, messages.INFO, 'Successfully updated %s' % page)
                                                               
-                return HttpResponseRedirect(reverse('page', args=[page.pk]))             
+                return HttpResponseRedirect(reverse('page', args=[page.slug]))             
         else:
             form = form_class(request.user, instance=page)
 
@@ -111,29 +114,29 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
         raise Http403
 
 @login_required
-def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.html"):
+def edit_meta(request, slug, form_class=MetaForm, template_name="pages/edit-meta.html"):
 
     # check permission
     page = get_object_or_404(Page, pk=id)
     if not request.user.has_perm('pages.change_page', page):
         raise Http403
 
-    if not page.meta:
-        # TODO: replace this place-holder
-        # with dynamic meta information
-        defaults = {
-            'title': 'Optimized title',
-            'description': 'Optimized description',
-            'keywords': 'optimized, keywords, go, here',
-        }
-        page.meta = MetaTags(**defaults)
+    defaults = {
+        'title': page.get_title(),
+        'description': page.get_description(),
+        'keywords': page.get_keywords(),
+    }
+    page.meta = MetaTags(**defaults)
 
     if request.method == "POST":
         form = form_class(request.POST, instance=page.meta)
         if form.is_valid():
             page.meta = form.save() # save meta
             page.save() # save relationship
-            return HttpResponseRedirect(reverse('page', args=[page.pk]))
+
+            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % page)
+            
+            return HttpResponseRedirect(reverse('page', args=[page.slug]))
     else:
         form = form_class(instance=page.meta)
 
@@ -173,6 +176,8 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                 # assign creator permissions
                 ObjectPermission.objects.assign(page.creator, page) 
                 
+                messages.add_message(request, messages.INFO, 'Successfully added %s' % page)
+                
                 return HttpResponseRedirect(reverse('page', args=[page.pk]))
         else:
             form = form_class(request.user)
@@ -197,6 +202,7 @@ def delete(request, id, template_name="pages/delete.html"):
                 'instance': page,
             }
             EventLog.objects.log(**log_defaults)
+            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % page)
             page.delete()
             return HttpResponseRedirect(reverse('page.search'))
     

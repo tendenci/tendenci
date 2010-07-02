@@ -1,5 +1,5 @@
 
 {% block body %}
-<h1>Entities Delete Page</h1>
+<h1>{% firstof MODULE_ENTITIES_LABEL 'Entities' %} Delete Page</h1>
 <div class="back-to-search"><a href="{% url entity.search %}">&laquo; Back to entities search</a></div>
 {% endblock %}

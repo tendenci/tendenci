@@ -34,7 +34,21 @@ class ArticleMeta():
 
         ### Build string -----------------------
         value = '%s - %s' % (object.headline, object.release_dt)
+        value = value.strip()
 
+        value = ''
+
+        # start w/ headline
+        if object.headline:
+            value += object.headline
+
+        # contact release
+        if object.headline and object.release_dt:
+            value += ' - ' + object.release_dt
+        elif object.release_dt:
+            value += object.release_dt
+
+        # primary keywords OR category/subcategory
         if primary_keywords:
             value = '%s : %s' % (value, primary_keywords)
         else:
@@ -72,10 +86,10 @@ class ArticleMeta():
 
         if object.summary:
             content = object.summary
-        elif object.body:
+        else:
             content = object.body
 
-        content = strip_tags(content)
+        content = strip_tags(content) #strips HTML tags
         content = unescape_entities(content)
         content = content.replace("\n","").replace("\r","")
         content = truncate_words(content, 50) # ~ about 250 chars
@@ -145,24 +159,24 @@ class ArticleMeta():
                 secondary_keywords,
             ]
             value = '%s %s' % (value, ''.join(list))
-        
 
-
-        return generate_meta_keywords(self.object.body)
+        return value
 
     def get_meta(self, object, name):
 
         self.object = object
         self.name = name
-        
-        if self.name == 'title':
-            return self.get_title()
-        elif self.name == 'description':
-            return self.get_description()
-        elif self.name =='keywords':
-            return self.get_keywords()
 
+        if name == 'title':
+            if object.meta and object.meta.title: return object.meta.title
+            else: return self.get_title()
+        elif name == 'description':
+            if object.meta and object.meta.description: return object.meta.description
+            else: return self.get_description()
+        elif name =='keywords':
+            if object.meta and object.meta.keywords: return object.meta.keywords
+            else: return self.get_keywords()
         return ''
     
-
-
+    
+    

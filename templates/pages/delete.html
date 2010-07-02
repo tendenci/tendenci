@@ -1,4 +1,4 @@
 {% block body %}
-<h1>Pages Delete Page</h1>
-<div class="back-to-search"><a href="{% url page.search %}">&laquo; Back to pages search</a></div>
+<h1>{% firstof MODULE_PAGES_LABEL 'Pages' %} Delete Page</h1>
+<div class="back-to-search"><a href="{% url page.search %}">&laquo; Back to {% firstof MODULE_PAGES_LABEL 'pages' %} search</a></div>
 {% endblock %}
