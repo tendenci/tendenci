@@ -41,7 +41,10 @@
 	   	Sender: <a href="mailto:{{ action.email.sender }}">{{ action.email.sender }}</a>
 	   	<div style="float:right;">
 	   	<a href="{% url email.view action.email.id %}" class="body-copy-yellow" target="_blank">View Email</a>
-	   	 &nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url email.edit action.email.id %}?next={% url action.step4 action.id %}" class="body-copy-yellow" target="_blank">Edit Email</a>
+	   	 {% if action.article %}
+	   	 &nbsp;&nbsp;&nbsp;&nbsp;
+	   	 <a href="{% url article action.article.id %}" class="body-copy-yellow" target="_blank">View Article</a>
+	   	 {% endif %}
 	   	</div>
 	   
 	   	Email Subject: {{ action.email.subject }}<br />

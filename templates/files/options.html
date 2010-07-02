@@ -1,13 +1,26 @@
 {% load base_tags %}
 {% load perm_tags %}
-<ul>   
-    {% has_perm user files.change_file opt_object as can_edit %}
-    {% if can_edit %} 
-    	<li><a href="{% url file.edit opt_object.pk %}">Edit</a></li>
-    {% endif %}
-    
-    {% has_perm user files.delete_file opt_object as can_delete %}
-    {% if can_delete %} 
-	<li class="delete"><a href="{% url file.delete opt_object.pk %}">Delete</a></li>
+
+{% has_perm user files.change_file opt_object as can_edit %}
+{% has_perm user files.delete_file opt_object as can_delete %}
+
+<div class="t-iconrow">
+	{% if can_edit %}
+		<a class="option-link edit" href="{% url file.edit opt_object.pk %}">Edit</a>
 	{% endif %}
-</ul>
+
+ {% if can_edit %}
+	  <div class="more-options-wrap">
+	    <a href="javascript:;" class="more-options-trigger">More options <small>&#9660;</small></a>
+	    <div class="more-options-target">
+	        <ul>
+				{% if can_delete %}
+					<li>
+						<a class="option-link delete" href="{% url file.delete opt_object.pk %}">Delete</a>
+					</li>				
+				{% endif %}
+			 </ul>
+	        </div>
+	  </div>
+  {% endif %}
+</div>

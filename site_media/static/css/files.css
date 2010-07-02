@@ -37,6 +37,23 @@
 .t .files-wrap .file-wrap .submitted {
 	background-color: #EEE;
 }
+.t .files-wrap-search .file-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .files-wrap-search .file-wrap h2 {
+	width: 85%;
+}
+.t .files-wrap-search .file-wrap .content {
+	margin-bottom: 10px;
+}
+.t .files-wrap-search .file-wrap .submitted {
+	background-color: #EEE;
+}
 
 .t .options {
 	text-align: right;
