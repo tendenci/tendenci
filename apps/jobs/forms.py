@@ -14,6 +14,7 @@ class JobForm(TendenciBaseForm):
         model = Job
         fields = (
         'title',
+        'slug',
         'description',
         'list_type',
         'code',
