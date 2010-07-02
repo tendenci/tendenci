@@ -12,7 +12,7 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_ARTICLES_LABEL }} Add</h1>
+    <h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} Add</h1>
     
     {% article_nav request.user %}
 
@@ -20,7 +20,7 @@
     	<form action="{% url article.add %}" method="post">
     	<div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Add {{ MODULE_ARTICLES_LABEL }}" />
+        	<input type="submit" value="Add {% firstof MODULE_ARTICLES_LABEL 'Article' %}" />
 		</div>
         </form>
     </div>
