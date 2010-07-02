@@ -45,7 +45,7 @@
 			</div>
 
 
-            <h2><a href="{% url news.view n.pk %}">{{ n.headline }}</a></h2>
+            <h2><a href="{% url news.view n.object.slug %}">{{ n.headline }}</a></h2>
             <div class="content">{{ n.body|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ n.create_dt|date:"D d M Y P" }} by {{ n.creator }}</div>

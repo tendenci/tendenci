@@ -20,9 +20,9 @@ try:
 except:
     notification = None
 
-def index(request, id=None, template_name="articles/view.html"):
-    if not id: return HttpResponseRedirect(reverse('article.search'))
-    article = get_object_or_404(Article, pk=id)
+def index(request, slug=None, template_name="articles/view.html"):
+    if not slug: return HttpResponseRedirect(reverse('article.search'))
+    article = get_object_or_404(Article, slug=slug)
     
     if request.user.has_perm('articles.view_article', article):
         log_defaults = {
@@ -56,8 +56,8 @@ def search(request, template_name="articles/search.html"):
     return render_to_response(template_name, {'articles':articles}, 
         context_instance=RequestContext(request))
 
-def print_view(request, id, template_name="articles/print-view.html"):
-    article = get_object_or_404(Article, pk=id)    
+def print_view(request, slug, template_name="articles/print-view.html"):
+    article = get_object_or_404(Article, slug=slug)    
 
     log_defaults = {
         'event_id' : 435000,
@@ -115,7 +115,7 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                     }
                     notification.send(get_administrators(),'article_edited', extra_context)
                                                                              
-                return HttpResponseRedirect(reverse('article', args=[article.pk]))             
+                return HttpResponseRedirect(reverse('article', args=[article.slug]))             
         else:
             form = form_class(request.user, instance=article)
 
@@ -147,7 +147,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
         if form.is_valid():
             article.meta = form.save() # save meta
             article.save() # save relationship
-            return HttpResponseRedirect(reverse('article', args=[article.pk]))
+            return HttpResponseRedirect(reverse('article', args=[article.slug]))
     else:
         form = form_class(instance=article.meta)
 
@@ -194,7 +194,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                     }
                     notification.send(get_administrators(),'article_added', extra_context)
                     
-                return HttpResponseRedirect(reverse('article', args=[article.pk]))
+                return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
             form = form_class(request.user)
            
