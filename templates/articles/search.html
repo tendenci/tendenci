@@ -31,7 +31,7 @@
 					{% article_options request.user article %} 	       
                 </div>
 			</div>
-            <h2><a href="{% url article article.pk %}">{% firstof article.headline "Untitled" %}</a></h2>
+            <h2><a href="{{ article.object.get_absolute_url }}">{% firstof article.headline "Untitled" %}</a></h2>
             <div class="content">{{ article.body|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Released on {{ article.release_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
