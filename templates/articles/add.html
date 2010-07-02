@@ -5,7 +5,6 @@
 {% block title %}{{ block.super }}Add{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}articles.css">
 <script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
 {% endblock %}
@@ -26,4 +25,17 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_body %}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+	<script type="text/javascript">
+		var slugit = new Slugify({
+			input_element : 'input#id_headline',
+			slug_element : 'input#id_slug',
+			submit_element : 'input[type="submit"]',
+			help: false,
+			limit : 150
+		});
+	</script>
 {% endblock %}

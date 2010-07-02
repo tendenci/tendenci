@@ -23,9 +23,9 @@
 	</li>
 
 	<li>
-		<span>{{ MODULE_LOCATIONS_LABEL }}</span>
+		<span>{% firstof MODULE_LOCATIONS_LABEL 'Locations' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url locations %}">{{ MODULE_LOCATIONS_LABEL }}:</a></li> 
+			<li><a href="{% url locations %}">{% firstof MODULE_LOCATIONS_LABEL 'Locations' %}:</a></li> 
 			{% if can_edit_setting %}
 				<li><a href="{% url settings.index "module" "locations" %}">Settings</a></li>
 			{% endif %}
@@ -48,7 +48,7 @@
 		
 	</li>
 	{% if MODULE_ENTITIES_ENABLED %}
-	<li><a href="{% url entities %}">{{ MODULE_ENTITIES_LABEL }}</a></li>
+	<li><a href="{% url entities %}">{% firstof MODULE_ENTITIES_LABEL 'Entities' %}</a></li>
 	{% endif %}
 	</ul>
 </div>

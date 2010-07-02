@@ -13,9 +13,9 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
-def index(request, id=None, template_name="news/view.html"):
-    if not id: return HttpResponseRedirect(reverse('news.search'))
-    news = get_object_or_404(News, pk=id)
+def index(request, slug=None, template_name="news/view.html"):
+    if not slug: return HttpResponseRedirect(reverse('news.search'))
+    news = get_object_or_404(News, slug=slug)
 
     # check permission
     if not request.user.has_perm('news.view_news', news):
@@ -51,8 +51,8 @@ def search(request, template_name="news/search.html"):
     return render_to_response(template_name, {'news':news}, 
         context_instance=RequestContext(request))
 
-def print_view(request, id, template_name="news/print-view.html"):
-    news = get_object_or_404(News, pk=id)
+def print_view(request, slug, template_name="news/print-view.html"):
+    news = get_object_or_404(News, slug=slug)
 
     # check permission
     if not request.user.has_perm('news.view_news', news):
@@ -106,7 +106,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
             # assign creator permissions
             ObjectPermission.objects.assign(news.creator, news)
 
-            return HttpResponseRedirect(reverse('news.view', args=[news.pk])) 
+            return HttpResponseRedirect(reverse('news.view', args=[news.slug])) 
 
     return render_to_response(template_name, {'news': news, 'form':form}, 
         context_instance=RequestContext(request))
@@ -132,7 +132,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
         if form.is_valid():
             news.meta = form.save() # save meta
             news.save() # save relationship
-            return HttpResponseRedirect(reverse('news.view', args=[news.pk]))
+            return HttpResponseRedirect(reverse('news.view', args=[news.slug]))
     else:
         form = form_class(instance=news.meta)
 
@@ -175,7 +175,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             # assign creator permissions
             ObjectPermission.objects.assign(news.creator, news)
             
-            return HttpResponseRedirect(reverse('news.view', args=[news.pk]))
+            return HttpResponseRedirect(reverse('news.view', args=[news.slug]))
     else:
         form = form_class(request.user)
        

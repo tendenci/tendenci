@@ -4,8 +4,6 @@
 {% block title %}{{ block.super }}{{ location.location_name }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/messages.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/locations.css">
 {% endblock %}
 
@@ -16,18 +14,6 @@
     <div class="location-wrap">
 
         <div class="options">
-
-            <div class="dropdown-options">
-                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                <ul>
-                    <li>Review Reports</li>
-                    <li>Optimize Meta Tags</li>
-                    <li>Attach Files</li>
-                    <li>View Revisions</li>
-                    <li>Delete</li>
-                </ul>
-            </div>
-
             <div class="quick-options">
                {% location_options request.user location %}
             </div>
@@ -49,7 +35,7 @@
 		$(document).ready(function(){
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_location = confirm('Permenantly delete {{ MODULE_LOCATIONS_LABEL }}?');	// confirm
+				var delete_location = confirm("Permenantly delete {% firstof MODULE_LOCATIONS_LABEL 'Location' %}?");	// confirm
 				if(delete_location) $('.t').find('form[name="location-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});

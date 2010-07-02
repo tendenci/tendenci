@@ -5,15 +5,14 @@
 {% block title %}{{ block.super }}Edit Meta Information{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/forms.css">
-<link rel="stylesheet" href="/site_media/static/css/pages.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
 
     {% page_nav user %}
-    <h1>{{ MODULE_PAGES_LABEL }} Meta Information for<br />
+    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} Meta Information for<br />
     {{ page.title }}</h1>
 
     <div class="page-wrap">
