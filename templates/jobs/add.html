@@ -17,7 +17,9 @@
 
     <div class="job-wrap">
     <form action="{% url job.add %}" method="post">
+    	<div class="forms">
         {{ form|styled_form }}
+        </div>
         <input type="submit" value="Add {% firstof MODULE_JOBS_LABEL 'Job' %}" />
     </form>
 
