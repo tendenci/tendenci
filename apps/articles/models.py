@@ -52,8 +52,8 @@ class Article(TendenciBaseModel ):
         """
         This method is standard across all models that are
         related to the Meta model.  Used to generate dynamic
-        meta information niche to this model.
-        """
+        methods coupled to this instance.
+        """    
         return ArticleMeta().get_meta(self, name)
     
     @models.permalink
