@@ -1,13 +1,47 @@
+import datetime
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.forms.extras.widgets import SelectDateWidget
 from profiles.models import Profile
+from perms.forms import TendenciBaseForm
 
 attrs_dict = {'class': 'required' }
+THIS_YEAR = datetime.date.today().year
 
-class ProfileForm(forms.ModelForm):
-    first_name = forms.CharField(label=_("First Name"), max_length=100)
-    last_name = forms.CharField(label=_("Last Name"), max_length=100)
+class ProfileForm(TendenciBaseForm):
+    first_name = forms.CharField(label=_("First Name"), max_length=100,
+                                 error_messages={'required': 'First Name is a required field.'})
+    last_name = forms.CharField(label=_("Last Name"), max_length=100,
+                                error_messages={'required': 'Last Name is a required field.'})
+    email = forms.CharField(label=_("Email"), max_length=100,
+                                 error_messages={'required': 'Email is a required field.'})
+    initials = forms.CharField(label=_("Initial"), max_length=100, 
+                               widget=forms.TextInput(attrs={'size':'10'}))
+    display_name = forms.CharField(label=_("Display name"), max_length=100, 
+                               widget=forms.TextInput(attrs={'size':'30'}))
+    
+    url = forms.CharField(label=_("Web Site"), max_length=100, 
+                               widget=forms.TextInput(attrs={'size':'40'}))
+    company = forms.CharField(label=_("Company"), max_length=100, 
+                               widget=forms.TextInput(attrs={'size':'45'}))
+    department = forms.CharField(label=_("Department"), max_length=100, 
+                               widget=forms.TextInput(attrs={'size':'35'}))
+    address = forms.CharField(label=_("Address"), max_length=150, 
+                               widget=forms.TextInput(attrs={'size':'45'}))
+    address2 = forms.CharField(label=_("Address2"), max_length=100, 
+                               widget=forms.TextInput(attrs={'size':'40'}))
+    city = forms.CharField(label=_("City"), max_length=50, 
+                               widget=forms.TextInput(attrs={'size':'15'}))
+    state = forms.CharField(label=_("State"), max_length=50, 
+                               widget=forms.TextInput(attrs={'size':'5'}))
+    zipcode = forms.CharField(label=_("Zipcode"), max_length=50, 
+                               widget=forms.TextInput(attrs={'size':'10'}))
+    country = forms.CharField(label=_("Country"), max_length=50, 
+                               widget=forms.TextInput(attrs={'size':'15'}))
+    mailing_name = forms.CharField(label=_("Mailing Name"), max_length=120, 
+                               widget=forms.TextInput(attrs={'size':'30'}))
+    
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs=attrs_dict),
@@ -20,6 +54,13 @@ class ProfileForm(forms.ModelForm):
                                                                 ('developer','Developer'),))
     interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
                                                           (0,'Not Interactive (no login)'),))
+    direct_mail =  forms.ChoiceField(initial=1, choices=((1, 'Yes'),(0, 'No'),))
+    notes = forms.CharField(label=_("Notes"), max_length=1000, 
+                               widget=forms.Textarea(attrs={'rows':'3'}))
+    admin_notes = forms.CharField(label=_("Admin Notes"), max_length=1000, 
+                               widget=forms.Textarea(attrs={'rows':'3'}))
+    language = forms.ChoiceField(initial="en-us", choices=(('en-us', u'English'),))
+    dob = forms.DateField(required=False, widget=SelectDateWidget(None, range(THIS_YEAR-100, THIS_YEAR)))
     class Meta:
         model = Profile
         fields = ('salutation', 
@@ -39,7 +80,13 @@ class ProfileForm(forms.ModelForm):
                   'company',
                   'position_title',
                   'position_assignment',
+                  'display_name',
+                  'hide_in_search',
+                  'hide_phone',
+                  'hide_email',
+                  'initials',
                   'sex',
+                  'mailing_name',
                   'address',
                   'address2',
                   'city',
@@ -48,10 +95,10 @@ class ProfileForm(forms.ModelForm):
                   'county',
                   'country',
                   'url',
-                  'url2',
                   'dob',
                   'ssn',
                   'spouse',
+                  'time_zone',
                   'department',
                   'education',
                   'student',
@@ -68,9 +115,11 @@ class ProfileForm(forms.ModelForm):
                 )
         
     def __init__(self, user_current=None, user_this=None, *args, **kwargs):
-        super(ProfileForm, self).__init__(*args, **kwargs)
-
+        super(ProfileForm, self).__init__(user_current, *args, **kwargs)
         self.user_this = user_this
+        
+        self.fields['user_perms'].label = "Owner"
+        self.fields['user_perms'].help_text = "Non-admin who can edit this user"
         
         if user_this:
             self.fields['first_name'].initial = user_this.first_name

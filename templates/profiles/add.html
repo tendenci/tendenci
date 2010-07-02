@@ -9,24 +9,524 @@
 <link rel="stylesheet" href="/site_media/static/css/iconrow.css">
 <link rel="stylesheet" href="/site_media/static/css/forms.css">
 <link rel="stylesheet" href="/site_media/static/css/profiles.css">
+<style>
+td.label{
+	text-align: right;
+}
+#t-profile #t-add h2{
+	color: #204177;
+	font-size: 14px;
+	font-weight: bold;
+}
+#t-profile #t-add {
+    width: 550px;
+}
+</style>
 {% endblock %}
 
 {% block body %}
 {{ block.super }}
 <div class="t">
 {% users_nav request.user user_this %}
-
-    <h1>Add User</h1>
+<div id="t-profile">
+<div id="t-add">
+    <h1>Site Registration</h1>
+    <p>Complete the fields below and press Submit to add a user. Required fields are designated with an <span class="body-copy-alerts">*</span>.</p>
 
     <div class="profile-wrap">
     	<form action="{% url profile.add %}" method="post">
     	<div class="forms">
-            {{ form|styled_form }}
-            {{ form2|styled_form }}
-        	<input type="submit" value="Add User" />
+           
+           
+           <table width="100%" border="0"> 
+           		<tr bgcolor="#f2f2f2">
+                   <td colspan="6" ><h2>A) Name Information  </h2></td>
+                 </tr>
+                 <tr>
+                   <td colspan="6" ><table width="550" border="0">
+                       <tr >
+                         <td class="label"><label for="id_salutation">Salutation </label>                               &nbsp;</td>
+                         <td>{{ form.salutation }}</td>
+                       </tr>
+                       <tr >
+                         <td width="120" class="label" ><label for="id_first_name">First Name</label> <span class="body-copy-alerts">*</span></td>
+                         <td>
+	                        {% if form.first_name.errors %}
+								{{ form.first_name.errors }}
+							{% endif %}
+							{{ form.first_name }}
+						</td>
+                       </tr>
+                       <tr >
+                         <td class="label"><label for="id_initials">Initial</label> 
+                         </span></td>
+                         <td>{{ form.initials }}</td>
+                       </tr>
+                       <tr >
+                         <td width="120" class="label"><label for="id_last_name">Last Name</label> <span class="body-copy-alerts">*</span></td>
+                         <td>
+                          {% if form.last_name.errors %}
+								{{ form.last_name.errors }}
+							{% endif %}
+							{{ form.last_name }}
+                         </td>
+                       </tr>
+                       <tr >
+                         <td class="label"><label for="id_position_title">Position Title</label></td>
+                         <td>
+							{% if form.position_title.errors %}
+								{{ form.position_title.errors }}
+							{% endif %}
+							{{ form.position_title }}
+						</td>
+                       </tr>
+                       
+                       <tr >
+                         <td class="label"><label for="id_display_name">Display Name</label></td>
+                         <td>
+                         {% if form.display_name.errors %}
+								{{ form.display_name.errors }}
+							{% endif %}
+                         {{form.display_name}}
+                         </td>
+                       </tr>
+                       <tr >
+                         <td >&nbsp;</td>
+                         <td>&nbsp;</td>
+                       </tr>
+                       <tr >
+                         <td colspan="2" ><label for="id_hide_in_search">Prevent my record from displaying  in search?</label>&nbsp;&nbsp;&nbsp;{{ form.hide_in_search }} Yes </td>
+                         </tr>
+                   </table></td>
+                 </tr>
+                 <tr>
+                   <td colspan="6" >&nbsp;</td>
+                 </tr>
+                 
+                   <tr bgcolor="#f2f2f2">
+                        <td colspan="6" ><h2>B) Phone Information </h2></td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" ><table width="550" border="0">
+                            <tr >
+                              <td  class="label"><label for="id_phone">Phone</label> </td>
+                              <td width="180">
+                               {% if form.phone.errors %}
+									{{ form.phone.errors }}
+								{% endif %}
+                              {{ form.phone }}
+                              </td>
+                              <td  class="label"><label for="id_phone2">Phone2 </td>
+                              <td width="186">
+                              {% if form.phone2.errors %}
+									{{ form.phone2.errors }}
+							{% endif %}
+                              {{form.phone2}}
+                              </td>
+                            </tr>
+                            <tr >
+                              <td  class="label"><label for="id_home_phone">Home Phone</label> </td>
+                              <td width="180">
+                               {% if form.home_phone.errors %}
+									{{ form.home_phone.errors }}
+								{% endif %}
+                              {{ form.home_phone }}
+                              </td>
+                              <td  class="label"><label for="id_work_phone">Work Phone </td>
+                              <td width="186">
+                              {% if form.work_phone.errors %}
+									{{ form.work_phone.errors }}
+								{% endif %}
+                              {{ form.work_phone }}
+                              </td>
+                            </tr>
+                            <tr >
+                              <td  class="label"><label for="id_fax">Fax</label> </td>
+                              <td width="180">
+                               {% if form.fax.errors %}
+									{{ form.fax.errors }}
+								{% endif %}
+                              {{ form.fax }}
+                              </td>
+                              <td  class="label"><label for="id_mobile_phone">Mobile Phone </td>
+                              <td width="186">
+                              {% if form.mobile_phone.errors %}
+									{{ form.mobile_phone.errors }}
+								{% endif %}
+                              {{ form.mobile_phone }}
+                              </td>
+                            </tr>
+                            <tr >
+                              <td colspan="3"><label for="id_hide_phone">Hide phone numbers?</label> &nbsp;&nbsp;&nbsp; {{ form.hide_phone }} Yes </td>
+
+                              <td>&nbsp;</td>
+                            </tr>
+                        </table></td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" >&nbsp;</td>
+                      </tr>
+                      
+                       <tr bgcolor="#f2f2f2">
+                        <td colspan="6" ><h2>C) E-mail and Internet Information </h2></td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" ><table width="550" border="0">
+                            <tr >
+                              <td width="120" class="label"><label for="id_email">Email <span class="body-copy-alerts">*</span></label>
+                              </td>
+                              <td>
+                              {% if form.email.errors %}
+									{{ form.email.errors }}
+								{% endif %}
+                              {{ form.email }}
+                                 &nbsp;&nbsp;<label for="id_direct_mail">Receive Email?</label>
+                                {{ form.direct_mail }}
+                                </td>
+                            </tr>
+                            <tr >
+                              <td width="120" class="label"><label for="id_email2">Email2</label> </td>
+                              <td>
+								{% if form.email2.errors %}
+									{{ form.email2.errors }}
+								{% endif %}
+                              {{ form.email2 }}
+							</td>
+                            </tr>
+                            <tr >
+                              <td width="120" class="label"><label for="id_url">Web Site</label></td>
+                              <td>
+								{% if form.url.errors %}
+									{{ form.url.errors }}
+								{% endif %}
+                              {{ form.url }}
+							 </td>
+                            </tr>
+                            <tr >
+                              <td colspan="2"><label for="id_hide_email">Hide email addresses? </label>&nbsp;&nbsp;&nbsp; 
+								{{ form.hide_email }}
+								 Yes </td>
+                              </tr>
+                        </table></td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" >&nbsp;</td>
+                      </tr>
+                      
+                      
+                       <tr bgcolor="#f2f2f2">
+                        <td colspan="6" ><h2>D) Company Information </h2></td>
+                      </tr>
+                       <tr>
+                        <td colspan="6" ><table width="550" border="0">
+                        <tr >
+                          <td class="label"><label for="id_company">Company</label></td>
+                          <td>
+							{% if form.company.errors %}
+									{{ form.company.errors }}
+								{% endif %}
+                              {{ form.company }}
+							
+							</td>
+                        </tr>
+                         <tr >
+                          <td class="label"><label for="id_department">Department</label></td>
+                          <td>
+							{% if form.department.errors %}
+									{{ form.department.errors }}
+								{% endif %}
+                              {{ form.department }}
+							
+							</td>
+                        </tr>
+                         </table></td>
+                      </tr>
+                        
+                      <tr>
+                        <td colspan="6" >&nbsp;</td>
+                      </tr>
+                 
+      
+      				<tr bgcolor="#f2f2f2">
+                        <td colspan="6" ><h2>E) Address Information </h2></td>
+                      </tr>
+                  <tr>
+                    <td colspan="6" ><table width="550" border="0">
+                        <tr >
+                          <td width="120" class="label"><label for="id_mailing_name">Mailing Name</label> </td>
+                          <td colspan="2" nowrap>(&quot;Mr &amp; Mrs ?&quot;)
+                          
+							{% if form.mailing_name.errors %}
+									{{ form.mailing_name.errors }}
+								{% endif %}
+                              {{ form.mailing_name }}
+						</td>
+                        </tr>
+                        <tr >
+                          <td class="label"><label for="id_address">Address</label></td>
+                          <td colspan="2">
+                          {% if form.address.errors %}
+									{{ form.address.errors }}
+								{% endif %}
+                              {{ form.address }}
+                          <span class="copyright">(line 1)</span></td>
+                        </tr>
+                        <tr >
+                          <td class="label"><label for="id_address2">Address Line 2</label></td>
+                          <td colspan="2">
+                          {% if form.address2.errors %}
+									{{ form.address2.errors }}
+								{% endif %}
+                              {{ form.address2 }}
+                          <span class="copyright">(line 2)</span></td>
+                        </tr>
+                        <tr >
+                          <td ><label for="id_city">City</label> / <label for="id_state">State</label>
+                           / <label for="id_zipcode">Zipcode</label>
+                          </td>
+                          <td colspan="2">
+                          	{% if form.city.errors %}
+									{{ form.city.errors }}
+								{% endif %}
+								 {% if form.state.errors %}
+									{{ form.state.errors }}
+								{% endif %}
+								 {% if form.zipcode.errors %}
+									{{ form.zipcode.errors }}
+								{% endif %}
+                          {{ form.city }} / {{ form.state }} / {{ form.zipcode }}
+							</td>
+                        </tr>
+                        <tr >
+                          <td class="label"><label for="id_country">Country</label></td>
+                          <td colspan="2">
+                          	{% if form.country.errors %}
+									{{ form.country.errors }}
+								{% endif %}
+                              {{ form.country }}
+                           </td>
+                        </tr>
+                        <tr >
+                          <td class="label"><label for="id_hide_address">Hide address? </td>
+                          <td colspan="2">{{form.hide_address}} Yes 
+                          </td>
+                        </tr>
+                        </table></td>
+                        </tr>
+                        
+                        
+                        
+                      <tr bgcolor="#f2f2f2">
+                        <td colspan="6" ><h2>F) Login Information </h2></td>
+                      </tr>
+                       <tr>
+                        <td colspan="6" ><table width="550" border="0">
+                           <tr >
+                             <td width="120" class="label"><label for="id_username">Username</label> <span class="body-copy-alerts">*</span></td>
+                             <td >
+								{% if form.username.errors %}
+									{{ form.username.errors }}
+								{% endif %}
+                              {{ form.username }}
+							 </td>
+                           </tr>
+                           <tr >
+                             <td width="120" class="label"><label for="id_password1">Password</label> <span class="body-copy-alerts">*</span></td>
+                             <td>
+                             {{ form.password1 }}
+							</td>
+                           </tr>
+                           <tr >
+                             <td width="120" nowrap class="label"><label for="id_password2">Confirm Password</label> <span class="body-copy-alerts">*</span></td>
+                             <td>{{ form.password2 }}</td>
+                           </tr>
+                           <tr >
+                             <td nowrap class="label"><label for="id_interactive">Interactive</label> </td>
+                             <td>
+                             {% if form.interactive.errors %}
+									{{ form.interactive.errors }}
+								{% endif %}
+                             {{ form.interactive }}
+                             </td>
+                           </tr>
+                           <tr >
+                             <td nowrap class="label"><label for="id_status_detail">Status Detail</label> </td>
+                             <td>
+                             {% if form.status_detail.errors %}
+									{{ form.status_detail.errors }}
+								{% endif %}
+                             {{ form.status_detail }}
+                             </td>
+                           </tr>
+                           
+                           <tr >
+                             <td nowrap class="label"><label for="id_status">Status</label> </td>
+                             <td>
+                             {% if form.status.errors %}
+									{{ form.status.errors }}
+								{% endif %}
+                             {{ form.status }}
+                             </td>
+                           </tr>
+                      </table></td>
+                      </tr>
+                       
+                      <tr>
+                        <td colspan="6" >&nbsp;</td>
+                      </tr>
+                      
+      				<tr bgcolor="#f2f2f2">
+                        <td colspan="6" ><h2>H) Notes </h2></td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" ><table width="550" border="0">
+                            <tr >
+                              <td width="50" colspan="3" valign="top" class="label"><label for="id_notes">Notes</label> </td>
+                              <td>{{ form.notes }} </td>
+                            </tr>
+                           
+                        </table></td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" >&nbsp;</td>
+                      </tr>                
+  
+      
+      				 <tr bgcolor="#f2f2f2">
+                        <td colspan="6" ><h2>I) Optional Information </h2></td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" ><table width="550" border="0">
+                            <tr >
+                              <td width="80" nowrap class="label"><label for="id_time_zone">Time Zone</label> </td>
+                              <td colspan="3" >
+                               {% if form.time_zone.errors %}
+									{{ form.time_zone.errors }}
+								{% endif %}
+                              {{ form.time_zone }}</td>
+                            </tr>
+                            <tr >
+                              <td width="80" class="label"><label for="id_language">Language </td>
+                              <td width="191" >
+                              {% if form.language.errors %}
+									{{ form.language.errors }}
+								{% endif %}
+                              {{ form.language }}
+                              </td>
+                              <td width="58" class="label"><label for="id_sex">Gender</label>
+                               </td>
+                              <td width="203" >
+                              {% if form.sex.errors %}
+									{{ form.sex.errors }}
+								{% endif %}
+                              {{ form.sex }}
+                              </td>
+                            </tr>
+                            <tr >
+                              <td  class="label"><label for="id_spouse">Spouse</label> </td>
+                              <td >
+                              {% if form.spouse.errors %}
+									{{ form.spouse.errors }}
+								{% endif %}
+                              {{ form.spouse }}
+                              </td>
+                              <td class="label"><label for="id_dob">DOB</label> </td>
+                              <td > 
+                              {{ form.dob }}
+                              </td>
+                            </tr>
+                        </table></td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" >&nbsp;</td>
+                      </tr>
+{% if request.user.get_profile.is_admin  %}
+					<tr>
+                     <td colspan="6" ></td>
+                   </tr>
+                   <tr>
+                     <td colspan="6" ><table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#000000">
+                         <tr>
+                           <td>
+                             <table width="100%" border="0" cellspacing="1" cellpadding="1">
+                               <tr bgcolor="#f2f2f2">
+                                 <td width="375" height="19" valign="middle" > <h2>J) Administrator Information </h2></td>
+                               </tr>
+                               <tr>
+                                 <td height="21" valign="middle"><table width="550" border="0">
+                                   <tr >
+                                     <td colspan="3" ><label for="id_admin_notes">Admin Only Notes</label></td>
+                                     <td>&nbsp; </td>
+                                   </tr>
+                                   <tr >
+                                     <td colspan="4" ><div align="center">
+                                        {{ form.admin_notes }}
+                                     </div></td>
+                                   </tr>
+                                     <tr >
+                                       <td colspan="4">&nbsp;</td>
+                                     </tr>
+                                     <tr >
+                                       <td width="130" class="label"><label for="id_security_level">Security Level</label> </td>
+                                       <td colspan="3"><b>
+                                         {{ form.security_level }}
+                                       </b> </td>
+                                     </tr>
+                                     <tr >
+                                       <td width="130" class="label"><label for="id_entity">Entity</label></td>
+                                       <td colspan="3">
+                                       {{ form.entity }}
+                                       </td>
+                                     </tr>
+                                     
+                                     <tr >
+                                       <td nowrap class="label"><label for="id_ssn">Social Security Num</label> </td>
+                                       <td colspan="3">
+                                       {{ form.ssn }}
+										</td>
+                                     </tr>
+                                     <tr >
+                                       <td nowrap class="label" valign="top"><label for="id_user_perms">Owners</label> </td>
+                                       <td colspan="3">
+                                       {{ form.user_perms }}<br />
+                                       {{ form.user_perms.help_text}}
+                                       
+										</td>
+                                     </tr>
+                                    
+                                 </table></td>
+                               </tr>
+                           </table></td>
+                         </tr>
+                     </table></td>
+                   </tr>
+                   <tr>
+                     <td colspan="6"><span >
+                     </span></td>
+                   </tr>
+	
+{% endif %}
+					<tr>
+                        <td colspan="6">&nbsp;</td>
+                      </tr>
+
+					<tr>
+                        <td width="100">&nbsp;</td>
+                        <td width="100"><span > </span></td>
+                        <td colspan="3">
+                          <input type="submit" name="Submit" value="Add User" >
+                        </td>
+                        <td>&nbsp;</td>
+                      </tr>
+      
+      
+           </table>
+           
+           
 		</div>
         </form>
     </div>
-
+</div>
+</div>
 </div>
 {% endblock %}
