@@ -14,9 +14,9 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
-def index(request, id=None, template_name="pages/view.html"):
-    if not id: return HttpResponseRedirect(reverse('page.search'))
-    page = get_object_or_404(Page, pk=id)
+def index(request, slug=None, template_name="pages/view.html"):
+    if not slug: return HttpResponseRedirect(reverse('page.search'))
+    page = get_object_or_404(Page, slug=slug)
 
     if request.user.has_perm('pages.view_page', page):
         log_defaults = {
@@ -51,8 +51,8 @@ def search(request, template_name="pages/search.html"):
     return render_to_response(template_name, {'pages':pages}, 
         context_instance=RequestContext(request))
 
-def print_view(request, id, template_name="pages/print-view.html"):
-    page = get_object_or_404(Page, pk=id)
+def print_view(request, slug, template_name="pages/print-view.html"):
+    page = get_object_or_404(Page, pk=slug)
 
     if request.user.has_perm('pages.view_page', page):
         log_defaults = {
@@ -104,7 +104,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % page)
                                                               
-                return HttpResponseRedirect(reverse('page', args=[page.pk]))             
+                return HttpResponseRedirect(reverse('page', args=[page.slug]))             
         else:
             form = form_class(request.user, instance=page)
 
@@ -114,7 +114,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
         raise Http403
 
 @login_required
-def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.html"):
+def edit_meta(request, slug, form_class=MetaForm, template_name="pages/edit-meta.html"):
 
     # check permission
     page = get_object_or_404(Page, pk=id)
@@ -133,10 +133,10 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
         if form.is_valid():
             page.meta = form.save() # save meta
             page.save() # save relationship
-            
+
             messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % page)
             
-            return HttpResponseRedirect(reverse('page', args=[page.pk]))
+            return HttpResponseRedirect(reverse('page', args=[page.slug]))
     else:
         form = form_class(instance=page.meta)
 
