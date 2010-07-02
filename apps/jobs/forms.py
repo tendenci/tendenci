@@ -1,7 +1,15 @@
 from jobs.models import Job
 from perms.forms import TendenciBaseForm
+from django import forms
+from tinymce.widgets import TinyMCE
 
 class JobForm(TendenciBaseForm):
+
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Job._meta.app_label, 
+        'storme_model':Job._meta.module_name.lower()}))
+    
     class Meta:
         model = Job
         fields = (
@@ -52,8 +60,6 @@ class JobForm(TendenciBaseForm):
         'status_detail',
        )
  
-
-    
     #integrate with payment (later)
     #invoice_id  
     #payment_method
@@ -77,7 +83,10 @@ class JobForm(TendenciBaseForm):
     def __init__(self, user=None, *args, **kwargs): 
         self.user = user
         super(JobForm, self).__init__(user, *args, **kwargs)
-        
+        if self.instance.pk:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0        
         
         
         

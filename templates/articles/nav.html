@@ -24,9 +24,9 @@
 	</li>
 
 	<li>
-		<span>{{ MODULE_ARTICLES_LABEL }}</span>
+		<span>{% firstof MODULE_ARTICLES_LABEL 'Article' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url articles %}">{{ MODULE_ARTICLES_LABEL }}:</a></li> 
+			<li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL 'Article' %}:</a></li> 
 			{% if can_edit_setting %}
 				<li><a href="{% url settings.index "module" "articles" %}">Settings</a></li>
 			{% endif %}
@@ -57,7 +57,7 @@
 		
 	</li>
 	{% if MODULE_NEWS_ENABLED %}
-	<li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}</a></li>
+	<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
 	{% endif %}
 	</ul>
 </div>

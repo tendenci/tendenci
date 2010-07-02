@@ -72,7 +72,7 @@
 		$(document).ready(function(){
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_article = confirm('Permenantly delete {{ MODULE_ARTICLES_LABEL }}?');	// confirm
+				var delete_article = confirm('Permenantly delete {% firstof MODULE_ARTICLES_LABEL 'Article' %}?');	// confirm
 				if(delete_article) $('.t').find('form[name="article-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});

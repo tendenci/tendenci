@@ -19,7 +19,7 @@
     	<form action="{% url entity.add %}" method="post">
     	<div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Add {{ MODULE_ENTITIES_LABEL }}" />
+        	<input type="submit" value="Add {% firstof MODULE_ENTITIES_LABEL 'Entity' %}" />
 		</div>
         </form>
     </div>
