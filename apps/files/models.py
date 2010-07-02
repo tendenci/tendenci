@@ -1,4 +1,4 @@
-import os, mimetypes, uuid, Image
+import os, mimetypes, uuid, Image, re
 from django.db import models
 from django.conf import settings
 from perms.models import TendenciBaseModel
@@ -6,8 +6,8 @@ from django.contrib.contenttypes.models import ContentType
 from files.managers import FileManager
 
 def file_directory(instance, filename):
-    new_filename = '%s%s' % (instance.pk, os.path.splitext(filename)[1])
-    return 'files/%s/%s/%s' % (instance.content_type, instance.object_id, new_filename)
+    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+    return 'files/%s/%s' % (instance.content_type, filename)
     
 
 class File(TendenciBaseModel):
