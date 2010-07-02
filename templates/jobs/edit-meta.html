@@ -13,7 +13,8 @@
 <div class="t">
 
     {% job_nav user %}
-    <h1>{{ MODULE_JOBS_LABEL }} Meta Information</h1>
+    <h1>{% firstof MODULE_JOBS_LABEL 'Jobs' %} Meta Information for<br />
+    {{ job.title }}</h1>
 
     <div class="job-wrap">
     	<form action="{% url job.edit.meta job.pk %}" method="post">

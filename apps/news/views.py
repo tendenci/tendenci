@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 
 from news.models import News
 from news.forms import NewsForm
+from news.module_meta import NewsMeta
 from base.http import Http403
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
@@ -119,12 +120,10 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
         raise Http403
 
     if not news.meta:
-        # TODO: replace this place-holder
-        # with dynamic meta information
         defaults = {
-            'title': 'Optimized title',
-            'description': 'Optimized description',
-            'keywords': 'optimized, keywords, go, here',
+            'title': NewsMeta().get_meta(news, 'title'),
+            'description': NewsMeta().get_meta(news, 'description'),
+            'keywords': NewsMeta().get_meta(news, 'keywords'),
         }
         news.meta = MetaTags(**defaults)
 
