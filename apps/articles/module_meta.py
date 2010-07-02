@@ -164,19 +164,17 @@ class ArticleMeta():
 
     def get_meta(self, object, name):
 
-        print 'blah'
-
         self.object = object
         self.name = name
 
         if name == 'title':
-            if object.meta.title: return object.meta.title
+            if object.meta and object.meta.title: return object.meta.title
             else: return self.get_title()
         elif name == 'description':
-            if object.meta.description: return object.meta.description
+            if object.meta and object.meta.description: return object.meta.description
             else: return self.get_description()
         elif name =='keywords':
-            if object.meta.keywords: return object.meta.keywords
+            if object.meta and object.meta.keywords: return object.meta.keywords
             else: return self.get_keywords()
         return ''
     

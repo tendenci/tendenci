@@ -9,26 +9,11 @@
 
 {% block body %}
 <div class="t">
-    {% location_nav request.user location %}
 
     <div class="location-wrap">
 
         <div class="options">
 
-            <div class="dropdown-options">
-                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                <ul>
-                    <li>Review Reports</li>
-                    <li>Optimize Meta Tags</li>
-                    <li>Attach Files</li>
-                    <li>View Revisions</li>
-                    <li>Delete</li>
-                </ul>
-            </div>
-
-            <div class="quick-options">
-               {% location_options request.user location %}
-            </div>
         </div>
 
 
