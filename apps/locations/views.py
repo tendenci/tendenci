@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 
 from base.http import Http403
 from locations.models import Location
@@ -96,6 +97,8 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
  
                 # assign creator permissions
                 ObjectPermission.objects.assign(location.creator, location) 
+                
+                messages.add_message(request, messages.INFO, 'Successfully updated %s' % location)
                                                               
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))             
         else:
@@ -138,6 +141,8 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                 # assign creator permissions
                 ObjectPermission.objects.assign(location.creator, location) 
                 
+                messages.add_message(request, messages.INFO, 'Successfully added %s' % location)
+                
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))
         else:
             form = form_class(request.user)
@@ -163,7 +168,7 @@ def delete(request, id, template_name="locations/delete.html"):
             }
             
             EventLog.objects.log(**log_defaults)
-            
+            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % location)
             location.delete()
                 
             return HttpResponseRedirect(reverse('location.search'))
