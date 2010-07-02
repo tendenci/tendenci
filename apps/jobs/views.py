@@ -3,10 +3,12 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 
 from base.http import Http403
 from jobs.models import Job
 from jobs.forms import JobForm
+from jobs.module_meta import JobMeta
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
@@ -68,77 +70,6 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
         raise Http403
     
 @login_required
-def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
-    job = get_object_or_404(Job, pk=id)
-
-    if request.user.has_perm('jobs.change_job', job):    
-        if request.method == "POST":
-            form = form_class(request.user, request.POST, instance=job)
-            if form.is_valid():
-                job = form.save(commit=False)
-                job.save()
-
-                log_defaults = {
-                    'event_id' : 252000,
-                    'event_data': '%s (%d) edited by %s' % (job._meta.object_name, job.pk, request.user),
-                    'description': '%s edited' % job._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': job,
-                }
-                EventLog.objects.log(**log_defaults)
-                
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(job)
-                
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, job)               
- 
-                # assign creator permissions
-                ObjectPermission.objects.assign(job.creator, job) 
-                                                              
-                return HttpResponseRedirect(reverse('job', args=[job.slug]))             
-        else:
-            form = form_class(request.user, instance=job)
-
-        return render_to_response(template_name, {'job': job, 'form':form}, 
-            context_instance=RequestContext(request))
-    else:
-        raise Http403
-
-@login_required
-def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.html"):
-
-    # check permission
-    job = get_object_or_404(Job, pk=id)
-    if not request.user.has_perm('jobs.change_job', job):
-        raise Http403
-
-    if not job.meta:
-        # TODO: replace this place-holder
-        # with dynamic meta information
-        defaults = {
-            'title': 'Optimized title',
-            'description': 'Optimized description',
-            'keywords': 'optimized, keywords, go, here',
-        }
-        job.meta = MetaTags(**defaults)
-
-    if request.method == "POST":
-        form = form_class(request.POST, instance=job.meta)
-        if form.is_valid():
-            job.meta = form.save() # save meta
-            job.save() # save relationship
-            return HttpResponseRedirect(reverse('job', args=[job.slug]))
-    else:
-        form = form_class(instance=job.meta)
-
-    return render_to_response(template_name, {'job': job, 'form':form}, 
-        context_instance=RequestContext(request))
-
-@login_required
 def add(request, form_class=JobForm, template_name="jobs/add.html"):
     if request.user.has_perm('jobs.add_job'):
         if request.method == "POST":
@@ -170,6 +101,8 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                 # assign creator permissions
                 ObjectPermission.objects.assign(job.creator, job) 
                 
+                messages.add_message(request, messages.INFO, 'Successfully added %s' % job)
+                
                 return HttpResponseRedirect(reverse('job', args=[job.slug]))
         else:
             form = form_class(request.user)
@@ -179,6 +112,81 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
     else:
         raise Http403
     
+@login_required
+def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
+    job = get_object_or_404(Job, pk=id)
+
+    if request.user.has_perm('jobs.change_job', job):    
+        if request.method == "POST":
+            form = form_class(request.user, request.POST, instance=job)
+            if form.is_valid():
+                job = form.save(commit=False)
+                job.save()
+
+                log_defaults = {
+                    'event_id' : 252000,
+                    'event_data': '%s (%d) edited by %s' % (job._meta.object_name, job.pk, request.user),
+                    'description': '%s edited' % job._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': job,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(job)
+                
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, job)               
+ 
+                # assign creator permissions
+                ObjectPermission.objects.assign(job.creator, job) 
+                
+                messages.add_message(request, messages.INFO, 'Successfully updated %s' % job)
+                                                              
+                return HttpResponseRedirect(reverse('job', args=[job.slug]))             
+        else:
+            form = form_class(request.user, instance=job)
+
+        return render_to_response(template_name, {'job': job, 'form':form}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
+
+@login_required
+def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.html"):
+
+    # check permission
+    job = get_object_or_404(Job, pk=id)
+    if not request.user.has_perm('jobs.change_job', job):
+        raise Http403
+
+    if not job.meta:
+        defaults = {
+            'title': JobMeta().get_meta(job, 'title'),
+            'description': JobMeta().get_meta(job, 'description'),
+            'keywords': JobMeta().get_meta(job, 'keywords'),
+        }
+        job.meta = MetaTags(**defaults)
+
+
+    if request.method == "POST":
+        form = form_class(request.POST, instance=job.meta)
+        if form.is_valid():
+            job.meta = form.save() # save meta
+            job.save() # save relationship
+
+            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % job)
+            
+            return HttpResponseRedirect(reverse('job', args=[job.slug]))
+    else:
+        form = form_class(instance=job.meta)
+
+    return render_to_response(template_name, {'job': job, 'form':form}, 
+        context_instance=RequestContext(request))
+
 @login_required
 def delete(request, id, template_name="jobs/delete.html"):
     job = get_object_or_404(Job, pk=id)
@@ -195,7 +203,7 @@ def delete(request, id, template_name="jobs/delete.html"):
             }
             
             EventLog.objects.log(**log_defaults)
-            
+            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % job)
             job.delete()
                 
             return HttpResponseRedirect(reverse('job.search'))

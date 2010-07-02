@@ -4,9 +4,9 @@
 {% load base_tags %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{{ job.meta.get_title }}{% endblock %}
-{% block meta_description %}{{ job.meta.get_description }}{% endblock %}
-{% block meta_keywords %}{{ job.meta.get_keywords }}{% endblock %}
+{% block title %}{{ block.super }}{{ job.get_title }}{% endblock %}
+{% block meta_description %}{{ job.get_description }}{% endblock %}
+{% block meta_keywords %}{{ job.get_keywords }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">

@@ -3,9 +3,9 @@
 {% load tagging_tags %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{{ page.meta.get_title }}{% endblock %}
-{% block meta_description %}{{ page.meta.get_description }}{% endblock %}
-{% block meta_keywords %}{{ page.meta.get_keywords }}{% endblock %}
+{% block title %}{{ block.super }}{{ page.get_title }}{% endblock %}
+{% block meta_description %}{{ page.get_description }}{% endblock %}
+{% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
