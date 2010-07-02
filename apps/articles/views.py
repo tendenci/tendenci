@@ -10,10 +10,15 @@ from articles.models import Article
 from articles.forms import ArticleForm
 from articles.module_meta import ArticleMeta
 from perms.models import ObjectPermission
+from perms.utils import get_administrators
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
+try:
+    from notification import models as notification
+except:
+    notification = None
 
 def index(request, id=None, template_name="articles/view.html"):
     if not id: return HttpResponseRedirect(reverse('article.search'))
@@ -101,7 +106,15 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
  
                 # assign creator permissions
                 ObjectPermission.objects.assign(article.creator, article) 
-                                                              
+                
+                # send notification to administrators
+                if notification:
+                    extra_context = {
+                        'object': article,
+                        'request': request,
+                    }
+                    notification.send(get_administrators(),'article_edited', extra_context)
+                                                                             
                 return HttpResponseRedirect(reverse('article', args=[article.pk]))             
         else:
             form = form_class(request.user, instance=article)
@@ -173,6 +186,14 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 # assign creator permissions
                 ObjectPermission.objects.assign(article.creator, article) 
                 
+                # send notification to administrators
+                if notification:
+                    extra_context = {
+                        'object': article,
+                        'request': request,
+                    }
+                    notification.send(get_administrators(),'article_added', extra_context)
+                    
                 return HttpResponseRedirect(reverse('article', args=[article.pk]))
         else:
             form = form_class(request.user)
@@ -198,9 +219,17 @@ def delete(request, id, template_name="articles/delete.html"):
             }
             
             EventLog.objects.log(**log_defaults)
-            
+
+            # send notification to administrators
+            if notification:
+                extra_context = {
+                    'object': article,
+                    'request': request,
+                }
+                notification.send(get_administrators(),'article_delted', extra_context)
+                            
             article.delete()
-                
+                                    
             return HttpResponseRedirect(reverse('article.search'))
     
         return render_to_response(template_name, {'article': article}, 
