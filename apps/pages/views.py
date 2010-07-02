@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 
 from base.http import Http403
 from pages.models import Page
+from pages.module_meta import PageMeta
 from pages.forms import PageForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
@@ -119,12 +120,10 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
         raise Http403
 
     if not page.meta:
-        # TODO: replace this place-holder
-        # with dynamic meta information
         defaults = {
-            'title': 'Optimized title',
-            'description': 'Optimized description',
-            'keywords': 'optimized, keywords, go, here',
+            'title': PageMeta().get_meta(page, 'title'),
+            'description': PageMeta().get_meta(page, 'description'),
+            'keywords': PageMeta().get_meta(page, 'keywords'),
         }
         page.meta = MetaTags(**defaults)
 
