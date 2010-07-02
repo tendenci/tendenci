@@ -11,7 +11,7 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_ENTITIES_LABEL }} Edit</h1>
+    <h1>{% firstof MODULE_ENTITIES_LABEL 'Entities' %} Edit</h1>
     
     {% entity_nav request.user %}
 

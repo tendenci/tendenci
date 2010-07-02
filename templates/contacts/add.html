@@ -20,7 +20,7 @@
     	<form action="{% url contact.add %}" method="post">
     	<div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Add {{ MODULE_CONTACTS_LABEL }}" />
+        	<input type="submit" value="Add {{ {% firstof MODULE_CONTACTS_LABEL 'Contact' %}}}" />
 		</div>
         </form>
     </div>

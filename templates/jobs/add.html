@@ -12,14 +12,14 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_JOBS_LABEL }} Add</h1>
+    <h1>{% firstof MODULE_JOBS_LABEL 'Jobs' %} Add</h1>
     
     {% job_nav request.user %}
 
     <div class="job-wrap">
     <form action="{% url job.add %}" method="post">
         {{ form|styled_form }}
-        <input type="submit" value="Add {{ MODULE_JOBS_LABEL }}" />
+        <input type="submit" value="Add {% firstof MODULE_JOBS_LABEL 'Job' %}" />
     </form>
 
     </div>
