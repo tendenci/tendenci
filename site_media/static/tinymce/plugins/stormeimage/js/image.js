@@ -133,10 +133,16 @@ var ImageDialog = {
 		var file_url = $(item_wrap).find("input[name='file_url']").val();
 		var file_download_url = $(item_wrap).find("input[name='file_download_url']").val();
 
-		var file_element = '<div class="t5_file"> '+ 
-			'<a href="'+ file_download_url +'">'+
-			'<img src="'+ icon_url +'" /> ' + '</a> ' +
-			'<a href="'+ file_download_url +'">'+ filename +'</a> </div>';
+		if(icon_url != 'None'){
+			var file_element = '<div class="t5_file"> '+ 
+				'<a href="'+ file_download_url +'">'+
+				'<img src="'+ icon_url +'" /> ' + '</a> ' +
+				'<a href="'+ file_download_url +'">'+ filename +'</a> </div>';	
+		}
+		else {
+			var file_element = '<div class="t5_file"> '+ 
+				'<a href="'+ file_download_url +'">'+ filename +'</a> </div>';	
+		}
 
 		ed.execCommand('mceInsertContent', false, file_element);
 		ed.undoManager.add();

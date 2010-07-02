@@ -13,7 +13,8 @@
 <div class="t">
 
     {% article_nav user %}
-    <h1>{{ MODULE_ARTICLES_LABEL }} Meta Information</h1>
+    <h1>{{ MODULE_ARTICLES_LABEL }} Meta Information for<br />
+    {{ article.headline }}</h1>
 
     <div class="article-wrap">
     	<form action="{% url article.edit.meta article.pk %}" method="post">

@@ -1,29 +1,29 @@
-{% if articles %}
+{% if news %}
 	<font face="Arial" size="3"><b>
 	<font color=#000000>
 	{# named area for jump links #}
-	<a name="articles" id="articles"></a>
+	<a name="news" id="news"></a>
 	{% if start_dt %}
-		Articles for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}
+		News for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}
 	{% else %}
-		All Articles
+		All News
 	{% endif %}
 	
 	</font></b></font>							   
 							   
-	{% for article in articles %}
+	{% for n in news %}
 		
 		{# leverage the functions in the object #}
 				
 		<table width="100%"  border="0" cellpadding="0" cellspacing="0" class="body_copy">
 		<tr><td>&nbsp;</td></tr>
 		<tr><td align="left" valign="top">
-		<a href="{{ SITE_GLOBAL_SITEURL }}{% url article article.id %}" >
-		<font face="Arial" size="2"><b> {{article.headline}}
+		<a href="{{ SITE_GLOBAL_SITEURL }}{% url news.view n.id %}" >
+		<font face="Arial" size="2"><b> {{n.headline}}
 		</b></font></a>
 		
 		{# show member icon if not allowanonymousview/allowsiteuserview #}
-		{% if not article.allow_anonymous_view and article.allow_user_view   %}
+		{% if not n.allow_anonymous_view and n.allow_user_view   %}
 			&nbsp;&nbsp;<img src="{{ SITE_GLOBAL_SITEURL }}/site_media/static/images/icons/member.gif" height="13" width="15" 
 			border="0" alt="Member View Only">
 		{% endif %}
@@ -31,25 +31,25 @@
 		
 		{% if not simplified  %}
 			<tr><td align="left" valign="top"><font face="Arial" size="2" color="#000000">
-			<b>Author:</b> {{ article.first_name }} {{ article.last_name }} </font></td></tr>
+			<b>Author:</b> {{ n.first_name }} {{ n.last_name }} </font></td></tr>
 
 			<tr><td align="left"><font face="Arial" size="2" color="#000000">
-			<b>Release Date:</b> {{ article.release_dt|date:"l d-M-Y h:i A" }} </font> 
+			<b>Release Date:</b> {{ n.release_dt|date:"l d-M-Y h:i A" }} </font> 
 			</td></tr>
 		{% endif %}
 		
 		<tr><td align="left" valign="top"><div>
 		<font face="Arial" size="2" color="#000000">
 
-		{{ article.body|striptags|truncatewords:60 }}
-		 <a href="{{ SITE_GLOBAL_SITEURL }}{% url article article.id %}">[More Info]</a>
+		{{ n.body|striptags|truncatewords:60 }}
+		 <a href="{{ SITE_GLOBAL_SITEURL }}{% url news.view n.id %}">[More Info]</a>
 		</font>
 		
 		{#  posted by #}
 		{% if not simplified  %}
 			<font face="Arial" size="2" color="#000000">
 			<br><b>Posted by</b>: 
-			{{ article.owner.first_name }} {{ article.owner.last_name }}
+			{{ n.owner.first_name }} {{n.owner.last_name }}
 			</font>
 		{% endif %}
 		<br>
