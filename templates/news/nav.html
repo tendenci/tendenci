@@ -22,15 +22,15 @@
 	</li>
 
 	<li>
-		<span>{{ MODULE_NEWS_LABEL }}</span>
+		<span>{% firstof MODULE_NEWS_LABEL 'News' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}:</a></li> 
+			<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}:</a></li> 
 			{% if can_edit_setting %}
 				<li><a href="{% url settings.index "module" "news" %}">Settings</a></li>
 			{% endif %}
 			{% if nav_object %}
 				{% if can_view_news %}
-				<li><a href="{% url news.view nav_object.pk %}">View</a></li>
+				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
 				{% endif %}
 				{% if can_edit_news %}
 				<li><a href="{% url news.edit nav_object.pk %}">Edit</a></li>
@@ -49,7 +49,7 @@
 		
 	</li>
 	{% if MODULE_ARTICLES_ENABLED %}
-	<li><a href="{% url articles %}">{{ MODULE_ARTICLES_LABEL }}</a></li>
+	<li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL 'Articles' %}</a></li>
 	{% endif %}
 	</ul>
 </div>

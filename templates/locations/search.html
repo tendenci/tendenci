@@ -7,8 +7,6 @@
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/messages.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/locations.css">
 {% endblock %}
 
@@ -72,7 +70,7 @@
 
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_location = confirm('Permenantly delete {{ MODULE_LOCATIONS_LABEL }}?');	// confirm
+				var delete_location = confirm("Permenantly delete {% firstof MODULE_LOCATIONS_LABEL 'Location' %}?");	// confirm
 				if(delete_location) $(this).parents('.location-wrap').find('form[name="location-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});

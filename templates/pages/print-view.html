@@ -4,7 +4,7 @@
 {% block title %}Print View Page{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/pages.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
 {% endblock %}
 
 {% block body %}
@@ -12,26 +12,9 @@
 <div class="t">
     <h1>{{ MODULE_PAGES_LABEL }} Print</h1>
     
-    {% page_nav request.user %}
-
     <div class="page-wrap">
 
         <div class="options">
-
-            <div class="dropdown-options">
-                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                <ul>
-                    <li>Review Reports</li>
-                    <li>Optimize Meta Tags</li>
-                    <li>Attach Files</li>
-                    <li>View Revisions</li>
-                    <li>Delete</li>
-                </ul>
-            </div>
-
-            <div class="quick-options">
-				{% page_options request.user page %}
-            </div>
         </div>
 
 

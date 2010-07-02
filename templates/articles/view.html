@@ -4,13 +4,11 @@
 {% load base_tags %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{{ article.meta.get_title }}{% endblock %}
-{% block meta_description %}{{ article.meta.get_description }}{% endblock %}
-{% block meta_keywords %}{{ article.meta.get_keywords }}{% endblock %}
+{% block title %}{{ block.super }}{{ article.get_title }}{% endblock %}
+{% block meta_description %}{{ article.get_description }}{% endblock %}
+{% block meta_keywords %}{{ article.get_keywords }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/messages.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
 {% endblock %}
 
@@ -72,7 +70,7 @@
 		$(document).ready(function(){
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_article = confirm('Permenantly delete {{ MODULE_ARTICLES_LABEL }}?');	// confirm
+				var delete_article = confirm('Permenantly delete {% firstof MODULE_ARTICLES_LABEL 'Article' %}?');	// confirm
 				if(delete_article) $('.t').find('form[name="article-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});

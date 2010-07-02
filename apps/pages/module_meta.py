@@ -23,12 +23,16 @@ class PageMeta():
 
         self.object = object
         self.name = name
-        
-        if self.name == 'title':
-            return self.get_title()
-        elif self.name == 'description':
-            return self.get_description()
-        elif self.name =='keywords':
-            return self.get_keywords()
 
+        if name == 'title':
+            if object.meta and object.meta.title: return object.meta.title
+            else: return self.get_title()
+        elif name == 'description':
+            if object.meta and object.meta.description: return object.meta.description
+            else: return self.get_description()
+        elif name =='keywords':
+            if object.meta and object.meta.keywords: return object.meta.keywords
+            else: return self.get_keywords()
         return ''
+    
+  

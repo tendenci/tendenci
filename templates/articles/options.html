@@ -5,7 +5,11 @@
 {% has_perm user articles.delete_article opt_object as can_delete %}
 
 <div class="t-iconrow">
-		<a class="option-link print" href="{% url article.print_view opt_object.pk %}">Print</a>
+	{% if opt_object.object %}
+		<a class="option-link print" href="{{ opt_object.object.get_absolute_url }}">Print</a>
+	{% else %}
+		<a class="option-link print" href="{{ opt_object.get_absolute_url }}">Print</a>
+	{% endif %}
 	{% if can_edit %}
 		<a class="option-link edit" href="{% url article.edit opt_object.pk %}">Edit</a>
 	{% endif %}

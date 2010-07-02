@@ -7,8 +7,6 @@
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/messages.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/entities.css">
 {% endblock %}
 
@@ -72,7 +70,7 @@
 
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_entity = confirm('Permenantly delete {{ MODULE_ENTITIES_LABEL }}?');	// confirm
+				var delete_entity = confirm('Permenantly delete {{ MODULE_ENTITIES_LABEL }} ?');	// confirm
 				if(delete_entity) $(this).parents('.entity-wrap').find('form[name="entity-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});

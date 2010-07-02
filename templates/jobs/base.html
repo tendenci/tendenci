@@ -1,3 +1,5 @@
 {% extends "site_base.html" %}
 
-{% block title %}{{ MODULE_JOBS_LABEL }} - {% endblock %}
+{% block title %}{% firstof MODULE_JOBS_LABEL 'Jobs' %} - {% endblock %}
+
+{% block messages %}{{ block.super }}{% endblock %}
