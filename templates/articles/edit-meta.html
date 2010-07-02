@@ -5,7 +5,6 @@
 {% block title %}{{ block.super }}Edit Meta Information{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
 {% endblock %}
 
@@ -13,7 +12,7 @@
 <div class="t">
 
     {% article_nav user %}
-    <h1>{{ MODULE_ARTICLES_LABEL }} Meta Information for<br />
+    <h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} Meta Information for<br />
     {{ article.headline }}</h1>
 
     <div class="article-wrap">

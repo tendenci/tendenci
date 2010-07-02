@@ -4,30 +4,18 @@
 {% block title %}{{ block.super }}Print{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/news.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_NEWS_LABEL }} Print</h1>
+    <h1>{% firstof MODULE_NEWS_LABEL 'News' %} Print</h1>
     
     {% news_nav request.user news %}
 
     <div class="news-wrap">
 
         <div class="options">
-
-            <div class="dropdown-options">
-                <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                <ul>
-                    <li>Review Reports</li>
-                    <li>Optimize Meta Tags</li>
-                    <li>Attach Files</li>
-                    <li>View Revisions</li>
-                    <li>Delete</li>
-                </ul>
-            </div>
-
             <div class="quick-options">
                 {% news_options request.user news %}
             </div>

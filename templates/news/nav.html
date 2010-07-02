@@ -22,9 +22,9 @@
 	</li>
 
 	<li>
-		<span>{{ MODULE_NEWS_LABEL }}</span>
+		<span>{% firstof MODULE_NEWS_LABEL 'News' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}:</a></li> 
+			<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}:</a></li> 
 			{% if can_edit_setting %}
 				<li><a href="{% url settings.index "module" "news" %}">Settings</a></li>
 			{% endif %}

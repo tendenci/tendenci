@@ -9,7 +9,7 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_ENTITIES_LABEL }} Print</h1>
+    <h1>{% firstof MODULE_ENTITIES_LABEL 'Entity' %} Print</h1>
     
     {% entity_nav request.user entity %}
 
