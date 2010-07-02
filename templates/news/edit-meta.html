@@ -13,9 +13,10 @@
 <div class="t">
 
     {% news_nav user %}
-    <h1>{{ MODULE_NEWS_LABEL }} Meta Information</h1>
+    <h1>{{ MODULE_NEWS_LABEL }} Meta Information for<br />
+    {{ news.headline }}</h1>
 
-    <div class="article-wrap">
+    <div class="news-wrap">
     	<form action="{% url news.edit.meta news.pk %}" method="post">
     	<div class="forms">
             {{ form|styled_form }}

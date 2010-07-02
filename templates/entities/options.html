@@ -15,14 +15,6 @@
 	    <a href="javascript:;" class="more-options-trigger">More options <small>&#9660;</small></a>
 	    <div class="more-options-target">
 	        <ul>
-				<li>
-				{% if opt_object.object %}
-					<a href="{% url category.update opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk %}">Edit Categories</a>
-				{% else %}
-					<a href="{% url category.update opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">Edit Categories</a>
-				{% endif %}
-				</li>
-				
 				{% if can_delete %}
 					<li>
 						<a class="option-link delete" href="{% url entity.delete opt_object.pk %}">Delete</a>
