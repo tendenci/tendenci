@@ -18,7 +18,9 @@
 
     <div class="job-wrap">
     <form action="{% url job.edit job.id %}" method="post">
+    	<div class="forms">
         {{ form|styled_form }}
+        </div>
         <input type="submit" value="Save changes" />
     </form>
 
