@@ -13,7 +13,7 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_CONTACTS_LABEL 'Conacts' %} Search</h1>
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_CONTACTS_LABEL }} Search</h1>
 
     {% contact_nav request.user %}
 
