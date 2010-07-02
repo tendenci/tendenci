@@ -1,4 +1,4 @@
-.t ul.messages {
+ul.messages {
 	list-style-type: none;
 	margin: 0 0 5px 0;
 	padding: 0;
@@ -6,6 +6,6 @@
 	padding: 10px;
 }
 
-.t ul.messages li.info {
+ul.messages li.info {
 	color: #333333;
 }

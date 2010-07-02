@@ -7,8 +7,6 @@
 {% block title %}{{ block.super }}{{ entity.entity_name }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/messages.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/entities.css">
 {% endblock %}
 
@@ -50,7 +48,7 @@
 		$(document).ready(function(){
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_entity = confirm('Permenantly delete {{ MODULE_ENTITIES_LABEL }}?');	// confirm
+				var delete_entity = confirm("Permenantly delete {% firstof MODULE_ENTITIES_LABEL 'Entity' %}?");	// confirm
 				if(delete_entity) $('.t').find('form[name="entity-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
@@ -58,10 +56,10 @@
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
 	</script>
 {% endblock %}

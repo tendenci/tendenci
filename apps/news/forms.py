@@ -14,6 +14,7 @@ class NewsForm(TendenciBaseForm):
         model = News
         fields = (
         'headline',
+        'slug',
         'summary',
         'body',
         'source',

@@ -7,13 +7,13 @@
     
     {% url contribution.search as search_url %}
     {% if not search_url in request.path %}
-    	<a href="{{ search_url }}">Search {{ MODULE_CONTRIBUTIONS_LABEL|lower }}</a>&nbsp;
+    	<a href="{{ search_url }}">Search {% firstof MODULE_CONTRIBUTION_LABEL 'Contributions' %}</a>&nbsp;
     {% endif %}
     
     {% url contribution.add as add_url %}
     {% if not add_url in request.path %}
     {% if can_add %}
-	    <a href="{{ add_url }}">Add {{ MODULE_CONTRIBUTIONS_LABEL|lower }}</a>
+	    <a href="{{ add_url }}">Add {% firstof MODULE_CONTRIBUTION_LABEL 'Contributions' %}</a>
     {% endif %}
     {% endif %}
 </div>
