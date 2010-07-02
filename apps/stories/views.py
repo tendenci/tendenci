@@ -5,6 +5,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.contrib import messages
 
 from base.http import Http403
 from stories.models import Story
@@ -102,7 +103,9 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 ObjectPermission.objects.assign(user_perms, story)
             
             # assign creator permissions
-            ObjectPermission.objects.assign(story.creator, story) 
+            ObjectPermission.objects.assign(story.creator, story)
+            
+            messages.add_message(request, messages.INFO, 'Successfully added %s' % story) 
             
             return HttpResponseRedirect(reverse('story', args=[story.pk]))
     else:
@@ -146,6 +149,8 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
     
             # assign creator permissions
             ObjectPermission.objects.assign(story.creator, story) 
+            
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % story)
                                                              
             return HttpResponseRedirect(reverse('story', args=[story.pk]))             
     else:
@@ -179,9 +184,8 @@ def delete(request, id, template_name="stories/delete.html"):
                 'instance': story,
             }
             EventLog.objects.log(**log_defaults)
-            
+            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % story)
             story.delete()
-            
             
             return HttpResponseRedirect(reverse('story.search'))
     

@@ -4,9 +4,11 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 
 from base.http import Http403
 from pages.models import Page
+from pages.module_meta import PageMeta
 from pages.forms import PageForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
@@ -100,6 +102,8 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
  
                 # assign creator permissions
                 ObjectPermission.objects.assign(page.creator, page) 
+                
+                messages.add_message(request, messages.INFO, 'Successfully updated %s' % page)
                                                               
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))             
         else:
@@ -119,12 +123,10 @@ def edit_meta(request, slug, form_class=MetaForm, template_name="pages/edit-meta
         raise Http403
 
     if not page.meta:
-        # TODO: replace this place-holder
-        # with dynamic meta information
         defaults = {
-            'title': 'Optimized title',
-            'description': 'Optimized description',
-            'keywords': 'optimized, keywords, go, here',
+            'title': PageMeta().get_meta(page, 'title'),
+            'description': PageMeta().get_meta(page, 'description'),
+            'keywords': PageMeta().get_meta(page, 'keywords'),
         }
         page.meta = MetaTags(**defaults)
 
@@ -133,6 +135,9 @@ def edit_meta(request, slug, form_class=MetaForm, template_name="pages/edit-meta
         if form.is_valid():
             page.meta = form.save() # save meta
             page.save() # save relationship
+
+            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % page)
+            
             return HttpResponseRedirect(reverse('page', args=[page.slug]))
     else:
         form = form_class(instance=page.meta)
@@ -173,6 +178,8 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                 # assign creator permissions
                 ObjectPermission.objects.assign(page.creator, page) 
                 
+                messages.add_message(request, messages.INFO, 'Successfully added %s' % page)
+                
                 return HttpResponseRedirect(reverse('page', args=[page.pk]))
         else:
             form = form_class(request.user)
@@ -197,6 +204,7 @@ def delete(request, id, template_name="pages/delete.html"):
                 'instance': page,
             }
             EventLog.objects.log(**log_defaults)
+            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % page)
             page.delete()
             return HttpResponseRedirect(reverse('page.search'))
     

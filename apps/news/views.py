@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 
 from news.models import News
 from news.forms import NewsForm
@@ -105,6 +106,8 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
 
             # assign creator permissions
             ObjectPermission.objects.assign(news.creator, news)
+            
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % news)
 
             return HttpResponseRedirect(reverse('news.view', args=[news.slug])) 
 
@@ -132,6 +135,9 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
         if form.is_valid():
             news.meta = form.save() # save meta
             news.save() # save relationship
+            
+            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % news)
+            
             return HttpResponseRedirect(reverse('news.view', args=[news.slug]))
     else:
         form = form_class(instance=news.meta)
@@ -175,6 +181,8 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             # assign creator permissions
             ObjectPermission.objects.assign(news.creator, news)
             
+            messages.add_message(request, messages.INFO, 'Successfully added %s' % news)
+            
             return HttpResponseRedirect(reverse('news.view', args=[news.slug]))
     else:
         form = form_class(request.user)
@@ -200,6 +208,7 @@ def delete(request, id, template_name="news/delete.html"):
             'instance': news,
         }
         EventLog.objects.log(**log_defaults)
+        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % news)
         news.delete()
         return HttpResponseRedirect(reverse('news.search'))
 
