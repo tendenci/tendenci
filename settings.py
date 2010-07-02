@@ -38,7 +38,7 @@ EMAIL_PORT = 25
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'jqian@schipul.com'
+DEFAULT_FROM_EMAIL = 'DO-NOT-REPLY@tendenci.com'
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -146,6 +146,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
 
     # third party applications
+    'notification',
     'pagination',
     'photologue',
     'tagging',

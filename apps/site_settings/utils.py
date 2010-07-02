@@ -83,7 +83,19 @@ def get_setting(scope, scope_category, name):
     key = '.'.join(keys)
     value = cache.get(key)
     if not value:
-        cache_settings(scope, scope_category)
+        filters = {
+            'scope': scope,
+            'scope_category': scope_category,
+            'name': name
+        }
+        try:
+            setting = Setting.objects.get(**filters)
+        except:
+            setting = None
+        if setting:
+            cache_setting(setting.scope, 
+                          setting.scope_category,
+                          setting.name,
+                          setting.value)
         value = cache.get(key)
-    
     return value
