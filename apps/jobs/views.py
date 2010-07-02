@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from base.http import Http403
 from jobs.models import Job
 from jobs.forms import JobForm
+from jobs.module_meta import JobMeta
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
@@ -117,14 +118,13 @@ def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.ht
         raise Http403
 
     if not job.meta:
-        # TODO: replace this place-holder
-        # with dynamic meta information
         defaults = {
-            'title': 'Optimized title',
-            'description': 'Optimized description',
-            'keywords': 'optimized, keywords, go, here',
+            'title': JobMeta().get_meta(job, 'title'),
+            'description': JobMeta().get_meta(job, 'description'),
+            'keywords': JobMeta().get_meta(job, 'keywords'),
         }
         job.meta = MetaTags(**defaults)
+
 
     if request.method == "POST":
         form = form_class(request.POST, instance=job.meta)
