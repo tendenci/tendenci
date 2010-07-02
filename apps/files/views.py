@@ -215,7 +215,7 @@ def swfupload(request):
 
         try:
             file = form.save(commit=False)
-            file.name = re.sub(r'[^a-zA-Z0-9._]+', '-', request.FILES['file'].name)
+            file.name = re.sub(r'[^a-zA-Z0-9._]+', '-', file.file.name)
             file.content_type = ContentType.objects.get(app_label=app_label, model=model)
             file.object_id = object_id
             file.owner = request.user
