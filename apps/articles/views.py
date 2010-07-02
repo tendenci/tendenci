@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse
 from base.http import Http403
 from articles.models import Article
 from articles.forms import ArticleForm
-from articles.module_meta import ArticleMeta
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
 from event_logs.models import EventLog
@@ -131,15 +130,12 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
     if not request.user.has_perm('articles.change_article', article):
         raise Http403
 
-    if not article.meta:
-        # TODO: replace this place-holder
-        # with dynamic meta information
-        defaults = {
-            'title': ArticleMeta().get_meta(article, 'title'),
-            'description': ArticleMeta().get_meta(article, 'description'),
-            'keywords': ArticleMeta().get_meta(article, 'keywords'),
-        }
-        article.meta = MetaTags(**defaults)
+    defaults = {
+        'title': article.get_title(),
+        'description': article.get_description(),
+        'keywords': article.get_keywords(),
+    }
+    article.meta = MetaTags(**defaults)
 
     if request.method == "POST":
         form = form_class(request.POST, instance=article.meta)
