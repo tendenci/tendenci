@@ -41,7 +41,7 @@
 		
 	</li>
 	{% if MODULE_NEWS_ENABLED %}
-	<li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}</a></li>
+	<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
 	{% endif %}
 	</ul>
 </div>

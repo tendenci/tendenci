@@ -19,9 +19,9 @@
 	</li>
 
 	<li>
-		<span>{{ MODULE_EVENT_LOGS_LABEL }}</span>
+		<span>{% firstof MODULE_EVENT_LOGS_LABEL 'Event Logs' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url event_logs %}">{{ MODULE_EVENT_LOGS_LABEL }}:</a></li> 
+			<li><a href="{% url event_logs %}">{% firstof MODULE_EVENT_LOGS_LABEL 'Event Logs' %}:</a></li> 
 			{% if can_edit_setting %}
 				<li><a href="{% url settings.index "module" "event_logs" %}">Settings</a></li>
 			{% endif %}
@@ -38,7 +38,7 @@
 		
 	</li>
 	{% if MODULE_ARTICLES_ENABLED %}
-	<li><a href="{% url articles %}">{{ MODULE_ARTICLES_LABEL }}</a></li>
+	<li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL 'Articles' %}</a></li>
 	{% endif %}
 	</ul>
 </div>
