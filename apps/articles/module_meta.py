@@ -36,6 +36,19 @@ class ArticleMeta():
         value = '%s - %s' % (object.headline, object.release_dt)
         value = value.strip()
 
+        value = ''
+
+        # start w/ headline
+        if object.headline:
+            value += object.headline
+
+        # contact release
+        if object.headline and object.release_dt:
+            value += ' - ' + object.release_dt
+        elif object.release_dt:
+            value += object.release_dt
+
+        # primary keywords OR category/subcategory
         if primary_keywords:
             value = '%s : %s' % (value, primary_keywords)
         else:
@@ -146,24 +159,24 @@ class ArticleMeta():
                 secondary_keywords,
             ]
             value = '%s %s' % (value, ''.join(list))
-        
 
-
-        return generate_meta_keywords(self.object.body)
+        return value
 
     def get_meta(self, object, name):
+
+        print 'blah'
 
         self.object = object
         self.name = name
 
         if name == 'title':
-            if object.meta: return object.meta.get_title()
+            if object.meta.title: return object.meta.title
             else: return self.get_title()
         elif name == 'description':
-            if object.meta: return object.meta.get_description()
+            if object.meta.description: return object.meta.description
             else: return self.get_description()
         elif name =='keywords':
-            if object.meta: return object.meta.get_keywords()
+            if object.meta.keywords: return object.meta.keywords
             else: return self.get_keywords()
         return ''
     
