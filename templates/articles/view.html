@@ -4,9 +4,9 @@
 {% load base_tags %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{{ article.meta.get_title }}{% endblock %}
-{% block meta_description %}{{ article.meta.get_description }}{% endblock %}
-{% block meta_keywords %}{{ article.meta.get_keywords }}{% endblock %}
+{% block title %}{{ block.super }}{{ article.get_title }}{% endblock %}
+{% block meta_description %}{{ article.get_description }}{% endblock %}
+{% block meta_keywords %}{{ article.get_keywords }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
