@@ -1,7 +1,15 @@
 from pages.models import Page
 from perms.forms import TendenciBaseForm
+from django import forms
+from tinymce.widgets import TinyMCE
 
 class PageForm(TendenciBaseForm):
+
+    content = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Page._meta.app_label, 
+        'storme_model':Page._meta.module_name.lower()}))
+        
     class Meta:
         model = Page
         fields = (
@@ -21,3 +29,7 @@ class PageForm(TendenciBaseForm):
     def __init__(self, user=None, *args, **kwargs): 
         self.user = user
         super(PageForm, self).__init__(user, *args, **kwargs)
+        if self.instance.pk:
+            self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['content'].widget.mce_attrs['app_instance_id'] = 0

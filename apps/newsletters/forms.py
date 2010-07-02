@@ -38,7 +38,7 @@ class NewsletterAddForm(forms.ModelForm):
     
     class Meta:
         model = Action
-        fields = ('member_only',
+        fields = (#'member_only',  # add back the member_only when the membership is available
                   'group',
                   'send_to_email2',
                   'subject',
@@ -62,11 +62,14 @@ class NewsletterAddForm(forms.ModelForm):
                   )
         
     def clean(self):
-        if not self.cleaned_data["member_only"] and not self.cleaned_data["group"]:
-            raise forms.ValidationError(_("You must choose either a User Group or Members Only."))
-        else:
-            if self.cleaned_data["member_only"] and self.cleaned_data["group"]:
-                raise forms.ValidationError(_("User Group and Members Only cannot both be selected."))
+        #if not self.cleaned_data["member_only"] and not self.cleaned_data["group"]:
+        #    raise forms.ValidationError(_("You must choose either a User Group or Members Only."))
+        #else:
+        #    if self.cleaned_data["member_only"] and self.cleaned_data["group"]:
+        #        raise forms.ValidationError(_("User Group and Members Only cannot both be selected."))
+        # remove this and replace the block above once the membership is available
+        if not self.cleaned_data["group"]:
+            raise forms.ValidationError(_("Please choose a user group."))
         return self.cleaned_data
     
     def save(self, request):

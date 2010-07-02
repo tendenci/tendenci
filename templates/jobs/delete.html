@@ -1,4 +1,4 @@
 {% block body %}
-<h1>Jobs Delete Page</h1>
+<h1>{% firstof MODULE_JOBS_LABEL 'Job' %} Delete Page</h1>
 <div class="back-to-search"><a href="{% url job.search %}">&laquo; Back to jobs search</a></div>
 {% endblock %}

@@ -34,6 +34,7 @@ class ArticleMeta():
 
         ### Build string -----------------------
         value = '%s - %s' % (object.headline, object.release_dt)
+        value = value.strip()
 
         if primary_keywords:
             value = '%s : %s' % (value, primary_keywords)
@@ -72,10 +73,10 @@ class ArticleMeta():
 
         if object.summary:
             content = object.summary
-        elif object.body:
+        else:
             content = object.body
 
-        content = strip_tags(content)
+        content = strip_tags(content) #strips HTML tags
         content = unescape_entities(content)
         content = content.replace("\n","").replace("\r","")
         content = truncate_words(content, 50) # ~ about 250 chars
