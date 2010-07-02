@@ -1,7 +1,10 @@
 import uuid
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
 from tagging.fields import TagField
+from base.fields import SlugField
 from perms.models import TendenciBaseModel
 from pages.managers import PageManager
 from tinymce import models as tinymce_models
@@ -12,6 +15,7 @@ from pages.module_meta import PageMeta
 class Page(TendenciBaseModel):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     title = models.CharField(max_length=500, blank=True)
+    slug = SlugField(_('URL Path'), unique=True)  
     content = tinymce_models.HTMLField()
     view_contact_form = models.BooleanField()
     design_notes = models.TextField(_('Design Notes'), blank=True)
@@ -37,7 +41,7 @@ class Page(TendenciBaseModel):
     
     @models.permalink
     def get_absolute_url(self):
-        return ("page", [self.pk])
+        return ("page", [self.slug])
 
     def __unicode__(self):
         return self.title
