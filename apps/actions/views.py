@@ -11,6 +11,9 @@ from actions.models import Action
 from site_settings.utils import get_setting
 from base.http import Http403
 
+# in order to send email instantly, the number of members in group should be less than LIMIT
+LIMIT = 50
+
 @login_required 
 def view(request, action_id, template_name="actions/view.html"):
     action = get_object_or_404(Action, pk=action_id)
@@ -95,8 +98,11 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
                 
                 action.save()
                 
-            # return to confirmation page    
-            return HttpResponseRedirect(reverse('action.confirm', args=[action.id]))
+            if action.group.members.count() < LIMIT:
+                return HttpResponseRedirect(reverse('action.send', args=[action.id]))
+            else:
+                # return to confirmation page    
+                return HttpResponseRedirect(reverse('action.confirm', args=[action.id]))
     else:
         form = form_class()
     
@@ -114,6 +120,17 @@ def confirm(request, action_id, template_name="actions/confirm.html"):
         action.sla = True
         action.save()
         
-    
     return render_to_response(template_name, {'action':action}, 
         context_instance=RequestContext(request))
+    
+@login_required 
+def send(request, action_id):
+    action = get_object_or_404(Action, pk=action_id)
+    if not request.user.has_perm('actions.add_action'): raise Http403
+    
+    if action.status_detail == 'open' and action.group.members.count() < LIMIT:
+        # send the newsletter immediately
+        from actions.utils import distribute_newsletter
+        boo = distribute_newsletter(request, action)  
+    
+    return HttpResponseRedirect(reverse('action.confirm', args=[action.id]))

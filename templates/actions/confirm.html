@@ -16,6 +16,20 @@
  <div id="t-newsletters">
 <div id="t-add">
 <h1>Send Marketing Action/Newsletter Confirmation</h1>
+{% if action.status_detail == 'closed' %}
+<p>
+Your newsletter has been distributed. Here is the summary of the recap.<br /><br />
+
+Total Attempted to Send = <b>{{ action.attempted }}</b><br />
+Bad Address or E-mail Blocked = <b>{{ action.failed }}</b><br />
+Total Processed = <b>{{ action.sent }}</b><br /><br />
+
+<b>Start time:</b> {{ action.start_dt|date:"l, d-M-Y h:i A" }} <br />
+<b>Finish time:</b> {{ action.finish_dt|date:"l, d-M-Y h:i A" }} <br />
+</p>
+<p><a href="{% url action.view action.id %}">View detail of the recap.</a></p>  
+<p><a href="{% url action.view action.id %}">View detail of your e-mail.</a></p>  
+{% else %}
 <p>
 Your newsletter has been scheduled to send within the next 10 minutes. 
 Please note that it may take several hours to complete the process depending 
@@ -23,6 +37,8 @@ on the size of your user group. You will receive an email notification when it's
 </p>  
 
 <p><a href="{% url action.view action.id %}">Click here to check the status of your e-mail.</a></p>   
+{% endif %} 
+
 {% if action.article %}
 <p><a href="{% url article action.article.id %}">Click here to edit the related article.</a></p> 
 {% endif %} 

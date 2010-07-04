@@ -62,7 +62,7 @@
 	  	</div> 
 	   	<b>{{ action.group.name }}</b>
 	   	{% with action.group.members.count as count_members %}
-            ({{ count_members  }} member{{count_members|pluralize }})
+            (<span class="body-copy-yellow">{{ count_members  }} member{{count_members|pluralize }}</span>)
             {% endwith %} 
 	   	</div>
 	   	{% else %}
@@ -94,9 +94,15 @@
 	   	<div class="step-label">Step5</div>
 	   	<div class="step-desc"><div class="body-copy-yellow">Send the E-mail!</div>
 		<div>
+			{% if action.group.members.count < 50 %}
+			<b>Note:</b> If the number of members in the group is less than 50, 
+			the email will be sent instantly. <span class="body-copy-alerts">
+			This newsletter will be distributed immediately once submitted. </span>
+			{% else %}
 	   		<b>Note:</b> This could take up to 30 minutes or longer depending on the size of 
 	   		your distribution list. <span class="body-copy-alerts">Once submitted the e-mail 
 	   		will be put into the queue for processing within 10 minutes. </span>
+	   		{% endif %}
 	  	</div> 
 	  	<p>&nbsp;</p>
 	   	<div>Do you want to add this newsletter as an article? {{ form.add_article }}</div>

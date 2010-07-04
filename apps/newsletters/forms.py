@@ -112,7 +112,7 @@ class NewsletterAddForm(forms.ModelForm):
         if self.cleaned_data['jobs']:
             jobs_days = self.cleaned_data['jobs_days']
             job_content = newsletter_jobs_list(request, jobs_days, simplified)
-        
+                
         # pages
         page_content = ""
         if self.cleaned_data['pages']:
