@@ -8,4 +8,5 @@ urlpatterns = patterns('actions.views',
     url(r'^confirm/(?P<action_id>\d+)/$', 'confirm', name="action.confirm"),
     url(r'^send/(?P<action_id>\d+)/$', 'send', name="action.send"),
     url(r'^view/(?P<action_id>\d+)/$', 'view', name="action.view"),
+    url(r'^recap/(?P<action_id>\d+)/$', 'recap', name="action.recap"),
 )

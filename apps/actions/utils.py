@@ -3,6 +3,7 @@ import re
 from django.core.urlresolvers import reverse
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
+from actions.models import ActionRecap
 
 p = re.compile(r"(href=\")((../)+)([^/])", re.IGNORECASE)
 
@@ -18,13 +19,14 @@ def distribute_newsletter(request, action, **kwargs):
     if action.status_detail == 'open':
         if action.group:
             # update the status_detail first
+            action.submit_dt = datetime.datetime.now()
             action.status_detail = 'inprogress'
             action.start_dt = datetime.datetime.now()
             action.save()
             
             i = 0
             result_d = {'total': 0, 'total_success':0, 'total_failed':0, 'total_nomail':0}
-            recap_d = []    # store the result in the action_recap table
+            recap_d = []    # the result will be stored in the action_recap table
             
             email_subject = action.email.subject
             email_body = action.email.body
@@ -108,6 +110,8 @@ def distribute_newsletter(request, action, **kwargs):
                              'first_name':user_this.first_name,
                              'last_name':user_this.last_name,
                              'email':user_this.email,
+                             'email2':profile_this.email2,
+                             'username':user_this.username,
                              'id':user_this.id}
                 if boo:
                     result_d['total_success'] += 1
@@ -117,9 +121,6 @@ def distribute_newsletter(request, action, **kwargs):
                     myrecap['notes'] = 'bad address or e-mail blocked'
                     
                 recap_d.append(myrecap)
-                    
-            print recap_d 
-            # insert the recap_d into table action_recap
              
             connection.close()
             
@@ -130,6 +131,21 @@ def distribute_newsletter(request, action, **kwargs):
             action.failed = result_d['total_failed']+ result_d['total_nomail']
             action.finish_dt = datetime.datetime.now()
             action.save()
+            
+            # save the recap
+            import cPickle
+            ar = ActionRecap()
+            ar.action = action
+            ar.recap = cPickle.dumps(recap_d)
+            ar.start_dt = action.start_dt
+            ar.finish_dt = action.finish_dt
+            ar.sent = action.sent
+            ar.attempted = action.attempted
+            ar.failed = action.failed
+            ar.save()
+            
+            # clear the recap_d
+            recap_d = None
             
             # log an event
             log_defaults = {

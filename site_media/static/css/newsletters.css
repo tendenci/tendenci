@@ -5,7 +5,7 @@ All CSS for newsletters and actions
 */
 
 /* add */
-#t-newsletters #t-add {
+#t-newsletters #t-add, #t-newsletters #t-view {
     width: 550px;
 }
 
@@ -107,4 +107,8 @@ ul.errorlist li{
 }
 .clear-both{
 	clear: both;
+}
+.recap-wrap{
+	border-bottom: 1px dotted #ccc;
+	padding-bottom: 1em;
 }

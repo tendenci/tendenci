@@ -50,3 +50,14 @@ class Action(TendenciBaseModel):
             self.owner_username=user.username
             
         super(self.__class__, self).save()
+        
+class ActionRecap(models.Model):
+    action = models.ForeignKey(Action)
+    start_dt = models.DateTimeField(auto_now_add=True)
+    finish_dt = models.DateTimeField(null=True)
+    sent = models.IntegerField(default=0)
+    attempted = models.IntegerField(default=0)
+    failed = models.IntegerField(default=0)
+    recap = models.TextField()
+    create_dt = models.DateTimeField(auto_now_add=True)
+    
