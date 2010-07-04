@@ -40,7 +40,7 @@
 	   	<div class="step-desc">E-mail to bind to this Marketing Action.<br />
 	   		<div style="float:right;">
 	   	<a href="{% url email.view action.email.id %}" class="body-copy-yellow" target="_blank">View Email</a>
-	   	 &nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url email.edit action.email.id %}?next={% url action.step4 action.id %}" class="body-copy-yellow" target="_blank">Edit Email</a>
+	   	 
 	   	</div>
 	   	Sender: <a href="mailto:{{ action.email.sender }}">{{ action.email.sender }}</a><br />
 	   
@@ -98,9 +98,20 @@
 	   		the queue for processing as soon as possible.</span>
 	  	</div> 
 	   	<div><span class="body-copy-yellow">Status of e-mail: {{action.status_detail}}</span> </div>
+	   	{% if action.status_detail == 'closed' %}
+	   	The e-mail has completed processing - ALL emails have been distributed.<br /><br />
+	   	Total emails sent: {{ action.sent }}<br />
+	   	Emails completed sending at: {{ action.finish_dt|date:"l, d-M-Y h:i A" }} <br />
+	   	{% else %}
 	   	This e-mail has entered the queue for processing.<br />
+	   	{% endif %}
 	   	Date Created: {{ action.create_dt|date:"N j, Y f A" }} <br />
 	   	Date Submitted: {{ action.submit_dt|date:"N j, Y f A" }} {# June 30, 2010 6:35 PM  #}
+	   	{% if action.status_detail == 'closed' %}
+		   	<div align="right">
+		   	<a href="" class="body-copy-yellow" target="_blank">View Recap</a>
+		   	</div>
+	   	{% endif %}
 	   	</div>
    </div>  
    <div class="clear-left"></div> 

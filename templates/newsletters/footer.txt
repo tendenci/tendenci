@@ -1,0 +1,11 @@
+ Powered by Tendenci Software from Schipul (http://www.schipul.com)
+ {% if action.group %}
+    To unsubscribe, reply with the subject "remove" or click 
+
+    {{ SITE_GLOBAL_SITEURL }}{% url group.deleteuser action.group.slug user_this.id %}
+ {% endif %}          
+    RSS syndication available for the {{ SITE_GLOBAL_SITEDISPLAYNAME }}:
+    
+    {# need to replace with the real rss link #}
+    {{ SITE_GLOBAL_SITEURL }}/rss/index
+   

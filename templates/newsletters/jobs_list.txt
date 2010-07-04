@@ -1,6 +1,5 @@
-{% load base_filters %}
-
 {% if jobs %}
+{% load base_filters %}
 	<font face="Arial" size="3"><b>
 	<font color=#000000>
 	{# named area for jump links #}
