@@ -134,3 +134,17 @@ def send(request, action_id):
         boo = distribute_newsletter(request, action)  
     
     return HttpResponseRedirect(reverse('action.confirm', args=[action.id]))
+
+@login_required 
+def recap(request, action_id, template_name="actions/recap.html"):
+    action = get_object_or_404(Action, pk=action_id)
+    
+    if not request.user.has_perm('actions.add_action'): raise Http403
+    
+    import cPickle
+    action_recaps = action.actionrecap_set.all()
+    for action_recap in action_recaps:
+        action_recap.recap = cPickle.loads(action_recap.recap.encode('utf-8'))
+    
+    return render_to_response(template_name, {'action':action, 'action_recaps': action_recaps}, 
+        context_instance=RequestContext(request))
