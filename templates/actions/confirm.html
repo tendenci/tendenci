@@ -18,7 +18,7 @@
 <h1>Send Marketing Action/Newsletter Confirmation</h1>
 {% if action.status_detail == 'closed' %}
 <p>
-Your newsletter has been distributed. Here is the summary of the recap.<br /><br />
+Your newsletter has been distributed. Here is the summary of the submission.<br /><br />
 
 Total Attempted to Send = <b>{{ action.attempted }}</b><br />
 Bad Address or E-mail Blocked = <b>{{ action.failed }}</b><br />
@@ -40,7 +40,7 @@ on the size of your user group. You will receive an email notification when it's
 {% endif %} 
 
 {% if action.article %}
-<p><a href="{% url article action.article.id %}">Click here to edit the related article.</a></p> 
+<p><a href="{% url article action.article.slug %}">Click here to edit the related article.</a></p> 
 {% endif %} 
 
 <p>
