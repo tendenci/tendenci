@@ -109,7 +109,7 @@
 	   	Date Submitted: {{ action.submit_dt|date:"N j, Y f A" }} {# June 30, 2010 6:35 PM  #}
 	   	{% if action.status_detail == 'closed' %}
 		   	<div align="right">
-		   	<a href="" class="body-copy-yellow" target="_blank">View Recap</a>
+		   	<a href="{% url action.recap action.id %}" class="body-copy-yellow" target="_blank">View Recap</a>
 		   	</div>
 	   	{% endif %}
 	   	</div>
