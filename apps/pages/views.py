@@ -178,7 +178,7 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % page)
                 
-                return HttpResponseRedirect(reverse('page', args=[page.pk]))
+                return HttpResponseRedirect(reverse('page', args=[page.slug]))
         else:
             form = form_class(request.user)
            
