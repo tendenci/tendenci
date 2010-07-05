@@ -1,5 +1,44 @@
 {% extends "site_base_authnet.html" %}
 
 {% block body %}
-{{ html_display|safe }}
+<h1>Payment Status</h1>
+<p>&nbsp;</p>
+    <p>
+    {% if not payment.is_approved %}
+        <b>
+        DO NOT press the back button in your browser.
+        </b>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id %}">Try Making Payment Again</a> 
+    {% else %}
+        <b>
+        DO NOT press the back button in your browser, or your credit card will be charged twice.
+        </b>
+	{% endif %}
+    </p>
+    <p>&nbsp;</p>
+    <p>Status of transaction (with reason if declined):</p>
+    {% if payment.response_code != '1' and payment.response_reason_code != '1' %}
+        <b>Not approved -</b> 
+	{% endif %}
+    <b> 
+    {{ payment.response_reason_text }}
+    </b>
+    
+    <p>&nbsp;</p>
+	<p>&nbsp;</p>
+	{% if not payment.is_approved %}
+        <p>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id %}">Try Making Payment Again</a>
+        </p>
+    {% else %}
+        <p>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.print_view payment.invoice.id %}">Print Friendly Invoice.</a>
+        </p>
+        <p><a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id %}">View my Invoice</a></p>
+        <p>Thank you for your payment!</p>
+   {% endif %}
+    <p>&nbsp;</p>
+
+	 <p>&nbsp;</p>
+	 <p>&nbsp;</p>
 {% endblock %}
