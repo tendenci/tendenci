@@ -104,7 +104,7 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
             profile = form.save(request, None)
             new_user = profile.user
             
-            # security_levl
+            # security_level
             security_level = form.cleaned_data['security_level']
             if security_level == 'developer':
                 new_user.is_superuser = 1

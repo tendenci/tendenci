@@ -16,30 +16,30 @@ class ProfileForm(TendenciBaseForm):
                                 error_messages={'required': 'Last Name is a required field.'})
     email = forms.CharField(label=_("Email"), max_length=100,
                                  error_messages={'required': 'Email is a required field.'})
-    initials = forms.CharField(label=_("Initial"), max_length=100, 
+    initials = forms.CharField(label=_("Initial"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'10'}))
-    display_name = forms.CharField(label=_("Display name"), max_length=100, 
+    display_name = forms.CharField(label=_("Display name"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'30'}))
     
-    url = forms.CharField(label=_("Web Site"), max_length=100, 
+    url = forms.CharField(label=_("Web Site"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'40'}))
-    company = forms.CharField(label=_("Company"), max_length=100, 
+    company = forms.CharField(label=_("Company"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'45'}))
-    department = forms.CharField(label=_("Department"), max_length=100, 
+    department = forms.CharField(label=_("Department"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'35'}))
-    address = forms.CharField(label=_("Address"), max_length=150, 
+    address = forms.CharField(label=_("Address"), max_length=150, required=False,
                                widget=forms.TextInput(attrs={'size':'45'}))
-    address2 = forms.CharField(label=_("Address2"), max_length=100, 
+    address2 = forms.CharField(label=_("Address2"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'40'}))
-    city = forms.CharField(label=_("City"), max_length=50, 
+    city = forms.CharField(label=_("City"), max_length=50, required=False,
                                widget=forms.TextInput(attrs={'size':'15'}))
-    state = forms.CharField(label=_("State"), max_length=50, 
+    state = forms.CharField(label=_("State"), max_length=50, required=False,
                                widget=forms.TextInput(attrs={'size':'5'}))
-    zipcode = forms.CharField(label=_("Zipcode"), max_length=50, 
+    zipcode = forms.CharField(label=_("Zipcode"), max_length=50, required=False,
                                widget=forms.TextInput(attrs={'size':'10'}))
-    country = forms.CharField(label=_("Country"), max_length=50, 
+    country = forms.CharField(label=_("Country"), max_length=50, required=False,
                                widget=forms.TextInput(attrs={'size':'15'}))
-    mailing_name = forms.CharField(label=_("Mailing Name"), max_length=120, 
+    mailing_name = forms.CharField(label=_("Mailing Name"), max_length=120, required=False,
                                widget=forms.TextInput(attrs={'size':'30'}))
     
     username = forms.RegexField(regex=r'^\w+$',
@@ -55,9 +55,9 @@ class ProfileForm(TendenciBaseForm):
     interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
                                                           (0,'Not Interactive (no login)'),))
     direct_mail =  forms.ChoiceField(initial=1, choices=((1, 'Yes'),(0, 'No'),))
-    notes = forms.CharField(label=_("Notes"), max_length=1000, 
+    notes = forms.CharField(label=_("Notes"), max_length=1000, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
-    admin_notes = forms.CharField(label=_("Admin Notes"), max_length=1000, 
+    admin_notes = forms.CharField(label=_("Admin Notes"), max_length=1000, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     language = forms.ChoiceField(initial="en-us", choices=(('en-us', u'English'),))
     dob = forms.DateField(required=False, widget=SelectDateWidget(None, range(THIS_YEAR-100, THIS_YEAR)))
@@ -84,6 +84,7 @@ class ProfileForm(TendenciBaseForm):
                   'hide_in_search',
                   'hide_phone',
                   'hide_email',
+                  'hide_address',
                   'initials',
                   'sex',
                   'mailing_name',
@@ -119,7 +120,7 @@ class ProfileForm(TendenciBaseForm):
         self.user_this = user_this
         
         self.fields['user_perms'].label = "Owner"
-        self.fields['user_perms'].help_text = "Non-admin who can edit this user"
+        self.fields['user_perms'].help_text = "People who can edit this user"
         
         if user_this:
             self.fields['first_name'].initial = user_this.first_name
@@ -144,6 +145,9 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['security_level']
                 del self.fields['status']
                 del self.fields['status_detail']
+            if user_current.is_superuser and not user_current.is_staff:
+                self.fields['security_level'].choices=(('user','User'),
+                                                            ('admin','Admin'),)
         
     def clean_username(self):
         """
@@ -153,7 +157,7 @@ class ProfileForm(TendenciBaseForm):
         """
         try:
             user = User.objects.get(username__iexact=self.cleaned_data['username'])
-            if user==self.user_this:
+            if self.user_this and user.id==self.user_this.id and user.username==self.user_this.username:
                 return self.cleaned_data['username']
         except User.DoesNotExist:
             return self.cleaned_data['username']
@@ -200,6 +204,9 @@ class ProfileForm(TendenciBaseForm):
             
         if not self.instance.id:
             self.instance.creator = request.user
+            self.instance.creator_username = request.user.username
+        self.instance.owner = request.user
+        self.instance.owner_username = request.user.username
             
         return super(ProfileForm, self).save(*args, **kwargs)
     
