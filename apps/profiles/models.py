@@ -41,7 +41,7 @@ class Profile(TendenciBaseModel):
     sex = models.CharField(_('sex'), max_length=50, blank=True, choices=(('male', u'Male'),('female', u'Female')))
     address_type = models.CharField(_('address type'), max_length=50, blank=True)
     address = models.CharField(_('address'), max_length=150, blank=True)
-    address2 = models.CharField(_('address2'), max_length=100, blank=True)
+    address2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
     city = models.CharField(_('city'), max_length=50, blank=True)
     state = models.CharField(_('state'), max_length=50, blank=True)
     zipcode = models.CharField(_('zipcode'), max_length=50, blank=True)
@@ -67,7 +67,7 @@ class Profile(TendenciBaseModel):
     exported = models.BooleanField(_('exported'))
     direct_mail = models.BooleanField(_('direct mail'), default=False)
     notes = models.TextField(_('notes'), blank=True) 
-    admin_notes = models.TextField(_('admin notes'), blank=True) 
+    admin_notes = models.TextField(_('admin notes'), default='', blank=True) 
     referral_source = models.CharField(_('referral source'), max_length=50, blank=True)
     hide_in_search = models.BooleanField(default=0)
     hide_address = models.BooleanField(default=0)
@@ -144,4 +144,6 @@ class Profile(TendenciBaseModel):
                     if user2_compare.has_perm('profiles.change_profile', self):
                         return True
         return False
+    
+
             
