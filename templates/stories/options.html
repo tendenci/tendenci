@@ -1,6 +1,5 @@
 {% load base_tags %}
 {% load perm_tags %}
-{% with opt_object.object as opt_object %}
 <div class="t-iconrow">
 <ul>	
     {% has_perm request.user stories.change_stories opt_object as can_edit %}
@@ -14,4 +13,3 @@
     
 </ul>
 </div>
-{% endwith %}
