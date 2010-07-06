@@ -55,6 +55,23 @@ def index(request, username="", template_name="profiles/index.html"):
     # security check 
     if not profile.allow_view_by(request.user): 
         raise Http403
+    
+    # content counts
+    content_counts = {'total':0, 'invoice':0}
+    from django.db.models import Q
+    from invoices.models import Invoice
+    inv_count = Invoice.objects.filter(Q(creator=user_this) | (Q(owner=user_this))).count()
+    content_counts['invoice'] = inv_count
+    content_counts['total'] += inv_count
+    
+    # owners
+    additional_owners = ObjectPermission.objects.who_has_perm('profiles.change_profile', profile)
+    if profile.owner in additional_owners:
+        additional_owners.remove(profile.owner)
+        
+    # group list
+    group_memberships = user_this.group_member.all()
+                                       
  
     log_defaults = {
         'event_id' : 125000,
@@ -66,8 +83,12 @@ def index(request, username="", template_name="profiles/index.html"):
     }
     EventLog.objects.log(**log_defaults)
        
-    return render_to_response(template_name, {"user_this": user_this, "profile":profile,
-                                              "user_objs":{"user_this": user_this } }, 
+    return render_to_response(template_name, {"user_this": user_this, 
+                                              "profile":profile,
+                                              'content_counts': content_counts,
+                                              'additional_owners': additional_owners,
+                                              'group_memberships': group_memberships
+                                               }, 
                               context_instance=RequestContext(request))
    
 @login_required   
