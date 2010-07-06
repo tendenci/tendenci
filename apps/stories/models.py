@@ -7,12 +7,13 @@ from perms.models import TendenciBaseModel
 from stories.managers import StoryManager
 from perms.utils import is_admin
 from entities.models import Entity
+from tinymce import models as tinymce_models
 
 # Create your models here.
 class Story(TendenciBaseModel):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     title = models.CharField(max_length=200, blank=True)
-    content = models.TextField(blank=True)
+    content = tinymce_models.HTMLField()
     syndicate = models.BooleanField(_('Include in RSS feed'))
     full_story_link = models.CharField(_('Full Story Link'), max_length=300, blank=True)
     start_dt = models.DateTimeField(_('Start Date/Time'), null=True, blank=True)
