@@ -391,7 +391,7 @@ def photos_batch_add(request, photoset_id=0):
         raise Http403
 
     if request.method == 'POST':
-
+        
         for field_name in request.FILES:
             uploaded_file = request.FILES[field_name]
 
@@ -411,40 +411,40 @@ def photos_batch_add(request, photoset_id=0):
             })
             photo_form = PhotoUploadForm(request.user, request.POST, request.FILES)
 
-        if photo_form.is_valid():
-            # save photo
-            photo = photo_form.save(commit=False)
-            photo.creator = request.user
-            photo.member = request.user
-            photo.safetylevel = 3
-            photo.save()
-
-            log_defaults = {
-                'event_id' : 990100,
-                'event_data': '%s (%d) added by %s' % (photo._meta.object_name, photo.pk, request.user),
-                'description': '%s added' % photo._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': photo,
-            }
-            EventLog.objects.log(**log_defaults)
-
-            # assign creator permissions
-            ObjectPermission.objects.assign(photo.creator, photo) 
-
-            # add to photo set if photo set is specified
-            if photoset_id:
-                photo_set = get_object_or_404(PhotoSet, id=photoset_id)
-                photo_set.image_set.add(photo)
-
-            data = serializers.serialize("json", Image.objects.filter(id=photo.id))
-
-            # returning a response of "ok" (flash likes this)
-            # response is for flash, not humans
-            return HttpResponse(data, mimetype="text/plain")
-        else:
-
-            return HttpResponse("photo is not valid", mimetype="text/plain")
+            if photo_form.is_valid():
+                # save photo
+                photo = photo_form.save(commit=False)
+                photo.creator = request.user
+                photo.member = request.user
+                photo.safetylevel = 3
+                photo.save()
+    
+                log_defaults = {
+                    'event_id' : 990100,
+                    'event_data': '%s (%d) added by %s' % (photo._meta.object_name, photo.pk, request.user),
+                    'description': '%s added' % photo._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': photo,
+                }
+                EventLog.objects.log(**log_defaults)
+    
+                # assign creator permissions
+                ObjectPermission.objects.assign(photo.creator, photo) 
+    
+                # add to photo set if photo set is specified
+                if photoset_id:
+                    photo_set = get_object_or_404(PhotoSet, id=photoset_id)
+                    photo_set.image_set.add(photo)
+    
+                data = serializers.serialize("json", Image.objects.filter(id=photo.id))
+    
+                # returning a response of "ok" (flash likes this)
+                # response is for flash, not humans
+                return HttpResponse(data, mimetype="text/plain")
+            else:
+    
+                return HttpResponse("photo is not valid", mimetype="text/plain")
 
     else:
 

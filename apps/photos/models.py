@@ -64,7 +64,7 @@ class Image(ImageModel, TendenciBaseModel):
         (1, _('Safe')),
         (2, _('Not Safe')),
     )
-    guid = models.CharField(max_length=40, default=uuid.uuid1) 
+    guid = models.CharField(max_length=40, default=uuid.uuid1, editable=False) 
     title = models.CharField(_('title'), max_length=200)
     title_slug = models.SlugField(_('slug'))
     caption = models.TextField(_('caption'), blank=True)
