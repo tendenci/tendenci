@@ -11,9 +11,9 @@
 
 {% block body %}
 <div class="t">
-    {% stories_nav request.user story %}
+    {% stories_nav user story %}
     <div class="quick-options">
- 	{% stories_options request.user story %}
+ 	{% stories_options user story %}
  	</div>
 
         <h2>{{ story.title }}</h2>
