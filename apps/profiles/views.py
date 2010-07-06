@@ -66,8 +66,9 @@ def index(request, username="", template_name="profiles/index.html"):
     
     # owners
     additional_owners = ObjectPermission.objects.who_has_perm('profiles.change_profile', profile)
-    if profile.owner in additional_owners:
-        additional_owners.remove(profile.owner)
+    if additional_owners:
+        if profile.owner in additional_owners:
+            additional_owners.remove(profile.owner)
         
     # group list
     group_memberships = user_this.group_member.all()
