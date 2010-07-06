@@ -98,4 +98,5 @@ def get_setting(scope, scope_category, name):
                           setting.name,
                           setting.value)
         value = cache.get(key)
+        if not value: value = ''
     return value
