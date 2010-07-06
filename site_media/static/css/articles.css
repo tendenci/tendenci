@@ -116,3 +116,12 @@ div.forms div.form-field div.id_phone .field input {
 div.forms div.form-field div.id_fax .field input {
 	width: 18%;
 }
+
+div.forms div.form-field div.id_release_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+
+div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
+	width: 80px;
+}

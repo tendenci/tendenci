@@ -5,20 +5,17 @@
 {% block title %}{{ block.super }} Edit{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/forms.css">
-<link rel="stylesheet" href="/site_media/static/css/stories.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/stories.css">
+<script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
 {% endblock %}
 
 {% block body %}
 <div class="t">
+
 {% stories_nav request.user story %}
     <h1>{% firstof MODULE_STORIES_LABEL "Story" %} Edit</h1>
- <div>
- <a href="{% url story.upload story.pk %}">Upload New Image</a>
- {% if image_name %}
- Current image: {{ image_name }}
- {% endif %}
-  </div>
  
     <div class="story-wrap">
     	<form action="{% url story.edit story.pk %}" method="post">
@@ -30,4 +27,16 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block extra_body %}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		$(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+		$('.timepicker').timePicker({
+		  show24Hours: false,
+		  step: 15
+		});
+	</script>
 {% endblock %}
