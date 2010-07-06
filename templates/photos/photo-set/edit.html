@@ -1,4 +1,5 @@
 {% extends "photos/base.html" %}
+{% load styled_forms %}
 {% load photo_tags %}
 
 {% load i18n %}
@@ -8,7 +9,7 @@
 {% block body %}
 	<h1>{{ MODULE_PHOTOS_LABEL }} Set Edit</h1>
     <form method="POST" action="">
-        {{ photoset_form.as_p }}
+        {{ photoset_form|styled_form }}
         <input type="hidden" name="action" value="edit" />
         <input type="submit" value="{% trans "Edit" %}"/>
     </form>  

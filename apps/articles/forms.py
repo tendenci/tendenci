@@ -1,7 +1,12 @@
+from datetime import datetime
+
+from django import forms
+from django.utils.translation import ugettext_lazy as _
+
 from articles.models import Article
 from perms.forms import TendenciBaseForm
-from django import forms
 from tinymce.widgets import TinyMCE
+from base.fields import SplitDateTimeField
 
 class ArticleForm(TendenciBaseForm):
 
@@ -9,6 +14,9 @@ class ArticleForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Article._meta.app_label, 
         'storme_model':Article._meta.module_name.lower()}))
+    
+    release_dt = SplitDateTimeField(label=_('Release Date/Time'),
+                                    initial=datetime.now())
 
     class Meta:
         model = Article

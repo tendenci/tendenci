@@ -5,6 +5,8 @@
 {% block title %}{{ block.super }}Edit{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
 <script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
 {% endblock %}
@@ -32,12 +34,14 @@
 {% endblock %}
 
 {% block extra_body %}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_article = confirm('Permenantly delete {% firstof MODULE_ARTICLES_LABEL 'Article' %}?');	// confirm
-				if(delete_article) $('.t').find('form[name="article-delete"]').submit() // delete: if OK
+				var delete_object = confirm("Permenantly delete {% firstof MODULE_ARTICLES_LABEL 'Article' %}?");	// confirm
+				if(delete_object) $('form[name="article-delete"]').submit()
 				return false;	// cancel
 			});
 		});
@@ -49,5 +53,12 @@
 		trigger:	'more-options-trigger',
 		target:		'more-options-target'
 	});
+	</script>
+	<script type="text/javascript">
+		$(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+		$('.timepicker').timePicker({
+		  show24Hours: false,
+		  step: 15
+		});
 	</script>
 {% endblock %}
