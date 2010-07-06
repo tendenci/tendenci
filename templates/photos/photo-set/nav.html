@@ -42,7 +42,10 @@
 			{% endif %}
 			{% if nav_object %}
 				{% if can_add_photoset %}
-				<li><a href="{% url photos_batch_add nav_object.pk %}">Add Photos to Set</a></li>
+				<li><a href="{% url photos_batch_add nav_object.pk %}">Add Photos</a></li>
+				{% endif %}
+				{% if can_edit_photoset %}
+				<li><a href="{% url photos_batch_edit nav_object.pk %}">Edit Photos</a></li>
 				{% endif %}
 			{% endif %}
 			{% if user.is_authenticated %}

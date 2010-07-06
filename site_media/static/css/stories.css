@@ -109,10 +109,21 @@
 
 /* form */
 div.forms div.form-field div.id_start_dt .field input {
-	width: 30%;
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+
+div.forms div.form-field div.id_start_dt .field input#id_start_dt_1 {
+	width: 80px;
 }
 
 div.forms div.form-field div.id_end_dt .field input {
-	width: 30%;
+	margin: 0 5px 0 0;
+	width: 18%;
 }
+
+div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
+	width: 80px;
+}
+
 
