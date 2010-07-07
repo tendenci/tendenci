@@ -41,6 +41,9 @@ class PhotoSetAddForm(TendenciBaseForm):
             'name',
             'description',
             'tags',
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_user_edit',
         )
 
     def __init__(self, user=None, *args, **kwargs):
@@ -56,6 +59,9 @@ class PhotoSetEditForm(TendenciBaseForm):
             'name',
             'description',
             'tags',
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_user_edit',
         )
 
     def __init__(self, user=None, *args, **kwargs):
