@@ -44,9 +44,9 @@ class ArticleMeta():
 
         # contact release
         if object.headline and object.release_dt:
-            value += ' - ' + object.release_dt
+            value += ' - %s' % object.release_dt.strftime('%m-%d-%Y')
         elif object.release_dt:
-            value += object.release_dt
+            value += object.release_dt.strftime('%m-%d-%Y')
 
         # primary keywords OR category/subcategory
         if primary_keywords:

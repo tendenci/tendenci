@@ -1,8 +1,12 @@
+from datetime import datetime
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+
 from stories.models import Story
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
+from base.fields import SplitDateTimeField
 
 class StoryForm(TendenciBaseForm):
 
@@ -12,6 +16,12 @@ class StoryForm(TendenciBaseForm):
         'storme_model':Story._meta.module_name.lower()}))
 
     fullstorylink = forms.CharField(label=_("Full Story Link"), required=False, max_length=300)
+
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'),
+                                    initial=datetime.now())
+
+    end_dt = SplitDateTimeField(label=_('End Date/Time'),
+                                    initial=datetime.now())
 
     class Meta:
         model = Story
