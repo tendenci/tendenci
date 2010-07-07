@@ -40,6 +40,8 @@ class ArticleManager(Manager):
                     else:
                         sqs = sqs.filter(allow_anonymous_view=True)               
             else:
-                sqs = sqs.filter(allow_anonymous_view=True) 
+                sqs = sqs.filter(allow_anonymous_view=True)
+
+            sqs = sqs.order_by('-release_dt')
     
-        return sqs.models(self.model).order_by('-create_dt')
+        return sqs.models(self.model)

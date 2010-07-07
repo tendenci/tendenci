@@ -15,5 +15,7 @@ class FileManager(Manager):
             sqs = sqs.auto_query(sqs.query.clean(query))
         else:
             sqs = sqs.all()
+
+        sqs = sqs.order_by('-update_dt')
         
-        return sqs.models(File).order_by('-create_dt')
+        return sqs.models(File)
