@@ -6,7 +6,6 @@
     {% if can_edit %} 
     	<li><a href="{% url story.edit opt_object.pk  %}" title="Edit Story" class="option-link edit">Edit</a></li>
     	<li><a href="{% url category.update opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">Categories</a></li>
-    	<li><a href="{% url story.upload opt_object.pk  %}" title="Upload Story" class="option-link upload">Upload</a></li>
     	<li><a href="{% url story.delete opt_object.pk  %}" class="option-link delete" title="Delete Story">Delete</a></li>
     {% endif %}
     
