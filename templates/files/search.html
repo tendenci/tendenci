@@ -31,9 +31,9 @@
 
 {% block body %}
 <div class="t">
-    <h1>{% firstof MODULE_FILES_LABEL 'Files' %} Search</h1>
-	
     {% file_nav request.user %}
+
+    <h1>{% firstof MODULE_FILES_LABEL 'Files' %} Search</h1>
 
 	{% file_search %}
     {% autopaginate files 10 %}
