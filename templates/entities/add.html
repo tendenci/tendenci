@@ -10,9 +10,10 @@
 
 {% block body %}
 <div class="t">
-    <h1>{% firstof MODULE_ENTITIES_LABEL 'Entity' %}  Add</h1>
-    
+
     {% entity_nav request.user %}
+
+    <h1>{% firstof MODULE_ENTITIES_LABEL 'Entity' %}  Add</h1>
 
     <div class="entities-wrap">
     	<form action="{% url entity.add %}" method="post">
