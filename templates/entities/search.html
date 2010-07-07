@@ -12,12 +12,12 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_ENTITIES_LABEL }} Search</h1>
-	
+
     {% entity_nav request.user %}
 
+    <h1>{{ MODULE_ENTITIES_LABEL }} Search</h1>
+
     {% autopaginate entities 10 %}
-	
 	<div class="entities-wrap">
     {% for entity in entities %}
     	{% has_perm user entities.view_entity entity as can_view %}

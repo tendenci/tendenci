@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
 from profiles.models import Profile
 from perms.forms import TendenciBaseForm
+from perms.utils import is_admin, is_developer
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -140,12 +141,12 @@ class ProfileForm(TendenciBaseForm):
             del self.fields['password1']
             del self.fields['password2']
             
-            if not user_current.is_superuser:
+            if not is_admin(user_current):
                 del self.fields['admin_notes']
                 del self.fields['security_level']
                 del self.fields['status']
                 del self.fields['status_detail']
-            if user_current.is_superuser and not user_current.is_staff:
+            if is_admin(user_current) and not is_developer(user_current):
                 self.fields['security_level'].choices=(('user','User'),
                                                             ('admin','Admin'),)
         
