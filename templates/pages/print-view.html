@@ -1,7 +1,7 @@
-{% extends "pages/base.html" %}
+{% extends "pages/base-print.html" %}
 {% load page_tags %}
 
-{% block title %}Print View Page{% endblock %}
+{% block title %}{{ block.super }}Print - {{ page.get_title }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
@@ -9,14 +9,18 @@
 
 {% block body %}
 
-<div class="t">
-    <h1>{{ MODULE_PAGES_LABEL }} Print</h1>
-    
+<div class="t-print">
+
+	<div class='hide-this'>
+		<h1>Print View</h1>
+
+		<div class="guide">
+			<div><a href="{{ article.get_absolute_url }}">&laquo; Back to regular page view</a></div>
+			<div>Your printed page will look <em>something</em> like this.</div>
+		</div>
+	</div>
+
     <div class="page-wrap">
-
-        <div class="options">
-        </div>
-
 
         <h2>{{ page.title }}</h2>
         <div class="content">{{ page.content|safe }}</div>
