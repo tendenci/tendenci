@@ -12,9 +12,10 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_LOCATIONS_LABEL }} Search</h1>
-	
+
     {% location_nav request.user %}
+
+    <h1>{{ MODULE_LOCATIONS_LABEL }} Search</h1>
 
     {% autopaginate locations 10 %}
 	

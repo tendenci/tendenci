@@ -10,9 +10,10 @@
 
 {% block body %}
 <div class="t">
-    <h1>{% firstof MODULE_LOCATIONS_LABEL 'Location' %} Add</h1>
-    
+
     {% location_nav request.user %}
+
+    <h1>{% firstof MODULE_LOCATIONS_LABEL 'Location' %} Add</h1>
 
     <div class="location-wrap">
     	<form action="{% url location.add %}" method="post">
