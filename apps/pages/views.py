@@ -52,7 +52,7 @@ def search(request, template_name="pages/search.html"):
         context_instance=RequestContext(request))
 
 def print_view(request, slug, template_name="pages/print-view.html"):
-    page = get_object_or_404(Page, pk=slug)
+    page = get_object_or_404(Page, slug=slug)
 
     if request.user.has_perm('pages.view_page', page):
         log_defaults = {

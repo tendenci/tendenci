@@ -9,6 +9,9 @@
 	margin-top: 1em;
 }
 
+#t-profile #t-view{
+	width: 550px;	
+}
 .t form.search-form input[type="text"] {
 	margin-bottom:10px;
 	padding:5px;
@@ -27,7 +30,6 @@
 .clear-both{
 	clear: both;
 }
-
 
 #userview-profile {
     padding-top: 10px;
@@ -135,6 +137,14 @@
     border-top: solid 1px #BBB;
     border-bottom: dotted 1px #BBB;
     background: #F9F9F9;
+}
+.module-content h2{
+	font-size: 1.2em;
+    font-weight: bold;
+}
+.admin-section .column h3{
+	font-size: 1.2em;
+    font-weight: bold;
 }
 
 #userview-profile .profile-section small {
@@ -262,6 +272,15 @@
     margin: 0;
     margin-top: 6px;
     padding: 4px;
+}
+#userview-profile .admin-section .speed-registration {
+	border:1px solid #DDDDDD;
+	font-size:12px;
+	height:25px;
+	line-height:25px;
+	padding:6px;
+	text-align:right;
+	vertical-align:middle;
 }
 
 #userview-profile .admin-section .column {
@@ -455,4 +474,17 @@ div.forms div.form-field div.id_ssn .field input {
 	float: right;		
 }
 
+.t #userview-groups .group {
+	border-bottom: 1px solid #DDD;
+	padding: 10px;
+	margin: 10px 0;
+}
 
+.t #userview-groups .content-type {
+	width: 50%;
+	float: left;
+}
+.t #userview-groups .contrib-title {
+	float: left;
+	width: 50%;		
+}

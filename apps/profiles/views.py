@@ -36,6 +36,7 @@ from user_groups.models import Group, GroupMembership
 from perms.utils import is_admin
 
 from event_logs.models import EventLog
+from perms.models import ObjectPermission
 
 # view profile  
 @login_required 
@@ -54,6 +55,24 @@ def index(request, username="", template_name="profiles/index.html"):
     # security check 
     if not profile.allow_view_by(request.user): 
         raise Http403
+    
+    # content counts
+    content_counts = {'total':0, 'invoice':0}
+    from django.db.models import Q
+    from invoices.models import Invoice
+    inv_count = Invoice.objects.filter(Q(creator=user_this) | (Q(owner=user_this))).count()
+    content_counts['invoice'] = inv_count
+    content_counts['total'] += inv_count
+    
+    # owners
+    additional_owners = ObjectPermission.objects.who_has_perm('profiles.change_profile', profile)
+    if additional_owners:
+        if profile.owner in additional_owners:
+            additional_owners.remove(profile.owner)
+        
+    # group list
+    group_memberships = user_this.group_member.all()
+                                       
  
     log_defaults = {
         'event_id' : 125000,
@@ -65,8 +84,12 @@ def index(request, username="", template_name="profiles/index.html"):
     }
     EventLog.objects.log(**log_defaults)
        
-    return render_to_response(template_name, {"user_this": user_this, "profile":profile,
-                                              "user_objs":{"user_this": user_this } }, 
+    return render_to_response(template_name, {"user_this": user_this, 
+                                              "profile":profile,
+                                              'content_counts': content_counts,
+                                              'additional_owners': additional_owners,
+                                              'group_memberships': group_memberships
+                                               }, 
                               context_instance=RequestContext(request))
    
 @login_required   
@@ -105,13 +128,25 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
             new_user = profile.user
             
             # security_level
-            security_level = form.cleaned_data['security_level']
-            if security_level == 'developer':
-                new_user.is_superuser = 1
-                new_user.is_staff = 1
-            elif security_level == 'admin':
-                new_user.is_superuser = 1
-                new_user.is_staff = 0
+            if is_admin(request.user):
+                security_level = form.cleaned_data['security_level']
+                if security_level == 'developer':
+                    new_user.is_superuser = 1
+                    new_user.is_staff = 1
+                elif security_level == 'admin':
+                    new_user.is_superuser = 1
+                    new_user.is_staff = 0
+                else:
+                    new_user.is_superuser = 0
+                    new_user.is_staff = 0
+                
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, profile)
+                    # assign creator permissions
+                    ObjectPermission.objects.assign(profile.creator, profile) 
+                    
             else:
                 new_user.is_superuser = 0
                 new_user.is_staff = 0
@@ -143,7 +178,6 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
             return HttpResponseRedirect(reverse('profile', args=[new_user.username]))
     else:
         form = form_class(request.user, None)
-        #form2 = form_class2()
        
     return render_to_response(template_name, {'form':form, 'user_this':None}, 
         context_instance=RequestContext(request))
@@ -158,30 +192,36 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
         
-    #if not request.user.has_perm('profiles.change_profile', profile): raise Http403 
     if not profile.allow_edit_by(request.user): raise Http403
        
     if request.method == "POST":
-        #form_user = form_class2(request.user, request.POST)
-        if profile:
-            form = form_class(request.user, user_edit, request.POST, request.user, instance=profile)
-        else:
-            form = form_class(request.user, user_edit, request.POST, request.user )
-        #form2 = form_class2(request.POST, request.user, instance=user_edit)
+        form = form_class(request.user, user_edit, request.POST, request.user, instance=profile)
         
         if form.is_valid():
             profile = form.save(request, user_edit)
-            #user_edit.is_superuser = form2.cleaned_data['is_superuser']
-            #user_edit.groups = form2.cleaned_data['groups']
-            #user_edit.user_permissions = form2.cleaned_data['user_permissions']
-            security_level = form.cleaned_data['security_level']
-            
-            if security_level == 'developer':
-                user_edit.is_superuser = 1
-                user_edit.is_staff = 1
-            elif security_level == 'admin':
-                user_edit.is_superuser = 1
-                user_edit.is_staff = 0
+           
+            if is_admin(request.user):
+                security_level = form.cleaned_data['security_level']
+                
+                if security_level == 'developer':
+                    user_edit.is_superuser = 1
+                    user_edit.is_staff = 1
+                elif security_level == 'admin':
+                    user_edit.is_superuser = 1
+                    user_edit.is_staff = 0
+                else:
+                    user_edit.is_superuser = 0
+                    user_edit.is_staff = 0
+                    
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(profile)
+                 
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, profile)
+                    # assign creator permissions
+                    ObjectPermission.objects.assign(profile.creator, profile) 
             else:
                 user_edit.is_superuser = 0
                 user_edit.is_staff = 0
