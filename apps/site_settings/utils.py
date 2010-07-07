@@ -86,7 +86,14 @@ def get_setting(scope, scope_category, name):
     setting = cache.get(key)
     if setting:
         value = setting.value
-            
+
+        # convert data types
+        if setting.data_type == 'boolean':
+            value = value[0].lower() == 't'
+        if setting.data_type == 'int':
+            if value.strip(): value = int(value.strip())
+            else: value = 0 # default to 0
+                            
     if not value:
         try:
             filters = {
