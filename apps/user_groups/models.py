@@ -4,12 +4,13 @@ from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 
+from base.fields import SlugField
 from perms.models import TendenciBaseModel
 from entities.models import Entity
 
 class Group(TendenciBaseModel):
     name = models.CharField(_('Group Name'), max_length=255, unique=True)
-    slug = models.SlugField(editable=False, unique=True)
+    slug = SlugField(_('URL Path'), unique=True) 
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     label = models.CharField(_('Group Label'), max_length=255, blank=True)
     entity = models.ForeignKey(Entity, null=True, blank=True)
