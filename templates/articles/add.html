@@ -5,7 +5,9 @@
 {% block title %}{{ block.super }}Add{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}articles.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
 <script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
 {% endblock %}
 
@@ -28,6 +30,8 @@
 {% endblock %}
 
 {% block extra_body %}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
 	<script type="text/javascript">
 		var slugit = new Slugify({
@@ -36,6 +40,13 @@
 			submit_element : 'input[type="submit"]',
 			help: false,
 			limit : 150
+		});
+	</script>
+	<script type="text/javascript">
+		$(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+		$('.timepicker').timePicker({
+		  show24Hours: false,
+		  step: 15
 		});
 	</script>
 {% endblock %}

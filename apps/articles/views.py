@@ -231,7 +231,7 @@ def delete(request, id, template_name="articles/delete.html"):
                     'object': article,
                     'request': request,
                 }
-                notification.send(get_administrators(),'article_delted', extra_context)
+                notification.send(get_administrators(),'article_deleted', extra_context)
                             
             article.delete()
                                     

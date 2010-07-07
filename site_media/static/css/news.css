@@ -116,7 +116,9 @@ div.forms div.form-field div.id_fax .field input {
 div.forms div.form-field div.id_release_dt .field input {
 	width: 30%;
 }
-
+div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
+	width: 80px;
+}
 
 /* News Print View
  ------------------------- */
@@ -148,4 +150,6 @@ div.forms div.form-field div.id_release_dt .field input {
 		border: none;
 		padding: 0; margin: 0;
 	}
+	margin: 0 5px 0 0;
+	width: 18%;
 }
