@@ -77,8 +77,8 @@ def get_setting(scope, scope_category, name):
         and scope category
     """
     value = u''
-    keys = [SETTING_PRE_KEY, scope,
-            scope_category,
+    keys = [SETTING_PRE_KEY, scope, 
+            scope_category, 
             name]
     key = '.'.join(keys)
     
@@ -99,7 +99,8 @@ def get_setting(scope, scope_category, name):
                 'scope': scope,
                 'scope_category': scope_category,
                 'name': name
-            }
+            }            
+
             setting = Setting.objects.get(**filters)
             cache_setting(setting.scope, setting.scope_category,setting.name,setting)
         except:

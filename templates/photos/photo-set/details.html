@@ -15,11 +15,12 @@
 
 {% block body %}
 <div class="t" style="width:100%;">
-    <h1>{{ photo_set.name }}</h1>
 
     <div class="photos-nav">
 		{% photo_set_nav request.user photo_set %}
 	</div>
+
+    <h1>{{ photo_set.name }}</h1>
 
 	<div id="photos-wrap">
         {% if photos %}

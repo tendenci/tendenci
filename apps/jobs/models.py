@@ -5,15 +5,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from tagging.fields import TagField
 from base.fields import SlugField
-from timezones.fields import TimeZoneField
 from perms.models import TendenciBaseModel 
 from jobs.managers import JobManager
 from entities.models import Entity
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from jobs.module_meta import JobMeta
-
-from uuid import uuid1 
 
 class Job(TendenciBaseModel ):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
