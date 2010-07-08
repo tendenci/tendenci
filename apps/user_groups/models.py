@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from base.fields import SlugField
 from perms.models import TendenciBaseModel
 from entities.models import Entity
+from user_groups.managers import GroupManager
 
 class Group(TendenciBaseModel):
     name = models.CharField(_('Group Name'), max_length=255, unique=True)
@@ -28,6 +29,8 @@ class Group(TendenciBaseModel):
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
+    
+    objects = GroupManager()
 
     class Meta:
         permissions = (("view_group","Can view group"),)
