@@ -32,7 +32,7 @@
 					{% job_options request.user job %} 	       
                 </div>
 			</div>
-            <h2><a href="{{ job.object.get_absolute_url }}">{% firstof job.title "Untitled" %}</a></h2>
+            <h2><a href="{{ job.get_absolute_url }}">{% firstof job.title "Untitled" %}</a></h2>
             <div class="content">{{ job.description|safe|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Released on {{ job.release_dt|date:"D d M Y P" }} by {{ job.creator }}</div>

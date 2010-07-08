@@ -13,7 +13,7 @@ class ProfileManager(Manager):
         
     def search(self, query=None, *args, **kwargs):
         """
-            Uses haystack to query articles. 
+            Uses haystack to query user and profiles. 
             Returns a SearchQuerySet
         """
         from profiles.models import Profile
