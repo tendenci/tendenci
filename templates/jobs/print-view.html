@@ -1,7 +1,9 @@
 {% extends "jobs/base-print.html" %}
 {% load job_tags %}
 
-{% block title %}{{ block.super }}Print - {{ job.get_title }}{% endblock %}
+{% block title %}{{ jobs.get_title }}{% endblock %}
+{% block meta_description %}{{ jobs.get_description }}{% endblock %}
+{% block meta_keywords %}{{ jobs.get_keywords }}{% endblock %}
 
 {% block extra_head %}
 <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css" />
