@@ -2,7 +2,7 @@
 {% load news_tags %}
 {% load styled_forms %}
 
-{% block title %}{{ block.super }}Add{% endblock %}
+{% block title %}{% firstof MODULE_NEWS_LABEL 'News' %} Add{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
