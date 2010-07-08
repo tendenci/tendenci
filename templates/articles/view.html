@@ -4,7 +4,7 @@
 {% load base_tags %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{{ article.get_title }}{% endblock %}
+{% block title %}{{ article.get_title }}{% endblock %}
 {% block meta_description %}{{ article.get_description }}{% endblock %}
 {% block meta_keywords %}{{ article.get_keywords }}{% endblock %}
 

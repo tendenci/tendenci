@@ -38,7 +38,7 @@ def save_settings_form(self):
             setting.value = field_value
             setting.save()
             cache_setting(setting.scope, setting.scope_category, setting.name,
-              setting.value)
+              setting)
             
 
 def build_settings_form(user, settings):

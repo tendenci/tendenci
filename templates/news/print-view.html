@@ -1,7 +1,9 @@
 {% extends "news/base-print.html" %}
 {% load news_tags %}
 
-{% block title %}{{ block.super }}Print - {{ news.get_title }}{% endblock %}
+{% block title %}{{ news.get_title }}{% endblock %}
+{% block meta_description %}{{ news.get_description }}{% endblock %}
+{% block meta_keywords %}{{ news.get_keywords }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
