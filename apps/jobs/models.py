@@ -41,18 +41,10 @@ class Job(TendenciBaseModel ):
     post_dt = models.DateTimeField(null=True, blank=True) #date job was posted (same as create date?)
     expiration_dt = models.DateTimeField(null=True, blank=True) #date job expires based on activation date and duration
     start_dt = models.DateTimeField(null=True, blank=True) #date job starts(defined by job poster)
-    
-    job_url = models.CharField(max_length=300) #link to other (fuller) job posting
-    
-    syndicate = models.BooleanField(blank=True)
-    
-    # meta information
-    design_notes = models.TextField(blank=True)
-    page_title = models.TextField(blank=True)
-    meta_keywords = models.TextField(blank=True)
-    meta_description = models.TextField(blank=True)
 
-    entity = models.ForeignKey(Entity,null=True)
+    job_url = models.CharField(max_length=300) #link to other (fuller) job posting    
+    syndicate = models.BooleanField(blank=True)
+    design_notes = models.TextField(blank=True)
            
     #TODO: foreign
     contact_company = models.CharField(max_length=300)
@@ -68,9 +60,8 @@ class Job(TendenciBaseModel ):
     contact_email = models.CharField(max_length=300)
     contact_website = models.CharField(max_length=300)
  
-    # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
- 
+    entity = models.ForeignKey(Entity,null=True)
     tags = TagField(blank=True)
                  
     #integrate with payment (later)
@@ -82,17 +73,6 @@ class Job(TendenciBaseModel ):
     #non_member_count = models.IntegerField(blank=True)
     #override_price = models.DecimalField(null=True, max_digits=20, decimal_places=2, blank=True)
     #override_userid = models.IntegerField(null=True, blank=True)
-    
-    #don't need
-    #positionlevel = models.CharField(max_length=250) #does not appear to be in use in T4
-    #contactcompanyindustry = models.CharField(max_length=150)
-    #duration = models.CharField(max_length=50) #does not appear to be in use in T4
-    #citizenship_required = models.BooleanField()
-    #security_clearance = models.BooleanField()
-    #expertise = models.TextField(blank=True)
-    #benefits = models.TextField(blank=True)
-    #is_offsite = models.BooleanField(blank=True)
-    #language = models.CharField(max_length=200)
  
     objects = JobManager()
 
