@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from registration.forms import RegistrationForm
 from forms import LoginForm
 from event_logs.models import EventLog
+from site_settings.utils import get_setting
 
 def login(request, form_class=LoginForm, template_name="account/login.html"):
     if request.method == "POST":
@@ -111,6 +112,18 @@ def register(request, success_url=None,
     argument.
     
     """
+    # check if this site allows self registration, if not, redirect to login page
+    allow_self_registration = get_setting('module', 'users', 'selfregistration')
+    # need to delete this block once the get_setting gets fixed.
+#    if allow_self_registration == 'false':
+#        allow_self_registration = False
+#    if allow_self_registration == 'true':
+#        allow_self_registration = True
+    
+    if not allow_self_registration:
+        return HttpResponseRedirect(reverse('auth_login'))
+    
+    
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
         if form.is_valid():
@@ -119,6 +132,22 @@ def register(request, success_url=None,
             # a default value using reverse() will cause circular-import
             # problems with the default URLConf for this application, which
             # imports this file.
+            
+            # add to the default group(s)
+            default_user_groups = (get_setting('module', 'users', 'defaultusergroup')).split(',')
+            if default_user_groups:
+                from user_groups.models import Group, GroupMembership
+                for group_name in default_user_groups:
+                    group = Group.objects.get(name=group_name.strip(), allow_self_add=1, status=1, status_detail='active')
+                    if group:
+                        gm = GroupMembership()
+                        gm.group = group
+                        gm.member = new_user
+                        gm.creator_id = new_user.id
+                        gm.creator_username = new_user.username
+                        gm.owner_id =  new_user.id
+                        gm.owner_username = new_user.username
+                        gm.save()
  
             log_defaults = {
                 'event_id' : 121000,

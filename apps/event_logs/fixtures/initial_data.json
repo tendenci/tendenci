@@ -1,0 +1,569 @@
+[
+    {
+        "pk": 1, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1060100, 
+            "rgb_color": "255,51,255", 
+            "hex_color": "FF33FF"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 990200, 
+            "rgb_color": "70,144,213", 
+            "hex_color": "4690D5"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 587500, 
+            "rgb_color": "51,255,128", 
+            "hex_color": "33FF80"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 164000, 
+            "rgb_color": "51,153,153", 
+            "hex_color": "339999"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 294000, 
+            "rgb_color": "102,255,204", 
+            "hex_color": "66FFCC"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 585000, 
+            "rgb_color": "0,255,51", 
+            "hex_color": "00FF33"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 122000, 
+            "rgb_color": "51,51,255", 
+            "hex_color": "3333FF"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 435000, 
+            "rgb_color": "204,204,153", 
+            "hex_color": "CCCC99"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 163000, 
+            "rgb_color": "51,153,153", 
+            "hex_color": "339999"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 165000, 
+            "rgb_color": "51,153,153", 
+            "hex_color": "339999"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 990400, 
+            "rgb_color": "70,130,185", 
+            "hex_color": "4682B9"
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1060200, 
+            "rgb_color": "221,119,170", 
+            "hex_color": "DD77AA"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 251000, 
+            "rgb_color": "102,153,0", 
+            "hex_color": "669900"
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 431000, 
+            "rgb_color": "204,153,102", 
+            "hex_color": "CC9966"
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 125000, 
+            "rgb_color": "51,153,255", 
+            "hex_color": "3399FF"
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1060500, 
+            "rgb_color": "153,255,0", 
+            "hex_color": "99FF00"
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 181000, 
+            "rgb_color": "51,0,102", 
+            "hex_color": "330066"
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 832000, 
+            "rgb_color": "102,204,102", 
+            "hex_color": "66CC66"
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 252000, 
+            "rgb_color": "102,102,0", 
+            "hex_color": "666600"
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 305100, 
+            "rgb_color": "255,0,51", 
+            "hex_color": "FF0033"
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 162000, 
+            "rgb_color": "51,153,153", 
+            "hex_color": "339999"
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 161000, 
+            "rgb_color": "51,153,153", 
+            "hex_color": "339999"
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 255000, 
+            "rgb_color": "0,204,102", 
+            "hex_color": "00CC66"
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 123000, 
+            "rgb_color": "51,102,255", 
+            "hex_color": "3366FF"
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 253000, 
+            "rgb_color": "102,255,102", 
+            "hex_color": "66FF66"
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 991300, 
+            "rgb_color": "74,158,255", 
+            "hex_color": "4A9EFF"
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 432000, 
+            "rgb_color": "204,204,102", 
+            "hex_color": "CCCC66"
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 124000, 
+            "rgb_color": "51,102,255", 
+            "hex_color": "3366FF"
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 293000, 
+            "rgb_color": "51,255,102", 
+            "hex_color": "33FF66"
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 587400, 
+            "rgb_color": "51,255,153", 
+            "hex_color": "33FF99"
+        }
+    }, 
+    {
+        "pk": 31, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 305300, 
+            "rgb_color": "255,0,51", 
+            "hex_color": "FF0033"
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 990300, 
+            "rgb_color": "93,158,199", 
+            "hex_color": "5D9EC7"
+        }
+    }, 
+    {
+        "pk": 33, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 121000, 
+            "rgb_color": "51,0,255", 
+            "hex_color": "3300FF"
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 434000, 
+            "rgb_color": "204,204,51", 
+            "hex_color": "CCCC33"
+        }
+    }, 
+    {
+        "pk": 35, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 182000, 
+            "rgb_color": "51,0,102", 
+            "hex_color": "330066"
+        }
+    }, 
+    {
+        "pk": 36, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 295000, 
+            "rgb_color": "153,255,204", 
+            "hex_color": "99FFCC"
+        }
+    }, 
+    {
+        "pk": 37, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 833000, 
+            "rgb_color": "102,204,0", 
+            "hex_color": "66CC00"
+        }
+    }, 
+    {
+        "pk": 38, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 991100, 
+            "rgb_color": "37,130,255", 
+            "hex_color": "2582FF"
+        }
+    }, 
+    {
+        "pk": 39, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 991500, 
+            "rgb_color": "111,185,255", 
+            "hex_color": "6FB9FF"
+        }
+    }, 
+    {
+        "pk": 40, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 582000, 
+            "rgb_color": "0,153,102", 
+            "hex_color": "009966"
+        }
+    }, 
+    {
+        "pk": 41, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 305500, 
+            "rgb_color": "140,0,0", 
+            "hex_color": "8C0000"
+        }
+    }, 
+    {
+        "pk": 42, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1060300, 
+            "rgb_color": "204,153,128", 
+            "hex_color": "CC9980"
+        }
+    }, 
+    {
+        "pk": 43, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 305200, 
+            "rgb_color": "255,0,51", 
+            "hex_color": "FF0033"
+        }
+    }, 
+    {
+        "pk": 44, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 990500, 
+            "rgb_color": "46,121,209", 
+            "hex_color": "2E79D1"
+        }
+    }, 
+    {
+        "pk": 45, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 291000, 
+            "rgb_color": "0,255,204", 
+            "hex_color": "00FFCC"
+        }
+    }, 
+    {
+        "pk": 46, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 305400, 
+            "rgb_color": "255,0,51", 
+            "hex_color": "FF0033"
+        }
+    }, 
+    {
+        "pk": 47, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 587100, 
+            "rgb_color": "51,255,230", 
+            "hex_color": "33FFE6"
+        }
+    }, 
+    {
+        "pk": 48, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1060400, 
+            "rgb_color": "170,221,43", 
+            "hex_color": "AADD2B"
+        }
+    }, 
+    {
+        "pk": 49, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 584000, 
+            "rgb_color": "0,255,0", 
+            "hex_color": "00FF00"
+        }
+    }, 
+    {
+        "pk": 50, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 991400, 
+            "rgb_color": "93,172,255", 
+            "hex_color": "5DACFF"
+        }
+    }, 
+    {
+        "pk": 51, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 254000, 
+            "rgb_color": "102,255,51", 
+            "hex_color": "66FF33"
+        }
+    }, 
+    {
+        "pk": 52, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 835000, 
+            "rgb_color": "102,204,153", 
+            "hex_color": "66CC99"
+        }
+    }, 
+    {
+        "pk": 53, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 587300, 
+            "rgb_color": "51,255,179", 
+            "hex_color": "33FFB3"
+        }
+    }, 
+    {
+        "pk": 54, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 183000, 
+            "rgb_color": "51,0,102", 
+            "hex_color": "330066"
+        }
+    }, 
+    {
+        "pk": 55, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 834000, 
+            "rgb_color": "102,204,51", 
+            "hex_color": "66CC33"
+        }
+    }, 
+    {
+        "pk": 56, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 587200, 
+            "rgb_color": "51,255,204", 
+            "hex_color": "33FFCC"
+        }
+    }, 
+    {
+        "pk": 57, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 292000, 
+            "rgb_color": "51,255,204", 
+            "hex_color": "33FFCC"
+        }
+    }, 
+    {
+        "pk": 58, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 583000, 
+            "rgb_color": "0,204,0", 
+            "hex_color": "00CC00"
+        }
+    }, 
+    {
+        "pk": 59, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 831000, 
+            "rgb_color": "102,153,102", 
+            "hex_color": "669966"
+        }
+    }, 
+    {
+        "pk": 60, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 991200, 
+            "rgb_color": "56,144,255", 
+            "hex_color": "3890FF"
+        }
+    }, 
+    {
+        "pk": 61, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 581000, 
+            "rgb_color": "0,153,51", 
+            "hex_color": "009933"
+        }
+    }, 
+    {
+        "pk": 62, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 433000, 
+            "rgb_color": "204,204,0", 
+            "hex_color": "CCCC00"
+        }
+    }, 
+    {
+        "pk": 63, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 990100, 
+            "rgb_color": "46,130,227", 
+            "hex_color": "2E82E3"
+        }
+    }
+]

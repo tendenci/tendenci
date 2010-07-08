@@ -33,7 +33,6 @@ def cache_settings(scope, scope_category):
         'scope_category': scope_category,
     }
     settings = Setting.objects.filter(**filters)
-    
     if settings:
         for setting in settings:
             keys = [SETTING_PRE_KEY, setting.scope, 
@@ -101,6 +100,7 @@ def get_setting(scope, scope_category, name):
                 'scope_category': scope_category,
                 'name': name
             }            
+
             setting = Setting.objects.get(**filters)
             cache_setting(setting.scope, setting.scope_category,setting.name,setting)
         except:
