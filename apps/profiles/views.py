@@ -38,6 +38,7 @@ from perms.utils import is_admin
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
 from site_settings.utils import get_setting
+from profiles.utils import profile_edit_admin_notify
 
 # view profile  
 @login_required 
@@ -93,13 +94,20 @@ def index(request, username="", template_name="profiles/index.html"):
                                                }, 
                               context_instance=RequestContext(request))
    
-@login_required   
+ 
 def search(request, template_name="profiles/search.html"):
+    # check if allow anonymous user search
+    allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
+    allow_user_search = get_setting('module', 'users', 'allowusersearch')
+
+    if request.user.is_anonymous():
+        if not allow_anonymous_search or not allow_user_search:
+            raise Http403
+    
     query = request.GET.get('q', None)
     profiles = Profile.objects.search(query)
     
     if not is_admin(request.user):
-        allow_user_search = get_setting('module', 'users', 'allowusersearch')
         if not allow_user_search:
             # should only be able to view his own record
             profiles = profiles.filter(user=request.user, status=1, status_detail='active')
@@ -265,7 +273,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
             
             # notify ADMIN of update to a user's record
             if get_setting('module', 'users', 'userseditnotifyadmin'):
-                profile_edit_admin_notify(old_user, old_profile, profile)
+                profile_edit_admin_notify(request, old_user, old_profile, profile)
 
             log_defaults = {
                 'event_id' : 122000,
@@ -290,8 +298,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                                               'required_fields_list':required_fields_list}, 
         context_instance=RequestContext(request))
     
-def profile_edit_admin_notify(old_user, old_profile, profile, **kwargs):
-    pass
+
     
 
 def delete(request, id, template_name="profiles/delete.html"):
