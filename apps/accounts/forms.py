@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _, ugettext
 from registration.forms import RegistrationForm
 from profiles.models import Profile
 from registration.models import RegistrationProfile
+from site_settings.utils import get_setting
 
 class RegistrationCustomForm(RegistrationForm):
     first_name = forms.CharField(max_length=100)
@@ -34,6 +35,13 @@ class RegistrationCustomForm(RegistrationForm):
                               country=self.cleaned_data['country'],
                               zipcode=self.cleaned_data['zipcode'],
                               )
+        user_hide_default = get_setting('module', 'users', 'usershidedefault')
+        if user_hide_default:
+            new_profile.hide_in_search = 1
+            new_profile.hide_address = 1
+            new_profile.hide_email = 1
+            new_profile.hide_phone = 1 
+          
         new_profile.creator = new_user
         new_profile.creator_username = new_user.username
         new_profile.owner = new_user
@@ -51,7 +59,19 @@ class LoginForm(forms.Form):
     remember = forms.BooleanField(label=_("Remember Login"), required=False)
 
     user = None
-
+    
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        # check if we need to hide the remember me checkbox
+        # and set the default value for remember me
+        hide_remember_me = get_setting('module', 'users', 'usershiderememberme')
+        remember_me_default_checked = get_setting('module', 'users', 'usersremembermedefaultchecked')
+        
+        if remember_me_default_checked:
+            self.fields['remember'].initial = True
+        if hide_remember_me:
+            self.fields['remember'].widget = forms.HiddenInput()
+           
     def clean(self):
         if self._errors:
             return
