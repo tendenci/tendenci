@@ -34,8 +34,7 @@
 					{% page_options request.user page %}
                 </div>
 			</div>
-
-            <h2><a href="{{ page.object.get_absolute_url }}">{{ page.title }}</a></h2>
+            <h2><a href="{{ page.get_absolute_url }}">{% firstof page.title 'Untitled'%}</a></h2>
             <div class="content">{{ page.content|safe|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ page.create_dt|date:"D d M Y P" }} by {{ page.creator }}</div>
