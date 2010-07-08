@@ -27,7 +27,9 @@
     
 		<div class="profile-wrap">
 			{% users_options request.user profile.user %}
-            <h2><a href="{% url profiles.views.index profile.user.username %}">{{ profile.user.last_name }}{%if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{profile.user.email}})</a></h2>
+            <h2>
+            	<a href="{% url profiles.views.index profile.user.username %}">{{ profile.user.last_name }}{%if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{profile.user.email}})</a>
+            </h2>
            <div class="clear-right"></div>
            
            <div class="profile-avatar-left" style="float: left; padding-right:1em;">
@@ -54,7 +56,7 @@
             </div>
 
             <!-- delete-profile form -->
-            <form name="profile-delete" method="POST" action="{% url profile.delete user.pk %}">
+            <form name="profile-delete" method="POST" action="{% url profile.delete profile.user.pk %}">
                 <input type="hidden" name="action" value="delete">
             </form>
             
