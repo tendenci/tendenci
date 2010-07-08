@@ -5,24 +5,8 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import Manager
 from perms.utils import is_admin
-
-class InvoiceManager(Manager):
-    def create_invoice(self, user, **kwargs):
-        return self.create(title=kwargs.get('title', ''), 
-                           estimate=kwargs.get('estimate', True),
-                           status=kwargs.get('status', True), 
-                           status_detail=kwargs.get('status_detail', 'estimate'),
-                           invoice_object_type=kwargs.get('invoice_object_type', ''),
-                           invoice_object_type_id=kwargs.get('invoice_object_type_id', 0),
-                           subtotal=kwargs.get('subtotal', 0),
-                           total=kwargs.get('total', 0),
-                           balance=kwargs.get('balance', 0),
-                           creator=user, 
-                           creator_username=user.username,
-                           owner=user, 
-                           owner_username=user.username)
+from invoices.managers import InvoiceManager
 
 class Invoice(models.Model):
     guid = models.CharField(max_length=50)

@@ -78,3 +78,9 @@
 	display: inline;
 }
 
+/* group search */
+.t form.search-form input[type="text"] {
+	margin-bottom:10px;
+	padding:5px;
+	width:500px;
+}
