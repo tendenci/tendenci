@@ -35,12 +35,14 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
         context_instance=RequestContext(request))
     
 def search(request, template_name="invoices/search.html"):
+    query = request.GET.get('q', None)
+    invoices = Invoice.objects.search(query)
     if is_admin(request.user):
-        invoices = Invoice.objects.all().order_by('-create_dt')
+        invoices = invoices.order_by('-create_dt')
     else:
         if request.user.is_authenticated():
             from django.db.models import Q
-            invoices = Invoice.objects.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
+            invoices = invoices.objects.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
         else:
             raise Http403
     return render_to_response(template_name, {'invoices': invoices}, 
