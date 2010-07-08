@@ -1,3 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>User Self Add - Admin Notice</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+<p>The following user's account has been updated/modified at {{ SITE_GLOBAL_SITEDISPLAYNAME }}. The details are listed below: </p>
+<table width="100%"  border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="11%"><strong>Name:</strong></td>
+    <td width="89%">{{ profile.user.get_full_name}}</td>
+  </tr>
+</table>
+<p><br>
+The list of updated items include: </p>
+<p>
+
 	<table width="100%"  border="0" cellspacing="0" cellpadding="0">
 			
 	<tr class="bold_body_copy">
@@ -609,7 +629,7 @@
 				</tr>
 	{% endif %}
 				
-	{% if old_profile.language!= profile.language %}
+	{% if old_profile.language != profile.language %}
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
@@ -670,3 +690,12 @@
 	{% endif %}
 	
 </table>
+
+</p>
+<p><br>
+  To view this user's record, click here: <a href="{{ SITE_GLOBAL_SITEURL }}{% url profile profile.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url profile profile.user.username %}</a>  
+ 
+<P>Time submitted:  {% now "D d M Y P" %}</P>
+ 
+</body>
+</html>
