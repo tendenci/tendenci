@@ -139,6 +139,7 @@ class ArticleMeta():
 
         if primary_keywords:
             value = '%s %s' % (value, primary_keywords)
+            value = value.strip()
 
         if object.headline:
             list = [
@@ -148,7 +149,13 @@ class ArticleMeta():
                 'white paper',
                 creator_name,
             ]
-            value = '%s %s %s' % (value, ''.join(list), dynamic_keywords)
+
+            # remove blank items
+            for item in list:
+                if not item.strip():
+                    list.remove(item)
+ 
+            value = '%s %s %s' % (value, ', '.join(list), dynamic_keywords)
 
         else:
             list = [
