@@ -1,5 +1,7 @@
 {% extends "site_base.html" %}
 
-{% block title %}{{ MODULE_NEWS_LABEL }} - {% endblock %}
+{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_NEWS_LABEL 'News' %} for  {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
+{% block meta_description %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_NEWS_LABEL 'News' %} and White Papers for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
+{% block meta_keywords %}{% firstof MODULE_NEWS_LABEL 'News' %},  {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{SITE_GLOBAL_SITEDISPLAYNAME }}, white papers, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }}{% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}
