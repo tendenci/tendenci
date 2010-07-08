@@ -4,7 +4,9 @@
 {% load base_tags %}
 {% load perm_tags %}
 
-{% block title %}{{ block.super }}Search{% endblock %}
+{% block title %}{{ block.super }} Search{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
