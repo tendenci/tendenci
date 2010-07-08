@@ -54,6 +54,8 @@ class GroupMembership(models.Model):
     role = models.CharField(max_length=255, default="", blank=True)
     sort_order =  models.IntegerField(_('Sort Order'), default=0, blank=True)
     
+    # the reason this model doesn't inherit from TendenciBaseModel is
+    # because it cannot have more than two foreignKeys on User
     creator_id = models.IntegerField(default=0, editable=False)
     creator_username = models.CharField(max_length=50, editable=False)
     owner_id = models.IntegerField(default=0, editable=False)   
@@ -64,7 +66,8 @@ class GroupMembership(models.Model):
                                                              ('inactive','Inactive'),),
                                      default='active')
     
-    create_dt = models.DateField(auto_now_add=True, editable=False)
+    create_dt = models.DateTimeField(auto_now_add=True, editable=False)
+    update_dt = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('group', 'member',)
