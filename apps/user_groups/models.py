@@ -72,6 +72,9 @@ class GroupMembership(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True, editable=False)
     update_dt = models.DateTimeField(auto_now=True)
 
+    def __unicode__(self):
+        return self.group.name
+    
     class Meta:
         unique_together = ('group', 'member',)
 
