@@ -9,6 +9,10 @@ from perms.utils import is_admin, is_developer
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
+# this is the list of apps whose permissions will be displayed on the permission edit page
+APPS = ['profiles', 'user_groups', 'articles', 
+        'news', 'pages', 'jobs', 'locations', 
+        'stories', 'actions']
 
 class ProfileForm(TendenciBaseForm):
     first_name = forms.CharField(label=_("First Name"), max_length=100,
@@ -237,8 +241,19 @@ class UserForm(forms.ModelForm):
         
 class UserPermissionForm(forms.ModelForm):
     is_superuser = forms.BooleanField(label=_("Is Admin"), 
-                                      help_text = _("If selected, this user has all permissions without explicitly assigning them."))
+                                      help_text = _("If selected, admin has all permissions without explicitly assigning them."))
     class Meta:
         model = User
         fields= ('is_superuser', 'user_permissions',)
+        
+    def __init__(self, *args, **kwargs):
+        super(UserPermissionForm, self).__init__(*args, **kwargs)
+        # filter out the unwanted permissions,
+        # only display the permissions for the apps in APPS
+        from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Permission
+        content_types = ContentType.objects.filter(app_label__in=APPS)
+        
+        self.fields['user_permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
+    
         
