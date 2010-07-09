@@ -114,7 +114,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
         raise Http403
 
 @login_required
-def edit_meta(request, slug, form_class=MetaForm, template_name="pages/edit-meta.html"):
+def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.html"):
 
     # check permission
     page = get_object_or_404(Page, pk=id)
