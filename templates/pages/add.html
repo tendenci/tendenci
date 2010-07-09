@@ -2,7 +2,7 @@
 {% load page_tags %}
 {% load styled_forms %}
 
-{% block title %}Add Page{% endblock %}
+{% block title %}{% firstof MODULE_PAGE_LABEL 'Page' %} Add{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">

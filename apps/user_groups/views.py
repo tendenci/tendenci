@@ -13,10 +13,12 @@ from perms.utils import is_admin
 from event_logs.models import EventLog
 
 def group_search(request, template_name="user_groups/search.html"):
+    query = request.GET.get('q', None)
+    
     if is_admin(request.user):
-        groups = Group.objects.all()
+        groups = Group.objects.search(query)
     else:
-        groups = Group.objects.filter(show_as_option=1, allow_self_add=1, status=1)
+        groups = Group.objects.search(query).filter(show_as_option=1, allow_self_add=1, status=1)
 
     log_defaults = {
         'event_id' : 164000,

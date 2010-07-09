@@ -73,3 +73,22 @@
 .errorlist{
 		color: red;
 	}
+	
+/* invoice search*/
+.t .t-invoice .t-search .invoice-row{
+	width: 620px;
+	border: 1.5px solid #333;
+	padding: .5px 1px 1px .5px;
+	margin-bottom: 1em;
+}
+.invoice-row-inner{
+	border: 1.5px solid #333;
+}
+.body-copy-yellow{
+	background-color: yellow;
+}
+.t form.search-form input[type="text"] {
+	margin-bottom:10px;
+	padding:5px;
+	width:500px;
+}
