@@ -153,18 +153,20 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
 def groupmembership_add_edit(request, group_slug, user_id=None, 
                              form_class=GroupMembershipForm, 
                              template_name="user_groups/member_add_edit.html"):
-
+    add, edit = None, None
     group = get_object_or_404(Group, slug=group_slug)
-   
+    
     if user_id:
         user = get_object_or_404(User, pk=user_id)
         groupmembership = get_object_or_404(GroupMembership, member=user, group=group)
         if not request.user.has_perm('user_groups.change_groupmembership', groupmembership):
             raise Http403
+        edit = True
     else:
         groupmembership = None
         if not request.user.has_perm('user_groups.add_groupmembership'):
             raise Http403
+        add = True
 
     if request.method == 'POST':
         form = form_class(None, user_id, request.POST, instance=groupmembership)
@@ -176,8 +178,30 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
                 groupmembership.creator_username = request.user.username
             groupmembership.owner_id =  request.user.id
             groupmembership.owner_username = request.user.username
-            
+
             groupmembership.save()
+            if add:
+                log_defaults = {
+                    'event_id' : 221000,
+                    'event_data': '%s (%d) added by %s' % (groupmembership._meta.object_name, groupmembership.pk, request.user),
+                    'description': '%s added' % groupmembership._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': groupmembership,
+                }
+                EventLog.objects.log(**log_defaults)                
+            if edit:
+                log_defaults = {
+                    'event_id' : 222000,
+                    'event_data': '%s (%d) edited by %s' % (groupmembership._meta.object_name, groupmembership.pk, request.user),
+                    'description': '%s edited' % groupmembership._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': groupmembership,
+                }
+                EventLog.objects.log(**log_defaults)
+                            
+            
             return HttpResponseRedirect(group.get_absolute_url())
     else:
 
@@ -194,6 +218,15 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
         raise Http403
     
     if request.method == 'POST':
+        log_defaults = {
+            'event_id' : 223000,
+            'event_data': '%s (%d) deleted by %s' % (groupmembership._meta.object_name, groupmembership.pk, request.user),
+            'description': '%s deleted' % groupmembership._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': groupmembership,
+        }
+        EventLog.objects.log(**log_defaults)
         groupmembership.delete()
         return HttpResponseRedirect(group.get_absolute_url())
     
