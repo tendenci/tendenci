@@ -102,7 +102,7 @@ class PageMeta():
                 if not item.strip():
                     list.remove(item)
  
-            value = '%s %s %s' % (value, ', '.join(list), dynamic_keywords)
+            value = '%s %s, %s' % (value, ', '.join(list), dynamic_keywords)
 
         else:
             list = [
