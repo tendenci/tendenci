@@ -4,7 +4,7 @@
 {% load base_tags %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{{ job.get_title }}{% endblock %}
+{% block title %}{{ job.get_title }}{% endblock %}
 {% block meta_description %}{{ job.get_description }}{% endblock %}
 {% block meta_keywords %}{{ job.get_keywords }}{% endblock %}
 

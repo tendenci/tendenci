@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from base.fields import SlugField
 from perms.models import TendenciBaseModel
 from entities.models import Entity
+from user_groups.managers import GroupManager
 
 class Group(TendenciBaseModel):
     name = models.CharField(_('Group Name'), max_length=255, unique=True)
@@ -28,6 +29,8 @@ class Group(TendenciBaseModel):
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
+    
+    objects = GroupManager()
 
     class Meta:
         permissions = (("view_group","Can view group"),)
@@ -54,6 +57,8 @@ class GroupMembership(models.Model):
     role = models.CharField(max_length=255, default="", blank=True)
     sort_order =  models.IntegerField(_('Sort Order'), default=0, blank=True)
     
+    # the reason this model doesn't inherit from TendenciBaseModel is
+    # because it cannot have more than two foreignKeys on User
     creator_id = models.IntegerField(default=0, editable=False)
     creator_username = models.CharField(max_length=50, editable=False)
     owner_id = models.IntegerField(default=0, editable=False)   
@@ -64,7 +69,8 @@ class GroupMembership(models.Model):
                                                              ('inactive','Inactive'),),
                                      default='active')
     
-    create_dt = models.DateField(auto_now_add=True, editable=False)
+    create_dt = models.DateTimeField(auto_now_add=True, editable=False)
+    update_dt = models.DateTimeField(auto_now=True)
 
     class Meta:
         unique_together = ('group', 'member',)

@@ -2,7 +2,7 @@
 {% load article_tags %}
 {% load styled_forms %}
 
-{% block title %}{{ block.super }}Add{% endblock %}
+{% block title %}{% firstof MODULE_ARTICLES_LABEL 'Article' %} Add{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">

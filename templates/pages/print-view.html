@@ -1,7 +1,9 @@
 {% extends "pages/base-print.html" %}
 {% load page_tags %}
 
-{% block title %}{{ block.super }}Print - {{ page.get_title }}{% endblock %}
+{% block title %}{{ page.get_title }}{% endblock %}
+{% block meta_description %}{{ page.get_description }}{% endblock %}
+{% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">

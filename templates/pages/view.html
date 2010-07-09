@@ -3,7 +3,7 @@
 {% load tagging_tags %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{{ page.get_title }}{% endblock %}
+{% block title %}{{ page.get_title }}{% endblock %}
 {% block meta_description %}{{ page.get_description }}{% endblock %}
 {% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
 
