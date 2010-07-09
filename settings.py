@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     'stories',
     'pages',
     'photos',
+#    'events',
     'base',
     'entities',
     'locations',

@@ -1,0 +1,5 @@
+{% extends "site_base.html" %}
+
+{% block title %}{% firstof MODULE_EVENTS_LABEL 'Event' %} - {% endblock %}
+
+{% block messages %}{{ block.super }}{% endblock %}
