@@ -64,26 +64,23 @@ class JobMeta():
         object = self.object
 
         ### Assign variables -----------------------  
-        dynamic_keywords = generate_meta_keywords(object.body)
+        dynamic_keywords = generate_meta_keywords(object.description)
         site_name = get_setting('site','global','sitedisplayname')
+        site_name = site_name.strip()
         
         #T4 used title, experience, skills, education and description
 
-        ### Build string -----------------------
-        value = ''
-        value = dynamic_keywords
-
-        #list = [
-        #    site_name,
-        #    'employment opportunity',
-        #    'jobs',
-        #]
+        list = [
+            site_name,
+            'employment opportunity',
+            'jobs',
+        ]
 
         # remove blank items
-        #for item in list:
-        #    if not item.strip():
-        #        list.remove(item)
-        #    value = '%s %s %s' % (value, ', '.join(list), dynamic_keywords)
+        for item in list:
+            if not item.strip():
+                list.remove(item)
+            value = '%s, %s' % (', '.join(list), dynamic_keywords)
 
         return value
 
