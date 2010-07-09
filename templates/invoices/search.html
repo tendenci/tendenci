@@ -5,36 +5,27 @@
 {% block title %}{{ block.super }}Invoice Search{% endblock %}
 
 {% block extra_head %}
-<style>
-.invoice-row{
-	width: 620px;
-	border: 1.5px solid #333;
-	padding: .5px 1px 1px .5px;
-	margin-bottom: 1em;
-}
-.invoice-row-inner{
-	border: 1.5px solid #333;
-}
-.body-copy-yellow{
-	background-color: yellow;
-}
-</style>
+{{ block.super }}
+<link rel="stylesheet" href="/site_media/static/css/invoices.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
+<div class="t-invoice">
+<div class="t-search">
  {% invoice_nav  %}
 <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice Search</h1>
-
+{% invoice_search %}
 {% autopaginate invoices 10 %}
 <div class="invoices-wrap">
     {% for invoice in invoices %}
+    {% with invoice.object as invoice %}
     	<div class="invoice-row">
 	    	<div class="invoice-row-inner">
 				{% invoices_search_results_line request invoice %}
 			</div>
 		</div>
-		
+	{% endwith %}	
 	{% empty %}
 		<div>0 Results Found</div>
 	{% endfor %}
@@ -42,6 +33,8 @@
 
 
  {% paginate %}
+ </div>
+</div>
 </div>
 
 {% endblock %}

@@ -9,6 +9,10 @@ from perms.utils import is_admin, is_developer
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
+# this is the list of apps whose permissions will be displayed on the permission edit page
+APPS = ['profiles', 'user_groups', 'articles', 
+        'news', 'pages', 'jobs', 'locations', 
+        'stories', 'actions']
 
 class ProfileForm(TendenciBaseForm):
     first_name = forms.CharField(label=_("First Name"), max_length=100,
@@ -25,22 +29,29 @@ class ProfileForm(TendenciBaseForm):
     url = forms.CharField(label=_("Web Site"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'40'}))
     company = forms.CharField(label=_("Company"), max_length=100, required=False,
+                              error_messages={'required': 'Company is a required field.'},
                                widget=forms.TextInput(attrs={'size':'45'}))
     department = forms.CharField(label=_("Department"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'35'}))
     address = forms.CharField(label=_("Address"), max_length=150, required=False,
+                              error_messages={'required': 'Address is a required field.'},
                                widget=forms.TextInput(attrs={'size':'45'}))
     address2 = forms.CharField(label=_("Address2"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'40'}))
     city = forms.CharField(label=_("City"), max_length=50, required=False,
+                           error_messages={'required': 'City is a required field.'},
                                widget=forms.TextInput(attrs={'size':'15'}))
     state = forms.CharField(label=_("State"), max_length=50, required=False,
+                            error_messages={'required': 'State is a required field.'},
                                widget=forms.TextInput(attrs={'size':'5'}))
     zipcode = forms.CharField(label=_("Zipcode"), max_length=50, required=False,
+                              error_messages={'required': 'Zipcode is a required field.'},
                                widget=forms.TextInput(attrs={'size':'10'}))
     country = forms.CharField(label=_("Country"), max_length=50, required=False,
+                              error_messages={'required': 'Country is a required field.'},
                                widget=forms.TextInput(attrs={'size':'15'}))
     mailing_name = forms.CharField(label=_("Mailing Name"), max_length=120, required=False,
+                                   error_messages={'required': 'Mailing name is a required field.'},
                                widget=forms.TextInput(attrs={'size':'30'}))
     
     username = forms.RegexField(regex=r'^\w+$',
@@ -116,7 +127,7 @@ class ProfileForm(TendenciBaseForm):
                 
                 )
         
-    def __init__(self, user_current=None, user_this=None, *args, **kwargs):
+    def __init__(self, user_current=None, user_this=None, required_fields_list=None, *args, **kwargs):
         super(ProfileForm, self).__init__(user_current, *args, **kwargs)
         self.user_this = user_this
         
@@ -149,6 +160,15 @@ class ProfileForm(TendenciBaseForm):
             if is_admin(user_current) and not is_developer(user_current):
                 self.fields['security_level'].choices=(('user','User'),
                                                             ('admin','Admin'),)
+        # we make first_name, last_name, email, username and password as required field regardless
+        # the rest of fields will be decided by the setting - UsersRequiredFields
+        if required_fields_list:
+            for field in required_fields_list:
+                for myfield in self.fields:
+                    if field == self.fields[myfield].label:
+                        self.fields[myfield].required = True
+                        continue
+            
         
     def clean_username(self):
         """
@@ -221,8 +241,19 @@ class UserForm(forms.ModelForm):
         
 class UserPermissionForm(forms.ModelForm):
     is_superuser = forms.BooleanField(label=_("Is Admin"), 
-                                      help_text = _("If selected, this user has all permissions without explicitly assigning them."))
+                                      help_text = _("If selected, admin has all permissions without explicitly assigning them."))
     class Meta:
         model = User
         fields= ('is_superuser', 'user_permissions',)
+        
+    def __init__(self, *args, **kwargs):
+        super(UserPermissionForm, self).__init__(*args, **kwargs)
+        # filter out the unwanted permissions,
+        # only display the permissions for the apps in APPS
+        from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Permission
+        content_types = ContentType.objects.filter(app_label__in=APPS)
+        
+        self.fields['user_permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
+    
         
