@@ -1,8 +1,18 @@
 {% load tagging_tags %}
+{% load category_tags %}
+
 {% firstof object.title "Untitled" %}
 by {{ object.creator }}
 by {{ object.object.creator.get_profile.display_name }}
 {{ object.content }}
+{% get_category_for_object object as category %}
+{% if category %}
+category:{{ category }}
+{% endif %}
+{% get_sub_category_for_object object as sub_category %}
+{% if sub_category %}
+sub_category:{{ sub_category }}
+{% endif %}
 {% tags_for_object object as tags %}
 {% for tag in tags %}
 {{ tag }}
