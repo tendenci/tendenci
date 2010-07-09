@@ -1,0 +1,74 @@
+{% extends "events/base.html" %}
+{% load pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url event.feed %}" />
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% event_nav request.user %}
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL 'Event' %} Search</h1>  
+
+	{% event_search %}
+    {% autopaginate events 10 %}
+	
+	<div class="events-wrap">
+    {% for event in events %}
+		{% with event.object as event %}
+    	{% has_perm user events.view_event event as can_view %}
+    	{% if can_view %}
+		<div class="event-wrap-search">
+			<div class="options">
+                <div class="quick-options">
+					{% event_options request.user event %} 	       
+                </div>
+			</div>
+            <h2><a href="{{ event.get_absolute_url }}">{% firstof event.title "Untitled" %}</a></h2>
+            <div class="content">{{ event.description|safe|striptags|truncatewords:20 }}</div>
+			<div class="meta">
+            	<div class="submitted">Created on {{ event.create_dt|date:"D d M Y P" }} by {{ event.creator }}</div>
+            </div>
+
+            <!-- delete-event form -->
+            <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+		</div>
+		{% endif %}
+		{% endwith %}
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_object = confirm("Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?");	// confirm
+				if(delete_object) $('form[name="event-delete"]').submit()
+				return false;	// cancel
+			});
+		});
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+	</script>
+{% endblock %}
