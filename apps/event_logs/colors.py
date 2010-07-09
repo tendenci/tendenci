@@ -72,6 +72,13 @@ colors = {
     '164000':'339999', # search 
     '165000':'339999', # view    
 
+    # group relationship
+    '221000':'00CCFF', # add
+    '222000':'00CCFF', # edit
+    '223000':'00CCFF', # delete
+    '224000':'00CCFF', # search 
+    '225000':'00CCFF', # view   
+    
     # locations
     '831000':'669966', # add
     '832000':'66CC66', # edit
