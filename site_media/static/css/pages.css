@@ -45,6 +45,9 @@
 	padding: 5px;
 	white-space: nowrap;
 }
+.t .view-options {
+	margin: 10px 0;
+}
 
 .t .quick-options {
 	float: right;
