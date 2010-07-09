@@ -5,26 +5,26 @@
 	margin: 0 auto 10px 0;
 }
 
-.t ul.pages-nav {
+.t ul.events-nav {
 	margin: 0; padding: 0;
 	list-style-type: none;
 	margin-bottom: 20px;
 }
-.t ul.pages-nav li {
+.t ul.events-nav li {
 	display: inline;
 }
 
-.t .pages-wrap {
+.t .events-wrap {
 	margin-bottom: 20px;
 }
 
-.t .page-wrap {
+.t .event-wrap {
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
 }
 
-.t .pages-wrap .page-wrap-search {
+.t .events-wrap .event-wrap-search {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -32,10 +32,10 @@
 	background-color: white;
 }
 
-.t .pages-wrap .page-wrap h2 {
+.t .events-wrap .event-wrap h2 {
 	width: 85%;
 }
-.t .pages-wrap .page-wrap .content {
+.t .events-wrap .event-wrap .content {
 	margin-bottom: 10px;
 }
 .t .options {
@@ -44,9 +44,6 @@
 	top: 0; right: 0;
 	padding: 5px;
 	white-space: nowrap;
-}
-.t .view-options {
-	margin: 10px 0;
 }
 
 .t .quick-options {
@@ -87,21 +84,63 @@
 	cursor: pointer;
 }
 
-/* Page View
+/* Article View
  ------------------------- */
-.t .page-wrap .meta, .t .page-wrap-search .meta {
+.t .event-wrap .meta, .t .event-wrap-search .meta {
 	border: 1px solid silver;
 	padding: 10px;
 	background-color: #F7F7F7;
 	margin-top: 10px;
 }
-.t .page-wrap .meta .tags {
+.t .event-wrap .meta .tags {
 	margin-bottom: 5px;
 }
 
-/* Page Print View
+/* form */
+div.forms div.form-field div.id_release_dt .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_first_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_last_name .field input {
+	width: 30%;
+}
+
+div.forms div.form-field div.id_phone .field input {
+	width: 18%;
+}
+
+div.forms div.form-field div.id_fax .field input {
+	width: 18%;
+}
+
+/* start_dt */
+div.forms div.form-field 
+div.id_start_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+div.forms div.form-field 
+div.id_start_dt .field input#id_start_dt_1 {
+	width: 80px;
+}
+/* end_dt */
+div.forms div.form-field 
+div.id_end_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+div.forms div.form-field 
+div.id_end_dt .field input#id_end_dt_1 {
+	width: 80px;
+}
+
+/* Article Print View
  ------------------------- */
-.t-print .page-wrap {
+.t-print .event-wrap {
 	width: 8in;
 	padding: .25in;
 	margin: 20px 0;
@@ -124,9 +163,10 @@
 	.hide-this {
 		display: none;
 	}
-	.t-print .page-wrap {
+	.t-print .event-wrap {
 		width: 100%;
 		border: none;
 		padding: 0; margin: 0;
 	}
 }
+

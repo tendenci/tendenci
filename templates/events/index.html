@@ -1,0 +1,9 @@
+<h1>{% firstof MODULE_EVENTS_LABEL 'Events' %} Index Page</h1>
+
+<ul>
+	<li><a href="{% url event.search %}">Search</a></li>
+	<li><a href="{% url event.view %}">View</a></li>
+	<li><a href="{% url event.print_view %}">Print View</a></li>
+	<li><a href="{% url event.edit %}">Edit</a></li>
+	<li><a href="{% url event.delete %}">Delete</a></li>
+</ul>

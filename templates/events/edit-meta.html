@@ -1,28 +1,27 @@
-{% extends "news/base.html" %}
-{% load news_tags %}
+{% extends "events/base.html" %}
+{% load event_tags %}
 {% load styled_forms %}
 
 {% block title %}{{ block.super }}Edit Meta Information{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
 
-    {% news_nav user %}
-    <h1>{% firstof MODULE_NEWS_LABEL 'News' %} Meta Information for<br />
-    {{ news.headline }}</h1>
+    {% event_nav user %}
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} Meta Information for<br />
+    {{ event.title }}</h1>
 
-    <div class="news-wrap">
+    <div class="event-wrap">
 		<div class="options">
              <div class="quick-options">
-				{% news_options request.user news %} 	       
+				{% event_options request.user event %} 	       
              </div>
 		</div>
-    
-    	<form action="{% url news.edit.meta news.pk %}" method="post">
+    	<form action="{% url event.edit.meta event.pk %}" method="post">
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />
@@ -36,11 +35,10 @@
 {% block extra_body %}
     <script type="text/javascript">
 		$(document).ready(function(){
-
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_news = confirm("Permenantly delete {% firstof MODULE_NEWS_LABEL 'News' %}?");	// confirm
-				if(delete_news) $(this).parents('.news-wrap').find('form[name="news-delete"]').submit() // delete: if OK
+				var delete_event = confirm('Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?');	// confirm
+				if(delete_event) $('.t').find('form[name="event-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});
