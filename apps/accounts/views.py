@@ -134,11 +134,32 @@ def register(request, success_url=None,
             # imports this file.
             
             # add to the default group(s)
-            default_user_groups = (get_setting('module', 'users', 'defaultusergroup')).split(',')
+            default_user_groups =[g.strip() for g in (get_setting('module', 'users', 'defaultusergroup')).split(',')]
             if default_user_groups:
                 from user_groups.models import Group, GroupMembership
+                from django.db.models import Q
                 for group_name in default_user_groups:
-                    group = Group.objects.get(name=group_name.strip(), allow_self_add=1, status=1, status_detail='active')
+                    groups = Group.objects.filter(Q(name=group_name) | Q(label=group_name)).filter(allow_self_add=1, status=1, status_detail='active')
+                    if groups:
+                        group = groups[0]
+                    else:
+                        # group doesnot exist, so create the group
+                        group = Group()
+                        group.name  = group_name
+                        group.label = group_name
+                        group.type = 'distribution'
+                        group.show_as_option = 1
+                        group.allow_self_add = 1
+                        group.allow_self_remove = 1
+                        group.creator = new_user
+                        group.creator_username = new_user.username
+                        group.owner =  new_user
+                        group.owner_username = new_user.username
+                        try:
+                            group.save()
+                        except:
+                            group = None
+                        
                     if group:
                         gm = GroupMembership()
                         gm.group = group

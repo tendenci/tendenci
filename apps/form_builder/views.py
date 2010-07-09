@@ -10,7 +10,7 @@ from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from contacts.models import Contact, Address, Phone, Email, URL
 from form_builder.forms import ContactForm
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import User, AnonymousUser
 
 def index(request, form_class=ContactForm, template_name="form.html"):
 
@@ -95,12 +95,20 @@ def index(request, form_class=ContactForm, template_name="form.html"):
             msg = EmailMessage(subject, body, sender, recipients)
             msg.content_subtype = 'html'
             msg.send(fail_silently=True)
+            
+            user = User.objects.filter(email=email)[0]
+            if user:
+                event_user = user
+                event_id = 125115
+            else:
+                event_user = AnonymousUser()
+                event_id = 125114
 
             log_defaults = {
-                'event_id' : 587100,
-                'event_data': '%s (%d) added by %s' % (contact._meta.object_name, contact.pk, email),
+                'event_id' : event_id,
+                'event_data': 'Contact Form (id:%d) submitted by %s' % (contact.pk, email),
                 'description': '%s added' % contact._meta.object_name,
-                'user': AnonymousUser(),
+                'user': event_user,
                 'request': request,
                 'instance': contact,
             }

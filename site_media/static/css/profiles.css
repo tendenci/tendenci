@@ -503,3 +503,11 @@ div.forms div.form-field div.id_ssn .field input {
 .errorlist li{
 	list-style: none;
 }
+
+/* edit perms */
+ .t .t-profile .t-perm h2{
+  	font-size: 1.4em;
+  }
+  .t .t-profile .t-perm .field-wrapper{
+  	margin: 1em 0;
+  }
