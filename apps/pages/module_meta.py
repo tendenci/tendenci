@@ -12,17 +12,10 @@ class PageMeta():
         object = self.object
 
         ### Assign variables -----------------------  
-        primary_keywords = get_setting('site','global','siteprimarykeywords')
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
         category = Category.objects.get_for_object(object, 'category')
         subcategory = Category.objects.get_for_object(object, 'subcategory')
-
-        creator_name = '%s %s' % (
-            object.creator.first_name, 
-            object.creator.last_name
-        )
-        creator_name = creator_name.strip()
 
         value = ''
         
@@ -38,7 +31,7 @@ class PageMeta():
         value = value.strip()
         
         if geo_location:
-            value = '%s in %s' % (value, geo_location)
+            value = '%s %s' % (value, geo_location)
 
         return value
 
@@ -46,21 +39,12 @@ class PageMeta():
         object = self.object
 
         ### Assign variables -----------------------  
-        primary_keywords = get_setting('site','global','siteprimarykeywords')
         category = Category.objects.get_for_object(object, 'category')
         subcategory = Category.objects.get_for_object(object, 'subcategory')
         site_name = get_setting('site','global','sitedisplayname')
         geo_location = get_setting('site','global','sitegeographiclocation')
-        creator_name = '%s %s' % (
-            object.creator.first_name, 
-            object.creator.last_name
-        )
-        creator_name = creator_name.strip()
-
-        if object.summary:
-            content = object.summary
-        else:
-            content = object.body
+       
+        content = object.content
 
         content = strip_tags(content) #strips HTML tags
         content = unescape_entities(content)
@@ -68,24 +52,21 @@ class PageMeta():
         content = truncate_words(content, 50) # ~ about 250 chars
 
         ### Build string -----------------------
-        value = object.headline
+        value = object.title
 
-        if creator_name:
-            value = '%s %s' % (value, creator_name)
+        value = '%s - %s' % (value, content)
 
-        value = '%s : %s' % (value, content)
-
-        if primary_keywords:
-            value = '%s %s' % (value, primary_keywords)
+        if site_name:
+            value = '%s %s' % (value, site_name)
         else:
             if category:
-                value = '%s %s' % (value, category)
+                value = '%s, %s' % (value, category)
             if category and subcategory:
-                value = '%s : %s' % (value, subcategory)
+                value = '%s, %s' % (value, subcategory)
 
-            value = '%s news' % value
+            value = '%s ' % value
 
-        value = '%s News and Press Releases for %s %s' % (
+        value = '%s %s %s' % (
             value, site_name, geo_location)
 
         value = value.strip()
@@ -96,16 +77,11 @@ class PageMeta():
         object = self.object
 
         ### Assign variables -----------------------  
-        dynamic_keywords = generate_meta_keywords(object.body)
+        dynamic_keywords = generate_meta_keywords(object.content)
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         secondary_keywords = get_setting('site','global','sitesecondarykeywords')
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
-
-        creator_name = '%s %s' % (
-            object.creator.first_name, 
-            object.creator.last_name
-        )
 
         ### Build string -----------------------
         value = ''
@@ -114,13 +90,11 @@ class PageMeta():
             value = '%s %s' % (value, primary_keywords)
             value = value.strip()
 
-        if object.headline:
+        if object.title:
             list = [
-                'News',
-                geo_location,
                 site_name,
-                'white paper',
-                creator_name,
+                geo_location,
+                object.title
             ]
 
             # remove blank items
@@ -132,10 +106,9 @@ class PageMeta():
 
         else:
             list = [
-                'News',
-                geo_location,
                 site_name,
-                'white paper',
+                geo_location,
+                primary_keywords,
                 secondary_keywords,
             ]
             value = '%s %s' % (value, ''.join(list))
