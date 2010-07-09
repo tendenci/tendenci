@@ -6,32 +6,66 @@ from django.utils.text import truncate_words
 
 from categories.models import Category
 
-class PageMeta():
-
+class EventMeta():
+    """
+    SEO specific tags carefully constructed follow.  These must *NOT* be perfect
+    but rather should be strong. - ES
+    
+    create a search engine friendly html TITLE tag for the page
+    - we want similar phrases but NOT the exact same between TITLE and META tags
+    - It MUST produce the exact same result if the spider returns but must also differ
+    by site for sites that feed from the same central data
+    """ 
     def get_title(self):
         object = self.object
 
         ### Assign variables -----------------------  
+        primary_keywords = get_setting('site','global','siteprimarykeywords')
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
         category = Category.objects.get_for_object(object, 'category')
         subcategory = Category.objects.get_for_object(object, 'subcategory')
 
+        creator_name = '%s %s' % (
+            object.creator.first_name, 
+            object.creator.last_name
+        )
+        creator_name = creator_name.strip()
+
+        ### Build string -----------------------
+        value = '%s - %s' % (object.headline, object.release_dt)
+        value = value.strip()
+
         value = ''
-        
-        # start w/ title
-        value = '%s - %s' % (object.title, site_name)
-        value = value.strip()
 
-        if category:
-            value = '%s %s' % (value, category)
-        if category and subcategory:
-            value = '%s : %s' % (value, subcategory)
+        # start w/ headline
+        if object.headline:
+            value += object.headline
 
-        value = value.strip()
-        
+        # contact release
+        if object.headline and object.release_dt:
+            value += ' - %s' % object.release_dt.strftime('%m-%d-%Y')
+        elif object.release_dt:
+            value += object.release_dt.strftime('%m-%d-%Y')
+
+        # primary keywords OR category/subcategory
+        if primary_keywords:
+            value = '%s : %s' % (value, primary_keywords)
+        else:
+            if category:
+                value = '%s %s' % (value, category)
+            if category and subcategory:
+                value = '%s : %s' % (value, subcategory)
+
+        value = '%s event' % value
+
+        if creator_name:
+            value = '%s contact: %s' % (value, creator_name)
+
+        value = '%s events for %s' % (value, site_name)
+
         if geo_location:
-            value = '%s %s' % (value, geo_location)
+            value = '%s in %s' % (value, geo_location)
 
         return value
 
@@ -39,12 +73,21 @@ class PageMeta():
         object = self.object
 
         ### Assign variables -----------------------  
+        primary_keywords = get_setting('site','global','siteprimarykeywords')
         category = Category.objects.get_for_object(object, 'category')
         subcategory = Category.objects.get_for_object(object, 'subcategory')
         site_name = get_setting('site','global','sitedisplayname')
         geo_location = get_setting('site','global','sitegeographiclocation')
-       
-        content = object.content
+        creator_name = '%s %s' % (
+            object.creator.first_name, 
+            object.creator.last_name
+        )
+        creator_name = creator_name.strip()
+
+        if object.summary:
+            content = object.summary
+        else:
+            content = object.body
 
         content = strip_tags(content) #strips HTML tags
         content = unescape_entities(content)
@@ -52,21 +95,24 @@ class PageMeta():
         content = truncate_words(content, 50) # ~ about 250 chars
 
         ### Build string -----------------------
-        value = object.title
+        value = object.headline
 
-        value = '%s - %s' % (value, content)
+        if creator_name:
+            value = '%s %s' % (value, creator_name)
 
-        if site_name:
-            value = '%s %s' % (value, site_name)
+        value = '%s : %s' % (value, content)
+
+        if primary_keywords:
+            value = '%s %s' % (value, primary_keywords)
         else:
             if category:
-                value = '%s, %s' % (value, category)
+                value = '%s %s' % (value, category)
             if category and subcategory:
-                value = '%s, %s' % (value, subcategory)
+                value = '%s : %s' % (value, subcategory)
 
-            value = '%s ' % value
+            value = '%s event' % value
 
-        value = '%s %s %s' % (
+        value = '%s Events and White Papers for %s %s' % (
             value, site_name, geo_location)
 
         value = value.strip()
@@ -77,11 +123,16 @@ class PageMeta():
         object = self.object
 
         ### Assign variables -----------------------  
-        dynamic_keywords = generate_meta_keywords(object.content)
+        dynamic_keywords = generate_meta_keywords(object.body)
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         secondary_keywords = get_setting('site','global','sitesecondarykeywords')
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
+
+        creator_name = '%s %s' % (
+            object.creator.first_name, 
+            object.creator.last_name
+        )
 
         ### Build string -----------------------
         value = ''
@@ -90,11 +141,13 @@ class PageMeta():
             value = '%s %s' % (value, primary_keywords)
             value = value.strip()
 
-        if object.title:
+        if object.headline:
             list = [
-                site_name,
+                'Events',
                 geo_location,
-                object.title
+                site_name,
+                'white paper',
+                creator_name,
             ]
 
             # remove blank items
@@ -106,9 +159,10 @@ class PageMeta():
 
         else:
             list = [
-                site_name,
+                'Events',
                 geo_location,
-                primary_keywords,
+                site_name,
+                'white paper',
                 secondary_keywords,
             ]
             value = '%s %s' % (value, ''.join(list))
@@ -130,5 +184,6 @@ class PageMeta():
             if object.meta and object.meta.keywords: return object.meta.keywords
             else: return self.get_keywords()
         return ''
+    
     
     

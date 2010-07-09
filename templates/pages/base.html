@@ -1,5 +1,7 @@
 {% extends "site_base.html" %}
 
-{% block title %}{% firstof MODULE_PAGES_LABEL 'Pages' %} - {% endblock %}
+{% block title %}{{SITE_GLOBAL_SITEDISPLAYNAME }} - {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
+{% block meta_description %}{{SITE_GLOBAL_SITEDISPLAYNAME }} - {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
+{% block meta_keywords %}{{SITE_GLOBAL_SITEDISPLAYNAME }} - {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }}{% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}
