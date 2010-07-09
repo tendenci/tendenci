@@ -2,7 +2,7 @@
 {% load page_tags %}
 {% load styled_forms %}
 
-{% block title %}{{ block.super }}Edit Meta Information{% endblock %}
+{% block title %}{% firstof MODULE_PAGE_LABEL 'Page' %} Edit Meta Information{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">

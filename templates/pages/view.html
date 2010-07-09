@@ -3,7 +3,7 @@
 {% load tagging_tags %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{{ page.get_title }}{% endblock %}
+{% block title %}{{ page.get_title }}{% endblock %}
 {% block meta_description %}{{ page.get_description }}{% endblock %}
 {% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
 
@@ -15,20 +15,13 @@
 {% tags_for_object page as tags %}
 
 <div class="t">
-    <h1>Pages View Page</h1>
-    
-    {% page_nav request.user page %}
 
     <div class="page-wrap">
 
-        <div class="options">
-            <div class="quick-options">
-				{% page_options request.user page %}
-            </div>
-        </div>
-
-
+		{% if page.title %}
         <h2>{{ page.title }}</h2>
+		{% endif %}
+
         <div class="content">{{ page.content|safe }}</div>
         <div class="meta">
 			<div class="categories">
@@ -55,6 +48,13 @@
 			by {% firstof page.creator.get_profile.display_name page.creator %}</div>
 
         </div>
+
+        <div class="view-options">
+            <div class="quick-options">
+				{% page_options request.user page %}
+            </div>
+        </div>
+
     </div>
 
 </div>

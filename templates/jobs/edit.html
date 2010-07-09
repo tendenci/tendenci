@@ -2,7 +2,7 @@
 {% load job_tags %}
 {% load styled_forms %}
 
-{% block title %}{{ block.super }}Edit{% endblock %}
+{% block title %}{% firstof MODULE_JOBS_LABEL 'Job' %} Edit{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="/site_media/static/css/forms.css">
