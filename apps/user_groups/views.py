@@ -11,6 +11,7 @@ from user_groups.forms import GroupForm, GroupMembershipForm, GroupPermissionFor
 from base.http import Http403
 from perms.utils import is_admin
 from event_logs.models import EventLog
+#from perms.decorators import PageSecurityCheck
 
 def group_search(request, template_name="user_groups/search.html"):
     query = request.GET.get('q', None)
