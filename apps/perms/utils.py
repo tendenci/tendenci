@@ -42,4 +42,3 @@ def is_developer(user):
 
 def get_administrators():
     return User.objects.filter(is_active=True,is_staff=True)
-    
