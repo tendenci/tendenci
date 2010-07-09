@@ -84,3 +84,11 @@
 	padding:5px;
 	width:500px;
 }
+
+/* edit perms */
+ .t .t-group .t-perm h2{
+  	font-size: 1.4em;
+  }
+  .t .t-group .t-perm .field-wrapper{
+  	margin: 1em 0;
+  }
