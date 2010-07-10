@@ -21,12 +21,65 @@
 
 {% block body %}
 <div class="t">
-{% user_group_nav request.user %}
+
+	{% user_group_nav request.user %}
+
 	<div class="quick-options">
-		{% user_group_options request.user group %} 
+		{% user_group_options request.user group %}
 	</div>
-<h1>{{ group.name }}</h1>
- <div class="clear-right"></div>
+	
+	<h1>{{ group.name }}</h1>
+
+	<div class="column-left">
+		
+		<div class="box">
+			<h2>Group Members</h2>
+			<div class="info">
+				<p>This group currently has {{ count_members }} members.</p>
+				<p><a href="">View all members</a>. <a href="">View editors only</a></p>
+				<p><a href="">Add/Remove Members of this Group</a></p>
+				<p><a href="">Export members</a> to a CSV(excel) or XML.</p>
+				<p class="small">Note: this requires Admin rights and the Authentication String</p>
+			</div>
+		</div>
+		<div class="box">
+			<h2>Group Permissions</h2>
+			<div class="info">
+				<p>Group Type: {{ group.type|capfirst }}</p>
+				<p>This group is displayed as an option in the Users Module</p>
+				<p>Allow self Add? {{ group.allow_self_add }}</p>
+				<p>Allow self Remove? {{ group.allow_self_remove }}</p>
+				<p><a href="{% url group.edit_perms group.pk %}">Edit Security Permissions for Group Members</a></p>
+			</div>
+		</div>
+		<div class="box">
+			<h2>Module Displays</h2>
+			<div class="info"></div>
+		</div>
+		
+	</div>
+	<div class="column-right">
+
+		<div class="box">
+			<h2>Technical Information</h2>
+			<div class="info">
+				<p>Usergroup ID: {{ group.pk }}</p>
+				<p>Created: {{ group.create_dt }}</p>
+				<p>Owner: <a href="{{ group.owner.get_absolute_url }}">{{ group.owner }}</a> (ID: {{ group.owner.pk }}) </p>
+				<p>Entity: {{ group.entity }}</p>
+				<p>Multilevel: {{ group.multi_level }}</p>
+				<p>Status: {{ group.status }}<p>
+			</div>
+		</div>
+		<div class="box">
+			<h2>Group Contact</h2>
+			<div class="info">
+				<p>Emails regarding activity in this group will be sent to: xxx</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="clear"></div>
  
 {% if not groupmemberships %}
 <p>This group has no members</p>

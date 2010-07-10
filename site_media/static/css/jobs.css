@@ -1,9 +1,6 @@
 .t {
 	width: 90%;
 }
-.t h2 {
-	margin: 0 auto 10px 0;
-}
 
 .t ul.jobs-nav {
 	margin: 0; padding: 0;
@@ -66,9 +63,6 @@
 	display: none;
 }
 
-.t h1 {
-	margin: 0;
-}
 .t .back-to-search {
 	margin-bottom: 20px;
 }
@@ -129,6 +123,37 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 	margin-bottom: 5px;
 }
 
+.section-block {
+	margin-bottom: 10px;
+}
+.section-block .label {
+	font-weight: bold;
+}
+.section-block .value {
+	margin-left: 20px;
+}
+
+.section-line {
+	margin-bottom: 10px;
+}
+.section-line .label {
+	float: left;
+	width: 120px;
+	font-weight: bold;
+	white-space: nowrap;
+}
+.section-line .value {
+	margin-left: 130px;
+}
+
+.company-wrap {
+	margin-bottom: 10px;
+}
+.contact-wrap {
+	margin-bottom: 10px;
+}
+
+
 /* Job Print View
  ------------------------- */
 
@@ -165,13 +190,20 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 /* Jobs Add/Edit
  ------------------------- */
 
+.errors {
+	border: 2px solid #FF8B78;
+	background-color: #FFEBE8;
+	padding: 10px;
+	margin-bottom: 20px;
+	margin-left: 110px;
+	width: 75%;
+}
 .clear {
 	clear: both;
 }
 .wrap {
 	white-space: pre-wrap;
 }
-
 .item-text {
 	font-size: 1.4em;
 	border-bottom: 1px solid silver;
@@ -182,6 +214,10 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 /* label:field item */
 .item {
 	margin-bottom: 10px;
+}
+.item .errs {
+	color: red;
+	margin-left: 110px;
 }
 .item .label {
 	float: left;
@@ -212,6 +248,9 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 /* date-time item */
 .item-dt {
 	margin: 0 0 20px 110px;
+}
+.item-dt .errs {
+	color: red;
 }
 .item-dt .label {
 	font-size: 1.4em;
