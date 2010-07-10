@@ -1,7 +1,12 @@
+from datetime import datetime
+
+from django import forms
+from django.utils.translation import ugettext_lazy as _
+
 from jobs.models import Job
 from perms.forms import TendenciBaseForm
-from django import forms
 from tinymce.widgets import TinyMCE
+from base.fields import SplitDateTimeField
 
 class JobForm(TendenciBaseForm):
 
@@ -9,6 +14,15 @@ class JobForm(TendenciBaseForm):
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Job._meta.app_label, 
         'storme_model':Job._meta.module_name.lower()}))
+
+    activation_dt = SplitDateTimeField(label=_('Activation Date/Time'),
+        initial=datetime.now())
+
+    post_dt = SplitDateTimeField(label=_('Post Date/Time'),
+        initial=datetime.now())
+
+    expiration_dt = SplitDateTimeField(label=_('Expriation Date/Time'),
+        initial=datetime.now())
     
     class Meta:
         model = Job

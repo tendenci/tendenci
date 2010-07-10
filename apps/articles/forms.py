@@ -16,7 +16,7 @@ class ArticleForm(TendenciBaseForm):
         'storme_model':Article._meta.module_name.lower()}))
     
     release_dt = SplitDateTimeField(label=_('Release Date/Time'),
-                                    initial=datetime.now())
+        initial=datetime.now())
 
     class Meta:
         model = Article
