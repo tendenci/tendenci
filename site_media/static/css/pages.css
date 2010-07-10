@@ -41,7 +41,7 @@
 .t .options {
 	text-align: right;
 	position: absolute;
-	top: 0; right: 0;
+	top: -30px; right: 0;
 	padding: 5px;
 	white-space: nowrap;
 }
@@ -129,4 +129,76 @@
 		border: none;
 		padding: 0; margin: 0;
 	}
+}
+
+/* Pages Add/Edit
+ ------------------------- */
+
+.clear {
+	clear: both;
+}
+
+/* label:field item */
+.item {
+	margin-bottom: 10px;
+}
+.item .label {
+	float: left;
+	font-size: 1.4em;
+	text-align: right;
+	width: 100px;
+	white-space: nowrap;
+}
+.item .field,
+.item .help {
+	margin-left: 110px;
+}
+.item .field input,
+.item .field textarea,
+.item .field select {
+	width: 100%;
+}
+.item .field .mceLayout {
+	/* WYSIWYG; .1 keeps border intact */
+	width: 100.1% !important; 
+}
+
+/* date-time item */
+.item-dt {
+	margin: 0 0 20px 110px;
+}
+.item-dt .label {
+	font-size: 1.4em;
+	margin-bottom: 5px;
+}
+.item-dt .field input {
+	float: left;
+	width: 15%;
+	margin-right: 5px;
+}
+
+/* field:label item */
+.item-checkbox {
+	margin: 0 0 5px 110px;
+}
+.item-checkbox .label {
+	font-size: 1.4em;
+	margin-bottom: 5px;
+}
+.item-checkbox .field input {
+	float: left;
+	margin-right: 10px;
+}
+
+/* horizontal rule item */
+.item-hr {
+	height: 1px;
+	background-color: silver;
+	margin: 10px 0 10px 110px;
+	width: 85%;
+}
+/* horizontal rule (transparent) item */
+.item-hr-clear {
+	height: 10px;
+	width: 100%;
 }
