@@ -114,7 +114,10 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                         'object': article,
                         'request': request,
                     }
-                    notification.send(get_administrators(),'article_edited', extra_context)
+                    admins = get_administrators()
+                    #admins = [request.user]
+                    #notification.send(get_administrators(),'article_edited', extra_context)
+                    notification.send(admins,'article_edited', extra_context)
                                                                              
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))             
         else:
