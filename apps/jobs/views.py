@@ -13,6 +13,13 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
+from perms.utils import get_administrators
+
+try:
+    from notification import models as notification
+except:
+    notification = None
+
 def index(request, slug=None, template_name="jobs/view.html"):
     if not slug: return HttpResponseRedirect(reverse('job.search'))
     job = get_object_or_404(Job, slug=slug)
@@ -101,6 +108,14 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                 ObjectPermission.objects.assign(job.creator, job) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % job)
+                
+                # send notification to administrators
+                if notification:
+                    extra_context = {
+                        'object': job,
+                        'request': request,
+                    }
+                    notification.send(get_administrators(),'job_added', extra_context)
                 
                 return HttpResponseRedirect(reverse('job', args=[job.slug]))
         else:
@@ -202,6 +217,15 @@ def delete(request, id, template_name="jobs/delete.html"):
             
             EventLog.objects.log(**log_defaults)
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % job)
+            
+            # send notification to administrators
+            if notification:
+                extra_context = {
+                    'object': job,
+                    'request': request,
+                }
+                notification.send(get_administrators(),'job_deleted', extra_context)
+            
             job.delete()
                 
             return HttpResponseRedirect(reverse('job.search'))

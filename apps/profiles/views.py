@@ -39,6 +39,7 @@ from event_logs.models import EventLog
 from perms.models import ObjectPermission
 from site_settings.utils import get_setting
 from profiles.utils import profile_edit_admin_notify
+from perms.utils import get_administrators
 
 # view profile  
 @login_required 
@@ -193,12 +194,19 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                 'instance': new_user,
             }
             EventLog.objects.log(**log_defaults)
+            
+            # send notification to administrators
+            if notification:
+                extra_context = {
+                    'object': profile,
+                    'request': request,
+                }
+                notification.send(get_administrators(),'user_added', extra_context)
            
             return HttpResponseRedirect(reverse('profile', args=[new_user.username]))
     else:
         form = form_class(request.user, None, required_fields_list)
-     
-    print required_fields_list  
+      
     return render_to_response(template_name, {'form':form, 'user_this':None,
                                               'required_fields_list': required_fields_list}, 
         context_instance=RequestContext(request))
@@ -273,7 +281,17 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
             
             # notify ADMIN of update to a user's record
             if get_setting('module', 'users', 'userseditnotifyadmin'):
-                profile_edit_admin_notify(request, old_user, old_profile, profile)
+            #    profile_edit_admin_notify(request, old_user, old_profile, profile)
+                # send notification to administrators
+                if notification:
+                    extra_context = {
+                        'old_user': old_user,
+                        'old_profile': old_profile,
+                        'profile': profile,
+                        'request': request,
+                    }
+                    notification.send(get_administrators(),'user_edited', extra_context)
+            
 
             log_defaults = {
                 'event_id' : 122000,
@@ -311,6 +329,12 @@ def delete(request, id, template_name="profiles/delete.html"):
     if not request.user.has_perm('profiles.delete_profile', profile): raise Http403
 
     if request.method == "POST":
+        if notification:
+            extra_context = {
+                'profile': profile,
+                'request': request,
+            }
+            notification.send(get_administrators(),'user_deleted', extra_context)
         #soft delete
         #profile.delete()
         #user.delete()
