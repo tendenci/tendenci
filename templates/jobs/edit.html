@@ -23,6 +23,22 @@
 				{% job_options request.user job %} 	       
              </div>
 		</div>
+
+	{{ form.erros }}
+
+	{% if form.errors %}
+	<div class="errors">
+		<p>Please review the fields below. Thank you.</p>
+		<ul>
+		{% for field in form %}
+			{% if field.errors %}
+				<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+			{% endif %}
+		{% endfor %}
+		</ul>
+	</div>
+	{% endif %}
+
     <form action="{% url job.edit job.id %}" method="post">
     	<div class="forms">
 

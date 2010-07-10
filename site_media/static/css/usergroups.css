@@ -188,3 +188,43 @@
 	height: 10px;
 	width: 100%;
 }
+
+.clear {
+	clear: both;
+}
+
+.column-left {
+	float: left;
+	width: 64%;	
+}
+.column-left .box {
+	border: 1px solid silver;
+	margin: 5px 0;
+}
+.column-left .box h2 {
+	margin: 10px;
+}
+.column-left .box .info {
+	margin: 10px;
+}
+.column-left .box .info p {
+	margin: 3px;
+}
+.column-right {
+	float: right;
+	width: 35%;	
+}
+.column-right .box {
+	border: 1px solid silver;
+	margin: 5px 0;
+}
+.column-right .box h2 {
+	margin: 10px;
+}
+.column-right .box .info {
+	margin: 10px;
+}
+.column-right .box .info p {
+	margin: 3px;
+}
+
