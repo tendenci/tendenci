@@ -15,7 +15,7 @@ class JobForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Job._meta.app_label, 
         'storme_model':Job._meta.module_name.lower()}))
 
-    activation_dt = SplitDateTimeField(label=_('Release Date/Time'),
+    activation_dt = SplitDateTimeField(label=_('Activation Date/Time'),
         initial=datetime.now())
 
     post_dt = SplitDateTimeField(label=_('Post Date/Time'),
