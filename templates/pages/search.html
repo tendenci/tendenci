@@ -30,12 +30,12 @@
     	{% if can_view %}
 		<div class="page-wrap-search">
 
-
-			<div class="options">
+			<div class="options options-search">
                 <div class="quick-options">
 					{% page_options request.user page %}
                 </div>
 			</div>
+
             <h2><a href="{{ page.get_absolute_url }}">{% firstof page.title 'Untitled'%}</a></h2>
             <div class="content">{{ page.content|safe|striptags|truncatewords:20 }}</div>
 			<div class="meta">
