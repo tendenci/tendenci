@@ -109,15 +109,16 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % article)
                 
                 # send notification to administrators
-                if notification:
-                    extra_context = {
-                        'object': article,
-                        'request': request,
-                    }
-                    admins = get_administrators()
-                    #admins = [request.user]
-                    #notification.send(get_administrators(),'article_edited', extra_context)
-                    notification.send(admins,'article_edited', extra_context)
+                # commenting out - there is no notification on edit in T4
+#                if notification:
+#                    extra_context = {
+#                        'object': article,
+#                        'request': request,
+#                    }
+#                    admins = get_administrators()
+#                    #admins = [request.user]
+#                    #notification.send(get_administrators(),'article_edited', extra_context)
+#                    notification.send(admins,'article_edited', extra_context)
                                                                              
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))             
         else:
