@@ -37,7 +37,9 @@
 	padding: 5px;
 	white-space: nowrap;
 }
-
+.t .options-search {
+	position: static;
+}
 .t .quick-options {
 	xfloat: right;
 	margin: 0 0 15px 0;
@@ -98,13 +100,20 @@
  /* Groups Add/Edit
  ------------------------- */
 
+.errors {
+	border: 2px solid #FF8B78;
+	background-color: #FFEBE8;
+	padding: 10px;
+	margin-bottom: 20px;
+	margin-left: 110px;
+	width: 75%;
+}
 .clear {
 	clear: both;
 }
 .wrap {
 	white-space: pre-wrap;
 }
-
 .item-text {
 	font-size: 1.4em;
 	border-bottom: 1px solid silver;
@@ -115,6 +124,10 @@
 /* label:field item */
 .item {
 	margin-bottom: 10px;
+}
+.item .errs {
+	color: red;
+	margin-left: 110px;
 }
 .item .label {
 	float: left;
@@ -145,6 +158,9 @@
 /* date-time item */
 .item-dt {
 	margin: 0 0 20px 110px;
+}
+.item-dt .errs {
+	color: red;
 }
 .item-dt .label {
 	font-size: 1.4em;
@@ -188,43 +204,3 @@
 	height: 10px;
 	width: 100%;
 }
-
-.clear {
-	clear: both;
-}
-
-.column-left {
-	float: left;
-	width: 64%;	
-}
-.column-left .box {
-	border: 1px solid silver;
-	margin: 5px 0;
-}
-.column-left .box h2 {
-	margin: 10px;
-}
-.column-left .box .info {
-	margin: 10px;
-}
-.column-left .box .info p {
-	margin: 3px;
-}
-.column-right {
-	float: right;
-	width: 35%;	
-}
-.column-right .box {
-	border: 1px solid silver;
-	margin: 5px 0;
-}
-.column-right .box h2 {
-	margin: 10px;
-}
-.column-right .box .info {
-	margin: 10px;
-}
-.column-right .box .info p {
-	margin: 3px;
-}
-
