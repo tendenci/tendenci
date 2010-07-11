@@ -27,7 +27,7 @@
     	{% has_perm user articles.view_article article as can_view %}
     	{% if can_view %}
 		<div class="article-wrap-search">
-			<div class="options">
+			<div class="options options-search">
                 <div class="quick-options">
 					{% article_options request.user article %} 	       
                 </div>

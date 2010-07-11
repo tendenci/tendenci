@@ -27,11 +27,13 @@
     	{% has_perm user jobs.view_job job as can_view %}
     	{% if can_view %}
 		<div class="job-wrap-search">
-			<div class="options">
+
+			<div class="options options-search">
                 <div class="quick-options">
 					{% job_options request.user job %} 	       
                 </div>
 			</div>
+
             <h2><a href="{{ job.get_absolute_url }}">{% firstof job.title "Untitled" %}</a></h2>
             <div class="content">{{ job.description|safe|striptags|truncatewords:20 }}</div>
 			<div class="meta">

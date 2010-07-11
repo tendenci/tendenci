@@ -18,6 +18,19 @@
 
     <h1>{% firstof MODULE_NEWS_LABEL 'News' %} Add</h1>
 
+	{% if form.errors %}
+	<div class="errors">
+		<p>Please review the fields below. Thank you.</p>
+		<ul>
+		{% for field in form %}
+			{% if field.errors %}
+				<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+			{% endif %}
+		{% endfor %}
+		</ul>
+	</div>
+	{% endif %}
+
     <div class="news-wrap">
     	<form action="{% url news.add %}" method="post">
     	<div class="forms">
