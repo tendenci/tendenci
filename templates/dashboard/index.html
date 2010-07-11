@@ -176,14 +176,17 @@
 		{% if MODULE_PAGES_ENABLED %}
     	<li><a href="{% url page.add %}">Add a page</a></li>
 		{% endif %}
-		<li><a href="{% url entity.search %}">Search entities</a></li>
+
+		<li><a href="{% url haystack_search %}">Search All Modules</a></li>
+
+		<!--<li><a href="{% url entity.search %}">Search entities</a></li>
     	<li><a href="javascript:;">Edit navigation</a></li>
     	<li><a href="{% url event_log.search %}">Search event logs</a></li>
-    	<li><a href="{% url profile.search %}">Search users</a></li>
+    	<li><a href="{% url profile.search %}">Search users</a></li>-->
     	<li><a href="{% url newsletter.add %}">Make a newsletter</a></li>
-    	<li><a href="javascript:;">Change website settings</a></li>
-    	<li><a href="javascript:;">Enable/Disable modules</a></li>
-    	<li><a href="javascript:;">Update SEM</a></li>
+    	<!-- <li><a href="{% url settings %}">Change website settings</a></li> -->
+    	<li><a href="{% url settings %}">Enable/Disable modules</a></li>
+    	<!-- <li><a href="javascript:;">Update SEM</a></li> -->
         <li><a href="/admin/">Admin Panel</a></li>
     </ul>
     </div>
