@@ -12,6 +12,12 @@ from base.http import Http403
 from perms.utils import is_admin
 from event_logs.models import EventLog
 #from perms.decorators import PageSecurityCheck
+from perms.utils import get_administrators
+
+try:
+    from notification import models as notification
+except:
+    notification = None
 
 def group_search(request, template_name="user_groups/search.html"):
     query = request.GET.get('q', None)
@@ -19,7 +25,18 @@ def group_search(request, template_name="user_groups/search.html"):
     if is_admin(request.user):
         groups = Group.objects.search(query)
     else:
-        groups = Group.objects.search(query).filter(show_as_option=1, allow_self_add=1, status=1)
+        if request.user.has_perm('user_groups.view_group'):
+            groups = Group.objects.search(query).filter(show_as_option=1, allow_self_add=1, 
+                                                        status=1, status_detail='active')
+        else:
+            if not request.user.is_anonymous():
+                groups = Group.objects.search(query).filter(show_as_option=1, allow_self_add=1, 
+                                                            status=1, status_detail='active',
+                                                            allow_user_view=1)
+            else:
+                groups = Group.objects.search(query).filter(show_as_option=1, allow_self_add=1, 
+                                                            status=1, status_detail='active',
+                                                            allow_anonymous_view=1)
 
     log_defaults = {
         'event_id' : 164000,
@@ -85,6 +102,14 @@ def group_add_edit(request, group_slug=None,
             group = form.save()
             
             if add:
+                # send notification to administrators
+                if notification:
+                    extra_context = {
+                        'object': group,
+                        'request': request,
+                    }
+                    notification.send(get_administrators(),'group_added', extra_context)
+                    
                 log_defaults = {
                     'event_id' : 161000,
                     'event_data': '%s (%d) added by %s' % (group._meta.object_name, group.pk, request.user),
@@ -135,6 +160,14 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
     if not request.user.has_perm('user_groups.delete_group', group): raise Http403
 
     if request.method == "POST":
+        # send notification to administrators
+        if notification:
+            extra_context = {
+                'object': group,
+                'request': request,
+            }
+            notification.send(get_administrators(),'group_deleted', extra_context)
+                    
         log_defaults = {
             'event_id' : 163000,
             'event_data': '%s (%d) deleted by %s' % (group._meta.object_name, group.pk, request.user),

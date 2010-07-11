@@ -240,7 +240,7 @@ class UserForm(forms.ModelForm):
         fields= ('is_superuser', 'user_permissions')
         
 class UserPermissionForm(forms.ModelForm):
-    is_superuser = forms.BooleanField(label=_("Is Admin"), 
+    is_superuser = forms.BooleanField(required=False, label=_("Is Admin"), 
                                       help_text = _("If selected, admin has all permissions without explicitly assigning them."))
     class Meta:
         model = User

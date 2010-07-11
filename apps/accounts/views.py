@@ -114,11 +114,6 @@ def register(request, success_url=None,
     """
     # check if this site allows self registration, if not, redirect to login page
     allow_self_registration = get_setting('module', 'users', 'selfregistration')
-    # need to delete this block once the get_setting gets fixed.
-#    if allow_self_registration == 'false':
-#        allow_self_registration = False
-#    if allow_self_registration == 'true':
-#        allow_self_registration = True
     
     if not allow_self_registration:
         return HttpResponseRedirect(reverse('auth_login'))
