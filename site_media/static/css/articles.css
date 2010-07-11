@@ -45,7 +45,9 @@
 	padding: 5px;
 	white-space: nowrap;
 }
-
+.t .options-search {
+	position: static;
+}
 .t .quick-options {
 	float: right;
 	margin-right: 5px;
@@ -159,13 +161,34 @@ div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
 /* Article Add/Edit
  ------------------------- */
 
+.errors {
+	border: 2px solid #FF8B78;
+	background-color: #FFEBE8;
+	padding: 10px;
+	margin-bottom: 20px;
+	margin-left: 110px;
+	width: 75%;
+}
 .clear {
 	clear: both;
+}
+.wrap {
+	white-space: pre-wrap;
+}
+.item-text {
+	font-size: 1.4em;
+	border-bottom: 1px solid silver;
+	margin: 20px 0;
+	font-weight: bold;
 }
 
 /* label:field item */
 .item {
 	margin-bottom: 10px;
+}
+.item .errs {
+	color: red;
+	margin-left: 110px;
 }
 .item .label {
 	float: left;
@@ -174,6 +197,11 @@ div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
 	width: 100px;
 	white-space: nowrap;
 }
+.item .label-wrap {
+	white-space: normal;
+}
+
+
 .item .field,
 .item .help {
 	margin-left: 110px;
@@ -191,6 +219,9 @@ div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
 /* date-time item */
 .item-dt {
 	margin: 0 0 20px 110px;
+}
+.item-dt .errs {
+	color: red;
 }
 .item-dt .label {
 	font-size: 1.4em;
@@ -222,9 +253,15 @@ div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
 	margin: 10px 0 10px 110px;
 	width: 85%;
 }
+/* horizontal rule long item */
+.item-hr-long {
+	height: 1px;
+	background-color: silver;
+	margin: 20px 0 20px 0;
+	width: 100%;
+}
 /* horizontal rule (transparent) item */
 .item-hr-clear {
 	height: 10px;
 	width: 100%;
 }
-

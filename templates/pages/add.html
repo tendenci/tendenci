@@ -17,6 +17,19 @@
 
     <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} Add</h1>
 
+	{% if form.errors %}
+	<div class="errors">
+		<p>Please review the fields below. Thank you.</p>
+		<ul>
+		{% for field in form %}
+			{% if field.errors %}
+				<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+			{% endif %}
+		{% endfor %}
+		</ul>
+	</div>
+	{% endif %}
+
     <div class="page-wrap">
     	<form action="{% url page.add %}" method="post">
     	<div class="forms">

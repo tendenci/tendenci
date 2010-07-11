@@ -42,7 +42,9 @@
 	padding: 5px;
 	white-space: nowrap;
 }
-
+.t .options-search {
+	position: static;
+}
 .t .quick-options {
 	float: right;
 	margin-right: 5px;

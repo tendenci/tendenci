@@ -52,10 +52,10 @@
 				<p><a href="{% url group.edit_perms group.pk %}">Edit Security Permissions for Group Members</a></p>
 			</div>
 		</div>
-		<div class="box">
+		<!-- <div class="box">
 			<h2>Module Displays</h2>
 			<div class="info"></div>
-		</div>
+		</div> -->
 		
 	</div>
 	<div class="column-right">
@@ -67,14 +67,17 @@
 				<p>Created: {{ group.create_dt }}</p>
 				<p>Owner: <a href="{{ group.owner.get_absolute_url }}">{{ group.owner }}</a> (ID: {{ group.owner.pk }}) </p>
 				<p>Entity: {{ group.entity }}</p>
-				<p>Multilevel: {{ group.multi_level }}</p>
 				<p>Status: {{ group.status }}<p>
 			</div>
 		</div>
 		<div class="box">
 			<h2>Group Contact</h2>
 			<div class="info">
-				<p>Emails regarding activity in this group will be sent to: xxx</p>
+				{% if group.email_recipient %}
+					<p>Emails regarding activity in this group will be sent to: {{ group.email_recipient }}</p>
+				{% else %}
+					<p>THere is no email recipient set for this group.  <a href="{% url group.edit group.slug %}">Edit group.</a></p>
+				{% endif %}
 			</div>
 		</div>
 	</div>
