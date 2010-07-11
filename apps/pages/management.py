@@ -6,9 +6,9 @@ if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
 
     def create_notice_types(app, created_models, verbosity, **kwargs):
-        notification.create_notice_type("article_added", _("Article Added"), _("An article has been added."))
-        #notification.create_notice_type("article_edited", _("Article Edited"), _("An article has been edited."))
-        notification.create_notice_type("article_deleted", _("Article Deleted"), _("An article has been deleted"))
+        notification.create_notice_type("page_added", _("Page Added"), _("A page has been added."))
+        notification.create_notice_type("page_edited", _("Page Edited"), _("A page has been edited."))
+        notification.create_notice_type("page_deleted", _("Page Deleted"), _("A page has been deleted"))
 
     post_syncdb.connect(create_notice_types, sender=notification)
 else:
