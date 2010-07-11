@@ -9,7 +9,7 @@ APPS = ['profiles', 'user_groups', 'articles',
 
 class GroupForm(forms.ModelForm):
     email_recipient = forms.CharField(label="Recipient Email", required=False, max_length=100, 
-                                     help_text='Comma Delimited')
+                                     help_text='Recipient email(s), comma delimited')
     show_as_option = forms.BooleanField(initial=1, label="Show Option",
                                       help_text='Display this user group as an option to logged-in users.')
     class Meta:
