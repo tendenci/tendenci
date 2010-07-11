@@ -24,7 +24,8 @@ class Group(TendenciBaseModel):
     allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=1)
     description = models.TextField(blank=True)
     auto_respond = models.BooleanField(_('Auto Responder'), default=0)
-    auto_respond_template =  models.CharField(_('Auto Responder Template'), max_length=100, blank=True)
+    auto_respond_template =  models.CharField(_('Auto Responder Template'), 
+        help_text=_("Autor Responder Template URL"), max_length=100, blank=True)
     auto_respond_priority = models.FloatField(_('Priority'), blank=True, default=0)
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
