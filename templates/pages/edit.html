@@ -23,6 +23,19 @@
 				{% page_options request.user page %}
             </div>
         </div>
+
+		{% if form.errors %}
+		<div class="errors">
+			<p>Please review the fields below. Thank you.</p>
+			<ul>
+			{% for field in form %}
+				{% if field.errors %}
+					<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+				{% endif %}
+			{% endfor %}
+			</ul>
+		</div>
+		{% endif %}
     
     	<form action="{% url page.edit page.pk %}" method="post">
     	<div class="forms">
