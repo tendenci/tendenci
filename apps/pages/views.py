@@ -13,6 +13,13 @@ from perms.models import ObjectPermission
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
+from perms.utils import get_administrators
+from perms.utils import is_admin
+
+try:
+    from notification import models as notification
+except:
+    notification = None
 
 def index(request, slug=None, template_name="pages/view.html"):
     if not slug: return HttpResponseRedirect(reverse('page.search'))
@@ -104,6 +111,15 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
                 ObjectPermission.objects.assign(page.creator, page) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % page)
+                
+                if not is_admin(request.user):
+                    # send notification to administrators
+                    if notification:
+                        extra_context = {
+                            'object': page,
+                            'request': request,
+                        }
+                        notification.send(get_administrators(),'page_edited', extra_context)
                                                               
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))             
         else:
@@ -179,6 +195,15 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % page)
                 
+                if not is_admin(request.user):
+                    # send notification to administrators
+                    if notification:
+                        extra_context = {
+                            'object': page,
+                            'request': request,
+                        }
+                        notification.send(get_administrators(),'page_added', extra_context)
+                    
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))
         else:
             form = form_class(request.user)
@@ -204,6 +229,15 @@ def delete(request, id, template_name="pages/delete.html"):
             }
             EventLog.objects.log(**log_defaults)
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % page)
+            
+            # send notification to administrators
+            if notification:
+                extra_context = {
+                    'object': page,
+                    'request': request,
+                }
+                notification.send(get_administrators(),'page_deleted', extra_context)
+            
             page.delete()
             return HttpResponseRedirect(reverse('page.search'))
     

@@ -1,0 +1,1 @@
+Page Edited for {{ SITE_GLOBAL_SITEDISPLAYNAME }}: {{ object.title }}
