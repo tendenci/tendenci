@@ -42,3 +42,23 @@ def is_developer(user):
 
 def get_administrators():
     return User.objects.filter(is_active=True,is_staff=True)
+
+# get a list of the admin notice recipients
+def get_notice_recipients(scope, scope_category, setting_name):
+    from site_settings.utils import get_setting
+    from django.core.validators import email_re
+    
+    recipients = []
+    # global recipients
+    g_recipients = (get_setting('site', 'global', 'allnoticerecipients')).split(',')
+    g_recipients = [r.strip() for r in g_recipients]
+    
+    # module recipients
+    m_recipients = (get_setting(scope, scope_category, setting_name)).split(',')
+    m_recipients = [r.strip() for r in m_recipients]
+    
+    for recipient in g_recipients+m_recipients:
+        if email_re.match(recipient):
+            recipients.append(recipient)
+        
+    return recipients
