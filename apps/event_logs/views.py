@@ -11,6 +11,8 @@ from django.conf import settings
 
 from base.http import render_to_403
 from event_logs.models import EventLog
+from django.db.models import Count
+from django.contrib.admin.views.decorators import staff_member_required
 
 @permission_required('event_logs.view_eventlog')
 def index(request, id=None, template_name="event_logs/view.html"):
@@ -64,3 +66,19 @@ def colored_image(request, color):
         f.close()
 
     return HttpResponse(data, mimetype="image/png")
+
+@staff_member_required
+def event_summary_report(request):
+    items = EventLog.objects.all()\
+                .extra(select={'day':'DATE(create_dt)'})\
+                .values('day', 'source')\
+                .annotate(count=Count('pk'))\
+                .order_by('day', 'source')
+    data = dict([(i, []) for i in range(1,32)])
+    
+    for item in items:
+        print item
+    return render_to_response(
+                'reports/event_summary.html', 
+                {'items': items},  
+                context_instance=RequestContext(request))

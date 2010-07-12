@@ -49,6 +49,13 @@ urlpatterns = patterns('',
     (r'^tinymce/', include('tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
     
+    #Reports:
+    url(r'^reports/user-activity/$', 'profiles.views.user_activity_report', name='reports-user-activity'),
+    url(r'^reports/admins/$', 'profiles.views.admin_users_report', name='reports-admin-users'),
+    url(r'^reports/events-summary/$', 'event_logs.views.event_summary_report', name='reports-admin-users'),
+    
+    
+    
     # page view
     url(r'^(?P<slug>[\w\-\/]+)/$', 'pages.views.index', name="page"),
 )
