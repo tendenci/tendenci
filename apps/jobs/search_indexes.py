@@ -11,6 +11,7 @@ class JobIndex(indexes.RealTimeSearchIndex):
     title = indexes.CharField(model_attr='title')
     description = indexes.CharField(model_attr='description')
     post_dt = indexes.DateTimeField(model_attr='post_dt', null=True)
+    create_dt = indexes.DateTimeField(model_attr='create_dt')
     
     # authority fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')

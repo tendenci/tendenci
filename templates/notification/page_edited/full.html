@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>Page Edited</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+<font size="2" face="Arial, Helvetica, sans-serif">
+<p>A page has been edited on the 
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} - <b>{{ object.title }}</b></p>
+<p>To view the detail of the edited page, go to: <b>
+<a href="{{ SITE_GLOBAL_SITEURL }}{% url page object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url page object.id %}</a></b><br>
+To approve the edited page, go to 
+<a href="{{ SITE_GLOBAL_SITEURL }}{% url page.edit object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url page.edit object.id %}</a>
+</p>
+
+<br>Thanks!
+
+<P>Time submitted: {% now "D d M Y P" %}</P>
+</font>
+</body>
+</html>

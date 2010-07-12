@@ -49,8 +49,10 @@ class EventLogManager(Manager):
                 sqs = sqs.auto_query(sqs.query.clean(q)) 
         else:
             sqs = sqs.all()
+
+        sqs = sqs.order_by('-create_dt')
         
-        return sqs.models(self.model).order_by('-create_dt')
+        return sqs.models(self.model)
 
     def log(self, **kwargs):
         """

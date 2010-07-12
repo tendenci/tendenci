@@ -9,9 +9,10 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_EVENT_LOGS_LABEL }} Print</h1>
-    
+
     {% event_log_nav request.user event_log %}
+
+    <h1>{{ MODULE_EVENT_LOGS_LABEL }} Print</h1>
 
     <div class="event-log-wrap">
 

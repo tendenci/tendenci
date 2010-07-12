@@ -13,6 +13,13 @@ from perms.models import ObjectPermission
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
+from perms.utils import get_administrators
+from perms.utils import is_admin
+
+try:
+    from notification import models as notification
+except:
+    notification = None
 
 def index(request, slug=None, template_name="pages/view.html"):
     if not slug: return HttpResponseRedirect(reverse('page.search'))
@@ -52,7 +59,8 @@ def search(request, template_name="pages/search.html"):
         context_instance=RequestContext(request))
 
 def print_view(request, slug, template_name="pages/print-view.html"):
-    page = get_object_or_404(Page, pk=slug)
+    print 'blah!'
+    page = get_object_or_404(Page, slug=slug)
 
     if request.user.has_perm('pages.view_page', page):
         log_defaults = {
@@ -103,6 +111,15 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
                 ObjectPermission.objects.assign(page.creator, page) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % page)
+                
+                if not is_admin(request.user):
+                    # send notification to administrators
+                    if notification:
+                        extra_context = {
+                            'object': page,
+                            'request': request,
+                        }
+                        notification.send(get_administrators(),'page_edited', extra_context)
                                                               
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))             
         else:
@@ -114,7 +131,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
         raise Http403
 
 @login_required
-def edit_meta(request, slug, form_class=MetaForm, template_name="pages/edit-meta.html"):
+def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.html"):
 
     # check permission
     page = get_object_or_404(Page, pk=id)
@@ -178,6 +195,15 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % page)
                 
+                if not is_admin(request.user):
+                    # send notification to administrators
+                    if notification:
+                        extra_context = {
+                            'object': page,
+                            'request': request,
+                        }
+                        notification.send(get_administrators(),'page_added', extra_context)
+                    
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))
         else:
             form = form_class(request.user)
@@ -203,6 +229,15 @@ def delete(request, id, template_name="pages/delete.html"):
             }
             EventLog.objects.log(**log_defaults)
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % page)
+            
+            # send notification to administrators
+            if notification:
+                extra_context = {
+                    'object': page,
+                    'request': request,
+                }
+                notification.send(get_administrators(),'page_deleted', extra_context)
+            
             page.delete()
             return HttpResponseRedirect(reverse('page.search'))
     

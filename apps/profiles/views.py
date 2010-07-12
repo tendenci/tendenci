@@ -41,6 +41,9 @@ from perms.utils import is_admin
 
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
+from site_settings.utils import get_setting
+from profiles.utils import profile_edit_admin_notify
+from perms.utils import get_administrators
 
 # view profile  
 @login_required 
@@ -96,13 +99,25 @@ def index(request, username="", template_name="profiles/index.html"):
                                                }, 
                               context_instance=RequestContext(request))
    
-@login_required   
+ 
 def search(request, template_name="profiles/search.html"):
+    # check if allow anonymous user search
+    allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
+    allow_user_search = get_setting('module', 'users', 'allowusersearch')
+
+    if request.user.is_anonymous():
+        if not allow_anonymous_search or not allow_user_search:
+            raise Http403
+    
     query = request.GET.get('q', None)
     profiles = Profile.objects.search(query)
     
     if not is_admin(request.user):
-        profiles = profiles.filter(status=1, status_detail='active')
+        if not allow_user_search:
+            # should only be able to view his own record
+            profiles = profiles.filter(user=request.user, status=1, status_detail='active')
+        else:
+            profiles = profiles.filter(status=1, status_detail='active')
 
     log_defaults = {
         'event_id' : 124000,
@@ -122,10 +137,15 @@ def search(request, template_name="profiles/search.html"):
 def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
     if not request.user.has_perm('profiles.add_profile'):raise Http403
     
+    required_fields = get_setting('module', 'users', 'usersrequiredfields')
+    if required_fields:
+        required_fields_list = required_fields.split(',')
+        required_fields_list = [field.strip() for field in required_fields_list]
+    else:
+        required_fields_list = None
+    
     if request.method == "POST":
-        #form_user = form_class2(request.user, request.POST)
-        form = form_class(request.user, None, request.POST, request.user)
-        #form2 = form_class2(request.POST, request.user)
+        form = form_class(request.user, None, required_fields_list, request.POST, request.user)
         
         if form.is_valid():
             profile = form.save(request, None)
@@ -178,12 +198,21 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                 'instance': new_user,
             }
             EventLog.objects.log(**log_defaults)
+            
+            # send notification to administrators
+            if notification:
+                extra_context = {
+                    'object': profile,
+                    'request': request,
+                }
+                notification.send(get_administrators(),'user_added', extra_context)
            
             return HttpResponseRedirect(reverse('profile', args=[new_user.username]))
     else:
-        form = form_class(request.user, None)
-       
-    return render_to_response(template_name, {'form':form, 'user_this':None}, 
+        form = form_class(request.user, None, required_fields_list)
+      
+    return render_to_response(template_name, {'form':form, 'user_this':None,
+                                              'required_fields_list': required_fields_list}, 
         context_instance=RequestContext(request))
     
 
@@ -197,11 +226,22 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
         profile = Profile.objects.create_profile(user=user_edit)
         
     if not profile.allow_edit_by(request.user): raise Http403
+    
+    required_fields = get_setting('module', 'users', 'usersrequiredfields')
+    if required_fields:
+        required_fields_list = required_fields.split(',')
+        required_fields_list = [field.strip() for field in required_fields_list]
+    else:
+        required_fields_list = None
        
     if request.method == "POST":
-        form = form_class(request.user, user_edit, request.POST, request.user, instance=profile)
+        form = form_class(request.user, user_edit, required_fields_list, request.POST, request.user, instance=profile)
         
         if form.is_valid():
+            # get the old profile, so we know what has been changed in admin notification
+            old_user = User.objects.get(id=id)
+            old_profile = Profile.objects.get(user=old_user)
+            
             profile = form.save(request, user_edit)
            
             if is_admin(request.user):
@@ -242,6 +282,20 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 user_edit.is_active = 0
                 
             user_edit.save()
+            
+            # notify ADMIN of update to a user's record
+            if get_setting('module', 'users', 'userseditnotifyadmin'):
+            #    profile_edit_admin_notify(request, old_user, old_profile, profile)
+                # send notification to administrators
+                if notification:
+                    extra_context = {
+                        'old_user': old_user,
+                        'old_profile': old_profile,
+                        'profile': profile,
+                        'request': request,
+                    }
+                    notification.send(get_administrators(),'user_edited', extra_context)
+            
 
             log_defaults = {
                 'event_id' : 122000,
@@ -256,14 +310,17 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
             return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
     else:
         if profile:
-            form = form_class(request.user, user_edit, instance=profile)
+            form = form_class(request.user, user_edit, required_fields_list, instance=profile)
             
         else:
-            form = form_class(request.user, user_edit,)
+            form = form_class(request.user, user_edit, required_fields_list)
         #form2 = form_class2(instance=user_edit)
 
-    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form,}, 
+    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form,
+                                              'required_fields_list':required_fields_list}, 
         context_instance=RequestContext(request))
+    
+
     
 
 def delete(request, id, template_name="profiles/delete.html"):
@@ -276,6 +333,12 @@ def delete(request, id, template_name="profiles/delete.html"):
     if not request.user.has_perm('profiles.delete_profile', profile): raise Http403
 
     if request.method == "POST":
+        if notification:
+            extra_context = {
+                'profile': profile,
+                'request': request,
+            }
+            notification.send(get_administrators(),'user_deleted', extra_context)
         #soft delete
         #profile.delete()
         #user.delete()

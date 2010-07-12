@@ -1,24 +1,88 @@
 from django.utils.html import strip_tags
 from django.utils.text import unescape_entities
 from meta.utils import generate_meta_keywords
+from site_settings.utils import get_setting
+from django.utils.text import truncate_words
+
+from categories.models import Category
 
 class JobMeta():
 
     def get_title(self):
-        return self.object.title
+        object = self.object
+
+        ### Assign variables -----------------------  
+        site_name = get_setting('site','global','sitedisplayname')
+
+        ### Build string -----------------------
+        value = ''
+
+        # start w/ title
+        if object.title:
+            value += object.title
+
+        # location
+        if object.location:
+            value = '%s - %s' % (value, object.location)
+
+        # description
+        # TODO truncate at 400 characters
+        #if object.description:
+        #    value = '%s - %s' % (value, object.description)
+
+        value = '%s - employment opportunity or job position %s' % (value, site_name)
+
+        return value
 
     def get_description(self):
-        return_value = self.object.description
+        object = self.object
 
-        return_value = strip_tags(return_value)
-        return_value = unescape_entities(return_value)
-        return_value = return_value.replace("\n","")
-        return_value = return_value.replace("\r","")
+        ### Assign variables -----------------------  
+        site_name = get_setting('site','global','sitedisplayname')
 
-        return return_value
+        ### Build string -----------------------
+        value = ''
 
+        # start w/ title
+        if object.title:
+            value += object.title
+
+        # location
+        if object.location:
+            value = '%s - %s' % (value, object.location)
+
+        # description
+        # TODO truncate at 450 characters
+        if object.description:
+            value = '%s - %s' % (value, object.description)
+
+        value = '%s - employment opportunity %s' % (value, site_name)
+
+        return value
+    
     def get_keywords(self):
-        return generate_meta_keywords(self.object.description)
+        object = self.object
+
+        ### Assign variables -----------------------  
+        dynamic_keywords = generate_meta_keywords(object.description)
+        site_name = get_setting('site','global','sitedisplayname')
+        site_name = site_name.strip()
+        
+        #T4 used title, experience, skills, education and description
+
+        list = [
+            site_name,
+            'employment opportunity',
+            'jobs',
+        ]
+
+        # remove blank items
+        for item in list:
+            if not item.strip():
+                list.remove(item)
+            value = '%s, %s' % (', '.join(list), dynamic_keywords)
+
+        return value
 
     def get_meta(self, object, name):
 
@@ -36,4 +100,4 @@ class JobMeta():
             else: return self.get_keywords()
         return ''
     
-  
+    

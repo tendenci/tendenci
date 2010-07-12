@@ -13,6 +13,12 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
+from perms.utils import get_administrators
+try:
+    from notification import models as notification
+except:
+    notification = None
+
 def index(request, slug=None, template_name="news/view.html"):
     if not slug: return HttpResponseRedirect(reverse('news.search'))
     news = get_object_or_404(News, slug=slug)
@@ -181,6 +187,14 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             
             messages.add_message(request, messages.INFO, 'Successfully added %s' % news)
             
+            # send notification to administrators
+            if notification:
+                extra_context = {
+                    'object': news,
+                    'request': request,
+                }
+                notification.send(get_administrators(),'news_added', extra_context)
+            
             return HttpResponseRedirect(reverse('news.view', args=[news.slug]))
     else:
         form = form_class(request.user)
@@ -207,6 +221,15 @@ def delete(request, id, template_name="news/delete.html"):
         }
         EventLog.objects.log(**log_defaults)
         messages.add_message(request, messages.INFO, 'Successfully deleted %s' % news)
+        
+        # send notification to administrators
+        if notification:
+            extra_context = {
+                'object': news,
+                'request': request,
+            }
+            notification.send(get_administrators(),'news_deleted', extra_context)
+        
         news.delete()
         return HttpResponseRedirect(reverse('news.search'))
 
