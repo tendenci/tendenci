@@ -1,0 +1,34 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+
+
+<h1>Administrator Security Level Report</h1>
+
+Lists all users with a securitylevel of Administrator. This can be helpful as a cross reference when auditing.
+
+
+
+<table style="width: 80%;">
+<tr>
+	<th>#</th>
+	<th>Username</th>
+	<th>UserId</th>
+	<th>Lastname</th>
+	<th>Firstname</th>
+	<th>Email</th>
+	<th>Phone</th>
+</tr>
+{% for user in users %}
+<tr>
+	<td>{{ forloop.counter }}</td>
+	<td><a href="{% url profile user.username %}">{{ user.username }}</a></td>
+	<td>{{ user.pk }}</td>
+	<td>{{ user.lastname }}</td>
+	<td>{{ user.firstname }}</td>
+	<td><a href="mailto:{{ user.email }}">{{ user.email }}</td>
+	<td></td>
+</tr>
+{% endfor %}
+</table>
+{% endblock content %}
