@@ -34,8 +34,6 @@ class GroupForm(forms.ModelForm):
                   'auto_respond_priority',
                   'notes',
                   'status',
-                  
-                  'status_detail',
                   )
         exclude = ('members',)
        

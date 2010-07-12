@@ -4,11 +4,14 @@ from django import forms
 from tinymce.widgets import TinyMCE
 
 class PageForm(TendenciBaseForm):
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
 
     content = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Page._meta.app_label, 
         'storme_model':Page._meta.module_name.lower()}))
+
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
         
     class Meta:
         model = Page

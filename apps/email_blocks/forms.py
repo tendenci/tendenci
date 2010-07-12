@@ -12,7 +12,6 @@ class EmailBlockForm(forms.ModelForm):
         fields = ('email',
                   'email_domain',
                   'reason',
-                  'status_detail',
                   'status',
                   )
     def save(self, user=None, *args, **kwargs):

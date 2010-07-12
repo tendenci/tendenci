@@ -34,6 +34,9 @@ class PhotoEditForm(TendenciBaseForm):
 
 class PhotoSetAddForm(TendenciBaseForm):
     """ Photo-Set Add-Form """
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
+
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
 
     class Meta:
         model = PhotoSet
@@ -52,6 +55,9 @@ class PhotoSetAddForm(TendenciBaseForm):
 
 class PhotoSetEditForm(TendenciBaseForm):
     """ Photo-Set Edit-Form """
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
+
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
 
     class Meta:
         model = PhotoSet
