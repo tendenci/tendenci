@@ -58,5 +58,3 @@ class EventLogColor(models.Model):
     event_id = models.IntegerField()
     hex_color = models.CharField(max_length=6)
     rgb_color = models.CommaSeparatedIntegerField(max_length=11)
-    
-

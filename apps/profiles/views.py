@@ -1,10 +1,13 @@
 # django
+from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.db.models import Count
+from django.contrib.admin.views.decorators import staff_member_required
 
 # for password change
 from django.contrib.auth.forms import PasswordChangeForm
@@ -17,6 +20,7 @@ from avatar.forms import PrimaryAvatarForm
 from django.utils.translation import ugettext as _
 from django.db.models import get_app
 from django.core.exceptions import ImproperlyConfigured
+
 
 try:
     notification = get_app('notification')
@@ -521,3 +525,55 @@ def password_change(request, id, template_name='registration/password_change_for
 def password_change_done(request, id, template_name='registration/password_change_done.html'):
     user_edit = get_object_or_404(User, pk=id)
     return render_to_response(template_name, {'user_this': user_edit},  context_instance=RequestContext(request))
+
+
+
+### REPORTS ###########################################################################
+
+def _user_events(from_date):
+    return User.objects.all()\
+                .filter(eventlog__create_dt__gte=from_date)\
+                .annotate(event_count=Count('eventlog__pk'))\
+                .order_by('-event_count')
+
+@staff_member_required
+def user_activity_report(request):
+    now = datetime.now()
+    users30days = _user_events(now-timedelta(days=10))[:10]
+    users60days = _user_events(now-timedelta(days=60))[:10]
+    users90days = _user_events(now-timedelta(days=90))[:10]
+    return render_to_response(
+                'reports/user_activity.html', 
+                {'users30days': users30days,'users60days': users60days,'users90days': users90days,},  
+                context_instance=RequestContext(request))
+
+
+@staff_member_required
+def admin_users_report(request):
+    users = User.objects.all().filter(is_superuser=True)
+    return render_to_response(
+                'reports/admin_users.html', 
+                {'users': users},  
+                context_instance=RequestContext(request))
+
+
+@staff_member_required
+def user_access_report(request):
+    now = datetime.now()
+    logins_qs = EventLog.objects.filter(event_id=125200)
+    
+    total_users = User.objects.all().count()
+    total_logins = logins_qs.count()
+    
+    day_logins = []
+    for days in [30, 60, 90, 120, 182, 365]:
+        count = logins_qs.filter(create_dt__gte=now-timedelta(days=days)).count()
+        day_logins.append((days, count))
+    
+    return render_to_response('reports/user_access.html', {
+                  'total_users': total_users,
+                  'total_logins': total_logins,
+                  'day_logins': day_logins,},  
+                context_instance=RequestContext(request))
+    
+    
