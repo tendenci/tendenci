@@ -1,3 +1,4 @@
+from datetime import datetime
 from os.path import join, isdir
 from os import mkdir
 from PIL import Image
@@ -11,7 +12,13 @@ from django.conf import settings
 
 from base.http import render_to_403
 from event_logs.models import EventLog
+from event_logs.utils import day_bars, append_colors, month_days,\
+    request_month_range
+from django.db.models import Count
+from django.contrib.admin.views.decorators import staff_member_required
 from base.http import Http403
+from forms import EventsFilterForm
+
 
 #@permission_required('event_logs.view_eventlog')
 def index(request, id=None, template_name="event_logs/view.html"):
@@ -67,3 +74,33 @@ def colored_image(request, color):
         f.close()
 
     return HttpResponse(data, mimetype="image/png")
+
+
+@staff_member_required
+def event_summary_report(request):
+    queryset = EventLog.objects.all()
+    form = EventsFilterForm(request.GET)
+    if form.is_valid():
+        queryset = form.process_filter(queryset)
+    
+    from_date, to_date = request_month_range(request)
+    queryset = queryset.filter(create_dt__gte=from_date, create_dt__lte=to_date)
+    
+    chart_data = queryset\
+                .extra(select={'day':'DATE(create_dt)'})\
+                .values('day', 'source')\
+                .annotate(count=Count('pk'))\
+                .order_by('day', 'source')
+    chart_data = day_bars(chart_data, 2010, 7)
+    
+    summary_data = queryset\
+                .values('source')\
+                .annotate(count=Count('pk'))\
+                .order_by('source')
+    append_colors(summary_data)
+
+    return render_to_response(
+                'reports/event_summary.html', 
+                {'chart_data': chart_data, 'summary_data':summary_data, 
+                 'form': form, 'date_range': (from_date, to_date)},  
+                context_instance=RequestContext(request))
