@@ -136,7 +136,7 @@
     <div class="rss-feeds">
         <div class="rss-feed">
         	<h3>Tendenci Blog</h3>
-
+			{% cache 86400 tendenci_blog_rss %}
                 {% get_rss "http://blog.tendenci.com/feed/" as rss %}
                 <ul>
                 {% for entry in rss.entries|slice:":3" %}
@@ -146,12 +146,12 @@
                     </li>
                 {% endfor %}
                 </ul>
-
+			{% endcache %}
         </div>
         
         <div class="rss-feed">
         	<h3>Tendenci Help</h3>
-
+			{% cache 86400 tendenci_help_rss %}
                 {% get_rss "http://www.tendenci.com/en/rss/helpfiles/" as rss %}
                 <ul>
                 {% for entry in rss.entries|slice:":3" %}
@@ -161,7 +161,7 @@
                     </li>
                 {% endfor %}
                 </ul>
-
+			{% endcache %}
         </div>
     </div>
 
