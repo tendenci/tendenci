@@ -8,6 +8,8 @@ from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 
+STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
+
 class ArticleForm(TendenciBaseForm):
 
     body = forms.CharField(required=False,
@@ -17,6 +19,18 @@ class ArticleForm(TendenciBaseForm):
     
     release_dt = SplitDateTimeField(label=_('Release Date/Time'),
         initial=datetime.now())
+
+#    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+
+#    def clean_status_detail(self):
+#        data = self.cleaned_data['status_detail']
+#        print 'data:', dir(data)
+#        return data
+
+#    def clean(self):
+#        cleaned_data = self.cleaned_data
+#        print 'self', self.errors
+#        return cleaned_data
 
     class Meta:
         model = Article
