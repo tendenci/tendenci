@@ -50,3 +50,13 @@ class EventLog(models.Model):
     def __unicode__(self):
         return str(self.event_id)
 
+
+class EventLogColor(models.Model):
+    """
+        Event Log Colors is for reporting only
+    """
+    event_id = models.IntegerField()
+    hex_color = models.CharField(max_length=6)
+    rgb_color = models.CommaSeparatedIntegerField(max_length=11)
+    
+

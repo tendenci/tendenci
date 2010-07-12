@@ -10,9 +10,10 @@
 
 {% block body %}
 <div class="t">
-    <h1>{% firstof MODULE_FILES_LABEL 'File' %} Edit</h1>
-    
+
     {% file_nav request.user %}
+
+    <h1>{% firstof MODULE_FILES_LABEL 'File' %} Edit</h1>
 
     <div class="file-wrap">
     <form action="{% url file.edit file.pk %}" method="post" enctype="multipart/form-data">

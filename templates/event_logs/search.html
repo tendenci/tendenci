@@ -12,9 +12,11 @@
 
 {% block body %}
 <div class="t">
-    <h1>{% firstof MODULE_EVENT_LOGS_LABEL 'Event Logs' %} Search</h1>
-	
+
     {% event_log_nav request.user %}
+
+    <h1>{% firstof MODULE_EVENT_LOGS_LABEL 'Event Logs' %} Search</h1>
+
 	{% event_log_search %}
     {% autopaginate event_logs 10 %}
 	

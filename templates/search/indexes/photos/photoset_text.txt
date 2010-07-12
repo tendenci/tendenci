@@ -1,4 +1,20 @@
+{% load tagging_tags %}
+
 {% firstof object.name "Untitled" %}
 by {{ object.creator }}
 by {{ object.object.creator.get_profile.name }}
 {{ object.description }}
+
+# photo-set tags
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+	{{ tag }}
+{% endfor %}
+
+# photo tags
+{% for image in object.image_set.all %}
+	{% tags_for_object image as tags %}
+	{% for tag in tags %}
+		{{ tag }}
+	{% endfor %}
+{% endfor %}

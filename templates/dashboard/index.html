@@ -25,7 +25,15 @@
 {% has_perm user contributions.view_contribution as view_contributions %}
 {% has_perm user locations.view_location as view_locations %}
 {% has_perm user settings.view_setting as view_settings %}
+
+{% has_perm user settings.view_contact as view_contacts %}
+
+{% has_perm user settings.view_invoice as view_invoices %}
+{% has_perm user settings.view_group as view_groups %}
+
 {% has_perm user eventlogs.view_eventlog as view_eventlogs %}
+{% has_perm user eventlogs.view_setting as view_settings %}
+
 {% is_developer user as is_developer %}
 
 
@@ -39,10 +47,10 @@
     	<li class="users"><a href="{% url profile.search %}"><span>{% firstof MODULE_USERS_LABEL "Users" %}</span></a></li>
 		{% endif %}
 
+		{% if MODULE_GROUPS_ENABLED %}
+		{% if view_groups %}
     	<li class="groups"><a href="{% url group.search %}"><span>{% firstof MODULE_GROUPS_LABEL "Groups" %}</span></a></li>
-
-		{% if 1 %}
-    	<li class="events"><a href="javascript:;"><span>{% firstof MODULE_EVENTS_LABEL "Events" %}</span></a></li>
+		{% endif %}
 		{% endif %}
 
 		{% if MODULE_ARTICLES_ENABLED %}
@@ -59,10 +67,6 @@
 		{% if view_news %}
     	<li class="news"><a href="{% url news.search %}"><span>{% firstof MODULE_NEWS_LABEL "News" %}</span></a></li>
 		{% endif %}
-		{% endif %}
-
-		{% if 1 %}
-    	<li class="directories"><a href="javascript:;"><span>{% firstof MODULE_DIRECTORIES_LABEL "Directories" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_PHOTOS_ENABLED %}
@@ -103,13 +107,26 @@
 		<li class="contributions"><a href="{% url contribution.search %}"><span>{% firstof MODULE_CONTRIBUTION_LABEL  "Contributions" %}</span></a></li>
 		{% endif %}
 
+		{% if view_contacts %}
+		{% if MODULE_CONTACTS_ENABLED %}
 		<li class="contacts"><a href="{% url contact.search %}"><span>{% firstof MODULE_CONTACTS_LABEL "Contacts" %}</span></a></li>
+		{% endif %}
+		{% endif %}
 
+		{% if view_settings %}
      	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
+ 		{% endif %}
+
+		{% if view_eventlogs %}
         <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
-         {% if request.user.is_authenticated %}
+ 		{% endif %}
+
+		{% if view_invoices %}
+		{% if MODULE_INVOICES_ENABLED %}
          <li class="invoices"><a href="{% url invoice.search %}"><span>{% firstof MODULE_INVOICES_LABEL  "Invoices" %}</span></a></li>
  		{% endif %}
+ 		{% endif %}
+
  		<div style="clear: both"><!-- IE7 --></div>
     </ul>
     </div> <!-- modules -->
@@ -159,14 +176,17 @@
 		{% if MODULE_PAGES_ENABLED %}
     	<li><a href="{% url page.add %}">Add a page</a></li>
 		{% endif %}
-		<li><a href="{% url entity.search %}">Search entities</a></li>
+
+		<li><a href="{% url haystack_search %}">Search All Modules</a></li>
+
+		<!--<li><a href="{% url entity.search %}">Search entities</a></li>
     	<li><a href="javascript:;">Edit navigation</a></li>
     	<li><a href="{% url event_log.search %}">Search event logs</a></li>
-    	<li><a href="{% url profile.search %}">Search users</a></li>
+    	<li><a href="{% url profile.search %}">Search users</a></li>-->
     	<li><a href="{% url newsletter.add %}">Make a newsletter</a></li>
-    	<li><a href="javascript:;">Change website settings</a></li>
-    	<li><a href="javascript:;">Enable/Disable modules</a></li>
-    	<li><a href="javascript:;">Update SEM</a></li>
+    	<!-- <li><a href="{% url settings %}">Change website settings</a></li> -->
+    	<li><a href="{% url settings %}">Enable/Disable modules</a></li>
+    	<!-- <li><a href="javascript:;">Update SEM</a></li> -->
         <li><a href="/admin/">Admin Panel</a></li>
     </ul>
     </div>

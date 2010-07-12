@@ -4,6 +4,7 @@ from event_logs.models import EventLog
 
 class EventLogIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
+    create_dt = indexes.DateTimeField(model_attr='create_dt')
 
     content_type = indexes.CharField(model_attr='content_type', null=True)
     source = indexes.CharField(model_attr='source', null=True)

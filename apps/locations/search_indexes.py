@@ -9,6 +9,7 @@ class LocationIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     description = indexes.CharField(model_attr='description')
     location_name = indexes.CharField(model_attr='location_name')
+    create_dt = indexes.DateTimeField(model_attr='create_dt', null=True)
 
     # authority fields
     creator = indexes.CharField(model_attr='creator')
