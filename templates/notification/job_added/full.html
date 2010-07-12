@@ -9,7 +9,7 @@
 {% is_admin request.user as isadmin %}
 <body bgcolor="#ffffff" text="#000000">
 <p>The following job was added 
-  to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Online Job Bank by {{request.uer.get_full_name}}
+  to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Online Job Bank by {{request.user.get_full_name}}
   {% if isadmin %}(administrator){% else %} and needs to be activated{% endif %}:</p>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
