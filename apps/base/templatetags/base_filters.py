@@ -86,4 +86,29 @@ def first_chars(string, arg):
         return string
     return string
 
+@register.filter
+def rss_date(value, arg=None):
+    """Formats a date according to the given format."""
+    from django.utils import formats
+    from django.utils.dateformat import format
+    from datetime import datetime
+
+    if not value:
+        return u''
+    else:
+        value = datetime(*value[:-3])
+    if arg is None:
+        arg = settings.DATE_FORMAT
+    try:
+        return formats.date_format(value, arg)
+    except AttributeError:
+        try:
+            return format(value, arg)
+        except AttributeError:
+            return ''
+rss_date.is_safe = False
+
+
+
+
     
