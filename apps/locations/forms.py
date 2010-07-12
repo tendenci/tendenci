@@ -1,7 +1,11 @@
 from locations.models import Location
 from perms.forms import TendenciBaseForm
+from django import forms
 
 class LocationForm(TendenciBaseForm):
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+
     class Meta:
         model = Location
         fields = (

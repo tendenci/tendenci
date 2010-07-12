@@ -9,7 +9,7 @@ from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 
 class JobForm(TendenciBaseForm):
-
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Job._meta.app_label, 
@@ -23,6 +23,8 @@ class JobForm(TendenciBaseForm):
 
     expiration_dt = SplitDateTimeField(label=_('Expriation Date/Time'),
         initial=datetime.now())
+
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
     
     class Meta:
         model = Job

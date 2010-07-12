@@ -8,10 +8,8 @@ from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 
-STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
-
 class ArticleForm(TendenciBaseForm):
-
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
     body = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Article._meta.app_label, 
@@ -20,7 +18,7 @@ class ArticleForm(TendenciBaseForm):
     release_dt = SplitDateTimeField(label=_('Release Date/Time'),
         initial=datetime.now())
 
-#    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
 
 #    def clean_status_detail(self):
 #        data = self.cleaned_data['status_detail']
