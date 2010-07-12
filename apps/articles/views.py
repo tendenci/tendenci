@@ -9,7 +9,7 @@ from base.http import Http403
 from articles.models import Article
 from articles.forms import ArticleForm
 from perms.models import ObjectPermission
-from perms.utils import get_administrators
+from perms.utils import get_notice_recipients
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
@@ -194,12 +194,16 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % article)
                 
                 # send notification to administrators
-                if notification:
-                    extra_context = {
-                        'object': article,
-                        'request': request,
-                    }
-                    notification.send(get_administrators(),'article_added', extra_context)
+                # get admin notice recipients
+                recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
+                if recipients:
+                    if notification:
+                        extra_context = {
+                            'object': article,
+                            'request': request,
+                        }
+                        #notification.send(get_administrators(),'article_added', extra_context)
+                        notification.send_emails(recipients,'article_added', extra_context)
                     
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
@@ -230,12 +234,14 @@ def delete(request, id, template_name="articles/delete.html"):
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % article)
 
             # send notification to administrators
-            if notification:
-                extra_context = {
-                    'object': article,
-                    'request': request,
-                }
-                notification.send(get_administrators(),'article_deleted', extra_context)
+            recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': article,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'article_deleted', extra_context)
                             
             article.delete()
                                     

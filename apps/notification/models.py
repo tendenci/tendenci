@@ -238,6 +238,87 @@ def get_formatted_messages(formats, label, context):
             'notification/%s' % format), context_instance=context),template_ext)
     return format_templates
 
+def send_emails(emails, label, extra_context=None, on_site=True):
+    """
+    Just send the notice to a list of emails immediately.
+
+    No new notice created here
+
+    notification.send_emails(email_list, 'friends_invite_sent', {
+        'spam': 'eggs',
+        'foo': 'bar',
+    )
+    """
+    if extra_context is None:
+        extra_context = {}
+
+    notice_type = NoticeType.objects.get(label=label)
+
+    protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+    current_site = Site.objects.get_current()
+
+    notices_url = u"%s://%s%s" % (
+        protocol,
+        unicode(current_site),
+        reverse("notification_notices"),
+    )
+
+    #current_language = get_language()
+
+    formats = (
+        'full.txt',
+        'full.html',
+        'short.txt',
+        'notice.html',
+    ) # TODO make formats configurable
+    
+    # test for request in the extra_context
+    if 'request' in extra_context.keys():
+        context = RequestContext(extra_context['request'])
+        extra_context.update({
+            "notice": ugettext(notice_type.display),
+            "notices_url": notices_url,
+            "current_site": current_site,
+        })
+        context.update(extra_context)
+    else:
+        # update context with user specific translations
+        context = Context({
+            "notice": ugettext(notice_type.display),
+            "notices_url": notices_url,
+            "current_site": current_site,
+        })
+        context.update(extra_context)
+
+    # get prerendered format messages
+    messages = get_formatted_messages(formats, label, context)
+
+    # Strip newlines from subject
+    subject = ''.join(render_to_string('notification/email_subject.txt', {
+        'message': messages['short'][0],
+    }, context).splitlines())
+
+    body = render_to_string('notification/email_body.txt', {
+        'message': messages['full'][0],
+    }, context)
+
+
+    for email_addr in emails:
+        recipients = [email_addr]
+       
+        if messages['full'][1] == '.html':
+            headers = {'Content-Type': 'text/html'} 
+            content_type = 'html'
+        else:
+            headers = {'Content-Type': 'text/plain'}
+            content_type = 'text'  
+            
+        email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
+        email.content_subtype = content_type
+        email.send()
+        #email.send(fail_silently=True)  # should we raise exception or not?
+    
+
 def send_now(users, label, extra_context=None, on_site=True):
     """
     Creates a new notice.

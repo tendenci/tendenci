@@ -13,7 +13,7 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
-from perms.utils import get_administrators
+from perms.utils import get_notice_recipients
 
 try:
     from notification import models as notification
@@ -110,12 +110,14 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % job)
                 
                 # send notification to administrators
-                if notification:
-                    extra_context = {
-                        'object': job,
-                        'request': request,
-                    }
-                    notification.send(get_administrators(),'job_added', extra_context)
+                recipients = get_notice_recipients('module', 'jobs', 'jobrecipients')
+                if recipients:
+                    if notification:
+                        extra_context = {
+                            'object': job,
+                            'request': request,
+                        }
+                        notification.send_emails(recipients,'job_added', extra_context)
                 
                 return HttpResponseRedirect(reverse('job', args=[job.slug]))
         else:
@@ -219,12 +221,14 @@ def delete(request, id, template_name="jobs/delete.html"):
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % job)
             
             # send notification to administrators
-            if notification:
-                extra_context = {
-                    'object': job,
-                    'request': request,
-                }
-                notification.send(get_administrators(),'job_deleted', extra_context)
+            recipients = get_notice_recipients('module', 'jobs', 'jobrecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': job,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'job_deleted', extra_context)
             
             job.delete()
                 

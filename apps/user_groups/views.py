@@ -12,7 +12,7 @@ from base.http import Http403
 from perms.utils import is_admin
 from event_logs.models import EventLog
 #from perms.decorators import PageSecurityCheck
-from perms.utils import get_administrators
+from perms.utils import get_notice_recipients
 
 try:
     from notification import models as notification
@@ -103,12 +103,14 @@ def group_add_edit(request, group_slug=None,
             
             if add:
                 # send notification to administrators
-                if notification:
-                    extra_context = {
-                        'object': group,
-                        'request': request,
-                    }
-                    notification.send(get_administrators(),'group_added', extra_context)
+                recipients = get_notice_recipients('module', 'groups', 'grouprecipients')
+                if recipients:
+                    if notification:
+                        extra_context = {
+                            'object': group,
+                            'request': request,
+                        }
+                        notification.send_emails(recipients,'group_added', extra_context)
                     
                 log_defaults = {
                     'event_id' : 161000,
@@ -161,12 +163,14 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
 
     if request.method == "POST":
         # send notification to administrators
-        if notification:
-            extra_context = {
-                'object': group,
-                'request': request,
-            }
-            notification.send(get_administrators(),'group_deleted', extra_context)
+        recipients = get_notice_recipients('module', 'groups', 'grouprecipients')
+        if recipients: 
+            if notification:
+                extra_context = {
+                    'object': group,
+                    'request': request,
+                }
+                notification.send_emails(recipients,'group_deleted', extra_context)
                     
         log_defaults = {
             'event_id' : 163000,
