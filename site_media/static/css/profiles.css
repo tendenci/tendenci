@@ -488,3 +488,26 @@ div.forms div.form-field div.id_ssn .field input {
 	float: left;
 	width: 50%;		
 }
+
+#t-profile #t-add h2{
+	color: #204177;
+	font-size: 14px;
+	font-weight: bold;
+}
+#t-profile #t-add {
+    width: 550px;
+}
+.errorlist{
+	color: red;
+}
+.errorlist li{
+	list-style: none;
+}
+
+/* edit perms */
+ .t .t-profile .t-perm h2{
+  	font-size: 1.4em;
+  }
+  .t .t-profile .t-perm .field-wrapper{
+  	margin: 1em 0;
+  }

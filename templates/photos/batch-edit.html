@@ -11,11 +11,12 @@
 
 {% block body %}
 	<div class="t" style="width: 105%;">
-	<h1>Bulk edit photos</h1>
 
         <div class="photos-nav">
             {% photo_set_nav request.user %}
         </div>
+
+		<h1>Bulk edit photos</h1>
 
         <form method="POST" action="">
     
@@ -79,12 +80,9 @@
                         </div>
                         <div class="safetylevel-wrap">
                             {{ photo_form.safetylevel }}
-                        </div>
-
-                        <div>
+                        	{{ photo_form.owner.label_tag }}
                             {{ photo_form.owner }}
-                            {{ photo_form.owner_username }}
-                            {{ photo_form.creator_username }}
+							{{ photo_form.status_detail.label_tag }}
                             {{ photo_form.status_detail }}
                         </div>
                     </div>

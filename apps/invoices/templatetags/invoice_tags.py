@@ -22,6 +22,12 @@ def invoices_search_results_line(request, invoice):
         return {'request':request, 'invoice':invoice, 'mp':mp}
     else:
         return {'request':request, 'invoice':invoice}
+    
+    
+@register.inclusion_tag("invoices/search-form.html", takes_context=True)
+def invoice_search(context):
+    return context
+
 
         
     

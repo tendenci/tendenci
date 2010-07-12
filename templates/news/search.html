@@ -4,7 +4,9 @@
 {% load base_tags %}
 {% load perm_tags %}
 
-{% block title %}{{ block.super }}Search{% endblock %}
+{% block title %}{{ block.super }} Search{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
@@ -21,30 +23,19 @@
 	
 	<div class="news-wrap">
     {% for n in news %}
+		{% with n.object as n %}
     	{% has_perm user news.view_news n as can_view %}
     	{% if can_view %}
 		<div class="news-wrap-search">
-			<div class="options">
 
-                <div class="dropdown-options">
-                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
-                    <ul>
-                        <li>Review Reports</li>
-                        <li>Optimize Meta Tags</li>
-                        <li>Attach Files</li>
-                        <li>View Revisions</li>
-                        <li>Delete</li>
-                    </ul>
-                </div>
-
+			<div class="options options-search">
                 <div class="quick-options">
 					{% news_options request.user n %} 	       
                 </div>
 			</div>
 
-
-            <h2><a href="{{ n.object.get_absolute_url }}">{{ n.headline }}</a></h2>
-            <div class="content">{{ n.body|striptags|truncatewords:20 }}</div>
+            <h2><a href="{{ n.get_absolute_url }}">{{ n.headline }}</a></h2>
+            <div class="content">{{ n.body|safe|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ n.create_dt|date:"D d M Y P" }} by {{ n.creator }}</div>
             </div>
@@ -55,6 +46,7 @@
             </form>
 		</div>
 		{% endif %}
+		{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>
     {% endfor %}

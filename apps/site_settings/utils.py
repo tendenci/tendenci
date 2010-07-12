@@ -33,7 +33,6 @@ def cache_settings(scope, scope_category):
         'scope_category': scope_category,
     }
     settings = Setting.objects.filter(**filters)
-    
     if settings:
         for setting in settings:
             keys = [SETTING_PRE_KEY, setting.scope, 
@@ -77,26 +76,44 @@ def get_setting(scope, scope_category, name):
         Gets a single setting value from within a scope
         and scope category
     """
+    value = u''
     keys = [SETTING_PRE_KEY, scope, 
             scope_category, 
             name]
     key = '.'.join(keys)
-    value = cache.get(key)
+    
+    setting = cache.get(key)
+    if setting:
+        value = setting.value
+
+        # convert data types
+        if setting.data_type == 'boolean':
+            value = value[0].lower() == 't'
+        if setting.data_type == 'int':
+            if value.strip(): value = int(value.strip())
+            else: value = 0 # default to 0
+                            
     if not value:
-        filters = {
-            'scope': scope,
-            'scope_category': scope_category,
-            'name': name
-        }
         try:
+            filters = {
+                'scope': scope,
+                'scope_category': scope_category,
+                'name': name
+            }            
+
             setting = Setting.objects.get(**filters)
+            cache_setting(setting.scope, setting.scope_category,setting.name,setting)
         except:
             setting = None
+            
         if setting:
-            cache_setting(setting.scope, 
-                          setting.scope_category,
-                          setting.name,
-                          setting.value)
-        value = cache.get(key)
-        if not value: value = ''
+            value = setting.value
+            
+            # convert data types
+            if setting.data_type == 'boolean':
+                value = value[0].lower() == 't'
+            if setting.data_type == 'int':
+                if value.strip(): value = int(value.strip())
+                else: value = 0 # default to 0
+                
     return value

@@ -4,7 +4,7 @@
 {% load base_tags %}
 {% load category_tags %}
 
-{% block title %}{{ block.super }}{{ job.get_title }}{% endblock %}
+{% block title %}{{ job.get_title }}{% endblock %}
 {% block meta_description %}{{ job.get_description }}{% endblock %}
 {% block meta_keywords %}{{ job.get_keywords }}{% endblock %}
 
@@ -25,8 +25,79 @@
              </div>
 		</div>
 			
-        <h2>{{ job.title }}</h2>
-        <div class="content">{{ job.description|safe }}</div>
+        <h1>{{ job.title }}</h1>
+
+		<h2>Job Information</h2>
+
+		<div class="section-block">
+			<div class="label">Description</div>
+			<div class="value">{{ job.description|safe }}</div>
+		</div>
+
+		<div class="section-line">
+			<div class="label">Position Type</div>
+			<div class="value">{{ job.period }}</div>
+			<div class="clear"></div>
+		</div>
+
+		<div class="section-line">
+			<div class="label">Position Reports To</div>
+			<div class="value">{{ job.position_reports_to }}</div>
+			<div class="clear"></div>
+		</div>
+
+		<div class="section-line">
+			<div class="label">Location</div>
+			<div class="value">{{ job.location }}</div>
+			<div class="clear"></div>
+		</div>
+
+		<div class="section-line">
+			<div class="label">Travel Required</div>
+			<div class="value">{{ job.percent_travel }} of the time (approximate)</div>
+			<div class="clear"></div>
+		</div>
+
+		<div class="section-line">
+			<div class="label">Starts On</div>
+			<div class="value">{{ job.start_dt }}</div>
+			<div class="clear"></div>
+		</div>
+
+		<h2>Job Requirements</h2>
+
+		<div class="section-block">
+			<div class="label">Experience</div>
+			<div class="value">{{ job.experience }}</div>
+		</div>
+
+		<div class="section-block">
+			<div class="label">Skills</div>
+			<div class="value">{{ job.skills }}</div>
+		</div>
+
+		<div class="section-line">
+			<div class="label">Education Required</div>
+			<div class="value">{{ job.skills }}</div>
+			<div class="clear"></div>
+		</div>
+
+		<h2>Company Information</h2>
+		<div class="company-wrap">
+			{{ job.contact_company }}<br />
+			{{ job.contact_address }}<br />
+			{{ job.contact_city }}, {{ job.contact_state }} {{ job.contact_zip_code }}<br />
+			{{ job.contact_country }}
+		</div>
+
+		<h2>Contact Information</h2>
+		<div class="contact-wrap">
+			<div>{{ job.contact_name }}</div>
+			<div>{{ job.contact_phone }}</div>
+			<div>{{ job.contact_fax }}</div>
+			<div><a href="">{{ job.contact_email }}</a></div>
+		</div>
+
         <div class="meta">
 			<div class="categories">
 				{% get_category_for_object job as category %}

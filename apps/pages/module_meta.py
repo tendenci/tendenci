@@ -1,23 +1,119 @@
 from django.utils.html import strip_tags
 from django.utils.text import unescape_entities
 from meta.utils import generate_meta_keywords
+from site_settings.utils import get_setting
+from django.utils.text import truncate_words
+
+from categories.models import Category
 
 class PageMeta():
 
     def get_title(self):
-        return self.object.title
+        object = self.object
+
+        ### Assign variables -----------------------  
+        geo_location = get_setting('site','global','sitegeographiclocation')
+        site_name = get_setting('site','global','sitedisplayname')
+        category = Category.objects.get_for_object(object, 'category')
+        subcategory = Category.objects.get_for_object(object, 'subcategory')
+
+        value = ''
+        
+        # start w/ title
+        value = '%s - %s' % (object.title, site_name)
+        value = value.strip()
+
+        if category:
+            value = '%s %s' % (value, category)
+        if category and subcategory:
+            value = '%s : %s' % (value, subcategory)
+
+        value = value.strip()
+        
+        if geo_location:
+            value = '%s %s' % (value, geo_location)
+
+        return value
 
     def get_description(self):
-        return_value = self.object.content
-        return_value = strip_tags(return_value)
-        return_value = unescape_entities(return_value)
-        return_value = return_value.replace("\n","")
-        return_value = return_value.replace("\r","")
+        object = self.object
 
-        return return_value
+        ### Assign variables -----------------------  
+        category = Category.objects.get_for_object(object, 'category')
+        subcategory = Category.objects.get_for_object(object, 'subcategory')
+        site_name = get_setting('site','global','sitedisplayname')
+        geo_location = get_setting('site','global','sitegeographiclocation')
+       
+        content = object.content
+
+        content = strip_tags(content) #strips HTML tags
+        content = unescape_entities(content)
+        content = content.replace("\n","").replace("\r","")
+        content = truncate_words(content, 50) # ~ about 250 chars
+
+        ### Build string -----------------------
+        value = object.title
+
+        value = '%s - %s' % (value, content)
+
+        if site_name:
+            value = '%s %s' % (value, site_name)
+        else:
+            if category:
+                value = '%s, %s' % (value, category)
+            if category and subcategory:
+                value = '%s, %s' % (value, subcategory)
+
+            value = '%s ' % value
+
+        value = '%s %s %s' % (
+            value, site_name, geo_location)
+
+        value = value.strip()
+
+        return value
 
     def get_keywords(self):
-        return generate_meta_keywords(self.object.content)
+        object = self.object
+
+        ### Assign variables -----------------------  
+        dynamic_keywords = generate_meta_keywords(object.content)
+        primary_keywords = get_setting('site','global','siteprimarykeywords')
+        secondary_keywords = get_setting('site','global','sitesecondarykeywords')
+        geo_location = get_setting('site','global','sitegeographiclocation')
+        site_name = get_setting('site','global','sitedisplayname')
+
+        ### Build string -----------------------
+        value = ''
+
+        if primary_keywords:
+            value = '%s %s' % (value, primary_keywords)
+            value = value.strip()
+
+        if object.title:
+            list = [
+                site_name,
+                geo_location,
+                object.title
+            ]
+
+            # remove blank items
+            for item in list:
+                if not item.strip():
+                    list.remove(item)
+ 
+            value = '%s %s, %s' % (value, ', '.join(list), dynamic_keywords)
+
+        else:
+            list = [
+                site_name,
+                geo_location,
+                primary_keywords,
+                secondary_keywords,
+            ]
+            value = '%s %s' % (value, ''.join(list))
+
+        return value
 
     def get_meta(self, object, name):
 
@@ -35,4 +131,4 @@ class PageMeta():
             else: return self.get_keywords()
         return ''
     
-  
+    
