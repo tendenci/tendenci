@@ -3,11 +3,17 @@
 <div class="t-iconrow">
 <ul>	
     {% has_perm user user_groups.change_group group as can_edit %}
+    {% has_perm user user_groups.add_groupmembership as can_add_member %}
+    {% has_perm user user_groups.delete_group group as can_delete %}
     {% if can_edit %} 
     	<li><a href="{% url group.edit group.slug %}" title="Edit Group" class="option-link edit">Edit</a></li>
     	<li><a href="{% url group.edit_perms group.id %}" class="option-link permissions" title="Edit Permissions">Permissions</a></li>
-    	<li><a href="{% url group.adduser group.slug %}" title="Add new member">Add Member</a></li>
-    	<li><a href="{% url group.delete group.id  %}" class="option-link delete" title="Delete Group">Delete</a></li>
+    	{% if can_add_member %} 
+    		<li><a href="{% url group.adduser group.slug %}" title="Add new member">Add Member</a></li>
+    	{% endif %}
+    	 {% if can_delete %} 
+    		<li><a href="{% url group.delete group.id  %}" class="option-link delete" title="Delete Group">Delete</a></li>
+   		{% endif %}
     {% endif %}
     
     
