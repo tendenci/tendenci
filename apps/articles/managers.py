@@ -22,12 +22,16 @@ class ArticleManager(Manager):
             sqs = sqs.auto_query(sqs.query.clean(query)) 
             if user:
                 if not is_an_admin:
+                    sqs = sqs.filter(status=True)
+                    sqs = sqs.filter(status_detail='active')
                     if not user.is_anonymous():
                         sqs = sqs.filter(allow_user_view=True)
                         sqs = sqs.filter_or(who_can_view__exact=user.username)
                     else:
                         sqs = sqs.filter(allow_anonymous_view=True)               
             else:
+                sqs = sqs.filter(status=True)
+                sqs = sqs.filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True) 
         else:
             if user:

@@ -2,17 +2,19 @@ from django import forms
 from email_blocks.models import EmailBlock
 
 class EmailBlockForm(forms.ModelForm):
-    #body = forms.CharField(max_length=10000, widget=forms.TextInput(attrs={'size':'40'}))
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
     email = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'size':'45'}))
     email_domain = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'size':'45'}))
     reason =forms.CharField(max_length=255, required=False, widget=forms.Textarea(attrs={'rows':'3'}))
-    
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+
     class Meta:
         model = EmailBlock
         fields = ('email',
                   'email_domain',
                   'reason',
                   'status',
+                  'status_detail',
                   )
     def save(self, user=None, *args, **kwargs):
         if user and user.id:
