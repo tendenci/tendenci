@@ -1,9 +1,11 @@
+from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.db.models import Count
 
 from user_groups.models import Group, GroupMembership
 from user_groups.forms import GroupForm, GroupMembershipForm, GroupPermissionForm
@@ -13,6 +15,9 @@ from perms.utils import is_admin
 from event_logs.models import EventLog
 #from perms.decorators import PageSecurityCheck
 from perms.utils import get_notice_recipients
+from django.contrib.admin.views.decorators import staff_member_required
+from entities.models import Entity
+from django.contrib.sites.models import Site
 
 try:
     from notification import models as notification
@@ -269,3 +274,17 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
         return HttpResponseRedirect(group.get_absolute_url())
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+
+@staff_member_required
+def users_added_report(request):
+    queryset = Group.objects.all()
+    if 'entity' in request.GET and request.GET['entity']:
+        queryset = queryset.filter(entity__pk=request.GET['entity'])
+    groups = queryset\
+            .annotate(user_count=Count('groupmembership'))#\
+            #.filter(groupmembership__create_dt__gte=datetime(1999, 1, 1))
+    return render_to_response('reports/users_added.html', 
+                              {'groups': groups, 
+                               'entities': Entity.objects.all(),
+                               'site': Site.objects.get_current()}, 
+                              context_instance=RequestContext(request))
