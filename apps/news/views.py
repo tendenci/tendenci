@@ -13,7 +13,7 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
-from perms.utils import get_administrators
+from perms.utils import get_notice_recipients
 try:
     from notification import models as notification
 except:
@@ -188,12 +188,14 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             messages.add_message(request, messages.INFO, 'Successfully added %s' % news)
             
             # send notification to administrators
-            if notification:
-                extra_context = {
-                    'object': news,
-                    'request': request,
-                }
-                notification.send(get_administrators(),'news_added', extra_context)
+            recipients = get_notice_recipients('module', 'news', 'newsrecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': news,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'news_added', extra_context)
             
             return HttpResponseRedirect(reverse('news.view', args=[news.slug]))
     else:
@@ -223,12 +225,14 @@ def delete(request, id, template_name="news/delete.html"):
         messages.add_message(request, messages.INFO, 'Successfully deleted %s' % news)
         
         # send notification to administrators
-        if notification:
-            extra_context = {
-                'object': news,
-                'request': request,
-            }
-            notification.send(get_administrators(),'news_deleted', extra_context)
+        recipients = get_notice_recipients('module', 'news', 'newsrecipients')
+        if recipients:
+            if notification:
+                extra_context = {
+                    'object': news,
+                    'request': request,
+                }
+                notification.send_emails(recipients,'news_deleted', extra_context)
         
         news.delete()
         return HttpResponseRedirect(reverse('news.search'))
