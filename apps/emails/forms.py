@@ -15,7 +15,6 @@ class EmailForm(forms.ModelForm):
                   'sender_display',
                   'reply_to',
                   'recipient',
-                  'status_detail',
                   'status',
                   )
     def save(self, user=None, *args, **kwargs):

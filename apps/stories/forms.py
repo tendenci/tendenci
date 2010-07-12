@@ -9,6 +9,7 @@ from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 
 class StoryForm(TendenciBaseForm):
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
 
     content = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
@@ -17,11 +18,11 @@ class StoryForm(TendenciBaseForm):
 
     fullstorylink = forms.CharField(label=_("Full Story Link"), required=False, max_length=300)
 
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'),
-                                    initial=datetime.now())
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
 
-    end_dt = SplitDateTimeField(label=_('End Date/Time'),
-                                    initial=datetime.now())
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now())
+
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
 
     class Meta:
         model = Story

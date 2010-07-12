@@ -9,14 +9,17 @@ from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 
 class NewsForm(TendenciBaseForm):
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
 
     body = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':News._meta.app_label, 
         'storme_model':News._meta.module_name.lower()}))
 
-    release_dt = SplitDateTimeField(label=_('Release Date/Time'),
-                                    initial=datetime.now())
+    release_dt = SplitDateTimeField(label=_('Release Date/Time'), 
+        initial=datetime.now())
+
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
            
     class Meta:
         model = News

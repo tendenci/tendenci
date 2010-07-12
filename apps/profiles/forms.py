@@ -15,6 +15,8 @@ APPS = ['profiles', 'user_groups', 'articles',
         'stories', 'actions']
 
 class ProfileForm(TendenciBaseForm):
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
+
     first_name = forms.CharField(label=_("First Name"), max_length=100,
                                  error_messages={'required': 'First Name is a required field.'})
     last_name = forms.CharField(label=_("Last Name"), max_length=100,
@@ -73,6 +75,9 @@ class ProfileForm(TendenciBaseForm):
                                widget=forms.Textarea(attrs={'rows':'3'}))
     language = forms.ChoiceField(initial="en-us", choices=(('en-us', u'English'),))
     dob = forms.DateField(required=False, widget=SelectDateWidget(None, range(THIS_YEAR-100, THIS_YEAR)))
+
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+
     class Meta:
         model = Profile
         fields = ('salutation', 
