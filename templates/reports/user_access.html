@@ -1,0 +1,29 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+
+<h1>User Access</h1>
+
+The following users have access times
+
+<table>
+<tr>
+	<td>Total User Records in Database: {{ total_users }}</td>
+</tr>
+<tr>
+	<td>Total User Records in Database: {{ total_logins }}</td>
+</tr>
+</table>
+
+{% for days, count in day_logins %}
+<table>
+<tr>
+	<th>LAST {{ days }} DAYS</th>
+</tr>
+<tr>
+	<td>Event 125200 - User Login: {{ count }}</td>
+</tr>
+</table>
+{% endfor %}
+
+{% endblock content %}
