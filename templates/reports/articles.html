@@ -1,0 +1,28 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+<h1>Article Reporting Options</h1>
+
+Article times read. Click the article headline to view the article. Click the numbers on the left to view those specific views. Blank headlines means the article was probably deleted but the view records are still kept for accurate reporting.
+
+<table>
+<tr>
+	<th>Viewed</th>
+	<th>Name</th>
+	<th>Views / Day</th>
+	<th>Created</th>
+</tr>
+{% for item in stats %}
+<tr>
+	<td>{{ item.count }}</td>
+	<td>{{ item.article }}</td>
+	<td>{{ item.per_day|floatformat:2 }}</td>
+	<td>{{ item.article.create_dt|date:"M d, Y" }}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock content %}
+
+
+stats

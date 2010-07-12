@@ -1,0 +1,29 @@
+h1 {
+	color:#204177;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:18px;
+	font-weight:bold;
+}
+
+
+.events-summary-chart {
+	height: 300px;
+}
+
+.events-summary-chart tr td {
+	vertical-align: bottom;
+	text-align: center;
+	width: 24px;
+}
+
+
+.events-summary {
+	width: 650px;
+}
+
+.events-summary li {
+	display: block;
+	width: 200px;
+	float: left;
+}
+
