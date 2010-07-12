@@ -548,9 +548,32 @@ def user_activity_report(request):
                 context_instance=RequestContext(request))
 
 
+@staff_member_required
 def admin_users_report(request):
     users = User.objects.all().filter(is_superuser=True)
     return render_to_response(
                 'reports/admin_users.html', 
                 {'users': users},  
                 context_instance=RequestContext(request))
+
+
+@staff_member_required
+def user_access_report(request):
+    now = datetime.now()
+    logins_qs = EventLog.objects.filter(event_id=125200)
+    
+    total_users = User.objects.all().count()
+    total_logins = logins_qs.count()
+    
+    day_logins = []
+    for days in [30, 60, 90, 120, 182, 365]:
+        count = logins_qs.filter(create_dt__gte=now-timedelta(days=days)).count()
+        day_logins.append((days, count))
+    
+    return render_to_response('reports/user_access.html', {
+                  'total_users': total_users,
+                  'total_logins': total_logins,
+                  'day_logins': day_logins,},  
+                context_instance=RequestContext(request))
+    
+    

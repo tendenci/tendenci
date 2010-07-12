@@ -11,6 +11,17 @@ authority.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
+    
+    #Reports:
+    url(r'^event-logs/reports/summary/$', 'event_logs.views.event_summary_report', name='reports-admin-users'),
+    url(r'^users/reports/users-activity-top10/$', 'profiles.views.user_activity_report', name='reports-user-activity'),
+    url(r'^users/reports/active-logins/$', 'profiles.views.user_access_report', name='reports-user-access'),
+    url(r'^users/reports/admin/$', 'profiles.views.admin_users_report', name='reports-admin-users'),
+    url(r'^users/reports/users-added/$', 'user_groups.views.users_added_report', name='reports-user-added'),
+    url(r'^articles/reports/rank/$', 'articles.views.articles_report', name='reports-articles'),
+    
+
+    
     (r'^notifications/', include('notification.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^base/', include('base.urls')),
@@ -49,13 +60,7 @@ urlpatterns = patterns('',
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
-    
-    #Reports:
-    url(r'^reports/user-activity/$', 'profiles.views.user_activity_report', name='reports-user-activity'),
-    url(r'^reports/admins/$', 'profiles.views.admin_users_report', name='reports-admin-users'),
-    url(r'^reports/events-summary/$', 'event_logs.views.event_summary_report', name='reports-admin-users'),
-    
-    
+
     
     # page view
     url(r'^(?P<slug>[\w\-\/]+)/$', 'pages.views.index', name="page"),
