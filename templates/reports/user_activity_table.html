@@ -1,0 +1,20 @@
+<table style="width: 80%;">
+<tr>
+	<th>#</th>
+	<th>Username</th>
+	<th>Lastname</th>
+	<th>Firstname</th>
+	<th>Email</th>
+	<th>Events</th>
+</tr>
+{% for user in users %}
+<tr>
+	<td>{{ forloop.counter }}</td>
+	<td><a href="{% url profile user.username %}">{{ user.username }}</a></td>
+	<td>{{ user.lastname }}</td>
+	<td>{{ user.firstname }}</td>
+	<td>{{ user.email }}</td>
+	<td>{{ user.event_count }}</td>
+</tr>
+{% endfor %}
+</table>

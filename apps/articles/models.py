@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -62,3 +63,6 @@ class Article(TendenciBaseModel ):
 
     def __unicode__(self):
         return self.headline
+    
+    def age(self):
+        return datetime.now() - self.create_dt

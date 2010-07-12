@@ -21,3 +21,7 @@ site_media/static/tresources
 # except for .gitignore
 !.gitignore
 
+#vitaliy local stuff
+libs/
+django
+database.db
