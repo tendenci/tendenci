@@ -60,9 +60,9 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
     job = get_object_or_404(Job, slug=slug)    
 
     log_defaults = {
-        'event_id' : 255000,
+        'event_id' : 255001,
         'event_data': '%s (%d) viewed by %s' % (job._meta.object_name, job.pk, request.user),
-        'description': '%s viewed' % job._meta.object_name,
+        'description': '%s viewed - print view' % job._meta.object_name,
         'user': request.user,
         'request': request,
         'instance': job,
