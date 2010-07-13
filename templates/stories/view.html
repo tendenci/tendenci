@@ -5,8 +5,8 @@
 {% block title %}{{ block.super }}{{ story.title }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
-<link rel="stylesheet" href="/site_media/static/css/stories.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/stories.css">
 {% endblock %}
 
 {% block body %}
@@ -15,15 +15,8 @@
     <div class="quick-options">
  	{% stories_options user story %}
  	</div>
-
         <h2>{{ story.title }}</h2>
-         <div class="clear-right"></div>
         <div class="content">{{ story.content|safe }}</div>
-        {% with story.get_image_url as image_url %}
-        {% if image_url %}
-        <div class="story_image" style="margin: 1em 0;"><a href="{{ image_url }}"><img src="{{ image_url }}" border="0" /></a></div>
-         {% endif %}
-         {% endwith %}
         <div class="meta">
 			<div class="categories">
 				{% get_category_for_object story as category %}
