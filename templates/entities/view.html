@@ -29,17 +29,17 @@
          <div class="notes">{{ entity.notes|safe }}</div>    
          <div class="summary">{{ entity.summary|safe }}</div> 
          
-         <p>    
-         <div class="contact"><h3>Contact:</h3><br>
-         {{ entity.contact_name|safe }}<br>	
-         {{ entity.phone|safe }}  {{ entity.fax|safe }}<br>
-         {{ entity.email|safe }}<br>
-         {{ entity.website|safe }}
-         </br></div>  
-  		 </p>
-           <p>    
-           <div class="admin_notes">{{ entity.admin_notes|safe }}</div>             
-   		 </p>      
+	         <p>    
+	         <div class="contact"><h3>Contact:</h3>
+		         {{ entity.contact_name|safe }}<br>	
+		         {{ entity.phone|safe }}  {{ entity.fax|safe }}<br>
+		         {{ entity.email|safe }}<br>
+		         {{ entity.website|safe }}
+	         </div>  
+	  		 </p>
+	           <p>    
+	           <div class="admin_notes">{{ entity.admin_notes|safe }}</div>             
+	   		 </p>      
         
         </div>
         
