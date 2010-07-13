@@ -18,6 +18,7 @@ from perms.utils import get_administrators
 from django.contrib.admin.views.decorators import staff_member_required
 from entities.models import Entity
 from django.contrib.sites.models import Site
+from event_logs.utils import request_month_range
 
 try:
     from notification import models as notification
@@ -276,11 +277,16 @@ def users_added_report(request):
     queryset = Group.objects.all()
     if 'entity' in request.GET and request.GET['entity']:
         queryset = queryset.filter(entity__pk=request.GET['entity'])
+    
+    from_date, to_date = request_month_range(request)
+    queryset = queryset.filter(groupmembership__create_dt__gte=from_date)
+    queryset = queryset.filter(groupmembership__create_dt__lte=to_date)
+    
     groups = queryset\
-            .annotate(user_count=Count('groupmembership'))#\
-            #.filter(groupmembership__create_dt__gte=datetime(1999, 1, 1))
+            .annotate(user_count=Count('groupmembership'))
     return render_to_response('reports/users_added.html', 
                               {'groups': groups, 
                                'entities': Entity.objects.all(),
-                               'site': Site.objects.get_current()}, 
+                               'site': Site.objects.get_current(),
+                               'date_range': (from_date, to_date)}, 
                               context_instance=RequestContext(request))

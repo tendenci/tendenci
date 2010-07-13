@@ -20,7 +20,7 @@ Lists all users with a securitylevel of Administrator. This can be helpful as a 
 	<th>Phone</th>
 </tr>
 {% for user in users %}
-<tr>
+<tr class="{% cycle 'odd' '' %}">
 	<td>{{ forloop.counter }}</td>
 	<td><a href="{% url profile user.username %}">{{ user.username }}</a></td>
 	<td>{{ user.pk }}</td>

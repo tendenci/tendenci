@@ -27,3 +27,7 @@ h1 {
 	float: left;
 }
 
+
+tr.odd {
+	background-color: #DDDDDD;
+}
