@@ -4,15 +4,18 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.db.models import Count
 
 from base.http import Http403
 from articles.models import Article
 from articles.forms import ArticleForm
 from perms.models import ObjectPermission
-from perms.utils import get_administrators
+from perms.utils import get_notice_recipients
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.contenttypes.models import ContentType
 
 try:
     from notification import models as notification
@@ -194,12 +197,16 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % article)
                 
                 # send notification to administrators
-                if notification:
-                    extra_context = {
-                        'object': article,
-                        'request': request,
-                    }
-                    notification.send(get_administrators(),'article_added', extra_context)
+                # get admin notice recipients
+                recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
+                if recipients:
+                    if notification:
+                        extra_context = {
+                            'object': article,
+                            'request': request,
+                        }
+                        #notification.send(get_administrators(),'article_added', extra_context)
+                        notification.send_emails(recipients,'article_added', extra_context)
                     
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
@@ -230,12 +237,14 @@ def delete(request, id, template_name="articles/delete.html"):
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % article)
 
             # send notification to administrators
-            if notification:
-                extra_context = {
-                    'object': article,
-                    'request': request,
-                }
-                notification.send(get_administrators(),'article_deleted', extra_context)
+            recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': article,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'article_deleted', extra_context)
                             
             article.delete()
                                     
@@ -245,3 +254,21 @@ def delete(request, id, template_name="articles/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
+    
+
+@staff_member_required
+def articles_report(request):
+    stats= EventLog.objects.filter(event_id=435000)\
+                    .values('content_type', 'object_id')\
+                    .annotate(count=Count('pk'))\
+                    .order_by('-count')
+    for item in stats:
+        ct = ContentType.objects.get_for_id(item['content_type'])
+        assert ct.model_class() == Article
+        article = Article.objects.get(pk=item['object_id'])
+        item['article'] = article
+        item['per_day'] = item['count'] * 1.0 / article.age().days
+        
+    return render_to_response('reports/articles.html', 
+            {'stats': stats}, 
+            context_instance=RequestContext(request))

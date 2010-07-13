@@ -1,0 +1,37 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+
+<h1>Site Users Added Report</h1>
+
+Site: {{site}}
+<br>
+URL: {{ site.domain }}
+
+
+<form>
+<select name='entity'>
+	<option></option>
+	{% for e in entities %}
+		<option value="{{e.pk}}">{{e}}</option>
+	{% endfor %}
+</select>
+<input type="submit" value="Submit">
+</form>
+
+<table>
+<tr>
+	<td>#</td>
+	<td>Group</td>
+	<td># Users</td>
+</tr>
+{% for group in groups %}
+<tr>
+	<td>{{ forloop.counter }}</td>
+	<td>{{ group }}</td>
+	<td>{{ group.user_count }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock content %}
+
