@@ -1,0 +1,1 @@
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} Payment Attempt Submitted by {{ mp.first_name }} {{ mp.last_name }}
