@@ -115,6 +115,7 @@ def payment_update_authorizenet(user, response_d, payment, **kwargs):
         if payment.status_detail == '':
             payment.status_detail = 'not approved'
             payment.save()
+            
     
     
     

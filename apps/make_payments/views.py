@@ -9,6 +9,13 @@ from make_payments.models import MakePayment
 from site_settings.utils import get_setting
 from base.http import Http403
 from base.utils import tcurrency
+from event_logs.models import EventLog
+from perms.utils import get_notice_recipients
+
+try:
+    from notification import models as notification
+except:
+    notification = None
 
 
 def add(request, form_class=MakePaymentForm, template_name="make_payments/add.html"):
@@ -34,11 +41,44 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
             
             # create invoice
             invoice = make_payment_inv_add(user, mp)
+            # log an event for invoice add
+            log_defaults = {
+                'event_id' : 311000,
+                'event_data': '%s (%d) added by %s' % (invoice._meta.object_name, invoice.pk, request.user),
+                'description': '%s added' % invoice._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': invoice,
+            }
+            EventLog.objects.log(**log_defaults)  
+            
             # updated the invoice_id for mp, so save again
             mp.save(user)
             
-            # email to admin - later
-            # email to user - later
+            # log an event for make_payment
+            log_defaults = {
+                'event_id' : 671000,
+                'event_data': '%s (%d) added by %s' % (mp._meta.object_name, mp.pk, request.user),
+                'description': '%s added' % mp._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': mp,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            # send notification to administrators
+            # get admin notice recipients
+            recipients = get_notice_recipients('module', 'payments', 'paymentrecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'mp': mp,
+                        'invoice': invoice,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'make_payment_added', extra_context)
+            
+            # email to user 
             email_receipt = form.cleaned_data['email_receipt']
             if email_receipt:
                 make_payment_email_user(request, mp, invoice)
