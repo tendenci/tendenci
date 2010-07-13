@@ -13,7 +13,7 @@ from perms.models import ObjectPermission
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
-from perms.utils import get_administrators
+from perms.utils import get_notice_recipients
 from perms.utils import is_admin
 
 try:
@@ -114,12 +114,14 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
                 
                 if not is_admin(request.user):
                     # send notification to administrators
-                    if notification:
-                        extra_context = {
-                            'object': page,
-                            'request': request,
-                        }
-                        notification.send(get_administrators(),'page_edited', extra_context)
+                    recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
+                    if recipients:
+                        if notification:
+                            extra_context = {
+                                'object': page,
+                                'request': request,
+                            }
+                            notification.send_emails(recipients,'page_edited', extra_context)
                                                               
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))             
         else:
@@ -197,12 +199,14 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                 
                 if not is_admin(request.user):
                     # send notification to administrators
-                    if notification:
-                        extra_context = {
-                            'object': page,
-                            'request': request,
-                        }
-                        notification.send(get_administrators(),'page_added', extra_context)
+                    recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
+                    if recipients:
+                        if notification:
+                            extra_context = {
+                                'object': page,
+                                'request': request,
+                            }
+                            notification.send_emails(recipients,'page_added', extra_context)
                     
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))
         else:
@@ -231,12 +235,14 @@ def delete(request, id, template_name="pages/delete.html"):
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % page)
             
             # send notification to administrators
-            if notification:
-                extra_context = {
-                    'object': page,
-                    'request': request,
-                }
-                notification.send(get_administrators(),'page_deleted', extra_context)
+            recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': page,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'page_deleted', extra_context)
             
             page.delete()
             return HttpResponseRedirect(reverse('page.search'))
