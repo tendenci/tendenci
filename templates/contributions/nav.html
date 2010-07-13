@@ -26,6 +26,9 @@
 		</ul>
 		
 	</li>
+	{% if MODULE_USERS_ENABLED %}
+	<li><a href="{% url profile.search %}">{% firstof MODULE_USERS_LABEL 'Users' %}</a></li>
+	{% endif %}
 	{% if MODULE_EVENT_LOGS_ENABLED %}
 	<li><a href="{% url event_logs %}">{% firstof MODULE_EVENT_LOGS 'Event Logs' %}</a></li>
 	{% endif %}
