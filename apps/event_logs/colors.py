@@ -1,5 +1,10 @@
 # colors from schipul_codebase_dev\cb\eventlogs\cb_eventlogs_hex.asp
 # colors = { 'event_id':'hex color' }
+
+# **************************************************
+# WHEN you ADD colors here make sure and ADD them
+# to the fixture as well
+# ************************************************** 
 colors = {
     # profiles - BLUE base - complement is ORANGE
     '120000':'3300FF', # base
