@@ -26,7 +26,30 @@
 		</div>
 			
         <h2>{{ article.headline }}</h2>
-        <div class="content">{{ article.body|safe }}</div>
+ 	    <div class="article-wrap">
+			<div class="options">
+	             <div class="quick-options">
+					{% article_options request.user article %} 	       
+	             </div>
+			</div>
+	
+	        <h2>{{ article.headline }}</h2>
+	        <div class="content">{{ article.body|safe }}
+			<p>&nbsp;</p> 
+	 		<p>Release Date: {{ article.release_dt }}</p>
+			<p>Source: {{ article.source|safe }}</p>
+			<p>&nbsp;</p>
+	        <p>    
+	         <div class="contact"><h4>Contact:</h4>
+		         {{ article.first_name|safe }} {{ article.last_name|safe }}<br>	
+		             
+		         {{ article.phone|safe }}  {{ article.fax|safe }}<br>
+		         {{ article.email|safe }}<br>
+		         {{ article.website|safe }}
+	         </div>  
+	 		</p>               
+        </div>
+
         <div class="meta">
 			<div class="categories">
 				{% get_category_for_object article as category %}
