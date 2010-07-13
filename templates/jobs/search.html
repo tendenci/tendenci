@@ -63,7 +63,7 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_job = confirm('Permenantly delete {% firstof MODULE_JOBS_LABEL 'Job' %}?');	// confirm
-				if(delete_job) $(this).parents('.job-wrap').find('form[name="job-delete"]').submit() // delete: if OK
+				if(delete_job) $(this).parents('.job-wrap-search').find('form[name="job-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});
