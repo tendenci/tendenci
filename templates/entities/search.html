@@ -16,10 +16,15 @@
     {% entity_nav request.user %}
 
     <h1>{{ MODULE_ENTITIES_LABEL }} Search</h1>
-
+	{% entity_search %}
     {% autopaginate entities 10 %}
 	<div class="entities-wrap">
     {% for entity in entities %}
+
+    	{% with entity.object as entity %}
+    	{% has_perm user entities.view_entity entity as can_view %}
+    	{% if can_view %}
+
 		<div class="entity-wrap-search">
 			<div class="options">
 
@@ -40,20 +45,23 @@
 			</div>
 
 
-            <h2><a href="{% url entity entity.id %}">{{ entity.entity_name }}</a></h2>
+            <h2><a href="{% url entity entity.pk %}">{{ entity.entity_name }}</a></h2>
             <div class="content">{{ entity.entity_name|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ entity.create_dt|date:"D d M Y P" }} by {{ entity.creator }}</div>
             </div>
 
             <!-- delete-entity form -->
-            <form name="entity-delete" method="POST" action="{% url entity.delete entity.id %}">
+            <form name="entity-delete" method="POST" action="{% url entity.delete entity.pk %}">
                 <input type="hidden" name="action" value="delete">
             </form>
 
 		</div>
+		{% endif %}
+	{% endwith %}
+
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>0 Results Found</div>	
     {% endfor %}
 	</div>
 
