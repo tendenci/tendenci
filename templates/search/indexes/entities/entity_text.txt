@@ -1,0 +1,11 @@
+{{ object.entity_name }}
+by {{ object.creator }}
+by {{ object.object.creator.get_full_name }}
+{{ object.contact_name }}
+{{ object.phone }}
+{{ object.fax }}
+{{ object.email }}
+{{ object.website }}
+{{ object.summary }}
+{{ object.notes }}
+{{ object.admin_notes }}
