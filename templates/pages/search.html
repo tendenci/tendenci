@@ -66,7 +66,7 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_page = confirm("Permenantly delete {% firstof MODULE_PAGES_LABEL 'Page' %}?");	// confirm
-				if(delete_page) $(this).parents('.page-wrap').find('form[name="page-delete"]').submit() // delete: if OK
+				if(delete_page) $(this).parents('.page-wrap-search').find('form[name="page-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});

@@ -63,7 +63,7 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_news = confirm("Permenantly delete {% firstof MODULE_NEWS_LABEL 'News' %}?");	// confirm
-				if(delete_news) $(this).parents('.news-wrap').find('form[name="news-delete"]').submit() // delete: if OK
+				if(delete_news) $(this).parents('.news-wrap-search').find('form[name="news-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});
