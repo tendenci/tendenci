@@ -31,7 +31,7 @@
                 </div>
 			</div>
             <h2><a href="{{ location.get_absolute_url }}">{% firstof location.location_name "Untitled" %}</a></h2>
-            <div class="content">{{ location.description|safe|striptags|truncatewords:20 }}</div>
+            <div class="content">{{ location.description|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Released on {{ location.release_dt|date:"D d M Y P" }} by {{ location.creator }}</div>
             </div>
