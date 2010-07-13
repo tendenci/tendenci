@@ -1,10 +1,10 @@
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
+from django.conf import settings
 from base.http import Http403
 from invoices.models import Invoice
 from invoices.forms import AdminNotesForm, AdminAdjustForm
-from invoices.utils import invoice_html_display
 from perms.utils import is_admin
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
@@ -23,15 +23,18 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     else:
         form = None
     
-    invoice_display = invoice_html_display(request, invoice)
     notify = request.GET.get('notify', '')
     if guid==None: guid=''
+    
+    merchant_login = False
+    if hasattr(settings, 'MERCHANT_LOGIN') and settings.MERCHANT_LOGIN:
+        merchant_login = True
     
     return render_to_response(template_name, {'invoice': invoice,
                                               'guid':guid, 
                                               'notify': notify, 
                                               'form':form,
-                                              'invoice_display':invoice_display}, 
+                                              'merchant_login': merchant_login}, 
         context_instance=RequestContext(request))
     
 def search(request, template_name="invoices/search.html"):

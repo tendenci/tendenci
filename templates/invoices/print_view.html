@@ -1,4 +1,7 @@
 {% extends "invoices/base.html" %}
+{% load invoice_tags %}
+{% load perm_tags %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}Invoice View{% endblock %}
 
@@ -14,7 +17,28 @@
 
 <div>{{ notify }}</div>
 <div class="invoice-view-display">
-{{ invoice_display|safe }}
+{% is_admin request.user as isadmin %}
+<div class="invoice-view-wrap">
+	{% if invoice.is_tendered %}
+		<span>TENDERED: {{ invoice.tender_date|date:'N j, Y h:i a' }}</span>
+	{% else %}
+		<div class="subtitles">E-S-T-I-M-A-T-E &nbsp;&nbsp;</div>
+	{% endif %}
+	
+	{% invoice_makepayments_display request invoice %}
+	{% invoice_total_display request invoice %}
+	
+	{% if invoice.balance > 0 and merchant_login %}
+		<div class="invoice-view-box">   
+        <div class="invoice-view-payonline">
+        <a href="{% url payments.views.pay_online invoice.id invoice.guid %}" class="body_copy_yellow" title="Pay Online">Pay Online Now</a>
+        </div>
+        <div class="clear-right"></div>
+       </div>
+	{% endif %}
+</div>
+
+{% payment_history_display request invoice %}
 
 </div>
 {% endblock %}
