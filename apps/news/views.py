@@ -65,9 +65,9 @@ def print_view(request, slug, template_name="news/print-view.html"):
         raise Http403
 
     log_defaults = {
-        'event_id' : 305500,
+        'event_id' : 305501,
         'event_data': '%s (%d) viewed by %s' % (news._meta.object_name, news.pk, request.user),
-        'description': '%s viewed' % news._meta.object_name,
+        'description': '%s viewed - print view' % news._meta.object_name,
         'user': request.user,
         'request': request,
         'instance': news,
@@ -107,7 +107,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
 
             # assign new permissions
             user_perms = form.cleaned_data['user_perms']
-            if user_perms: ObjectPermission.objects.assign(user_perms, file)               
+            if user_perms: ObjectPermission.objects.assign(user_perms, news)               
 
             # assign creator permissions
             ObjectPermission.objects.assign(news.creator, news)
