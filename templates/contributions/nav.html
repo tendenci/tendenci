@@ -1,19 +1,33 @@
 {% load base_tags %}
 {% load perm_tags %}
 
-<div class="back-to-search">
-    <a href="{% url dashboard %}">&laquo; Dashboard</a>
-    {% has_perm user contributions.add_contribution as can_add %}
-    
-    {% url contribution.search as search_url %}
-    {% if not search_url in request.path %}
-    	<a href="{{ search_url }}">Search {% firstof MODULE_CONTRIBUTION_LABEL 'Contributions' %}</a>&nbsp;
-    {% endif %}
-    
-    {% url contribution.add as add_url %}
-    {% if not add_url in request.path %}
-    {% if can_add %}
-	    <a href="{{ add_url }}">Add {% firstof MODULE_CONTRIBUTION_LABEL 'Contributions' %}</a>
-    {% endif %}
-    {% endif %}
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>{% firstof MODULE_CONTRIBUTIONS_LABEL 'Contributions' %}</span>
+		<ul id="secondary">
+			<li><a href="{% url articles %}">{% firstof MODULE_CONTRIBUTIONS_LABEL 'Contributions' %}:</a></li> 
+			{% if nav_object %}
+				{% if can_view_article %}
+				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
+				{% endif %}
+			{% endif %}
+			<li><a href="{% url article.search %}">Search</a></li>
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
+		</ul>
+		
+	</li>
+	{% if MODULE_EVENT_LOGS_ENABLED %}
+	<li><a href="{% url event_logs %}">{% firstof MODULE_EVENT_LOGS 'Event Logs' %}</a></li>
+	{% endif %}
+	</ul>
 </div>
