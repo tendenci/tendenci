@@ -10,6 +10,7 @@ from entities.models import Entity
 from entities.forms import EntityForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
+from perms.utils import is_admin
 
 def index(request, id=None, template_name="entities/view.html"):
     if not id: return HttpResponseRedirect(reverse('entity.search'))
@@ -31,7 +32,10 @@ def index(request, id=None, template_name="entities/view.html"):
         raise Http403
 
 def search(request, template_name="entities/search.html"):
-    entities = Entity.objects.all()
+    query = request.GET.get('q', None)
+    is_an_admin = is_admin(request.user)
+    entities = Entity.objects.search(query, user=request.user, is_admin=is_an_admin)
+    #entities = Entity.objects.all()
 
     log_defaults = {
         'event_id' : 294000,
