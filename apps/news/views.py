@@ -65,9 +65,9 @@ def print_view(request, slug, template_name="news/print-view.html"):
         raise Http403
 
     log_defaults = {
-        'event_id' : 305500,
+        'event_id' : 305501,
         'event_data': '%s (%d) viewed by %s' % (news._meta.object_name, news.pk, request.user),
-        'description': '%s viewed' % news._meta.object_name,
+        'description': '%s viewed - print view' % news._meta.object_name,
         'user': request.user,
         'request': request,
         'instance': news,

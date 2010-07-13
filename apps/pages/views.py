@@ -64,9 +64,9 @@ def print_view(request, slug, template_name="pages/print-view.html"):
 
     if request.user.has_perm('pages.view_page', page):
         log_defaults = {
-            'event_id' : 585000,
+            'event_id' : 585001,
             'event_data': '%s (%d) viewed by %s' % (page._meta.object_name, page.pk, request.user),
-            'description': '%s viewed' % page._meta.object_name,
+            'description': '%s viewed - print view' % page._meta.object_name,
             'user': request.user,
             'request': request,
             'instance': page,
