@@ -1,0 +1,41 @@
+{% load base_filters %}
+
+{# user info #}
+<div class="invoice-view-box">
+	{# make 3 blocks in the first box #}
+	<div class="invoice-view-detail-left">
+		{% if mp %}
+			<a href="{% url make_payment.view mp.id %}" title="View Make Payment">{{ mp.id }}</a>
+		{% else %}
+			{{ invoice.invoice_object_type_id }}
+		{% endif%}
+	</div>
+	
+	<div class="invoice-view-detail-middle">
+		<div class="invoice-item">
+			{% if mp %}
+				Payment Made by {{ mp.first_name }} {{mp.last_name}}
+			{% else %}
+				Make Payment Information not available
+			{% endif%}
+		</div>
+		<div class="invoice-item">Phone: {{ mp.phone }}</div>
+		<div class="invoice-item">Email: {{ mp.email }}</div>
+		{% if mp.company %}
+			<div class="invoice-item">Company: {{ mp.company }}</div>
+		{% endif%}
+		{% if mp.address or mp.address2 or mp.city or mp.state or mp.zip_code  %}
+			<div class="invoice-item">Address: {{ mp.address }} {{ mp.address2 }}
+				{{ mp.city }} {{ mp.state }} {{ mp.zip_code }}
+			</div>
+		{% endif%}
+	</div>
+	
+	<div class="invoice-view-detail-right">
+		Amount: {{ invoice.total|format_currency }}
+	</div>
+	<div class="clear-both"></div>
+</div>
+
+	
+
