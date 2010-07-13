@@ -29,14 +29,7 @@
  					{% stories_options request.user story %}
 			    </div>
 
-            <h2><a href="{% url story story.pk %}">{{ story.title }}</a></h2>
-             <div class="clear-right"></div>
-             
-              {% with story.object.get_image_url as image_url %}
-        	{% if image_url %}
-        		<div class="story_image" style="margin: 1em 0;"><a href="{{ image_url }}"><img src="{{ image_url }}" border="0" /></a></div>
-         		{% endif %}
-         	{% endwith %}
+            <h2><a href="{% url story story.pk %}">{{ story.title }}</a></h2>             
             <div class="content">{{ story.content|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ story.create_dt|date:"D d M Y P" }} by {{ story.creator }}</div>

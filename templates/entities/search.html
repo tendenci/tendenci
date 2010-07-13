@@ -20,9 +20,11 @@
     {% autopaginate entities 10 %}
 	<div class="entities-wrap">
     {% for entity in entities %}
+
     	{% with entity.object as entity %}
     	{% has_perm user entities.view_entity entity as can_view %}
     	{% if can_view %}
+
 		<div class="entity-wrap-search">
 			<div class="options">
 
@@ -57,6 +59,7 @@
 		</div>
 		{% endif %}
 	{% endwith %}
+
 	{% empty %}
 		<div>0 Results Found</div>	
     {% endfor %}
