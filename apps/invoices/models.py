@@ -8,6 +8,8 @@ from django.utils.translation import ugettext_lazy as _
 from perms.utils import is_admin
 from invoices.managers import InvoiceManager
 
+from event_logs.models import EventLog
+
 class Invoice(models.Model):
     guid = models.CharField(max_length=50)
     invoice_object_type = models.CharField(_('object_type'), max_length=50, blank=True, null=True)
