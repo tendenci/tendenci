@@ -250,6 +250,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
             form = form_class(request.user, request.POST)
             if form.is_valid():
                 photo_set = form.save(commit=False)
+
                 photo_set.creator = request.user
                 photo_set.creator_username = request.user.username
                 photo_set.owner = request.user
