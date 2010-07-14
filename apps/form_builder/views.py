@@ -12,6 +12,10 @@ from contacts.models import Contact, Address, Phone, Email, URL
 from form_builder.forms import ContactForm
 from django.contrib.auth.models import User, AnonymousUser
 
+from perms.utils import get_notice_recipients
+try: from notification import models as notification
+except: notification = None
+
 def index(request, form_class=ContactForm, template_name="form.html"):
 
     if request.method == "POST":
@@ -87,14 +91,36 @@ def index(request, form_class=ContactForm, template_name="form.html"):
                 'message_link':message_link,
                 })
 
-            # TODO: replace with more dynamic sender 
-            sender = settings.DEFAULT_FROM_EMAIL
-            # TODO: replace with more dynamic list of recipients
-            recipients = [admin[1] for admin in settings.ADMINS]
+#            # TODO: replace with more dynamic sender 
+#            sender = settings.DEFAULT_FROM_EMAIL
+#            # TODO: replace with more dynamic list of recipients
+#            recipients = [admin[1] for admin in settings.ADMINS]
+#
+#            msg = EmailMessage(subject, body, sender, recipients)
+#            msg.content_subtype = 'html'
+#            msg.send(fail_silently=True)
 
-            msg = EmailMessage(subject, body, sender, recipients)
-            msg.content_subtype = 'html'
-            msg.send(fail_silently=True)
+            # send notification to administrators
+            # get admin notice recipients
+            recipients = get_notice_recipients('module', 'contacts', 'contactrecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                    'contact':contact,
+                    'first_name':first_name,
+                    'last_name':last_name,
+                    'address':address,
+                    'city':city,
+                    'state':state,
+                    'zipcode':zipcode,
+                    'country':country,
+                    'phone':phone,
+                    'email':email,
+                    'url':url,
+                    'message':message,
+                    'message_link':message_link,
+                    }
+                    notification.send_emails(recipients,'contact_submitted', extra_context)
 
             try: user = User.objects.filter(email=email)[0]
             except: user = None
