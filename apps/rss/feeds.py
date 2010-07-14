@@ -7,6 +7,7 @@ from django.contrib.syndication.views import FeedDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 #from django.utils.feedgenerator import Rss201rev2Feed
+from django.conf import settings
 from site_settings.utils import get_setting
 
 from articles.models import Article
@@ -18,6 +19,10 @@ site_url = get_setting('site', 'global', 'siteurl')
 site_display_name = get_setting('site', 'global', 'sitedisplayname')
 site_description = get_setting('site', 'global', 'sitedescription')
 if site_description == '': site_description = 'All syndicated rss feeds on %s' % site_display_name
+
+max_items = settings.MAX_RSS_ITEMS_PER_OBJECT
+if not max_items: max_items = 20
+    
 
 class MainRSSFeed(Feed):
     #feed_type = Rss201rev2Feed
@@ -32,14 +37,14 @@ class MainRSSFeed(Feed):
                                        status_detail='active',
                                        allow_anonymous_view=1,
                                        release_dt__lte=datetime.now()).models(Article, 
-                                                                              News).order_by('-create_dt'),
+                                                                              News).order_by('-create_dt')[:max_items*2],
                 
                 SearchQuerySet().filter(syndicate=1, status=1,  
                                        status_detail='active',
-                                       allow_anonymous_view=1).models(Page).order_by('-create_dt'),
+                                       allow_anonymous_view=1).models(Page).order_by('-create_dt')[:max_items],
                 SearchQuerySet().filter(status=1,  
                                        status_detail='active',
-                                       allow_anonymous_view=1).models(PhotoSet).order_by('-create_dt'),
+                                       allow_anonymous_view=1).models(PhotoSet).order_by('-create_dt')[:max_items],
 
                )
 

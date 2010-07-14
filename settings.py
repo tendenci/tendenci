@@ -263,6 +263,11 @@ AUTHNET_KEY = ""
 MERCHANT_LOGIN = ""
 MERCHANT_TXN_KEY = ""
 
+#-------------------------------------------------------------------#
+# Maximum number of rss items to display per object on the main rss
+#-------------------------------------------------------------------#
+MAX_RSS_ITEMS_PER_OBJECT = 20
+
 # --------------------------------------#
 # CAPTCHA SETTINGS
 # --------------------------------------#
@@ -271,6 +276,7 @@ CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
 
 # Django Messaging system
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
 
 # local settings for development
 try:
