@@ -516,11 +516,16 @@ def password_change(request, id, template_name='registration/password_change_for
         post_change_redirect = reverse('profiles.views.password_change_done', kwargs={'id':id})
     if request.method == "POST":
         form = password_change_form(user=user_edit, data=request.POST)
+        if is_admin(request.user):
+            del form.fields['old_password']
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(post_change_redirect)
     else:
         form = password_change_form(user=user_edit)
+        # an admin doesn't have to enter the old password
+        if is_admin(request.user):
+            del form.fields['old_password']
     return render_to_response(template_name, {
         'user_this': user_edit,
         'form': form,
