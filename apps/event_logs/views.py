@@ -89,7 +89,7 @@ def event_summary_report(request):
                 .values('day', 'source')\
                 .annotate(count=Count('pk'))\
                 .order_by('day', 'source')
-    chart_data = day_bars(chart_data, 2010, 7)
+    chart_data = day_bars(chart_data, from_date.year, from_date.month)
     
     summary_data = queryset\
                 .values('source')\
