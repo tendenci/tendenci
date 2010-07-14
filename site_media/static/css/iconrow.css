@@ -58,6 +58,8 @@
 .t-iconrow a.usergroups{background-image: url('/site_media/static/tresources/en/images/icons/usergroups12x12.gif');}
 .t-iconrow a.vcard{background-image: url('/site_media/static/tresources/en/images/icons/vcard12x12.gif');}
 .t-iconrow a.xml{background-image: url('/site_media/static/tresources/en/images/icons/xml12x12.gif');}
+.t-iconrow a.changepassword {background-image: url('/site_media/static/images/icons/password.png');}
+.t-iconrow a.addmember {background-image: url('/site_media/static/images/icons/add.png');}
 
 .t-iconrow img.non-interactive{vertical-align: baseline;}
 

@@ -9,7 +9,7 @@
     	<li><a href="{% url group.edit group.slug %}" title="Edit Group" class="option-link edit">Edit</a></li>
     	<li><a href="{% url group.edit_perms group.id %}" class="option-link permissions" title="Edit Permissions">Permissions</a></li>
     	{% if can_add_member %} 
-    		<li><a href="{% url group.adduser group.slug %}" title="Add new member">Add Member</a></li>
+    		<li><a href="{% url group.adduser group.slug %}" class="option-link addmember" title="Add new member">Add Member</a></li>
     	{% endif %}
     	 {% if can_delete %} 
     		<li><a href="{% url group.delete group.id  %}" class="option-link delete" title="Delete Group">Delete</a></li>
