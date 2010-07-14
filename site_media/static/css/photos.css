@@ -120,7 +120,7 @@ div.gallery-photo-thumb img {
 }
 .photo-instance {
 	float: left;
-	width: 1000px;
+	width: 100%;
 }
 .photo-sets-wrap {
 	float: right;

@@ -91,10 +91,6 @@ def add(request, form_class=ContactForm, template_name="contacts/add.html"):
 #                    'instance': contact,
 #                }
 #                EventLog.objects.log(**log_defaults)
-                               
-                # assign permissions for selected users
-#                user_perms = form.cleaned_data['user_perms']
-#                if user_perms: ObjectPermission.objects.assign(user_perms, contact)
                 
                 # assign creator permissions
                 ObjectPermission.objects.assign(contact.creator, contact) 

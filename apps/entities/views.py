@@ -35,7 +35,6 @@ def search(request, template_name="entities/search.html"):
     query = request.GET.get('q', None)
     is_an_admin = is_admin(request.user)
     entities = Entity.objects.search(query, user=request.user, is_admin=is_an_admin)
-    #entities = Entity.objects.all()
 
     log_defaults = {
         'event_id' : 294000,
@@ -81,7 +80,16 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
                 entity.creator_username = request.user.username
                 entity.owner = request.user
                 entity.owner_username = request.user.username               
-                entity.save()
+                entity.save() # get pk
+
+                # assign permissions for selected users
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, entity)
+                # assign creator permissions
+                ObjectPermission.objects.assign(entity.creator, entity) 
+
+                entity.save() # update search-index w/ permissions
 
                 log_defaults = {
                     'event_id' : 291000,
@@ -92,14 +100,6 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
                     'instance': entity,
                 }
                 EventLog.objects.log(**log_defaults)
-               
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, entity)
-                
-                # assign creator permissions
-                ObjectPermission.objects.assign(entity.creator, entity) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % entity)
                 
@@ -121,6 +121,15 @@ def edit(request, id, form_class=EntityForm, template_name="entities/edit.html")
             form = form_class(request.user, request.POST, instance=entity)
             if form.is_valid():               
                 entity = form.save(commit=False)
+
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(entity)
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, entity)
+                messages.add_message(request, messages.INFO, 'Successfully updated %s' % entity)   
+
                 entity.save()
 
                 log_defaults = {
@@ -131,17 +140,7 @@ def edit(request, id, form_class=EntityForm, template_name="entities/edit.html")
                     'request': request,
                     'instance': entity,
                 }
-                EventLog.objects.log(**log_defaults)
-
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(entity)
-                
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, entity)
-                
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % entity)                              
+                EventLog.objects.log(**log_defaults)                           
 
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))             
         else:
