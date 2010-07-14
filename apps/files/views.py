@@ -18,8 +18,13 @@ def index(request, id=None, download='', template_name="files/view.html"):
     file = get_object_or_404(File, pk=id)
 
     # check permission
-    if not request.user.has_perm('files.view_file', file):
-        raise Http403
+    # if not request.user.has_perm('files.view_file', file):
+    #    raise Http403
+    
+    # check public permissions
+    if not file.is_public:
+        if not request.user.is_authenticated():
+            raise Http403
 
     try: data = file.file.read()
     except: raise Http404
