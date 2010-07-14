@@ -36,7 +36,7 @@ class PageIndex(indexes.RealTimeSearchIndex):
     
     # for rss
     can_syndicate = indexes.BooleanField()
-    syndicate_order = indexes.DateTimeField()
+    order = indexes.DateTimeField()
     
     def prepare_can_syndicate(self, obj):
         if obj.allow_anonymous_view and obj.syndicate and obj.status==1  \
@@ -45,7 +45,7 @@ class PageIndex(indexes.RealTimeSearchIndex):
         else:
             return False
         
-    def prepare_syndicate_order(self, obj):
+    def prepare_order(self, obj):
         return obj.update_dt
     
     def prepare_category(self, obj):

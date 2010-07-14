@@ -34,7 +34,7 @@ class MainRSSFeed(Feed):
 
     def items(self):
         return SearchQuerySet().filter(can_syndicate=True).models(Article, News, Page, 
-                                                            PhotoSet).order_by('-syndicate_order')[:max_items]
+                                                            PhotoSet).order_by('-order')[:max_items]
        
 
     def item_title(self, item):
