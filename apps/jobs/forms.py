@@ -4,12 +4,13 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from jobs.models import Job
+from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 
 class JobForm(TendenciBaseForm):
-    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
+
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Job._meta.app_label, 
@@ -24,7 +25,8 @@ class JobForm(TendenciBaseForm):
     expiration_dt = SplitDateTimeField(label=_('Expriation Date/Time'),
         initial=datetime.now())
 
-    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
     
     class Meta:
         model = Job
@@ -105,5 +107,7 @@ class JobForm(TendenciBaseForm):
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0        
         
-        
+        if not is_admin(user):
+            if 'status' in self.fields: self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
         

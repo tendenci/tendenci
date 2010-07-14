@@ -167,7 +167,19 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
         if request.POST["action"] == "update":
             form = form_class(request.user, request.POST, instance=photo)
             if form.is_valid():
-                photo = form.save()
+
+                photo = form.save(commit=False)
+
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(photo)
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms: ObjectPermission.objects.assign(user_perms, photo)
+                # assign creator permissions
+                ObjectPermission.objects.assign(photo.creator, photo)
+                
+                photo.save() 
+
 
                 log_defaults = {
                     'event_id' : 990200,
@@ -178,16 +190,6 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                     'instance': photo,
                 }
                 EventLog.objects.log(**log_defaults)
-                
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(photo)
-                
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, photo)               
- 
-                # assign creator permissions
-                ObjectPermission.objects.assign(photo.creator, photo) 
 
                 request.user.message_set.create(message=_("Successfully updated photo '%s'") % photo.title)
                 return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
@@ -253,7 +255,16 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                 photo_set.owner = request.user
                 photo_set.owner_username = request.user.username
                 photo_set.author = request.user
-                photo_set.save()
+                
+                photo_set.save() # get pk
+
+                # assign permissions for selected users
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms: ObjectPermission.objects.assign(user_perms, photo_set)
+                # assign creator permissions
+                ObjectPermission.objects.assign(photo_set.creator, photo_set)
+
+                photo_set.save() # update search-index w/ permissions
 
                 log_defaults = {
                     'event_id' : 991100,
@@ -263,14 +274,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                     'request': request,
                     'instance': photo_set,
                 }
-                EventLog.objects.log(**log_defaults)
-
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, photo_set)
-                
-                # assign creator permissions
-                ObjectPermission.objects.assign(photo_set.creator, photo_set) 
+                EventLog.objects.log(**log_defaults) 
 
                 request.user.message_set.create(message=_("Successfully added photo set!") + '')
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))
@@ -294,7 +298,16 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
         if request.POST["action"] == "edit":
             form = form_class(request.user, request.POST, instance=photo_set)
             if form.is_valid():
-                photo_set = form.save()
+                photo_set = form.save(commit=False)
+
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(photo_set)
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms: ObjectPermission.objects.assign(user_perms, photo_set)
+                
+                photo_set.save()
+
                 request.user.message_set.create(message=_("Successfully updated photo set! ") + '')
 
                 log_defaults = {
@@ -305,14 +318,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
                     'request': request,
                     'instance': photo_set,
                 }
-                EventLog.objects.log(**log_defaults)
-
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(photo_set)
-                
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, photo_set)               
+                EventLog.objects.log(**log_defaults)               
  
                 # assign creator permissions
                 ObjectPermission.objects.assign(photo_set.creator, photo_set) 
@@ -417,6 +423,10 @@ def photos_batch_add(request, photoset_id=0):
                 photo.creator = request.user
                 photo.member = request.user
                 photo.safetylevel = 3
+
+                # assign creator permissions
+                ObjectPermission.objects.assign(photo.creator, photo)
+
                 photo.save()
     
                 log_defaults = {
@@ -427,11 +437,8 @@ def photos_batch_add(request, photoset_id=0):
                     'request': request,
                     'instance': photo,
                 }
-                EventLog.objects.log(**log_defaults)
-    
-                # assign creator permissions
-                ObjectPermission.objects.assign(photo.creator, photo) 
-    
+                EventLog.objects.log(**log_defaults) 
+
                 # add to photo set if photo set is specified
                 if photoset_id:
                     photo_set = get_object_or_404(PhotoSet, id=photoset_id)
