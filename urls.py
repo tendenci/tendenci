@@ -64,6 +64,7 @@ urlpatterns = patterns('',
     (r'^captcha/', include('captcha.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html",}, name="site_map"),
+    url(r'^robots.txt', direct_to_template, {"template": "robots.txt",}, name="robots"),
     
     # lEGACY REDIRECTS
     # rss redirect
