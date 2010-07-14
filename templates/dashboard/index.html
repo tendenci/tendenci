@@ -88,15 +88,12 @@
 		<li class="contributions"><a href="{% url contribution.search %}"><span>{% firstof MODULE_CONTRIBUTION_LABEL  "Contributions" %}</span></a></li>
 		{% endif %}
 
-		{% if MODULE_CONTACTS_ENABLED %}
-		<li class="contacts"><a href="{% url contact.search %}"><span>{% firstof MODULE_CONTACTS_LABEL "Contacts" %}</span></a></li>
-		{% endif %}
-
 		{% if MODULE_INVOICES_ENABLED %}
          <li class="invoices"><a href="{% url invoice.search %}"><span>{% firstof MODULE_INVOICES_LABEL  "Invoices" %}</span></a></li>
  		{% endif %}
 
 		{% if admin %}
+		<li class="contacts"><a href="{% url contact.search %}"><span>{% firstof MODULE_CONTACTS_LABEL "Contacts" %}</span></a></li>
      	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
         <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
 		<li class="rss"><a href="/rss/"><span>RSS</span></a></li>
