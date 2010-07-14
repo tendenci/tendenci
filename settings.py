@@ -264,9 +264,9 @@ MERCHANT_LOGIN = ""
 MERCHANT_TXN_KEY = ""
 
 #-------------------------------------------------------------------#
-# Maximum number of rss items to display per object on the main rss
+# Maximum number of rss items to display on the main rss
 #-------------------------------------------------------------------#
-MAX_RSS_ITEMS_PER_OBJECT = 20
+MAX_RSS_ITEMS = 100
 
 # --------------------------------------#
 # CAPTCHA SETTINGS
