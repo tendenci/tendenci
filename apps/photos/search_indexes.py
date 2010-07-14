@@ -26,7 +26,7 @@ class PhotoSetIndex(indexes.RealTimeSearchIndex):
     
     # for rss
     can_syndicate = indexes.BooleanField()
-    syndicate_order = indexes.DateTimeField()
+    order = indexes.DateTimeField()
     
     def prepare_can_syndicate(self, obj):
         if obj.allow_anonymous_view and  obj.status==1  and obj.status_detail=='active':
