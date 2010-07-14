@@ -5,9 +5,7 @@ from django.contrib.auth.models import User
 from perms.managers import ObjectPermissionManager
 
 # Abstract base class for authority fields
-class TendenciBaseModel(models.Model):
-    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
-    
+class TendenciBaseModel(models.Model):    
     # authority fields
     allow_anonymous_view = models.BooleanField()
     allow_user_view = models.BooleanField()
@@ -22,9 +20,8 @@ class TendenciBaseModel(models.Model):
     creator_username = models.CharField(max_length=50)
     owner = models.ForeignKey(User, related_name="%(class)s_owner")    
     owner_username = models.CharField(max_length=50)
-    status = models.BooleanField(default=True)
-    status_detail = models.CharField(max_length=50, choices=STATUS_CHOICES,
-                                     default='active')
+    status = models.BooleanField("Active", default=True)
+    status_detail = models.CharField(max_length=50, default='active')
 
     @property
     def opt_app_label(self):

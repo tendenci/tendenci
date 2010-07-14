@@ -2,10 +2,11 @@ from django import forms
 from emails.models import Email
 
 class EmailForm(forms.ModelForm):
-    #body = forms.CharField(max_length=10000, widget=forms.TextInput(attrs={'size':'40'}))
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
     subject = forms.CharField(max_length=255, widget=forms.TextInput(attrs={'size':'50'}))
     recipient =forms.CharField(max_length=255, required=False, widget=forms.Textarea(attrs={'rows':'3'}))
-    
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+
     class Meta:
         model = Email
         fields = ('content_type',
@@ -15,8 +16,8 @@ class EmailForm(forms.ModelForm):
                   'sender_display',
                   'reply_to',
                   'recipient',
-                  'status_detail',
                   'status',
+                  'status_detail',
                   )
     def save(self, user=None, *args, **kwargs):
         if user and user.id:
