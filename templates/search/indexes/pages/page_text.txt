@@ -13,6 +13,9 @@ category:{{ category }}
 {% if sub_category %}
 sub_category:{{ sub_category }}
 {% endif %}
+
+is:{{ object.status_detail }}
+
 {% tags_for_object object as tags %}
 {% for tag in tags %}
 {{ tag }}

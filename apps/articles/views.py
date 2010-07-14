@@ -83,9 +83,21 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
 
     if request.user.has_perm('articles.change_article', article):    
         if request.method == "POST":
+
             form = form_class(request.user, request.POST, instance=article)
+
             if form.is_valid():
                 article = form.save(commit=False)
+
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(article)
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, article)               
+                # assign creator permissions
+                ObjectPermission.objects.assign(article.creator, article)
+                
                 article.save()
 
                 log_defaults = {
@@ -97,17 +109,6 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                     'instance': article,
                 }
                 EventLog.objects.log(**log_defaults)
-                
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(article)
-                
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, article)               
- 
-                # assign creator permissions
-                ObjectPermission.objects.assign(article.creator, article) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % article)
                 
@@ -175,6 +176,14 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 article.owner = request.user
                 article.owner_username = request.user.username
                 article.save()
+
+                # assign permissions for selected users
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms: ObjectPermission.objects.assign(user_perms, article)
+                # assign creator permissions
+                ObjectPermission.objects.assign(article.creator, article)
+
+                article.save() # update search-index w/ permissions
  
                 log_defaults = {
                     'event_id' : 431000,
@@ -185,14 +194,6 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                     'instance': article,
                 }
                 EventLog.objects.log(**log_defaults)
-                               
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, article)
-                
-                # assign creator permissions
-                ObjectPermission.objects.assign(article.creator, article) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % article)
                 

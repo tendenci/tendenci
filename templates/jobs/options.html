@@ -5,6 +5,11 @@
 {% has_perm user jobs.delete_job opt_object as can_delete %}
 
 <div class="t-iconrow">
+
+	{% if can_edit %}
+	<span>{{ opt_object.status_detail|capfirst }}</span>
+	{% endif %}
+
 	<a class="option-link print" href="{% url job.print_view opt_object.slug %}">Print</a>
 	{% if can_edit %}
 		<a class="option-link edit" href="{% url job.edit opt_object.pk %}">Edit</a>
