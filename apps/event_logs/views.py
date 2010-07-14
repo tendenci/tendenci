@@ -34,7 +34,6 @@ def search(request, template_name="event_logs/search.html"):
     if not request.user.has_perm('event_logs.view_eventlog'): raise Http403
     
     event_logs = EventLog.objects.search(request.GET)
-    print event_logs
         
     return render_to_response(template_name, {'event_logs':event_logs}, 
         context_instance=RequestContext(request))
