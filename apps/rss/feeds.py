@@ -20,8 +20,8 @@ site_display_name = get_setting('site', 'global', 'sitedisplayname')
 site_description = get_setting('site', 'global', 'sitedescription')
 if site_description == '': site_description = 'All syndicated rss feeds on %s' % site_display_name
 
-max_items = settings.MAX_RSS_ITEMS_PER_OBJECT
-if not max_items: max_items = 20
+max_items = settings.MAX_RSS_ITEMS
+if not max_items: max_items = 100
     
 
 class MainRSSFeed(Feed):
@@ -33,22 +33,9 @@ class MainRSSFeed(Feed):
     #description_template = "rss/description.html"
 
     def items(self):
-        return itertools.chain(SearchQuerySet().filter(syndicate=1, status=1,  
-                                       status_detail='active',
-                                       allow_anonymous_view=1,
-                                       release_dt__lte=datetime.now()).models(Article).order_by('-create_dt')[:max_items],
-                SearchQuerySet().filter(syndicate=1, status=1,  
-                                       status_detail='active',
-                                       allow_anonymous_view=1,
-                                       release_dt__lte=datetime.now()).models(News).order_by('-create_dt')[:max_items],
-                SearchQuerySet().filter(syndicate=1, status=1,  
-                                       status_detail='active',
-                                       allow_anonymous_view=1).models(Page).order_by('-create_dt')[:max_items],
-                SearchQuerySet().filter(status=1,  
-                                       status_detail='active',
-                                       allow_anonymous_view=1).models(PhotoSet).order_by('-create_dt')[:max_items],
-
-               )
+        return SearchQuerySet().filter(can_syndicate=True).models(Article, News, Page, 
+                                                            PhotoSet).order_by('-syndicate_order')[:max_items]
+       
 
     def item_title(self, item):
         if hasattr(item.object, 'headline'):        # articles, news

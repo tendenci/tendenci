@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.utils.html import strip_tags, strip_entities
 
 from haystack import indexes
@@ -32,6 +33,21 @@ class ArticleIndex(indexes.RealTimeSearchIndex):
     
     category = indexes.CharField()
     sub_category = indexes.CharField()
+    
+    # for rss
+    can_syndicate = indexes.BooleanField()
+    syndicate_order = indexes.DateTimeField()
+    
+    def prepare_can_syndicate(self, obj):
+        if obj.allow_anonymous_view and obj.syndicate \
+                and obj.status==1  and obj.status_detail=='active' \
+                and obj.release_dt <= datetime.now():
+            return True
+        else:
+            return False
+        
+    def prepare_syndicate_order(self, obj):
+        return obj.release_dt
     
     def prepare_category(self, obj):
         category = Category.objects.get_for_object(obj, 'category')
