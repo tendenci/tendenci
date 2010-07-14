@@ -246,6 +246,10 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 	/* WYSIWYG; .1 keeps border intact */
 	width: 100.1% !important; 
 }
+.item .field-short input,
+.item .field-short select {
+	width: 20%;
+}
 
 /* date-time item */
 .item-dt {

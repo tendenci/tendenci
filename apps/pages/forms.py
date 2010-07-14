@@ -1,17 +1,18 @@
 from pages.models import Page
+from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from django import forms
 from tinymce.widgets import TinyMCE
 
 class PageForm(TendenciBaseForm):
-    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
 
     content = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Page._meta.app_label, 
         'storme_model':Page._meta.module_name.lower()}))
 
-    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
         
     class Meta:
         model = Page
@@ -37,3 +38,7 @@ class PageForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
+
+        if not is_admin(user):
+            if 'status' in self.fields: self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
