@@ -13,7 +13,8 @@ urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
     
     #Reports:
-    url(r'^event-logs/reports/summary/$', 'event_logs.views.event_summary_report', name='reports-admin-users'),
+    url(r'^reports/$', direct_to_template, {"template": "reports/all.html",}, name="home"),
+    url(r'^event-logs/reports/summary/$', 'event_logs.views.event_summary_report', name='reports-events-summary'),
     url(r'^users/reports/users-activity-top10/$', 'profiles.views.user_activity_report', name='reports-user-activity'),
     url(r'^users/reports/active-logins/$', 'profiles.views.user_access_report', name='reports-user-access'),
     url(r'^users/reports/admin/$', 'profiles.views.admin_users_report', name='reports-admin-users'),

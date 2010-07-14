@@ -5,7 +5,7 @@
 {% block title %}{{ block.super }}{{ story.headline }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/site_media/static/css/stories.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/stories.css">
 {% endblock %}
 
 {% block body %}

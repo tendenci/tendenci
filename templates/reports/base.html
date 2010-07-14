@@ -1,8 +1,9 @@
-<html>
-<head>
-<link rel="stylesheet" href="{{ MEDIA_URL }}css/reports.css" type="text/css" />
-</head>
-<body>
+{% extends "site_base.html" %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/reports.css" type="text/css" />
+{% endblock %}
+
+{% block body %}
 	{% block content %}{% endblock content %}
-</body>
-</html>
+{% endblock %}

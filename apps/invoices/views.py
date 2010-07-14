@@ -1,11 +1,12 @@
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect
+from django.conf import settings
 from base.http import Http403
 from invoices.models import Invoice
 from invoices.forms import AdminNotesForm, AdminAdjustForm
-from invoices.utils import invoice_html_display
 from perms.utils import is_admin
+from event_logs.models import EventLog
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
@@ -18,20 +19,33 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
             form = form_class(request.POST, instance=invoice)
             if form.is_valid():
                 invoice = form.save()
+                # log an event here for invoice edit
+                log_defaults = {
+                    'event_id' : 312000,
+                    'event_data': '%s (%d) edited by %s' % (invoice._meta.object_name, invoice.pk, request.user),
+                    'description': '%s edited' % invoice._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': invoice,
+                }
+                EventLog.objects.log(**log_defaults)  
         else:
             form = form_class(initial={'admin_notes':invoice.admin_notes})
     else:
         form = None
     
-    invoice_display = invoice_html_display(request, invoice)
     notify = request.GET.get('notify', '')
     if guid==None: guid=''
+    
+    merchant_login = False
+    if hasattr(settings, 'MERCHANT_LOGIN') and settings.MERCHANT_LOGIN:
+        merchant_login = True
     
     return render_to_response(template_name, {'invoice': invoice,
                                               'guid':guid, 
                                               'notify': notify, 
                                               'form':form,
-                                              'invoice_display':invoice_display}, 
+                                              'merchant_login': merchant_login}, 
         context_instance=RequestContext(request))
     
 def search(request, template_name="invoices/search.html"):
@@ -64,7 +78,16 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
             invoice.balance = invoice.total - invoice.payments_credits 
             invoice.save()
             
-            # need to log an event here
+            # log an event for invoice edit
+            log_defaults = {
+                'event_id' : 312000,
+                'event_data': '%s (%d) edited by %s' % (invoice._meta.object_name, invoice.pk, request.user),
+                'description': '%s edited' % invoice._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': invoice,
+            }
+            EventLog.objects.log(**log_defaults)  
             
             # make accounting entries
             from accountings.models import AcctEntry

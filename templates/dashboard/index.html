@@ -37,6 +37,8 @@
 
 {% is_developer user as is_developer %}
 
+{% is_admin user as is_admin %}
+
 
 {% dashboard_nav user %}	
 
@@ -92,7 +94,7 @@
 
 		{% if view_locations %}
 		{% if MODULE_LOCATIONS_ENABLED %}
-		<li class="locations"><a href="{% url location.search %}"><span>{% firstof MODULE_LOCATION_LABEL  "Locations" %}</span></a></li>
+		<li class="locations"><a href="{% url location.search %}"><span>{% firstof MODULE_LOCATIONS_LABEL  "Locations" %}</span></a></li>
 		{% endif %}
 		{% endif %}
 
@@ -161,7 +163,7 @@
 
 
 <div class="side-panel">
-	{% if is_developer %}
+	{% if is_admin %}
 	<div class="admin-quick-links">
     <h3>Admin Quick Links</h3>
 	<ul>

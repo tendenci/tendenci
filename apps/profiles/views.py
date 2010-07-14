@@ -42,7 +42,6 @@ from perms.utils import is_admin
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
 from site_settings.utils import get_setting
-from profiles.utils import profile_edit_admin_notify
 from perms.utils import get_notice_recipients
 
 # view profile  
@@ -514,7 +513,7 @@ def password_change(request, id, template_name='registration/password_change_for
                     post_change_redirect=None, password_change_form=PasswordChangeForm):
     user_edit = get_object_or_404(User, pk=id)
     if post_change_redirect is None:
-        post_change_redirect = reverse('profiles.views.password_change_done', args=(id))
+        post_change_redirect = reverse('profiles.views.password_change_done', kwargs={'id':id})
     if request.method == "POST":
         form = password_change_form(user=user_edit, data=request.POST)
         if form.is_valid():
