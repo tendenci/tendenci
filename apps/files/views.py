@@ -121,11 +121,6 @@ def add(request, form_class=FileForm, template_name="files/add.html"):
                 'instance': file,
             }
             EventLog.objects.log(**log_defaults)
-
-
-#            # assign permissions for selected users
-#            user_perms = form.cleaned_data['user_perms']
-#            if user_perms: ObjectPermission.objects.assign(user_perms, file)
             
             # assign creator permissions
             ObjectPermission.objects.assign(file.creator, file) 
