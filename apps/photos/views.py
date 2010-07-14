@@ -425,6 +425,8 @@ def photos_batch_add(request, photoset_id=0):
                 photo.member = request.user
                 photo.safetylevel = 3
 
+                photo.save()
+
                 # assign creator permissions
                 ObjectPermission.objects.assign(photo.creator, photo)
 
@@ -451,7 +453,7 @@ def photos_batch_add(request, photoset_id=0):
                 # response is for flash, not humans
                 return HttpResponse(data, mimetype="text/plain")
             else:
-    
+                print 'no workie'
                 return HttpResponse("photo is not valid", mimetype="text/plain")
 
     else:
@@ -559,12 +561,15 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     }
     EventLog.objects.log(**log_defaults)
 
-    # if private; set private message
-    if photo_set.publish_type == 2:
-        # if no permission; raise 404 exception
-        if not photo_set.check_perm(request.user,'photos.view_photoset'):
-            raise Http404 # raise 404 exception
-        request.user.message_set.create(message=unicode(_("This photo set is currently in private mode.")))
+
+    # TODO: re-evaluate private permission setting
+    # use tendenci permission system (not photologues)
+#    # if private; set private message
+#    if photo_set.publish_type == 2:
+#        # if no permission; raise 404 exception
+#        if not photo_set.check_perm(request.user,'photos.view_photoset'):
+#            raise Http404 # raise 404 exception
+#        request.user.message_set.create(message=unicode(_("This photo set is currently in private mode.")))
 
     return render_to_response(template_name, {
         "photos": photos,
