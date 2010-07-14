@@ -75,10 +75,8 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
         if request.method == "POST":
             form = form_class(request.user, request.POST, instance=location)
             if form.is_valid():
-                location = form.save(commit=False)
 
-                if is_admin(request.user):
-                    pass
+                location = form.save(commit=False)
 
                 # remove all permissions on the object
                 ObjectPermission.objects.remove_all(location)                
@@ -87,7 +85,6 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                 if user_perms:
                     ObjectPermission.objects.assign(user_perms, location)
 
-                print 'location.status', location.status
                 location.save()
 
                 log_defaults = {

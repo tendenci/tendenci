@@ -92,8 +92,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
                 ObjectPermission.objects.remove_all(page)
                 # assign new permissions
                 user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, page)
+                if user_perms: ObjectPermission.objects.assign(user_perms, page)
 
                 page.save()
 
