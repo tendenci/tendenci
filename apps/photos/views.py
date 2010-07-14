@@ -561,12 +561,15 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     }
     EventLog.objects.log(**log_defaults)
 
-    # if private; set private message
-    if photo_set.publish_type == 2:
-        # if no permission; raise 404 exception
-        if not photo_set.check_perm(request.user,'photos.view_photoset'):
-            raise Http404 # raise 404 exception
-        request.user.message_set.create(message=unicode(_("This photo set is currently in private mode.")))
+
+    # TODO: re-evaluate private permission setting
+    # use tendenci permission system (not photologues)
+#    # if private; set private message
+#    if photo_set.publish_type == 2:
+#        # if no permission; raise 404 exception
+#        if not photo_set.check_perm(request.user,'photos.view_photoset'):
+#            raise Http404 # raise 404 exception
+#        request.user.message_set.create(message=unicode(_("This photo set is currently in private mode.")))
 
     return render_to_response(template_name, {
         "photos": photos,
