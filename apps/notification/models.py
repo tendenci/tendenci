@@ -315,8 +315,8 @@ def send_emails(emails, label, extra_context=None, on_site=True):
             
         email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
         email.content_subtype = content_type
-        email.send()
-        #email.send(fail_silently=True)  # should we raise exception or not?
+        #email.send()
+        email.send(fail_silently=True)  # should we raise exception or not?
     
 
 def send_now(users, label, extra_context=None, on_site=True):

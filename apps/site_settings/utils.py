@@ -84,7 +84,7 @@ def get_setting(scope, scope_category, name):
     
     setting = cache.get(key)
     if setting:
-        value = setting.value
+        value = setting.value.strip()
 
         # convert data types
         if setting.data_type == 'boolean':
@@ -107,7 +107,7 @@ def get_setting(scope, scope_category, name):
             setting = None
             
         if setting:
-            value = setting.value
+            value = setting.value.strip()
             
             # convert data types
             if setting.data_type == 'boolean':

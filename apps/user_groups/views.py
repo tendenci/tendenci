@@ -18,6 +18,8 @@ from perms.utils import get_notice_recipients
 from django.contrib.admin.views.decorators import staff_member_required
 from entities.models import Entity
 from django.contrib.sites.models import Site
+from event_logs.utils import request_month_range, day_bars
+from django.contrib.contenttypes.models import ContentType
 
 try:
     from notification import models as notification
@@ -275,16 +277,53 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
+
+def _added_users(from_date, to_date):
+    "Returns users-added stats"
+    event_ids = (121000, 121100)
+    data = EventLog.objects.all()\
+            .filter(create_dt__gte=from_date)\
+            .filter(create_dt__lte=to_date)\
+            .filter(event_id__in=event_ids)\
+            .extra(select={'day':'DATE(create_dt)'})\
+            .values('day')\
+            .annotate(count=Count('pk'))
+    return day_bars(data, from_date.year, from_date.month, add_coloring=False)
+    
+
 @staff_member_required
 def users_added_report(request):
-    queryset = Group.objects.all()
-    if 'entity' in request.GET and request.GET['entity']:
-        queryset = queryset.filter(entity__pk=request.GET['entity'])
-    groups = queryset\
-            .annotate(user_count=Count('groupmembership'))#\
-            #.filter(groupmembership__create_dt__gte=datetime(1999, 1, 1))
+    
+    from_date, to_date = request_month_range(request)
+    #print _added_users(from_date, to_date)
+    queryset = EventLog.objects.all()
+    queryset = queryset.filter(create_dt__gte=from_date)
+    queryset = queryset.filter(create_dt__lte=to_date)
+    
+    data = queryset.filter(event_id=221000)\
+            .filter()\
+            .values('content_type', 'object_id')\
+            .annotate(count=Count('pk'))\
+            .order_by('-count')
+    
+    for item in data:
+        ct = ContentType.objects.get_for_id(item['content_type'])
+        assert ct.model_class() == GroupMembership
+        item['group'] = GroupMembership.objects.get(pk=item['object_id']).group
+#NOTE: do not delete for now might be useful
+#    queryset = Group.objects.all()
+#    if 'entity' in request.GET and request.GET['entity']:
+#        queryset = queryset.filter(entity__pk=request.GET['entity'])
+#    
+#    from_date, to_date = request_month_range(request)
+#    queryset = queryset.filter(groupmembership__create_dt__gte=from_date)
+#    queryset = queryset.filter(groupmembership__create_dt__lte=to_date)
+#    
+#    groups = queryset\
+#            .annotate(user_count=Count('groupmembership'))
     return render_to_response('reports/users_added.html', 
-                              {'groups': groups, 
+                              {'data': data, 
                                'entities': Entity.objects.all(),
-                               'site': Site.objects.get_current()}, 
+                               'site': Site.objects.get_current(),
+                               'date_range': (from_date, to_date)}, 
                               context_instance=RequestContext(request))

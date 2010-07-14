@@ -24,7 +24,26 @@
 		</div>
 			
         <h2>{{ entity.entity_name }}</h2>
-        <div class="content">{{ entity.description|safe }}</div>
+        <div class="content">
+        
+         <div class="notes">{{ entity.notes|safe }}</div>    
+         <div class="summary">{{ entity.summary|safe }}</div> 
+         
+	         <p>    
+	         <div class="contact"><h3>Contact:</h3>
+		         {{ entity.contact_name|safe }}<br>	
+		         {{ entity.phone|safe }}  {{ entity.fax|safe }}<br>
+		         {{ entity.email|safe }}<br>
+		         {{ entity.website|safe }}
+	         </div>  
+	  		 </p>
+	           <p>    
+	           <div class="admin_notes">{{ entity.admin_notes|safe }}</div>             
+	   		 </p>      
+        
+        </div>
+        
+       
         <div class="meta">
             <div class="submitted">Submitted on {{ entity.create_dt|date:"D d M Y P" }} 
 			by {% firstof entity.creator.get_profile.display_name entity.creator %}</div>

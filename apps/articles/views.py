@@ -62,9 +62,9 @@ def print_view(request, slug, template_name="articles/print-view.html"):
     article = get_object_or_404(Article, slug=slug)    
 
     log_defaults = {
-        'event_id' : 435000,
+        'event_id' : 435001,
         'event_data': '%s (%d) viewed by %s' % (article._meta.object_name, article.pk, request.user),
-        'description': '%s viewed' % article._meta.object_name,
+        'description': '%s viewed - print view' % article._meta.object_name,
         'user': request.user,
         'request': request,
         'instance': article,
