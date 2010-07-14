@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from django.views.generic.simple import direct_to_template
+from django.views.generic.simple import direct_to_template, redirect_to
 
 # Django admin
 from django.contrib import admin
@@ -63,9 +63,11 @@ urlpatterns = patterns('',
     (r'^tinymce/', include('tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
 
+    url(r'^sitemap/$', direct_to_template, {"template": "site_map.html",}, name="site_map"),
     
-    # page view
-    url(r'^(?P<slug>[\w\-\/]+)/$', 'pages.views.index', name="page"),
+    # lEGACY REDIRECTS
+    # rss redirect
+    url(r'^en/rss/$', redirect_to, {'url':'/rss'}),
 )
 
 handler500 = 'base.views.custom_error'
@@ -76,3 +78,11 @@ try:
     urlpatterns += MEDIA_PATTERNS
 except ImportError:
     pass
+
+# tack on the pages pattern at the very end so let custom and software patterns
+# happen first
+pattern_pages = patterns('',
+    # page view
+    url(r'^(?P<slug>[\w\-\/]+)/$', 'pages.views.index', name="page"),                        
+)
+urlpatterns += pattern_pages
