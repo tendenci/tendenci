@@ -20,7 +20,6 @@
 
 .t .article-wrap {
 	padding: 10px;
-	margin-bottom: 20px;
 	position: relative;
 }
 
@@ -96,6 +95,9 @@
 }
 .t .article-wrap .meta .tags {
 	margin-bottom: 5px;
+}
+.t .article-wrap .fb-connect {
+	margin-top: 10px;
 }
 
 /* form */
