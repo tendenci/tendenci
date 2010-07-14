@@ -272,7 +272,7 @@ MAX_RSS_ITEMS_PER_OBJECT = 20
 # CAPTCHA SETTINGS
 # --------------------------------------#
 CAPTCHA_FONT_SIZE = 50
-CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 
 # Django Messaging system
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
