@@ -10,7 +10,7 @@ h1 {
 	height: 300px;
 }
 
-.events-summary-chart tr td {
+.events-summary-chart td {
 	vertical-align: bottom;
 	text-align: center;
 	width: 24px;

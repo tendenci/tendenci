@@ -34,11 +34,11 @@ URL: {{ site.domain }}
 	<td>Group</td>
 	<td># Users</td>
 </tr>
-{% for group in groups %}
+{% for item in data %}
 <tr class="{% cycle 'odd' '' %}">
 	<td>{{ forloop.counter }}</td>
-	<td>{{ group }}</td>
-	<td>{{ group.user_count }}</td>
+	<td>{{ item.group }}</td>
+	<td>{{ item.count }}</td>
 </tr>
 {% endfor %}
 </table>
