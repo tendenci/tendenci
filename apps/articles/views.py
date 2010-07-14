@@ -94,7 +94,7 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                 # assign new permissions
                 user_perms = form.cleaned_data['user_perms']
                 if user_perms:
-                    ObjectPermission.objects.assign(user_perms, article)               
+                    ObjectPermission.objects.assign(user_perms, article)  
                 # assign creator permissions
                 ObjectPermission.objects.assign(article.creator, article)
                 
@@ -175,7 +175,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 article.creator_username = request.user.username
                 article.owner = request.user
                 article.owner_username = request.user.username
-                article.save()
+                article.save() # get pk
 
                 # assign permissions for selected users
                 user_perms = form.cleaned_data['user_perms']
