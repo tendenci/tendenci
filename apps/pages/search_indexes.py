@@ -11,6 +11,8 @@ class PageIndex(indexes.RealTimeSearchIndex):
     title = indexes.CharField(model_attr='title')
     content = indexes.CharField(model_attr='content')
     create_dt = indexes.DateTimeField(model_attr='create_dt', null=True)
+    
+    syndicate = indexes.BooleanField(model_attr='syndicate')
 
     # authority fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
