@@ -1258,5 +1258,167 @@
             "rgb_color": "0,102,0", 
             "hex_color": "006600"
         }
+    }, 
+    {
+        "pk": 1, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 120000, 
+            "source": "profiles", 
+            "hex_color": "3300FF"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 120000, 
+            "source": "auth", 
+            "hex_color": "3300FF"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 220000, 
+            "source": "user_groups", 
+            "hex_color": "00CCFF"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 290000, 
+            "source": "entities", 
+            "hex_color": "00FFCC"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 830000, 
+            "source": "locations", 
+            "hex_color": "669933"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 180000, 
+            "source": "files", 
+            "hex_color": "330066"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 430000, 
+            "source": "articles", 
+            "hex_color": "CC9966"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 305000, 
+            "source": "news", 
+            "hex_color": "FF0033"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 250000, 
+            "source": "jobs", 
+            "hex_color": "669900"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 580000, 
+            "source": "pages", 
+            "hex_color": "009900"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 990000, 
+            "source": "photos", 
+            "hex_color": "1774F1"
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 1060000, 
+            "source": "stories", 
+            "hex_color": "FF33FF"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 310000, 
+            "source": "accounting", 
+            "hex_color": "006666"
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 280000, 
+            "source": "payments", 
+            "hex_color": "FF6666"
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 670000, 
+            "source": "make_payments", 
+            "hex_color": "66CC00"
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 300000, 
+            "source": "actions", 
+            "hex_color": "FF0033"
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 130000, 
+            "source": "emails", 
+            "hex_color": "CC3300"
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "event_logs.eventlogbasecolor", 
+        "fields": {
+            "event_id": 135000, 
+            "source": "email_blocks", 
+            "hex_color": "CC3300"
+        }
     }
 ]
