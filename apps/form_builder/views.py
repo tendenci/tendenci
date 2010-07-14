@@ -119,6 +119,7 @@ def index(request, form_class=ContactForm, template_name="form.html"):
                     'url':url,
                     'message':message,
                     'message_link':message_link,
+                    'site_name':site_name,
                     }
                     notification.send_emails(recipients,'contact_submitted', extra_context)
 
