@@ -71,8 +71,8 @@ class MainRSSFeed(Feed):
     
     def item_author_name(self, item):
         if hasattr(item.object, 'author'):
-            return item.object.author.get_full_name
+            return item.object.author.get_full_name()
         else:
-            return item.object.creator.get_full_name
+            return item.object.creator.get_full_name()
 
     
