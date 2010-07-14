@@ -68,7 +68,14 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
         form = form_class(request.user, request.POST, request.FILES, instance=file)
 
         if form.is_valid():
-            file = form.save()
+            file = form.save(commit=False)
+
+            # remove all permissions on the object
+            ObjectPermission.objects.remove_all(file)            
+            # assign creator permissions
+            ObjectPermission.objects.assign(file.creator, file) 
+
+            file.save()
 
             log_defaults = {
                 'event_id' : 182000,
@@ -79,12 +86,6 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
                 'instance': file,
             }
             EventLog.objects.log(**log_defaults)
-                
-            # remove all permissions on the object
-            ObjectPermission.objects.remove_all(file)            
-    
-            # assign creator permissions
-            ObjectPermission.objects.assign(file.creator, file) 
                                                           
             return HttpResponseRedirect(reverse('file', args=[file.pk]))             
     else:
