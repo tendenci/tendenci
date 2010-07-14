@@ -13,7 +13,7 @@ from meta.models import Meta as MetaTags
 from articles.module_meta import ArticleMeta
 from entities.models import Entity
 
-class Article(TendenciBaseModel ):
+class Article(TendenciBaseModel):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
     slug = SlugField(_('URL Path'), unique=True)
     timezone = TimeZoneField(_('Time Zone'))
