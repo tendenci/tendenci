@@ -102,11 +102,7 @@ def index(request, form_class=ContactForm, template_name="form.html"):
 
             # send notification to administrators
             # get admin notice recipients
-            recipients = get_notice_recipients('default', 'will', 'pickup')
-
-            print 'recipients', recipients
-            
-
+            recipients = get_notice_recipients('module', 'contacts', 'contactrecipients')
             if recipients:
                 if notification:
                     extra_context = {
@@ -124,7 +120,6 @@ def index(request, form_class=ContactForm, template_name="form.html"):
                     'message':message,
                     'message_link':message_link,
                     }
-                    #notification.send(get_administrators(),'article_added', extra_context)
                     notification.send_emails(recipients,'contact_submitted', extra_context)
 
             try: user = User.objects.filter(email=email)[0]
