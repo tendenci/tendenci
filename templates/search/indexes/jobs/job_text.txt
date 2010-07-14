@@ -3,6 +3,9 @@
 by {{ object.creator }}
 by {{ object.object.creator.get_profile.display_name }}
 {{ object.description }}
+
+is:{{ object.status_detail }}
+
 {% tags_for_object object as tags %}
 {% for tag in tags %}
 {{ tag }} 

@@ -85,7 +85,17 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
             story.creator_username = request.user.username
             story.owner = request.user
             story.owner_username = request.user.username
-            story.save()
+
+            story.save() # get pk
+
+            # assign permissions for selected users
+            user_perms = form.cleaned_data['user_perms']
+            if user_perms:
+                ObjectPermission.objects.assign(user_perms, story)
+            # assign creator permissions
+            ObjectPermission.objects.assign(story.creator, story)
+
+            story.save() # update search-index w/ permissions
 
             log_defaults = {
                 'event_id' : 1060100,
@@ -96,14 +106,6 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 'instance': story,
             }
             EventLog.objects.log(**log_defaults)
-            
-            # assign permissions for selected users
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms:
-                ObjectPermission.objects.assign(user_perms, story)
-            
-            # assign creator permissions
-            ObjectPermission.objects.assign(story.creator, story)
             
             messages.add_message(request, messages.INFO, 'Successfully added %s' % story) 
             
@@ -127,6 +129,16 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
         form = form_class(request.user, request.POST, instance=story)
         if form.is_valid():
             story = form.save(commit=False)
+
+            # remove all permissions on the object
+            ObjectPermission.objects.remove_all(story)               
+            # assign new permissions
+            user_perms = form.cleaned_data['user_perms']
+            if user_perms:
+                ObjectPermission.objects.assign(user_perms, story)
+            # assign creator permissions
+            ObjectPermission.objects.assign(story.creator, story)
+
             story.save()
             
             log_defaults = {
@@ -138,17 +150,6 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
                 'instance': story,
             }
             EventLog.objects.log(**log_defaults)
-    
-            # remove all permissions on the object
-            ObjectPermission.objects.remove_all(story)
-               
-            # assign new permissions
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms:
-                ObjectPermission.objects.assign(user_perms, story)               
-    
-            # assign creator permissions
-            ObjectPermission.objects.assign(story.creator, story) 
             
             messages.add_message(request, messages.INFO, 'Successfully updated %s' % story)
                                                              

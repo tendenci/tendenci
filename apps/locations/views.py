@@ -8,6 +8,7 @@ from django.contrib import messages
 from base.http import Http403
 from locations.models import Location
 from locations.forms import LocationForm
+from perms.utils import is_admin
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
 
@@ -75,6 +76,18 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
             form = form_class(request.user, request.POST, instance=location)
             if form.is_valid():
                 location = form.save(commit=False)
+
+                if is_admin(request.user):
+                    pass
+
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(location)                
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, location)
+
+                print 'location.status', location.status
                 location.save()
 
                 log_defaults = {
@@ -85,15 +98,7 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                     'request': request,
                     'instance': location,
                 }
-                EventLog.objects.log(**log_defaults)
-                
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(location)
-                
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, location)               
+                EventLog.objects.log(**log_defaults)               
  
                 # assign creator permissions
                 ObjectPermission.objects.assign(location.creator, location) 
@@ -121,7 +126,17 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                 location.creator_username = request.user.username
                 location.owner = request.user
                 location.owner_username = request.user.username
-                location.save()
+
+                location.save() # get pk
+
+                # assign permissions for selected users
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, location)                
+                # assign creator permissions
+                ObjectPermission.objects.assign(location.creator, location)
+
+                location.save() # update search-index w/ permissions
  
                 log_defaults = {
                     'event_id' : 831000,
@@ -132,14 +147,6 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                     'instance': location,
                 }
                 EventLog.objects.log(**log_defaults)
-                               
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, location)
-                
-                # assign creator permissions
-                ObjectPermission.objects.assign(location.creator, location) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % location)
                 
