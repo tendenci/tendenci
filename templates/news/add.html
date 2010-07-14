@@ -1,6 +1,6 @@
 {% extends "news/base.html" %}
 {% load news_tags %}
-{% load styled_forms %}
+{% load perm_tags %}
 
 {% block title %}{% firstof MODULE_NEWS_LABEL 'News' %} Add{% endblock %}
 
@@ -174,46 +174,14 @@
 			<div class="item-hr"></div>
 
 			<div class="item-checkbox">
-				<div class="errs">{{ form.syndicate.errors }}</div>
-				<div class="field">{{ form.syndicate }}</div>
-				<div class="label">{{ form.syndicate.label_tag }}</div>
-				<div class="help">{{ form.syndicate.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-checkbox">
-				<div class="errs">{{ form.featured.errors }}</div>
-				<div class="field">{{ form.featured }}</div>
-				<div class="label">{{ form.featured.label_tag }}</div>
-				<div class="help">{{ form.featured.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-checkbox">
 				<div class="errs">{{ form.not_official_content.errors }}</div>
 				<div class="field">{{ form.not_official_content }}</div>
 				<div class="label">{{ form.not_official_content.label_tag }}</div>
 				<div class="help">{{ form.not_official_content.help_text }}</div>
 				<div class="clear"></div>
 			</div>
-
-			<div class="item-checkbox">
-				<div class="errs">{{ form.status.errors }}</div>
-				<div class="field">{{ form.status }}</div>
-				<div class="label">{{ form.status.label_tag }}</div>
-				<div class="help">{{ form.status.help_text }}</div>
-				<div class="clear"></div>
-			</div>
 			
 			<div class="item-hr-clear"></div>
-
-			<div class="item">
-				<div class="errs">{{ form.status_detail.errors }}</div>
-				<div class="label">{{ form.status_detail.label_tag }}</div>
-				<div class="field">{{ form.status_detail }}</div>
-				<div class="help">{{ form.status_detail.help_text }}</div>
-				<div class="clear"></div>
-			</div>
 
 			<div class="item">
 				<div class="errs">{{ form.user_perms.errors }}</div>
@@ -222,6 +190,40 @@
 				<div class="help">{{ form.user_perms.help_text }}</div>
 				<div class="clear"></div>
 			</div>
+
+			{% is_admin user as admin %}
+			{% if admin %}
+			<div class="admin-block">
+
+				<div class="item-text">
+					Administrators Only
+				</div>
+
+				<div class="item-checkbox">
+					<div class="errs">{{ form.syndicate.errors }}</div>
+					<div class="field">{{ form.syndicate }}</div>
+					<div class="label">{{ form.syndicate.label_tag }}</div>
+					<div class="help">{{ form.syndicate.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+
+				<div class="item-checkbox">
+					<div class="errs">{{ form.status.errors }}</div>
+					<div class="field">{{ form.status }}</div>
+					<div class="label">{{ form.status.label_tag }}</div>
+					<div class="help">{{ form.status.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+	
+				<div class="item">
+					<div class="errs">{{ form.status_detail.errors }}</div>
+					<div class="label">{{ form.status_detail.label_tag }}</div>
+					<div class="field field-short">{{ form.status_detail }}</div>
+					<div class="help">{{ form.status_detail.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+			{% endif %}
 
         	<input type="submit" value="Add {% firstof MODULE_NEWS_LABEL 'News' %}" />
 		</div>

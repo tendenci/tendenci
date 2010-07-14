@@ -2,3 +2,5 @@
 by {{ object.creator }}
 by {{ object.object.creator.get_profile.display_name }}
 {{ object.description }}
+
+is:{{ object.status_detail }}

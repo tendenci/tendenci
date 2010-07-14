@@ -1,6 +1,11 @@
 {% load base_tags %}
 {% load perm_tags %}
 <div class="t-iconrow">
+
+	{% if can_edit %}
+	<span>{{ opt_object.status_detail|capfirst }}</span>
+	{% endif %}
+
 <ul>	
     {% has_perm request.user stories.change_stories opt_object as can_edit %}
     {% if can_edit %} 

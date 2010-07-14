@@ -8,10 +8,13 @@ APPS = ['profiles', 'user_groups', 'articles',
         'stories', 'actions']
 
 class GroupForm(forms.ModelForm):
+    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
     email_recipient = forms.CharField(label="Recipient Email", required=False, max_length=100, 
-                                     help_text='Recipient email(s), comma delimited')
-    show_as_option = forms.BooleanField(initial=1, label="Show Option",
-                                      help_text='Display this user group as an option to logged-in users.')
+        help_text='Recipient email(s), comma delimited')
+    show_as_option = forms.BooleanField(initial=1, label="Show Option", 
+        help_text='Display this user group as an option to logged-in users.')
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+
     class Meta:
         model = Group
         fields = ('name',
@@ -34,7 +37,6 @@ class GroupForm(forms.ModelForm):
                   'auto_respond_priority',
                   'notes',
                   'status',
-                  
                   'status_detail',
                   )
         exclude = ('members',)

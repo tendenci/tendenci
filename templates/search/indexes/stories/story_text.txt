@@ -2,3 +2,4 @@
 by {{ object.creator }}
 by {{ object.object.creator.get_profile.name }}
 {{ object.content }}
+is:{{ object.status_detail }}
