@@ -95,8 +95,10 @@ def index(request, form_class=ContactForm, template_name="form.html"):
             msg = EmailMessage(subject, body, sender, recipients)
             msg.content_subtype = 'html'
             msg.send(fail_silently=True)
-            
-            user = User.objects.filter(email=email)[0]
+
+            try: user = User.objects.filter(email=email)[0]
+            except: user = None
+
             if user:
                 event_user = user
                 event_id = 125115
