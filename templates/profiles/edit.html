@@ -336,6 +336,8 @@
                              {{ form.interactive }}
                              </td>
                            </tr>
+
+							{% if form.status_detail %}
                            <tr >
                              <td nowrap class="label"><label for="id_status_detail">{% trans 'Status Detail'%}</label> </td>
                              <td>
@@ -345,7 +347,9 @@
                              {{ form.status_detail }}
                              </td>
                            </tr>
-                           
+						   {% endif %}
+
+                           {% if form.status %}
                            <tr >
                              <td nowrap class="label"><label for="id_status">{% trans 'Status'%}</label> </td>
                              <td>
@@ -355,6 +359,7 @@
                              {{ form.status }}
                              </td>
                            </tr>
+						   {% endif %}
                       </table></td>
                       </tr>
                        

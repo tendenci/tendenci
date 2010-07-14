@@ -87,6 +87,14 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
             form = form_class(request.user, request.POST, instance=page)
             if form.is_valid():
                 page = form.save(commit=False)
+
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(page)
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, page)
+
                 page.save()
 
                 log_defaults = {
@@ -97,15 +105,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
                     'request': request,
                     'instance': page,
                 }
-                EventLog.objects.log(**log_defaults)
-
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(page)
-                
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, page)               
+                EventLog.objects.log(**log_defaults)               
  
                 # assign creator permissions
                 ObjectPermission.objects.assign(page.creator, page) 
@@ -175,7 +175,17 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                 page.creator_username = request.user.username
                 page.owner = request.user
                 page.owner_username = request.user.username
-                page.save()
+
+                page.save() # get pk
+
+                # assign permissions for selected users
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, page)
+                # assign creator permissions
+                ObjectPermission.objects.assign(page.creator, page) 
+
+                page.save() # update search-index w/ permissions
  
                 log_defaults = {
                     'event_id' : 581000,
@@ -186,14 +196,6 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                     'instance': page,
                 }
                 EventLog.objects.log(**log_defaults)
-               
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, page)
-                
-                # assign creator permissions
-                ObjectPermission.objects.assign(page.creator, page) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % page)
                 

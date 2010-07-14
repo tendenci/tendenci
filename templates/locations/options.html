@@ -5,7 +5,12 @@
 {% has_perm user locations.delete_location opt_object as can_delete %}
 
 <div class="t-iconrow">
-		<a class="option-link print" href="{% url location.print_view opt_object.pk %}">Print</a>
+
+	{% if can_edit %}
+	<span>{{ opt_object.status_detail|capfirst }}</span>
+	{% endif %}
+
+	<a class="option-link print" href="{% url location.print_view opt_object.pk %}">Print</a>
 	{% if can_edit %}
 		<a class="option-link edit" href="{% url location.edit opt_object.pk %}">Edit</a>
 	{% endif %}
