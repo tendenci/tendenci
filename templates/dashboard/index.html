@@ -26,19 +26,13 @@
 {% has_perm user contributions.view_contribution as view_contributions %}
 {% has_perm user locations.view_location as view_locations %}
 {% has_perm user settings.view_setting as view_settings %}
-
 {% has_perm user settings.view_contact as view_contacts %}
-
 {% has_perm user settings.view_invoice as view_invoices %}
 {% has_perm user settings.view_group as view_groups %}
-
 {% has_perm user eventlogs.view_eventlog as view_eventlogs %}
 {% has_perm user eventlogs.view_setting as view_settings %}
-
 {% is_developer user as is_developer %}
-
-{% is_admin user as is_admin %}
-
+{% is_admin user as admin %}
 
 {% dashboard_nav user %}	
 
@@ -75,52 +69,38 @@
 		{% endif %}
 
 		{% if MODULE_PAGES_ENABLED %}
-		{% if view_pages %}
     	<li class="pages"><a href="{% url page.search %}"><span>{% firstof MODULE_PAGES_LABEL "Pages" %}</span></a></li>
 		{% endif %}
-		{% endif %}
 
-		{% if view_entities %}
 		{% if MODULE_ENTITIES_ENABLED %}
      	<li class="entities"><a href="{% url entity.search %}"><span>{% firstof MODULE_ENTITIES_LABEL "Entities" %}</span></a></li>
 		{% endif %}
-		{% endif %}
 
 		{% if MODULE_FILES_ENABLED %}
-		{% if view_files %}
      	<li class="files"><a href="{% url file.search %}"><span>{% firstof MODULE_FILES_LABEL Files %}</span></a></li>
 		{% endif %}
-		{% endif %}
 
-		{% if view_locations %}
 		{% if MODULE_LOCATIONS_ENABLED %}
 		<li class="locations"><a href="{% url location.search %}"><span>{% firstof MODULE_LOCATIONS_LABEL  "Locations" %}</span></a></li>
 		{% endif %}
-		{% endif %}
 
-		{% if view_contributions %}
+		{% if MODULE_CONTRIBUTIONS_ENABLED %}
 		<li class="contributions"><a href="{% url contribution.search %}"><span>{% firstof MODULE_CONTRIBUTION_LABEL  "Contributions" %}</span></a></li>
 		{% endif %}
 
-		{% if view_contacts %}
 		{% if MODULE_CONTACTS_ENABLED %}
 		<li class="contacts"><a href="{% url contact.search %}"><span>{% firstof MODULE_CONTACTS_LABEL "Contacts" %}</span></a></li>
 		{% endif %}
-		{% endif %}
 
-		{% if view_settings %}
-     	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
- 		{% endif %}
-
-		{% if view_eventlogs %}
-        <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
- 		{% endif %}
-
-		{% if view_invoices %}
 		{% if MODULE_INVOICES_ENABLED %}
          <li class="invoices"><a href="{% url invoice.search %}"><span>{% firstof MODULE_INVOICES_LABEL  "Invoices" %}</span></a></li>
  		{% endif %}
- 		{% endif %}
+
+		{% if admin %}
+     	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
+        <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
+		<li class="rss"><a href="/rss/"><span>RSS</span></a></li>
+		{% endif %}
 
  		<div style="clear: both"><!-- IE7 --></div>
     </ul>
@@ -163,7 +143,7 @@
 
 
 <div class="side-panel">
-	{% if is_admin %}
+	{% if admin %}
 	<div class="admin-quick-links">
     <h3>Admin Quick Links</h3>
 	<ul>
