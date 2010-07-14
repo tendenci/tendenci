@@ -6,6 +6,7 @@ from base.http import Http403
 from invoices.models import Invoice
 from invoices.forms import AdminNotesForm, AdminAdjustForm
 from perms.utils import is_admin
+from event_logs.models import EventLog
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
@@ -18,6 +19,16 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
             form = form_class(request.POST, instance=invoice)
             if form.is_valid():
                 invoice = form.save()
+                # log an event here for invoice edit
+                log_defaults = {
+                    'event_id' : 312000,
+                    'event_data': '%s (%d) edited by %s' % (invoice._meta.object_name, invoice.pk, request.user),
+                    'description': '%s edited' % invoice._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': invoice,
+                }
+                EventLog.objects.log(**log_defaults)  
         else:
             form = form_class(initial={'admin_notes':invoice.admin_notes})
     else:
@@ -67,7 +78,16 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
             invoice.balance = invoice.total - invoice.payments_credits 
             invoice.save()
             
-            # need to log an event here
+            # log an event for invoice edit
+            log_defaults = {
+                'event_id' : 312000,
+                'event_data': '%s (%d) edited by %s' % (invoice._meta.object_name, invoice.pk, request.user),
+                'description': '%s edited' % invoice._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': invoice,
+            }
+            EventLog.objects.log(**log_defaults)  
             
             # make accounting entries
             from accountings.models import AcctEntry

@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from perms.models import TendenciBaseModel
+from entities.managers import EntityManager
 
 class Entity(TendenciBaseModel):
     guid = models.CharField(max_length=40, default=uuid.uuid1)
@@ -19,9 +20,12 @@ class Entity(TendenciBaseModel):
     summary = models.TextField(blank=True)
     notes = models.TextField(blank=True)
     admin_notes = models.TextField(_('Admin Notes'), blank=True)
+    
+    objects = EntityManager()
 
     class Meta:
         permissions = (("view_entity","Can view entity"),)
+        verbose_name_plural = "entities"
         
     def __unicode__(self):
         return self.entity_name
