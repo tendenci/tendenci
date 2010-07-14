@@ -50,7 +50,14 @@ class EventLog(models.Model):
     def __unicode__(self):
         return str(self.event_id)
 
-
+class EventLogBaseColor(models.Model):
+    """
+        Event Log Base Colors is for reporting only
+    """
+    source = models.CharField(max_length=50)
+    event_id = models.IntegerField() 
+    hex_color = models.CharField(max_length=6)
+    
 class EventLogColor(models.Model):
     """
         Event Log Colors is for reporting only
