@@ -13,6 +13,8 @@ class JobIndex(indexes.RealTimeSearchIndex):
     post_dt = indexes.DateTimeField(model_attr='post_dt', null=True)
     create_dt = indexes.DateTimeField(model_attr='create_dt')
     
+    syndicate = indexes.BooleanField(model_attr='syndicate')
+    
     # authority fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
