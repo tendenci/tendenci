@@ -2,6 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from photos.models import Image, PhotoSet
+from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 
 class PhotoUploadForm(TendenciBaseForm):
@@ -34,9 +35,9 @@ class PhotoEditForm(TendenciBaseForm):
 
 class PhotoSetAddForm(TendenciBaseForm):
     """ Photo-Set Add-Form """
-    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
 
-    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
     class Meta:
         model = PhotoSet
@@ -47,17 +48,21 @@ class PhotoSetAddForm(TendenciBaseForm):
             'allow_anonymous_view',
             'allow_user_view',
             'allow_user_edit',
+            'status',
+            'status_detail',
         )
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
         super(PhotoSetAddForm, self).__init__(user, *args, **kwargs)
 
+        if is_admin(user):
+            self.fields['status'] = forms.BooleanField(required=False)
+            self.fields['status_detail'] = forms.ChoiceField(
+                choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+
 class PhotoSetEditForm(TendenciBaseForm):
     """ Photo-Set Edit-Form """
-    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
-
-    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
 
     class Meta:
         model = PhotoSet
@@ -68,8 +73,14 @@ class PhotoSetEditForm(TendenciBaseForm):
             'allow_anonymous_view',
             'allow_user_view',
             'allow_user_edit',
+            'status',
+            'status_detail',
         )
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
         super(PhotoSetEditForm, self).__init__(user, *args, **kwargs)
+
+        if not is_admin(user):
+            if 'status' in self.fields: self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')

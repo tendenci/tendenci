@@ -5,11 +5,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from stories.models import Story
 from perms.forms import TendenciBaseForm
+from perms.utils import is_admin
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 
 class StoryForm(TendenciBaseForm):
-    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
 
     content = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
@@ -17,12 +17,11 @@ class StoryForm(TendenciBaseForm):
         'storme_model':Story._meta.module_name.lower()}))
 
     fullstorylink = forms.CharField(label=_("Full Story Link"), required=False, max_length=300)
-
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now())
 
-    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
     class Meta:
         model = Story
@@ -46,6 +45,11 @@ class StoryForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
+
+        if not is_admin(user):
+            if 'status' in self.fields: self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
+
       
 class UploadStoryImageForm(forms.Form):
     file  = forms.FileField(label=_("File Path"))

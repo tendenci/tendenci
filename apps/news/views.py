@@ -85,12 +85,22 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
     if not request.user.has_perm('news.change_news', news):  
         raise Http403
 
-    form = form_class(instance=news)
+    form = form_class(request.user, instance=news)
 
     if request.method == "POST":
         form = form_class(request.user, request.POST, instance=news)
         if form.is_valid():
-            news = form.save()
+
+            news = form.save(commit=False)
+
+            # remove all permissions on the object
+            ObjectPermission.objects.remove_all(news)
+            # assign new permissions
+            user_perms = form.cleaned_data['user_perms']
+            if user_perms: ObjectPermission.objects.assign(user_perms, file)
+            
+            news.save()
+
 
             log_defaults = {
                 'event_id' : 305200,
@@ -100,14 +110,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
                 'request': request,
                 'instance': news,
             }
-            EventLog.objects.log(**log_defaults)
-
-            # remove all permissions on the object
-            ObjectPermission.objects.remove_all(news)
-
-            # assign new permissions
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms: ObjectPermission.objects.assign(user_perms, file)               
+            EventLog.objects.log(**log_defaults)               
 
             # assign creator permissions
             ObjectPermission.objects.assign(news.creator, news)
@@ -165,8 +168,17 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             news.creator = request.user
             news.creator_username = request.user.username
             news.owner = request.user
-            news.owner_username = request.user.username        
-            news.save()
+            news.owner_username = request.user.username
+            
+            news.save() # get pk
+
+            # assign permissions for selected users
+            user_perms = form.cleaned_data['user_perms']
+            if user_perms: ObjectPermission.objects.assign(user_perms, news)
+            # assign creator permissions
+            ObjectPermission.objects.assign(news.creator, news)
+
+            news.save() # update search-index w/ permissions
 
             log_defaults = {
                 'event_id' : 305100,
@@ -177,13 +189,6 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
                 'instance': news,
             }
             EventLog.objects.log(**log_defaults)
-
-            # assign permissions for selected users
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms: ObjectPermission.objects.assign(user_perms, news)
-            
-            # assign creator permissions
-            ObjectPermission.objects.assign(news.creator, news)
             
             messages.add_message(request, messages.INFO, 'Successfully added %s' % news)
             

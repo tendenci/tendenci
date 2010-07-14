@@ -88,6 +88,15 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                 job.owner = request.user
                 job.owner_username = request.user.username
                 job.save()
+
+                # assign permissions for selected users
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, job)
+                # assign creator permissions
+                ObjectPermission.objects.assign(job.creator, job) 
+
+                job.save() # update search-index w/ permissions
  
                 log_defaults = {
                     'event_id' : 251000,
@@ -98,15 +107,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                     'instance': job,
                 }
                 EventLog.objects.log(**log_defaults)
-                               
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, job)
-                
-                # assign creator permissions
-                ObjectPermission.objects.assign(job.creator, job) 
-                
+
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % job)
                 
                 # send notification to administrators
@@ -135,6 +136,16 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
             form = form_class(request.user, request.POST, instance=job)
             if form.is_valid():
                 job = form.save(commit=False)
+
+                # remove all permissions on the object
+                ObjectPermission.objects.remove_all(job)
+                # assign new permissions
+                user_perms = form.cleaned_data['user_perms']
+                if user_perms:
+                    ObjectPermission.objects.assign(user_perms, job)               
+                # assign creator permissions
+                ObjectPermission.objects.assign(job.creator, job)
+
                 job.save()
 
                 log_defaults = {
@@ -145,18 +156,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
                     'request': request,
                     'instance': job,
                 }
-                EventLog.objects.log(**log_defaults)
-                
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(job)
-                
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, job)               
- 
-                # assign creator permissions
-                ObjectPermission.objects.assign(job.creator, job) 
+                EventLog.objects.log(**log_defaults) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % job)
                                                               

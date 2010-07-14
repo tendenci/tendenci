@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
 from profiles.models import Profile
+from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin, is_developer
 
@@ -15,7 +16,6 @@ APPS = ['profiles', 'user_groups', 'articles',
         'stories', 'actions']
 
 class ProfileForm(TendenciBaseForm):
-    STATUS_CHOICES = (('active','Active'),('inactive','Inactive'), ('pending','Pending'),)
 
     first_name = forms.CharField(label=_("First Name"), max_length=100,
                                  error_messages={'required': 'First Name is a required field.'})
@@ -76,7 +76,8 @@ class ProfileForm(TendenciBaseForm):
     language = forms.ChoiceField(initial="en-us", choices=(('en-us', u'English'),))
     dob = forms.DateField(required=False, widget=SelectDateWidget(None, range(THIS_YEAR-100, THIS_YEAR)))
 
-    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
     class Meta:
         model = Profile
@@ -123,13 +124,12 @@ class ProfileForm(TendenciBaseForm):
                   'direct_mail',
                   'notes',
                   'interactive', 
-                  'status', 
-                  'status_detail',
                   'allow_anonymous_view',
                   'admin_notes',
                   'entity',
                   'security_level',
-                
+                  'status',
+                  'status_detail',
                 )
         
     def __init__(self, user_current=None, user_this=None, required_fields_list=None, *args, **kwargs):
@@ -163,8 +163,12 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['status']
                 del self.fields['status_detail']
             if is_admin(user_current) and not is_developer(user_current):
-                self.fields['security_level'].choices=(('user','User'),
-                                                            ('admin','Admin'),)
+                self.fields['security_level'].choices=(('user','User'), ('admin','Admin'),)
+
+        if not is_admin(user_current):
+            if 'status' in self.fields: self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
+
         # we make first_name, last_name, email, username and password as required field regardless
         # the rest of fields will be decided by the setting - UsersRequiredFields
         if required_fields_list:

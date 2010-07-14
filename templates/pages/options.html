@@ -6,6 +6,10 @@
 
 <div class="t-iconrow">
 
+	{% if can_edit %}
+	<span>{{ opt_object.status_detail|capfirst }}</span>
+	{% endif %}
+
 	<a class="option-link print" href="{% url page.print_view opt_object.slug %}">Print</a>
 		
 	{% if can_edit %}
