@@ -12,6 +12,8 @@ class ArticleIndex(indexes.RealTimeSearchIndex):
     body = indexes.CharField(model_attr='body')
     release_dt = indexes.DateTimeField(model_attr='release_dt', null=True)
     
+    syndicate = indexes.BooleanField(model_attr='syndicate')
+    
     # authority fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
