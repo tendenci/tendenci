@@ -1,0 +1,16 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+<h1>Available reports</h1>
+
+<ul>
+	<li><a href="{% url reports-events-summary %}">Marketing Events Summary</li>
+	<li><a href="{% url reports-admin-users %}">Administrator Security Level</li>
+	<li><a href="{% url reports-user-added %}">Site Users Added</li>
+	<li><a href="{% url reports-user-activity %}">User Activity Summary</li>
+	<li><a href="{% url reports-user-access %}">User Access</li>
+	<li><a href="#">Contacts Report - Referral Analysis</li>
+	<li><a href="{% url reports-articles %}">Article Reporting Options</li>
+</ul>
+
+{% endblock content %}
