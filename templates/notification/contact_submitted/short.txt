@@ -1,1 +1,1 @@
-Contact Form Submitted for {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+Contact Form Submitted for {{ site_name }}
