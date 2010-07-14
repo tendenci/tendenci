@@ -11,6 +11,7 @@ class PageIndex(indexes.RealTimeSearchIndex):
     title = indexes.CharField(model_attr='title')
     content = indexes.CharField(model_attr='content')
     create_dt = indexes.DateTimeField(model_attr='create_dt', null=True)
+    update_dt = indexes.DateTimeField(model_attr='update_dt', null=True)
     
     syndicate = indexes.BooleanField(model_attr='syndicate')
 
@@ -32,6 +33,20 @@ class PageIndex(indexes.RealTimeSearchIndex):
 
     category = indexes.CharField()
     sub_category = indexes.CharField()
+    
+    # for rss
+    can_syndicate = indexes.BooleanField()
+    syndicate_order = indexes.DateTimeField()
+    
+    def prepare_can_syndicate(self, obj):
+        if obj.allow_anonymous_view and obj.syndicate and obj.status==1  \
+            and obj.status_detail=='active':
+            return True
+        else:
+            return False
+        
+    def prepare_syndicate_order(self, obj):
+        return obj.update_dt
     
     def prepare_category(self, obj):
         category = Category.objects.get_for_object(obj, 'category')
