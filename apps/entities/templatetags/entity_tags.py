@@ -17,3 +17,8 @@ def entity_nav(context, user, entity=None):
         "user": user
     })
     return context
+
+
+@register.inclusion_tag("entities/search-form.html", takes_context=True)
+def entity_search(context):
+    return context
