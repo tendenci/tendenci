@@ -36,14 +36,15 @@ def append_colors(data):
     for item in data:
         item['color'] = COLORS.get(item['source'], '#CCCCCC')
 
-def day_bars(data, year, month, height=300):
+def day_bars(data, year, month, height=300, add_coloring=True):
     "Returns bars prepared for event-summary chart"
     
     def _sum_counts(items):
         for values in items.values():
             yield sum([i['count'] for i in values])
     
-    append_colors(data)
+    if add_coloring:
+        append_colors(data)
     result = SortedDict([(d, []) for d in month_days(year, month)])
     for item in data:
         result[item['day']].append(item)

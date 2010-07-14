@@ -1,4 +1,5 @@
 {% extends "reports/base.html" %}
+{% load reports_tags %}
 
 {% block content %}
 
@@ -8,6 +9,14 @@ Site: {{site}}
 <br>
 URL: {{ site.domain }}
 
+
+<div>
+	<a href="./?{% month_url previous %}">Previous</a>
+	{{ date_range.0|date:"M Y" }}
+	<a href="./?{% month_url next %}">Next</a>
+	<br>
+	{{ date_range.0|date:"M d, Y" }}:{{ date_range.1|date:"M d, Y" }}
+</div>
 
 <form>
 <select name='entity'>
@@ -25,11 +34,11 @@ URL: {{ site.domain }}
 	<td>Group</td>
 	<td># Users</td>
 </tr>
-{% for group in groups %}
-<tr>
+{% for item in data %}
+<tr class="{% cycle 'odd' '' %}">
 	<td>{{ forloop.counter }}</td>
-	<td>{{ group }}</td>
-	<td>{{ group.user_count }}</td>
+	<td>{{ item.group }}</td>
+	<td>{{ item.count }}</td>
 </tr>
 {% endfor %}
 </table>
