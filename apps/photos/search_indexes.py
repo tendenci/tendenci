@@ -24,6 +24,19 @@ class PhotoSetIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
     
+    # for rss
+    can_syndicate = indexes.BooleanField()
+    order = indexes.DateTimeField()
+    
+    def prepare_can_syndicate(self, obj):
+        if obj.allow_anonymous_view and  obj.status==1  and obj.status_detail=='active':
+            return True
+        else:
+            return False
+        
+    def prepare_syndicate_order(self, obj):
+        return obj.update_dt
+    
     def prepare_description(self, obj):
         description = obj.description
         description = strip_tags(description)
