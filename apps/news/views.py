@@ -97,7 +97,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
             ObjectPermission.objects.remove_all(news)
             # assign new permissions
             user_perms = form.cleaned_data['user_perms']
-            if user_perms: ObjectPermission.objects.assign(user_perms, file)
+            if user_perms: ObjectPermission.objects.assign(user_perms, news)
             # assign creator permissions
             ObjectPermission.objects.assign(news.creator, news)
 
