@@ -472,20 +472,18 @@ def photos_batch_add(request, photoset_id=0):
 
 def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
     template_name="photos/batch-edit.html"):
-    """ batch edit photos """
     from django.forms.models import modelformset_factory
 
     # photo form set
-    PhotoFormSet = modelformset_factory(Image, exclude=('title_slug',), extra=0)
+    PhotoFormSet = modelformset_factory(Image, exclude=('title_slug', 'creator_username', 'owner_username'), extra=0)
 
     if request.method == "POST":
-
         photo_formset = PhotoFormSet(request.POST)
-
         if photo_formset.is_valid():
 
             photos = photo_formset.save(commit=False)
             for photo in photos:
+
                 photo.member = request.user
                 photo.safetylevel = 1
                 photo.save()
@@ -501,6 +499,8 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
                 EventLog.objects.log(**log_defaults)
      
             photo_formset.save_m2m()
+        else:
+            print photo_formset.errors
 
         if photoset_id:
             return HttpResponseRedirect(reverse('photoset_details', args=[photoset_id]))  
@@ -509,7 +509,6 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
     else:
 
         if photoset_id:
-
             photo_set = get_object_or_404(PhotoSet, id=photoset_id)
 
             # if permission; get photos for editing
@@ -535,7 +534,6 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
 
         photo_formset = PhotoFormSet(queryset=photo_queryset)
 
- 
     return render_to_response(template_name, {
         "photo_formset": photo_formset,
         "photo_set": photo_set,
