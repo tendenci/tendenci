@@ -301,6 +301,11 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     body = render_to_string('notification/email_body.txt', {
         'message': messages['full'][0],
     }, context)
+    
+    if 'reply_to' in extra_context.keys():
+        reply_to = extra_context['reply_to']
+    else:
+        reply_to = None
 
 
     for email_addr in emails:
@@ -311,7 +316,10 @@ def send_emails(emails, label, extra_context=None, on_site=True):
             content_type = 'html'
         else:
             headers = {'Content-Type': 'text/plain'}
-            content_type = 'text'  
+            content_type = 'text'
+            
+        if reply_to:
+            headers['Reply-To'] = reply_to
             
         email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
         email.content_subtype = content_type
