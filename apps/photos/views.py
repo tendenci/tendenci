@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
 from django.conf import settings
 from django.core import serializers
+from haystack.indexes import SearchIndex
 
 from photologue.models import *
 from photos.models import Image, Pool, PhotoSet
@@ -473,6 +474,7 @@ def photos_batch_add(request, photoset_id=0):
 def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
     template_name="photos/batch-edit.html"):
     from django.forms.models import modelformset_factory
+    from photos.search_indexes import PhotoSetIndex
 
     # photo form set
     PhotoFormSet = modelformset_factory(Image, exclude=('title_slug', 'creator_username', 'owner_username'), extra=0)
@@ -499,6 +501,10 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
                 EventLog.objects.log(**log_defaults)
      
             photo_formset.save_m2m()
+
+            photo_set = PhotoSet.objects.get(pk=photoset_id)
+            PhotoSetIndex(PhotoSet).update_object(photo_set)
+
         else:
             print photo_formset.errors
 
