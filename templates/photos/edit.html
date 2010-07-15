@@ -4,6 +4,7 @@
 {% load humanize %}
 {% load tagging_tags %}
 {% load photo_tags %}
+{% load styled_forms %}
 
 {% load base_filters %}
 {% load smart_if %}
@@ -24,7 +25,7 @@
 
 	<div class="field-wrap">
 
-		{{ photo_form.as_p }}
+		{{ photo_form|styled_form }}
 
         <div class="submit">
             <input type="hidden" name="action" value="update" />
