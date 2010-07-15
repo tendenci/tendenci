@@ -415,11 +415,33 @@ def edit_user_groups(request, id, template_name="profiles/edit_groups.html"):
             gm.owner_id = request.user.id
             gm.owner_username = request.user.username
             gm.save()    
+            log_defaults = {
+                'event_id' : 221000,
+                'event_data': '%s (%d) added by %s' % (gm._meta.object_name, gm.pk, request.user),
+                'description': '%s added' % gm._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': gm,
+            }
+            EventLog.objects.log(**log_defaults)    
+
         # remove those not selected but already in GroupMembership  
         groups_to_remove = [g for g in groups_joined if g not in selected_groups]
         for g in groups_to_remove:
             gm = GroupMembership.objects.get(group=g, member=user_edit)
+            log_defaults = {
+                'event_id' : 223000,
+                'event_data': '%s (%d) deleted by %s' % (gm._meta.object_name, gm.pk, request.user),
+                'description': '%s deleted' % gm._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': gm,
+            }
+            EventLog.objects.log(**log_defaults)            
+            
             gm.delete()
+            
+            
         groups_joined = user_edit.group_set.all()
         #print new_groups
         #print request.POST 
