@@ -298,8 +298,10 @@ def users_added_report(request, kind):
     
     if kind == 'added':
         event_ids = (121000, 121100, 123001, 123103)
+        title = 'Site Users Added Report'
     elif kind == 'referral':
-        event_ids = (125114, 125115) 
+        event_ids = (125114, 125115)
+        title = 'Contacts Report - Referral Analysis Report (all contacts)'
     else:
         raise NotImplementedError('kind "%s" not supported' % kind)
     
@@ -318,6 +320,7 @@ def users_added_report(request, kind):
 
     return render_to_response('reports/users_added.html', 
                               {'data': data, 'chart_data': chart_data,
+                               'report_title': title,
                                'entities': Entity.objects.all(),
                                'site': Site.objects.get_current(),
                                'date_range': (from_date, to_date)}, 
