@@ -28,6 +28,24 @@ URL: {{ site.domain }}
 <input type="submit" value="Submit">
 </form>
 
+<table class="users-added-chart">
+<tr>
+{% for day, items in chart_data.items %}
+	<td>
+		{% for item in items %}
+			<a href="#" title="{{ item.event_id }} ({{ item.count }})">
+				<div style="width: 12px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
+			</a>
+		{% endfor %}
+		{{ day.day }}
+		<div style="font-size: 10px;">{{ day|date:"D" }}</div>
+	</td>
+{% endfor %}
+</tr>
+</table>
+
+<h3>User Groups (Referral) report</h3>
+
 <table>
 <tr>
 	<td>#</td>
@@ -37,7 +55,7 @@ URL: {{ site.domain }}
 {% for item in data %}
 <tr class="{% cycle 'odd' '' %}">
 	<td>{{ forloop.counter }}</td>
-	<td>{{ item.group }}</td>
+	<td>{{ item.headline }}</td>
 	<td>{{ item.count }}</td>
 </tr>
 {% endfor %}

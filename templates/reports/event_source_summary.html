@@ -2,7 +2,7 @@
 {% load reports_tags %}
 
 {% block content %}
-<h1>Tendenci&trade; Marketing Events Summary Report</h1>
+<h1>Tendenci&trade; Marketing Events Summary Report ({{ source }})</h1>
 
 <div>
 	<a href="./?{% month_url previous %}">Previous</a>
@@ -15,7 +15,7 @@
 {% for day, items in chart_data.items %}
 	<td>
 		{% for item in items %}
-			<a href="{% url reports-events-source item.source %}" title="{{ item.source }} ({{ item.count }})">
+			<a href="./?event_id={{ item.event_id }}" title="{{ item.event_id }} ({{ item.count }})">
 				<div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
 			</a>
 		{% endfor %}
@@ -31,7 +31,7 @@
 	<li>
 	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
-	<a href="{% url reports-events-source item.source %}">{{ item.source }} ({{ item.count }})</a>
+	<a href="./?event_id={{ item.event_id }}">{{ item.event_id }} ({{ item.count }})</a>
 	</li>
 {% endfor %}
 </ul>

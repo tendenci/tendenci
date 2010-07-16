@@ -11,8 +11,8 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from base.http import render_to_403
-from event_logs.models import EventLog
-from event_logs.utils import day_bars, append_colors, month_days,\
+from event_logs.models import EventLog, EventLogBaseColor, EventLogColor
+from event_logs.utils import day_bars, month_days,\
     request_month_range
 from django.db.models import Count
 from django.contrib.admin.views.decorators import staff_member_required
@@ -73,6 +73,14 @@ def colored_image(request, color):
     return HttpResponse(data, mimetype="image/png")
 
 
+def source_colors(data):
+    for item in data:
+        item['color'] = EventLogBaseColor.get_color(item['source'])
+
+def event_colors(data):
+    for item in data:
+        item['color'] = EventLogColor.get_color(item['event_id'])
+
 @staff_member_required
 def event_summary_report(request):
     queryset = EventLog.objects.all()
@@ -88,16 +96,47 @@ def event_summary_report(request):
                 .values('day', 'source')\
                 .annotate(count=Count('pk'))\
                 .order_by('day', 'source')
-    chart_data = day_bars(chart_data, from_date.year, from_date.month)
+    chart_data = day_bars(chart_data, from_date.year, from_date.month, 300, source_colors)
     
     summary_data = queryset\
                 .values('source')\
                 .annotate(count=Count('pk'))\
                 .order_by('source')
-    append_colors(summary_data)
+    source_colors(summary_data)
 
     return render_to_response(
                 'reports/event_summary.html', 
                 {'chart_data': chart_data, 'summary_data':summary_data, 
                  'form': form, 'date_range': (from_date, to_date)},  
                 context_instance=RequestContext(request))
+
+@staff_member_required
+def event_source_summary_report(request, source):
+    queryset = EventLog.objects.filter(source=source)
+    form = EventsFilterForm(request.GET)
+    if form.is_valid():
+        queryset = form.process_filter(queryset)
+    
+    from_date, to_date = request_month_range(request)
+    queryset = queryset.filter(create_dt__gte=from_date, create_dt__lte=to_date)
+    
+    chart_data = queryset\
+                .extra(select={'day':'DATE(create_dt)'})\
+                .values('day', 'event_id')\
+                .annotate(count=Count('pk'))\
+                .order_by('day', 'event_id')
+    chart_data = day_bars(chart_data, from_date.year, from_date.month, 300, event_colors)
+    
+    summary_data = queryset\
+                .values('event_id')\
+                .annotate(count=Count('pk'))\
+                .order_by('event_id')
+    event_colors(summary_data)
+    
+    return render_to_response(
+                'reports/event_source_summary.html', 
+                {'chart_data': chart_data, 'summary_data':summary_data, 
+                 'form': form, 'date_range': (from_date, to_date),
+                 'source':source},  
+                context_instance=RequestContext(request))
+    
