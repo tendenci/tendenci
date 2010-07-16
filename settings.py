@@ -30,16 +30,17 @@ DATABASES = {
         'PORT': '3306',
     }
 }
+
 # email
 EMAIL_HOST = '4.78.3.131'
-#EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
-#EMAIL_PORT = 1025
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = 'DO-NOT-REPLY@tendenci.com'
 
+# user agent for external retrieval of files/images
+TENDENCI_USER_AGENT = 'Tendenci/5.0 +http://www.tendenci.com'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

@@ -290,7 +290,7 @@ def make_image_object_from_url(image_url):
         parsed_url.source = parsed_url.protocol + "://" + parsed_url.source
 
     request = urllib2.Request(parsed_url.source)
-    request.add_header('User-Agent', settings.STORME_USER_AGENT)
+    request.add_header('User-Agent', settings.TENDENCI_USER_AGENT)
     opener = urllib2.build_opener()
 
     # make image object
