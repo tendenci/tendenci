@@ -50,10 +50,10 @@ def image_preview(request, app_label, model, id,  size):
             image_urls = parse_image_sources(instance.content)
             
         if isinstance(instance,Article):
-            image_urls = parse_image_sources(instance.content)
+            image_urls = parse_image_sources(instance.body)
                   
         if isinstance(instance,News):
-            image_urls = parse_image_sources(instance.content)
+            image_urls = parse_image_sources(instance.body)
                                  
         image = Pil.new('RGBA',size_min)
     
