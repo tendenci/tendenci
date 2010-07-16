@@ -50,7 +50,30 @@ class EventLog(models.Model):
     def __unicode__(self):
         return str(self.event_id)
 
-class EventLogBaseColor(models.Model):
+
+class CachedColorModel(models.Model):
+    "Cache to avoid re-looking up eventlog color objects all over the place."
+    class Meta:
+        abstract = True
+    
+    def save(self, *args, **kwargs):
+        self.__class__._cache = {}
+        super(CachedColorModel, self).save(*args, **kwargs)
+    
+    @classmethod
+    def cache_get(cls, key, field):
+        if not hasattr(cls, '_cache'):
+            cls._cache = {}
+        try:
+            return cls._cache[key]
+        except KeyError:
+            try:
+                cls._cache[key] = cls.objects.get(**{field:key}).hex_color
+            except cls.DoesNotExist:
+                return None
+            return cls._cache[key]
+
+class EventLogBaseColor(CachedColorModel):
     """
         Event Log Base Colors is for reporting only
     """
@@ -58,10 +81,18 @@ class EventLogBaseColor(models.Model):
     event_id = models.IntegerField() 
     hex_color = models.CharField(max_length=6)
     
-class EventLogColor(models.Model):
+    @classmethod
+    def get_color(cls, source):
+        return cls.cache_get(source, 'source') or '333333' # indeed some 
+    
+class EventLogColor(CachedColorModel):
     """
         Event Log Colors is for reporting only
     """
     event_id = models.IntegerField()
     hex_color = models.CharField(max_length=6)
     rgb_color = models.CommaSeparatedIntegerField(max_length=11)
+    
+    @classmethod
+    def get_color(cls, event_id):
+        return cls.cache_get(event_id, 'event_id') or '333333'
