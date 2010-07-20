@@ -15,9 +15,15 @@ Article times read. Click the article headline to view the article. Click the nu
 {% for item in stats %}
 <tr>
 	<td>{{ item.count }}</td>
-	<td>{{ item.article }}</td>
+{% if item.article %}
+	<td><a href="{% url article item.article.slug %}">{{ item.article }}</a></td>
 	<td>{{ item.per_day|floatformat:2 }}</td>
 	<td>{{ item.article.create_dt|date:"M d, Y" }}</td>
+{% else %}
+	<td>{{ item.headline }}</td>
+	<td><small>&lt;deleted&gt;</small></td>
+	<td><small>&lt;deleted&gt;</small></td>
+{% endif %}
 </tr>
 {% endfor %}
 </table>

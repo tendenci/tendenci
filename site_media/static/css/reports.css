@@ -17,6 +17,16 @@ h1 {
 }
 
 
+.users-added-chart {
+	height: 100px;
+}
+
+.users-added-chart td {
+	vertical-align: bottom;
+	text-align: center;
+	width: 12px;
+}
+
 .events-summary {
 	width: 650px;
 }
