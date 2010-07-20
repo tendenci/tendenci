@@ -25,7 +25,7 @@ def add(request, form_class=EmailBlockForm, template_name="email_blocks/edit.htm
     return render_to_response(template_name, {'form':form, 'email_block':None}, 
         context_instance=RequestContext(request))
     
-    
+@login_required    
 def view(request, id, template_name="email_blocks/view.html"):
     email_block = get_object_or_404(EmailBlock, pk=id)
     
@@ -53,17 +53,19 @@ def edit(request, id, form_class=EmailBlockForm, template_name="email_blocks/edi
        
     return render_to_response(template_name, {'form':form, 'email_block':email_block}, 
         context_instance=RequestContext(request))
-    
+
+@login_required     
 def search(request, template_name="email_blocks/search.html"):
     if is_admin(request.user):
         email_blocks = EmailBlock.objects.all()
     else:
-        email_blocks = EmailBlock.objects.filter(status=True, status_detail='active')
+        raise Http403
     email_blocks = email_blocks.order_by('-create_dt')
     
     return render_to_response(template_name, {'email_blocks':email_blocks}, 
         context_instance=RequestContext(request))
-    
+
+@login_required     
 def delete(request, id, template_name="email_blocks/delete.html"):
     email_block = get_object_or_404(EmailBlock, pk=id)
     

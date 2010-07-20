@@ -29,10 +29,7 @@ class PhotoSetIndex(indexes.RealTimeSearchIndex):
     order = indexes.DateTimeField()
     
     def prepare_can_syndicate(self, obj):
-        if obj.allow_anonymous_view and  obj.status==1  and obj.status_detail=='active':
-            return True
-        else:
-            return False
+        return obj.allow_anonymous_view and obj.status==1  and obj.status_detail=='active'
         
     def prepare_syndicate_order(self, obj):
         return obj.update_dt
