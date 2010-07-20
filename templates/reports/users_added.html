@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h1>Site Users Added Report</h1>
+<h1>{{ report_title }}</h1>
 
 Site: {{site}}
 <br>
@@ -19,6 +19,7 @@ URL: {{ site.domain }}
 </div>
 
 <form>
+Entity:
 <select name='entity'>
 	<option></option>
 	{% for e in entities %}
@@ -27,6 +28,24 @@ URL: {{ site.domain }}
 </select>
 <input type="submit" value="Submit">
 </form>
+
+<table class="users-added-chart">
+<tr>
+{% for day, items in chart_data.items %}
+	<td>
+		{% for item in items %}
+			<a href="#" title="{{ item.event_id }} ({{ item.count }})">
+				<div style="width: 12px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
+			</a>
+		{% endfor %}
+		{{ day.day }}
+		<div style="font-size: 10px;">{{ day|date:"D" }}</div>
+	</td>
+{% endfor %}
+</tr>
+</table>
+
+<h3>User Groups (Referral) report</h3>
 
 <table>
 <tr>
@@ -37,7 +56,7 @@ URL: {{ site.domain }}
 {% for item in data %}
 <tr class="{% cycle 'odd' '' %}">
 	<td>{{ forloop.counter }}</td>
-	<td>{{ item.group }}</td>
+	<td>{{ item.headline }}</td>
 	<td>{{ item.count }}</td>
 </tr>
 {% endfor %}

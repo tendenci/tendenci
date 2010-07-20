@@ -255,20 +255,23 @@ def delete(request, id, template_name="articles/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
 
 @staff_member_required
 def articles_report(request):
     stats= EventLog.objects.filter(event_id=435000)\
-                    .values('content_type', 'object_id')\
+                    .values('content_type', 'object_id', 'headline')\
                     .annotate(count=Count('pk'))\
                     .order_by('-count')
     for item in stats:
         ct = ContentType.objects.get_for_id(item['content_type'])
         assert ct.model_class() == Article
-        article = Article.objects.get(pk=item['object_id'])
-        item['article'] = article
-        item['per_day'] = item['count'] * 1.0 / article.age().days
+        try:
+            article = Article.objects.get(pk=item['object_id'])
+            item['article'] = article
+            item['per_day'] = item['count'] * 1.0 / article.age().days
+        except Article.DoesNotExist:
+            pass
         
     return render_to_response('reports/articles.html', 
             {'stats': stats}, 
