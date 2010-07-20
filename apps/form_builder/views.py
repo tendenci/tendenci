@@ -5,12 +5,15 @@ from django.core.urlresolvers import reverse
 from django.core.mail.message import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.contrib.auth.models import User, AnonymousUser
+
 from event_logs.models import EventLog
 
 from site_settings.utils import get_setting
 from contacts.models import Contact, Address, Phone, Email, URL
 from form_builder.forms import ContactForm
-from django.contrib.auth.models import User, AnonymousUser
+from form_builder.utils import listed_in_email_block
+
 
 from perms.utils import get_notice_recipients
 try: from notification import models as notification
@@ -21,16 +24,33 @@ def index(request, form_class=ContactForm, template_name="form.html"):
     if request.method == "POST":
         form = form_class(request.POST)
         if form.is_valid():
-
+            email = form.cleaned_data.get('email', None)
             first_name = form.cleaned_data.get('first_name', None)
             last_name = form.cleaned_data.get('last_name', None)
+            
+            if listed_in_email_block(email):
+                # listed in the email blocks - it's a spam email we want to block
+                # log the spam
+                log_defaults = {
+                    'event_id' : 130999,
+                    'event_data': 'SPAM detected in email from  %s %s, %s.' \
+                                    % (first_name, last_name, email),
+                    'description': 'email spam detected',
+                    'user': request.user,
+                    'request': request,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                # redirect normally so they don't suspect
+                return HttpResponseRedirect(reverse('form.confirmation'))
+            
             address = form.cleaned_data.get('address', None)
             city = form.cleaned_data.get('city', None)
             state = form.cleaned_data.get('state', None)
             zipcode = form.cleaned_data.get('zipcode', None)
             country = form.cleaned_data.get('country', None)
             phone = form.cleaned_data.get('phone', None)
-            email = form.cleaned_data.get('email', None)
+            
             url = form.cleaned_data.get('url', None)
             message = form.cleaned_data.get('message', None)
 

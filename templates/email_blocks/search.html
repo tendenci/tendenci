@@ -29,7 +29,7 @@
             <div><a href="{% url email_block.view email_block.pk %}">{% if email_block.email %}{{ email_block.email }}{% else %}{{email_block.email_domain }}{% endif %}</a></div>
             <div class="clear-right"></div>
            
-            <div class="content"><b>Reason:</b> {{ email_block|striptags|truncatewords:40 }}</div>
+            <div class="content"><b>Reason:</b> {{ email_block.reason|striptags|truncatewords:40 }}</div>
 			<div class="meta">
             	<div class="submitted">Created on {{ email_block.create_dt|date:"D d M Y P" }} by <a href="{% url profile email_block.creator.id %}">{{ email_block.creator }}</a></div>
             </div>
