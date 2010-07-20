@@ -128,7 +128,7 @@ def event_source_summary_report(request, source):
     chart_data = day_bars(chart_data, from_date.year, from_date.month, 300, event_colors)
     
     summary_data = queryset\
-                .values('event_id')\
+                .values('event_id', 'description')\
                 .annotate(count=Count('pk'))\
                 .order_by('event_id')
     event_colors(summary_data)
