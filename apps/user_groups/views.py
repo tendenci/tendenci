@@ -321,7 +321,7 @@ def users_added_report(request, kind):
     return render_to_response('reports/users_added.html', 
                               {'data': data, 'chart_data': chart_data,
                                'report_title': title,
-                               'entities': Entity.objects.all(),
+                               'entities': Entity.objects.all().order_by('entity_name'),
                                'site': Site.objects.get_current(),
                                'date_range': (from_date, to_date)}, 
                               context_instance=RequestContext(request))
