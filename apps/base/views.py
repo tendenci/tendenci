@@ -23,7 +23,7 @@ def image_preview(request, app_label, model, id,  size):
     except:
         return HttpResponseNotFound("Image not found.", mimetype="text/plain")
 
-    response = cache.get(IMAGE_PREVIEW_CACHE + '.'.join([model, instance.id, size]))
+    response = cache.get(IMAGE_PREVIEW_CACHE + '.'.join([model, str(instance.id), size]))
     original_size = size
     
     if not response:
@@ -50,10 +50,10 @@ def image_preview(request, app_label, model, id,  size):
             image_urls = parse_image_sources(instance.content)
             
         if isinstance(instance,Article):
-            image_urls = parse_image_sources(instance.content)
+            image_urls = parse_image_sources(instance.body)
                   
         if isinstance(instance,News):
-            image_urls = parse_image_sources(instance.content)
+            image_urls = parse_image_sources(instance.body)
                                  
         image = Pil.new('RGBA',size_min)
     
@@ -75,7 +75,7 @@ def image_preview(request, app_label, model, id,  size):
             
             image.save(response, "JPEG", quality=100)
             
-            cache.set(IMAGE_PREVIEW_CACHE + '.'.join([model, instance.id, size]), response)
+            cache.set(IMAGE_PREVIEW_CACHE + '.'.join([model, str(instance.id), size]), response)
             return response
     
         else: # raise http 404 error (returns page not found)
