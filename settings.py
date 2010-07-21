@@ -238,6 +238,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'apply_source_formatting' : True,
     'convert_urls' : False,
     'apply_source_formatting' : False,
+    'handle_event_callback' : "event_handler",
 }
 
 # -------------------------------------- #
