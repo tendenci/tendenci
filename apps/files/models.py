@@ -27,7 +27,7 @@ class File(TendenciBaseModel):
 
         # map file-type to extension
         types = {
-            'image' : ('.jpg','.jpeg','.gif','.png','.tif','.tiff'),
+            'image' : ('.jpg','.jpeg','.gif','.png','.tif','.tiff','.bmp',),
             'text' : ('.txt','.doc','.docx'),
             'spreadsheet' : ('.csv','.xls','.xlsx'),
             'powerpoint' : ('.ppt','.pptx'),

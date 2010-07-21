@@ -139,16 +139,18 @@
 
 			<div id="imageedit_panel" class="panel">
 
-<style type="text/css">
-	div.options {
-		border: 1px solid silver;
-		padding: 10px;
-		background-color: #F0F5FF;
-	}
-</style>
+				<style type="text/css">
+					div.options {
+						border: 1px solid silver;
+						padding: 10px;
+						background-color: #F0F5FF;
+					}
+				</style>
 
                 <div class="photo-wrapper">
                     <input type="hidden" name="image-id" value="{{ file.id }}" />
+					<input type="hidden" name="orig_width" value="{{ file.image_dimensions|first }}" />
+					<input type="hidden" name="orig_height" value="{{ file.image_dimensions|last }}" />
                     <div class="photo">
                         <img class="edit_src" style="width:75px; height:75px;" src="{{ file.file.url }}" />
                     </div>
@@ -157,23 +159,28 @@
                     </div>
                     <div style="clear:both;"></div>
                     <div class="options">
-                    	<input type="hidden" name="edit_width" value="" />
-                        <input type="hidden" name="edit_height" value="" />
-                        <table>
+                        <table cellpadding=5 style="width:100%;">
                             <tr>
                                 <td>Title: </td>
-                                <td><input type="text" name="edit_title" value="{{ file.name }}" /></td>
+                                <td><input style="width:100%;" type="text" name="edit_title" value="{{ file.name }}" /></td>
                             </tr>
+							<tr>
+								<td>&nbsp;</td>
+								<td>
+									Width: <input style="width:40px;" type="text" name="edit_width" />
+									Height: <input style="width:40px;" type="text" name="edit_height" />
+								</td>
+							</tr>
                             <tr>
-                                <td>Alignment: </td>
-                                <td>
+                                <td>&nbsp;</td>
+                                <td>Align: 
                                     <select name="edit_align">
                                         <option value="">-- Not set --</option>
                                         <option value="left">Left</option>
                                         <option value="right">Right</option>
-                                    </select>&nbsp;&nbsp;
-                                    V-Space: <input style="width:20px" type="text" name="edit_vspace" value="" />
-                                    H-Space: <input style="width:20px" type="text" name="edit_hspace" value="" />
+                                    </select>&nbsp;
+                                    V-Space: <input style="width:30px" type="text" name="edit_vspace" value="" />&nbsp;
+                                    H-Space: <input style="width:30px" type="text" name="edit_hspace" value="" />
                                 </td>
                             </tr>
                         </table>

@@ -36,14 +36,14 @@ var ImageDialog = {
 				if (dom.getAttrib(n, 'align'))
 					this.updateStyle('align');
 
+				if (dom.getAttrib(n, 'vspace'))
+					this.updateStyle('vspace');
+
 				if (dom.getAttrib(n, 'hspace'))
 					this.updateStyle('hspace');
 
 				if (dom.getAttrib(n, 'border'))
 					this.updateStyle('border');
-
-				if (dom.getAttrib(n, 'vspace'))
-					this.updateStyle('vspace');
 			}
 		}
 		else {
