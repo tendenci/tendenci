@@ -167,8 +167,6 @@ INSTALLED_APPS = (
     'stories',
     'pages',
     'photos',
-#    'events',
-    'base',
     'entities',
     'locations',
     'site_settings',
@@ -190,7 +188,12 @@ INSTALLED_APPS = (
     'jobs',
     'styled_forms',
     'form_builder',
+    'newsletters',
     'meta',
+    
+    # celery task system, must stay at the bottom
+    # of installed apps
+    'djcelery',
 )
 
 # This is the number of days users will have to activate their
@@ -242,6 +245,15 @@ TINYMCE_DEFAULT_CONFIG = {
 # -------------------------------------- #
 CACHE_DIR = PROJECT_ROOT + "/cache"
 CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800" # 7 days
+
+# --------------------------------------#
+# Celery
+# --------------------------------------#
+BROKER_HOST = "localhost"
+BROKER_PORT = 5672
+BROKER_USER = "guest"
+BROKER_PASSWORD = "guest"
+BROKER_VHOST = "/"
 
 # --------------------------------------#
 # Hackstack Search
