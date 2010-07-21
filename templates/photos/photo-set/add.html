@@ -7,11 +7,13 @@
         
 {% block body %}
 	<h1>{{ MODULE_PHOTOS_LABEL }} Set Add</h1>
+	<div class="forms">
     <form method="POST" action="">
         {{ photoset_form|styled_form }}
         <input type="hidden" name="action" value="add" />
         <input type="submit" value="{% trans "Add" %}"/>
-    </form>  
+    </form>
+	</div>
 {% endblock %}
 
 {% block extra_body %}
