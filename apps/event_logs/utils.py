@@ -16,35 +16,16 @@ def request_month_range(request):
     days = list(month_days(year, month)) 
     return days[0], days[-1]
 
-#TODO: this is just temporary colors for event summary reports
-#      should be replaced with some database values that currently unclear
-COLORS = {
-    'articles': '#660000',
-    'auth': '#FFCC00',
-    'contacts': '#009900',
-    'entities': '#009999',
-    'locations': '#0099FF',
-    'news': '#0000FF',
-    'pages': '#9900CC',
-    'photos': '#FF99FF',
-    'profiles': '#666699',
-    'stories': '#CCCC99',
-    'user_groups': '#000000',
-}
 
-def append_colors(data):
-    for item in data:
-        item['color'] = COLORS.get(item['source'], '#CCCCCC')
-
-def day_bars(data, year, month, height=300, add_coloring=True):
+def day_bars(data, year, month, height, color_func=None):
     "Returns bars prepared for event-summary chart"
     
     def _sum_counts(items):
         for values in items.values():
             yield sum([i['count'] for i in values])
     
-    if add_coloring:
-        append_colors(data)
+    if color_func:
+        color_func(data)
     result = SortedDict([(d, []) for d in month_days(year, month)])
     for item in data:
         result[item['day']].append(item)
@@ -55,5 +36,4 @@ def day_bars(data, year, month, height=300, add_coloring=True):
     for values in result.values():
         for item in values:
             item['height'] = int(item['count']*kH)
-            #item['color'] = COLORS.get(item['source'], '#CCCCCC')
     return result

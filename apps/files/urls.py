@@ -4,7 +4,9 @@ from files.feeds import LatestEntriesFeed
 urlpatterns = patterns('files',                  
     url(r'^$', 'views.index', name="files"),
     url(r'^(?P<id>\d+)/$', 'views.index', name="file"),
-    url(r'^(?P<id>\d+)/(?P<download>[\d\w\-\/]+)/$', 'views.index', name="file"),
+    url(r'^(?P<id>\d+)/(?P<download>[download/]*)$', 'views.index', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<download>[download/]*)$', 'views.index', name="file"),
+
     url(r'^search/$', 'views.search', name="file.search"),
     url(r'^add/$', 'views.add', name="file.add"),
     url(r'^edit/(?P<id>\d+)/$', 'views.edit', name="file.edit"),

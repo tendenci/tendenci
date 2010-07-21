@@ -9,33 +9,47 @@ from django.core.urlresolvers import reverse
 import simplejson as json
 from base.http import Http403
 from files.models import File
+from files.utils import get_image
 from files.forms import FileForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
 
-def index(request, id=None, download='', template_name="files/view.html"):
+def index(request, id=None, size=None, download=False, template_name="files/view.html"):
     if not id: return HttpResponseRedirect(reverse('file.search'))
     file = get_object_or_404(File, pk=id)
 
-    # check permission
-    # if not request.user.has_perm('files.view_file', file):
-    #    raise Http403
-    
-    # check public permissions
+    if download: attachment = 'attachment;'
+    else: attachment = ''
+
+    # check 'if public'
     if not file.is_public:
         if not request.user.is_authenticated():
             raise Http403
 
-    try: data = file.file.read()
+    # get image binary
+    try:
+        data = file.file.read()
+        file.file.close()
     except: raise Http404
 
+    # if image size specified
+    if file.type()=='image' and size: # if size specified
+        size= [int(s) for s in size.split('x')] # convert to list
+        # gets resized image from cache or rebuilds
+        image = get_image(file, size)
+        response = HttpResponse(mimetype='image/jpeg')
+        response['Content-Disposition'] = '%s filename=%s'% (attachment, file.file.name)
+        image.save(response, "JPEG", quality=100)
+
+        return response
+
+    # set mimetype
     if file.mime_type():
         response = HttpResponse(data, mimetype=file.mime_type())
     else: raise Http404
 
-    if download: download = 'attachment;'
-    response['Content-Disposition'] = '%s filename=%s'% (download, file.file.name)
-
+    # return response
+    response['Content-Disposition'] = '%s filename=%s'% (attachment, file.file.name)
     return response
 
 def search(request, template_name="files/search.html"):
