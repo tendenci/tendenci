@@ -156,6 +156,7 @@ INSTALLED_APPS = (
     'tinymce',
     'haystack',
     'captcha',
+    'south',
     
     # tendenci applications
     'base',
