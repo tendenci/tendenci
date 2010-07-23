@@ -13,21 +13,16 @@ urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
     
     #Reports:
-    url(r'^reports/$', direct_to_template, {"template": "reports/all.html",}, name="home"),
+    (r'^reports/', include('reports.urls')),
     url(r'^event-logs/reports/summary/$', 'event_logs.views.event_summary_report', name='reports-events-summary'),
     url(r'^event-logs/reports/summary/([^/]+)/$', 'event_logs.views.event_source_summary_report', name='reports-events-source'),
     url(r'^users/reports/users-activity-top10/$', 'profiles.views.user_activity_report', name='reports-user-activity'),
     url(r'^users/reports/active-logins/$', 'profiles.views.user_access_report', name='reports-user-access'),
     url(r'^users/reports/admin/$', 'profiles.views.admin_users_report', name='reports-admin-users'),
-    
-    url(r'^users/reports/users-added/$', 'user_groups.views.users_added_report'
-                                       , {'kind': 'added'}, name='reports-user-added'),
-    url(r'^users/reports/contacts-referral/$', 'user_groups.views.users_added_report'
-                                       , {'kind': 'referral'}, name='reports-contacts-referral'),
+    url(r'^users/reports/users-added/$', 'user_groups.views.users_added_report', {'kind': 'added'}, name='reports-user-added'),
+    url(r'^users/reports/contacts-referral/$', 'user_groups.views.users_added_report', {'kind': 'referral'}, name='reports-contacts-referral'),
     url(r'^articles/reports/rank/$', 'articles.views.articles_report', name='reports-articles'),
-    
 
-    
     (r'^notifications/', include('notification.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^base/', include('base.urls')),
