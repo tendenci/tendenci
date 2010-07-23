@@ -136,10 +136,14 @@ def send(request, action_id):
     action = get_object_or_404(Action, pk=action_id)
     if not request.user.has_perm('actions.add_action'): raise Http403
     
-    if action.status_detail == 'open' and action.group.members.count() < LIMIT:
-        # send the newsletter immediately
-        from actions.utils import distribute_newsletter
-        boo = distribute_newsletter(request, action)  
+    if action.status_detail == 'open':
+        if action.group.members.count() < LIMIT:
+            # send the newsletter immediately
+            from actions.utils import distribute_newsletter_v2
+            boo = distribute_newsletter_v2(action)
+        else:
+            from actions.tasks import task_queue_distribute_newsletter
+            result = task_queue_distribute_newsletter.delay(action)
     
     return HttpResponseRedirect(reverse('action.confirm', args=[action.id]))
 
