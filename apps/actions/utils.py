@@ -1,5 +1,6 @@
 import datetime
 import re
+import cPickle
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from site_settings.utils import get_setting
@@ -199,6 +200,12 @@ def distribute_newsletter_v2(action, request=None, **kwargs):
             action.start_dt = datetime.datetime.now()
             action.save()
             
+            # save the recap
+            ar = ActionRecap()
+            ar.action = action
+            ar.start_dt = action.start_dt
+            ar.save()
+            
             i = 0
             result_d = {'total': 0, 'total_success':0, 'total_failed':0, 'total_nomail':0}
             recap_d = []    # the result will be stored in the action_recap table
@@ -248,7 +255,15 @@ def distribute_newsletter_v2(action, request=None, **kwargs):
                     # make a new connection
                     connection.close()
                     connection.open()
-                    i += 1
+                    
+                    # save the recap during process
+                    ar.recap = cPickle.dumps(recap_d)
+                    ar.sent = result_d['total_success']
+                    ar.attempted = result_d['total']
+                    ar.failed = result_d['total_failed']+ result_d['total_nomail']
+                    ar.save()
+                    
+                i += 1
                     
                 profile_this = user_this.get_profile() 
                 user_this.password =  password_txt
@@ -309,11 +324,7 @@ def distribute_newsletter_v2(action, request=None, **kwargs):
             action.save()
             
             # save the recap
-            import cPickle
-            ar = ActionRecap()
-            ar.action = action
             ar.recap = cPickle.dumps(recap_d)
-            ar.start_dt = action.start_dt
             ar.finish_dt = action.finish_dt
             ar.sent = action.sent
             ar.attempted = action.attempted
