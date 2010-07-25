@@ -32,6 +32,7 @@ class Action(TendenciBaseModel):
     sla = models.BooleanField(_('Software License Agreement'), default=False)
     starting_point = models.IntegerField(default=0)
     stopping_point = models.IntegerField(default=0)
+    task_result = models.TextField(null=True)
     
     @models.permalink
     def get_absolute_url(self):
@@ -58,6 +59,6 @@ class ActionRecap(models.Model):
     sent = models.IntegerField(default=0)
     attempted = models.IntegerField(default=0)
     failed = models.IntegerField(default=0)
-    recap = models.TextField()
+    recap = models.TextField(null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     
