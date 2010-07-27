@@ -110,6 +110,7 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
+    'redirects.middleware.RedirectMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
@@ -167,8 +168,6 @@ INSTALLED_APPS = (
     'stories',
     'pages',
     'photos',
-#    'events',
-    'base',
     'entities',
     'locations',
     'site_settings',
@@ -191,6 +190,7 @@ INSTALLED_APPS = (
     'styled_forms',
     'form_builder',
     'meta',
+    'redirects',
 )
 
 # This is the number of days users will have to activate their
