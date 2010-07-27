@@ -8,71 +8,14 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding model 'Action'
-        db.create_table('actions_action', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('allow_user_view', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('allow_member_view', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('allow_anonymous_edit', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('allow_user_edit', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('allow_member_edit', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('create_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('update_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('creator', self.gf('django.db.models.fields.related.ForeignKey')(related_name='action_creator', to=orm['auth.User'])),
-            ('creator_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('owner', self.gf('django.db.models.fields.related.ForeignKey')(related_name='action_owner', to=orm['auth.User'])),
-            ('owner_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('status', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
-            ('status_detail', self.gf('django.db.models.fields.CharField')(default='active', max_length=50)),
-            ('guid', self.gf('django.db.models.fields.CharField')(default=UUID('2e7bca3c-99b6-11df-84fc-001aa06701b5'), max_length=50)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('type', self.gf('django.db.models.fields.CharField')(default='Distribution E-mail', max_length=50)),
-            ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('email', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['emails.Email'], null=True, blank=True)),
-            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['entities.Entity'], null=True, blank=True)),
-            ('group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['user_groups.Group'], null=True, blank=True)),
-            ('article', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['articles.Article'], null=True, blank=True)),
-            ('member_only', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('send_to_email2', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('category', self.gf('django.db.models.fields.CharField')(default='', max_length=50, null=True)),
-            ('start_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('finish_dt', self.gf('django.db.models.fields.DateTimeField')(null=True)),
-            ('due_dt', self.gf('django.db.models.fields.DateTimeField')(null=True)),
-            ('submit_dt', self.gf('django.db.models.fields.DateTimeField')(null=True)),
-            ('sent', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('attempted', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('failed', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('returned', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('responses', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('sla', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('starting_point', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('stopping_point', self.gf('django.db.models.fields.IntegerField')(default=0)),
-        ))
-        db.send_create_signal('actions', ['Action'])
-
-        # Adding model 'ActionRecap'
-        db.create_table('actions_actionrecap', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('action', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['actions.Action'])),
-            ('start_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('finish_dt', self.gf('django.db.models.fields.DateTimeField')(null=True)),
-            ('sent', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('attempted', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('failed', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('recap', self.gf('django.db.models.fields.TextField')()),
-            ('create_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-        ))
-        db.send_create_signal('actions', ['ActionRecap'])
+        # Adding field 'Action.task_result'
+        db.add_column('actions_action', 'task_result', self.gf('django.db.models.fields.TextField')(null=True), keep_default=False)
 
 
     def backwards(self, orm):
         
-        # Deleting model 'Action'
-        db.delete_table('actions_action')
-
-        # Deleting model 'ActionRecap'
-        db.delete_table('actions_actionrecap')
+        # Deleting field 'Action.task_result'
+        db.delete_column('actions_action', 'task_result')
 
 
     models = {
@@ -97,7 +40,7 @@ class Migration(SchemaMigration):
             'failed': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'finish_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True', 'blank': 'True'}),
-            'guid': ('django.db.models.fields.CharField', [], {'default': "UUID('2e82b7e8-99b6-11df-84fc-001aa06701b5')", 'max_length': '50'}),
+            'guid': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'member_only': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
@@ -114,6 +57,7 @@ class Migration(SchemaMigration):
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'stopping_point': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'submit_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
+            'task_result': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'type': ('django.db.models.fields.CharField', [], {'default': "'Distribution E-mail'", 'max_length': '50'}),
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
@@ -125,7 +69,7 @@ class Migration(SchemaMigration):
             'failed': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'finish_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'recap': ('django.db.models.fields.TextField', [], {}),
+            'recap': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'sent': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'start_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
         },
@@ -150,7 +94,7 @@ class Migration(SchemaMigration):
             'fax': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'featured': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'guid': ('django.db.models.fields.CharField', [], {'default': "UUID('2e838416-99b6-11df-84fc-001aa06701b5')", 'max_length': '40'}),
+            'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'headline': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
@@ -221,7 +165,7 @@ class Migration(SchemaMigration):
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'email_creator'", 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'guid': ('django.db.models.fields.CharField', [], {'default': "UUID('2e84b26e-99b6-11df-84fc-001aa06701b5')", 'max_length': '50'}),
+            'guid': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'email_owner'", 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
@@ -257,7 +201,7 @@ class Migration(SchemaMigration):
             'entity_parent_id': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'entity_type': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'fax': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
-            'guid': ('django.db.models.fields.CharField', [], {'default': "UUID('2e8132ec-99b6-11df-84fc-001aa06701b5')", 'max_length': '40'}),
+            'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'entity_owner'", 'to': "orm['auth.User']"}),
@@ -298,7 +242,7 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'email_recipient': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['entities.Entity']", 'null': 'True', 'blank': 'True'}),
-            'guid': ('django.db.models.fields.CharField', [], {'default': "UUID('2e821432-99b6-11df-84fc-001aa06701b5')", 'max_length': '40'}),
+            'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'label': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'members': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'through': "orm['user_groups.GroupMembership']", 'symmetrical': 'False'}),

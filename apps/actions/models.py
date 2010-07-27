@@ -9,7 +9,7 @@ from user_groups.models import Group
 from articles.models import Article
 
 class Action(TendenciBaseModel):
-    guid = models.CharField(max_length=50, default=uuid.uuid1)
+    guid = models.CharField(max_length=50)
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=50, default='Distribution E-mail')
     description = models.TextField(blank=True, null=True)
@@ -43,6 +43,7 @@ class Action(TendenciBaseModel):
     
     def save(self, user=None):
         if not self.id:
+            self.guid = uuid.uuid1()
             if user and not user.is_anonymous():
                 self.creator=user
                 self.creator_username=user.username
