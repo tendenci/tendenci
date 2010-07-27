@@ -1,4 +1,5 @@
 import datetime
+import cPickle
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -144,6 +145,9 @@ def send(request, action_id):
         else:
             from actions.tasks import task_queue_distribute_newsletter
             result = task_queue_distribute_newsletter.delay(action)
+            # store the AsyncResult of the task so we can check the state of the task later
+            action.task_result = cPickle.dumps(result)
+            action.save()
     
     return HttpResponseRedirect(reverse('action.confirm', args=[action.id]))
 
