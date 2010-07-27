@@ -47,7 +47,7 @@ class Contact(TendenciBaseModel):
     Later the contact can be updated to include comments for
     further communication.
     """
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
+    guid = models.CharField(max_length=40)
     timezone = TimeZoneField()
 
     first_name = models.CharField(max_length=100, blank=True)
@@ -73,6 +73,12 @@ class Contact(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("contact", [self.pk])
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return "%s %s " % (self.first_name, self.last_name)
