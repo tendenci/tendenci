@@ -18,10 +18,10 @@
 	    <div class="more-options-target">
 	        <ul>
 
-				<li><a href="{% url event.edit.place opt_object.pk %}">Edit Place</a></li>
+				<!--<li><a href="{% url event.edit.place opt_object.pk %}">Edit Place</a></li>
 				<li><a href="{% url event.edit.sponsor opt_object.pk %}">Edit Sponsors</a></li>
 				<li><a href="{% url event.edit.speaker opt_object.pk %}">Edit Speakers</a></li>
-				<li><a href="{% url event.edit.organizer opt_object.pk %}">Edit Organizers</a></li>
+				<li><a href="{% url event.edit.organizer opt_object.pk %}">Edit Organizers</a></li>-->
 				<li><a href="{% url event.edit.registration opt_object.pk %}">Edit Registration</a></li>
 
 				<li class="divider"></li>
@@ -30,9 +30,9 @@
 				
 				<li>
 				{% if opt_object.object %}
-					<a href="{% url category.update opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk %}">Edit Categories</a>
+					<a href="{# url category.update opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk #}">Edit Categories</a>
 				{% else %}
-					<a href="{% url category.update opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">Edit Categories</a>
+					<a href="{# url category.update opt_object.opt_app_label opt_object.opt_module_name opt_object.pk #}">Edit Categories</a>
 				{% endif %}
 				</li>
 
