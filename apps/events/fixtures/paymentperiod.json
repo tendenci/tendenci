@@ -1,0 +1,32 @@
+[
+    {
+        "pk": 3, 
+        "model": "events.paymentperiod", 
+        "fields": {
+            "price": "30.00", 
+            "start_dt": "2004-07-30 14:36:45", 
+            "end_dt": "2004-07-30 14:36:45", 
+            "label": "Late"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "events.paymentperiod", 
+        "fields": {
+            "price": "20.00", 
+            "start_dt": "2004-07-30 14:36:45", 
+            "end_dt": "2004-07-30 14:36:45", 
+            "label": "Regular"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "events.paymentperiod", 
+        "fields": {
+            "price": "10.00", 
+            "start_dt": "2004-07-30 14:36:45", 
+            "end_dt": "2004-07-30 14:36:45", 
+            "label": "Early"
+        }
+    }
+]

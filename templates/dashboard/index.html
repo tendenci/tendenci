@@ -60,6 +60,8 @@
     	<li class="news"><a href="{% url news.search %}"><span>{% firstof MODULE_NEWS_LABEL "News" %}</span></a></li>
 		{% endif %}
 
+        <li class="events"><a href="{% url event.search %}"><span>{% firstof MODULE_EVENTS_ENABLED "Events" %}</span></a></li>
+
 		{% if MODULE_PHOTOS_ENABLED %}
         <li class="photo-albums"><a href="{% url photoset_latest %}"><span>{% firstof MODULE_PHOTOSETS_LABEL "Albums" %}</span></a></li>
 		{% endif %}

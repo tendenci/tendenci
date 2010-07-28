@@ -3,8 +3,8 @@ from datetime import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from events.models import Event, Type, Place, Registration, \
-    Payment, Sponsor, Discount, Organizer, Speaker
+from events.models import Event, Type, Place, Registration, RegistrationConfiguration, \
+    Payment, PaymentMethod, Sponsor, Discount, Organizer, Speaker
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -102,6 +102,27 @@ class EventForm(forms.ModelForm):
 #            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
 #        else:
 #            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+
+class Reg8nEditForm(forms.ModelForm):
+
+    payment_methods_available = PaymentMethod.objects.all()
+    payment_methods = forms.ModelMultipleChoiceField(
+        queryset=payment_methods_available,
+        widget=forms.CheckboxSelectMultiple(),
+        initial=[1,2,3]) # first three items (inserted via fixture)
+
+#    payment_periods = forms.CharField(widget=forms.CheckboxSelectMultiple())
+
+#    early_reg8n_price = forms.DecimalField(
+#        label=_('Early Registration Price'), max_digits=21, decimal_places=2, required=False, initial=0)
+#    reg8n_price = forms.DecimalField(
+#        label=_('Registration Price'), max_digits=21, decimal_places=2, required=False, initial=0)
+#    late_reg8n_price = forms.DecimalField(
+#        label=_('Late Registration Price'), max_digits=21, decimal_places=2, required=False, initial=0)
+
+    class Meta:
+        model = RegistrationConfiguration
+
 
 class PlaceForm(forms.ModelForm):
     class Meta:

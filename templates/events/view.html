@@ -16,12 +16,12 @@
 {% tags_for_object event as tags %}
 
 <div class="t">
-    {% event_nav request.user event %}
+    {% event_nav user event %}
 
     <div class="event-wrap">
 		<div class="options">
              <div class="quick-options">
-				{% event_options request.user event %} 	       
+				{# event_options user event #} 	       
              </div>
 		</div>
 			

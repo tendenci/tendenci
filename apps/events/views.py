@@ -6,8 +6,8 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
-from events.models import Event
-from events.forms import EventForm
+from events.models import Event, RegistrationConfiguration
+from events.forms import EventForm, Reg8nEditForm
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
 from event_logs.models import EventLog
@@ -79,7 +79,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
     if request.user.has_perm('events.change_event', event):    
         if request.method == "POST":
-            form = form_class(request.user, request.POST, instance=event)
+            form = form_class(request.POST, instance=event)
             if form.is_valid():
                 event = form.save(commit=False)
                 event.save()
@@ -97,13 +97,11 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 # remove all permissions on the object
                 ObjectPermission.objects.remove_all(event)
                 
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, event)               
- 
-                # assign creator permissions
-                ObjectPermission.objects.assign(event.creator, event) 
+#                # assign new permissions
+#                user_perms = form.cleaned_data['user_perms']
+#                if user_perms: ObjectPermission.objects.assign(user_perms, event)               
+#                # assign creator permissions
+#                ObjectPermission.objects.assign(event.creator, event) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % event)
                 
@@ -117,7 +115,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                                                                              
                 return HttpResponseRedirect(reverse('event', args=[event.pk]))             
         else:
-            form = form_class(request.user, instance=event)
+            form = form_class(instance=event)
 
         return render_to_response(template_name, {'event': event, 'form':form}, 
             context_instance=RequestContext(request))
@@ -154,12 +152,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
     return render_to_response(template_name, {'event': event, 'form':form}, 
         context_instance=RequestContext(request))
 
-def edit_place(request, template_name='events/place.html'):
-    
-    
-
-    return render_to_response(template_name, {'form':form}, 
-        context_instance=RequestContext(request))
+def edit_place(request):
+    pass
 
 def edit_sponsor(request):
     pass
@@ -170,17 +164,60 @@ def edit_speaker(request):
 def edit_organizer(request):
     pass
 
-def edit_registration(request):
-    pass
+def edit_registration(request, event_id=None, form_class=Reg8nEditForm, template_name="events/reg8n/edit.html"):
+#    from events.models import PaymentPeriod
+    from datetime import datetime
+
+    # check permission
+    event = get_object_or_404(Event, pk=event_id)
+    if not request.user.has_perm('events.change_event', event):
+        raise Http403
+
+    try:
+        reg8n_config = RegistrationConfiguration.objects.get(event=event)
+    except:
+        defaults = {
+            'event': event,
+            'early_price':10,
+            'regular_price':10,
+            'late_price':10,
+            'early_dt': datetime.now(),
+            'regular_dt': datetime.now(),
+            'late_dt': datetime.now(),
+            'limit': 100,
+         }
+        reg8n_config = RegistrationConfiguration.objects.create(**defaults)
+
+    if request.method == "POST":
+        form = form_class(request.POST)
+        if form.is_valid():
+
+            # get variables
+            payment_methods = form.cleaned_data['payment_methods']
+#            early_reg8n_price = form.cleaned_data['early_reg8n_price']
+#            reg8n_price = form.cleaned_data['reg8n_price']
+#            late_reg8n_price = form.cleaned_data['late_reg8n_price']
+
+            reg8n_config.payment_methods = payment_methods
+
+            # TODO: save the registration configuration
+            # TODO: pull registration configuration (when re-editing)
+
+    else:
+        # TODO: will not work off of instance=event
+        # this form-class is not attached to a model
+        form = form_class(instance=reg8n_config)
+    return render_to_response(template_name, {'event':event,'form':form}, 
+        context_instance=RequestContext(request))
 
 @login_required
 def add(request, form_class=EventForm, template_name="events/add.html"):
     if request.user.has_perm('events.add_event'):
         if request.method == "POST":
-            form = form_class(request.user, request.POST)
+            form = form_class(request.POST)
             if form.is_valid():           
                 event = form.save(commit=False)
-                # set up the user information
+                # set up the user informationform_class
                 event.creator = request.user
                 event.creator_username = request.user.username
                 event.owner = request.user
@@ -197,13 +234,11 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 }
                 EventLog.objects.log(**log_defaults)
                                
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, event)
-                
-                # assign creator permissions
-                ObjectPermission.objects.assign(event.creator, event) 
+#                # assign permissions for selected users
+#                user_perms = form.cleaned_data['user_perms']
+#                if user_perms: ObjectPermission.objects.assign(user_perms, event)
+#                # assign creator permissions
+#                ObjectPermission.objects.assign(event.creator, event) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % event)
                 
