@@ -110,6 +110,7 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
+    'redirects.middleware.RedirectMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
@@ -190,10 +191,7 @@ INSTALLED_APPS = (
     'form_builder',
     'newsletters',
     'meta',
-    
-    # celery task system, must stay at the bottom
-    # of installed apps
-    'djcelery',
+    'redirects',
 )
 
 # This is the number of days users will have to activate their

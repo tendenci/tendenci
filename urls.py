@@ -13,7 +13,7 @@ urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
     
     #Reports:
-    url(r'^reports/$', direct_to_template, {"template": "reports/all.html",}, name="home"),
+    url(r'^reports/$', direct_to_template, {"template": "reports/all.html",}, name="reports_home"),
     url(r'^event-logs/reports/summary/$', 'event_logs.views.event_summary_report', name='reports-events-summary'),
     url(r'^event-logs/reports/summary/([^/]+)/$', 'event_logs.views.event_source_summary_report', name='reports-events-source'),
     url(r'^users/reports/users-activity-top10/$', 'profiles.views.user_activity_report', name='reports-user-activity'),
@@ -67,6 +67,7 @@ urlpatterns = patterns('',
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
+    (r'^redirects/', include('redirects.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html",}, name="site_map"),
     url(r'^robots.txt', direct_to_template, {"template": "robots.txt",}, name="robots"),
@@ -88,7 +89,7 @@ except ImportError:
 # tack on the pages pattern at the very end so let custom and software patterns
 # happen first
 pattern_pages = patterns('',
-    # page view
-    url(r'^(?P<slug>[\w\-\/]+)/$', 'pages.views.index', name="page"),                        
+    # page view  
+    url(r'^(?P<slug>[\w\-\/]+)/$', 'pages.views.index', name="page"),              
 )
 urlpatterns += pattern_pages
