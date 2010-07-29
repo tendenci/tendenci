@@ -1,0 +1,65 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Register{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">    
+    {% event_nav user %}
+    <h1>Registration Confirmed!</h1>
+
+<style type="text/css">
+	.event-details {
+		background-color: #F7F7F7;
+		border: 1px solid silver;
+		margin-bottom: 10px;
+	}
+	.event-details h2 {
+		background-color: #DDD;
+		padding: 10px;
+	}
+	.event-details h3 {
+		margin: 10px;
+	}
+	.event-details div {
+		margin: 10px;
+	}
+
+</style>
+
+	<div class="event-details">
+		<h2>Event Details</h2>
+		<h3>{{ event.title }}</h3>
+		<div>{{ event.description|safe }}</div>
+	</div>
+
+	<div class="event-details">
+		<h2>Your Details</h2>
+		<h3>{{ event.title }}</h3>
+		<div>{{ event.description|safe }}</div>
+	</div>
+
+	<div class="event-details">
+		<h2>Proof of Purchase</h2>
+		<h3>Instructions</h3>
+		<div>Simply tell us your name at the door.</div>
+	</div>
+
+	<div class="event-details">
+		<h2>What to expect</h2>
+		<ul>
+			<li>Email with registration information has been sent to you</li>
+			<li>Email includes lots of useful links. e.g <a href="javascript:;">reprint proof-of-registration</a> </li>
+		</ul>
+	</div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{% endblock %}
