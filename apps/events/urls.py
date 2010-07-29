@@ -12,6 +12,9 @@ urlpatterns = patterns('events',
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
     url(r'^(?P<id>\d+)/$', 'views.index', name="event"),
 
+    url(r'^(?P<event_id>\d+)/register/$', 'views.register', name='event.register'),
+    url(r'^(?P<event_id>\d+)/register/confirm/$', 'views.register_confirm', name='event.register.confirm'),
+
     url(r'^edit/place/(?P<id>\d+)/$', 'views.edit_place', name="event.edit.place"),
     url(r'^edit/sponsors/(?P<id>\d+)/$', 'views.edit_sponsor', name="event.edit.sponsor"),
     url(r'^edit/speakers/(?P<id>\d+)/$', 'views.edit_speaker', name="event.edit.speaker"),

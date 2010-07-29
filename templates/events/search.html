@@ -34,6 +34,8 @@
             <div class="content">{{ event.description|safe|striptags|truncatewords:20 }}</div>
 			<div class="meta">
             	<div class="submitted">Created on {{ event.create_dt|date:"D d M Y P" }} by {{ event.creator }}</div>
+            	<div class="attend-link"><a href="{% url event.register event.pk %}">Attend this Event</a></div>
+            	<div style="clear:both;"></div>
             </div>
 
             <!-- delete-event form -->

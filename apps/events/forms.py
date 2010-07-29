@@ -123,6 +123,24 @@ class Reg8nEditForm(forms.ModelForm):
     class Meta:
         model = RegistrationConfiguration
 
+class Reg8nForm(forms.Form):
+    """
+    Registration form.  People who want to attend the event
+    register using this form.
+    """
+
+    def __init__(self, event_id=None, *args, **kwargs):
+        super(Reg8nForm, self).__init__(*args, **kwargs)
+
+        event = Event.objects.get(pk=event_id)
+        payment_methods = event.registrationconfiguration.payment_methods.all()
+
+        # TODO: find nicer way of removing 'blank option'
+        # instead of using ModelMultipleChoiceField()
+        self.fields['payment_methods'] = forms.ModelChoiceField(
+            queryset=payment_methods, widget=forms.RadioSelect())
+
+
 
 class PlaceForm(forms.ModelForm):
     class Meta:
@@ -144,9 +162,9 @@ class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
 
-class Reg8nForm(forms.ModelForm):
-    class Meta:
-        model = Registration
+#class Reg8nForm(forms.ModelForm):
+#    class Meta:
+#        model = Registration
 
 class EventWizard(FormWizard):
 

@@ -7,7 +7,7 @@ from django.contrib import messages
 
 from base.http import Http403
 from events.models import Event, RegistrationConfiguration
-from events.forms import EventForm, Reg8nEditForm
+from events.forms import EventForm, Reg8nForm, Reg8nEditForm
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
 from event_logs.models import EventLog
@@ -294,3 +294,34 @@ def delete(request, id, template_name="events/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403# Create your views here.
+
+@login_required
+def register(request, event_id=0, form_class=Reg8nForm, template_name="events/reg8n/register.html"):
+        event = get_object_or_404(Event, pk=event_id)
+
+        if request.method == "POST":
+            form = form_class(event_id, request.POST)
+            if form.is_valid():
+
+                # TODO: add them to registration here
+                # TODO: check for duplicate registrations
+
+                response = HttpResponseRedirect(reverse('event.register.confirm', args=(event_id)))
+            else:
+                response = render_to_response(template_name, {'event':event, 'form':form}, 
+                context_instance=RequestContext(request))
+        else:
+            form = form_class(event_id)
+            response = render_to_response(template_name, {'event':event, 'form':form}, 
+                context_instance=RequestContext(request))
+
+        return response
+
+@login_required
+def register_confirm(request, event_id=0, template_name="events/reg8n/register-confirm.html"):
+        event = get_object_or_404(Event, pk=event_id)
+        return render_to_response(template_name, {'event':event}, 
+            context_instance=RequestContext(request))
+
+
+
