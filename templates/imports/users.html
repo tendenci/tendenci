@@ -1,0 +1,80 @@
+{% extends "imports/base.html" %}
+{% load i18n %}
+
+{% block title %}Import Users{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/user_imports.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<div class="imports">
+<h1>Import Users</h1>
+<p>Download the .xls template. Populate the .xls template with your information. 
+Upload your updated template. Review and adjust settings.  Preview import. 
+</p>
+
+<div class="download-csv">
+<a href="formats/import-users.csv">
+<img src="/site_media/static/tresources/en/images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/></a>
+<p><a href="{% url import.download_user_formats %}">Download xls Template</a></p>
+<em>Download. Fill out.</em>
+</div>
+
+<div class="clear-left"></div>
+<form class="import" action="." method="post" enctype="multipart/form-data" >
+
+<div class="select-file">
+	<h2>Upload Your XLS File </h2>
+	<p>{{ form.file }}</p>
+</div>
+
+<div class="wrap">
+
+<div class="column1">
+
+	<div class="user-settings">
+	<h2>Make Users </h2>
+
+	{{form.interactive}}
+
+	<h2>Update </h2>
+	{{form.override}}
+	
+	</div>
+
+</div> <!-- column1 -->
+
+
+<div class="column2">
+
+	<div class="duplicates">
+	<h2>Identify Duplicates by  </h2>
+	<p>{{ form.key }}</p>
+	</div>
+	
+	<div class="usergroup">
+	<h2>Add Users to Group  </h2>
+	<div class="usergroup-field">
+	{{ form.group }}
+	</div>
+	
+		<div class="reset-group">{{form.clear_group_membership}}
+		<label for="clear-user-group">Reset group before importing</label>
+		</div>
+	</div>
+
+</div> <!-- column2 -->
+<div class="clear-both"></div>
+
+<div>
+<input type="submit" class="submit-btn"  name="submit" value="Preview Import">
+</div>
+<div class="clear-both"></div>
+</div>
+</form>
+
+</div>
+</div>
+{% endblock %}

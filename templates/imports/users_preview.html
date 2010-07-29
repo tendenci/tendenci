@@ -1,0 +1,26 @@
+{% extends "imports/base.html" %}
+{% load i18n %}
+
+{% block title %}Import Users{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/user_imports.css">
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<div class="imports">
+<h1>Import Users Preview</h1>
+
+<form method="post" action=".">
+{{ form.interactive }}
+{{ form.override }}
+{{ form.key }}
+{{ form.group }}
+{{ form.clear_group_membership }}
+<input type="submit" class="submit-btn"  name="submit" value="Import">
+</form>
+</div>
+</div>
+{% endblock %}
