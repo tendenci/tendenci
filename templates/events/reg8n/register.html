@@ -1,0 +1,52 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Register{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">    
+    {% event_nav user %}
+    <h1>Register for Event</h1>
+
+    <!-- <div class="event-wrap">
+		<h2>{{ event.title }}</h2>
+		<div>{{ event.description|safe }}</div>
+    </div> -->
+
+	{% for field in form %}
+		{% if field.errors %}
+			<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+		{% endif %}
+	{% endfor %}
+
+	<div class="form-wrap">
+    	<form action="{% url event.register event.pk %}" method="post">
+    	<div class="forms">
+			<div class="forms">
+				<div class="form-field">
+					<div class="error">
+						{{ form.payment_methods.errors }}
+					</div>
+					<div class="label required">
+						Payment Methods Available
+					</div>
+					<div class="field">
+						{{ form.payment_methods }}
+					</div>
+				</div>
+        		<input type="submit" value="Register for this Event" />
+			</div>
+		</div>
+        </form>
+	</div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{% endblock %}

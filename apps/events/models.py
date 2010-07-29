@@ -41,24 +41,87 @@ class Place(models.Model):
 
     # online location
     url = models.URLField()
-    
+
+class Phone(): pass
+class Email(): pass
 
 class Registrant(models.Model):
     """
-    Event registrant
-    An event can have multiple registrants
-    A registrant can go to multiple events
+    Event registrant.
+    An event can have multiple registrants.
+    A registrant can go to multiple events.
+    A registrant is static information.
+    The names do not change nor does their information
+    This is the information that was used while registering
     """
     event = models.ManyToManyField('Event', editable=False)
 
+    name = models.CharField(max_length=100)
+    mail_name = models.CharField(max_length=100)
+    address = models.CharField(max_length=200)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    zip = models.CharField(max_length=50)
+    country = models.CharField(max_length=100)
+    
+    phone = models.CharField(max_length=50)
+    email = models.CharField(max_length=100)
+    groups = models.CharField(max_length=100)     
+
+    company_name = models.CharField(max_length=100)
+    
+    
+
+#class Registration(models.Model):
+#    """
+#    Registration record.
+#    Created every time a user successfully registers.
+#    Holds valuable information about their registration.
+#    Used mostly for proof-of-registration.
+#    Also used for metrics; how many people registered for event.
+#    """
+#
+#    event = models.OneToOneField('Event', editable=False)
+#    price = models.DecimalField(max_digits=21, decimal_places=2)
+#    limit = models.IntegerField()
+
 class Registration(models.Model):
-    """
-    Event registration
-    Extends the event model
-    """
-    event = models.OneToOneField('Event', editable=False)
-    price = models.DecimalField(max_digits=21, decimal_places=2)
-    limit = models.IntegerField()
+    guid = models.TextField(max_length=40, editable=False, default=uuid.uuid1)
+
+    event = models.ForeignKey('Event') # dynamic (should be static)
+
+    invoiceid = models.IntegerField(null=True, blank=True) # proof of transaction
+    subsidy = models.BooleanField(null=True, blank=True)
+
+    discountcode = models.CharField(max_length=50)
+    discountamount = models.DecimalField(null=True, max_digits=21, decimal_places=4, blank=True)
+
+    paid = models.IntegerField()
+    paidcheck = models.IntegerField()
+    secured = models.IntegerField()
+    offline = models.IntegerField()
+
+#    creator = models.ForeignKey('User')
+#    owner = models.ForeignKey('User')
+#    create_dt = models.DateField()
+#    update_dt = models.DateField()
+#    status = models.IntegerField()
+
+    submitdate = models.DateTimeField()
+
+    owneruserid = models.IntegerField()
+    ownerusername = models.TextField()
+
+    exported = models.BooleanField(null=True, blank=True)
+
+    registrationtable = models.TextField(blank=True)
+    registrationnotes = models.TextField(blank=True)
+    registrationteam = models.TextField(blank=True)
+
+    reminder = models.BooleanField(null=True, blank=True)
+
+    pricechoice = models.CharField(max_length=75, blank=True)
+
 
 # TODO: use shorter name
 class RegistrationConfiguration(models.Model):
@@ -185,3 +248,8 @@ class Event(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("event", [self.pk])
+
+    def __unicode__(self):
+        return self.title
+
+
