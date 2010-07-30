@@ -9,6 +9,4 @@ def cache_all_robots():
     key = '.'.join(key)
     
     robots = Robot.objects.all()
-    is_set = cache.add(key, robots)
-    if not is_set:
-        cache.set(key, robots)
+    cache.set(key, robots)
