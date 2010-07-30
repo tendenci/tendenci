@@ -13,7 +13,7 @@ from meta.models import Meta as MetaTags
 from jobs.module_meta import JobMeta
 
 class Job(TendenciBaseModel ):
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
+    guid = models.CharField(max_length=40)
     title = models.CharField(max_length=250)
     slug = SlugField(_('URL Path'), unique=True)  
     description = tinymce_models.HTMLField()
@@ -90,6 +90,12 @@ class Job(TendenciBaseModel ):
     @models.permalink
     def get_absolute_url(self):
         return ("job", [self.slug])
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.title

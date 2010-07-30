@@ -12,12 +12,18 @@ def file_directory(instance, filename):
 
 class File(TendenciBaseModel):
     file = models.FileField(max_length=260, upload_to=file_directory)
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
+    guid = models.CharField(max_length=40)
     name = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save(*args, **kwargs)
 
     def basename(self):
         return os.path.basename(str(self.file))
