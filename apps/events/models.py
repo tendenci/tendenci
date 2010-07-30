@@ -108,7 +108,7 @@ class Event(models.Model):
     """
     Calendar Event
     """
-    guid = models.TextField(max_length=40, editable=False, default=uuid.uuid1)
+    guid = models.TextField(max_length=40, editable=False)
     entity = models.ForeignKey(Entity, null=True)
 
     type = models.ForeignKey(Type, blank=True)
@@ -128,3 +128,9 @@ class Event(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("event", [self.pk])
+    
+    def save(self):
+        if not self.id:
+            self.guid = uuid.uuid1()
+            
+        super(self.__class__, self).save()
