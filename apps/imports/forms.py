@@ -9,7 +9,7 @@ class UserImportForm(forms.Form):
     override = forms.CharField(widget=forms.RadioSelect(choices=((0,'Blank Fields'),
                                                           (1,'All Fields (override)'),)), initial=0, )
     key = forms.ChoiceField(initial="email", choices=(('email','email'),
-                                                    ('name','first_name and last_name'),
+                                                    ('first_name,last_name','first_name and last_name'),
                                                     ('username','username'),))
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=1, 
                                                                  status_detail='active').order_by('name'),

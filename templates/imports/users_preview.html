@@ -6,21 +6,210 @@
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/user_imports.css">
 
+<style type="text/css">
+/* =csv-icon */
+div.csv-icon {
+	margin-bottom: 10px;
+	height: 46px;
+}
+div.csv-icon img {
+	float: left;
+	margin-right: 10px;
+}
+div.csv-icon p {
+	margin:0;
+	font-size: 1.5em;
+}
+div.csv-icon ul {
+	margin:0; padding:0;
+	list-style-type: none;
+}
+div.csv-icon li {
+	font-size: .9em;
+	display: inline;
+	margin: 0; padding: 0 5px;
+	border-right: 1px solid gray;
+}
+div.csv-icon li.highlight {
+	background-color: #FFA;
+}
+div.csv-icon li.first {
+	padding-left: 0;
+}
+div.csv-icon li.last {
+	border-right: none;
+}
+
+/* =import-settings
+--------------------------------*/
+div.import-settings table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	border: 1px solid silver;
+	width: 100%;
+}
+div.import-settings table tr td {
+	border-bottom: 1px solid silver;
+	padding: 5px;
+}
+div.import-settings table tr td.name {
+	width: 100px;
+	text-align: right;
+}
+div.import-settings table tr td.value {
+	background-color: #F7F7F7;
+	font-weight: bold;
+}
+
+form.import input.submit-btn {
+	font-size: 1.5em;
+	margin-top: 10px;
+}
+
+div.results {
+	overflow: auto;
+	height: 200px;
+	border: 1px solid silver;
+	margin: 10px auto;
+	padding: 10px;
+}
+
+/* =results */
+div.result-error {
+	background-color: #FFD;
+	border: 1px solid #FF9;
+	margin: 10px 0;
+}
+div.result-error p {
+	color: black;
+	font-size: 1.2em;
+	font-weight: bold;
+	margin: 20px;
+	margin-bottom: 0;
+}
+div.result-error em {
+	display: block;
+	font-style: normal;
+	margin: 5px auto 20px 20px;
+}
+.body-copy-yellow{
+	background-color: yellow;
+}
+
+</style>
+
+
 {% endblock %}
 
 {% block body %}
 <div class="t">
 <div class="imports">
-<h1>Import Users Preview</h1>
+<h1>Preview Your Import</h1>
 
-<form method="post" action=".">
-{{ form.interactive }}
-{{ form.override }}
-{{ form.key }}
-{{ form.group }}
-{{ form.clear_group_membership }}
-<input type="submit" class="submit-btn"  name="submit" value="Import">
-</form>
+<p>You're almost done!  Please review your settings.  To complete your import click 'Import Now.'</p>
+
+<div class="csv-icon">
+<img src="/site_media/static/tresources/en/images/icons/xls-icon.gif" alt="{{ file_name }}" />
+<p>{{ file_name }}<br /></p>
+
+<ul>
+	<li class="first">{{ total }} Total Users</li>
+	<li>{{ count_insert }} Insert</li>
+	<li>{{ count_update }} Update</li>
+	<li class="last highlight">{{ count_invalid}} Invalid Users</li>
+</ul>
+
+</div>
+
+<div style="clear: both; "></div>
+
+<div class="import-settings">
+<table>
+<tr>
+	<td class="name">ID Duplicates by:</td>
+	<td class="value">{{ key }}</td>
+</tr>
+<tr>
+	<td class="name">Interactive Status:</td>
+	<td class="value">{{ interactive }}</td>
+</tr>
+<tr>
+	<td class="name">User Group:</td>
+	<td class="value">{{ group.name }}</td>
+</tr>
+<tr>
+	<td class="name">Update: </td>
+	<td class="value">{{ str_update }}</td>
+</tr>
+</table>
+
+</div> <!-- import settings -->
+
+	<form class="import" method="post" action="{% url import.user_upload_process %}">
+
+	<div class="results">
+	{% for u in users_list %}
+		{%if not u.IS_VALID %}
+			<div class="result-error">
+				<p>Row {{ u.ROW_NUM }} - {{ u.ERROR }}</p>
+				<em>This user will be ignored (not added or updated)</em>
+			</div>
+		{% else %}
+			{% if u.ACTION == 'insert' %}
+				<div class="body-copy-yellow">
+					INSERT:
+				</div>
+			{% else %}
+				UPDATE
+			{% endif %}
+			
+			<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#CCCCCC">
+			  <tr> 
+			     <td> 
+			       <table width="100%" border="0" cellspacing="1" cellpadding="1">
+			         <tr bgcolor="#F2F2F2"> 
+			           <td width="5%" bgcolor="#F2F2F2" class="body_copy">&nbsp;</td>
+			           <td width="61%" class="body_copy">
+							<font face="Arial, Helvetica, sans-serif" size="2" class="subtitles">
+								{% if u.ACTION == 'update' %}
+									<a href="{% url profiles.views.index u.username %}">{{ u.first_name }} {{u.last_name }}</a>
+								
+								{% else %}
+									{{ u.first_name }} {{u.last_name }}
+								{% endif %}
+								{% if u.username %}
+									({{ u.username }})
+								{% endif %}
+							</font> 
+							
+						</td>
+			           <td width="34%" class="body_copy"> &nbsp;</td>
+			         </tr>
+			         <tr> 
+			           <td width="5%" class="body_copy">&nbsp;</td>
+			           <td width="61%">
+							<font face="Arial, Helvetica, sans-serif" size="2" class="body_copy">Email: 
+							<a href="mailto:{{ u.email }}" class="links">
+							{{ u.email }}</a></font>
+					   </td>
+			           <td width="34%" class="body_copy"><font face="Arial, Helvetica, sans-serif" size="2" class="body_copy">
+			          &nbsp;
+			            </font></td>
+			         </tr>	         
+       			</table>
+	    	 </td>
+	   		</tr>
+	 	</table>
+		{% endif %}
+	{% endfor %}
+	</div>
+
+	<div align="right">
+	<input type="submit" class="submit-btn" name="submit" value="Import Users" >
+	</div>
+
+	</form>
+
 </div>
 </div>
 {% endblock %}
