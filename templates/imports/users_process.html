@@ -1,0 +1,39 @@
+<html>
+<head>
+<title>User Import Process</title>
+</head>
+
+<body>
+
+<font face="courier new" size="2">
+	<b>You are importing the following file at ({% now "D d M Y P" %})</b>: <br> 
+	<font color="red">
+	{{ file_name }}
+	</font>
+	<br>
+	Note: User Logging Will be Suspended for the duration of import for this session only.<br>
+	<br>
+	{% for u in users_list %}
+		{% if u.ACTION == 'insert' %}
+			<div class="body-copy-yellow">
+				INSERT:
+			</div>
+		{% else %}
+			UPDATE:
+		{% endif %}
+		
+		<p>{{u.user.username}} &nbsp;&nbsp; {{u.user.first_name}} {{u.user.last_name}} &nbsp;&nbsp;&nbsp; {{u.user.email}}</p>
+	
+	{% endfor %}
+	<br /><br />
+	INSERTS: {{ count_insert }}<br>
+	UPDATES: {{ count_update }}<br>
+	TOTAL: {{ total }}
+	
+	<br /><br />
+	<a href="{% url profile.search %}">Search Users</a>  
+	<a href="{% url import.user_upload_add %}">Import More Users</a>  
+	
+</font>
+</body>
+</html>

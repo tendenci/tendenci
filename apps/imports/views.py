@@ -7,8 +7,11 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from perms.utils import is_admin
 from base.http import Http403
-from imports.forms import UserImportForm, UserImportPreviewForm
-from imports.utils import render_excel, handle_uploaded_file
+from imports.forms import UserImportForm
+from imports.utils import render_excel, handle_uploaded_file, get_user_import_settings, user_import_process
+
+IMPORT_DIR = os.path.join(settings.MEDIA_ROOT, 'imports')
+
 
 @login_required
 def user_upload_add(request, form_class=UserImportForm, template_name="imports/users.html"):
@@ -18,7 +21,7 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
         form = form_class(request.POST, request.FILES)
         if form.is_valid():
             # save the uploaded file
-            file_dir = os.path.join(settings.MEDIA_ROOT, 'imports')
+            file_dir = IMPORT_DIR
             if not os.path.isdir(file_dir):
                 os.makedirs(file_dir)
             f = request.FILES['file']
@@ -31,36 +34,59 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
             group = form.cleaned_data['group']
             clear_group_membership = form.cleaned_data['clear_group_membership']
             if group:
-                group_id = group.id
+                group = group.id
             else:
-                group_id = 0
+                group = 0
+                
+            # store in the session to pass to the next page
+            request.session['file_name'] = file_name
+            request.session['interactive'] = interactive
+            request.session['override'] = override
+            request.session['key'] = key
+            request.session['group'] = group
+            request.session['clear_group_membership'] = clear_group_membership
             
-            # pass the query string to the preview
-            qs = '?interactive=%s&override=%s&key=%s&group=%s&clear=%d&file_name=%s' % \
-                (interactive, override, key, group_id, clear_group_membership, file_name)
-            
-            return HttpResponseRedirect(reverse('imports.views.user_upload_preview') + qs)
+            return HttpResponseRedirect(reverse('imports.views.user_upload_preview'))
     else:
         form = form_class()
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
     
 @login_required
-def user_upload_preview(request, form_class=UserImportPreviewForm, template_name="imports/users_preview.html"):
+def user_upload_preview(request, template_name="imports/users_preview.html"):
     if not is_admin(request.user):raise Http403   # admin only page
 
-    if request.method == 'POST':
-        pass
-    else:
-        d = {}
-        d['file_name'] = request.GET.get('file_name', '')
-        d['interactive'] = request.GET.get('interactive', '0')
-        d['override'] = request.GET.get('override', '0')
-        d['key'] = request.GET.get('key', '')
-        d['group'] = request.GET.get('group', '')
-        d['clear_group_membership'] = request.GET.get('clear', '0')
-        form = form_class(initial=d)
-    return render_to_response(template_name, {'form': form}, 
+    import_dict = get_user_import_settings(request)
+    import_dict['file_dir'] = IMPORT_DIR
+    
+    if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
+        return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
+
+    users_list = user_import_process(request, import_dict, preview=True)
+    import_dict['users_list'] = users_list
+    
+    return render_to_response(template_name, import_dict, 
+        context_instance=RequestContext(request))
+    
+    
+@login_required
+def user_upload_process(request, template_name="imports/users_process.html"):
+    if not is_admin(request.user):raise Http403   # admin only page
+
+    import_dict = get_user_import_settings(request)
+    import_dict['file_dir'] = IMPORT_DIR
+    
+    if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
+        return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
+
+    users_list = user_import_process(request, import_dict, preview=False)
+    import_dict['users_list'] = users_list
+    # recalculate the total
+    import_dict['total'] = import_dict['count_insert'] + import_dict['count_update']
+    
+    # TODO: log an event
+    
+    return render_to_response(template_name, import_dict, 
         context_instance=RequestContext(request))
     
     
