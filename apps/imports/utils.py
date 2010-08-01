@@ -1,5 +1,6 @@
 import os
 import datetime
+import uuid
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
@@ -7,7 +8,7 @@ from django.http import HttpResponse
 import xlrd
 from xlwt import Workbook, XFStyle
 
-from user_groups.models import Group
+from user_groups.models import Group, GroupMembership
 from profiles.models import Profile
 
 def handle_uploaded_file(f, file_path):
@@ -56,15 +57,6 @@ def get_user_import_settings(request):
     except:
         d['clear_group_membership'] = False
     
-    try:
-        d['group'] = int(d['group'])
-    except:
-        d['group'] = 0
-    if d['group'] > 0:
-        try:
-            d['group'] = Group.objects.get(id=d['group'])
-        except Group.DoesNotExist:
-            d['group'] = None
             
     return d
 
@@ -128,6 +120,12 @@ def user_import_process(request, setting_dict, preview=True):
     setting_dict['count_invalid'] = 0
     
     user_obj_list = []
+    
+    if not preview:
+        #reset group - delete all members in the group
+        if setting_dict['clear_group_membership'] and setting_dict['group']:
+            GroupMembership.objects.filter(group=setting_dict['group']).delete()
+        
     
     for r in  range(1, sheet.nrows):
         user_object_dict = {}
@@ -206,10 +204,10 @@ def do_user_import(request, user, user_object_dict, setting_dict):
     user_field_names = [field.name for field in User._meta.fields if field.editable and (not field.__class__==AutoField)]
     profile_field_names = [field.name for field in Profile._meta.fields if field.editable and (not field.__class__==AutoField)]
     
-    # TODO: hash password
-    # TODO: check if interactive
     # insert/update user
     for field in user_field_names:
+        if field == 'password' or field == 'username' or (not insert and field in setting_dict['key']):
+            continue
         if user_object_dict.has_key(field):
             if override:
                 setattr(user, field, user_object_dict[field])
@@ -217,10 +215,27 @@ def do_user_import(request, user, user_object_dict, setting_dict):
                 # fill out the blank field only
                 if getattr(user, field) == '':
                     setattr(user, field, user_object_dict[field])
+                    
     if insert:
+        if user_object_dict.has_key('username') and user_object_dict['username']:
+            user.username = user_object_dict['username']
+            
         # generate the unique username
-        if not user.username:
-            user.username = user.email # TODO: generate the unique username
+        get_unique_username(user)
+        
+    if user_object_dict.has_key('password') and user_object_dict['password'] and (override or insert):
+        # override the password, then hash the password
+        #user.password = user_object_dict['password']
+        user.set_password(user_object_dict['password'])
+        
+    if not user.password:
+        #user.password = User.objects.make_random_password(length=8)
+        user.set_password(User.objects.make_random_password(length=8))
+            
+    if setting_dict['interactive']:
+        user.is_active = 1
+    else:
+        user.is_active = 0
         
     user.save()
     
@@ -245,9 +260,46 @@ def do_user_import(request, user, user_object_dict, setting_dict):
                     setattr(profile, field, user_object_dict[field])
     profile.save()
     
-    # TODO: handle group
+    # add to group
+    if setting_dict['group']:
+        try:
+            gm = GroupMembership.objects.get(group=setting_dict['group'], member=user)
+        except GroupMembership.DoesNotExist:
+            gm = GroupMembership()
+            gm.member = user
+            gm.group = setting_dict['group']
+            gm.creator_id = request.user.id
+            gm.creator_username = request.user.username
+            gm.owner_id =  request.user.id
+            gm.owner_username = request.user.username
+            gm.status =1
+            gm.status_detail = 'active'
+            gm.save()
     
     return user
+
+def get_unique_username(user):
+    if not user.username:
+        if user.email:
+            user.username = user.email
+    if not user.username:
+        if user.first_name and user.last_name:
+            user.username = '%s%s' % (user.first_name, user.last_name)
+    if not user.username:
+        user.username = str(uuid.uuid1())[:8]
+        
+    # check if this username already exists
+    users = User.objects.filter(username__startswith=user.username)
+    
+    if users:
+        t_list = [u.username[len(user.username):] for u in users]
+        num = 1
+        while str(num) in t_list:
+            num += 1
+            
+        user.username = '%s%s' % (user.username, str(num))
+   
+    return user.username
                      
 
 # populate user object to its dictionary, so we can display to the preview page
@@ -269,6 +321,8 @@ def populate_user_dict(user, user_dict, import_setting_list):
             user_dict['email'] = user.email
         if user.username:
             user_dict['username'] = user.username
+    if not user_dict['username']:
+        user_dict['username'] = user.username
                       
     
 def get_header_list(file_path):
