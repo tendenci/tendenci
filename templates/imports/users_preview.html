@@ -1,5 +1,6 @@
 {% extends "imports/base.html" %}
 {% load i18n %}
+{% load dashboard_tags %}
 
 {% block title %}Import Users{% endblock %}
 
@@ -7,94 +8,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/user_imports.css">
 
 <style type="text/css">
-/* =csv-icon */
-div.csv-icon {
-	margin-bottom: 10px;
-	height: 46px;
-}
-div.csv-icon img {
-	float: left;
-	margin-right: 10px;
-}
-div.csv-icon p {
-	margin:0;
-	font-size: 1.5em;
-}
-div.csv-icon ul {
-	margin:0; padding:0;
-	list-style-type: none;
-}
-div.csv-icon li {
-	font-size: .9em;
-	display: inline;
-	margin: 0; padding: 0 5px;
-	border-right: 1px solid gray;
-}
-div.csv-icon li.highlight {
-	background-color: #FFA;
-}
-div.csv-icon li.first {
-	padding-left: 0;
-}
-div.csv-icon li.last {
-	border-right: none;
-}
 
-/* =import-settings
---------------------------------*/
-div.import-settings table {
-	border-collapse: collapse;
-	border-spacing: 0;
-	border: 1px solid silver;
-	width: 100%;
-}
-div.import-settings table tr td {
-	border-bottom: 1px solid silver;
-	padding: 5px;
-}
-div.import-settings table tr td.name {
-	width: 100px;
-	text-align: right;
-}
-div.import-settings table tr td.value {
-	background-color: #F7F7F7;
-	font-weight: bold;
-}
-
-form.import input.submit-btn {
-	font-size: 1.5em;
-	margin-top: 10px;
-}
-
-div.results {
-	overflow: auto;
-	height: 200px;
-	border: 1px solid silver;
-	margin: 10px auto;
-	padding: 10px;
-}
-
-/* =results */
-div.result-error {
-	background-color: #FFD;
-	border: 1px solid #FF9;
-	margin: 10px 0;
-}
-div.result-error p {
-	color: black;
-	font-size: 1.2em;
-	font-weight: bold;
-	margin: 20px;
-	margin-bottom: 0;
-}
-div.result-error em {
-	display: block;
-	font-style: normal;
-	margin: 5px auto 20px 20px;
-}
-.body-copy-yellow{
-	background-color: yellow;
-}
 
 </style>
 
@@ -103,6 +17,7 @@ div.result-error em {
 
 {% block body %}
 <div class="t">
+{% dashboard_nav user %}	
 <div class="imports">
 <h1>Preview Your Import</h1>
 
