@@ -9,6 +9,7 @@ from perms.utils import is_admin
 from base.http import Http403
 from imports.forms import UserImportForm
 from imports.utils import render_excel, handle_uploaded_file, get_user_import_settings, user_import_process
+from event_logs.models import EventLog
 
 IMPORT_DIR = os.path.join(settings.MEDIA_ROOT, 'imports')
 
@@ -33,11 +34,7 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
             key = form.cleaned_data['key']
             group = form.cleaned_data['group']
             clear_group_membership = form.cleaned_data['clear_group_membership']
-            if group:
-                group = group.id
-            else:
-                group = 0
-                
+            
             # store in the session to pass to the next page
             request.session['file_name'] = file_name
             request.session['interactive'] = interactive
@@ -84,7 +81,19 @@ def user_upload_process(request, template_name="imports/users_process.html"):
     # recalculate the total
     import_dict['total'] = import_dict['count_insert'] + import_dict['count_update']
     
-    # TODO: log an event
+    # log an event
+    log_defaults = {
+        'event_id' : 129005,
+        'event_data': 'User import: %s<br>INSERTS:%d<br>UPDATES:%d<br>TOTAL:%d' % (import_dict['file_name'], 
+                                                                                   import_dict['count_insert'],
+                                                                                   import_dict['count_update'], 
+                                                                                   import_dict['total']),
+        'description': 'user import',
+        'user': request.user,
+        'request': request,
+    }
+    EventLog.objects.log(**log_defaults)
+    
     
     return render_to_response(template_name, import_dict, 
         context_instance=RequestContext(request))
@@ -93,6 +102,7 @@ def user_upload_process(request, template_name="imports/users_process.html"):
 @login_required
 def download_user_upload_template_xls(request):
     if not is_admin(request.user):raise Http403   # admin only page
+    
     filename = "import-users.xls"
     import_field_list = ['salutation', 'first_name', 'last_name', 'initials', 'display_name',
                          'email', 'address', 'address2', 'city', 'state', 'zipcode', 'country', 

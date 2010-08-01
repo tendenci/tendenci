@@ -1,5 +1,6 @@
 {% extends "imports/base.html" %}
 {% load i18n %}
+{% load dashboard_tags %}
 
 {% block title %}Import Users{% endblock %}
 
@@ -9,6 +10,8 @@
 
 {% block body %}
 <div class="t">
+{% dashboard_nav user %}	
+	
 <div class="imports">
 <h1>Import Users</h1>
 <p>Download the .xls template. Populate the .xls template with your information. 
