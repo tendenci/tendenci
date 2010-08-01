@@ -4,12 +4,16 @@ import uuid
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
+from django.db.models.fields import AutoField
 
 import xlrd
 from xlwt import Workbook, XFStyle
 
 from user_groups.models import Group, GroupMembership
 from profiles.models import Profile
+
+user_field_names = [field.name for field in User._meta.fields if field.editable and (not field.__class__==AutoField)]
+profile_field_names = [field.name for field in Profile._meta.fields if field.editable and (not field.__class__==AutoField)]
 
 def handle_uploaded_file(f, file_path):
     destination = open(file_path, 'wb+')
@@ -106,6 +110,10 @@ def render_excel(filename, col_title_list, data_row_list):
     return response
 
 def user_import_process(request, setting_dict, preview=True):
+    """ This function reads the spread sheet, processes each row
+        and store the data in the user_object_dict. Then it updates  
+        the database if preview=False.
+    """
     file_path = os.path.join(setting_dict['file_dir'], setting_dict['file_name'])
     
     # get a list of headers from the spread sheet
@@ -114,6 +122,9 @@ def user_import_process(request, setting_dict, preview=True):
     book = xlrd.open_workbook(file_path)
     sheet = book.sheet_by_index(0)
     key_list = setting_dict['key'].split(',')
+    # key(s)- user field(s) or profile fields(s)? that is import to identify
+    key_user_list = [key for key in key_list if key in user_field_names]
+    key_profile_list = [key for key in key_list if key in profile_field_names]
     setting_dict['total'] = sheet.nrows - 1
     setting_dict['count_insert'] = 0
     setting_dict['count_update'] = 0
@@ -131,7 +142,8 @@ def user_import_process(request, setting_dict, preview=True):
         user_object_dict = {}
         if not preview:
             user_import_dict = {}
-        identity_dict = {} # used to look up the database
+        identity_user_dict = {} # used to look up the User
+        identity_profile_dict = {} # used to look up the Profile
         missing_keys = []
         
         for c in range(0, sheet.ncols):
@@ -146,11 +158,16 @@ def user_import_process(request, setting_dict, preview=True):
                 cell_value = int(cell_value)
             
             user_object_dict[field_name] = cell_value
+            
             if field_name in key_list:
                 if cell_value <> '':
-                    identity_dict[field_name] = cell_value
+                    if field_name in key_user_list:
+                        identity_user_dict[field_name] = cell_value
+                    if field_name in key_profile_list:
+                        identity_profile_dict[field_name] = cell_value
                 else:
                     missing_keys.append(field_name)
+                
         
         user_object_dict['ROW_NUM'] = r + 1  
             
@@ -160,9 +177,10 @@ def user_import_process(request, setting_dict, preview=True):
             setting_dict['count_invalid'] += 1
         else:
             user_object_dict['IS_VALID'] = True
-            try:
-                # TODO: the keys could be the fields in both User and Profile tables, deal with it
-                user = User.objects.get(**identity_dict)
+            
+            # the keys could be the fields in both User and Profile tables
+            user = get_user_by_key(identity_user_dict, identity_profile_dict)
+            if user:
                 if preview:
                     user_object_dict['ACTION'] = 'update'
                 else:
@@ -171,8 +189,8 @@ def user_import_process(request, setting_dict, preview=True):
                 
                 if preview:
                     populate_user_dict(user, user_object_dict, setting_dict)
-            except User.DoesNotExist:
-                user = None
+            else:
+                #user = None
                 if preview:
                     user_object_dict['ACTION'] = 'insert'
                 else:
@@ -189,11 +207,29 @@ def user_import_process(request, setting_dict, preview=True):
                 
     return user_obj_list
 
+def get_user_by_key(identity_user_dict, identity_profile_dict):
+    user = None
+    
+    if identity_user_dict and identity_profile_dict:
+        users = User.objects.filter(**identity_user_dict)
+        profiles = Profile.objects.filter(user__in=users).filter(**identity_profile_dict)
+        if profiles:
+            user = profiles[0].user
+    elif identity_user_dict:
+        users = User.objects.filter(**identity_user_dict)
+        if users:
+            user = users[0]
+    else:
+        profiles = Profile.objects.filter(**identity_profile_dict)
+        if profiles:
+            user = profiles[0].user
+            
+    return user
+
 def do_user_import(request, user, user_object_dict, setting_dict):
     """
         the real work is here - do the insert or update
     """
-    from django.db.models.fields import AutoField
     
     if not user:
         user = User()
@@ -201,9 +237,7 @@ def do_user_import(request, user, user_object_dict, setting_dict):
     else:
         insert = False
     override = setting_dict['override'] # if True, update all fields, otherwise, update blank field
-    user_field_names = [field.name for field in User._meta.fields if field.editable and (not field.__class__==AutoField)]
-    profile_field_names = [field.name for field in Profile._meta.fields if field.editable and (not field.__class__==AutoField)]
-    
+
     # insert/update user
     for field in user_field_names:
         if field == 'password' or field == 'username' or (not insert and field in setting_dict['key']):

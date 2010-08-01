@@ -1,6 +1,11 @@
 from django import forms
 from user_groups.models import Group
-#forms.ChoiceField
+
+KEY_CHOICES = (('email','email'),
+               ('first_name,last_name,email','first_name and last_name and email'),
+               ('first_name,last_name,phone','first_name and last_name and phone'),
+               ('first_name,last_name,company','first_name and last_name and company'),
+               ('username','username'),)
 
 class UserImportForm(forms.Form):
     file  = forms.FileField(widget=forms.FileInput(attrs={'size': 35}))
@@ -8,9 +13,7 @@ class UserImportForm(forms.Form):
                                                           (0,'Not Interactive (no login)'),)), initial=0,)
     override = forms.CharField(widget=forms.RadioSelect(choices=((0,'Blank Fields'),
                                                           (1,'All Fields (override)'),)), initial=0, )
-    key = forms.ChoiceField(initial="email", choices=(('email','email'),
-                                                    ('first_name,last_name','first_name and last_name'),
-                                                    ('username','username'),))
+    key = forms.ChoiceField(initial="email", choices=KEY_CHOICES)
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=1, 
                                                                  status_detail='active').order_by('name'),
                                                                  empty_label='Select One', required=False)
