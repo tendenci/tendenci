@@ -270,8 +270,11 @@ def do_user_import(request, user, user_object_dict, setting_dict):
         user.is_active = 1
     else:
         user.is_active = 0
-        
-    user.save()
+   
+    if insert:
+        user.save(force_insert=True)
+    else:
+        user.save(force_update=True)
     
     # insert/update profile
     try:
@@ -318,12 +321,14 @@ def get_unique_username(user):
             user.username = user.email
     if not user.username:
         if user.first_name and user.last_name:
-            user.username = '%s%s' % (user.first_name, user.last_name)
+            user.username = '%s%s' % (user.first_name[0], user.last_name)
     if not user.username:
-        user.username = str(uuid.uuid1())[:8]
+        user.username = str(uuid.uuid1())[:7]
+    if len(user.username) > 20:
+        user.username = user.username[:7]
         
     # check if this username already exists
-    users = User.objects.filter(username__startswith=user.username)
+    users = User.objects.filter(username__istartswith=user.username)
     
     if users:
         t_list = [u.username[len(user.username):] for u in users]
