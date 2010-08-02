@@ -2,7 +2,7 @@ import os
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from perms.utils import is_admin
@@ -75,25 +75,80 @@ def user_upload_process(request, template_name="imports/users_process.html"):
     
     if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
         return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
+    
+    import_dict['next_starting_point'] = 0
+    request.session['next_starting_point'] = import_dict['next_starting_point']
+    request.session['is_completed'] = False
+    request.session['count_insert'] = 0
+    request.session['count_update'] = 0
 
-    users_list = user_import_process(request, import_dict, preview=False)
+#    users_list = user_import_process(request, import_dict, preview=False)
+#    import_dict['users_list'] = users_list
+#    # recalculate the total
+#    import_dict['total'] = import_dict['count_insert'] + import_dict['count_update']
+#    
+#    # log an event
+#    log_defaults = {
+#        'event_id' : 129005,
+#        'event_data': 'User import: %s<br>INSERTS:%d<br>UPDATES:%d<br>TOTAL:%d' % (import_dict['file_name'], 
+#                                                                                   import_dict['count_insert'],
+#                                                                                   import_dict['count_update'], 
+#                                                                                   import_dict['total']),
+#        'description': 'user import',
+#        'user': request.user,
+#        'request': request,
+#    }
+#    EventLog.objects.log(**log_defaults)
+    
+    
+    return render_to_response(template_name, import_dict, 
+        context_instance=RequestContext(request))
+    
+@login_required
+def user_upload_subprocess(request, template_name="imports/users_subprocess.html"):
+    if not is_admin(request.user):raise Http403   # admin only page
+    
+    if request.session['is_completed']:
+        return HttpResponse('')
+
+    import_dict = get_user_import_settings(request)
+    import_dict['file_dir'] = IMPORT_DIR
+    
+    if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
+        return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
+
+    starting_point = request.session['next_starting_point']
+    
+    users_list = user_import_process(request, import_dict, preview=False, starting_point=starting_point)
     import_dict['users_list'] = users_list
     # recalculate the total
     import_dict['total'] = import_dict['count_insert'] + import_dict['count_update']
     
-    # log an event
-    log_defaults = {
-        'event_id' : 129005,
-        'event_data': 'User import: %s<br>INSERTS:%d<br>UPDATES:%d<br>TOTAL:%d' % (import_dict['file_name'], 
-                                                                                   import_dict['count_insert'],
-                                                                                   import_dict['count_update'], 
-                                                                                   import_dict['total']),
-        'description': 'user import',
-        'user': request.user,
-        'request': request,
-    }
-    EventLog.objects.log(**log_defaults)
+    import_dict['is_completed'] = request.session['is_completed']
+    if import_dict['is_completed']:
     
+        # log an event
+        log_defaults = {
+            'event_id' : 129005,
+            'event_data': 'User import: %s<br>INSERTS:%d<br>UPDATES:%d<br>TOTAL:%d' % (import_dict['file_name'], 
+                                                                                       import_dict['count_insert'],
+                                                                                       import_dict['count_update'], 
+                                                                                       import_dict['total']),
+            'description': 'user import',
+            'user': request.user,
+            'request': request,
+        }
+        EventLog.objects.log(**log_defaults)
+        
+        # clear up the session
+        del request.session['file_name']
+        del request.session['interactive']
+        del request.session['override']
+        del request.session['key']
+        del request.session['group']
+        del request.session['clear_group_membership']
+        del request.session['next_starting_point']
+        #del request.session['is_completed']
     
     return render_to_response(template_name, import_dict, 
         context_instance=RequestContext(request))
