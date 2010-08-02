@@ -33,7 +33,6 @@ def get_redirect_patterns():
             url_list.append(url(pattern, 'redirect_to', extra))
         else:
             url_list.append(url(pattern, 'redirect_to', extra))
-        print extra
     arg_groups = list(group_aruments(url_list))
     
     for args in arg_groups:
