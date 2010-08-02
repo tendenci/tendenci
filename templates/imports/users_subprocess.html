@@ -21,5 +21,10 @@
 		<br /><br />
 		<a href="{% url profile.search %}">Search Users</a>  
 		<a href="{% url import.user_upload_add %}">Import More Users</a> 
-	
+		
+	{% else %}
+		<div class="loading-icon" style="position:absolute;top:300;right:300;width:300px;padding:5px;border:1px solid #071C7F;z-index:2;">
+			<img src="/site_media/static/tresources/en/images/icons/loading.gif" alt="loading"/> 
+			... loading ... <span style="color:red;">{{ total_done  }}</span>/{{ total }} completed
+		</div>
 	{%endif%}

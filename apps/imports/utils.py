@@ -24,14 +24,18 @@ def handle_uploaded_file(f, file_path):
         destination.write(chunk)
     destination.close()
     
-def get_user_import_settings(request):
+def get_user_import_settings(request, id):
+    if not request.session.has_key(id):
+        return None
+    
     d = {}
-    d['file_name'] = request.session['file_name']
-    d['interactive'] = request.session['interactive']
-    d['override'] = request.session['override']
-    d['key'] = request.session['key']
-    d['group'] = request.session['group']
-    d['clear_group_membership'] = request.session['clear_group_membership']
+
+    d['file_name'] = (request.session[id]).get('file_name', '')
+    d['interactive'] = request.session[id].get('interactive', '')
+    d['override'] = request.session[id].get('override', '')
+    d['key'] = request.session[id].get('key', '')
+    d['group'] = request.session[id].get('group', '')
+    d['clear_group_membership'] = request.session[id].get('clear_group_membership', '')
     
     try:
         d['interactive'] = int(d['interactive'])
@@ -112,7 +116,7 @@ def render_excel(filename, col_title_list, data_row_list):
     response['Content-Disposition'] = 'attachment; filename='+filename
     return response
 
-def user_import_process(request, setting_dict, preview=True, starting_point=0):
+def user_import_process(request, setting_dict, preview=True, starting_point=0, id=''):
     """ This function reads the spread sheet, processes each row
         and store the data in the user_object_dict. Then it updates  
         the database if preview=False.
@@ -221,18 +225,24 @@ def user_import_process(request, setting_dict, preview=True, starting_point=0):
     if not preview:
         if finish < sheet.nrows:
             # not finished yet, store some data in the session
-            request.session['next_starting_point'] = finish
-            request.session['count_insert'] = request.session.get('count_insert',  0) + setting_dict['count_insert']
-            request.session['count_update'] = request.session.get('count_update',  0) + setting_dict['count_update']
-            request.session['is_completed'] = False
+            #request.session[id]['next_starting_point'] = finish
+            count_insert = request.session[id].get('count_insert',  0) + setting_dict['count_insert']
+            count_update = request.session[id].get('count_update',  0) + setting_dict['count_update']
+            
             setting_dict['is_completed'] = False
-            
+            d = request.session[id]
+            d.update({'next_starting_point': finish,
+                      'is_completed': False,
+                      'count_insert': count_insert,
+                      'count_update': count_update})
+            request.session[id] = d
         else:
-            request.session['is_completed'] = True
             setting_dict['is_completed'] = True
-            setting_dict['count_insert'] += request.session.get('count_insert',  0)
-            setting_dict['count_update'] += request.session.get('count_update',  0)
-            
+            setting_dict['count_insert'] += request.session[id].get('count_insert',  0)
+            setting_dict['count_update'] += request.session[id].get('count_update',  0)
+            d = request.session[id]
+            d.update({'is_completed': True})
+            request.session[id] = d
                 
     return user_obj_list
 
