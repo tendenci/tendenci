@@ -1,0 +1,25 @@
+{% for u in users_list %}
+	<p>
+		{% if u.ACTION == 'insert' %}
+			<span class="body-copy-yellow">
+				INSERT:
+			</span>
+		{% else %}
+			UPDATE:
+		{% endif %}
+		
+		{{u.user.username}} &nbsp;&nbsp; {{u.user.first_name}} {{u.user.last_name}} &nbsp;&nbsp;&nbsp; {{u.user.email}}</p>
+	
+	{% endfor %}
+	
+	{% if is_completed %}
+		<br /><br />
+		INSERTS: {{ count_insert }}<br>
+		UPDATES: {{ count_update }}<br>
+		TOTAL: {{ total }}
+		
+		<br /><br />
+		<a href="{% url profile.search %}">Search Users</a>  
+		<a href="{% url import.user_upload_add %}">Import More Users</a> 
+	
+	{%endif%}
