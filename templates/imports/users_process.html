@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>User Import Process</title>
+
 </head>
 
 <body>
@@ -14,18 +15,18 @@
 	Note: User Logging Will be Suspended for the duration of import for this session only.<br>
 	<br>
 	<div class="results">
-		
+		<div class="loading-icon" style="position:absolute;top:300;left:0;width:300px;padding:5px;border:1px solid #071C7F;">
+			<img src="/site_media/static/tresources/en/images/icons/loading.gif" alt="loading"/> ... loading
+		</div>
 	</div>
-	<div class="loading-icon">
-		<img src="/site_media/static/tresources/en/images/icons/loading.gif" alt="loading"/> ... loading
-	</div>
+	
 
 </font>
 </body>
 <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-    var myurl = "{% url import.user_upload_subprocess %}";
+    var myurl = "{% url import.user_upload_subprocess id %}";
     var retval;
     var i = 0;
     var doc_h;
@@ -41,15 +42,16 @@ $(document).ready(function(){
 					$(".results").html(data);
 		    	}
 		    	else{
+		    		$('.loading-icon').remove();
 		    		$(".results").append(data);
 		    	}
 		    	
-		    	doc_h = document.body.clientHeight;
-		    	window.scrollTo(0, doc_h);
+		    	//doc_h = document.body.clientHeight;
+		    	//window.scrollTo(0, doc_h);
 		    	
 		    	if (data == ''){ 
 			    	completed = true;
-			    	$('.loading-icon').remove();
+			    	//$('.loading-icon').remove();
 			    }
 	    	}
 	    });

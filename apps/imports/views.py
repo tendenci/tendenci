@@ -1,4 +1,5 @@
 import os
+import time
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
@@ -35,96 +36,102 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
             group = form.cleaned_data['group']
             clear_group_membership = form.cleaned_data['clear_group_membership']
             
-            # store in the session to pass to the next page
-            request.session['file_name'] = file_name
-            request.session['interactive'] = interactive
-            request.session['override'] = override
-            request.session['key'] = key
-            request.session['group'] = group
-            request.session['clear_group_membership'] = clear_group_membership
+            # generate a unique id for this import
+            id = str(int(time.time()))
             
-            return HttpResponseRedirect(reverse('imports.views.user_upload_preview'))
+            # store in the session to pass to the next page
+            request.session[id] = {'file_name': file_name,
+                                   'interactive':interactive, 
+                                   'override': override,
+                                   'key': key,
+                                   'group': group,
+                                   'clear_group_membership': clear_group_membership }
+            
+            
+            return HttpResponseRedirect(reverse('imports.views.user_upload_preview', args=[id]))
     else:
         form = form_class()
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
     
 @login_required
-def user_upload_preview(request, template_name="imports/users_preview.html"):
+def user_upload_preview(request, id, template_name="imports/users_preview.html"):
     if not is_admin(request.user):raise Http403   # admin only page
-
-    import_dict = get_user_import_settings(request)
+    
+    id = str(id)
+        
+    import_dict = get_user_import_settings(request, id)
     import_dict['file_dir'] = IMPORT_DIR
     
     if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
         return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
 
-    users_list = user_import_process(request, import_dict, preview=True)
+    users_list = user_import_process(request, import_dict, preview=True, id=id)
     import_dict['users_list'] = users_list
+    import_dict['id'] = id
     
     return render_to_response(template_name, import_dict, 
         context_instance=RequestContext(request))
     
     
 @login_required
-def user_upload_process(request, template_name="imports/users_process.html"):
+def user_upload_process(request, id, template_name="imports/users_process.html"):
     if not is_admin(request.user):raise Http403   # admin only page
 
-    import_dict = get_user_import_settings(request)
+    id = str(id)
+    import_dict = get_user_import_settings(request, id)
+    if not import_dict:
+        return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
+    
     import_dict['file_dir'] = IMPORT_DIR
+    import_dict['id'] = id
     
     if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
         return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
     
     import_dict['next_starting_point'] = 0
-    request.session['next_starting_point'] = import_dict['next_starting_point']
-    request.session['is_completed'] = False
-    request.session['count_insert'] = 0
-    request.session['count_update'] = 0
 
-#    users_list = user_import_process(request, import_dict, preview=False)
-#    import_dict['users_list'] = users_list
-#    # recalculate the total
-#    import_dict['total'] = import_dict['count_insert'] + import_dict['count_update']
-#    
-#    # log an event
-#    log_defaults = {
-#        'event_id' : 129005,
-#        'event_data': 'User import: %s<br>INSERTS:%d<br>UPDATES:%d<br>TOTAL:%d' % (import_dict['file_name'], 
-#                                                                                   import_dict['count_insert'],
-#                                                                                   import_dict['count_update'], 
-#                                                                                   import_dict['total']),
-#        'description': 'user import',
-#        'user': request.user,
-#        'request': request,
-#    }
-#    EventLog.objects.log(**log_defaults)
+    d = request.session[id]
+    d.update({'next_starting_point': import_dict['next_starting_point'],
+              'is_completed': False,
+              'count_insert': 0,
+              'count_update': 0,
+              'total_done':0})
+    request.session[id] = d
     
     
     return render_to_response(template_name, import_dict, 
         context_instance=RequestContext(request))
     
 @login_required
-def user_upload_subprocess(request, template_name="imports/users_subprocess.html"):
+def user_upload_subprocess(request, id, template_name="imports/users_subprocess.html"):
     if not is_admin(request.user):raise Http403   # admin only page
     
-    if request.session['is_completed']:
+    id = str(id)
+    import_dict = get_user_import_settings(request, id)
+    if not import_dict:
         return HttpResponse('')
-
-    import_dict = get_user_import_settings(request)
+    
     import_dict['file_dir'] = IMPORT_DIR
     
     if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
-        return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
+        return HttpResponse('')
 
-    starting_point = request.session['next_starting_point']
+    starting_point = request.session[id]['next_starting_point']
     
-    users_list = user_import_process(request, import_dict, preview=False, starting_point=starting_point)
+    users_list = user_import_process(request, import_dict, preview=False, starting_point=starting_point, id=id)
     import_dict['users_list'] = users_list
-    # recalculate the total
-    import_dict['total'] = import_dict['count_insert'] + import_dict['count_update']
     
-    import_dict['is_completed'] = request.session['is_completed']
+    # recalculate the total
+    import_dict['total_done'] = request.session[id]['total_done']
+    import_dict['total_done'] += import_dict['count_insert'] + import_dict['count_update']
+    request.session[id]['total_done'] = import_dict['total_done']
+    
+    d = request.session[id]
+    d.update({'total_done': import_dict['total_done']})
+    request.session[id] = d
+    
+    import_dict['is_completed'] = request.session[id]['is_completed']
     if import_dict['is_completed']:
     
         # log an event
@@ -141,14 +148,8 @@ def user_upload_subprocess(request, template_name="imports/users_subprocess.html
         EventLog.objects.log(**log_defaults)
         
         # clear up the session
-        del request.session['file_name']
-        del request.session['interactive']
-        del request.session['override']
-        del request.session['key']
-        del request.session['group']
-        del request.session['clear_group_membership']
-        del request.session['next_starting_point']
-        #del request.session['is_completed']
+        del request.session[id]
+
     
     return render_to_response(template_name, import_dict, 
         context_instance=RequestContext(request))
