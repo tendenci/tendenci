@@ -12,6 +12,9 @@ from xlwt import Workbook, XFStyle
 from user_groups.models import Group, GroupMembership
 from profiles.models import Profile
 
+# number rows to process per request
+ROWS_TO_PROCESS = 10 
+
 user_field_names = [field.name for field in User._meta.fields if field.editable and (not field.__class__==AutoField)]
 profile_field_names = [field.name for field in Profile._meta.fields if field.editable and (not field.__class__==AutoField)]
 
@@ -109,7 +112,7 @@ def render_excel(filename, col_title_list, data_row_list):
     response['Content-Disposition'] = 'attachment; filename='+filename
     return response
 
-def user_import_process(request, setting_dict, preview=True):
+def user_import_process(request, setting_dict, preview=True, starting_point=0):
     """ This function reads the spread sheet, processes each row
         and store the data in the user_object_dict. Then it updates  
         the database if preview=False.
@@ -132,13 +135,23 @@ def user_import_process(request, setting_dict, preview=True):
     
     user_obj_list = []
     
+    start = 1
     if not preview:
         #reset group - delete all members in the group
         if setting_dict['clear_group_membership'] and setting_dict['group']:
             GroupMembership.objects.filter(group=setting_dict['group']).delete()
         
+        if starting_point > 0:
+            start = starting_point
+        finish = start + ROWS_TO_PROCESS
+        if finish > sheet.nrows:
+            finish = sheet.nrows
+            
+    else:
+        finish = sheet.nrows
+        
     
-    for r in  range(1, sheet.nrows):
+    for r in  range(start, finish):
         user_object_dict = {}
         if not preview:
             user_import_dict = {}
@@ -204,6 +217,22 @@ def user_import_process(request, setting_dict, preview=True):
                 
         if preview:
             user_obj_list.append(user_object_dict)
+            
+    if not preview:
+        if finish < sheet.nrows:
+            # not finished yet, store some data in the session
+            request.session['next_starting_point'] = finish
+            request.session['count_insert'] = request.session.get('count_insert',  0) + setting_dict['count_insert']
+            request.session['count_update'] = request.session.get('count_update',  0) + setting_dict['count_update']
+            request.session['is_completed'] = False
+            setting_dict['is_completed'] = False
+            
+        else:
+            request.session['is_completed'] = True
+            setting_dict['is_completed'] = True
+            setting_dict['count_insert'] += request.session.get('count_insert',  0)
+            setting_dict['count_update'] += request.session.get('count_update',  0)
+            
                 
     return user_obj_list
 

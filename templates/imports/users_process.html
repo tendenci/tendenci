@@ -13,27 +13,53 @@
 	<br>
 	Note: User Logging Will be Suspended for the duration of import for this session only.<br>
 	<br>
-	{% for u in users_list %}
-		{% if u.ACTION == 'insert' %}
-			<div class="body-copy-yellow">
-				INSERT:
-			</div>
-		{% else %}
-			UPDATE:
-		{% endif %}
+	<div class="results">
 		
-		<p>{{u.user.username}} &nbsp;&nbsp; {{u.user.first_name}} {{u.user.last_name}} &nbsp;&nbsp;&nbsp; {{u.user.email}}</p>
-	
-	{% endfor %}
-	<br /><br />
-	INSERTS: {{ count_insert }}<br>
-	UPDATES: {{ count_update }}<br>
-	TOTAL: {{ total }}
-	
-	<br /><br />
-	<a href="{% url profile.search %}">Search Users</a>  
-	<a href="{% url import.user_upload_add %}">Import More Users</a>  
-	
+	</div>
+	<div class="loading-icon">
+		<img src="/site_media/static/tresources/en/images/icons/loading.gif" alt="loading"/> ... loading
+	</div>
+
 </font>
 </body>
+<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var myurl = "{% url import.user_upload_subprocess %}";
+    var retval;
+    var i = 0;
+    var doc_h;
+    var completed = false;
+  	while(!completed){
+	    $.ajax({
+		    type: "GET",
+		    url: myurl, 
+		    async: false,
+		    success: function(data){
+		    	data = data.replace(/^\s+|\s+$/g, '');
+		    	if (i == 0){
+					$(".results").html(data);
+		    	}
+		    	else{
+		    		$(".results").append(data);
+		    	}
+		    	
+		    	doc_h = document.body.clientHeight;
+		    	window.scrollTo(0, doc_h);
+		    	
+		    	if (data == ''){ 
+			    	completed = true;
+			    	$('.loading-icon').remove();
+			    }
+	    	}
+	    });
+	   	i++;
+  	}
+    
+}); 
+
+</script>
+
+
+
 </html>
