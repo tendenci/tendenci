@@ -19,17 +19,24 @@ Upload your updated template. Review and adjust settings.  Preview import.
 </p>
 
 <div class="download-csv">
-<a href="{% url import.download_user_formats %}">
-<img src="/site_media/static/tresources/en/images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/></a>
-<p><a href="{% url import.download_user_formats %}">Download xls Template</a></p>
-<em>Download. Fill out.</em>
+<img src="/site_media/static/tresources/en/images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+<div class="item-right">
+	<p><a href="{% url import.download_user_upload_template_xls %}">Download .xls Template</a></p>
+	<p>-- OR --</p>
+	<p><a href="{% url import.download_user_upload_template_csv %}">Download .csv Template</a></p>
+	<em>Download. Fill out.</em>
 </div>
-
+</div>
 <div class="clear-left"></div>
+
+{% if form.non_field_errors %}
+	{{ form.non_field_errors }}
+{% endif %}
+
 <form class="import" action="." method="post" enctype="multipart/form-data" >
 
 <div class="select-file">
-	<h2>Upload Your XLS File </h2>
+	<h2>Upload Your Spread Sheet </h2>
 	<p>{{ form.file }}</p>
 </div>
 

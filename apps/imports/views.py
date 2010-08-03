@@ -9,8 +9,9 @@ from django.conf import settings
 from perms.utils import is_admin
 from base.http import Http403
 from imports.forms import UserImportForm
-from imports.utils import render_excel, handle_uploaded_file, get_user_import_settings, user_import_process
+from imports.utils import extract_from_excel, render_excel, handle_uploaded_file, get_user_import_settings, user_import_process
 from event_logs.models import EventLog
+from user_groups.models import Group, GroupMembership
 
 IMPORT_DIR = os.path.join(settings.MEDIA_ROOT, 'imports')
 
@@ -28,7 +29,8 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
                 os.makedirs(file_dir)
             f = request.FILES['file']
             file_name = f.name.replace('&', '')
-            handle_uploaded_file(f, os.path.join(file_dir, file_name))
+            file_path = os.path.join(file_dir, file_name)
+            handle_uploaded_file(f, file_path)
             
             interactive = form.cleaned_data['interactive']
             override = form.cleaned_data['override']
@@ -36,16 +38,21 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
             group = form.cleaned_data['group']
             clear_group_membership = form.cleaned_data['clear_group_membership']
             
+            # read the spreadsheet into a dictionary
+            data_dict_list = extract_from_excel(file_path)
+            
             # generate a unique id for this import
             id = str(int(time.time()))
             
-            # store in the session to pass to the next page
+            # store the infor in the session to pass to the next page
             request.session[id] = {'file_name': file_name,
                                    'interactive':interactive, 
                                    'override': override,
                                    'key': key,
                                    'group': group,
-                                   'clear_group_membership': clear_group_membership }
+                                   'clear_group_membership': clear_group_membership,
+                                   'total': len(data_dict_list),
+                                   'data_dict_list': data_dict_list}
             
             
             return HttpResponseRedirect(reverse('imports.views.user_upload_preview', args=[id]))
@@ -69,6 +76,12 @@ def user_upload_preview(request, id, template_name="imports/users_preview.html")
     users_list = user_import_process(request, import_dict, preview=True, id=id)
     import_dict['users_list'] = users_list
     import_dict['id'] = id
+    import_dict['total'] =  request.session[id].get('total',  0)
+    
+    d = request.session[id]
+    d.update({'total': import_dict['total'] - import_dict['count_invalid']})
+    request.session[id] = d
+    d = None
     
     return render_to_response(template_name, import_dict, 
         context_instance=RequestContext(request))
@@ -89,15 +102,19 @@ def user_upload_process(request, id, template_name="imports/users_process.html")
     if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
         return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
     
-    import_dict['next_starting_point'] = 0
+    #reset group - delete all members in the group
+    if import_dict['clear_group_membership'] and import_dict['group']:
+        GroupMembership.objects.filter(group=import_dict['group']).delete()
+    
+    #import_dict['next_starting_point'] = 0
 
     d = request.session[id]
-    d.update({'next_starting_point': import_dict['next_starting_point'],
-              'is_completed': False,
+    d.update({'is_completed': False,
               'count_insert': 0,
               'count_update': 0,
               'total_done':0})
     request.session[id] = d
+    d = None
     
     
     return render_to_response(template_name, import_dict, 
@@ -117,9 +134,8 @@ def user_upload_subprocess(request, id, template_name="imports/users_subprocess.
     if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
         return HttpResponse('')
 
-    starting_point = request.session[id]['next_starting_point']
     
-    users_list = user_import_process(request, import_dict, preview=False, starting_point=starting_point, id=id)
+    users_list = user_import_process(request, import_dict, preview=False, id=id)
     import_dict['users_list'] = users_list
     
     # recalculate the total
@@ -130,6 +146,7 @@ def user_upload_subprocess(request, id, template_name="imports/users_subprocess.
     d = request.session[id]
     d.update({'total_done': import_dict['total_done']})
     request.session[id] = d
+    d = None
     
     import_dict['is_completed'] = request.session[id]['is_completed']
     if import_dict['is_completed']:
@@ -156,10 +173,14 @@ def user_upload_subprocess(request, id, template_name="imports/users_subprocess.
     
     
 @login_required
-def download_user_upload_template_xls(request):
+def download_user_upload_template(request, file_ext='.xls'):
     if not is_admin(request.user):raise Http403   # admin only page
+    print file_ext
     
-    filename = "import-users.xls"
+    if file_ext == '.csv':
+        filename = "import-users.csv"
+    else:
+        filename = "import-users.xls"
     import_field_list = ['salutation', 'first_name', 'last_name', 'initials', 'display_name',
                          'email', 'address', 'address2', 'city', 'state', 'zipcode', 'country', 
                          'company', 'position_title', 'department', 'phone', 'phone2', 'home_phone', 
@@ -167,4 +188,4 @@ def download_user_upload_template_xls(request):
                          'username', 'password']
     data_row_list = []
     
-    return render_excel(filename, import_field_list, data_row_list)
+    return render_excel(filename, import_field_list, data_row_list, file_ext)
