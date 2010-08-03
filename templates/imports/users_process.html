@@ -7,7 +7,7 @@
 <body>
 
 <font face="courier new" size="2">
-	<b>You are importing the following file at ({% now "D d M Y P" %})</b>: <br> 
+	<b>You ({{ request.user.username }}) are importing the following file at ({% now "D d M Y P" %})</b>: <br> 
 	<font color="red">
 	{{ file_name }}
 	</font>
