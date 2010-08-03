@@ -63,9 +63,11 @@ div.download-csv img {
 	margin-right: 10px;
 	border: 0;
 }
+div.download-csv .item-right {
+	float: left;
+}
 div.download-csv p {
-	margin: 0;
-	margin-left: 10px;
+	margin:0;
 }
 div.download-csv a {
 	font-size: 1.5em;
@@ -236,4 +238,13 @@ div.result-error em {
 }
 .body-copy-yellow{
 	background-color: yellow;
+}
+.errorlist li{
+	list-style: none;
+}
+ul.errorlist{
+	border: 1px solid #FFF79F;
+	background-color: #FFEFEF;
+	color: red;
+	padding: 1em;
 }

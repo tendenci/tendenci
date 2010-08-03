@@ -71,88 +71,86 @@ def get_user_import_settings(request, id):
             
     return d
 
-def render_excel(filename, col_title_list, data_row_list):
-    import StringIO
-    output = StringIO.StringIO()
-    export_wb = Workbook()
-    export_sheet = export_wb.add_sheet('Sheet1')
-    col_idx = 0
-    for col_title in col_title_list:
-        export_sheet.write(0, col_idx, col_title)
-        col_idx += 1
-    row_idx = 1
-    for row_item_list in data_row_list:
+def render_excel(filename, col_title_list, data_row_list, file_extension='.xls'):
+    if file_extension == '.csv':
+        str_out = ','.join(col_title_list)
+        content_type = "application/text"
+    else:
+        import StringIO
+        output = StringIO.StringIO()
+        export_wb = Workbook()
+        export_sheet = export_wb.add_sheet('Sheet1')
         col_idx = 0
-        for current_value in row_item_list:
-            if current_value:
-                current_value_is_date = False
-                if isinstance(current_value, datetime.datetime):
-                    current_value = xlrd.xldate.xldate_from_datetime_tuple((current_value.year, current_value.month, \
-                                                    current_value.day, current_value.hour, current_value.minute, \
-                                                    current_value.second), 0)
-                    current_value_is_date = True
-                elif isinstance(current_value, datetime.date):
-                    current_value = xlrd.xldate.xldate_from_date_tuple((current_value.year, current_value.month, \
-                                                    current_value.day), 0)
-                    current_value_is_date = True
-                elif isinstance(current_value, datetime.time):
-                    current_value = xlrd.xldate.xldate_from_time_tuple((current_value.hour, current_value.minute, \
-                                                    current_value.second))
-                    current_value_is_date = True
-                elif isinstance(current_value, models.Model):
-                    current_value = str(current_value)
-                if current_value_is_date:
-                    s = XFStyle()
-                    s.num_format_str = 'M/D/YY'
-                    export_sheet.write(row_idx, col_idx, current_value, s)
-                else:
-                    export_sheet.write(row_idx, col_idx, current_value)
+        for col_title in col_title_list:
+            export_sheet.write(0, col_idx, col_title)
             col_idx += 1
-        row_idx += 1
-    export_wb.save(output)
-    output.seek(0)
-    response = HttpResponse(output.getvalue())
-    response['Content-Type'] = 'application/vnd.ms-excel'
+        row_idx = 1
+        for row_item_list in data_row_list:
+            col_idx = 0
+            for current_value in row_item_list:
+                if current_value:
+                    current_value_is_date = False
+                    if isinstance(current_value, datetime.datetime):
+                        current_value = xlrd.xldate.xldate_from_datetime_tuple((current_value.year, current_value.month, \
+                                                        current_value.day, current_value.hour, current_value.minute, \
+                                                        current_value.second), 0)
+                        current_value_is_date = True
+                    elif isinstance(current_value, datetime.date):
+                        current_value = xlrd.xldate.xldate_from_date_tuple((current_value.year, current_value.month, \
+                                                        current_value.day), 0)
+                        current_value_is_date = True
+                    elif isinstance(current_value, datetime.time):
+                        current_value = xlrd.xldate.xldate_from_time_tuple((current_value.hour, current_value.minute, \
+                                                        current_value.second))
+                        current_value_is_date = True
+                    elif isinstance(current_value, models.Model):
+                        current_value = str(current_value)
+                    if current_value_is_date:
+                        s = XFStyle()
+                        s.num_format_str = 'M/D/YY'
+                        export_sheet.write(row_idx, col_idx, current_value, s)
+                    else:
+                        export_sheet.write(row_idx, col_idx, current_value)
+                col_idx += 1
+            row_idx += 1
+        export_wb.save(output)
+        output.seek(0)
+        str_out = output.getvalue()
+        content_type = 'application/vnd.ms-excel'
+        
+    response = HttpResponse(str_out)
+    response['Content-Type'] = content_type
     response['Content-Disposition'] = 'attachment; filename='+filename
     return response
 
-def user_import_process(request, setting_dict, preview=True, starting_point=0, id=''):
-    """ This function reads the spread sheet, processes each row
-        and store the data in the user_object_dict. Then it updates  
-        the database if preview=False.
+
+def user_import_process(request, setting_dict, preview=True, id=''):
+    """ This function processes each row and store the data in the user_object_dict. 
+        Then it updates the database if preview=False.
     """
-    file_path = os.path.join(setting_dict['file_dir'], setting_dict['file_name'])
-    
-    # get a list of headers from the spread sheet
-    import_header_list = get_header_list(file_path)
-    
-    book = xlrd.open_workbook(file_path)
-    sheet = book.sheet_by_index(0)
     key_list = setting_dict['key'].split(',')
     # key(s)- user field(s) or profile fields(s)? that is import to identify
     key_user_list = [key for key in key_list if key in user_field_names]
     key_profile_list = [key for key in key_list if key in profile_field_names]
-    setting_dict['total'] = sheet.nrows - 1
+    
+    setting_dict['total'] = request.session[id].get('total',  0)
     setting_dict['count_insert'] = 0
     setting_dict['count_update'] = 0
     setting_dict['count_invalid'] = 0
     
+    data_dict_list = request.session[id].get('data_dict_list',  [])
+    data_dict_list_len = len(data_dict_list)
+    
     user_obj_list = []
     
-    start = 1
+    start = 0
     if not preview:
-        #reset group - delete all members in the group
-        if setting_dict['clear_group_membership'] and setting_dict['group']:
-            GroupMembership.objects.filter(group=setting_dict['group']).delete()
-        
-        if starting_point > 0:
-            start = starting_point
         finish = start + ROWS_TO_PROCESS
-        if finish > sheet.nrows:
-            finish = sheet.nrows
+        if finish > data_dict_list_len:
+            finish = data_dict_list_len
             
     else:
-        finish = sheet.nrows
+        finish = data_dict_list_len
         
     
     for r in  range(start, finish):
@@ -163,30 +161,20 @@ def user_import_process(request, setting_dict, preview=True, starting_point=0, i
         identity_profile_dict = {} # used to look up the Profile
         missing_keys = []
         
-        for c in range(0, sheet.ncols):
-            field_name = import_header_list[c]
-            cell = sheet.cell(r, c)
-            cell_value = cell.value
-            if cell.ctype == xlrd.XL_CELL_DATE:
-                date_tuple = xlrd.xldate_as_tuple(cell_value, book.datemode)
-                cell_value = datetime.date(date_tuple[0],date_tuple[1],date_tuple[2])
-            elif cell.ctype in (2,3) and int(cell_value) == cell_value:
-                # so for zipcode 77079, we don't end up with 77079.0
-                cell_value = int(cell_value)
-            
-            user_object_dict[field_name] = cell_value
-            
-            if field_name in key_list:
-                if cell_value <> '':
-                    if field_name in key_user_list:
-                        identity_user_dict[field_name] = cell_value
-                    if field_name in key_profile_list:
-                        identity_profile_dict[field_name] = cell_value
-                else:
-                    missing_keys.append(field_name)
-                
+        data_dict = data_dict_list[r]
         
-        user_object_dict['ROW_NUM'] = r + 1  
+        missing_keys = [key for key in data_dict.keys() if key in key_list and data_dict[key]=='']
+        
+        for key in data_dict.keys():
+            user_object_dict[key] = data_dict[key]
+            
+            if key in key_list and data_dict[key] <> '':
+                if key in key_user_list:
+                    identity_user_dict[key] =  data_dict[key]
+                if key in key_profile_list:
+                    identity_profile_dict[key] =  data_dict[key]
+        
+        user_object_dict['ROW_NUM'] = r + 2  
             
         if missing_keys:
             user_object_dict['ERROR'] = 'Missing key: %s.' % (', '.join(missing_keys))
@@ -223,18 +211,24 @@ def user_import_process(request, setting_dict, preview=True, starting_point=0, i
             user_obj_list.append(user_object_dict)
             
     if not preview:
-        if finish < sheet.nrows:
+        if finish < data_dict_list_len:
             # not finished yet, store some data in the session
             #request.session[id]['next_starting_point'] = finish
             count_insert = request.session[id].get('count_insert',  0) + setting_dict['count_insert']
             count_update = request.session[id].get('count_update',  0) + setting_dict['count_update']
             
             setting_dict['is_completed'] = False
+            
+          
+            for r in  range(start, finish):
+                # remove those already processed rows
+                data_dict_list.remove(data_dict_list[0])
+                
             d = request.session[id]
-            d.update({'next_starting_point': finish,
-                      'is_completed': False,
+            d.update({'is_completed': False,
                       'count_insert': count_insert,
-                      'count_update': count_update})
+                      'count_update': count_update,
+                      'data_dict_list':data_dict_list})
             request.session[id] = d
         else:
             setting_dict['is_completed'] = True
@@ -413,6 +407,88 @@ def get_header_list(file_path):
         col_item = sheet.cell_value(rowx=0, colx = col)
         header_list.append(col_item)
     return header_list
+
+def get_header_list_from_content(file_content, file_name):
+    header_list = []
+    if file_content and len(file_name) > 4:
+        file_ext = file_name[-4:].lower()
+        
+        if file_ext == '.csv':
+            import csv
+            line_return_index = file_content.find('\n')
+            header_list = ((file_content[:line_return_index]).strip('\r')).split(',')
+        else:
+            book = xlrd.open_workbook(file_contents=file_content)
+            nsheets = book.nsheets
+            for i in range(0, nsheets):
+                sh = book.sheet_by_index(i)
+                for c in range(0, sh.ncols):
+                    col_item = sh.cell_value(rowx=0, colx=c)
+                    header_list.append(col_item)
+    return header_list
+
+
+def extract_from_excel(file_path):
+    if not os.path.isfile(file_path):
+        raise NameError, "%s is not a valid file." % file_path
+    
+    file_ext = (file_path[-4:]).lower()
+    if file_ext <> '.csv' and file_ext <> '.xls':
+        raise NameError, "%s is not a valid file type (should be either .csv or .xls)." % file_path
+    
+    fields = []
+    data_list = []
+    
+    if file_ext == '.csv':
+        import csv
+        data = csv.reader(open(file_path))
+        
+        # read the column header
+        fields = data.next()
+        
+        for row in data:
+            item = dict(zip(fields, row))
+            data_list.append(item)
+    else:
+        book = xlrd.open_workbook(file_path)
+        nsheets = book.nsheets
+        nrows = book.sheet_by_index(0).nrows
+        
+        # get the fields from the first row
+        for i in range(0, nsheets):
+            sh = book.sheet_by_index(i)
+            for c in range(0, sh.ncols):
+                col_item = sh.cell_value(rowx=0, colx=c)
+                fields.append(col_item)
+         
+        # get the data - skip the first row
+        for r in  range(1, nrows):
+            row = []
+            for i in range(0, nsheets):
+                sh = book.sheet_by_index(i)
+                for c in range(0, sh.ncols):
+                    cell = sh.cell(r, c)
+                    cell_value = cell.value
+                    if cell.ctype == xlrd.XL_CELL_DATE:
+                        date_tuple = xlrd.xldate_as_tuple(cell_value, book.datemode)
+                        cell_value = datetime.date(date_tuple[0],date_tuple[1],date_tuple[2])
+                    elif cell.ctype in (2,3) and int(cell_value) == cell_value:
+                        # so for zipcode 77079, we don't end up with 77079.0
+                        cell_value = int(cell_value)
+                    row.append(cell_value)
+                   
+            item = dict(zip(fields, row))
+            data_list.append(item)
+      
+    return data_list
+                    
+                
+                
+                
+                
+        
+                
+            
         
  
     
