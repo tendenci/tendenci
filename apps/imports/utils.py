@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
 from django.db.models.fields import AutoField
+from django.utils.encoding import smart_str
 
 import xlrd
 from xlwt import Workbook, XFStyle
@@ -195,9 +196,9 @@ def user_import_process(request, setting_dict, preview=True, id=''):
             
             if key in key_list and data_dict[key] <> '':
                 if key in key_user_list:
-                    identity_user_dict[key] =  data_dict[key]
+                    identity_user_dict[key] =  smart_str(data_dict[key])
                 if key in key_profile_list:
-                    identity_profile_dict[key] =  data_dict[key]
+                    identity_profile_dict[key] =  smart_str(data_dict[key])
         
         user_object_dict['ROW_NUM'] = r + 2  
             
