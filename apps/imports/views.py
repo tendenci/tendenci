@@ -175,7 +175,6 @@ def user_upload_subprocess(request, id, template_name="imports/users_subprocess.
 @login_required
 def download_user_upload_template(request, file_ext='.xls'):
     if not is_admin(request.user):raise Http403   # admin only page
-    print file_ext
     
     if file_ext == '.csv':
         filename = "import-users.csv"
