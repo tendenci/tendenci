@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
 from django.db.models.fields import AutoField
+from django.utils.encoding import smart_str
 
 import xlrd
 from xlwt import Workbook, XFStyle
@@ -18,14 +19,14 @@ ROWS_TO_PROCESS = 10
 # field.__class__.__name__
 # DateTimeField
 user_fields = [field for field in User._meta.fields if field.editable and (not field.__class__==AutoField)]
-user_field_names = [field.name for field in user_fields]
+user_field_names = [smart_str(field.name) for field in user_fields]
 user_field_types = [field.__class__.__name__ for field in user_fields]
 field_type_dict = dict(zip(user_field_names, user_field_types))
 user_fields = None
 user_field_types = None
 
 profile_fields = [field for field in Profile._meta.fields if field.editable and (not field.__class__==AutoField)]
-profile_field_names =  [field.name for field in profile_fields]
+profile_field_names =  [smart_str(field.name) for field in profile_fields]
 profile_field_types =  [field.__class__.__name__ for field in profile_fields]
 field_type_dict.update(dict(zip(profile_field_names, profile_field_types)))
 profile_fields = None
@@ -195,9 +196,9 @@ def user_import_process(request, setting_dict, preview=True, id=''):
             
             if key in key_list and data_dict[key] <> '':
                 if key in key_user_list:
-                    identity_user_dict[key] =  data_dict[key]
+                    identity_user_dict[key] =  smart_str(data_dict[key])
                 if key in key_profile_list:
-                    identity_profile_dict[key] =  data_dict[key]
+                    identity_profile_dict[key] =  smart_str(data_dict[key])
         
         user_object_dict['ROW_NUM'] = r + 2  
             
@@ -266,7 +267,7 @@ def user_import_process(request, setting_dict, preview=True, id=''):
     return user_obj_list
 
 def get_user_by_key(identity_user_dict, identity_profile_dict):
-    user = None
+    user = None  
     
     if identity_user_dict and identity_profile_dict:
         users = User.objects.filter(**identity_user_dict)
@@ -489,7 +490,7 @@ def extract_from_excel(file_path):
             sh = book.sheet_by_index(i)
             for c in range(0, sh.ncols):
                 col_item = sh.cell_value(rowx=0, colx=c)
-                fields.append(col_item)
+                fields.append(smart_str(col_item))
          
         # get the data - skip the first row
         for r in  range(1, nrows):
