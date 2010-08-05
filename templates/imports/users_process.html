@@ -53,6 +53,12 @@ $(document).ready(function(){
 			    	completed = true;
 			    	//$('.loading-icon').remove();
 			    }
+	    	},
+	    	error: function(errmsg){
+	    		$('.loading-icon').remove();
+	    		$(".results").append(errmsg);
+	    		completed = true;
+	    		
 	    	}
 	    });
 	   	i++;
