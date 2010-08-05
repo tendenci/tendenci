@@ -473,6 +473,7 @@ def extract_from_excel(file_path):
         
         # read the column header
         fields = data.next()
+        fields = [smart_str(field) for field in fields]
         
         for row in data:
             item = dict(zip(fields, row))
