@@ -15,8 +15,21 @@ from profiles.models import Profile
 # number rows to process per request
 ROWS_TO_PROCESS = 10 
 
-user_field_names = [field.name for field in User._meta.fields if field.editable and (not field.__class__==AutoField)]
-profile_field_names = [field.name for field in Profile._meta.fields if field.editable and (not field.__class__==AutoField)]
+# field.__class__.__name__
+# DateTimeField
+user_fields = [field for field in User._meta.fields if field.editable and (not field.__class__==AutoField)]
+user_field_names = [field.name for field in user_fields]
+user_field_types = [field.__class__.__name__ for field in user_fields]
+field_type_dict = dict(zip(user_field_names, user_field_types))
+user_fields = None
+user_field_types = None
+
+profile_fields = [field for field in Profile._meta.fields if field.editable and (not field.__class__==AutoField)]
+profile_field_names =  [field.name for field in profile_fields]
+profile_field_types =  [field.__class__.__name__ for field in profile_fields]
+field_type_dict.update(dict(zip(profile_field_names, profile_field_types)))
+profile_fields = None
+profile_field_types = None
 
 def handle_uploaded_file(f, file_path):
     destination = open(file_path, 'wb+')
@@ -71,9 +84,21 @@ def get_user_import_settings(request, id):
             
     return d
 
-def render_excel(filename, col_title_list, data_row_list, file_extension='.xls'):
+def render_excel(filename, title_list, data_list, file_extension='.xls'):
     if file_extension == '.csv':
-        str_out = ','.join(col_title_list)
+        str_out = ','.join(title_list)
+        
+        for row_item_list in data_list:
+            for i in range (0, len(row_item_list)):
+                if row_item_list[i]:
+                    if isinstance(row_item_list[i], datetime.datetime):
+                        row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d %H:%M:%S')
+                    elif isinstance(row_item_list[i], datetime.date):
+                        row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d')
+                    elif isinstance(row_item_list[i], datetime.time):
+                        row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
+            str_out += ','.join(row_item_list)
+        
         content_type = "application/text"
     else:
         import StringIO
@@ -81,36 +106,36 @@ def render_excel(filename, col_title_list, data_row_list, file_extension='.xls')
         export_wb = Workbook()
         export_sheet = export_wb.add_sheet('Sheet1')
         col_idx = 0
-        for col_title in col_title_list:
+        for col_title in title_list:
             export_sheet.write(0, col_idx, col_title)
             col_idx += 1
         row_idx = 1
-        for row_item_list in data_row_list:
+        for row_item_list in data_list:
             col_idx = 0
-            for current_value in row_item_list:
-                if current_value:
-                    current_value_is_date = False
-                    if isinstance(current_value, datetime.datetime):
-                        current_value = xlrd.xldate.xldate_from_datetime_tuple((current_value.year, current_value.month, \
-                                                        current_value.day, current_value.hour, current_value.minute, \
-                                                        current_value.second), 0)
-                        current_value_is_date = True
-                    elif isinstance(current_value, datetime.date):
-                        current_value = xlrd.xldate.xldate_from_date_tuple((current_value.year, current_value.month, \
-                                                        current_value.day), 0)
-                        current_value_is_date = True
-                    elif isinstance(current_value, datetime.time):
-                        current_value = xlrd.xldate.xldate_from_time_tuple((current_value.hour, current_value.minute, \
-                                                        current_value.second))
-                        current_value_is_date = True
-                    elif isinstance(current_value, models.Model):
-                        current_value = str(current_value)
-                    if current_value_is_date:
+            for cell_value in row_item_list:
+                if cell_value:
+                    cell_value_is_date = False
+                    if isinstance(cell_value, datetime.datetime):
+                        cell_value = xlrd.xldate.xldate_from_datetime_tuple((cell_value.year, cell_value.month, \
+                                                        cell_value.day, cell_value.hour, cell_value.minute, \
+                                                        cell_value.second), 0)
+                        cell_value_is_date = True
+                    elif isinstance(cell_value, datetime.date):
+                        cell_value = xlrd.xldate.xldate_from_date_tuple((cell_value.year, cell_value.month, \
+                                                        cell_value.day), 0)
+                        cell_value_is_date = True
+                    elif isinstance(cell_value, datetime.time):
+                        cell_value = xlrd.xldate.xldate_from_time_tuple((cell_value.hour, cell_value.minute, \
+                                                        cell_value.second))
+                        cell_value_is_date = True
+                    elif isinstance(cell_value, models.Model):
+                        cell_value = str(cell_value)
+                    if cell_value_is_date:
                         s = XFStyle()
                         s.num_format_str = 'M/D/YY'
-                        export_sheet.write(row_idx, col_idx, current_value, s)
+                        export_sheet.write(row_idx, col_idx, cell_value, s)
                     else:
-                        export_sheet.write(row_idx, col_idx, current_value)
+                        export_sheet.write(row_idx, col_idx, cell_value)
                 col_idx += 1
             row_idx += 1
         export_wb.save(output)
@@ -441,6 +466,8 @@ def extract_from_excel(file_path):
     
     if file_ext == '.csv':
         import csv
+        import dateutil.parser as dparser
+        
         data = csv.reader(open(file_path))
         
         # read the column header
@@ -448,6 +475,9 @@ def extract_from_excel(file_path):
         
         for row in data:
             item = dict(zip(fields, row))
+            for key in item.keys():
+                if field_type_dict.has_key(key) and field_type_dict[key] == 'DateTimeField':
+                    item[key] = dparser.parser(item[key])
             data_list.append(item)
     else:
         book = xlrd.open_workbook(file_path)
