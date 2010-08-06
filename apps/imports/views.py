@@ -25,6 +25,7 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
         if form.is_valid():
             # save the uploaded file
             file_dir = IMPORT_DIR
+            
             if not os.path.isdir(file_dir):
                 os.makedirs(file_dir)
             f = request.FILES['file']
@@ -181,10 +182,11 @@ def download_user_upload_template(request, file_ext='.xls'):
     else:
         filename = "import-users.xls"
     import_field_list = ['salutation', 'first_name', 'last_name', 'initials', 'display_name',
-                         'email', 'address', 'address2', 'city', 'state', 'zipcode', 'country', 
+                         'email', 'email2', 'address', 'address2', 'city', 'state', 'zipcode', 'country', 
                          'company', 'position_title', 'department', 'phone', 'phone2', 'home_phone', 
-                         'work_phone', 'mobile_phone', 'fax', 'url', 'notes', 'admin_notes', 
-                         'username', 'password']
+                         'work_phone', 'mobile_phone', 'fax', 'url', 'dob', 'spouse', 'department',
+                         'direct_mail', 'notes', 'admin_notes', 
+                         'username', 'password', 'member_number']
     data_row_list = []
     
     return render_excel(filename, import_field_list, data_row_list, file_ext)
