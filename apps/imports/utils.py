@@ -196,9 +196,9 @@ def user_import_process(request, setting_dict, preview=True, id=''):
             
             if key in key_list and data_dict[key] <> '':
                 if key in key_user_list:
-                    identity_user_dict[key] =  smart_str(data_dict[key])
+                    identity_user_dict[key] =  data_dict[key]
                 if key in key_profile_list:
-                    identity_profile_dict[key] =  smart_str(data_dict[key])
+                    identity_profile_dict[key] =  data_dict[key]
         
         user_object_dict['ROW_NUM'] = r + 2  
             
@@ -239,7 +239,6 @@ def user_import_process(request, setting_dict, preview=True, id=''):
     if not preview:
         if finish < data_dict_list_len:
             # not finished yet, store some data in the session
-            #request.session[id]['next_starting_point'] = finish
             count_insert = request.session[id].get('count_insert',  0) + setting_dict['count_insert']
             count_update = request.session[id].get('count_update',  0) + setting_dict['count_update']
             
