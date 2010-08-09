@@ -96,7 +96,7 @@ class EventForm(TendenciBaseForm):
         )
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        super(EventForm, self).__init__(self.user, *args, **kwargs)
+        super(self.__class__, self).__init__(self.user, *args, **kwargs)
 
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
@@ -127,7 +127,7 @@ class Reg8nForm(forms.Form):
     """    
 
     def __init__(self, event_id=None, *args, **kwargs):
-        super(Reg8nForm, self).__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
 
         event = Event.objects.get(pk=event_id)
         payment_method = event.registrationconfiguration.payment_method.all()

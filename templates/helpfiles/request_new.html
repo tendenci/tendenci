@@ -1,0 +1,14 @@
+{% extends "helpfiles/base.html" %}
+
+{% block content %}
+
+<h3>Request Help File</h3>
+
+Please provide as much detail as possible.<br>
+If you would like to, also include your name and email:
+<form method="POST">
+<table>{{ form }}</table>
+<input type="submit" value="Request Help File">
+</form>
+
+{% endblock %}

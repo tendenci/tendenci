@@ -14,7 +14,7 @@ from profiles.managers import ProfileManager
 class Profile(TendenciBaseModel):
     # relations
     user = models.ForeignKey(User, unique=True, related_name="profile", verbose_name=_('user'))
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
+    guid = models.CharField(max_length=40)
     entity = models.ForeignKey(Entity, blank=True, null=True)
     pl_id = models.IntegerField(default=1)
     member_number = models.CharField(_('member number'), max_length=50, blank=True)
@@ -88,6 +88,12 @@ class Profile(TendenciBaseModel):
     
     class Meta:
         permissions = (("view_profile","Can view profile"),)
+        
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save(*args, **kwargs)
         
     def is_admin(self):
         if hasattr(self.user, 'is_admin'):

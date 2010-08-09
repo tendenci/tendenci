@@ -1,0 +1,33 @@
+div.left-col {
+	float: left;
+	width: 400px;
+}
+
+div.right-col {
+	float: left;
+	width: 200px;
+}
+
+.topics .col {
+	width: 180px;
+	float: left;
+}
+
+div.question {
+	border: 1px solid #dddddd;
+	margin-bottom: 1px;
+	padding: 2px;
+}
+
+div.question a {
+	font-weight: bold;
+}
+
+div.question span {
+	display: block;
+	padding-left: 10px;
+}
+
+div.question span a {
+	font-weight: normal !important;
+}
