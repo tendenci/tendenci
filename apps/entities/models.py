@@ -6,7 +6,7 @@ from perms.models import TendenciBaseModel
 from entities.managers import EntityManager
 
 class Entity(TendenciBaseModel):
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
+    guid = models.CharField(max_length=40)
     entity_name = models.CharField(_('Name'), max_length=200, blank=True)
     entity_type = models.CharField(_('Type'), max_length=200, blank=True)
     entity_parent_id = models.IntegerField(_('Parent ID'), default=0)
@@ -29,5 +29,11 @@ class Entity(TendenciBaseModel):
         
     def __unicode__(self):
         return self.entity_name
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save(*args, **kwargs)
 
 

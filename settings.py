@@ -33,7 +33,9 @@ DATABASES = {
 
 # email
 EMAIL_HOST = '4.78.3.131'
+#EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
+#EMAIL_PORT = 1025
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
@@ -192,6 +194,7 @@ INSTALLED_APPS = (
     'form_builder',
     'newsletters',
     'meta',
+    'helpfiles',
     
     # celery task system, must stay at the bottom
     # of installed apps

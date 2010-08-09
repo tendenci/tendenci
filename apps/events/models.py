@@ -132,7 +132,7 @@ class RegistrationConfiguration(models.Model):
     enabled = models.BooleanField()
 
     def __init__(self, *args, **kwargs):
-        super(RegistrationConfiguration, self).__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
 
         if hasattr(self,'event'):
         # registration_settings might not be attached to an event yet
