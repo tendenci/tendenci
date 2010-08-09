@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from events.models import Event, Type, Place, Registration, RegistrationConfiguration, \
     Payment, PaymentMethod, Sponsor, Discount, Organizer, Speaker
+from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -12,7 +13,7 @@ from django.contrib.formtools.wizard import FormWizard
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-class EventForm(forms.ModelForm):
+class EventForm(TendenciBaseForm):
 
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
@@ -47,6 +48,9 @@ class EventForm(forms.ModelForm):
     coord5r_email = forms.CharField(label=_('Coordinator Email'), max_length=50, required=False)
     coord5r_phone = forms.CharField(label=_('Coordinator Phone'), max_length=50, required=False)
     coord5r_fax = forms.CharField(label=_('Coordinator Fax'), max_length=50, required=False)
+
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
     class Meta:
         model = Event
@@ -83,21 +87,20 @@ class EventForm(forms.ModelForm):
 #            'private',
 #            'password',
 
-#            'allow_anonymous_view',
-#            'allow_user_view',
-#            'allow_user_edit',
-#
-#            'status',
-#            'status_detail',
-        )
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_user_edit',
 
-#    def __init__(self, user=None, *args, **kwargs):
-#        self.user = user 
-#        super(EventForm, self).__init__(user, *args, **kwargs)
-#        if self.instance.pk:
-#            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-#        else:
-#            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+            'status',
+            'status_detail',
+        )
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(EventForm, self).__init__(self.user, *args, **kwargs)
+
+        if not is_admin(self.user):
+            if 'status' in self.fields: self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
 class Reg8nEditForm(forms.ModelForm):
 

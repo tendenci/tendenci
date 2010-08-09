@@ -1,23 +1,5 @@
 [
     {
-        "pk": 2, 
-        "model": "events.registrationconfiguration", 
-        "fields": {
-            "late_price": "10.00", 
-            "early_price": "10.00", 
-            "regular_price": "10.00", 
-            "payment_method": [
-                3
-            ], 
-            "enabled": false, 
-            "limit": 100, 
-            "early_dt": "2010-08-06 11:35:13", 
-            "late_dt": "2010-08-06 11:35:13", 
-            "regular_dt": "2010-08-06 11:35:13", 
-            "event": 9
-        }
-    }, 
-    {
         "pk": 3, 
         "model": "events.paymentmethod", 
         "fields": {
@@ -36,38 +18,6 @@
         "model": "events.paymentmethod", 
         "fields": {
             "label": "Credit Card"
-        }
-    }, 
-    {
-        "pk": 9, 
-        "model": "events.event", 
-        "fields": {
-            "password": "", 
-            "guid": "ea5ab7bc-a173-11df-a6cf-001ec980c7cd", 
-            "description": "<ol><li>Do one thing</li><li>Do another thing</li><li>Do that last thing</li></ol>", 
-            "title": "Monday Morning Meeting", 
-            "end_dt": "2010-08-30 11:00:00", 
-            "private": false, 
-            "entity": null, 
-            "timezone": "US/Central", 
-            "start_dt": "2010-08-30 10:00:00", 
-            "type": null
-        }
-    }, 
-    {
-        "pk": 13, 
-        "model": "events.event", 
-        "fields": {
-            "password": "", 
-            "guid": "2e254402-a17f-11df-a98c-001ec980c7cd", 
-            "description": "<ol><li>Drop it like it's hot</li><li>Make it rain</li></ol>", 
-            "title": "Rave", 
-            "end_dt": "2010-08-30 23:30:00", 
-            "private": false, 
-            "entity": null, 
-            "timezone": "US/Central", 
-            "start_dt": "2010-08-30 17:30:00", 
-            "type": null
         }
     }
 ]
