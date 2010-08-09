@@ -1,30 +1,45 @@
-import uuid
-
 from django.db import models
 
-from perms.models import TendenciBaseModel 
-from entities.models import Entity
+class Entity(models.Model):
+    """just entity"""
+    pass
 
-class HelpFiles(TendenciBaseModel):
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
-    entity = models.ForeignKey(Entity, null=True)
-    question = models.TextField(blank=True)
-    answer = models.TextField(blank=True)
-    view_totals = models.IntegerField(default=0)
-    faq = models.BooleanField(null=True, blank=True)
-    featured = models.BooleanField(null=True, blank=True)
+class Topic(models.Model):
+    """Help topic"""
+    title = models.CharField(max_length=255)
+    content = models.TextField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['title']
+    
+    def __unicode__(self):
+        return self.title
 
-    # TODO: figure out nicer way to do this
-    basic = models.BooleanField(null=True, blank=True)
-    intermediate = models.BooleanField(null=True, blank=True)
-    advanced = models.BooleanField(null=True, blank=True)
-    expert = models.BooleanField(null=True, blank=True)
+class HelpFile(models.Model):
+    """Question/Answer infromation"""
+    LEVELS = ('basic', 'intermediate', 'advanced', 'expert')
+    LEVEL_CHOICES = [(i,i) for i in LEVELS]
+    
+    topics = models.ManyToManyField(Topic)
+    entity = models.ForeignKey(Entity, null=True, blank=True)
+    question = models.TextField()
+    answer = models.TextField()
+    level = models.CharField(choices=LEVEL_CHOICES, max_length=100)
+    is_faq = models.BooleanField()
+    is_featured = models.BooleanField()
+    is_video = models.BooleanField()
+    is_syndicated = models.BooleanField()
+    view_totals = models.PositiveIntegerField(default=0)
+    
+    def __unicode__(self):
+        return self.question
+    
+    def level_is(self):
+        "Template helper: {% if file.level_is.basic %}..."
+        return dict([i, self.level==i] for i in HelpFile.LEVELS)
 
-    video_included = models.BooleanField(null=True, blank=True)
-    syndicate = models.BooleanField(null=True, blank=True)
-    topics = models.ManyToManyField('HelpTopics')
-
-class HelpTopics(TendenciBaseModel):
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
-    title = models.CharField(max_length=50, blank=True)
-    content = models.TextField(blank=True)
+class Request(models.Model):
+    question = models.TextField()
+    
+    def __unicode__(self):
+        return self.question
