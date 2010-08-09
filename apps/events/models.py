@@ -240,7 +240,7 @@ class Speaker(models.Model):
     event = models.ManyToManyField('Event')
     user = models.OneToOneField(User)
 
-class Event(models.Model):
+class Event(TendenciBaseModel):
     """
     Calendar Event
     """
