@@ -60,6 +60,7 @@ urlpatterns = patterns('',
     (r'^jobs/', include('jobs.urls')),
     (r'^contact/', include('form_builder.urls')),
     (r'^sitemap.xml', include('sitemaps.urls')),
+    (r'^helpfiles/', include('helpfiles.urls')),
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
