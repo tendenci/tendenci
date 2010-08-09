@@ -13,7 +13,7 @@ from entities.models import Entity
 from pages.module_meta import PageMeta
 
 class Page(TendenciBaseModel):
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
+    guid = models.CharField(max_length=40)
     title = models.CharField(max_length=500, blank=True)
     slug = SlugField(_('URL Path'), unique=True)  
     content = tinymce_models.HTMLField()
@@ -42,6 +42,12 @@ class Page(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("page", [self.slug])
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.title

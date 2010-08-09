@@ -14,7 +14,7 @@ from news.module_meta import NewsMeta
 from entities.models import Entity
 
 class News(TendenciBaseModel):
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
+    guid = models.CharField(max_length=40)
     timezone = TimeZoneField(_('Time Zone'))
     slug = SlugField(_('URL Path'), unique=True)
     headline = models.CharField(max_length=200, blank=True)
@@ -56,6 +56,12 @@ class News(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("news.view", [self.slug])
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.headline
