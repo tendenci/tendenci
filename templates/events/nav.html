@@ -46,6 +46,7 @@
 
 			{% endif %}
 			<li><a href="{% url event.search %}">Search</a></li>
+			<li><a href="{% url event.month today.year today.month %}">Month</a></li>
 			{% if can_add_event %}
 			<li><a href="{% url event.add %}">Add</a></li>
 			{% endif %}

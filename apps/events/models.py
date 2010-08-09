@@ -5,9 +5,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from timezones.fields import TimeZoneField
 from entities.models import Entity
-from events.managers import EventManager
+from events.managers import EventManager, RegistrantManager
 from perms.models import TendenciBaseModel 
 from django import forms
+
 
 class Type(models.Model):
     """
@@ -54,7 +55,8 @@ class Registrant(models.Model):
     The names do not change nor does their information
     This is the information that was used while registering
     """
-    event = models.ManyToManyField('Event', editable=False)
+    registration = models.ForeignKey('Registration', null=True)
+    user = models.ForeignKey(User)
 
     name = models.CharField(max_length=100)
     mail_name = models.CharField(max_length=100)
@@ -70,7 +72,7 @@ class Registrant(models.Model):
 
     company_name = models.CharField(max_length=100)
     
-    
+    objects = RegistrantManager()
 
 #class Registration(models.Model):
 #    """
@@ -87,41 +89,24 @@ class Registrant(models.Model):
 
 class Registration(models.Model):
     guid = models.TextField(max_length=40, editable=False, default=uuid.uuid1)
-
     event = models.ForeignKey('Event') # dynamic (should be static)
 
-    invoiceid = models.IntegerField(null=True, blank=True) # proof of transaction
-    subsidy = models.BooleanField(null=True, blank=True)
+#    invoiceid = models.IntegerField(null=True, blank=True) # proof of transaction
+#    discounts = models.ForeignKey('DiscountRedeemed')
 
-    discountcode = models.CharField(max_length=50)
-    discountamount = models.DecimalField(null=True, max_digits=21, decimal_places=4, blank=True)
+    reminder = models.BooleanField(default=False)
+    note = models.TextField(blank=True)
 
-    paid = models.IntegerField()
-    paidcheck = models.IntegerField()
-    secured = models.IntegerField()
-    offline = models.IntegerField()
+    # payment methods are soft-deleted
+    # this means they can always be referenced
+    payment_method = models.ForeignKey('PaymentMethod')
+    amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
 
-#    creator = models.ForeignKey('User')
-#    owner = models.ForeignKey('User')
-#    create_dt = models.DateField()
-#    update_dt = models.DateField()
-#    status = models.IntegerField()
-
-    submitdate = models.DateTimeField()
-
-    owneruserid = models.IntegerField()
-    ownerusername = models.TextField()
-
-    exported = models.BooleanField(null=True, blank=True)
-
-    registrationtable = models.TextField(blank=True)
-    registrationnotes = models.TextField(blank=True)
-    registrationteam = models.TextField(blank=True)
-
-    reminder = models.BooleanField(null=True, blank=True)
-
-    pricechoice = models.CharField(max_length=75, blank=True)
-
+    creator = models.ForeignKey(User, related_name='created_registrations')
+    owner = models.ForeignKey(User, related_name='owned_registrations')
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+#    status = models.BooleanField()
 
 # TODO: use shorter name
 class RegistrationConfiguration(models.Model):
@@ -132,7 +117,7 @@ class RegistrationConfiguration(models.Model):
     event = models.OneToOneField('Event', editable=False)
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
-    payment_methods = models.ManyToManyField('PaymentMethod')
+    payment_method = models.ManyToManyField('PaymentMethod')
     
     early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2)
     regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2)
@@ -145,6 +130,36 @@ class RegistrationConfiguration(models.Model):
     limit = models.IntegerField()
 
     enabled = models.BooleanField()
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrationConfiguration, self).__init__(*args, **kwargs)
+
+        if hasattr(self,'event'):
+        # registration_settings might not be attached to an event yet
+            self.PERIODS = {
+                'early': (self.early_dt, self.regular_dt),
+                'regular': (self.regular_dt, self.late_dt),
+                'late': (self.late_dt, self.event.start_dt),
+            }
+        else:
+            self.PERIODS = None
+
+    def price(self):
+
+        price = 0.00
+        for period in self.PERIODS:
+            if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
+                price = self.price_from_period(period)
+
+        return price
+
+    def price_from_period(self, period):
+
+        if period in self.PERIODS:
+            return getattr(self, '%s_price' % period)
+        else: return None
+    
+
 
 class Payment(models.Model):
     """
@@ -160,8 +175,9 @@ class PaymentMethod(models.Model):
     This will hold available payment methods
     Default payment methods are 'Credit Card, Cash and Check.'
     Pre-populated via fixtures
+    Soft Deletes required; For historical purposes.
     """
-    label = models.CharField(max_length=50)
+    label = models.CharField(max_length=50, blank=False)
 
     def __unicode__(self):
         return self.label
@@ -251,5 +267,3 @@ class Event(models.Model):
 
     def __unicode__(self):
         return self.title
-
-

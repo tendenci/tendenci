@@ -48,14 +48,12 @@ class EventForm(forms.ModelForm):
     coord5r_phone = forms.CharField(label=_('Coordinator Phone'), max_length=50, required=False)
     coord5r_fax = forms.CharField(label=_('Coordinator Fax'), max_length=50, required=False)
 
-    price = forms.DecimalField(label=_('Price'), max_digits=21, decimal_places=2, required=False)
-
     class Meta:
         model = Event
         fields = (
             'title',
             'description',
-            'type',
+#            'type',
             'start_dt',
             'end_dt',
             'timezone',
@@ -82,10 +80,8 @@ class EventForm(forms.ModelForm):
             'coord5r_phone',
             'coord5r_fax',
 
-            'price',
-
-            'private',
-            'password',
+#            'private',
+#            'password',
 
 #            'allow_anonymous_view',
 #            'allow_user_view',
@@ -105,14 +101,12 @@ class EventForm(forms.ModelForm):
 
 class Reg8nEditForm(forms.ModelForm):
 
-    payment_methods_available = PaymentMethod.objects.all()
-    payment_methods = forms.ModelMultipleChoiceField(
-        queryset=payment_methods_available,
+    payment_method = forms.ModelMultipleChoiceField(
+        queryset=PaymentMethod.objects.all(),
         widget=forms.CheckboxSelectMultiple(),
         initial=[1,2,3]) # first three items (inserted via fixture)
 
 #    payment_periods = forms.CharField(widget=forms.CheckboxSelectMultiple())
-
 #    early_reg8n_price = forms.DecimalField(
 #        label=_('Early Registration Price'), max_digits=21, decimal_places=2, required=False, initial=0)
 #    reg8n_price = forms.DecimalField(
@@ -127,18 +121,19 @@ class Reg8nForm(forms.Form):
     """
     Registration form.  People who want to attend the event
     register using this form.
-    """
+    """    
 
     def __init__(self, event_id=None, *args, **kwargs):
         super(Reg8nForm, self).__init__(*args, **kwargs)
 
         event = Event.objects.get(pk=event_id)
-        payment_methods = event.registrationconfiguration.payment_methods.all()
+        payment_method = event.registrationconfiguration.payment_method.all()
 
-        # TODO: find nicer way of removing 'blank option'
-        # instead of using ModelMultipleChoiceField()
-        self.fields['payment_methods'] = forms.ModelChoiceField(
-            queryset=payment_methods, widget=forms.RadioSelect())
+        self.fields['payment_method'] = forms.ModelChoiceField(
+            queryset=payment_method, widget=forms.RadioSelect(), initial=1)
+
+        self.fields['price'] = forms.DecimalField(
+            widget=forms.HiddenInput(), initial=event.registrationconfiguration.price())
 
 
 

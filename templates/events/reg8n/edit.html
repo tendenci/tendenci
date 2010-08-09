@@ -10,9 +10,9 @@
 
 {% block body %}
 <div class="t">
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} Registration Form Edit</h1>
-    
     {% event_nav user %}
+
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} Registration Form Edit</h1>
 
     <div class="event-wrap">
 		<div class="options">
@@ -24,7 +24,7 @@
     	<div class="forms">
             {{ form|styled_form }}
 
-			{{ form.payment_periods }}
+			{# form.payment_periods #}
 
 			{# for payment_period in form.payment_periods #}
 				<!-- payment_period.label -->

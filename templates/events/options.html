@@ -23,9 +23,8 @@
 				<li><a href="{% url event.edit.speaker opt_object.pk %}">Edit Speakers</a></li>
 				<li><a href="{% url event.edit.organizer opt_object.pk %}">Edit Organizers</a></li>-->
 				<li><a href="{% url event.edit.registration opt_object.pk %}">Edit Registration</a></li>
-
+				<li><a href="{% url event.registrant.search opt_object.pk %}">View Registrants</a></li>
 				<li class="divider"></li>
-
 				<li><a href="{% url event.edit.meta opt_object.pk %}">Edit Meta</a></li>
 				
 				<li>
@@ -37,13 +36,14 @@
 				</li>
 
 				<li class="divider"></li>
-				
+
 				{% if can_delete %}
-					<li>
-						<a class="option-link delete" href="{% url event.delete opt_object.pk %}">Delete</a>
-					</li>				
+				<li>
+					<a class="option-link delete" href="{% url event.delete opt_object.pk %}">Delete</a>
+				</li>
 				{% endif %}
-			 </ul>
+
+			</ul>
 	        </div>
 	  </div>
   {% endif %}
