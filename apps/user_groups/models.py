@@ -12,7 +12,7 @@ from user_groups.managers import GroupManager
 class Group(TendenciBaseModel):
     name = models.CharField(_('Group Name'), max_length=255, unique=True)
     slug = SlugField(_('URL Path'), unique=True) 
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
+    guid = models.CharField(max_length=40)
     label = models.CharField(_('Group Label'), max_length=255, blank=True)
     entity = models.ForeignKey(Entity, null=True, blank=True)
     type = models.CharField(max_length=75, blank=True, choices=(
@@ -25,7 +25,7 @@ class Group(TendenciBaseModel):
     description = models.TextField(blank=True)
     auto_respond = models.BooleanField(_('Auto Responder'), default=0)
     auto_respond_template =  models.CharField(_('Auto Responder Template'), 
-        help_text=_("Autor Responder Template URL"), max_length=100, blank=True)
+        help_text=_("Auto Responder Template URL"), max_length=100, blank=True)
     auto_respond_priority = models.FloatField(_('Priority'), blank=True, default=0)
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
@@ -47,6 +47,7 @@ class Group(TendenciBaseModel):
         if not self.id:
             name = self.name
             self.slug = slugify(name)
+            self.guid = uuid.uuid1()
             
         super(self.__class__, self).save(force_insert, force_update)
 

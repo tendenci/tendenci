@@ -19,7 +19,7 @@ class PhotoSet(TendenciBaseModel):
         (1, _('Private')),
         (2, _('Public')),
     )
-    guid = models.CharField(max_length=40, default=uuid.uuid1) 
+    guid = models.CharField(max_length=40) 
     name = models.CharField(_('name'), max_length=200)
     description = models.TextField(_('description'), blank=True)
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
@@ -30,6 +30,12 @@ class PhotoSet(TendenciBaseModel):
         verbose_name = _('photo set')
         verbose_name_plural = _('photo sets')
         permissions = (("view_photoset","Can view photoset"),)
+        
+    def save(self):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save()
     
     def get_cover_photo(self, *args, **kwargs):
         """ get latest thumbnail url """
@@ -64,7 +70,7 @@ class Image(ImageModel, TendenciBaseModel):
         (1, _('Safe')),
         (2, _('Not Safe')),
     )
-    guid = models.CharField(max_length=40, default=uuid.uuid1, editable=False) 
+    guid = models.CharField(max_length=40, editable=False) 
     title = models.CharField(_('title'), max_length=200)
     title_slug = models.SlugField(_('slug'))
     caption = models.TextField(_('caption'), blank=True)
@@ -79,6 +85,8 @@ class Image(ImageModel, TendenciBaseModel):
         permissions = (("view_image","Can view image"),)
 
     def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
         super(Image, self).save(*args, **kwargs)       
         # clear the cache
 #        caching.instance_cache_clear(self, self.pk)
