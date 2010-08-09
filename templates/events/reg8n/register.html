@@ -27,20 +27,19 @@
 	<div class="form-wrap">
     	<form action="{% url event.register event.pk %}" method="post">
     	<div class="forms">
-			<div class="forms">
-				<div class="form-field">
-					<div class="error">
-						{{ form.payment_methods.errors }}
-					</div>
-					<div class="label required">
-						Payment Methods Available
-					</div>
-					<div class="field">
-						{{ form.payment_methods }}
-					</div>
+			{{ form.price }}
+			<div class="form-field">
+				<div class="error">
+					{{ form.payment_methods.errors }}
 				</div>
-        		<input type="submit" value="Register for this Event" />
+				<div class="label required">
+					Payment Methods Available
+				</div>
+				<div class="field">
+					{{ form.payment_method }}
+				</div>
 			</div>
+       		<input type="submit" value="Register for this Event" />
 		</div>
         </form>
 	</div>
