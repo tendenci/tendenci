@@ -193,6 +193,7 @@ INSTALLED_APPS = (
     'form_builder',
     'newsletters',
     'meta',
+    'helpfiles',
     
     # celery task system, must stay at the bottom
     # of installed apps
