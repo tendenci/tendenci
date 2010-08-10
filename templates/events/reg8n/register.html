@@ -9,6 +9,16 @@
 {% endblock %}
 
 {% block body %}
+
+<style type="text/css">
+	.price {
+		font-size: 1.6em;
+		margin-bottom: 10px;
+		background-color: #FFC;
+		padding: 10px;
+	}
+</style>
+
 <div class="t">    
     {% event_nav user %}
     <h1>Register for Event</h1>
@@ -23,6 +33,8 @@
 			<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
 		{% endif %}
 	{% endfor %}
+
+	<div class="price">Price ${{ event.registrationconfiguration.price|floatformat:2 }}</div>
 
 	<div class="form-wrap">
     	<form action="{% url event.register event.pk %}" method="post">
