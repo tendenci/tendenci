@@ -28,7 +28,7 @@ def index(request, slug=None, template_name="directories/view.html"):
     
     if request.user.has_perm('directories.view_directory', directory):
         log_defaults = {
-            'event_id' : 435000,
+            'event_id' : 445000,
             'event_data': '%s (%d) viewed by %s' % (directory._meta.object_name, directory.pk, request.user),
             'description': '%s viewed' % directory._meta.object_name,
             'user': request.user,
@@ -46,7 +46,7 @@ def search(request, template_name="directories/search.html"):
     directories = Directory.objects.search(query, user=request.user)
 
     log_defaults = {
-        'event_id' : 434000,
+        'event_id' : 444000,
         'event_data': '%s searched by %s' % ('Directory', request.user),
         'description': '%s searched' % 'Directory',
         'user': request.user,
@@ -62,7 +62,7 @@ def print_view(request, slug, template_name="directories/print-view.html"):
     directory = get_object_or_404(Directory, slug=slug)    
 
     log_defaults = {
-        'event_id' : 435001,
+        'event_id' : 445001,
         'event_data': '%s (%d) viewed by %s' % (directory._meta.object_name, directory.pk, request.user),
         'description': '%s viewed - print view' % directory._meta.object_name,
         'user': request.user,
@@ -101,7 +101,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                 directory.save()
 
                 log_defaults = {
-                    'event_id' : 432000,
+                    'event_id' : 442000,
                     'event_data': '%s (%d) edited by %s' % (directory._meta.object_name, directory.pk, request.user),
                     'description': '%s edited' % directory._meta.object_name,
                     'user': request.user,
@@ -186,7 +186,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.save() # update search-index w/ permissions
  
                 log_defaults = {
-                    'event_id' : 431000,
+                    'event_id' : 441000,
                     'event_data': '%s (%d) added by %s' % (directory._meta.object_name, directory.pk, request.user),
                     'description': '%s added' % directory._meta.object_name,
                     'user': request.user,
@@ -225,7 +225,7 @@ def delete(request, id, template_name="directories/delete.html"):
     if request.user.has_perm('directories.delete_directory'):   
         if request.method == "POST":
             log_defaults = {
-                'event_id' : 433000,
+                'event_id' : 443000,
                 'event_data': '%s (%d) deleted by %s' % (directory._meta.object_name, directory.pk, request.user),
                 'description': '%s deleted' % directory._meta.object_name,
                 'user': request.user,
