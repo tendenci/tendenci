@@ -11,6 +11,9 @@
 .clear-left{
 	clear: left;
 }
+.clear-both{
+	clear: both;
+	}
 
 label {
 	margin-bottom: 1px;
@@ -55,17 +58,18 @@ div.user-settings label {
 /* =download-csv
 --------------------------------------- */
 div.download-csv {
-	float: left; width: 100%;
-	margin: 5px auto 15px;
+	margin-bottom: 2em;
 }
 div.download-csv img {
 	float: left;
 	margin-right: 10px;
 	border: 0;
 }
+div.download-csv .item-right {
+	float: left;
+}
 div.download-csv p {
-	margin: 0;
-	margin-left: 10px;
+	margin:0;
 }
 div.download-csv a {
 	font-size: 1.5em;
@@ -236,4 +240,13 @@ div.result-error em {
 }
 .body-copy-yellow{
 	background-color: yellow;
+}
+.errorlist li{
+	list-style: none;
+}
+ul.errorlist{
+	border: 1px solid #FFF79F;
+	background-color: #FFEFEF;
+	color: red;
+	padding: 1em;
 }
