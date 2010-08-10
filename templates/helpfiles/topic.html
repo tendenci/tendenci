@@ -1,0 +1,11 @@
+{% extends "helpfiles/base.html" %}
+
+{% block content %}
+
+	<h2>{{ topic }}</h2>
+	{% for hfile in topic.helpfile_set.all %}
+		<a href="{% url helpfiles-details hfile.pk %}">{{ hfile }}</a>
+		<br>
+	{% endfor %}
+
+{% endblock %}
