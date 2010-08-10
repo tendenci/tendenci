@@ -1,0 +1,9 @@
+{{ object.name }}
+{{ object.mail_name }}
+{{ object.address }}
+{{ object.city }}
+{{ object.zip }}
+{{ object.country }}
+{{ object.phone }}
+{{ object.email }}
+{{ object.company_name }}
