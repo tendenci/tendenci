@@ -12,6 +12,25 @@
 {% endblock %}
 
 {% block body %}
+<style type="text/css">
+	.t .event-wrap-search .attend-wrap {
+		border-top: 1px solid #DDD;
+	}
+	.t .event-wrap-search .attend-wrap .attend {
+		border: 1px solid silver;
+		float: right;
+		margin-top: 10px;
+		padding: 5px;
+		background-color: #F7F7F7;
+	}
+	.t .event-wrap-search .attend-wrap .attend a {
+		text-decoration: none;
+	}
+	.t .event-wrap-search .content {
+		margin-bottom: 10px;
+	}
+</style>
+
 <div class="t">
 {% event_nav request.user %}
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL 'Event' %} Search</h1>  
@@ -32,9 +51,13 @@
 			</div>
             <h2><a href="{{ event.get_absolute_url }}">{% firstof event.title "Untitled" %}</a></h2>
             <div class="content">{{ event.description|safe|striptags|truncatewords:20 }}</div>
-			<div class="meta">
-            	<div class="submitted">Created on {{ event.create_dt|date:"D d M Y P" }} by {{ event.creator }}</div>
-            </div>
+
+			{% if event.registrationconfiguration and event.registrationconfiguration.enabled %}
+			<div class="attend-wrap">
+				<div class="attend"><a href="{% url event.register event.pk %}">Attend this event</a></div>
+				<div style="clear:both;"></div>
+			</div>
+            {% endif %}
 
             <!-- delete-event form -->
             <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">
@@ -58,7 +81,7 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_object = confirm("Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?");	// confirm
-				if(delete_object) $('form[name="event-delete"]').submit()
+				if(delete_object) $(this).parents('.event-wrap-search').find('form[name="event-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});

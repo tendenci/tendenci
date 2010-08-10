@@ -169,6 +169,7 @@ INSTALLED_APPS = (
     'news',
     'stories',
     'pages',
+    'events',
     'photos',
     'entities',
     'locations',
@@ -193,6 +194,7 @@ INSTALLED_APPS = (
     'form_builder',
     'newsletters',
     'meta',
+    'helpfiles',
     
     # celery task system, must stay at the bottom
     # of installed apps
