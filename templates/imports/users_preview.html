@@ -60,7 +60,7 @@
 
 </div> <!-- import settings -->
 
-	<form class="import" method="post" action="{% url import.user_upload_process %}">
+	<form class="import" method="post" action="{% url import.user_upload_process id %}">
 
 	<div class="results">
 	{% for u in users_list %}
