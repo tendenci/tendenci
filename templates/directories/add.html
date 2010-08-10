@@ -7,7 +7,7 @@
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/directorys.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
 <script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
 {% endblock %}
 
@@ -200,22 +200,6 @@
 				</div>
 
 				<div class="item-checkbox">
-					<div class="errs">{{ form.featured.errors }}</div>
-					<div class="field">{{ form.featured }}</div>
-					<div class="label">{{ form.featured.label_tag }}</div>
-					<div class="help">{{ form.featured.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-	
-				<div class="item-checkbox">
-					<div class="errs">{{ form.not_official_content.errors }}</div>
-					<div class="field">{{ form.not_official_content }}</div>
-					<div class="label">{{ form.not_official_content.label_tag }}</div>
-					<div class="help">{{ form.not_official_content.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-
-				<div class="item-checkbox">
 					<div class="errs">{{ form.status.errors }}</div>
 					<div class="field">{{ form.status }}</div>
 					<div class="label">{{ form.status.label_tag }}</div>
@@ -237,23 +221,30 @@
 		</div>
         </form>
     </div>
-
 </div>
 {% endblock %}
 
 {% block extra_body %}
-	<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
 	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
-	<script type="text/javascript">
-		var slugit = new Slugify({
-			input_element : 'input#id_headline',
-			slug_element : 'input#id_slug',
-			submit_element : 'input[type="submit"]',
-			help: false,
-			limit : 150
+    <script type="text/javascript">
+		$(document).ready(function(){
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_object = confirm("Permenantly delete {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}?");	// confirm
+				if(delete_object) $('form[name="directory-delete"]').submit()
+				return false;	// cancel
+			});
 		});
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+	var iconrow = new dropdown({
+		container:	'more-options-wrap',
+		trigger:	'more-options-trigger',
+		target:		'more-options-target'
+	});
 	</script>
 	<script type="text/javascript">
 		$(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
