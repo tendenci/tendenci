@@ -40,7 +40,6 @@
     	<form action="{% url directory.edit directory.pk %}" method="post">
     	<div class="forms">
 
-
 			<div class="item">
 				<div class="errs">{{ form.headline.errors }}</div>
 				<div class="label">{{ form.headline.label_tag }}</div>
@@ -203,22 +202,6 @@
 
 				<div class="item-text">
 					Administrators Only
-				</div>
-
-				<div class="item-checkbox">
-					<div class="errs">{{ form.featured.errors }}</div>
-					<div class="field">{{ form.featured }}</div>
-					<div class="label">{{ form.featured.label_tag }}</div>
-					<div class="help">{{ form.featured.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-	
-				<div class="item-checkbox">
-					<div class="errs">{{ form.not_official_content.errors }}</div>
-					<div class="field">{{ form.not_official_content }}</div>
-					<div class="label">{{ form.not_official_content.label_tag }}</div>
-					<div class="help">{{ form.not_official_content.help_text }}</div>
-					<div class="clear"></div>
 				</div>
 
 				<div class="item-checkbox">
