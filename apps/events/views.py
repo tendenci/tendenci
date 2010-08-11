@@ -302,16 +302,19 @@ def delete(request, id, template_name="events/delete.html"):
 @login_required
 def register(request, event_id=0, form_class=Reg8nForm, template_name="events/reg8n/register.html"):
         event = get_object_or_404(Event, pk=event_id)
-        
+
+        # check for registration-configuration
         if not RegistrationConfiguration.objects.filter(event=event).exists():
             raise Http404
 
+        
         if request.method == "POST":
             form = form_class(event_id, request.POST)
             if form.is_valid():
 
+                # get user information
                 user_account = request.user
-                user_profile = request.user.get_profile()
+                user_profile = user_account.get_profile()
 
                 try: # update registration
                     reg8n = Registration.objects.get(
@@ -344,8 +347,8 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 registrant.company_name = user_profile.company
                 registrant.save()
 
-                # save registration
-                reg8n.save()
+                reg8n.save() # save registration record
+                reg8n.save_invoice() # adds and updates invoice
 
                 response = HttpResponseRedirect(reverse('event.register.confirm', args=(event_id)))
             else:

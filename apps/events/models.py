@@ -3,11 +3,11 @@ from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+
 from timezones.fields import TimeZoneField
 from entities.models import Entity
 from events.managers import EventManager, RegistrantManager
 from perms.models import TendenciBaseModel 
-from django import forms
 
 
 class Type(models.Model):
@@ -88,6 +88,7 @@ class Registrant(models.Model):
 #    limit = models.IntegerField()
 
 class Registration(models.Model):
+
     guid = models.TextField(max_length=40, editable=False, default=uuid.uuid1)
     event = models.ForeignKey('Event') # dynamic (should be static)
 
@@ -107,6 +108,33 @@ class Registration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 #    status = models.BooleanField()
+
+    def save_invoice(self, *args, **kwargs):
+        from invoices.models import Invoice
+        status_detail = kwargs.get('status_detail', 'estimate')
+
+        try: # get invoice
+            invoice = Invoice.objects.get(
+                invoice_object_type = 'event_registration',
+                invoice_object_type_id = self.pk,
+            )
+        except: # else; create invoice
+            invoice = Invoice()
+            invoice.invoice_object_type = 'event_registration'
+            invoice.invoice_object_type_id = self.pk
+
+        # update invoice with details
+        invoice.estimate = True
+        invoice.status_detail = status_detail
+        invoice.subtotal = self.amount_paid
+        invoice.total = self.amount_paid
+        invoice.balance = self.amount_paid
+        invoice.due_date = datetime.now()
+        invoice.ship_date = datetime.now()
+        invoice.save(self.creator) # TODO: update to user once field exists 
+
+        return invoice
+            
 
 # TODO: use shorter name
 class RegistrationConfiguration(models.Model):
@@ -132,7 +160,7 @@ class RegistrationConfiguration(models.Model):
     enabled = models.BooleanField()
 
     def __init__(self, *args, **kwargs):
-        super(RegistrationConfiguration, self).__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
 
         if hasattr(self,'event'):
         # registration_settings might not be attached to an event yet
