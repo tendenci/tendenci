@@ -1,0 +1,62 @@
+{% extends "forms/base.html" %}
+{% load pagination_tags %}
+{% load forms_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }}Entries{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms-builder.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ {% forms_nav request.user %}
+    <h1>{% firstof MODULE_FORMS_LABEL 'Form' %} Entries</h1>
+    <h2>{{ form.title }}</h2>
+ 	<p><a href="{% url form_entries_export form.pk %}">Export All Entries</a></p>
+    {% autopaginate entries 10 %}
+	
+	<div class="forms-builder-wrap">
+    {% for entry in entries %}
+		<div class="form-builder-wrap">
+            <div class="quick-options">
+			{% forms_entry_options request.user entry %}
+		    </div>
+			<h3><a href="{{ entry.get_absolute_url }}">
+				{{ entry.entry_time }}
+				{% for field in entry.fields.all|slice:":3" %}
+					{% if field.field.field_type == 'FileField' %}
+						&nbsp;&ndash;&nbsp;{{ field.value|basename }}
+					{% else %}
+						&nbsp;&ndash;&nbsp;{{ field.value|truncatewords:"2" }}
+					{% endif %}
+				{% endfor %}
+				</a> 
+			</h3>
+            <!-- delete form -->
+            <form name="entry-delete" method="POST" action="{% url form_entry_delete entry.pk %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+		</div>
+	{% empty %}
+		<div>0 Entries Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_form = confirm('Permenantly delete entry?');	// confirm
+				if(delete_form) $(this).parents('.form-builder-wrap').find('form[name="entry-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+{% endblock %}
