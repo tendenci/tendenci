@@ -2,6 +2,7 @@ from django.template.context import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from models import Topic, HelpFile
 from forms import RequestForm
+from haystack.query import SearchQuerySet
 
 def render_to(template):
     def renderer(func):
@@ -40,6 +41,12 @@ def details(request, id):
     helpfile.view_totals += 1
     helpfile.save()
     return {'helpfile': helpfile}
+
+
+@render_to('helpfiles/search.html')
+def search(request):
+    sqs = SearchQuerySet().models(HelpFile).auto_query(request.GET.get('q', ''))
+    return {'results': sqs.load_all()}
 
 @render_to('helpfiles/request_new.html')
 def request_new(request):
