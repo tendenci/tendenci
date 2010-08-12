@@ -25,6 +25,7 @@
 {% has_perm user files.view_file as view_files %}
 {% has_perm user contributions.view_contribution as view_contributions %}
 {% has_perm user locations.view_location as view_locations %}
+{% has_perm user directories.view_directory as view_directories %}
 {% has_perm user settings.view_setting as view_settings %}
 {% has_perm user settings.view_contact as view_contacts %}
 {% has_perm user settings.view_invoice as view_invoices %}
@@ -52,12 +53,16 @@
     	<li class="articles"><a href="{% url article.search %}"><span>{% firstof MODULE_ARTICLES_LABEL "Articles" %}</span></a></li>
 		{% endif %}
 
-		{% if MODULE_JOBS_ENABLED %}
-    	<li class="jobs"><a href="{% url job.search %}"><span>{% firstof MODULE_JOBS_LABEL "Jobs" %}</span></a></li>
-		{% endif %}
-
 		{% if MODULE_NEWS_ENABLED %}
     	<li class="news"><a href="{% url news.search %}"><span>{% firstof MODULE_NEWS_LABEL "News" %}</span></a></li>
+		{% endif %}
+
+		{% if MODULE_DIRECTORIES_ENABLED %}
+    	<li class="directories"><a href="{% url directory.search %}"><span>{% firstof MODULE_DIRECTORIES_LABEL "Directories" %}</span></a></li>
+		{% endif %}
+		
+		{% if MODULE_JOBS_ENABLED %}
+    	<li class="jobs"><a href="{% url job.search %}"><span>{% firstof MODULE_JOBS_LABEL "Jobs" %}</span></a></li>
 		{% endif %}
 
         <li class="events"><a href="{% url event.search %}"><span>{% firstof MODULE_EVENTS_ENABLED "Events" %}</span></a></li>
