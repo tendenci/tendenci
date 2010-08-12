@@ -11,6 +11,9 @@
 .clear-left{
 	clear: left;
 }
+.clear-both{
+	clear: both;
+	}
 
 label {
 	margin-bottom: 1px;
@@ -55,8 +58,7 @@ div.user-settings label {
 /* =download-csv
 --------------------------------------- */
 div.download-csv {
-	float: left; width: 100%;
-	margin: 5px auto 15px;
+	margin-bottom: 2em;
 }
 div.download-csv img {
 	float: left;

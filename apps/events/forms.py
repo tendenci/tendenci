@@ -3,8 +3,9 @@ from datetime import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from events.models import Event, Type, Place, Registration, \
-    Payment, Sponsor, Discount, Organizer, Speaker
+from events.models import Event, Type, Place, Registration, RegistrationConfiguration, \
+    Payment, PaymentMethod, Sponsor, Discount, Organizer, Speaker
+from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -12,7 +13,7 @@ from django.contrib.formtools.wizard import FormWizard
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-class EventForm(forms.ModelForm):
+class EventForm(TendenciBaseForm):
 
     description = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
@@ -48,14 +49,15 @@ class EventForm(forms.ModelForm):
     coord5r_phone = forms.CharField(label=_('Coordinator Phone'), max_length=50, required=False)
     coord5r_fax = forms.CharField(label=_('Coordinator Fax'), max_length=50, required=False)
 
-    price = forms.DecimalField(label=_('Price'), max_digits=21, decimal_places=2, required=False)
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
     class Meta:
         model = Event
         fields = (
             'title',
             'description',
-            'type',
+#            'type',
             'start_dt',
             'end_dt',
             'timezone',
@@ -82,26 +84,61 @@ class EventForm(forms.ModelForm):
             'coord5r_phone',
             'coord5r_fax',
 
-            'price',
+#            'private',
+#            'password',
 
-            'private',
-            'password',
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_user_edit',
 
-#            'allow_anonymous_view',
-#            'allow_user_view',
-#            'allow_user_edit',
-#
-#            'status',
-#            'status_detail',
+            'status',
+            'status_detail',
         )
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super(self.__class__, self).__init__(self.user, *args, **kwargs)
 
-#    def __init__(self, user=None, *args, **kwargs):
-#        self.user = user 
-#        super(EventForm, self).__init__(user, *args, **kwargs)
-#        if self.instance.pk:
-#            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-#        else:
-#            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+        if not is_admin(self.user):
+            if 'status' in self.fields: self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
+
+class Reg8nEditForm(forms.ModelForm):
+
+    payment_method = forms.ModelMultipleChoiceField(
+        queryset=PaymentMethod.objects.all(),
+        widget=forms.CheckboxSelectMultiple(),
+        initial=[1,2,3]) # first three items (inserted via fixture)
+
+#    payment_periods = forms.CharField(widget=forms.CheckboxSelectMultiple())
+#    early_reg8n_price = forms.DecimalField(
+#        label=_('Early Registration Price'), max_digits=21, decimal_places=2, required=False, initial=0)
+#    reg8n_price = forms.DecimalField(
+#        label=_('Registration Price'), max_digits=21, decimal_places=2, required=False, initial=0)
+#    late_reg8n_price = forms.DecimalField(
+#        label=_('Late Registration Price'), max_digits=21, decimal_places=2, required=False, initial=0)
+
+    class Meta:
+        model = RegistrationConfiguration
+
+class Reg8nForm(forms.Form):
+    """
+    Registration form.  People who want to attend the event
+    register using this form.
+    """    
+
+    def __init__(self, event_id=None, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+        event = Event.objects.get(pk=event_id)
+        payment_method = event.registrationconfiguration.payment_method.all()
+
+        self.fields['payment_method'] = forms.ModelChoiceField(
+            queryset=payment_method, widget=forms.RadioSelect(), initial=1)
+
+        self.fields['price'] = forms.DecimalField(
+            widget=forms.HiddenInput(), initial=event.registrationconfiguration.price())
+
+
 
 class PlaceForm(forms.ModelForm):
     class Meta:
@@ -123,9 +160,9 @@ class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
 
-class Reg8nForm(forms.ModelForm):
-    class Meta:
-        model = Registration
+#class Reg8nForm(forms.ModelForm):
+#    class Meta:
+#        model = Registration
 
 class EventWizard(FormWizard):
 
