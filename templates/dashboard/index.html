@@ -32,6 +32,7 @@
 {% has_perm user settings.view_group as view_groups %}
 {% has_perm user eventlogs.view_eventlog as view_eventlogs %}
 {% has_perm user eventlogs.view_setting as view_settings %}
+{% has_perm user forms.view_form as view_forms %}
 {% is_developer user as is_developer %}
 {% is_admin user as admin %}
 
@@ -99,6 +100,10 @@
          <li class="invoices"><a href="{% url invoice.search %}"><span>{% firstof MODULE_INVOICES_LABEL  "Invoices" %}</span></a></li>
  		{% endif %}
 
+		{% if MODULE_FORMS_ENABLED %}
+         <li class="forms"><a href="{% url forms %}"><span>{% firstof MODULE_FORMS_LABEL  "Forms" %}</span></a></li>
+ 		{% endif %}
+ 		
 		{% if admin %}
 		<li class="contacts"><a href="{% url contact.search %}"><span>{% firstof MODULE_CONTACTS_LABEL "Contacts" %}</span></a></li>
      	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
