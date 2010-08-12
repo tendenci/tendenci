@@ -55,8 +55,29 @@ def tcurrency(mymoney):
     if mymoney >= 0:
         return currency_symbol + locale.format('%.2f', mymoney, True)
     else:
-        return currency_symbol + '(%s)' % (locale.format('%.2f', abs(mymoney), True)) 
-
+        return currency_symbol + '(%s)' % (locale.format('%.2f', abs(mymoney), True))
+    
+def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_time='%I:%M %p'):
+    """
+        takes datetime objects, start_dt, end_dt and format (for date and time) 
+        returns a formated datetime string with range.
+        ex:
+            dt_str = format_datetime_range(datetime(2010, 8, 12, 8, 30, 0), 
+                                           datetime(2010, 8, 12, 17, 30, 0))
+            # returns: Thursday, August 12, 2010 8:30 AM - 05:30 PM
+                                                                    - GJQ 8/12/2010
+    """
+    if isinstance(start_dt, datetime) and isinstance(end_dt, datetime):
+        if start_dt.date() == end_dt.date():
+            return '%s %s - %s' % (start_dt.strftime(format_date), 
+                                   start_dt.strftime(format_time), 
+                                   end_dt.strftime(format_time))
+        else:
+            return '%s %s - %s %s' % (start_dt.strftime(format_date), 
+                                      start_dt.strftime(format_time),
+                                      end_dt.strftime(format_date),
+                                      end_dt.strftime(format_time))
+                                       
 def generate_meta_keywords(value):
     """ 
         Take any string and removes the html and html entities

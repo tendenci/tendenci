@@ -12,7 +12,14 @@
 {% block body %}
 <div class="t">
  {% invoice_nav  invoice %}
-<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice View</h1>
+<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice View 
+{% if invoice.invoice_object_type == 'make_payment'  %}
+	for General Payment
+{% endif %}
+{% if invoice.invoice_object_type == 'event_registration'  %}
+	for Event Registration
+{% endif %}
+</h1>
 <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ SITE_GLOBAL_SITEMAILINGADDRESS }}</div>
 <div>{{ SITE_GLOBAL_NONPROFITSTATEMENT }}</div>
 
@@ -27,7 +34,13 @@
 		<div class="subtitles">E-S-T-I-M-A-T-E &nbsp;&nbsp;</div>
 	{% endif %}
 	
-	{% invoice_makepayments_display request invoice %}
+	{% if invoice.invoice_object_type == 'make_payment'  %}
+		{% invoice_makepayments_display request invoice %}
+	{% else %}
+		{% if invoice.invoice_object_type == 'event_registration'  %}
+			{% invoice_event_display request invoice %}
+		{% endif %}
+	{% endif %}
 	{% invoice_total_display request invoice %}
 	
 	{% if invoice.balance > 0 and merchant_login %}
