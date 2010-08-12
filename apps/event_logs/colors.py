@@ -202,7 +202,17 @@ colors = {
     '587400':'33FF99', # search 
     '587500':'33FF80', # view
     '587600':'33FF33', # export
-   
+
+    # directories 
+    '440000':'CCCC33', # base
+    '441000':'CCCC33', # add
+    '442000':'CCCC33', # edit
+    '443000':'CCCC33', # delete
+    '444000':'CCCC33', # search 
+    '445000':'CCCC33', # view    
+    '445001':'CCCC33', # print view  
+    '442210':'CCCC33', # renew      
+
 }
 
 def get_color(event_id):

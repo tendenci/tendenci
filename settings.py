@@ -170,6 +170,7 @@ INSTALLED_APPS = (
     'news',
     'stories',
     'pages',
+    'events',
     'photos',
     'entities',
     'locations',
@@ -194,10 +195,12 @@ INSTALLED_APPS = (
     'form_builder',
     'newsletters',
     'meta',
-    
+    'directories',
+    'helpfiles',
+
     # celery task system, must stay at the bottom
     # of installed apps
-    'djcelery',
+    #'djcelery',
 )
 
 # This is the number of days users will have to activate their

@@ -13,7 +13,7 @@ class TendenciBaseModel(models.Model):
     allow_anonymous_edit = models.BooleanField()
     allow_user_edit = models.BooleanField()
     allow_member_edit = models.BooleanField()
-    
+
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False)
@@ -33,7 +33,6 @@ class TendenciBaseModel(models.Model):
                 
     class Meta:
         abstract = True 
-        
 
 from user_groups.models import Group
 

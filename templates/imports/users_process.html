@@ -15,8 +15,8 @@
 	Note: User Logging Will be Suspended for the duration of import for this session only.<br>
 	<br>
 	<div class="results">
-		<div class="loading-icon" style="position:absolute;top:300;left:0;width:300px;padding:5px;border:1px solid #071C7F;">
-			<img src="/site_media/static/tresources/en/images/icons/loading.gif" alt="loading"/> ... loading
+		<div class="loading-icon" style="position:absolute;top:300;right:300;width:300px;padding:5px;border:1px solid #071C7F;">
+			<img src="/site_media/static/tresources/en/images/icons/loading.gif" alt="loading"/> loading ...
 		</div>
 	</div>
 	
@@ -53,6 +53,12 @@ $(document).ready(function(){
 			    	completed = true;
 			    	//$('.loading-icon').remove();
 			    }
+	    	},
+	    	error: function(errmsg){
+	    		$('.loading-icon').remove();
+	    		$(".results").append(errmsg);
+	    		completed = true;
+	    		
 	    	}
 	    });
 	   	i++;
