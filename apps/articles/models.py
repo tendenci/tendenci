@@ -42,7 +42,7 @@ class Article(TendenciBaseModel):
     entity = models.ForeignKey(Entity, null=True)
     
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, related_name='object', null=True)
+    meta = models.OneToOneField(MetaTags, null=True)
 
     objects = ArticleManager()
 

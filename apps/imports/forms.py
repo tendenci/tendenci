@@ -23,19 +23,20 @@ class UserImportForm(forms.Form):
     
     def clean(self):
         # test if the file is missing any key
-        key_list = self.cleaned_data["key"].split(',')
-        file = self.cleaned_data['file']
-        file_content = file.read()
-        fields = get_header_list_from_content(file_content, file.name)
-        
-        missing_keys = []
-        for key in key_list:
-            if key not in fields:
-                missing_keys.append(key)
-        
-        if missing_keys:
-            missing_keys = ','.join(missing_keys)
-            raise forms.ValidationError(_("The uploaded file lacks the required field(s) as the identity for duplicates: %s." % missing_keys))
+        if self.cleaned_data.has_key('key') and self.cleaned_data.has_key('file'):
+            key_list = self.cleaned_data["key"].split(',')
+            file = self.cleaned_data['file']
+            file_content = file.read()
+            fields = get_header_list_from_content(file_content, file.name)
+            
+            missing_keys = []
+            for key in key_list:
+                if key not in fields:
+                    missing_keys.append(key)
+            
+            if missing_keys:
+                missing_keys = ','.join(missing_keys)
+                raise forms.ValidationError(_("The uploaded file lacks the required field(s) as the identity for duplicates: %s." % missing_keys))
         return self.cleaned_data
     
 class UserImportPreviewForm(forms.Form):
