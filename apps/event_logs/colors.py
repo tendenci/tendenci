@@ -193,6 +193,15 @@ colors = {
     '630530':'00FFCC', # news rss feed
     '630560':'33FF99', # pages rss feed
     '630525':'00FF99', # jobs rss feed 
+    
+    # forms
+    '587000':'33FFFF', # base
+    '587100':'33FFE6', # add
+    '587200':'33FFCC', # edit
+    '587300':'33FFB3', # delete
+    '587400':'33FF99', # search 
+    '587500':'33FF80', # view
+    '587600':'33FF33', # export
 
     # directories 
     '440000':'CCCC33', # base
@@ -203,7 +212,7 @@ colors = {
     '445000':'CCCC33', # view    
     '445001':'CCCC33', # print view  
     '442210':'CCCC33', # renew      
-  
+
 }
 
 def get_color(event_id):

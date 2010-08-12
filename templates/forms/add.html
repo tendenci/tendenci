@@ -1,0 +1,28 @@
+{% extends "forms/base.html" %}
+{% load styled_forms %}
+{% load forms_tags %}
+
+{% block title %}{% firstof MODULE_FORMS_LABEL 'Forms' %} Add{% endblock %}
+
+{% block extra_head %}{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    {% forms_nav request.user %}
+	
+    <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} Add</h1>
+
+	<div class="form-builder-wrap">
+    	<form action="." method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Add {% firstof MODULE_FORMS_LABEL 'Form' %}" />
+		</div>
+        </form>
+    </div>
+	
+</div>
+{% endblock %}
+
+{% block extra_body %}{% endblock %}
