@@ -276,8 +276,8 @@ HAYSTACK_INCLUDED_APPS = ('article','page','news','story')
 #---------------------------------------------------------------
 # payment gateway settings - LOGIN and KEY need to be moved to local_urls.py later
 #---------------------------------------------------------------
-AUTHNET_POST_URL = ""
-AUTHNET_TEST_POST_URL = "https://test.authorize.net/gateway/transact.dll"
+#AUTHNET_POST_URL = "https://secure.authorize.net/gateway/transact.dll"
+AUTHNET_POST_URL = "https://test.authorize.net/gateway/transact.dll"
 # the AUTHNET_LOGIN and AUTHNET_KEY are specified in local_settings
 AUTHNET_LOGIN = ""
 AUTHNET_KEY = ""
