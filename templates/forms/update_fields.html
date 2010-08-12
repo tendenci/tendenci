@@ -1,0 +1,29 @@
+{% extends "forms/base.html" %}
+{% load styled_forms %}
+{% load forms_tags %}
+
+{% block title %}{% firstof MODULE_FORMS_LABEL 'Forms' %} Fields Update{% endblock %}
+
+{% block extra_head %}{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    {% forms_nav request.user %}
+	 
+    <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} Fields Update</h1>
+
+	<div class="form-builder-wrap">
+    	<form action="{% url form_field_update form_instance.pk %}" method="post">
+		{{ form.management_form }}
+    	<div class="forms">
+            {{ form|styled_form_set }}
+        	<input type="submit" value="Update Field(s)" />
+		</div>
+        </form>
+    </div>
+	
+</div>
+{% endblock %}
+
+{% block extra_body %}{% endblock %}
