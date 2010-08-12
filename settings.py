@@ -159,6 +159,7 @@ INSTALLED_APPS = (
     'haystack',
     'captcha',
     'south',
+    'forms_builder.forms',
     
     # tendenci applications
     'base',
@@ -297,6 +298,8 @@ CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 # Django Messaging system
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+# Fomrs upload path
+FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
 
 # local settings for development
 try:
