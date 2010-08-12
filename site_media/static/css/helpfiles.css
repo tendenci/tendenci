@@ -31,3 +31,7 @@ div.question span {
 div.question span a {
 	font-weight: normal !important;
 }
+
+div.searchform {
+	float: right;
+}

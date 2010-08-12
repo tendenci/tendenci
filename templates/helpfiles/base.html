@@ -5,6 +5,12 @@
 {% endblock %}
 
 {% block body %}
+	<div class="searchform">
+		<form action="{% url helpfiles-search %}">
+			<input type="text" value="{{ request.GET.q }}">
+			<input type="submit" value="Search">
+		</form>
+	</div>
 	<h1>Help files</h1>
 	{% block content %}{% endblock content %}
 {% endblock %}

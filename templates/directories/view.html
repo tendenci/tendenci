@@ -26,10 +26,20 @@
 				{% directory_options request.user directory %} 	       
              </div>
 		</div>
-		<div class="content">{{ directory.body|safe }}			<p>Release Date: {{ directory.activation_dt }}</p>			<p>Source: {{ directory.source|safe }}</p>			<div class="contact">
-				<h4>Contact:</h4>				{{ directory.first_name|safe }} {{ directory.last_name|safe }}<br>					{{ directory.phone|safe }}  {{ directory.fax|safe }}<br>				{{ directory.email|safe }}<br>				{{ directory.website|safe }}			</div>             
-		</div>
 
+		<div class="content">{{ directory.body|safe }}
+					{% if directory.source %}			<p>Source: {{ directory.source|safe }}</p>
+			{% endif %}	
+			
+			<% if directory.first_name %>					<div class="contact">
+				<h4>Contact:</h4>				{{ directory.first_name|safe }} {{ directory.last_name|safe }}<br>
+				{{ directory.address|safe }} {{ directory.address2|safe }}
+				{{ directory.city|safe }} {{ directory.state|safe }}  {{ directory.zip_code|safe }}  {{ directory.country|safe }}
+				{{ directory.phone|safe }}  {{ directory.phone2|safe }}<br>
+				<% if directory.fax%>Fax: {{ directory.fax|safe }}<%endif%>				{{ directory.email|safe }}  {{ directory.email2|safe }}<br>				{{ directory.website|safe }}			</div>             
+		</div>
+		<% endif%>
+		
         <div class="meta">
 			<div class="categories">
 				{% get_category_for_object directory as category %}

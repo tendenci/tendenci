@@ -1,0 +1,5 @@
+{% extends "site_base.html" %}
+
+{% block title %}{% firstof MODULE_FORMS_BUILDER_LABEL 'Forms Builder' %}{% endblock %}
+
+{% block messages %}{{ block.super }}{% endblock %}
