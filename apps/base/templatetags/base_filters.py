@@ -63,6 +63,12 @@ format_currency.is_safe = True
 def scope(object):
     return dir(object)
 
+@register.filter
+@stringfilter
+def basename(path):
+    from os.path import basename
+    return basename(path)
+
 @register.filter     
 def date_diff(value, date_to_compare=None):
     """Compare two dates and return the difference in days"""
