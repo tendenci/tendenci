@@ -80,14 +80,6 @@
 				<div class="clear"></div>
 			</div>
 
-			<div class="item">
-				<div class="errs">{{ form.website.errors }}</div>
-				<div class="label">{{ form.website.label_tag }}</div>
-				<div class="field">{{ form.website }}</div>
-				<div class="help">{{ form.website.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
 			<div class="item-dt">
 				<div class="errs">{{ form.activation_dt.errors }}</div>
 				<div class="label">{{ form.activation_dt.label_tag }}</div>
@@ -121,10 +113,66 @@
 			</div>
 
 			<div class="item">
+				<div class="errs">{{ form.address.errors }}</div>
+				<div class="label">{{ form.address.label_tag }}</div>
+				<div class="field">{{ form.address }}</div>
+				<div class="help">{{ form.address.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.address2.errors }}</div>
+				<div class="label">{{ form.address2.label_tag }}</div>
+				<div class="field">{{ form.address2 }}</div>
+				<div class="help">{{ form.address2.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.city.errors }}</div>
+				<div class="label">{{ form.city.label_tag }}</div>
+				<div class="field">{{ form.city }}</div>
+				<div class="help">{{ form.city.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.state.errors }}</div>
+				<div class="label">{{ form.state.label_tag }}</div>
+				<div class="field">{{ form.state }}</div>
+				<div class="help">{{ form.state.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.zip_code.errors }}</div>
+				<div class="label">{{ form.zip_code.label_tag }}</div>
+				<div class="field">{{ form.zip_code }}</div>
+				<div class="help">{{ form.zip_code.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.country.errors }}</div>
+				<div class="label">{{ form.country.label_tag }}</div>
+				<div class="field">{{ form.country }}</div>
+				<div class="help">{{ form.country.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
 				<div class="errs">{{ form.phone.errors }}</div>
 				<div class="label">{{ form.phone.label_tag }}</div>
 				<div class="field">{{ form.phone }}</div>
 				<div class="help">{{ form.phone.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.phone2.errors }}</div>
+				<div class="label">{{ form.phone2.label_tag }}</div>
+				<div class="field">{{ form.phone2 }}</div>
+				<div class="help">{{ form.phone2.help_text }}</div>
 				<div class="clear"></div>
 			</div>
 
@@ -141,6 +189,22 @@
 				<div class="label">{{ form.email.label_tag }}</div>
 				<div class="field">{{ form.email }}</div>
 				<div class="help">{{ form.email.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.email2.errors }}</div>
+				<div class="label">{{ form.email2.label_tag }}</div>
+				<div class="field">{{ form.email2 }}</div>
+				<div class="help">{{ form.email2.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.website.errors }}</div>
+				<div class="label">{{ form.website.label_tag }}</div>
+				<div class="field">{{ form.website }}</div>
+				<div class="help">{{ form.website.help_text }}</div>
 				<div class="clear"></div>
 			</div>
 
@@ -202,6 +266,14 @@
 
 				<div class="item-text">
 					Administrators Only
+				</div>
+
+				<div class="item-textarea">
+					<div class="errs">{{ form.admin_notes.errors }}</div>
+					<div class="label">{{ form.admin_notes.label_tag }}</div>
+					<div class="field">{{ form.admin_notes }}</div>
+					<div class="help">{{ form.admin_notes.help_text }}</div>
+					<div class="clear"></div>
 				</div>
 
 				<div class="item-checkbox">
