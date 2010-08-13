@@ -86,3 +86,87 @@
         </table>
 
 {% endif %}
+
+{% if invoice.invoice_object_type == 'event_registration'  %}
+       <table width="100%">
+            <tr>
+                <td colspan="6">
+                    <div style="background-color: #FF6600; height: 5px;">&nbsp;</div>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                
+                    <a href="{% url invoice.view invoice.pk %}">{{ invoice.pk}}</a>  
+                    {% if invoice.estimate  %}
+                        {% if 'cancel' in invoice.status_detail %}
+                            <span class="body_copy_yellow">CANCELLED</span>
+                        {% else %}
+                            EST
+                         {% endif %}
+                    {% else %}
+                        <a href="{% url invoice.view invoice.pk %}" class="links"><img src="/site_media/static/images/icons/tendered65x12.gif" border="0" width="65"  height="12" alt="Tendered {{ invoice.tender_date|date:'N j, Y h:i a'}}"></a>&nbsp;
+                     {% endif %} 
+                    {% if isadmin %}
+                        <a href="{% url invoice.detail invoice.pk %}" class="links">
+                        <img src="/site_media/static/images/icons/accounting12x12.gif"
+                               border="0" width="12" height="12" alt="View Accounting Entries"></a>
+                     {% endif %}
+                </td>
+            
+                {# createor username #}
+                <td>
+                    {% if invoice.creator %}
+                        <a href="{% url profile invoice.creator_username %}">{{ invoice.creator_username }}</a>
+                    {% else %}
+                        &nbsp;
+                     {% endif %}
+                </td>
+            
+                {# create_dt  #}
+                <td colspan="3">
+                     {% if invoice.create_dt %}
+                       {{ invoice.create_dt|date:'N j, Y h:i a'}} 
+                    {% else  %}
+                        &nbsp;
+                     {% endif %}
+                </td>
+            
+                {# total #}
+                <td>
+	                {% if not invoice.estimate and invoice.total > 0  %}
+	                   {{ invoice.total|format_currency }}
+	                {% else %}
+	                    ----
+	                {% endif %}
+                </td>
+            
+            </tr>
+            
+            
+            <tr>
+            <td colspan="6"><div style="background-color: #333; height: 2px;">&nbsp;</div></td>
+            </tr>
+            
+          {# display event registration #} 
+          <tr>
+          	<td>RegID</td>
+          	<td colspan="2">Title</td>
+          	<td>Date</td>
+          	<td>Price</td>
+          	<td>Balance</td>
+          </tr>
+          
+           <tr>
+          	<td><a href="{# eloy - fill out regration view link #}">{{reg8n.id}}</a></td>
+          	<td colspan="2"><a href="{% url events.views.index reg8n.event.id %}">{{reg8n.event.title|truncatewords:5}}</a></td>
+          	<td>{{reg8n.event.start_dt|date:'N j, Y h:i a'}}</td>
+          	<td>{{reg8n.amount_paid|format_currency}}</td>
+          	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+          </tr>  
+          
+        
+        </table>
+
+{% endif %}
