@@ -62,7 +62,7 @@ class RegistrantManager(Manager):
             user = None
             
         is_an_admin = is_admin(user)
-            
+
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query)) 
             if user:
@@ -78,6 +78,7 @@ class RegistrantManager(Manager):
             if user:
                 if is_an_admin:
                     sqs = sqs.all()
+                    print sqs
                 else:
                     if not user.is_anonymous():
                         sqs = sqs.filter(allow_user_view=True)
@@ -87,6 +88,6 @@ class RegistrantManager(Manager):
             else:
                 sqs = sqs.filter(allow_anonymous_view=True)
 
-            sqs = sqs.order_by('-release_dt')
+            sqs = sqs.order_by('-create_dt')
     
         return sqs.models(self.model)
