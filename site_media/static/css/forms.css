@@ -75,6 +75,15 @@ div.forms div.checkbox .help-text {
 	clear: both;
 }
 
+div.forms div.form-grouping {
+	margin-bottom: 15px;	
+	padding: 5px 0 5px 10px;
+}
+
+div.forms div.alt {
+	background-color: #EFEFEF;	
+}
+
 .required {
 	font-weight: bold;
 }

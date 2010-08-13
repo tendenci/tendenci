@@ -303,3 +303,9 @@ class Event(TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
+    
+    # this function is to display the event date in a nice way. 
+    # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010
+    def dt_display(self, format_date='%a, %b %d, %Y', format_time='%I:%M %p'):
+        from base.utils import format_datetime_range
+        return format_datetime_range(self.start_dt, self.end_dt, format_date, format_time)

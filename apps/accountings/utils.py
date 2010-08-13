@@ -12,6 +12,8 @@ def make_acct_entries(user, invoice, amount, **kwargs):
         
         if invoice.invoice_object_type == 'make_payment':
             make_acct_entries_general_sale(user, ae, amount, 'make_payment')
+        elif invoice.invoice_object_type == 'event_registration':
+            make_acct_entries_event_registration(user, ae, amount)
 
 def make_acct_entries_initial(user, acct_entry, amount, **kwargs):
     """Make the first set of accounting entries when the invoice is tendered
@@ -67,6 +69,12 @@ def make_acct_entries_general_sale(user, acct_entry, amount, object_type, **kwar
     elif object_type =='membership': acct_number = 404700
     else: acct_number = 400100
         
+    acct = Acct.objects.get(account_number=acct_number)
+    AcctTran.objects.create_acct_tran(user, acct_entry, acct, amount*(-1)) 
+    
+def make_acct_entries_event_registration(user, acct_entry, amount, **kwargs):
+    acct_number = 402000
+    #CREDIT event SALES
     acct = Acct.objects.get(account_number=acct_number)
     AcctTran.objects.create_acct_tran(user, acct_entry, acct, amount*(-1)) 
     

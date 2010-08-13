@@ -1,0 +1,51 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user forms.add_form as can_add_form %}
+
+{% if nav_object %}
+	{% has_perm user forms.view_form nav_object as can_view_form %}
+	{% has_perm user forms.change_form nav_object as can_edit_form %}
+	{% has_perm user forms.delete_form nav_object as can_delete_form %}
+{% else %}
+	{% has_perm user forms.view_form as can_view_form %}
+	{% has_perm user forms.change_form as can_edit_form %}
+	{% has_perm user forms.delete_form as can_delete_form %}
+{% endif %}
+
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>{% firstof MODULE_FORMS_LABEL 'Forms' %}</span>
+		<ul id="secondary">
+			<li><a href="{% url forms %}">{% firstof MODULE_FORMS_LABEL 'Forms' %}:</a></li> 
+			{% if can_edit_setting %}
+				<li><a href="{% url settings.index "module" "forms" %}">Settings</a></li>
+			{% endif %}
+			{% if nav_object %}
+				{% if can_view_form %}
+				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
+				{% endif %}
+				{% if can_edit_form %}
+				<li><a href="{% url form_edit nav_object.pk %}">Edit</a></li>
+				{% endif %}
+			{% endif %}
+			<li><a href="{% url forms %}">Search</a></li>
+			{% if can_add_form %}
+			<li><a href="{% url form_add %}">Add</a></li>
+			{% endif %}
+
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
+		</ul>
+	</li>
+</div>
