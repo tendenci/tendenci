@@ -23,10 +23,4 @@ urlpatterns = patterns('events',
     # registrants (search/view); admin-only
     url(r'^(?P<event_id>\d+)/registrants/search/$', 'views.registrant_search', name="event.registrant.search"),
     url(r'^registrants/(?P<id>\d+)/$', 'views.registrant_details', name="event.registrant"),
-
-    url(r'^edit/place/(?P<id>\d+)/$', 'views.edit_place', name="event.edit.place"),
-    url(r'^edit/sponsors/(?P<id>\d+)/$', 'views.edit_sponsor', name="event.edit.sponsor"),
-    url(r'^edit/speakers/(?P<id>\d+)/$', 'views.edit_speaker', name="event.edit.speaker"),
-    url(r'^edit/organizers/(?P<id>\d+)/$', 'views.edit_organizer', name="event.edit.organizer"),
-    url(r'^(?P<event_id>\d+)/edit/registration/$', 'views.edit_registration', name="event.edit.registration"),
 )

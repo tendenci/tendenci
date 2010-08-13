@@ -45,12 +45,6 @@ class RegistrantIndex(indexes.RealTimeSearchIndex):
         else: 
             return ''
     
-    def prepare_description(self, obj):
-        description = obj.description
-        description = strip_tags(description)
-        description = strip_entities(description)
-        return description
-    
 site.register(Event, EventIndex)
 site.register(Registrant, RegistrantIndex)
 

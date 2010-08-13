@@ -9,32 +9,31 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
-from events.models import Event, RegistrationConfiguration, Registration, Registrant
-from events.forms import EventForm, Reg8nForm, Reg8nEditForm
+from events.models import Event, RegistrationConfiguration, Registration, Registrant, Speaker, Organizer
+from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
-try:
-    from notification import models as notification
-except:
-    notification = None
+try: from notification import models as notification
+except: notification = None
 
 def index(request, id=None, template_name="events/view.html"):
     event = get_object_or_404(Event, pk=id)
     
     if request.user.has_perm('events.view_event', event):
-        log_defaults = {
-            'event_id' : 435000,
-            'event_data': '%s (%d) viewed by %s' % (event._meta.object_name, event.pk, request.user),
-            'description': '%s viewed' % event._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': event,
-        }
-        EventLog.objects.log(**log_defaults)
+
+        EventLog.objects.log(
+            event_id =  175000, # view event
+            event_data = '%s (%d) viewed by %s' % (event._meta.object_name, event.pk, request.user),
+            description = '%s viewed' % event._meta.object_name,
+            user = request.user,
+            request = request,
+            instance = event
+        )
+
         return render_to_response(template_name, {'event': event}, 
             context_instance=RequestContext(request))
     else:
@@ -44,32 +43,30 @@ def search(request, template_name="events/search.html"):
     query = request.GET.get('q', None)
     events = Event.objects.search(query, user=request.user)
 
-    log_defaults = {
-        'event_id' : 434000,
-        'event_data': '%s searched by %s' % ('Event', request.user),
-        'description': '%s searched' % 'Event',
-        'user': request.user,
-        'request': request,
-        'source': 'events'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+    EventLog.objects.log(
+        event_id =  174000, # searched event
+        event_data = '%s searched by %s' % ('Event', request.user),
+        description = 'Event searched',
+        user = request.user,
+        request = request,
+        source = 'events',
+    )
+
     return render_to_response(template_name, {'events':events}, 
         context_instance=RequestContext(request))
 
 def print_view(request, id, template_name="events/print-view.html"):
     event = get_object_or_404(Event, pk=id)    
 
-    log_defaults = {
-        'event_id' : 435000,
-        'event_data': '%s (%d) viewed by %s' % (event._meta.object_name, event.pk, request.user),
-        'description': '%s viewed' % event._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': event,
-    }
-    EventLog.objects.log(**log_defaults)
-       
+    EventLog.objects.log(
+        event_id =  175001, # print view event
+        event_data = '%s (%d) viewed [print] by %s' % (event._meta.object_name, event.pk, request.user),
+        description = '%s viewed [print]' % event._meta.object_name,
+        user = request.user,
+        request = request,
+        instance = event
+    )
+
     if request.user.has_perm('events.view_event', event):
         return render_to_response(template_name, {'event': event}, 
             context_instance=RequestContext(request))
@@ -80,49 +77,117 @@ def print_view(request, id, template_name="events/print-view.html"):
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
 
+    # tried get_or_create(); but get a keyword argument :(
+    try: # look for a speaker
+        speaker = event.speaker_set.all()[0]
+    except: # else: create a speaker
+        speaker = Speaker()
+        speaker.save()
+        speaker.event = [event]
+        speaker.save()
+
+    # tried get_or_create(); but get a keyword argument :(
+    try: # look for a speaker
+        organizer = event.organizer_set.all()[0]
+    except: # else: create a speaker
+        organizer = Organizer()
+        organizer.save()
+        organizer.event = [event]
+        organizer.save()
+
     if request.user.has_perm('events.change_event', event):    
         if request.method == "POST":
-            form = form_class(request.POST, instance=event, user=request.user)
-            if form.is_valid():
-                event = form.save(commit=False)
+
+            form_event = form_class(request.POST, instance=event, user=request.user)
+            if form_event.is_valid():
+                event = form_event.save(commit=False)
+                event.creator_username = request.user.username
+                event.owner_username = request.user.username
+                event.owner = request.user
                 event.save()
 
-#                log_defaults = {
-#                    'event_id' : 432000,
-#                    'event_data': '%s (%d) edited by %s' % (event._meta.object_name, event.pk, request.user),
-#                    'description': '%s edited' % event._meta.object_name,
-#                    'user': request.user,
-#                    'request': request,
-#                    'instance': event,
-#                }
-
-#                EventLog.objects.log(**log_defaults)
-
+                EventLog.objects.log(
+                    event_id =  172000, # edit event
+                    event_data = '%s (%d) edited by %s' % (event._meta.object_name, event.pk, request.user),
+                    description = '%s edited' % event._meta.object_name,
+                    user = request.user,
+                    request = request,
+                    instance = event,
+                )
                 
                 # remove all permissions on the object
                 ObjectPermission.objects.remove_all(event)
                 
                 # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
+                user_perms = form_event.cleaned_data['user_perms']
                 if user_perms: ObjectPermission.objects.assign(user_perms, event)               
                 # assign creator permissions
-                ObjectPermission.objects.assign(event.creator, event) 
+                ObjectPermission.objects.assign(event.creator, event)
 
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % event)
-                
-                # send notification to administrators
-                if notification:
-                    extra_context = {
-                        'object': event,
-                        'request': request,
-                    }
-                    notification.send(get_administrators(),'event_edited', extra_context)
-                                                                             
-                return HttpResponseRedirect(reverse('event', args=[event.pk]))             
+                # location validation
+                form_place = PlaceForm(request.POST, instance=event.place, prefix='place')
+                if form_place.is_valid():
+                    place = form_place.save() # save place
+                    event.place = place
+                    event.save() # save event
+
+                # speaker validation
+                form_speaker = SpeakerForm(request.POST, instance=speaker, prefix='speaker')
+                if form_speaker.is_valid():
+                    speaker = form_speaker.save(commit=False)                   
+                    speaker.event = [event]
+                    speaker.save()
+
+                # organizer validation
+                form_organizer = OrganizerForm(request.POST, instance=organizer, prefix='organizer')
+                if form_organizer.is_valid():
+                    organizer = form_organizer.save(commit=False)                   
+                    organizer.event = [event]
+                    organizer.save()
+
+                # registration configuration validation
+                form_regconf = Reg8nEditForm(request.POST, instance=event.registration_configuration, prefix='regconf')
+                if form_regconf.is_valid():
+                    regconf = form_regconf.save() # save registration configuration
+                    event.registration_configuration = regconf
+                    event.save() # save event
+
+                forms = [
+                    form_event,
+                    form_place,
+                    form_speaker,
+                    form_organizer,
+                    form_regconf,
+                ]
+
+                if all([form.is_valid() for form in forms]):
+                    messages.add_message(request, messages.INFO, 'Successfully updated %s' % event)
+                    if notification: notification.send(get_administrators(),'event_edited', {'object': event, 'request': request})
+                    return HttpResponseRedirect(reverse('event', args=[event.pk]))
+
         else:
-            form = form_class(instance=event, user=request.user)
 
-        return render_to_response(template_name, {'event': event, 'form':form}, 
+            reg_inits = {
+                'early_dt': datetime.now(),
+                'regular_dt': datetime.now(),
+                'late_dt': event.start_dt,
+             }
+
+            form_event = form_class(instance=event, user=request.user)
+            form_place = PlaceForm(instance=event.place, prefix='place')
+            form_speaker = SpeakerForm(instance=speaker, prefix='speaker')
+            form_organizer = OrganizerForm(instance=organizer, prefix='organizer')
+            form_regconf = Reg8nEditForm(instance=event.registration_configuration, initial=reg_inits, prefix='regconf')
+
+        # response
+        return render_to_response(template_name, {
+            'event': event,
+            'form_event':form_event,
+            'form_place':form_place,
+            'form_speaker':form_speaker,
+            'form_organizer':form_organizer,
+            'form_regconf':form_regconf,
+            }, 
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -157,109 +222,120 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
     return render_to_response(template_name, {'event': event, 'form':form}, 
         context_instance=RequestContext(request))
 
-def edit_place(request):
-    pass
-
-def edit_sponsor(request):
-    pass
-
-def edit_speaker(request):
-    pass
-
-def edit_organizer(request):
-    pass
-
-def edit_registration(request, event_id=0, form_class=Reg8nEditForm, template_name="events/reg8n/edit.html"):
-#    from events.models import PaymentPeriod
-
-    # check permission
-    event = get_object_or_404(Event, pk=event_id)
-    if not request.user.has_perm('events.change_event', event):
-        raise Http403
-
-    try:
-        reg8n_config = RegistrationConfiguration.objects.get(event=event)
-    except:
-        defaults = {
-            'event': event,
-            'early_price':10,
-            'regular_price':10,
-            'late_price':10,
-            'early_dt': datetime.now(),
-            'regular_dt': datetime.now(),
-            'late_dt': datetime.now(),
-            'limit': 100,
-         }
-        reg8n_config = RegistrationConfiguration.objects.create(**defaults)
-
-    if request.method == "POST":
-
-        form = form_class(request.POST, instance=reg8n_config)
-
-        if form.is_valid():
-            # get variables
-            reg8n_config = form.save(commit=False)
-            payment_method = form.cleaned_data['payment_method']
-            reg8n_config.save()
-
-            # update payment methods available
-            reg8n_config.payment_method = payment_method
-
-    else:
-        # TODO: will not work off of instance=event
-        # this form-class is not attached to a model
-        form = form_class(instance=reg8n_config)
-
-    return render_to_response(template_name, {'event':event,'form':form}, 
-        context_instance=RequestContext(request))
-
 @login_required
 def add(request, form_class=EventForm, template_name="events/add.html"):
+#    event = get_object_or_404(Event, pk=id)
+
     if request.user.has_perm('events.add_event'):
         if request.method == "POST":
 
-            form = form_class(request.POST, user=request.user)
-            if form.is_valid():           
-                event = form.save(commit=False)
-                # set up the user informationform_class
+            form_event = form_class(request.POST, user=request.user)
+            if form_event.is_valid():           
+                event = form_event.save(commit=False)
                 event.creator = request.user
                 event.creator_username = request.user.username
                 event.owner = request.user
                 event.owner_username = request.user.username
                 event.save()
- 
-                log_defaults = {
-                    'event_id' : 431000,
-                    'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                    'description': '%s added' % event._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': event,
-                }
-                EventLog.objects.log(**log_defaults)
+
+                EventLog.objects.log(
+                    event_id =  171000, # add event
+                    event_data = '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
+                    description = '%s added' % event._meta.object_name,
+                    user = request.user,
+                    request = request,
+                    instance = event
+                )
                                
                 # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
+                user_perms = form_event.cleaned_data['user_perms']
                 if user_perms: ObjectPermission.objects.assign(user_perms, event)
                 # assign creator permissions
                 ObjectPermission.objects.assign(event.creator, event) 
-                
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % event)
-                
-                # send notification to administrators
-#                if notification:
-#                    extra_context = {
-#                        'object': event,
-#                        'request': request,
-#                    }
-#                    notification.send(get_administrators(),'event_added', extra_context)
-                    
-                return HttpResponseRedirect(reverse('event', args=[event.pk]))
+
+                # tried get_or_create(); but get a keyword argument :(
+                try: # look for a speaker
+                    speaker = event.speaker_set.all()[0]
+                except: # else: create a speaker
+                    speaker = Speaker()
+                    speaker.save()
+                    speaker.event = [event]
+                    speaker.save()
+            
+                # tried get_or_create(); but get a keyword argument :(
+                try: # look for a speaker
+                    organizer = event.organizer_set.all()[0]
+                except: # else: create a speaker
+                    organizer = Organizer()
+                    organizer.save()
+                    organizer.event = [event]
+                    organizer.save()
+
+                # location validation
+                form_place = PlaceForm(request.POST, instance=event.place, prefix='place')
+                if form_place.is_valid():
+                    place = form_place.save() # save place
+                    event.place = place
+                    event.save() # save event
+
+                # speaker validation
+                form_speaker = SpeakerForm(request.POST, instance=speaker, prefix='speaker')
+                if form_speaker.is_valid():
+                    speaker = form_speaker.save(commit=False)                   
+                    speaker.event = [event]
+                    speaker.save()
+
+                # organizer validation
+                form_organizer = OrganizerForm(request.POST, instance=organizer, prefix='organizer')
+                if form_organizer.is_valid():
+                    organizer = form_organizer.save(commit=False)                   
+                    organizer.event = [event]
+                    organizer.save()
+
+                # registration configuration validation
+                form_regconf = Reg8nEditForm(request.POST, instance=event.registration_configuration, prefix='regconf')
+                if form_regconf.is_valid():
+                    regconf = form_regconf.save() # save registration configuration
+                    event.registration_configuration = regconf
+                    event.save() # save event
+
+                forms = [
+                    form_event,
+                    form_place,
+                    form_speaker,
+                    form_organizer,
+                    form_regconf,
+                ]
+
+                if all([form.is_valid() for form in forms]):
+                    messages.add_message(request, messages.INFO, 'Successfully added %s' % event)
+                    if notification: notification.send(get_administrators(),'event_added', {'object': event, 'request': request})
+                    return HttpResponseRedirect(reverse('event', args=[event.pk]))
+
         else:
-            form = form_class(user=request.user)
-           
-        return render_to_response(template_name, {'form':form}, 
-            context_instance=RequestContext(request))
+            reg_inits = {
+                'early_dt': datetime.now(),
+                'regular_dt': datetime.now(),
+                'late_dt': datetime.now(),
+             }
+
+            form_event = form_class(user=request.user)
+            form_place = PlaceForm(prefix='place')
+            form_speaker = SpeakerForm(prefix='speaker')
+            form_organizer = OrganizerForm(prefix='organizer')
+            form_regconf = Reg8nEditForm(initial=reg_inits, prefix='regconf')
+
+            # response
+            return render_to_response(template_name, {
+    #            'event': event,
+                'form_event':form_event,
+                'form_place':form_place,
+                'form_speaker':form_speaker,
+                'form_organizer':form_organizer,
+                'form_regconf':form_regconf,
+                }, 
+                context_instance=RequestContext(request))
+
     else:
         raise Http403
     
@@ -269,29 +345,21 @@ def delete(request, id, template_name="events/delete.html"):
 
     if request.user.has_perm('events.delete_event'):   
         if request.method == "POST":
-            log_defaults = {
-                'event_id' : 433000,
-                'event_data': '%s (%d) deleted by %s' % (event._meta.object_name, event.pk, request.user),
-                'description': '%s deleted' % event._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': event,
-            }
-            
-            EventLog.objects.log(**log_defaults)
+
+            EventLog.objects.log(
+                event_id =  173000, # delete event
+                event_data = '%s (%d) deleted by %s' % (event._meta.object_name, event.pk, request.user),
+                description = '%s deleted' % event._meta.object_name,
+                user = request.user,
+                request = request,
+                instance = event
+            )
 
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % event)
+            if notification: notification.send(get_administrators(),'event_deleted', {'object': event, 'request': request})
 
-#            # send notification to administrators
-#            if notification:
-#                extra_context = {
-#                    'object': event,
-#                    'request': request,
-#                }
-#                notification.send(get_administrators(),'event_deleted', extra_context)
-                            
             event.delete()
-                                    
+
             return HttpResponseRedirect(reverse('event.search'))
     
         return render_to_response(template_name, {'event': event}, 
@@ -348,7 +416,10 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 registrant.save()
 
                 reg8n.save() # save registration record
-                reg8n.save_invoice() # adds and updates invoice
+                invoice = reg8n.save_invoice() # adds and updates invoice
+                
+                if (reg8n.payment_method.label).lower() == 'credit card':
+                    return HttpResponseRedirect(reverse('payments.views.pay_online', args=[invoice.id, invoice.guid]))
 
                 response = HttpResponseRedirect(reverse('event.register.confirm', args=(event_id)))
             else:
@@ -369,14 +440,14 @@ def month_view(request, year=None, month=None, template_name='events/month-view.
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar
 
-    # TODO: cleaner way
+    # TODO: cleaner way to get next date
     next_month = (month+1)%13
     next_year = year
     if next_month == 0:
         next_month = 1
         next_year += 1
 
-    # TODO: cleaner way
+    # TODO: cleaner way to get next date
     prev_month = (month-1)%13
     prev_year = year
     if prev_month == 0:
@@ -401,7 +472,6 @@ def month_view(request, year=None, month=None, template_name='events/month-view.
         context_instance=RequestContext(request))
 
 def day_view(request, year=None, month=None, day=None, template_name='events/day-view.html'):
-    calendar = None
 
     kwargs = {
         # i'm being explicit about each date part
