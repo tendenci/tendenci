@@ -1,0 +1,33 @@
+{% extends "directories/base-print.html" %}
+{% load directory_tags %}
+
+{% block title %}{{ directory.get_title }}{% endblock %}
+{% block meta_description %}{{ directory.get_description }}{% endblock %}
+{% block meta_keywords %}{{ directory.get_keywords }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
+{% endblock %}
+
+{% block body %}
+<div class="t-print">
+
+	<div class='hide-this'>
+		<h1>Print View</h1>
+
+		<div class="guide">
+			<div><a href="{{ directory.get_absolute_url }}">&laquo; Back to regular directory view</a></div>
+			<div>Your printed page will look <em>something</em> like this.</div>
+		</div>
+	</div>
+
+    <div class="directory-wrap">
+        <h2>{{ directory.headline }}</h2>
+        <div class="content">{{ directory.body|safe }}</div>
+        <div class="meta">
+            <div class="submitted">Submitted on {{ directory.create_dt|date:"D d M Y P" }} by {{ directory.creator }}</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

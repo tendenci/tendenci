@@ -159,6 +159,7 @@ INSTALLED_APPS = (
     'haystack',
     'captcha',
     'south',
+    'forms_builder.forms',
     
     # tendenci applications
     'base',
@@ -194,11 +195,12 @@ INSTALLED_APPS = (
     'form_builder',
     'newsletters',
     'meta',
+    'directories',
     'helpfiles',
-    
+
     # celery task system, must stay at the bottom
     # of installed apps
-    'djcelery',
+    #'djcelery',
 )
 
 # This is the number of days users will have to activate their
@@ -274,8 +276,8 @@ HAYSTACK_INCLUDED_APPS = ('article','page','news','story')
 #---------------------------------------------------------------
 # payment gateway settings - LOGIN and KEY need to be moved to local_urls.py later
 #---------------------------------------------------------------
-AUTHNET_POST_URL = ""
-AUTHNET_TEST_POST_URL = "https://test.authorize.net/gateway/transact.dll"
+#AUTHNET_POST_URL = "https://secure.authorize.net/gateway/transact.dll"
+AUTHNET_POST_URL = "https://test.authorize.net/gateway/transact.dll"
 # the AUTHNET_LOGIN and AUTHNET_KEY are specified in local_settings
 AUTHNET_LOGIN = ""
 AUTHNET_KEY = ""
@@ -296,6 +298,8 @@ CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 # Django Messaging system
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+# Fomrs upload path
+FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
 
 # local settings for development
 try:

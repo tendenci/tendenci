@@ -416,7 +416,10 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 registrant.save()
 
                 reg8n.save() # save registration record
-                reg8n.save_invoice() # adds and updates invoice
+                invoice = reg8n.save_invoice() # adds and updates invoice
+                
+                if (reg8n.payment_method.label).lower() == 'credit card':
+                    return HttpResponseRedirect(reverse('payments.views.pay_online', args=[invoice.id, invoice.guid]))
 
                 response = HttpResponseRedirect(reverse('event.register.confirm', args=(event_id)))
             else:
