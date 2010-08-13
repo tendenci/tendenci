@@ -50,7 +50,7 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
         #merchant_account = "authorizenet"
         if merchant_account == "authorizenet":
             form = prepare_authorizenet_sim_form(request, payment)
-            post_url = settings.AUTHNET_TEST_POST_URL
+            post_url = settings.AUTHNET_POST_URL
         else:   # more vendors 
             form = None
             post_url = ""

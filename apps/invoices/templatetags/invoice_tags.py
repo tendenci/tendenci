@@ -14,12 +14,20 @@ def invoice_nav(context, invoice=None):
 def invoices_search_results_line(request, invoice):
     if invoice.invoice_object_type == 'make_payment':
         from make_payments.models import MakePayment
-        #item_display = invoices_display_make_payments(request, invoice)
+        
         try:
             mp = MakePayment.objects.get(id=invoice.invoice_object_type_id)
         except MakePayment.DoesNotExist:
             mp = None
         return {'request':request, 'invoice':invoice, 'mp':mp}
+    elif invoice.invoice_object_type == 'event_registration':
+        from events.models import Registration
+        
+        try:
+            reg8n = Registration.objects.get(id=invoice.invoice_object_type_id)
+        except Registration.DoesNotExist:
+            reg8n = None
+        return {'request':request, 'invoice':invoice, 'reg8n':reg8n}
     else:
         return {'request':request, 'invoice':invoice}
     
@@ -38,6 +46,17 @@ def invoice_makepayments_display(request, invoice):
     except MakePayment.DoesNotExist:
         mp = None
     return {'request':request, 'invoice':invoice, 'mp':mp}
+
+# display event registration on invoice view
+@register.inclusion_tag("invoices/event_display.html")
+def invoice_event_display(request, invoice):
+    from events.models import Registration
+    #item_display = invoices_display_make_payments(request, invoice)
+    try:
+        reg8n = Registration.objects.get(id=invoice.invoice_object_type_id)
+    except Registration.DoesNotExist:
+        reg8n = None
+    return {'request':request, 'invoice':invoice, 'reg8n':reg8n}
 
 
 # display invoice total on invoice view

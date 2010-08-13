@@ -52,7 +52,7 @@
             <h2><a href="{{ event.get_absolute_url }}">{% firstof event.title "Untitled" %}</a></h2>
             <div class="content">{{ event.description|safe|striptags|truncatewords:20 }}</div>
 
-			{% if event.registrationconfiguration and event.registrationconfiguration.enabled %}
+			{% if event.registration_configuration.enabled %}
 			<div class="attend-wrap">
 				<div class="attend"><a href="{% url event.register event.pk %}">Attend this event</a></div>
 				<div style="clear:both;"></div>
