@@ -83,7 +83,7 @@
 				<h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
 				<div class="description">{{ event.description|safe }}</div>
 
-				{% if event.registrationconfiguration and event.registrationconfiguration.enabled %}
+				{% if event.registration_configuration.enabled %}
 				<div class="attend-wrap">
 					<div class="attend"><a href="{% url event.register event.pk %}">Attend this event</a></div>
 					<div style="clear:both;"></div>
