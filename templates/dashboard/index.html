@@ -32,6 +32,7 @@
 {% has_perm user settings.view_group as view_groups %}
 {% has_perm user eventlogs.view_eventlog as view_eventlogs %}
 {% has_perm user eventlogs.view_setting as view_settings %}
+{% has_perm user forms.view_form as view_forms %}
 {% is_developer user as is_developer %}
 {% is_admin user as admin %}
 
@@ -70,7 +71,7 @@
 		{% if MODULE_PHOTOS_ENABLED %}
         <li class="photo-albums"><a href="{% url photoset_latest %}"><span>{% firstof MODULE_PHOTOSETS_LABEL "Albums" %}</span></a></li>
 		{% endif %}
-
+		
 		{% if MODULE_STORIES_ENABLED %}
     	<li class="stories"><a href="{% url story.search %}"><span>{% firstof MODULE_STORIES_LABEL "Stories" %}</span></a></li>
 		{% endif %}
@@ -99,6 +100,10 @@
          <li class="invoices"><a href="{% url invoice.search %}"><span>{% firstof MODULE_INVOICES_LABEL  "Invoices" %}</span></a></li>
  		{% endif %}
 
+		{% if MODULE_FORMS_ENABLED %}
+         <li class="forms"><a href="{% url forms %}"><span>{% firstof MODULE_FORMS_LABEL  "Forms" %}</span></a></li>
+ 		{% endif %}
+ 		
 		{% if admin %}
 		<li class="contacts"><a href="{% url contact.search %}"><span>{% firstof MODULE_CONTACTS_LABEL "Contacts" %}</span></a></li>
      	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
@@ -130,7 +135,7 @@
         <div class="rss-feed">
         	<h3>Tendenci Help</h3>
 			{% cache 86400 tendenci_help_rss %}
-                {% get_rss "http://www.tendenci.com/en/rss/helpfiles/" as rss %}
+                {% get_rss "http://support.tendenci.com/en/rss/helpfiles/" as rss %}
                 <ul>
                 {% for entry in rss.entries|slice:":3" %}
                     <li>
