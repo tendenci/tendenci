@@ -7,7 +7,9 @@ from django.contrib.auth.models import User
 from timezones.fields import TimeZoneField
 from entities.models import Entity
 from events.managers import EventManager, RegistrantManager
-from perms.models import TendenciBaseModel 
+from perms.models import TendenciBaseModel
+from meta.models import Meta as MetaTags
+from events.module_meta import EventMeta
 
 
 class Type(models.Model):
@@ -28,20 +30,24 @@ class Place(models.Model):
     An event can only be in one place
     A place can be used for multiple events
     """
-    event = models.ForeignKey('Event', editable=False)
-
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
 
-    # geo location
-    address = models.CharField(max_length=150)
-    city = models.CharField(max_length=150)
-    state = models.CharField(max_length=150)
-    zip = models.CharField(max_length=150)
-    country = models.CharField(max_length=150)
+    # offline location
+    address = models.CharField(max_length=150, blank=True)
+    city = models.CharField(max_length=150, blank=True)
+    state = models.CharField(max_length=150, blank=True)
+    zip = models.CharField(max_length=150, blank=True)
+    country = models.CharField(max_length=150, blank=True)
 
     # online location
-    url = models.URLField()
+    url = models.URLField(blank=True)
+
+    def __unicode__(self):
+        city_state = [s for s in (self.city, self.state) if s]
+        str_place = '%s %s %s %s %s' % (
+            self.name, self.address, ', '.join(city_state), self.zip, self.country)
+        return str_place.strip()
 
 class Phone(): pass
 class Email(): pass
@@ -73,19 +79,6 @@ class Registrant(models.Model):
     company_name = models.CharField(max_length=100)
     
     objects = RegistrantManager()
-
-#class Registration(models.Model):
-#    """
-#    Registration record.
-#    Created every time a user successfully registers.
-#    Holds valuable information about their registration.
-#    Used mostly for proof-of-registration.
-#    Also used for metrics; how many people registered for event.
-#    """
-#
-#    event = models.OneToOneField('Event', editable=False)
-#    price = models.DecimalField(max_digits=21, decimal_places=2)
-#    limit = models.IntegerField()
 
 class Registration(models.Model):
 
@@ -142,33 +135,41 @@ class RegistrationConfiguration(models.Model):
     Event registration
     Extends the event model
     """
-    event = models.OneToOneField('Event', editable=False)
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
     payment_method = models.ManyToManyField('PaymentMethod')
     
-    early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2)
-    regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2)
-    late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2)
+    early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
+    regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
+    late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
 
     early_dt = models.DateTimeField(_('Early Date'))
     regular_dt = models.DateTimeField(_('Regular Date'))
     late_dt = models.DateTimeField(_('Late Date'))
-    
-    limit = models.IntegerField()
 
-    enabled = models.BooleanField()
+    limit = models.IntegerField(default=0)
+    enabled = models.BooleanField(default=False)
+
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
 
         if hasattr(self,'event'):
-        # registration_settings might not be attached to an event yet
+        # registration_configuration might not be attached to an event yet
+
+            # assume practical dates
+            self.early_dt = self.create_dt
+            self.regular_dt = self.create_dt 
+            self.late_dt = self.event.start_dt
+            
             self.PERIODS = {
                 'early': (self.early_dt, self.regular_dt),
                 'regular': (self.regular_dt, self.late_dt),
                 'late': (self.late_dt, self.event.start_dt),
             }
+
         else:
             self.PERIODS = None
 
@@ -256,8 +257,10 @@ class Organizer(models.Model):
     Event can have multiple organizers
     Organizer can maintain multiple events
     """
-    event = models.ManyToManyField('Event')
-    user = models.OneToOneField(User)
+    event = models.ManyToManyField('Event', blank=True)
+    user = models.OneToOneField(User, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True) # static info.
+    description = models.TextField(blank=True) # static info.    
 
 class Speaker(models.Model):
     """
@@ -265,15 +268,17 @@ class Speaker(models.Model):
     Event can have multiple speakers
     Speaker can attend multiple events
     """
-    event = models.ManyToManyField('Event')
-    user = models.OneToOneField(User)
+    event = models.ManyToManyField('Event', blank=True)
+    user = models.OneToOneField(User, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True) # static info.
+    description = models.TextField(blank=True) # static info.
 
 class Event(TendenciBaseModel):
     """
     Calendar Event
     """
-    guid = models.TextField(max_length=40, editable=False, default=uuid.uuid1)
-    entity = models.ForeignKey(Entity, null=True)
+    guid = models.CharField(max_length=40, editable=False, default=uuid.uuid1)
+    entity = models.ForeignKey(Entity, blank=True, null=True)
 
     type = models.ForeignKey(Type, blank=True, null=True)
 
@@ -284,10 +289,28 @@ class Event(TendenciBaseModel):
     end_dt = models.DateTimeField(default=datetime.now())
     timezone = TimeZoneField(_('Time Zone'))
 
+    place = models.ForeignKey('Place', null=True)
+    registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
+
     private = models.BooleanField() # hide from lists
     password = models.CharField(max_length=50, blank=True)
 
+    # html-meta tags
+    meta = models.OneToOneField(MetaTags, null=True)
+
     objects = EventManager()
+
+    def get_meta(self, name):
+        """
+        This method is standard across all models that are
+        related to the Meta model.  Used to generate dynamic
+        methods coupled to this instance.
+        """    
+        return EventMeta().get_meta(self, name)
+
+    @property
+    def reg_conf(self):
+        return self.registration_configuration
 
     @models.permalink
     def get_absolute_url(self):
