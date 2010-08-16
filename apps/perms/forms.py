@@ -9,9 +9,6 @@ class TendenciBaseForm(ModelForm):
     user_perms = UserPermissionField()
 
     def __init__(self, user=None, *args, **kwargs):
-
-        print 'user:', user
-
         self.user = user
         super(TendenciBaseForm, self).__init__(*args, **kwargs)
         if 'instance' in kwargs:
