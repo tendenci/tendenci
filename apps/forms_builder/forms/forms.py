@@ -88,7 +88,7 @@ class FormForm(TendenciBaseForm):
         fields = ('title',
                   'intro',
                   'response',
-                  'send_email',
+                  # 'send_email', removed per ed's request
                   'email_from',
                   'email_copies',
                   'allow_anonymous_view',
