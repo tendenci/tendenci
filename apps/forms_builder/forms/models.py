@@ -70,7 +70,7 @@ class Form(TendenciBaseModel):
     response = models.TextField(_("Response"), max_length=2000)
 #    status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
 #        default=STATUS_PUBLISHED)
-    send_email = models.BooleanField(_("Send email"), default=True, help_text=
+    send_email = models.BooleanField(_("Send email"), default=False, help_text=
         _("If checked, the person entering the form will be sent an email"))
     email_from = models.EmailField(_("From address"), blank=True, 
         help_text=_("The address the email will be sent from"))
