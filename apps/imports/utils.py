@@ -168,13 +168,13 @@ def user_import_process(request, setting_dict, preview=True, id=''):
     data_dict_list_len = len(data_dict_list)
     
     user_obj_list = []
+    invalid_list = []
     
     start = 0
     if not preview:
         finish = start + ROWS_TO_PROCESS
         if finish > data_dict_list_len:
             finish = data_dict_list_len
-            
     else:
         finish = data_dict_list_len
         
@@ -200,12 +200,15 @@ def user_import_process(request, setting_dict, preview=True, id=''):
                 if key in key_profile_list:
                     identity_profile_dict[key] =  data_dict[key]
         
-        user_object_dict['ROW_NUM'] = r + 2  
+        user_object_dict['ROW_NUM'] = data_dict['ROW_NUM'] 
             
         if missing_keys:
             user_object_dict['ERROR'] = 'Missing key: %s.' % (', '.join(missing_keys))
             user_object_dict['IS_VALID'] = False
             setting_dict['count_invalid'] += 1
+            if not preview:
+                invalid_list.append({'ROW_NUM':user_object_dict['ROW_NUM'],
+                                     'ERROR':user_object_dict['ERROR']})
         else:
             user_object_dict['IS_VALID'] = True
             
@@ -231,6 +234,7 @@ def user_import_process(request, setting_dict, preview=True, id=''):
             if not preview:
                 user = do_user_import(request, user, user_object_dict, setting_dict)
                 user_import_dict['user'] = user
+                user_import_dict['ROW_NUM'] = user_object_dict['ROW_NUM']
                 user_obj_list.append(user_import_dict)
                 
         if preview:
@@ -263,7 +267,7 @@ def user_import_process(request, setting_dict, preview=True, id=''):
             d.update({'is_completed': True})
             request.session[id] = d
                 
-    return user_obj_list
+    return user_obj_list, invalid_list
 
 def get_user_by_key(identity_user_dict, identity_profile_dict):
     user = None  
@@ -474,12 +478,15 @@ def extract_from_excel(file_path):
         fields = data.next()
         fields = [smart_str(field) for field in fields]
         
+        r = 1
         for row in data:
             item = dict(zip(fields, row))
             for key in item.keys():
                 if field_type_dict.has_key(key) and field_type_dict[key] == 'DateTimeField':
                     item[key] = dparser.parser(item[key])
+            item['ROW_NUM'] = r + 1
             data_list.append(item)
+            r += 1
     else:
         book = xlrd.open_workbook(file_path)
         nsheets = book.nsheets
@@ -509,6 +516,7 @@ def extract_from_excel(file_path):
                     row.append(cell_value)
                    
             item = dict(zip(fields, row))
+            item['ROW_NUM'] = r + 1
             data_list.append(item)
       
     return data_list

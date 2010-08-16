@@ -9,6 +9,7 @@ from entities.models import Entity
 from events.managers import EventManager, RegistrantManager
 from perms.models import TendenciBaseModel
 from meta.models import Meta as MetaTags
+from events.module_meta import EventMeta
 
 
 class Type(models.Model):
@@ -41,6 +42,12 @@ class Place(models.Model):
 
     # online location
     url = models.URLField(blank=True)
+
+    def __unicode__(self):
+        city_state = [s for s in (self.city, self.state) if s]
+        str_place = '%s %s %s %s %s' % (
+            self.name, self.address, ', '.join(city_state), self.zip, self.country)
+        return str_place.strip()
 
 class Phone(): pass
 class Email(): pass
@@ -292,6 +299,14 @@ class Event(TendenciBaseModel):
     meta = models.OneToOneField(MetaTags, null=True)
 
     objects = EventManager()
+
+    def get_meta(self, name):
+        """
+        This method is standard across all models that are
+        related to the Meta model.  Used to generate dynamic
+        methods coupled to this instance.
+        """    
+        return EventMeta().get_meta(self, name)
 
     @property
     def reg_conf(self):
