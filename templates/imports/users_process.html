@@ -1,12 +1,23 @@
-<html>
-<head>
-<title>User Import Process</title>
+{% extends "imports/base.html" %}
+{% load i18n %}
+{% load dashboard_tags %}
 
-</head>
+{% block title %}Import Users{% endblock %}
 
-<body>
+{% block extra_head %}
 
-<font face="courier new" size="2">
+<style type="text/css">
+
+
+</style>
+
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% dashboard_nav user %}	
+<div class="imports">
 	<b>You ({{ request.user.username }}) are importing the following file at ({% now "D d M Y P" %})</b>: <br> 
 	<font color="red">
 	{{ file_name }}
@@ -15,15 +26,21 @@
 	Note: User Logging Will be Suspended for the duration of import for this session only.<br>
 	<br>
 	<div class="results">
-		<div class="loading-icon" style="position:absolute;top:300;right:300;width:300px;padding:5px;border:1px solid #071C7F;">
+		<div class="loading-icon" style="position:absolute;top:100;left:50;width:300px;padding:5px;border:1px solid #071C7F;margin-bottom:3em;">
 			<img src="/site_media/static/tresources/en/images/icons/loading.gif" alt="loading"/> loading ...
 		</div>
 	</div>
-	
-
-</font>
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
 </body>
-<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+{# dynamically load jquery #}
+<script>
+	if (!(window.jQuery)) { 
+		var s = document.createElement('script');
+		s.setAttribute('src', '/site_media/static/js/jquery-1.4.2.min.js'); 
+		s.setAttribute('type', 'text/javascript');
+		document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
 <script type="text/javascript">
 $(document).ready(function(){
     var myurl = "{% url import.user_upload_subprocess id %}";
@@ -69,5 +86,4 @@ $(document).ready(function(){
 </script>
 
 
-
-</html>
+{% endblock %}

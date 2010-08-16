@@ -37,7 +37,6 @@
 				{% if can_edit_event %}
 				<li><a href="{% url event.edit nav_object.pk %}">Edit</a></li>
 				<li><a href="{% url event.edit.meta nav_object.pk %}">Edit Meta</a></li>
-				<li><a href="{# url category.update nav_object.opt_app_label nav_object.opt_module_name nav_object.pk #}">Edit Categories</a></li>
 				{% endif %}
 
 				{% if can_delete_event %}
@@ -49,10 +48,6 @@
 			<li><a href="{% url event.month today.year today.month %}">Month</a></li>
 			{% if can_add_event %}
 			<li><a href="{% url event.add %}">Add</a></li>
-			{% endif %}
-
-			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">Log Off</a></li> 
 			{% endif %}
 		</ul>
 		

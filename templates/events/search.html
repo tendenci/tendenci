@@ -29,9 +29,69 @@
 	.t .event-wrap-search .content {
 		margin-bottom: 10px;
 	}
+
+	.search-view .event-wrap {
+		background-color: #EEE;
+		border: 1px solid silver;
+		margin-bottom: 10px;
+		padding: 0;
+	}
+	.event-wrap h3 {
+	}
+	.search-view .event-wrap div.description {
+		margin-bottom: 10px;
+	}
+	.event-wrap div.time-stamp {
+		float: left;
+		width: 80px;
+		text-align: center;
+		font-size: 1.1em;
+		font-weight: bold;
+		margin: 15px 0 0 15px
+
+
+	}
+	.event-wrap .event-info {
+		background-color: white;
+		padding: 10px;
+		margin-left: 110px;
+		
+	}
+	.search-view .no-events {
+		font-size: 1.4em;
+		background-color: #FFC;
+		padding: 10px;
+	}
+	
+	.search-view .event-info .attend-wrap {
+		border-top: 1px solid #DDD;
+	}
+	.search-view .event-info .attend-wrap .attend {
+		border: 1px solid silver;
+		float: right;
+		margin-top: 10px;
+		padding: 5px;
+		background-color: #F7F7F7;
+	}
+	.search-view .event-info .attend-wrap .attend a {
+		text-decoration: none;
+	}
+	.search-view .event-info .options {
+		float: right;
+	}
+
+	.search-view .event-info .time-period {
+		margin-bottom: 10px;
+	}
+	
+	.search-view .event-info .options {
+		top: 0;
+	}
+
+
 </style>
 
-<div class="t">
+<div class="t search-view">
 {% event_nav request.user %}
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL 'Event' %} Search</h1>  
 
@@ -43,21 +103,30 @@
 		{% with event.object as event %}
     	{% has_perm user events.view_event event as can_view %}
     	{% if can_view %}
-		<div class="event-wrap-search">
-			<div class="options">
-                <div class="quick-options">
-					{% event_options request.user event %} 	       
-                </div>
-			</div>
-            <h2><a href="{{ event.get_absolute_url }}">{% firstof event.title "Untitled" %}</a></h2>
-            <div class="content">{{ event.description|safe|striptags|truncatewords:20 }}</div>
+		<div class="event-wrap">
+			<div class="time-stamp">{{ event.start_dt|date:"M j, Y" }}</div>
+			<div class="event-info">
 
-			{% if event.registrationconfiguration and event.registrationconfiguration.enabled %}
-			<div class="attend-wrap">
-				<div class="attend"><a href="{% url event.register event.pk %}">Attend this event</a></div>
-				<div style="clear:both;"></div>
+				<div class="options">{% event_options user event %}</div>
+				
+				<h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
+				<div class="place">{{ event.place }}</div>
+
+				<div class="time-period">
+					{{ event.start_dt|date:"M j, Y P" }} - {{ event.end_dt|date:"M j, Y P" }}
+				</div> 
+
+				<div class="description">{{ event.description|safe|striptags|truncatewords:"80" }}</div>
+
+				{% if event.registration_configuration.enabled %}
+				<div class="attend-wrap">
+					<div class="attend"><a href="{% url event.register event.pk %}">Attend this event</a></div>
+					<div style="clear:both;"></div>
+				</div>
+				{% endif %}
+
 			</div>
-            {% endif %}
+			<div style="clear:both;"></div>
 
             <!-- delete-event form -->
             <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">
