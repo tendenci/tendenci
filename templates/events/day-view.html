@@ -97,7 +97,6 @@
             <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">
                 <input type="hidden" name="action" value="delete">
             </form>
-
 		</div>
 	{% empty %}
 		<div class="no-events">No events happening on this date. <a href="javascript:;">Add event on this date.</a></div>
