@@ -34,7 +34,7 @@
 		{% endif %}
 	{% endfor %}
 
-	<div class="price">Price ${{ event.registrationconfiguration.price|floatformat:2 }}</div>
+	<div class="price">Price ${{ event.registration_configuration.price|floatformat:2 }}</div>
 
 	<div class="form-wrap">
     	<form action="{% url event.register event.pk %}" method="post">
