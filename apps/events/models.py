@@ -45,7 +45,7 @@ class Place(models.Model):
 
     def __unicode__(self):
         str_place = '%s %s %s %s %s' % (
-            self.name, self.address, ', '.join(self.city_state), self.zip, self.country)
+            self.name, self.address, ', '.join(self.city_state()), self.zip, self.country)
         return unicode(str_place.strip())
 
     def city_state(self):
