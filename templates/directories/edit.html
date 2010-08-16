@@ -37,7 +37,7 @@
 		</div>
 		{% endif %}
 
-    	<form action="{% url directory.edit directory.pk %}" method="post">
+    	<form action="{% url directory.edit directory.pk %}" method="post" enctype="multipart/form-data">
     	<div class="forms">
 
 			<div class="item">
@@ -72,6 +72,14 @@
 				<div class="clear"></div>
 			</div>
 
+			<div class="item">
+				<div class="errs">{{ form.logo.errors }}</div>
+				<div class="label">{{ form.logo.label_tag }}</div>
+				<div class="field">{{ form.logo }}</div>
+				<div class="help">{{ form.logo.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+			
 			<div class="item">
 				<div class="errs">{{ form.source.errors }}</div>
 				<div class="label">{{ form.source.label_tag }}</div>
