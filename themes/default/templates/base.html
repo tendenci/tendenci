@@ -1,37 +1,194 @@
-<!DOCTYPE HTML>
-<html lang="en-US">
+{% load base_filters %}
+{% load base_tags %}
+{% load cache %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US">
+
 <head>
-	<title>{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {% block title %}{% endblock %}</title>
-   	<meta charset="UTF-8">
+  <title>{% block title %}{% endblock %} - {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
+     <meta charset="UTF-8">
     <meta name="description" content="{% block meta_description %}Tendenci 5.0{% endblock %}"> 
     <meta name="keywords" content="{% block meta_keywords %}{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}"> 
-	<link rel="stylesheet" href="{{ THEME_URL }}media/css/styles.css" />
-	<link href="/site_media/static/css/tabs.css" rel="stylesheet" type="text/css">
+    <link rel="alternate" type="application/rss+xml" title="Global Tendenci RSS Feed" href="/rss/" />
+  <link rel="shortcut icon" href="http://blog.tendenci.com/wp-content/themes/tendenciblog/favicon.ico" type="image/x-icon" />
+
+    <link href="{{ STATIC_URL }}css/global_tendenci.css" rel="stylesheet" type="text/css">
     {% block extra_head %}{% endblock %}
-</head>
-<body>
-<div id="content">
-    <div id="header">
-    	<div class="logo"><a href="/" alt="Tendenci 5.0" title="Tenenci 5.0">Tendenci 5.0</a></div>
-        <div class="login">
-            {% if not user.is_authenticated %}
-                <a href="{% url registration_register %}">Register for an account</a>&nbsp;&ndash;&nbsp;
-            {% endif %}
-            {% if user.is_authenticated %}
-                <a href="{% url auth_logout %}">Log Out ({{user.username}})</a>
-            {% else %}
-                <a href="{% url auth_login %}">Log In</a>
-            {% endif %}
-        </div> 
-        <div class="clear"><!-- IE7 FIX --></div>     
-    </div>
-    <div id="body">
-    {% block body %}
     
-    {% endblock %}
+  <link rel="stylesheet" href="{{ THEME_URL }}media/css/styles.css" type="text/css" />
+    <link rel="stylesheet" href="{{ THEME_URL }}media/css/menuh.css" type="text/css" />
+    <link rel="stylesheet" href="{{ THEME_URL }}media/css/jquery.twitter.css" type="text/css" />
+    {% if not user.is_authenticated %}
+        <link rel="stylesheet" href="{{ THEME_URL }}media/js/fancybox/jquery.fancybox-1.3.1.css" type="text/css" media="screen" />
+    {% endif %}
+    <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-3369175-1']);
+  _gaq.push(['_setDomainName', '.tendenci.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+
+<body id="sub">
+
+{% block login %}{% endblock %}
+
+<div id="container">
+  
+    <div id="header">
+
+      <h1><a id="logo" href="/" alt="Tendenci 5.0" title="Tenenci 5.0">Tendenci 5.0</a></h1>
+        
+        {% block menu %}{% endblock %}
+        
+        <a id="get-started" href="/contact">Get Started Today!</a>
+        
+    <a id="cost-cta" href="/buy">How much does Tendenci cost?</a>
+        
     </div>
-</div>
+     
+    <div id="body">
+    
+      <div id="main-content">
+        {% block messages %}
+             {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+          {% endif %}
+        {% endblock %}
+          {% block body %}{% endblock %}
+        </div><!-- /main-content -->
+        
+        <div id="sidebar">
+            {% if user.is_authenticated %}
+                <div id="logged-in">
+                  <a style="display: block; margin-bottom: 8px;" href="/dashboard" id="dashboard-btn">Go to the dashboard &raquo;</a>
+                  <p style="margin-left: 14px;"><a id="logout" href="{% url auth_logout %}">Log Out ({{user.username}})</a></p>
+                </div>
+            {% endif %}
+        
+          <div id="blog">
+                <h4><a href="http://blog.tendenci.com">From the blog &rarr;</a></h4>
+
+                {% get_rss "http://blog.tendenci.com/feed/" as rss %}
+                <ul>
+                {% for entry in rss.entries|slice:":2" %}
+                    <li>
+                        <h3><a href="{{ entry.link }}">{{ entry.title }}</a></h3>
+                        <p><em>{{ entry.updated_parsed|rss_date:"F j, Y" }}</em></p>
+                        <p>{{ entry.summary }}</p>
+                        <p><a href="{{ entry.link }}">Read on &rarr;</a></p>
+                    </li>
+                {% endfor %}
+                </ul>
+      </div><!-- /blog -->
+            
+            <!--
+            <div id="twitter">
+              <h4><a href="http://twitter.com/tendenci">Latest Tweets &rarr;</a></h4>
+                <div id="tweets"></div>
+            </div> /twitter -->
+            
+            <div id="get-satisfaction">
+            <h4><a href=" http://getsatisfaction.com/schipul_tendenci">Get Satisfaction &rarr;</a></h4>
+            <p>Got ideas for Tendenci? Want to leave some praise, or maybe just a 
+            comment? We want your feedback! <a href=" http://getsatisfaction.com/schipul_tendenci">Leave
+            it over at our Get Satisfaction account &rarr;</a></p>
+            <p><a style="display: block; margin-bottom: 10px;" href=" http://getsatisfaction.com/schipul_tendenci"><img width="180" height="80" alt="Badge_get_help" src=" http://getsatisfaction.com/images/badges/badge_get_help.png" /></a></p>
+            </div>
+
+        </div><!-- /sidebar -->
+    
+    <div class="clear"></div>
+    </div>
+    
+    <div id="footer">
+      {% spaceless %}{% include "footer.html" %}{% endspaceless %}
+    </div>
+    
+</div><!-- /container -->
+
 </body>
-<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.min.js"></script>
+
+{% if not user.is_authenticated %}
+<script type="text/javascript" src="{{ THEME_URL }}media/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
+{% endif %}
+<script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.twitter.js"></script>
+<script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.hoverIntent.minified.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    //$("#tweets").getTwitter({
+        //userName: "tendenci",
+        //numTweets: 3,
+        //loaderText: "Loading tweets...",
+        //slideIn: false,
+        //showHeading: false
+    //});
+  function megaHoverOver(){
+    $(this).find(".sub").stop().fadeTo(0, 1).show();
+    (function($) { 
+      jQuery.fn.calcSubWidth = function() {
+        rowWidth = 0;
+        $(this).find("ul").each(function() {          
+          rowWidth += $(this).width(); 
+        });  
+      };
+    })(jQuery);
+    if ( $(this).find(".row").length > 0 ) {
+      var biggestRow = 0;
+      $(this).find(".row").each(function() {                 
+        $(this).calcSubWidth();
+        if(rowWidth > biggestRow) {
+          biggestRow = rowWidth;
+        }
+      });
+      $(this).find(".sub").css({'width' :biggestRow});
+      $(this).find(".row:last").css({'margin':'0'});
+    } else {
+      $(this).calcSubWidth();
+      $(this).find(".sub").css({'width' : rowWidth});
+    }
+  }
+  
+  function megaHoverOut(){ 
+    $(this).find(".sub").stop().fadeTo(0, 0, function() {
+      $(this).hide(); 
+    });
+  }
+
+  var config = {    
+     sensitivity: 2, // number = sensitivity threshold (must be 1 or higher)    
+     interval: 0, // number = milliseconds for onMouseOver polling interval    
+     over: megaHoverOver, // function = onMouseOver callback (REQUIRED)    
+     timeout: 0, // number = milliseconds delay before onMouseOut    
+     out: megaHoverOut // function = onMouseOut callback (REQUIRED)    
+  };
+
+  $("#menu ul li .sub").css({'opacity':'0'});
+  $("#menu ul li").hoverIntent(config);
+});
+</script>
+
+{% if not user.is_authenticated %}
+<script type="text/javascript">
+   $(document).ready(function() { $("a#modal").fancybox(); });
+function clearDefault(el) {
+  if (el.defaultValue==el.value) el.value = ""
+}
+   </script>
+{% endif %}
 {% block extra_body %}{% endblock %}
 </html>

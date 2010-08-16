@@ -1,3 +1,51 @@
 {% extends "base.html" %}
 
+{% block menu %}
+    <div id="menu">{% spaceless %}{% include "nav.html" %}{% endspaceless %}<div class="clear"></div></div>
+{% endblock %}
+
+{% block login %}
+<div class="login-container">
+  
+  <div class="login">
+        {% if user.is_authenticated %}
+            <a href="/dashboard">Dashboard</a> | <a id="logout" href="{% url auth_logout %}">Log Out</a>            
+        {% endif %}
+        {% if not user.is_authenticated %}
+            {% if MODULE_USERS_SELFREGISTRATION %}<a href="{% url registration_register %}">Register</a>&nbsp;&ndash;&nbsp;{% endif %}<a id="modal" href="#login-screen">Log In</a>
+            <div style="display: none;">
+                <div id="login-screen" style="width: 300px; height: 280px;">
+                    <div style="padding-bottom: 20px; border-bottom: 1px solid #d8d8d8;">
+                    <h2>Log In</h2>
+                    <form method="post" action="/accounts/login/">
+                        <div style='display:none'>
+                            <input type='hidden' name='csrfmiddlewaretoken' value='6ac6961402db882ac98130550df13e57' />
+                        </div>
+                        <input id="id_username" value="Username" onfocus="clearDefault(this)" type="text" name="username" maxlength="30" style="margin-bottom: 6px; width: 250px; padding: 4px; color: #999; border: 1px solid #666;" />
+                        <input value="password" onfocus="clearDefault(this)" type="password" name="password" id="id_password" style="margin-bottom: 6px; width: 250px; padding: 4px; color: #999; border: 1px solid #666;" /></p>
+                        <input type="image" src="{{ THEME_URL }}media/images/login-btn.png" name="submit" value="Log in" />
+                    </form>
+                    </div>
+                    {% if MODULE_USERS_SELFREGISTRATION %}
+                    <div style="margin-top: 20px; border-top: 1px solid #fff;">
+                    <h4 style=" margin-bottom: 4px;">Forgot your password?</h4>
+                    <p style=" margin-bottom: 14px;"><a href="/accounts/password/reset/">Reset your password &rarr;</a></p>
+                    
+                    <h4 style=" margin-bottom: 4px;">Don't have an account?</h4>
+                    <p><a href="/accounts/register/">Register Now &rarr;</a></p>
+                    </div>
+                    {% else %}
+                    <div style="margin-top: 20px; border-top: 1px solid #fff;">
+          <img align="middle" src="{{ THEME_URL }}/media/images/tendenci-logo.png" alt="Tendenci" />
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+<div class="clear"></div>
+</div>
+{% endblock %}
+
 {# this will contain the footers and other base block tag overrides #}
