@@ -44,10 +44,13 @@ class Place(models.Model):
     url = models.URLField(blank=True)
 
     def __unicode__(self):
-        city_state = [s for s in (self.city, self.state) if s]
         str_place = '%s %s %s %s %s' % (
-            self.name, self.address, ', '.join(city_state), self.zip, self.country)
+            self.name, self.address, ', '.join(self.city_state), self.zip, self.country)
         return str_place.strip()
+
+    def city_state(self):
+        return [s for s in (self.city, self.state) if s]
+        
 
 class Phone(): pass
 class Email(): pass
@@ -260,7 +263,10 @@ class Organizer(models.Model):
     event = models.ManyToManyField('Event', blank=True)
     user = models.OneToOneField(User, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True) # static info.
-    description = models.TextField(blank=True) # static info.    
+    description = models.TextField(blank=True) # static info.
+
+    def __unicode__(self):
+        return self.name    
 
 class Speaker(models.Model):
     """
@@ -272,6 +278,9 @@ class Speaker(models.Model):
     user = models.OneToOneField(User, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True) # static info.
     description = models.TextField(blank=True) # static info.
+    
+    def __unicode__(self):
+        return self.name
 
 class Event(TendenciBaseModel):
     """
