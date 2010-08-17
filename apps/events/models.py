@@ -156,12 +156,6 @@ class RegistrationConfiguration(models.Model):
 
         if hasattr(self,'event'):
         # registration_configuration might not be attached to an event yet
-
-            # assume practical dates
-            self.early_dt = self.create_dt
-            self.regular_dt = self.create_dt 
-            self.late_dt = self.event.start_dt
-            
             self.PERIODS = {
                 'early': (self.early_dt, self.regular_dt),
                 'regular': (self.regular_dt, self.late_dt),
