@@ -35,9 +35,9 @@
             <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline "Untitled" %}</a></h2>
 
 			{% if directory.summary %}
-				<div class="content">{{ directory.summary|truncatewords:20 }}</div>
+				<div class="content">{{ directory.summary|striptags|truncatewords:20|safe }}</div>
 			{% else %}
-				<div class="content">{{ directory.body|safe|striptags|truncatewords:20 }}</div>	
+				<div class="content">{{ directory.body|striptags|truncatewords:20|safe }}</div>	
 			{% endif %}
 
 			<div class="meta">

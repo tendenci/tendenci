@@ -26,8 +26,20 @@
 				{% article_options request.user article %} 	       
              </div>
 		</div>
-		<div class="content">{{ article.body|safe }}			<p>Release Date: {{ article.release_dt }}</p>			<p>Source: {{ article.source|safe }}</p>			<div class="contact">
-				<h4>Contact:</h4>				{{ article.first_name|safe }} {{ article.last_name|safe }}<br>					{{ article.phone|safe }}  {{ article.fax|safe }}<br>				{{ article.email|urlize }}<br>				{{ article.website|urlize }}			</div>             
+		<div class="content">
+			{{ article.body|safe }}			<p>Release Date: {{ article.release_dt }}</p>			{% if article.source %}<p>Source: {{ article.source|urlize }}{% endif %}</p>
+						<div class="contact">
+				{% if article.first_name and article.last_name %}					<div>{{ article.first_name }} {{ article.last_name }}</div>
+				{% endif %}	
+				{% if article.phone %}					<div>{{ article.phone }}</div>	
+				{% endif %}	
+				{% if article.fax %}
+					<div>{{ article.fax }}</div>	
+				{% endif %}	
+				{% if article.email %}				<div>{{ article.email|urlize }}</div>
+				{% endif %}
+				{% if article.website %}					<div>{{ article.website|urlize }}</div>	
+				{% endif %}			</div>             
 		</div>
 
         <div class="meta">
