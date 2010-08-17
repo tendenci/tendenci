@@ -27,7 +27,7 @@
   </tr>
 </table>
 <p>To view the details of this 
-  job, go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url job object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url job object.id %}</a></b><br>
+  job, go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
 
 {% if not isadmin %}
     <br>
