@@ -1,39 +1,69 @@
-{% extends "site_base.html" %}
+{% extends "base_homepage.html" %}
 
-{% block title %}Homepage{% endblock %}
+{% block title %}Tendenci CMS - Member Management and Events for Associations and Organizations{% endblock %}
+{% block meta_description %}The Tendenci Content Management System CMS offer Businesses, Orgaizations, and Associations the Platform to create an easy to use website and allows web marketing to customers, clients, or members. Tendenci offers Membership support, Event registration, Email Newsletters, and Automatic Search Engine Optimization.{% endblock %}
+{% block meta_keywords %}Tendenci CMS, membership management, content management system, email marketing, electronic newsletters, event registration, business directories, online catalogs, job resume board, RSS, Podcast, {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
 
 {% block extra_head %}
 <style type="text/css">
-	.offline a {
-		color: #DDD;
-	}
-	.online a {
-		color: #551A8B;
-	}
+  .offline a {
+    color: #DDD;
+  }
+  .online a {
+    color: #551A8B;
+  }
 </style>
 {% endblock %}
 
+{% block menu %}
+    <div id="menu">{% spaceless %}{% include "nav.html" %}{% endspaceless %}<div class="clear"></div></div>
+{% endblock %}
+
+{% block login %}
+<div class="login-container">
+  
+  <div class="login">
+        {% if user.is_authenticated %}
+            <a href="/dashboard">Dashboard</a> | <a id="logout" href="{% url auth_logout %}">Log Out ({{user.username}})</a>            
+        {% endif %}
+        {% if not user.is_authenticated %}
+            {% if MODULE_USERS_SELFREGISTRATION %}<a href="{% url registration_register %}">Register</a>&nbsp;&ndash;&nbsp;{% endif %}<a id="modal" href="#login-screen">Log In</a>
+            <div style="display: none;">
+                <div id="login-screen" style="width: 300px; height: 280px;">
+                    <div style="padding-bottom: 20px; border-bottom: 1px solid #d8d8d8;">
+                    <h2>Log In</h2>
+                    <form method="post" action="/accounts/login/">
+                        <div style='display:none'>
+                            <input type='hidden' name='csrfmiddlewaretoken' value='6ac6961402db882ac98130550df13e57' />
+                        </div>
+                        <input id="id_username" value="Username" onfocus="clearDefault(this)" type="text" name="username" maxlength="30" style="margin-bottom: 6px; width: 250px; padding: 4px; color: #999; border: 1px solid #666;" />
+                        <input value="password" onfocus="clearDefault(this)" type="password" name="password" id="id_password" style="margin-bottom: 6px; width: 250px; padding: 4px; color: #999; border: 1px solid #666;" /></p>
+                        <input type="image" src="{{ THEME_URL }}media/images/login-btn.png" name="submit" value="Log in" />
+                    </form>
+                    </div>
+                    {% if MODULE_USERS_SELFREGISTRATION %}
+                    <div style="margin-top: 20px; border-top: 1px solid #fff;">
+                    <h4 style=" margin-bottom: 4px;">Forgot your password?</h4>
+                    <p style=" margin-bottom: 14px;"><a href="/accounts/password/reset/">Reset your password &rarr;</a></p>
+                    
+                    <h4 style=" margin-bottom: 4px;">Don't have an account?</h4>
+                    <p><a href="/accounts/register/">Register Now &rarr;</a></p>
+                    </div>
+                    {% else %}
+                    <div style="margin-top: 20px; border-top: 1px solid #fff;">
+          <img align="middle" src="{{ THEME_URL }}/media/images/tendenci-logo.png" alt="Tendenci" />
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+	<div id="phone-number"><h4>P: 281-497-6567</h4></div>
+    
+<div class="clear"></div>
+</div>
+{% endblock %}
+
 {% block body %}
-	{% if user.is_staff %}
-	<h2>Admin</h2>
-	<a href="/admin/">Admin Panel (Developer only)</a>
-    {% endif %}
-	<h3>Modules</h3>
-	<ul>
-		<li class="online"><a href="{% url dashboard %}">Dashboard</a></li>
-    	<li class="online"><a href="{% url profile.index %}">{% firstof MODULE_USERS_LABEL "Users" %}</a></li>
-    	<li class="online"><a href="{% url groups %}">{% firstof MODULE_GROUPS_LABEL "Groups" %}</a></li>
-    	<li class="offline"><a href="javascript:;">{% firstof MODULE_EVENTS_LABEL "Events" %}</a></li>
-    	<li class="online"><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL "Articles" %}</a></li>
-    	<li class="offline"><a href="javascript:;">{% firstof MODULE_JOBS_LABEL "Jobs" %}</a></li>
-    	<li class="online"><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL "News" %}</a></li>
-    	<li class="offline"><a href="javascript:;">{% firstof MODULE_DIRECTORIES_LABEL "Directories" %}</a></li>
-        <li class="online"><a href="{% url photoset_latest %}">{% firstof MODULE_PHOTOSETS_LABEL "Pages" %}</a></li>
-    	<li class="online"><a href="{% url stories %}">{% firstof MODULE_STORIES_LABEL "Pages" %}</a></li>
-    	<li class="online"><a href="{% url pages %}">{% firstof MODULE_PAGES_LABEL "Pages" %}</a></li>
-     	<li class="online"><a href="{% url entities %}">{% firstof MODULE_ENTITIES_LABEL "Entities" %}</a></li>
-     	<li class="online"><a href="{% url files %}">{% firstof MODULE_MEDIA_LABEL Files %}</a></li>
-     	<li class="online"><a href="{% url settings %}">Settings</a></li>
-        <li class="online"><a href="{% url event_logs %}">{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</a></li>
-    </ul>
 {% endblock %}

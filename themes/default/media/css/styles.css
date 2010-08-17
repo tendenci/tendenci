@@ -1,52 +1,163 @@
-@charset "utf-8";
-/* CSS Document */
+/*
+Theme Name: Tendenci
+Theme URI: http://tendenci.com
+Description: The official theme of the Tendenci software
+Version: 4.0
+Author: David Stagg for Schipul, Aaron Long for Schipul (design)
+Author URI: http://www.schipul.com/
+*/
 
-body {
-	margin: 0;
-	padding: 0;
-	background-color: #FFF;
-	font-family: Arial, Helvetica, sans-serif;
-}
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead {
+  margin: 0;
+  padding: 0;
+  } 
+  
+body { font: 12px/1.5em Arial, sans-serif normal; color: #525252; }
 
-div#content {
-	margin: 0 auto;
-	width: 990px;
-	border: 2px solid #CCC;
-}
+#home { background: #fff url(../images/body-bg.png) repeat-x top left; }
+#sub { background: #fff url(../images/sub-body-bg.png) repeat-x top left; }
 
-div#body {
-	padding: 15px;
-	width: 100%;
-}
+a { outline: none; }
+a img { border: none; }
 
-div#header {
-	background-color: #940F00;
-	padding: 15px;
-	color: #FFF;
-}
+p { margin-bottom: 10px; }
 
-div#header div.logo  {
-	font-size: 3em;
-	font-weight: bold;
-	float: left;
-}
+ul, ol { margin: 1em 0; padding-left: 2.5em; }
+dt { margin: 0.5em 0 0; }
+dd { margin: 0.25em 0 0.5em 2.5em; }
 
-div#header a {
-	text-decoration: none;
-	color: #FFF;
-}
+a { color: #6F0D02; text-decoration: underline; }
+a:hover { color: #430700; text-decoration: none; }
 
-div#header a:hover {
-	text-decoration: underline;
-}
+h1, h2, h3, h4, h5, h6, h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { font-weight: bold; margin-bottom: 10px; color: #6F0D02; text-decoration: none; text-shadow: 0 2px 0 #ebebeb; }
+h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover { color: #111; text-decoration: none; }
 
-div#header div.login {
-	float: right;
-	padding-top: 30px;
-}
+h1 { font-size: 30px; line-height: 34px; text-transform: uppercase; }
+h2 { font-size: 22px; line-height: 26px; }
+h3 { font-size: 16px; line-height: 20px; }
+h4 { color: #666; text-transform: uppercase; letter-spacing: .05em; font-size: 11px; margin-bottom: 10px; line-height: 14px; }
+h4 a { color: #666; }
+h4 a:hover { color: #333; }
 
-.clear {
-	clear: both;
-}
+#container { width: 900px; margin: 0 auto; }
+
+#header { padding-top: 14px; height: 60px; position: relative; z-index: 9999; }
+#sub #header { height: 78px; margin-bottom: 50px; }
+#header h1, #logo { display: block; width: 106px; height: 47px; margin: 0; padding: 2px }
+#logo { background: transparent url(../images/tendenci-logo.png) no-repeat top left; text-indent: -9999px; }
+
+.login-container { position: absolute; top: 0; right: 20px; width: 400px; z-index: 10000; }
+#phone-number { width: 110px; float: right; padding-top: 7px; }
+.login { float: right; padding: 4px 8px; background: #333; color: #fff; text-decoration: none; font-size: 11px; border-radius: 0 0 6px 6px; -moz-border-radius: 0 0 6px 6px; -webkit-border-radius: 0 0 6px 6px; }
+.login a { color: #fff; }
+.login:hover { background: #111; color: #ebebeb; }
+
+#spotlight { height: 320px; padding-top: 16px; border-bottom: 1px solid #d8d8d8; padding-bottom: 20px; background: transparent url(../images/video-bg.png) no-repeat -25px -74px; position: relative; }
+
+#intro-spotlight { display: block; float: left; width: 400px; height: 300px; padding: 0 0 0 38px; background: transparent url(../images/video-placeholder.png) no-repeat right top; }
+
+#ctas { float: right; top: 20px; width: 400px; height: 222px; overflow: hidden; }
+.headline, .cta-btn { display: block; text-indent: -9999px; }
+.headline { width: 410px; height: 145px; margin-bottom: 20px; }
+.cta-btn { width: 304px; height: 47px; background: transparent url(../images/cta-btn-bg.png) no-repeat top left; padding-top: 10px; }
+.cta-btn p { margin: 0 auto; padding: 0; }
+.cta-btn p a { display: block; height: 47px; }
+
+#keep-it-fresh-headline { background: transparent url(../images/keep-it-fresh-cta.png) no-repeat top left; }
+#keep-it-fresh-btn { width: 249px; height: 36px; background: transparent url(../images/keep-it-fresh-btn.png) no-repeat top left; }
+#increase-attendance-headline { background: transparent url(../images/increase-attendance-cta.png) no-repeat top left; }
+#increase-attendance-btn { width: 266px; height: 37px; background: transparent url(../images/increase-attendance-btn.png) no-repeat top left; }
+#membership-management-headline { background: transparent url(../images/membership-management-cta.png) no-repeat top left; }
+#membership-management-btn { width: 250px; height: 33px; background: transparent url(../images/membership-management-btn.png) no-repeat top left; }
+#seo-headline { background: transparent url(../images/seo-cta.png) no-repeat top left; }
+#seo-btn { width: 258px; height: 33px; background: transparent url(../images/seo-btn.png) no-repeat top left; }
+
+#cost-cta, #get-started { position: absolute; bottom: 14px; display: block; height: 32px; text-indent: -9999px; }
+#sub #get-started, #sub #cost-cta { top: 14px; }
+#dashboard-btn {display: block; height: 32px; text-indent: -9999px; }
+#cost-cta { background: transparent url(../images/cost-cta.png) no-repeat 0 0; right: 0; width: 233px; }
+:hover#cost-cta { background: transparent url(../images/cost-cta.png) no-repeat 0 -32px; }
+:active#cost-cta { background: transparent url(../images/cost-cta.png) no-repeat 0 -64px; }
+#get-started { background: transparent url(../images/get-started-today-cta.png) no-repeat 0 0; right: 253px; width: 188px; }
+:hover#get-started { background: transparent url(../images/get-started-today-cta.png) no-repeat 0 -32px; }
+:active#get-started { background: transparent url(../images/get-started-today-cta.png) no-repeat 0 -64px; }
+#dashboard-btn { background: transparent url(../images/dashboard-btn.png) no-repeat 0 0; }
+:hover#dashboard-btn { background: transparent url(../images/dashboard-btn.png) no-repeat 0 -32px; }
+:active#dashboard-btn { background: transparent url(../images/dashboard-btn.png) no-repeat 0 -64px; }
+
+#border-line, #footer { border-top: 1px solid #fff; padding-top: 30px; }
+
+#dashboard h1 { margin-bottom: 10px; }
+#dashboard .admin-link { margin-bottom: 10px; }
+.main-panel { width: 450px; }
+.side-panel { width: 185px; }
+.side-panel .admin-quick-links, .side-panel .theme-management { margin-right: 0; padding: 10px; width: 165px; }
+.side-panel .admin-quick-links h3, .side-panel .theme-management h3 { margin-top: 0; }
+.modules ul { margin: 0; padding: 0; }
+
+#body { border-bottom: 1px solid #d8d8d8; padding-bottom: 20px; }
+#main-home-content { width: 530px; float: left; }
+#main-content { float: left; width: 660px; }
+#reports #main-content { float: none; width: 100%; }
+
+#features {  }
+#features h2 { line-height: 22px; width: 180px; }
+#features h2 a { font-size: 22px; text-transform: uppercase; letter-spacing: -.05em; text-shadow: 1px 1px #c2c2c2, 2px 2px #c2c2c2, 3px 3px #c2c2c2; }
+#features h2 a:hover { color: #000; /* -webkit-transition: all 0.5s ease-out; -moz-transition: all 0.5s ease-out; -o-transition: all 0.5s ease-out; */ }
+#features a img, #features h2 { margin-right: 10px; }
+#features p a { color: #525252; text-decoration: none; }
+#features a:hover { color: #333; }
+
+#support { border-top: 1px solid #fff; padding: 20px 0; border-bottom: 1px solid #d8d8d8; }
+#support ul { list-style: none; margin: 0 0 10px 0; padding: 0 0 10px 0; border-bottom: 1px solid #d8d8d8; height: 210px; }
+#support ul li { margin: 0 0 10px 0; display: block; }
+#support ul li:hover { }
+#support ul li a { text-decoration: none; }
+#support ul li a:hover { text-decoration: underline; }
+#support-section h4 { font-size: 14px; text-align: center; color: #98012E; }
+
+#sidebar { width: 200px; float: right; }
+#home #sidebar { width: 300px; }
+#sidebar h3, #sidebar h3 a { font-size: 18px; line-height: 22px; color: #666; text-transform: lowercase; }
+#sidebar #blog { }
+#sidebar #blog ul { list-style: none; margin: 0; padding: 0; }
+#sidebar #twitter { padding-top: 20px; border-top: 1px solid #fff; }
+#sub #twitter, #logged-in { padding-bottom: 20px; border-bottom: 1px solid #D8D8D8; margin-bottom: 20px; }
+#logged-in p { margin: 0; }
+p#preloader { margin: 0; padding: 1em 1em 1em 3em; }
+ul#twitter_update_list { margin: 0; padding: 0; list-style: none; }
+ul#twitter_update_list li, #sidebar #blog ul li { margin: 0 0 12px 0; padding: 12px 0; border-bottom: 1px solid #d8d8d8; }
+ul#twitter_update_list li:first-child, #sidebar #blog ul li:first-child { padding: 0; margin: 0; }
+ul#twitter_update_list li a, #sidebar #blog ul li a { color: #525252; }
+ul#twitter_update_list li span { display: block; }
+ul#twitter_update_list li span a { color: #666; text-decoration: none; }
+ul#twitter_update_list li.firstTweet { }
+ul#twitter_update_list li.lastTweet { border-bottom: none; }
+#profileLink { display: block; text-align: right; }
 
 
+#footer { font-size: 11px; margin-bottom: 30px; color: #929292; text-align: center; }
+#footer a { color: #929292; text-decoration: none; }
+#footer a:hover { color: #828282; }
+
+/* OVERRIDES */
+.t { width: 100%; }
+.t .page-wrap { padding: 0; }
+.side-panel ul { list-style: none; margin: 0; padding: 0; }
+.t h1 { margin-bottom: 10px; }
+.rss-feeds ul { margin: 0; padding: 0; }
+.t .news-wrap { padding: 0; }
+
+/* MISC */
+.offline a { color: #999; }
+.align-right { text-align: right; display: block; }
+
+.clear { clear: both; }

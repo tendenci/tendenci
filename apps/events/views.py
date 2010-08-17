@@ -34,7 +34,18 @@ def index(request, id=None, template_name="events/view.html"):
             instance = event
         )
 
-        return render_to_response(template_name, {'event': event}, 
+        
+        try: speaker = event.speaker_set.all()[0]
+        except: speaker = None
+
+        try: organizer = event.organizer_set.all()[0]
+        except: organizer = None
+
+        return render_to_response(template_name, {
+            'event': event,
+            'speaker': speaker,
+            'organizer': organizer,
+            }, 
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -114,7 +125,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     request = request,
                     instance = event,
                 )
-                
+
                 # remove all permissions on the object
                 ObjectPermission.objects.remove_all(event)
                 
@@ -164,20 +175,13 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     messages.add_message(request, messages.INFO, 'Successfully updated %s' % event)
                     if notification: notification.send(get_administrators(),'event_edited', {'object': event, 'request': request})
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
-
         else:
-
-            reg_inits = {
-                'early_dt': datetime.now(),
-                'regular_dt': datetime.now(),
-                'late_dt': event.start_dt,
-             }
 
             form_event = form_class(instance=event, user=request.user)
             form_place = PlaceForm(instance=event.place, prefix='place')
             form_speaker = SpeakerForm(instance=speaker, prefix='speaker')
             form_organizer = OrganizerForm(instance=organizer, prefix='organizer')
-            form_regconf = Reg8nEditForm(instance=event.registration_configuration, initial=reg_inits, prefix='regconf')
+            form_regconf = Reg8nEditForm(instance=event.registration_configuration, prefix='regconf')
 
         # response
         return render_to_response(template_name, {
