@@ -11,6 +11,9 @@ urlpatterns = patterns('events',
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="event.delete"),
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
     url(r'^(?P<id>\d+)/$', 'views.index', name="event"),
+    url(r'^(?P<id>\d+)/registrations/(?P<registration_id>\d+)/$', 
+        'views.registration_confirmation', name='event.registration_confirmation'),
+    
 
     # month-view / day-view
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/$', 'views.month_view', name='event.month'),
@@ -18,7 +21,7 @@ urlpatterns = patterns('events',
 
     # register for event
     url(r'^(?P<event_id>\d+)/register/$', 'views.register', name='event.register'),
-    url(r'^(?P<event_id>\d+)/register/confirm/$', 'views.register_confirm', name='event.register.confirm'),
+#    url(r'^(?P<event_id>\d+)/register/confirm/$', 'views.register_confirm', name='event.register.confirm'),
 
     # registrants (search/view); admin-only
     url(r'^(?P<event_id>\d+)/registrants/search/$', 'views.registrant_search', name="event.registrant.search"),

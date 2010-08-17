@@ -41,10 +41,13 @@ def index(request, id=None, template_name="events/view.html"):
         try: organizer = event.organizer_set.all()[0]
         except: organizer = None
 
+        print datetime.now() > event.end_dt
+
         return render_to_response(template_name, {
             'event': event,
             'speaker': speaker,
             'organizer': organizer,
+            'now': datetime.now(),
             }, 
             context_instance=RequestContext(request))
     else:
@@ -406,8 +409,9 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 # get or create registrant
                 registrant = reg8n.registrant_set.get_or_create(user=user_account)[0]
 
-                # update registrant information
-                registrant.name = '%s %s' % (user_account.first_name, user_account.last_name)
+                # update registrant information                
+                registrant.name = ' '.join((user_account.first_name, user_account.last_name))
+                registrant.name = registrant.name.strip()
                 registrant.mail_name = user_profile.display_name
                 registrant.address = user_profile.address
                 registrant.city = user_profile.city
@@ -425,11 +429,19 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 if (reg8n.payment_method.label).lower() == 'credit card':
                     return HttpResponseRedirect(reverse('payments.views.pay_online', args=[invoice.id, invoice.guid]))
 
-                response = HttpResponseRedirect(reverse('event.register.confirm', args=(event_id)))
+                response = HttpResponseRedirect(reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
             else:
                 response = render_to_response(template_name, {'event':event, 'form':form}, 
                 context_instance=RequestContext(request))
         else:
+
+            try: reg8n = Registration.objects.get(
+                    event=event, registrant=request.user)
+            except: reg8n = None
+
+            if reg8n:
+                return HttpResponseRedirect(reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
+
             form = form_class(event_id)
             response = render_to_response(template_name, {'event':event, 'form':form}, 
                 context_instance=RequestContext(request))
@@ -494,11 +506,11 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
         context_instance=RequestContext(request))
 
 
-@login_required
-def register_confirm(request, event_id=0, template_name="events/reg8n/register-confirm.html"):
-        event = get_object_or_404(Event, pk=event_id)
-        return render_to_response(template_name, {'event':event}, 
-            context_instance=RequestContext(request))
+#@login_required
+#def register_confirm(request, event_id=0, template_name="events/reg8n/register-confirm.html"):
+#        event = get_object_or_404(Event, pk=event_id)
+#        return render_to_response(template_name, {'event':event}, 
+#            context_instance=RequestContext(request))
 
 @login_required
 def registrant_search(request, event_id=0, template_name='events/registrants/search.html'):
@@ -519,6 +531,21 @@ def registrant_details(request, id=0, template_name='events/registrants/details.
             context_instance=RequestContext(request))
     else:
         raise Http403
+
+@login_required
+def registration_confirmation(request, id=0, registration_id=0, template_name='events/reg8n/register-confirm.html'):
+        event = get_object_or_404(Event, pk=id)
+        registration = get_object_or_404(Registration, pk=registration_id)
+
+        try: registrant = registration.registrant_set.all()[0]
+        except: raise Http404
+
+        return render_to_response(template_name, {
+            'event':event,
+            'registration':registration,
+            'registrant':registrant,
+            }, 
+            context_instance=RequestContext(request))
 
 
 
