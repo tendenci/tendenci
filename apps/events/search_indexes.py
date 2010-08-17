@@ -29,7 +29,7 @@ class EventIndex(indexes.RealTimeSearchIndex):
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('events.view_event', obj)
         if not users: users = []
-        return ','.join([user.name for user in users])
+        return ','.join([user.username for user in users])
     
     def prepare_description(self, obj):
         description = obj.description
@@ -47,7 +47,7 @@ class RegistrantIndex(indexes.RealTimeSearchIndex):
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('registrants.view_registrant', obj)
         if not users: users = []
-        return ','.join([user.name for user in users])
+        return ','.join([user.username for user in users])
     
 site.register(Event, EventIndex)
 site.register(Registrant, RegistrantIndex)
