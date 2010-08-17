@@ -319,6 +319,14 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     if notification: notification.send(get_administrators(),'event_added', {'object': event, 'request': request})
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
 
+                return render_to_response(template_name, {
+                    'form_event':form_event,
+                    'form_place':form_place,
+                    'form_speaker':form_speaker,
+                    'form_organizer':form_organizer,
+                    'form_regconf':form_regconf,
+                    }, 
+                    context_instance=RequestContext(request))
         else:
             reg_inits = {
                 'early_dt': datetime.now(),
@@ -334,7 +342,6 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
 
             # response
             return render_to_response(template_name, {
-    #            'event': event,
                 'form_event':form_event,
                 'form_place':form_place,
                 'form_speaker':form_speaker,
@@ -342,7 +349,6 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 'form_regconf':form_regconf,
                 }, 
                 context_instance=RequestContext(request))
-
     else:
         raise Http403
     
