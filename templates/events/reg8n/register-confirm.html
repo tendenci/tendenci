@@ -1,6 +1,7 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
 {% load styled_forms %}
+{% load avatar_tags %}
 
 {% block title %}{{ block.super }}Register{% endblock %}
 
@@ -11,7 +12,7 @@
 {% block body %}
 <div class="t">    
     {% event_nav user %}
-    <h1>Registration Confirmed!</h1>
+    <h1>Proof of Registration</h1>
 
 <style type="text/css">
 	.regconf-section {
@@ -29,33 +30,36 @@
 	.regconf-section div {
 		margin: 10px;
 	}	
+	
+	.registration .avatar {
+		float: left;
+	}
+	.registration .info {
+		margin-top: 20px;
+	}
+	.registration .info .name,
+	.registration .info .email {
+		margin: 0;
+	}
 
 </style>
 
-	<div class="regconf-section">
+	<div class="regconf-section registration">
+		<h2>Your Details</h2>
+		<h3>Registration Number: {{ registration.pk }}</h3>
+
+		<div class='avatar'>{% avatar registrant.user 56 %}</div>
+		<div class="info">
+			<div class="name">{% firstof registrant.name "Name Not Recorded" %}</div>
+			<div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
+		</div>
+		<div style="clear:both;"></div>
+	</div>
+
+	<div class="regconf-section event">
 		<h2>Event Details</h2>
 		<h3>{{ event.title }}</h3>
 		<div>{{ event.description|safe }}</div>
-	</div>
-
-	<div class="regconf-section">
-		<h2>Your Details</h2>
-		<h3>{{ event.title }}</h3>
-		<div>{{ event.description|safe }}</div>
-	</div>
-
-	<div class="regconf-section">
-		<h2>Proof of Purchase</h2>
-		<h3>Instructions</h3>
-		<div>Simply tell us your name at the door.</div>
-	</div>
-
-	<div class="regconf-section">
-		<h2>What to expect</h2>
-		<ul>
-			<li>Email with registration information has been sent to you</li>
-			<li>Email includes lots of useful links. e.g <a href="javascript:;">reprint proof-of-registration</a> </li>
-		</ul>
 	</div>
 
 </div>
