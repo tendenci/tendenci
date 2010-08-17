@@ -125,7 +125,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     request = request,
                     instance = event,
                 )
-                
+
                 # remove all permissions on the object
                 ObjectPermission.objects.remove_all(event)
                 
@@ -175,20 +175,13 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     messages.add_message(request, messages.INFO, 'Successfully updated %s' % event)
                     if notification: notification.send(get_administrators(),'event_edited', {'object': event, 'request': request})
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
-
         else:
-
-            reg_inits = {
-                'early_dt': datetime.now(),
-                'regular_dt': datetime.now(),
-                'late_dt': event.start_dt,
-             }
 
             form_event = form_class(instance=event, user=request.user)
             form_place = PlaceForm(instance=event.place, prefix='place')
             form_speaker = SpeakerForm(instance=speaker, prefix='speaker')
             form_organizer = OrganizerForm(instance=organizer, prefix='organizer')
-            form_regconf = Reg8nEditForm(instance=event.registration_configuration, initial=reg_inits, prefix='regconf')
+            form_regconf = Reg8nEditForm(instance=event.registration_configuration, prefix='regconf')
 
         # response
         return render_to_response(template_name, {

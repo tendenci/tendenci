@@ -1,10 +1,12 @@
 from django import forms
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext_lazy as _, ugettext
 from registration.forms import RegistrationForm
 from profiles.models import Profile
 from registration.models import RegistrationProfile
 from site_settings.utils import get_setting
+from accounts.utils import send_registration_activation_email
 
 class RegistrationCustomForm(RegistrationForm):
     first_name = forms.CharField(max_length=100)
@@ -18,12 +20,20 @@ class RegistrationCustomForm(RegistrationForm):
     zipcode = forms.CharField(max_length=50, required=False)
     
     def save(self, profile_callback=None):
-        new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
-                                                                    password=self.cleaned_data['password1'],
-                                                                    email=self.cleaned_data['email'])
+        # 
+        #new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
+        #                                                            password=self.cleaned_data['password1'],
+        # create inactive user                                                           email=self.cleaned_data['email'])
+        new_user = User.objects.create_user(self.cleaned_data['username'],
+                                            self.cleaned_data['email'],
+                                            self.cleaned_data['password1'])
+        
         new_user.first_name = self.cleaned_data['first_name']
         new_user.last_name = self.cleaned_data['last_name']
         new_user.save()
+        # create registration profile
+        registration_profile = RegistrationProfile.objects.create_profile(new_user)
+        send_registration_activation_email(new_user, registration_profile)
         
         new_profile = Profile(user=new_user, 
                               email=self.cleaned_data['email'],
