@@ -66,7 +66,7 @@ def search(request, template_name="events/search.html"):
         source = 'events',
     )
 
-    return render_to_response(template_name, {'events':events}, 
+    return render_to_response(template_name, {'events':events, 'now':datetime.now()}, 
         context_instance=RequestContext(request))
 
 def print_view(request, id, template_name="events/print-view.html"):
@@ -508,6 +508,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
     return render_to_response(template_name, {
         'events': events,
         'date': datetime(year=int(year), month=int(month), day=int(day)),
+        'now':datetime.now()
         }, 
         context_instance=RequestContext(request))
 
