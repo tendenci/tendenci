@@ -96,6 +96,14 @@
 		color: white;
 	}
 
+	.search-view .event-info .closed .attend {
+		background-color: darkred;
+		border: 1px solid darkred;
+	}
+	.search-view .event-info .closed .attend a {
+		color: white;
+	}
+
 
 </style>
 
@@ -128,10 +136,16 @@
 
 				{% if event.registration_configuration.enabled %}
 
+					{% if now > event.end_dt or now > event.registration_configuration.late_dt %}
+
+					<div class="attend-wrap closed">
+						<div class="attend"><a href="">Registration Closed</a></div>
+						<div style="clear:both;"></div>
+					</div>
+					
+					{% else %}
+
 					{% is_registered_user user event as registered_user %}
-
-					{{ registered_user }}
-
 					{% if registered_user %}
 					<div class="attend-wrap registered">
 						<div class="attend"><a href="{% url event.register event.pk %}">You are registered</a></div>
@@ -142,6 +156,8 @@
 						<div class="attend"><a href="{% url event.register event.pk %}">Attend this event</a></div>
 						<div style="clear:both;"></div>
 					</div>
+					{% endif %}
+
 					{% endif %}
 
 				{% endif %}
