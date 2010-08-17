@@ -27,7 +27,7 @@
              </div>
 		</div>
 		<div class="content">{{ article.body|safe }}			<p>Release Date: {{ article.release_dt }}</p>			<p>Source: {{ article.source|safe }}</p>			<div class="contact">
-				<h4>Contact:</h4>				{{ article.first_name|safe }} {{ article.last_name|safe }}<br>					{{ article.phone|safe }}  {{ article.fax|safe }}<br>				{{ article.email|safe }}<br>				{{ article.website|safe }}			</div>             
+				<h4>Contact:</h4>				{{ article.first_name|safe }} {{ article.last_name|safe }}<br>					{{ article.phone|safe }}  {{ article.fax|safe }}<br>				{{ article.email|urlize }}<br>				{{ article.website|urlize }}			</div>             
 		</div>
 
         <div class="meta">
