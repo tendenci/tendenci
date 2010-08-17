@@ -388,6 +388,19 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
         if not RegistrationConfiguration.objects.filter(event=event).exists():
             raise Http404
 
+        try: reg8n = Registration.objects.get(event=event, registrant=request.user)
+        except: reg8n = None
+
+        if reg8n:
+            return HttpResponseRedirect(
+                reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
+
+        if datetime.now() > event.end_dt:
+            raise Http404
+
+        if datetime.now() > event.registration_configuration.late_dt:
+            raise Http404
+
         
         if request.method == "POST":
             form = form_class(event_id, request.POST)
@@ -440,14 +453,6 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 response = render_to_response(template_name, {'event':event, 'form':form}, 
                 context_instance=RequestContext(request))
         else:
-
-            try: reg8n = Registration.objects.get(
-                    event=event, registrant=request.user)
-            except: reg8n = None
-
-            if reg8n:
-                return HttpResponseRedirect(reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
-
             form = form_class(event_id)
             response = render_to_response(template_name, {'event':event, 'form':form}, 
                 context_instance=RequestContext(request))
