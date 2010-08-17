@@ -165,6 +165,17 @@ class RegistrationConfiguration(models.Model):
         else:
             self.PERIODS = None
 
+    def available(self):
+        
+        if not self.enabled:
+            return False
+
+        if hasattr(self, 'event'):
+            if datetime.now() > self.event.end_dt:
+                return False
+
+        return True
+
     def price(self):
 
         price = 0.00
@@ -281,6 +292,7 @@ class Event(TendenciBaseModel):
     title = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
 
+    all_day = models.BooleanField()
     start_dt = models.DateTimeField(default=datetime.now())
     end_dt = models.DateTimeField(default=datetime.now())
     timezone = TimeZoneField(_('Time Zone'))
@@ -307,9 +319,9 @@ class Event(TendenciBaseModel):
         """    
         return EventMeta().get_meta(self, name)
 
-    @property
-    def reg_conf(self):
-        return self.registration_configuration
+    def is_registrant(self, user):
+        return Registration.objects.filter(
+            event=self.event, registrant=user).exists()
 
     @models.permalink
     def get_absolute_url(self):
