@@ -1,23 +1,27 @@
-from datetime import datetime
+import imghdr
+from os.path import splitext
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
 
 from directories.models import Directory
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from base.fields import SplitDateTimeField
 
+ALLOWED_LOGO_EXT = (
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.png' 
+)
+                    
+                    
 class DirectoryForm(TendenciBaseForm):
     body = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Directory._meta.app_label, 
         'storme_model':Directory._meta.module_name.lower()}))
-
-    #activation_dt = SplitDateTimeField(label=_('Activation Date/Time'),
-    #    initial=datetime.now())
-
+    
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
@@ -28,8 +32,8 @@ class DirectoryForm(TendenciBaseForm):
             'slug',
             'summary',
             'body',
-            'source',
             'logo',
+            'source',
             'timezone',
             'first_name',
             'last_name',
@@ -54,6 +58,20 @@ class DirectoryForm(TendenciBaseForm):
             'status_detail',
         )
 
+    def clean_logo(self):
+        logo = self.cleaned_data['logo']
+        extension = splitext(logo.name)[1]
+        
+        # check the extension
+        if extension.lower() not in ALLOWED_LOGO_EXT:
+            raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
+        
+        # check the image header
+        image_type = '.%s' % imghdr.what('', logo.read())
+        if image_type not in ALLOWED_LOGO_EXT:
+            raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
+        
+        return logo
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user 

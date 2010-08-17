@@ -23,7 +23,50 @@
 
     <div class="directory-wrap">
         <h2>{{ directory.headline }}</h2>
+		{% if directory.logo %} 
+			<img src="{{ MEDIA_URL }}{{ directory.logo }}" />
+		{% endif %}
         <div class="content">{{ directory.body|safe }}</div>
+		{% if directory.first_name and directory.last_name %}		
+		<div class="contact">
+			<p><strong>Contact:</strong></p>
+			<div>{{ directory.first_name }} {{ directory.last_name }}</div>
+			{% if directory.address %}
+				<div>{{ directory.address }}</div>
+			{% endif %}
+			{% if directory.address2 %}
+				<div>{{ directory.address2 }}</div>
+			{% endif %}
+			{% if directory.city or directory.state or directory.zip_code %}
+				<div>
+					{% if directory.city %}{{ directory.city }}{% endif %}
+					{% if directory.state %},{{ directory.state }}{% endif %}
+					{% if directory.zip_code %}{{ directory.zip_code }}{% endif %}
+				</div>
+			{% endif %}
+			{% if directory.country %}
+				<div>{{ directory.country }}</div>
+			{% endif %}
+			{% if directory.phone %}
+				<div>{{ directory.phone }}</div>
+			{% endif %}
+			{% if directory.phone2 %}
+				<div>{{ directory.phone2 }}</div>
+			{% endif %}
+			{% if directory.fax %}
+				<div>{{ directory.fax }} fax.</div>
+			{% endif %}				
+			{% if directory.email %}
+				<div>{{ directory.email }}</div>
+			{% endif %}	
+			{% if directory.email2 %}
+				<div>{{ directory.email2 }}</div>
+			{% endif %}	
+			{% if directory.website %}
+				<div>{{ directory.website }}</div>
+			{% endif %}							
+		</div>      
+		{% endif%}   
         <div class="meta">
             <div class="submitted">Submitted on {{ directory.create_dt|date:"D d M Y P" }} by {{ directory.creator }}</div>
         </div>

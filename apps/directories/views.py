@@ -1,10 +1,11 @@
+from PIL import Image
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.db.models import Count
 
 from base.http import Http403
 from directories.models import Directory
@@ -14,8 +15,6 @@ from perms.utils import get_notice_recipients
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.contenttypes.models import ContentType
 
 try:
     from notification import models as notification
@@ -84,7 +83,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
     if request.user.has_perm('directories.change_directory', directory):    
         if request.method == "POST":
 
-            form = form_class(request.user, request.POST, instance=directory)
+            form = form_class(request.user, request.POST, request.FILES, instance=directory)
 
             if form.is_valid():
                 directory = form.save(commit=False)
@@ -100,6 +99,14 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                 
                 directory.save()
 
+                # resize the image that has been uploaded
+                try:
+                    logo = Image.open(directory.logo.path)
+                    logo.thumbnail((200,200),Image.ANTIALIAS)
+                    logo.save(directory.logo.path)
+                except:
+                    pass
+                
                 log_defaults = {
                     'event_id' : 442000,
                     'event_data': '%s (%d) edited by %s' % (directory._meta.object_name, directory.pk, request.user),
@@ -167,7 +174,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 def add(request, form_class=DirectoryForm, template_name="directories/add.html"):
     if request.user.has_perm('directories.add_directory'):
         if request.method == "POST":
-            form = form_class(request.user, request.POST)
+            form = form_class(request.user, request.POST, request.FILES)
             if form.is_valid():           
                 directory = form.save(commit=False)
                 # set up the user information
@@ -177,6 +184,14 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.owner_username = request.user.username
                 directory.save() # get pk
 
+                # resize the image that has been uploaded
+                try:
+                    logo = Image.open(directory.logo.path)
+                    logo.thumbnail((200,200),Image.ANTIALIAS)
+                    logo.save(directory.logo.path)
+                except:
+                    pass
+        
                 # assign permissions for selected users
                 user_perms = form.cleaned_data['user_perms']
                 if user_perms: ObjectPermission.objects.assign(user_perms, directory)
@@ -206,7 +221,6 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                             'object': directory,
                             'request': request,
                         }
-                        #notification.send(get_administrators(),'directory_added', extra_context)
                         notification.send_emails(recipients,'directory_added', extra_context)
                     
                 return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
@@ -255,24 +269,3 @@ def delete(request, id, template_name="directories/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-
-
-@staff_member_required
-def directories_report(request):
-    stats= EventLog.objects.filter(event_id=435000)\
-                    .values('content_type', 'object_id', 'headline')\
-                    .annotate(count=Count('pk'))\
-                    .order_by('-count')
-    for item in stats:
-        ct = ContentType.objects.get_for_id(item['content_type'])
-        assert ct.model_class() == Directory
-        try:
-            directory = Directory.objects.get(pk=item['object_id'])
-            item['directory'] = directory
-            item['per_day'] = item['count'] * 1.0 / directory.age().days
-        except Directory.DoesNotExist:
-            pass
-        
-    return render_to_response('reports/directories.html', 
-            {'stats': stats}, 
-            context_instance=RequestContext(request))

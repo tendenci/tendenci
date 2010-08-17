@@ -1,8 +1,9 @@
-{% extends "events/base.html" %}
+{% extends "events/base-wide.html" %}
 {% load event_tags %}
 {% load tagging_tags %}
 {% load base_tags %}
 {% load category_tags %}
+{% load humanize %}
 
 {% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
 {% block meta_description %}{{ event.get_description }}{% endblock %}
@@ -13,48 +14,60 @@
 {% endblock %}
 
 {% block body %}
-{% tags_for_object event as tags %}
 
 <div class="t">
+
     {% event_nav user event %}
 
     <div class="event-wrap">
-		<div class="options">
-             <div class="quick-options">
-				{# event_options user event #} 	       
-             </div>
+
+		<div class="info">
+	        <h2>{{ event.title }}</h2>
+	        <div class="content">{{ event.description|safe }}</div>
 		</div>
-			
-        <h2>{{ event.title }}</h2>
-        <div class="content">{{ event.description|safe }}</div>
-        <div class="meta">
-			<div class="categories">
-				{% get_category_for_object event as category %}
-				{% if category %}
-					Category:&nbsp;<a href="{% url event.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
-				{% endif %}
-				{% get_sub_category_for_object event as sub_category %}
-				{% if sub_category %}
-					Sub Category:&nbsp;<a href="{% url event.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
-				{% endif %}				
-			</div>
-			
-			<div class="tags">
-				{% if tags %}
-					Tags: 
-					{% for tag in tags %}
-						<a href="{% url event.search %}?q={{ tag }}">{{ tag }}</a>
-					{% endfor %}
-				{% endif %}
+
+		<div class="vitals">
+
+
+			{% if event.registration_configuration.enabled %}
+			<div class="register-wrap">
+			{% with event.registration_configuration.price as price %}
+			{% if price %}
+				<div class="register-btn">
+					<a href="{% url event.register event.pk %}">${{ price|floatformat:"2" }} to Register</a>
+				</div>
+			{% else %}
+				<div class="register-btn">
+					<a href="{% url event.register event.pk %}">Register for Free</a>
+				</div>
+			{% endif %}
+			{% endwith %}
 			</div>
 
-            <div class="submitted">Submitted on {{ event.create_dt|date:"D d M Y P" }} 
-			by {% firstof event.creator.get_profile.display_name event.creator %}</div>
-        </div>
-        
-		<br />
-        {% url event event.pk as the_url %}
-        <p>{% fb_like_button_iframe the_url %}</p>
+			<div>Registration ends {{ event.registration_configuration.late_dt|naturalday }}</div>
+
+			<div class="hr"></div>
+			{% endif %}
+			
+			<div class="place">
+				<div><strong>{{ event.place.name }}</strong></div>
+				<div class="line">{{ event.place.address }}</div>
+				<div class="line">{{ event.place.city_state|join:", "}} {{ event.place.zip }} {{ event.place.country }}</div>
+			</div>
+
+			<div class="time-period">
+				<div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
+				<div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
+			</div>
+			
+			<div class="hr"></div>
+
+			{% if speaker.name %}<div class="speaker"><strong>Speaker</strong> {{ speaker.name }}</div>{% endif %}
+			{% if organizer.name %}<div class="organizer"><strong>Organizer</strong> {{ organizer.name }}</div>{% endif %}
+
+		</div>
+
+		<div style="clear:both;"></div>
     </div>
 
     <!-- delete-event form -->
@@ -64,6 +77,14 @@
 
 </div>
 {% endblock %}
+
+<div class="meta">
+<div class="submitted">Submitted on {{ event.create_dt|date:"D d M Y P" }}
+by {% firstof event.creator.get_profile.display_name event.creator %}</div>
+</div>
+
+{% url event event.pk as the_url %}
+<p>{% fb_like_button_iframe the_url %}</p>
 
 {% block extra_body %}
     <script type="text/javascript">
@@ -76,12 +97,4 @@
 			});
 		});
     </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
-	</script>
 {% endblock %}

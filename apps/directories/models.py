@@ -1,4 +1,5 @@
 import uuid
+import re
 from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -13,6 +14,10 @@ from meta.models import Meta as MetaTags
 from directories.module_meta import DirectoryMeta
 from entities.models import Entity
 
+def file_directory(instance, filename):
+    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+    return 'directories/%s' % (filename)
+
 class Directory(TendenciBaseModel):
  
     guid = models.CharField(max_length=40)
@@ -22,7 +27,9 @@ class Directory(TendenciBaseModel):
     summary = models.TextField(blank=True)
     body = tinymce_models.HTMLField()
     source = models.CharField(max_length=300, blank=True)
-    logo = models.CharField(max_length=100, blank=True)
+    logo = models.FileField(max_length=260, upload_to=file_directory, 
+                            help_text=_('Company logo. Only jpg, gif, or png images.'), 
+                            blank=True)
     
     first_name = models.CharField(_('First Name'), max_length=100, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=100, blank=True)
@@ -86,6 +93,7 @@ class Directory(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
             
         super(self.__class__, self).save(*args, **kwargs)
+
     
     def age(self):
         return datetime.now() - self.create_dt

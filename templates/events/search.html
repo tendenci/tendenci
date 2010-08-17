@@ -116,7 +116,7 @@
 					{{ event.start_dt|date:"M j, Y P" }} - {{ event.end_dt|date:"M j, Y P" }}
 				</div> 
 
-				<div class="description">{{ event.description|safe|striptags|truncatewords:"80" }}</div>
+				<div class="description">{{ event.description|striptags|truncatewords:"80"|safe }}</div>
 
 				{% if event.registration_configuration.enabled %}
 				<div class="attend-wrap">
