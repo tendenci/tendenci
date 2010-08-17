@@ -13,8 +13,7 @@ STATUS_CHOICES = (
     (0,'Inactive'),         
 )
 
-uses_regex_helptext = _("Determines the order in which redirect gets evaluated. If checked,\
-                        this will get redirected after non-regex redirects to allow for overrides.")
+uses_regex_helptext = _("Check if the From URL uses a regular expression.")
 
 class Redirect(models.Model):
     from_url = models.CharField(_('From URL'), max_length=255, unique=True, db_index=True)
