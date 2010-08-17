@@ -33,7 +33,7 @@ def build_image(file, size):
 
     key = generate_image_cache_key(file, size)
 
-    cache.add(key, binary, 60*60*24*30) # cache for 30 days
+    cache.add(key, binary, 60*60*24*30) # cache for 30 days #issue/134
     
     return binary
 
