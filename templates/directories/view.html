@@ -27,18 +27,54 @@
              </div>
 		</div>
 
-		<div class="content">{{ directory.body|safe }}
+		<div class="content">
+		
+			{% if directory.logo %} 
+				<img src="{{ MEDIA_URL }}{{ directory.logo }}" />
+			{% endif %}
+			<p>{{ directory.body|safe }}</p>
 					{% if directory.source %}			<p>Source: {{ directory.source|safe }}</p>
 			{% endif %}	
 			
-			<% if directory.first_name %>					<div class="contact">
-				<h4>Contact:</h4>				{{ directory.first_name|safe }} {{ directory.last_name|safe }}<br>
-				{{ directory.address|safe }} {{ directory.address2|safe }}
-				{{ directory.city|safe }} {{ directory.state|safe }}  {{ directory.zip_code|safe }}  {{ directory.country|safe }}
-				{{ directory.phone|safe }}  {{ directory.phone2|safe }}<br>
-				<% if directory.fax%>Fax: {{ directory.fax|safe }}<%endif%>				{{ directory.email|safe }}  {{ directory.email2|safe }}<br>				{{ directory.website|safe }}			</div>             
+								<div class="contact">
+				{% if directory.first_name and directory.last_name %}				<div>{{ directory.first_name }} {{ directory.last_name }}</div>
+				{% endif %}
+				{% if directory.address %}
+					<div>{{ directory.address }}</div>
+				{% endif %}
+				{% if directory.address2 %}
+					<div>{{ directory.address2 }}</div>
+				{% endif %}
+				{% if directory.city or directory.state or directory.zip_code %}
+					<div>
+						{% if directory.city %}{{ directory.city }}{% endif %}
+						{% if directory.state %}{{ directory.state }}{% endif %}
+						{% if directory.zip_code %}{{ directory.zip_code }}{% endif %}
+					</div>
+				{% endif %}
+				{% if directory.country %}
+					<div>{{ directory.country }}</div>
+				{% endif %}
+				{% if directory.phone %}
+					<div>{{ directory.phone }}</div>
+				{% endif %}
+				{% if directory.phone2 %}
+					<div>{{ directory.phone2 }}</div>
+				{% endif %}
+				{% if directory.fax %}
+					<div>{{ directory.fax }} fax.</div>
+				{% endif %}				
+				{% if directory.email %}
+					<div>{{ directory.email|urlize }}</div>
+				{% endif %}	
+				{% if directory.email2 %}
+					<div>{{ directory.email2|urlize }}</div>
+				{% endif %}	
+				{% if directory.website %}
+					<div>{{ directory.website|urlize }}</div>
+				{% endif %}										</div>     
 		</div>
-		<% endif%>
+
 		
         <div class="meta">
 			<div class="categories">

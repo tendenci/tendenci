@@ -36,7 +36,7 @@ class EventManager(Manager):
                         sqs = sqs.filter(allow_user_view=True)
                         sqs = sqs.filter_or(who_can_view__exact=user.username)
                     else:
-                        sqs = sqs.filter(allow_anonymous_view=True)               
+                        sqs = sqs.filter(allow_anonymous_view=True)
             else:
                 sqs = sqs.filter(allow_anonymous_view=True)
 

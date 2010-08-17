@@ -44,13 +44,12 @@ class Place(models.Model):
     url = models.URLField(blank=True)
 
     def __unicode__(self):
-        city_state = [s for s in (self.city, self.state) if s]
         str_place = '%s %s %s %s %s' % (
-            self.name, self.address, ', '.join(city_state), self.zip, self.country)
-        return str_place.strip()
+            self.name, self.address, ', '.join(self.city_state()), self.zip, self.country)
+        return unicode(str_place.strip())
 
-class Phone(): pass
-class Email(): pass
+    def city_state(self):
+        return [s for s in (self.city, self.state) if s]
 
 class Registrant(models.Model):
     """
@@ -80,19 +79,19 @@ class Registrant(models.Model):
     
     objects = RegistrantManager()
 
+    class Meta:
+        permissions = (("view_registrant","Can view registrant"),)
+
 class Registration(models.Model):
 
     guid = models.TextField(max_length=40, editable=False, default=uuid.uuid1)
     event = models.ForeignKey('Event') # dynamic (should be static)
 
-#    invoiceid = models.IntegerField(null=True, blank=True) # proof of transaction
-#    discounts = models.ForeignKey('DiscountRedeemed')
-
     reminder = models.BooleanField(default=False)
     note = models.TextField(blank=True)
 
-    # payment methods are soft-deleted
-    # this means they can always be referenced
+    # TODO: Payment-Method must be soft-deleted
+    # so that it may always be referenced
     payment_method = models.ForeignKey('PaymentMethod')
     amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
 
@@ -100,7 +99,6 @@ class Registration(models.Model):
     owner = models.ForeignKey(User, related_name='owned_registrations')
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-#    status = models.BooleanField()
 
     def save_invoice(self, *args, **kwargs):
         from invoices.models import Invoice
@@ -158,12 +156,6 @@ class RegistrationConfiguration(models.Model):
 
         if hasattr(self,'event'):
         # registration_configuration might not be attached to an event yet
-
-            # assume practical dates
-            self.early_dt = self.create_dt
-            self.regular_dt = self.create_dt 
-            self.late_dt = self.event.start_dt
-            
             self.PERIODS = {
                 'early': (self.early_dt, self.regular_dt),
                 'regular': (self.regular_dt, self.late_dt),
@@ -195,9 +187,7 @@ class Payment(models.Model):
     Event registration payment
     Extends the registration model
     """
-#    METHODS = ('Credit Card', 'Check', 'Cash', 'At Event')
     registration = models.OneToOneField('Registration')
-#    methods_available = models.CharField(max_length=50, choices=METHODS, default='active')
 
 class PaymentMethod(models.Model):
     """
@@ -260,7 +250,10 @@ class Organizer(models.Model):
     event = models.ManyToManyField('Event', blank=True)
     user = models.OneToOneField(User, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True) # static info.
-    description = models.TextField(blank=True) # static info.    
+    description = models.TextField(blank=True) # static info.
+
+    def __unicode__(self):
+        return self.name    
 
 class Speaker(models.Model):
     """
@@ -272,6 +265,9 @@ class Speaker(models.Model):
     user = models.OneToOneField(User, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True) # static info.
     description = models.TextField(blank=True) # static info.
+    
+    def __unicode__(self):
+        return self.name
 
 class Event(TendenciBaseModel):
     """
@@ -300,6 +296,9 @@ class Event(TendenciBaseModel):
 
     objects = EventManager()
 
+    class Meta:
+        permissions = (("view_event","Can view event"),)
+
     def get_meta(self, name):
         """
         This method is standard across all models that are
@@ -318,7 +317,7 @@ class Event(TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
-    
+
     # this function is to display the event date in a nice way. 
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010
     def dt_display(self, format_date='%a, %b %d, %Y', format_time='%I:%M %p'):
