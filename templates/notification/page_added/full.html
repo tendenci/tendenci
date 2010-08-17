@@ -11,9 +11,9 @@
 <p>A new page has been added on the 
 {{ SITE_GLOBAL_SITEDISPLAYNAME }} - <b>{{ object.title }}</b></p>
 <p>To view the detail of this page, go to: <b>
-<a href="{{ SITE_GLOBAL_SITEURL }}{% url page object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url page object.id %}</a></b><br>
+<a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
 To approve this page and make it visible to the public, go to
-<a href="{{ SITE_GLOBAL_SITEURL }}{% url page.edit object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url page.edit object.id %}</a>
+<a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a>
 </p>
 
 <br>Thanks!
