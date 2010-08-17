@@ -11,7 +11,7 @@
 {% block body %}
 <div class="t">
     
-    {% entity_nav request.user %}
+    {% entity_nav request.user entity %}
 
     <h1>{% firstof MODULE_ENTITIES_LABEL 'Entities' %} Edit</h1>
 

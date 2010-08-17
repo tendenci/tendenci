@@ -14,7 +14,7 @@
 {% block body %}
 <div class="t">
 
-    {% job_nav request.user %}
+    {% job_nav request.user job %}
 
     <h1>{% firstof MODULE_JOBS_LABEL 'Job' %} Edit</h1>
 

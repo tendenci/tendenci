@@ -23,9 +23,6 @@
 		<ul id="secondary">
 			<li><a href="{% url email.search %}">Emails:</a></li> 
 			<li><a href="{% url email_block.search %}">Email Blocks:</a></li> 
-			{% if can_edit_setting %}
-				<li><a href="{% url settings.index "module" "emails" %}">Settings</a></li>
-			{% endif %}
 			{% if nav_object %}
 				{% if can_view %}
 				<li><a href="{% url email_block.view nav_object.pk %}">View</a></li>

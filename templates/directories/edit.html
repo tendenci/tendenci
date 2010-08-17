@@ -13,7 +13,7 @@
 
 {% block body %}
 <div class="t">
-    {% directory_nav request.user %}
+    {% directory_nav request.user directory %}
 
     <h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} Edit</h1>
 
