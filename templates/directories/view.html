@@ -36,8 +36,9 @@
 					{% if directory.source %}			<p>Source: {{ directory.source|safe }}</p>
 			{% endif %}	
 			
-			{% if directory.first_name and directory.last_name %}					<div class="contact">
-				<p><strong>Contact:</strong></p>				<div>{{ directory.first_name }} {{ directory.last_name }}</div>
+								<div class="contact">
+				{% if directory.first_name and directory.last_name %}				<div>{{ directory.first_name }} {{ directory.last_name }}</div>
+				{% endif %}
 				{% if directory.address %}
 					<div>{{ directory.address }}</div>
 				{% endif %}
@@ -71,8 +72,7 @@
 				{% endif %}	
 				{% if directory.website %}
 					<div>{{ directory.website|urlize }}</div>
-				{% endif %}										</div>      
-			{% endif%}       
+				{% endif %}										</div>     
 		</div>
 
 		
