@@ -34,7 +34,18 @@ def index(request, id=None, template_name="events/view.html"):
             instance = event
         )
 
-        return render_to_response(template_name, {'event': event}, 
+        
+        try: speaker = event.speaker_set.all()[0]
+        except: speaker = None
+
+        try: organizer = event.organizer_set.all()[0]
+        except: organizer = None
+
+        return render_to_response(template_name, {
+            'event': event,
+            'speaker': speaker,
+            'organizer': organizer,
+            }, 
             context_instance=RequestContext(request))
     else:
         raise Http403
