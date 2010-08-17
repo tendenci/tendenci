@@ -2,6 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext_lazy as _, ugettext
+from django.contrib.auth.tokens import default_token_generator
+from django.template import Context, loader
+from django.utils.http import int_to_base36
 from registration.forms import RegistrationForm
 from profiles.models import Profile
 from registration.models import RegistrationProfile
@@ -112,3 +115,42 @@ class LoginForm(forms.Form):
                 
             return True
         return False
+    
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField(label=_("E-mail"), max_length=75)
+
+    def clean_email(self):
+        """
+        Validates that a user exists with the given e-mail address.
+        """
+        email = self.cleaned_data["email"]
+        self.users_cache = User.objects.filter(email__iexact=email)
+        if len(self.users_cache) == 0:
+            raise forms.ValidationError(_("That e-mail address doesn't have an associated user account. Are you sure you've registered?"))
+        return email
+
+    def save(self, domain_override=None, email_template_name='registration/password_reset_email.html',
+             use_https=False, token_generator=default_token_generator):
+        """
+        Generates a one-use only link for resetting password and sends to the user
+        """
+        from django.core.mail import send_mail
+        
+        for user in self.users_cache:
+            if not domain_override:
+                site_name = get_setting('site', 'global', 'sitedisplayname')
+            else:
+                site_name  = domain_override
+            site_url = get_setting('site', 'global', 'siteurl')
+            t = loader.get_template(email_template_name)
+            c = {
+                'email': user.email,
+                'site_url': site_url,
+                'site_name': site_name,
+                'uid': int_to_base36(user.id),
+                'user': user,
+                'token': token_generator.make_token(user),
+                'protocol': use_https and 'https' or 'http',
+            }
+            send_mail(_("Password reset on %s") % site_name,
+                t.render(Context(c)), None, [user.email])
