@@ -55,13 +55,14 @@ class RegistrantManager(Manager):
             Returns a SearchQuerySet
         """
         sqs = SearchQuerySet()
-        
-        if 'user' in kwargs:
-            user = kwargs['user']
-        else:
-            user = None
+
+        user = kwargs.get('user', None)
+        event = kwargs.get('event', None)
             
         is_an_admin = is_admin(user)
+        
+        if event:
+            sqs = sqs.filter(event=event)
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query)) 
