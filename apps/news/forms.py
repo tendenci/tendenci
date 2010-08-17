@@ -12,7 +12,7 @@ from base.fields import SplitDateTimeField
 class NewsForm(TendenciBaseForm):
 
     body = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        widget=TinyMCE(attrs={'style':'width:100%;'}, 
         mce_attrs={'storme_app_label':News._meta.app_label, 
         'storme_model':News._meta.module_name.lower()}))
 
