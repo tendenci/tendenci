@@ -10,6 +10,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 {% endblock %}
 
 {% block body %}
@@ -93,7 +94,10 @@
 	.month-names .next a {
 		background-color: #EEE;
 	}
-
+	
+	.event-item {
+		word-wrap: break-word;
+	}
 
 </style>
 
@@ -127,9 +131,12 @@
 				{% if events %}
 					{% for event in events|slice:"2" %}
 						<div class="event-item">
-							<span class="time-stamp">{{ event.start_dt|date:"P" }}</span>
+							<span cla5ss="time-stamp">{{ event.start_dt|date:"P" }}</span>
 							<span class="event-title">
-							<a href="{{ event.get_absolute_url }}">{{ event }}</a></span>
+							<a class="event-item-link" href="{{ event.get_absolute_url }}" title="{{ event.start_dt|date:"P" }}&nbsp;{{ event }}">
+								{{ event.title|slice:":13 " }} ...
+							</a>
+							</span>
 						</div>
 					{% endfor %}
 
@@ -153,5 +160,11 @@
 {% endblock %}
 
 {% block extra_body %}
-
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
+<script type="text/javascript">
+	$('a.event-item-link').tipsy({
+		gravity: 's', 
+		live: true 
+	});
+</script>
 {% endblock %}
