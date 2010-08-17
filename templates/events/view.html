@@ -49,15 +49,20 @@
 
 		<div class="vitals">
 
-
 			{% if event.registration_configuration.enabled %}
 			
 				{% is_registered_user user event as registered_user %}
 
 				{% if registered_user %}
 
-					{% if now > event.end_dt %}
-						asdfasdf
+					{% if now > event.end_dt or now > event.registration_configuration.late_dt %}
+
+						<div class="register-wrap">
+							<div class="register-btn closed">
+								<a href="">Registration Closed</a>
+							</div>
+						</div>
+						<div>Registration ended {{ event.registration_configuration.late_dt|naturalday }}</div>
 
 					{% else %}
 
@@ -73,13 +78,11 @@
 							</div>
 						{% endif %}
 						{% endwith %}
+						</div>
+						<div>Registration ends {{ event.registration_configuration.late_dt|naturalday }}</div>
 
 					{% endif %}
-					</div>
-					<div>Registration ends {{ event.registration_configuration.late_dt|naturalday }}</div>
 				{% else %}
-
-
 
 					{% if now > event.end_dt or now > event.registration_configuration.late_dt %}
 
@@ -110,7 +113,7 @@
 					{% endif %}
 
 				{% endif %}
-	
+
 				<div class="hr"></div>
 
 			{% endif %}
