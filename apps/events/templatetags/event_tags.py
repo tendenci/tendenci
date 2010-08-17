@@ -1,6 +1,6 @@
 from datetime import datetime
 from django import template
-from events.models import Event
+from events.models import Event, Registration
 
 register = template.Library()
 
@@ -92,3 +92,42 @@ def event_list(parser, token):
 
     
     return EventListNode(day, limit, context_var)
+
+class IsRegisteredUserNode(template.Node):    
+    
+    def __init__(self, user, event, context_var):
+        self.user = template.Variable(user)
+        self.event = template.Variable(event)
+        self.context_var = context_var
+    
+    def render(self, context):
+
+        user = self.user.resolve(context)
+        event = self.event.resolve(context)
+
+        exists = Registration.objects.filter(
+            event = event,
+            registrant__user=user).exists()
+
+        context[self.context_var] = exists
+        return ''
+
+@register.tag
+def is_registered_user(parser, token):
+    """
+    Example: {% is_registered_user user event as registered_user %}
+    """
+    bits = token.split_contents()
+
+    if len(bits) != 5:
+        message = '%s tag requires 5 arguments' % bits[0]
+        raise template.TemplateSyntaxError(message)
+
+    user = bits[1]
+    event = bits[2]
+    context_var = bits[4]
+
+    
+    return IsRegisteredUserNode(user, event, context_var)
+
+
