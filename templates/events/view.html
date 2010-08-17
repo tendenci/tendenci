@@ -28,6 +28,8 @@
 
 		<div class="vitals">
 
+
+			{% if event.registration_configuration.enabled %}
 			<div class="register-wrap">
 			{% with event.registration_configuration.price as price %}
 			{% if price %}
@@ -45,6 +47,7 @@
 			<div>Registration ends {{ event.registration_configuration.late_dt|naturalday }}</div>
 
 			<div class="hr"></div>
+			{% endif %}
 			
 			<div class="place">
 				<div><strong>{{ event.place.name }}</strong></div>
@@ -59,9 +62,8 @@
 			
 			<div class="hr"></div>
 
-
-			<div class="speaker"><strong>Speaker</strong> {{ speaker }}</div>
-			<div class="organizer"><strong>Organizer</strong> {{ organizer }}</div>
+			{% if speaker.name %}<div class="speaker"><strong>Speaker</strong> {{ speaker.name }}</div>{% endif %}
+			{% if organizer.name %}<div class="organizer"><strong>Organizer</strong> {{ organizer.name }}</div>{% endif %}
 
 		</div>
 
