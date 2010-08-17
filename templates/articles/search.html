@@ -35,9 +35,9 @@
             <h2><a href="{{ article.get_absolute_url }}">{% firstof article.headline "Untitled" %}</a></h2>
 
 			{% if article.summary %}
-				<div class="content">{{ article.summary|truncatewords:20 }}</div>
+				<div class="content">{{ article.summary|striptags|truncatewords:20|safe  }}</div>
 			{% else %}
-				<div class="content">{{ article.body|safe|striptags|truncatewords:20 }}</div>	
+				<div class="content">{{ article.body|striptags|truncatewords:20|safe }}</div>	
 			{% endif %}
 
 			<div class="meta">
