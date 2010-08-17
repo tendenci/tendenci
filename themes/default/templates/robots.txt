@@ -1,9 +1,4 @@
 User-agent: *
-Disallow: /admin/
-Disallow: /*?q=
-Allow: /
-
-
-Sitemap: http://www.tendenci.com/sitemap.xml
+Disallow: /
 
 

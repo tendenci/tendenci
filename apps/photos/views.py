@@ -454,7 +454,6 @@ def photos_batch_add(request, photoset_id=0):
                 # response is for flash, not humans
                 return HttpResponse(data, mimetype="text/plain")
             else:
-                print 'no workie'
                 return HttpResponse("photo is not valid", mimetype="text/plain")
 
     else:
