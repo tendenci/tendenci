@@ -64,13 +64,13 @@
 					<div>{{ directory.fax }} fax.</div>
 				{% endif %}				
 				{% if directory.email %}
-					<div>{{ directory.email }}</div>
+					<div>{{ directory.email|urlize }}</div>
 				{% endif %}	
 				{% if directory.email2 %}
-					<div>{{ directory.email2 }}</div>
+					<div>{{ directory.email2|urlize }}</div>
 				{% endif %}	
 				{% if directory.website %}
-					<div>{{ directory.website }}</div>
+					<div>{{ directory.website|urlize }}</div>
 				{% endif %}										</div>      
 			{% endif%}       
 		</div>

@@ -36,8 +36,8 @@
 		         {{ news.first_name|safe }} {{ news.last_name|safe }}<br>	
 		             
 		         {{ news.phone|safe }}  {{ news.fax|safe }}<br>
-		         {{ news.email|safe }}<br>
-		         {{ news.website|safe }}
+		         {{ news.email|urlize }}<br>
+		         {{ news.website|urlize }}
 	         </div>  
 	 		</p>               
         </div>
