@@ -230,7 +230,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'theme': "advanced",
 
     # theme options
-    'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,|,image,|,pagebreak,fullscreen,code",
+    'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,bullist,numlist,table, |,justifyleft,justifycenter,justifyright,|,link,unlink,|,image,|,pagebreak,fullscreen,code",
     'theme_advanced_buttons2': "formatselect,underline,justifyfull,forecolor,|,pastetext,pasteword,removeformat,media,charmap,|,outdent,indent,|,undo,redo",
     'theme_advanced_buttons3': "",
     'theme_advanced_toolbar_location': "top",
