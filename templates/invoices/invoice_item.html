@@ -160,7 +160,7 @@
           
            <tr>
           	<td><a href="{# eloy - fill out regration view link #}">{{reg8n.id}}</a></td>
-          	<td colspan="2"><a href="{% url events.views.index reg8n.event.id %}">{{reg8n.event.title|truncatewords:5}}</a></td>
+          	<td colspan="2"><a href="{# url events.views.index reg8n.event.id #}">{{reg8n.event.title|truncatewords:5}}</a></td>
           	<td>{{reg8n.event.start_dt|date:'N j, Y h:i a'}}</td>
           	<td>{{reg8n.amount_paid|format_currency}}</td>
           	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>

@@ -51,11 +51,14 @@ def tcurrency(mymoney):
     # get_setting is slow, so i hard coded the currency symbol here until the slowness gets fixed
     currency_symbol = "$"
     if not currency_symbol: currency_symbol = "$"
-    
-    if mymoney >= 0:
-        return currency_symbol + locale.format('%.2f', mymoney, True)
+
+    if not isinstance(mymoney, str):
+        if mymoney >= 0:
+            return currency_symbol + locale.format('%.2f', mymoney, True)
+        else:
+            return currency_symbol + '(%s)' % (locale.format('%.2f', abs(mymoney), True))
     else:
-        return currency_symbol + '(%s)' % (locale.format('%.2f', abs(mymoney), True))
+        return mymoney
     
 def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_time='%I:%M %p'):
     """
