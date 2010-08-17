@@ -36,9 +36,9 @@
 
             <h2><a href="{{ n.get_absolute_url }}">{{ n.headline }}</a></h2>
 			{% if n.summary %}
-				<div class="content">{{ n.summary|truncatewords:20 }}</div>
+				<div class="content">{{ n.summary|striptags|truncatewords:20|safe }}</div>
 			{% else %}
-				<div class="content">{{ n.body|safe|striptags|truncatewords:20 }}</div>	
+				<div class="content">{{ n.body|striptags|truncatewords:20|safe }}</div>	
 			{% endif %}
 			<div class="meta">
             	<div class="submitted">Submitted on {{ n.create_dt|date:"D d M Y P" }} by {{ n.creator }}</div>
