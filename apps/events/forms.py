@@ -30,6 +30,11 @@ class EventForm(TendenciBaseForm):
             'start_dt',
             'end_dt',
             'timezone',
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_user_edit',
+            'status',
+            'status_detail',
             )
 
     def __init__(self, *args, **kwargs):
