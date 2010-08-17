@@ -1,0 +1,22 @@
+{% extends "site_base.html" %}
+
+{% block title %}{{ block.super }}404 NOT FOUND{% endblock%}
+
+{% block body %}
+    <h1>The page was not found!</h1>
+    <p>In technical terms this is a 404 error. What happened is likely one of the situations listed below. The possibilities are:</p>
+    <ul>
+      <li>The page URL changed from {{ request.get_full_path }} to another URL like /cool-stuff/</li>
+        <li>If you came from another site they may have linked this page incorrectly</li>
+        <li>The page has been deleted and the search engine has not updated its database.</li>
+        <li>The URL was entered incorrectly</li>
+    </ul>
+<h3>Don't leave so soon</h3>
+    <p>You may be able to find what your looking for by</p>
+    <ul>
+      <li><a href="{% url home %}">Visiting the Home Page</a></li>
+      <li><a href="/sitemap">Visiting the Tendenci Sitemap</a></li>
+        <li><a href="{% url haystack_search %}">Searching the site</a></li>
+    </ul>  
+{% include "nav.html" %}
+{% endblock %}

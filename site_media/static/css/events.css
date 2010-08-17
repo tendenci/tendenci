@@ -302,3 +302,66 @@ div.id_end_dt .field input#id_end_dt_1 {
 	height: 10px;
 	width: 100%;
 }
+
+
+/* details page */
+.t .event-wrap {
+	background-color: #F7F7F7;
+	padding: 0;
+}
+.event-wrap .info {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: white;
+	width: 66%;
+	float: left;
+}
+.event-wrap .vitals {
+	float: right;
+	margin: 10px 0;
+	width: 31.5%;
+	text-align: center;
+	xbackground-color: #CFF;
+}
+
+.event-wrap .vitals .register-wrap {			
+}
+.event-wrap .vitals .register-btn a {
+	color: white;
+	margin: 0 auto;
+	font-size: 1.6em;
+	background-color: #006018;
+	padding: 10px 0;
+	border: 1px solid #005F18;
+	width: 200px;
+	display: block;
+	text-decoration: none;
+}
+.event-wrap .vitals .register-btn a:active, 
+.event-wrap .vitals .register-btn a:hover {
+	background-color: #007F20;
+}
+
+.event-wrap .vitals .price {
+	font-size: 1.4em;
+	margin-bottom: 10px;
+}		
+.event-wrap .vitals .place {
+	margin-bottom: 15px;
+}
+.event-wrap .vitals .place .line {
+	margin: 0;
+	line-height: 1em;
+}
+.event-wrap .vitals .time-period .line {
+	margin: 0;
+	line-height: 1em;
+}
+.event-wrap .hr {
+	background-color: silver;
+	height: 1px;
+	margin: 15px;
+}
+
+
+
