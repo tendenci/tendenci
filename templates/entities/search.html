@@ -45,8 +45,7 @@
 			</div>
 
 
-            <h2><a href="{% url entity entity.pk %}">{{ entity.entity_name }}</a></h2>
-            <div class="content">{{ entity.entity_name|striptags|truncatewords:20 }}</div>
+            <h2><a href="{% url entity entity.pk %}">{{ entity.entity_name|striptags|truncatewords:20|safe }}</a></h2>
 			<div class="meta">
             	<div class="submitted">Submitted on {{ entity.create_dt|date:"D d M Y P" }} by {{ entity.creator }}</div>
             </div>
