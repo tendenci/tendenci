@@ -27,9 +27,6 @@
 		<span>{% firstof MODULE_ENTITIES_LABEL 'Entities' %}</span>
 		<ul id="secondary">
 			<li><a href="{% url entities %}">{% firstof MODULE_ENTITIES_LABEL 'Entities' %}:</a></li> 
-			{% if can_edit_setting %}
-				<li><a href="{% url settings.index "module" "entities" %}">Settings</a></li>
-			{% endif %}
 			{% if nav_object %}
 				{% if can_view_entity %}
 				<li><a href="{% url entity nav_object.pk %}">View</a></li>

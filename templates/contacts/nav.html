@@ -25,9 +25,6 @@
 		<span>{% firstof MODULE_CONTACTS_LABEL 'Conacts' %}</span>
 		<ul id="secondary">
 			<li><a href="{% url contact.search %}">{% firstof MODULE_CONTACTS_LABEL 'Conacts' %}:</a></li> 
-			{% if can_edit_setting %}
-				<li><a href="{% url settings.index "module" "contacts" %}">Settings</a></li>
-			{% endif %}
 			{% if nav_object %}
 				{% if can_view_contact %}
 				<li><a href="{% url contact nav_object.pk %}">View</a></li>

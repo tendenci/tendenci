@@ -22,9 +22,6 @@
 		<span>{% firstof MODULE_EVENT_LOGS_LABEL 'Event Logs' %}</span>
 		<ul id="secondary">
 			<li><a href="{% url event_logs %}">{% firstof MODULE_EVENT_LOGS_LABEL 'Event Logs' %}:</a></li> 
-			{% if can_edit_setting %}
-				<li><a href="{% url settings.index "module" "event_logs" %}">Settings</a></li>
-			{% endif %}
 			{% if nav_object %}
 				{% if can_view_el %}
 				<li><a href="{% url event_log nav_object.pk %}">View</a></li>
