@@ -11,7 +11,7 @@ from tinymce import models as tinymce_models
 
 # Create your models here.
 class Story(TendenciBaseModel):
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
+    guid = models.CharField(max_length=40)
     title = models.CharField(max_length=200, blank=True)
     content = tinymce_models.HTMLField()
     syndicate = models.BooleanField(_('Include in RSS feed'))
@@ -26,6 +26,12 @@ class Story(TendenciBaseModel):
     class Meta:
         permissions = (("view_story","Can view story"),)
         verbose_name_plural = "stories"
+        
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save(*args, **kwargs)
 
     @models.permalink
     def get_absolute_url(self):

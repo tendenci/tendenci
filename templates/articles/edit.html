@@ -13,7 +13,7 @@
 
 {% block body %}
 <div class="t">
-    {% article_nav request.user %}
+    {% article_nav request.user article %}
 
     <h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} Edit</h1>
 

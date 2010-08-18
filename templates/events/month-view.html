@@ -1,0 +1,170 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load category_tags %}
+
+{% block title %}{{ block.super }} {% endblock %}
+{% block meta_description %} {% endblock %}
+{% block meta_keywords %} {% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
+{% endblock %}
+
+{% block body %}
+
+<style type="text/css">
+
+	.month-view h1 {
+		text-align: center;
+	}
+	.month-view div.weekday {
+		width: 14.28%;
+		float: left;
+		text-align: center;
+	}
+	.month-view div.month-wrap {
+		border: 1px solid silver;
+		border-right: none;
+		border-bottom: none;
+	}
+	.month-view div.day {
+		width: 14.13%;
+		height: 116px;
+		border: 1px solid silver;
+
+		border-top: none;
+		border-left: none;
+
+		float: left;
+	}
+	.month-view div.day div.date-numeral {
+		text-align: right;
+		background-color: #EEE;
+		position: relative;
+	}
+	.month-view div.day div.date-numeral a {
+		display: block;
+		text-decoration: none;
+		padding-right: 5px;
+	}
+	.month-view div.day div.event-item {
+		font-size: 11px;
+		line-height: 1.1em;
+		border-bottom: 1px dashed silver;
+		padding: 5px 0;
+		margin-left: 2px;
+	}
+	.month-view div.day div.event-item span.event-title a {
+		text-decoration: none;
+	}
+	.month-view div.day div.more-events {
+		background-color: #FFC;
+		padding: 5px;
+	}
+
+
+	.month-names {
+		margin-bottom: 10px;
+	}
+	.month-names .month-name {
+		font-size: 1.4em;
+		float: left;
+		margin-right: 0;
+	}
+	.month-names .month-name a {
+		text-decoration: none;
+		display: block;
+		padding: 10px;
+	}
+	.month-names .month-name a:active,
+	.month-names .month-name a:hover {
+		background-color: #DDD;
+	}
+	.month-names .previous a {
+		background-color: #EEE;
+	}
+	.month-names .current a {
+		background-color: #EEE;
+		width: 140px;
+		text-align: center;
+	}
+	.month-names .next a {
+		background-color: #EEE;
+	}
+	
+	.event-item {
+		word-wrap: break-word;
+	}
+
+</style>
+
+<div class="month-view">
+
+	{% event_nav user %}
+
+	<div class="month-names">
+		<div class="month-name previous"><a href="{{ prev_month_url }}"> &laquo;</a></div>
+		<div class="month-name current"><a href="">{{ month_names.1 }} {{ year }}</a></div>
+		<div class="month-name next"><a href="{{ next_month_url }}">&raquo;</a></div>
+		<div style="clear:both;"></div>
+	</div>
+	<div style="clear:both;"></div>
+
+	<div class="weekdays">
+	{% for weekday in weekdays %}
+		<div class="weekday">{{ weekday }}</div>
+	{% endfor %}
+	<div style="clear:both;"></div>
+	</div>
+
+	<div class="month-wrap">
+	{% for week in month %}
+		{% for day in week %}
+			<div class="day">
+				<div class="date-numeral"><a href="{% url event.day day.year day.month day.day %}">{{ day.day }}</a></div>
+
+				{% event_list day as events %}
+				
+				{% if events %}
+					{% for event in events|slice:"2" %}
+						<div class="event-item">
+							<span cla5ss="time-stamp">{{ event.start_dt|date:"P" }}</span>
+							<span class="event-title">
+							<a class="event-item-link" href="{{ event.get_absolute_url }}" title="{{ event.start_dt|date:"P" }}&nbsp;{{ event }}">
+								{{ event.title|slice:":13 " }} ...
+							</a>
+							</span>
+						</div>
+					{% endfor %}
+
+					{% if events|length|add:"-2" > 0 %}
+						<div class="more-events">
+							<a href="{% url event.day day.year day.month day.day %}">+{{ events|length|add:"-2" }} more</a>
+						</div>
+					{% endif %}
+
+
+				{% endif %}
+				
+			</div>
+		{% endfor %}	
+	{% endfor %}
+	<div style="clear:both;"></div>
+	</div> <!-- END month-wrap -->
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
+<script type="text/javascript">
+	$('a.event-item-link').tipsy({
+		gravity: 's', 
+		live: true 
+	});
+</script>
+{% endblock %}

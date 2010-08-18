@@ -1,0 +1,341 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load perm_tags %}
+
+{% block title %}{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} Edit{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
+<script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% directory_nav request.user directory %}
+
+    <h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} Edit</h1>
+
+    <div class="DIRECTORIESectory-wrap">
+		<div class="options">
+             <div class="quick-options">
+				{% directory_options request.user directory %} 	       
+             </div>
+		</div>
+
+		{% if form.errors %}
+		<div class="errors">
+			<p>Please review the fields below. Thank you.</p>
+			<ul>
+			{% for field in form %}
+				{% if field.errors %}
+					<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+				{% endif %}
+			{% endfor %}
+			</ul>
+		</div>
+		{% endif %}
+
+    	<form action="{% url directory.edit directory.pk %}" method="post" enctype="multipart/form-data">
+    	<div class="forms">
+
+			<div class="item">
+				<div class="errs">{{ form.headline.errors }}</div>
+				<div class="label">{{ form.headline.label_tag }}</div>
+				<div class="field">{{ form.headline }}</div>
+				<div class="help">{{ form.headline.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.slug.errors }}</div>
+				<div class="label">{{ form.slug.label_tag }}</div>
+				<div class="field">{{ form.slug }}</div>
+				<div class="help">{{ form.slug.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.summary.errors }}</div>
+				<div class="label">{{ form.summary.label_tag }}</div>
+				<div class="field">{{ form.summary }}</div>
+				<div class="help">{{ form.summary.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.body.errors }}</div>
+				<div class="label">{{ form.body.label_tag }}</div>
+				<div class="field">{{ form.body }}</div>
+				<div class="help">{{ form.body.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.logo.errors }}</div>
+				<div class="label">{{ form.logo.label_tag }}</div>
+				<div class="field">{{ form.logo }}</div>
+				<div class="help">{{ form.logo.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+			
+			<div class="item">
+				<div class="errs">{{ form.source.errors }}</div>
+				<div class="label">{{ form.source.label_tag }}</div>
+				<div class="field">{{ form.source }}</div>
+				<div class="help">{{ form.source.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item-dt">
+				<div class="errs">{{ form.activation_dt.errors }}</div>
+				<div class="label">{{ form.activation_dt.label_tag }}</div>
+				<div class="field">{{ form.activation_dt }}</div>
+				<div class="help">{{ form.activation_dt.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.timezone.errors }}</div>
+				<div class="label">{{ form.timezone.label_tag }}</div>
+				<div class="field">{{ form.timezone }}</div>
+				<div class="help">{{ form.timezone.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.first_name.errors }}</div>
+				<div class="label">{{ form.first_name.label_tag }}</div>
+				<div class="field">{{ form.first_name }}</div>
+				<div class="help">{{ form.first_name.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.last_name.errors }}</div>
+				<div class="label">{{ form.last_name.label_tag }}</div>
+				<div class="field">{{ form.last_name }}</div>
+				<div class="help">{{ form.last_name.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.address.errors }}</div>
+				<div class="label">{{ form.address.label_tag }}</div>
+				<div class="field">{{ form.address }}</div>
+				<div class="help">{{ form.address.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.address2.errors }}</div>
+				<div class="label">{{ form.address2.label_tag }}</div>
+				<div class="field">{{ form.address2 }}</div>
+				<div class="help">{{ form.address2.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.city.errors }}</div>
+				<div class="label">{{ form.city.label_tag }}</div>
+				<div class="field">{{ form.city }}</div>
+				<div class="help">{{ form.city.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.state.errors }}</div>
+				<div class="label">{{ form.state.label_tag }}</div>
+				<div class="field">{{ form.state }}</div>
+				<div class="help">{{ form.state.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.zip_code.errors }}</div>
+				<div class="label">{{ form.zip_code.label_tag }}</div>
+				<div class="field">{{ form.zip_code }}</div>
+				<div class="help">{{ form.zip_code.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.country.errors }}</div>
+				<div class="label">{{ form.country.label_tag }}</div>
+				<div class="field">{{ form.country }}</div>
+				<div class="help">{{ form.country.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.phone.errors }}</div>
+				<div class="label">{{ form.phone.label_tag }}</div>
+				<div class="field">{{ form.phone }}</div>
+				<div class="help">{{ form.phone.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.phone2.errors }}</div>
+				<div class="label">{{ form.phone2.label_tag }}</div>
+				<div class="field">{{ form.phone2 }}</div>
+				<div class="help">{{ form.phone2.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.fax.errors }}</div>
+				<div class="label">{{ form.fax.label_tag }}</div>
+				<div class="field">{{ form.fax }}</div>
+				<div class="help">{{ form.fax.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.email.errors }}</div>
+				<div class="label">{{ form.email.label_tag }}</div>
+				<div class="field">{{ form.email }}</div>
+				<div class="help">{{ form.email.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.email2.errors }}</div>
+				<div class="label">{{ form.email2.label_tag }}</div>
+				<div class="field">{{ form.email2 }}</div>
+				<div class="help">{{ form.email2.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.website.errors }}</div>
+				<div class="label">{{ form.website.label_tag }}</div>
+				<div class="field">{{ form.website }}</div>
+				<div class="help">{{ form.website.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item">
+				<div class="errs">{{ form.tags.errors }}</div>
+				<div class="label">{{ form.tags.label_tag }}</div>
+				<div class="field">{{ form.tags }}</div>
+				<div class="help">{{ form.tags.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item-checkbox">
+				<div class="errs">{{ form.allow_anonymous_view.errors }}</div>
+				<div class="field">{{ form.allow_anonymous_view }}</div>
+				<div class="label">{{ form.allow_anonymous_view.label_tag }}</div>
+				<div class="help">{{ form.allow_anonymous_view.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item-checkbox">
+				<div class="errs">{{ form.allow_user_view.errors }}</div>
+				<div class="field">{{ form.allow_user_view }}</div>
+				<div class="label">{{ form.allow_user_view.label_tag }}</div>
+				<div class="help">{{ form.allow_user_view.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item-checkbox">
+				<div class="errs">{{ form.allow_user_edit.errors }}</div>
+				<div class="field">{{ form.allow_user_edit }}</div>
+				<div class="label">{{ form.allow_user_edit.label_tag }}</div>
+				<div class="help">{{ form.allow_user_edit.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item-hr"></div>
+
+			<div class="item-checkbox">
+				<div class="errs">{{ form.syndicate.errors }}</div>
+				<div class="field">{{ form.syndicate }}</div>
+				<div class="label">{{ form.syndicate.label_tag }}</div>
+				<div class="help">{{ form.syndicate.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item-hr-clear"></div>
+
+			<div class="item">
+				<div class="errs">{{ form.user_perms.errors }}</div>
+				<div class="label">{{ form.user_perms.label_tag }}</div>
+				<div class="field">{{ form.user_perms }}</div>
+				<div class="help">{{ form.user_perms.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			{% is_admin user as admin %}
+			{% if admin %}
+			<div class="admin-block">
+
+				<div class="item-text">
+					Administrators Only
+				</div>
+
+				<div class="item-textarea">
+					<div class="errs">{{ form.admin_notes.errors }}</div>
+					<div class="label">{{ form.admin_notes.label_tag }}</div>
+					<div class="field">{{ form.admin_notes }}</div>
+					<div class="help">{{ form.admin_notes.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+
+				<div class="item-checkbox">
+					<div class="errs">{{ form.status.errors }}</div>
+					<div class="field">{{ form.status }}</div>
+					<div class="label">{{ form.status.label_tag }}</div>
+					<div class="help">{{ form.status.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+	
+				<div class="item">
+					<div class="errs">{{ form.status_detail.errors }}</div>
+					<div class="label">{{ form.status_detail.label_tag }}</div>
+					<div class="field field-short">{{ form.status_detail }}</div>
+					<div class="help">{{ form.status_detail.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+			{% endif %}
+
+        	<input type="submit" value="Save Changes" />
+		</div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+    <script type="text/javascript">
+		$(document).ready(function(){
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_object = confirm("Permenantly delete {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}?");	// confirm
+				if(delete_object) $('form[name="directory-delete"]').submit()
+				return false;	// cancel
+			});
+		});
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+	var iconrow = new dropdown({
+		container:	'more-options-wrap',
+		trigger:	'more-options-trigger',
+		target:		'more-options-target'
+	});
+	</script>
+	<script type="text/javascript">
+		$(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+		$('.timepicker').timePicker({
+		  show24Hours: false,
+		  step: 15
+		});
+	</script>
+{% endblock %}

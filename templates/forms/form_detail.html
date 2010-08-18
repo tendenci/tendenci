@@ -1,0 +1,25 @@
+{% extends "forms/base.html" %}
+{% load styled_forms %}
+
+{% block title %}{{ form.title }}{% endblock %}
+
+{% block extra_head %}{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <h2>{{ form.title }}</h2>
+    <p>{{ form.intro|urlize }}</p>
+
+	<div class="form-builder-wrap">
+    	<form method="post" enctype="multipart/form-data">
+    	<div class="forms">
+            {{ form_for_form|styled_form }}
+        	<input type="submit" value="Submit" />
+		</div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}{% endblock %}

@@ -14,7 +14,7 @@ from articles.module_meta import ArticleMeta
 from entities.models import Entity
 
 class Article(TendenciBaseModel):
-    guid = models.CharField(max_length=40, default=uuid.uuid1)
+    guid = models.CharField(max_length=40)
     slug = SlugField(_('URL Path'), unique=True)
     timezone = TimeZoneField(_('Time Zone'))
     headline = models.CharField(max_length=200, blank=True)
@@ -42,7 +42,7 @@ class Article(TendenciBaseModel):
     entity = models.ForeignKey(Entity, null=True)
     
     # html-meta tags
-    meta = models.OneToOneField(MetaTags, related_name='object', null=True)
+    meta = models.OneToOneField(MetaTags, null=True)
 
     objects = ArticleManager()
 
@@ -63,6 +63,12 @@ class Article(TendenciBaseModel):
 
     def __unicode__(self):
         return self.headline
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save(*args, **kwargs)
     
     def age(self):
         return datetime.now() - self.create_dt

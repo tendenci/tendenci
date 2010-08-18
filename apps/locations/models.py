@@ -7,7 +7,7 @@ from locations.managers import LocationManager
 from entities.models import Entity
 
 class Location(TendenciBaseModel ):
-    guid = models.CharField(max_length=40, default=uuid.uuid1) 
+    guid = models.CharField(max_length=40) 
     location_name = models.CharField(_('Name'), max_length=200, blank=True)
     description = models.TextField(blank=True)
 
@@ -40,6 +40,12 @@ class Location(TendenciBaseModel ):
     @models.permalink
     def get_absolute_url(self):
         return ("location", [self.pk])
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            
+        super(self.__class__, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.description
