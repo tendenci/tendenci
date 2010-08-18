@@ -105,6 +105,7 @@
  		{% endif %}
  		
 		{% if admin %}
+		 <li class="redirects"><a href="{% url redirects %}"><span>Redirects</span></a></li>
 		<li class="contacts"><a href="{% url contact.search %}"><span>{% firstof MODULE_CONTACTS_LABEL "Contacts" %}</span></a></li>
      	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
         <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
