@@ -29,63 +29,10 @@
 </div>
 <div class="clear-left"></div>
 
-<div class="field-wrapper">
-	{% if form.address.errors %}
-		{{ form.address.errors }}
-	{% endif %}
-	<label for="id_address">{% trans 'Address:'%}</label>
-	{{ form.address }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{{ form.city.errors }}
-	<label for="id_city">{% trans 'City:'%}</label>
-	{{ form.city }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{{ form.state.errors }}
-	<label for="id_state">{% trans 'State:'%}</label>
-	{{ form.state }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{{ form.country.errors }}
-	<label for="id_country">{% trans 'Country:'%}</label>
-	{{ form.country }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{{ form.zipcode.errors }}
-	<label for="id_zipcode">{% trans 'Zipcode:'%}</label>
-	{{ form.zipcode }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{% if form.company.errors %}
-		{{ form.company.errors }}
-	{% endif %}
-	<label for="id_company">{% trans 'Company:'%}</label>
-	{{ form.company }}
-</div>
-<div class="clear-left"></div>
-
 <div class="field-wrapper required">
 	{{ form.email.errors }}
 	<label for="id_email">{% trans 'Email Address:'%}</label>
 	{{ form.email }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{{ form.phone.errors }}
-	<label for="id_phone">{% trans 'Phone:'%}</label>
-	{{ form.phone }}
 </div>
 <div class="clear-left"></div>
 

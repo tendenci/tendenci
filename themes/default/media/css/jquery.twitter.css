@@ -1,0 +1,10 @@
+div#twitter { }
+p#preloader { margin: 0; padding: 1em 1em 1em 3em; }
+ul#twitter_update_list { margin: 0; padding: 0; list-style: none; }
+ul#twitter_update_list li { margin: 0; padding: 10px 0 12px 0; border-bottom: 1px solid #d8d8d8; }
+ul#twitter_update_list li a { color: #525252; }
+ul#twitter_update_list li span { display: block; }
+ul#twitter_update_list li span a { color: #666; text-decoration: none; }
+ul#twitter_update_list li.firstTweet { padding: 0 0 12px 0; }
+ul#twitter_update_list li.lastTweet { border-bottom: none; }
+#profileLink { display: block; text-align: right; }

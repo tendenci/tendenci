@@ -1,0 +1,89 @@
+{% extends "imports/base.html" %}
+{% load i18n %}
+{% load dashboard_tags %}
+
+{% block title %}Import Users{% endblock %}
+
+{% block extra_head %}
+
+<style type="text/css">
+
+
+</style>
+
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% dashboard_nav user %}	
+<div class="imports">
+	<b>You ({{ request.user.username }}) are importing the following file at ({% now "D d M Y P" %})</b>: <br> 
+	<font color="red">
+	{{ file_name }}
+	</font>
+	<br>
+	Note: User Logging Will be Suspended for the duration of import for this session only.<br>
+	<br>
+	<div class="results">
+		<div class="loading-icon" style="position:absolute;top:100;left:50;width:300px;padding:5px;border:1px solid #071C7F;margin-bottom:3em;">
+			<img src="/site_media/static/tresources/en/images/icons/loading.gif" alt="loading"/> loading ...
+		</div>
+	</div>
+	<p>&nbsp;</p>
+	<p>&nbsp;</p>
+</body>
+{# dynamically load jquery #}
+<script>
+	if (!(window.jQuery)) { 
+		var s = document.createElement('script');
+		s.setAttribute('src', '/site_media/static/js/jquery-1.4.2.min.js'); 
+		s.setAttribute('type', 'text/javascript');
+		document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var myurl = "{% url import.user_upload_subprocess id %}";
+    var retval;
+    var i = 0;
+    var doc_h;
+    var completed = false;
+  	while(!completed){
+	    $.ajax({
+		    type: "GET",
+		    url: myurl, 
+		    async: false,
+		    success: function(data){
+		    	data = data.replace(/^\s+|\s+$/g, '');
+		    	if (i == 0){
+					$(".results").html(data);
+		    	}
+		    	else{
+		    		$('.loading-icon').remove();
+		    		$(".results").append(data);
+		    	}
+		    	
+		    	//doc_h = document.body.clientHeight;
+		    	//window.scrollTo(0, doc_h);
+		    	
+		    	if (data == ''){ 
+			    	completed = true;
+			    	//$('.loading-icon').remove();
+			    }
+	    	},
+	    	error: function(errmsg){
+	    		$('.loading-icon').remove();
+	    		$(".results").append(errmsg);
+	    		completed = true;
+	    		
+	    	}
+	    });
+	   	i++;
+  	}
+    
+}); 
+
+</script>
+
+
+{% endblock %}

@@ -1,4 +1,5 @@
 import datetime
+import cPickle
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -136,10 +137,17 @@ def send(request, action_id):
     action = get_object_or_404(Action, pk=action_id)
     if not request.user.has_perm('actions.add_action'): raise Http403
     
-    if action.status_detail == 'open' and action.group.members.count() < LIMIT:
-        # send the newsletter immediately
-        from actions.utils import distribute_newsletter
-        boo = distribute_newsletter(request, action)  
+    if action.status_detail == 'open':
+        if action.group.members.count() < LIMIT:
+            # send the newsletter immediately
+            from actions.utils import distribute_newsletter_v2
+            boo = distribute_newsletter_v2(action)
+        else:
+            from actions.tasks import task_queue_distribute_newsletter
+            result = task_queue_distribute_newsletter.delay(action)
+            # store the AsyncResult of the task so we can check the state of the task later
+            action.task_result = cPickle.dumps(result)
+            action.save()
     
     return HttpResponseRedirect(reverse('action.confirm', args=[action.id]))
 

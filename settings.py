@@ -8,8 +8,7 @@ sys.path.insert(0, APPS_PATH)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-SITE_THEME = "tendenci"
-#SITE_THEME = "default"
+SITE_THEME = "default"
 
 ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
@@ -33,7 +32,9 @@ DATABASES = {
 
 # email
 EMAIL_HOST = '4.78.3.131'
+#EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
+#EMAIL_PORT = 1025
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
@@ -41,6 +42,14 @@ DEFAULT_FROM_EMAIL = 'DO-NOT-REPLY@tendenci.com'
 
 # user agent for external retrieval of files/images
 TENDENCI_USER_AGENT = 'Tendenci/5.0 +http://www.tendenci.com'
+
+Tue Aug 17 20:58:29 2010
+Switched to branch 'master'
+
+Tue Aug 17 20:58:43 2010
+From github.com:schipul/Tendenci-5.0
+ * branch            master     -> FETCH_HEAD
+Already up-to-date.
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -88,7 +97,7 @@ AUTO_GENERATE_AVATAR_SIZES = (128, 80, 48,)
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = '/site_media/static/admin/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 's$6*!=m$t0__=51^w@_tbazonjm4+fg@0+ic#bx^3rj)zc$a6i'
@@ -157,6 +166,8 @@ INSTALLED_APPS = (
     'tinymce',
     'haystack',
     'captcha',
+    'south',
+    'forms_builder.forms',
     
     # tendenci applications
     'base',
@@ -167,6 +178,7 @@ INSTALLED_APPS = (
     'news',
     'stories',
     'pages',
+    'events',
     'photos',
     'entities',
     'locations',
@@ -192,6 +204,12 @@ INSTALLED_APPS = (
     'newsletters',
     'meta',
     'redirects',
+    'directories',
+    'helpfiles',
+
+    # celery task system, must stay at the bottom
+    # of installed apps
+    'djcelery',
 )
 
 # This is the number of days users will have to activate their
@@ -222,7 +240,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'theme': "advanced",
 
     # theme options
-    'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,bullist,numlist,|,justifyleft,justifycenter,justifyright,|,link,unlink,|,image,|,pagebreak,fullscreen,code",
+    'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,bullist,numlist,table, |,justifyleft,justifycenter,justifyright,|,link,unlink,|,image,|,pagebreak,fullscreen,code",
     'theme_advanced_buttons2': "formatselect,underline,justifyfull,forecolor,|,pastetext,pasteword,removeformat,media,charmap,|,outdent,indent,|,undo,redo",
     'theme_advanced_buttons3': "",
     'theme_advanced_toolbar_location': "top",
@@ -267,8 +285,8 @@ HAYSTACK_INCLUDED_APPS = ('article','page','news','story')
 #---------------------------------------------------------------
 # payment gateway settings - LOGIN and KEY need to be moved to local_urls.py later
 #---------------------------------------------------------------
-AUTHNET_POST_URL = ""
-AUTHNET_TEST_POST_URL = "https://test.authorize.net/gateway/transact.dll"
+#AUTHNET_POST_URL = "https://secure.authorize.net/gateway/transact.dll"
+AUTHNET_POST_URL = "https://test.authorize.net/gateway/transact.dll"
 # the AUTHNET_LOGIN and AUTHNET_KEY are specified in local_settings
 AUTHNET_LOGIN = ""
 AUTHNET_KEY = ""
@@ -289,6 +307,8 @@ CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 # Django Messaging system
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+# Fomrs upload path
+FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
 
 # local settings for development
 try:

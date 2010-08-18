@@ -7,7 +7,7 @@ from registration.views import activate
 
 from profiles.views import password_change, password_change_done
 
-from accounts.forms import RegistrationCustomForm
+from accounts.forms import RegistrationCustomForm, PasswordResetForm
 from accounts.views import register
 
 urlpatterns = patterns('',
@@ -34,7 +34,7 @@ urlpatterns = patterns('',
                            password_change_done,
                            name='auth_password_change_done'),
                        url(r'^password/reset/$',
-                           auth_views.password_reset,
+                           auth_views.password_reset, {'password_reset_form':PasswordResetForm},
                            name='auth_password_reset'),
                        url(r'^password/reset/confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
                            auth_views.password_reset_confirm,

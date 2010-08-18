@@ -6,7 +6,7 @@ from perms.utils import is_admin
 from tinymce import models as tinymce_models
 
 class Email(TendenciBaseModel):
-    guid = models.CharField(max_length=50, default=uuid.uuid1)
+    guid = models.CharField(max_length=50)
     priority = models.IntegerField(default=0)
     subject =models.CharField(max_length=255)
     body = tinymce_models.HTMLField()
@@ -63,6 +63,7 @@ class Email(TendenciBaseModel):
     
     def save(self, user=None):
         if not self.id:
+            self.guid = uuid.uuid1()
             if user and not user.is_anonymous():
                 self.creator=user
                 self.creator_username=user.username

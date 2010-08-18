@@ -10,14 +10,60 @@ class EventManager(Manager):
             Returns a SearchQuerySet
         """
         sqs = SearchQuerySet()
-        
-        if 'user' in kwargs:
-            user = kwargs['user']
+
+        user = kwargs.get('user', None)
+        event = kwargs.get('event', None)
+
+        admin = is_admin(user)
+            
+        if query:
+            sqs = sqs.auto_query(sqs.query.clean(query)) 
+            if user:
+                if not admin:
+                    if not user.is_anonymous():
+                        sqs = sqs.filter(allow_user_view=True)
+                        sqs = sqs.filter_or(who_can_view__exact=user.username)
+                    else:
+                        sqs = sqs.filter(allow_anonymous_view=True)               
+            else:
+                sqs = sqs.filter(allow_anonymous_view=True) 
         else:
-            user = None
+            if user:
+                if admin:
+                    sqs = sqs.all()
+                else:
+                    if not user.is_anonymous():
+                        sqs = sqs.filter(allow_user_view=True)
+                        sqs = sqs.filter_or(who_can_view__exact=user.username)
+                    else:
+                        sqs = sqs.filter(allow_anonymous_view=True)
+            else:
+                sqs = sqs.filter(allow_anonymous_view=True)
+
+            sqs = sqs.order_by('-create_dt')
+
+
+        if event:
+            sqs = sqs.filter(event=event)
+
+        return sqs.models(self.model)
+
+class RegistrantManager(Manager):
+    def search(self, query=None, *args, **kwargs):
+        """
+            Uses haystack to query events. 
+            Returns a SearchQuerySet
+        """
+        sqs = SearchQuerySet()
+
+        user = kwargs.get('user', None)
+        event = kwargs.get('event', None)
             
         is_an_admin = is_admin(user)
-            
+        
+        if event:
+            sqs = sqs.filter(event=event)
+
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query)) 
             if user:
@@ -33,6 +79,7 @@ class EventManager(Manager):
             if user:
                 if is_an_admin:
                     sqs = sqs.all()
+                    print sqs
                 else:
                     if not user.is_anonymous():
                         sqs = sqs.filter(allow_user_view=True)
@@ -42,6 +89,6 @@ class EventManager(Manager):
             else:
                 sqs = sqs.filter(allow_anonymous_view=True)
 
-            sqs = sqs.order_by('-release_dt')
+            sqs = sqs.order_by('-create_dt')
     
         return sqs.models(self.model)

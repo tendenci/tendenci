@@ -9,7 +9,7 @@ from user_groups.models import Group
 from articles.models import Article
 
 class Action(TendenciBaseModel):
-    guid = models.CharField(max_length=50, default=uuid.uuid1)
+    guid = models.CharField(max_length=50)
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=50, default='Distribution E-mail')
     description = models.TextField(blank=True, null=True)
@@ -32,6 +32,7 @@ class Action(TendenciBaseModel):
     sla = models.BooleanField(_('Software License Agreement'), default=False)
     starting_point = models.IntegerField(default=0)
     stopping_point = models.IntegerField(default=0)
+    task_result = models.TextField(null=True)
     
     @models.permalink
     def get_absolute_url(self):
@@ -42,6 +43,7 @@ class Action(TendenciBaseModel):
     
     def save(self, user=None):
         if not self.id:
+            self.guid = uuid.uuid1()
             if user and not user.is_anonymous():
                 self.creator=user
                 self.creator_username=user.username
@@ -58,6 +60,6 @@ class ActionRecap(models.Model):
     sent = models.IntegerField(default=0)
     attempted = models.IntegerField(default=0)
     failed = models.IntegerField(default=0)
-    recap = models.TextField()
+    recap = models.TextField(null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     
