@@ -43,14 +43,6 @@ DEFAULT_FROM_EMAIL = 'DO-NOT-REPLY@tendenci.com'
 # user agent for external retrieval of files/images
 TENDENCI_USER_AGENT = 'Tendenci/5.0 +http://www.tendenci.com'
 
-Tue Aug 17 20:58:29 2010
-Switched to branch 'master'
-
-Tue Aug 17 20:58:43 2010
-From github.com:schipul/Tendenci-5.0
- * branch            master     -> FETCH_HEAD
-Already up-to-date.
-
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
