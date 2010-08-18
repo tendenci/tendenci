@@ -1,0 +1,69 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+{% load avatar_tags %}
+
+{% block title %}{{ block.super }}Register{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">    
+    {% event_nav user %}
+    <h1>Proof of Registration</h1>
+
+<style type="text/css">
+	.regconf-section {
+		background-color: #F7F7F7;
+		border: 1px solid silver;
+		margin-bottom: 10px;
+	}
+	.regconf-section h2 {
+		background-color: #DDD;
+		padding: 10px;
+	}
+	.regconf-section h3 {
+		margin: 10px;
+	}
+	.regconf-section div {
+		margin: 10px;
+	}	
+	
+	.registration .avatar {
+		float: left;
+	}
+	.registration .info {
+		margin-top: 20px;
+	}
+	.registration .info .name,
+	.registration .info .email {
+		margin: 0;
+	}
+
+</style>
+
+	<div class="regconf-section registration">
+		<h2>Your Details</h2>
+		<h3>Registration Number: {{ registration.pk }}</h3>
+
+		<div class='avatar'>{% avatar registrant.user 56 %}</div>
+		<div class="info">
+			<div class="name">{% firstof registrant.name "Name Not Recorded" %}</div>
+			<div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
+		</div>
+		<div style="clear:both;"></div>
+	</div>
+
+	<div class="regconf-section event">
+		<h2>Event Details</h2>
+		<h3>{{ event.title }}</h3>
+		<div>{{ event.description|safe }}</div>
+	</div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{% endblock %}

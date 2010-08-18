@@ -1,0 +1,58 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user directories.add_directory as can_add_directory %}
+
+{% if nav_object %}
+	{% has_perm user directories.view_directory nav_object as can_view_directory %}
+	{% has_perm user directories.change_directory nav_object as can_edit_directory %}
+	{% has_perm user directories.delete_directory nav_object as can_delete_directory %}
+{% else %}
+	{% has_perm user directories.view_directory as can_view_directory %}
+	{% has_perm user directories.change_directory as can_edit_directory %}
+	{% has_perm user directories.delete_directory as can_delete_directory %}
+{% endif %}
+
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</span>
+		<ul id="secondary">
+			<li><a href="{% url directories %}">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}:</a></li> 
+			{% if can_edit_setting %}
+				<li><a href="{% url settings.index "module" "directories" %}">Settings</a></li>
+			{% endif %}
+			{% if nav_object %}
+				{% if can_view_directory %}
+				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
+				{% endif %}
+				{% if can_edit_directory %}
+				<li><a href="{% url directory.edit nav_object.pk %}">Edit</a></li>
+				<li><a href="{% url directory.edit.meta nav_object.pk %}">Edit Meta</a></li>
+				<li><a href="{% url category.update nav_object.opt_app_label nav_object.opt_module_name nav_object.pk %}">Edit Categories</a></li>
+				{% endif %}
+			{% endif %}
+			<li><a href="{% url directory.search %}">Search</a></li>
+			{% if can_add_directory %}
+			<li><a href="{% url directory.add %}">Add</a></li>
+			{% endif %}
+
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
+		</ul>
+		
+	</li>
+	{% if MODULE_NEWS_ENABLED %}
+	<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
+	{% endif %}
+	</ul>
+</div>

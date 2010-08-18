@@ -1,0 +1,364 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load cache %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US">
+
+<head>
+  <title>{% block title %}{% endblock %} - {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
+     <meta charset="UTF-8">
+    <meta name="description" content="{% block meta_description %}{% endblock %}"> 
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %}"> 
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/" />
+  <link rel="shortcut icon" href="http://blog.tendenci.com/wp-content/themes/tendenciblog/favicon.ico" type="image/x-icon" />
+   <meta name="google-site-verification" content="KP12ELf7yM-sFYUztMDTlZ8rpOktCfeutsz2C2FVMgc" />
+    <link href="{{ STATIC_URL }}css/global_tendenci.css" rel="stylesheet" type="text/css">
+    
+  <link rel="stylesheet" href="{{ THEME_URL }}media/css/styles.css" type="text/css" />
+    <link rel="stylesheet" href="{{ THEME_URL }}media/css/menuh.css" type="text/css" />
+    <link rel="stylesheet" href="{{ THEME_URL }}media/css/jquery.twitter.css" type="text/css" />
+    {% if not user.is_authenticated %}
+        <link rel="stylesheet" href="{{ THEME_URL }}media/js/fancybox/jquery.fancybox-1.3.1.css" type="text/css" media="screen" />
+    {% endif %}
+    
+    <!--[if IE]><link rel="stylesheet" href="{{ THEME_URL }}media/css/ie.css" type="text/css" /><![endif]-->
+    <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-3369175-1']);
+  _gaq.push(['_setDomainName', '.tendenci.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+
+<body id="home">
+      
+{% block login %}{% endblock %}
+
+<div id="container">
+
+    <div id="header">
+
+      <h1><a id="logo" href="/" alt="Tendenci 5.0" title="Tenenci 5.0">Tendenci 5.0</a></h1>
+      
+      {% block menu %}{% endblock %}
+        
+    </div>
+    
+    <div id="spotlight">
+      
+        <div id="intro-spotlight">
+          <a href="/modules"><img src="http://tendenci.com/files/970/" alt="Tendenci Membership Management Software" /></a>
+        </div>
+        
+        <div id="ctas">
+          <div class="cta">
+                <span class="headline" id="keep-it-fresh-headline">
+                  <strong>Keep it fresh with content management</strong>
+                </span>
+                <span class="cta-btn">
+                  <p id="keep-it-fresh-btn"><a href="/cms">Update every page on your 
+                    site, anytime, anywhere &rarr;</a></p>
+                </span>
+            </div>
+            <div class="cta">
+                <span class="headline" id="increase-attendance-headline">
+                  <strong>Increase attendance with on-line event registration</strong>
+                </span>
+                <span class="cta-btn">
+                  <p id="increase-attendance-btn"><a href="/modules">Add upcoming events on 
+                    your site, quickly and easily &rarr;</a></p>
+                </span>
+            </div>
+            <div class="cta">
+                <span class="headline" id="membership-management-headline">
+                  <strong>Grow your organization with membership management</strong>
+                </span>
+                <span class="cta-btn">
+                  <p id="membership-management-btn"><a href="/modules">Payments, 
+                    custom applications, member-only access &rarr;</a></p>
+                </span>
+            </div>
+            <div class="cta">
+                <span class="headline" id="seo-headline">
+                  <strong>Out of the box search engine optimization</strong>
+                </span>
+                <span class="cta-btn">
+                  <p id="seo-btn"><a href="/sem">Carefully designed to help 
+                    your content get found &rarr;</a></p>
+                </span>
+            </div>
+        </div>
+        
+        <a id="get-started" href="/contact">Get started today!</a>
+        <a id="cost-cta" href="/buy">How much does Tendenci cost?</a>
+    
+    <div class="clear"></div>
+    </div><!-- /spotlight -->
+    <div id="border-line"></div>
+    
+    {% if user.is_authenticated %}
+      {% block body %}{% endblock %}
+    {% endif %}
+     
+    <div id="body">
+    
+      <div id="main-home-content">
+        
+            <div id="features">
+                <table cellpadding="0" cellspacing="0" border="0">
+                    <tr bor>
+                        <td valign="top" width="60" align="center">
+                            <a href="/cms"><img src="{{ THEME_URL }}media/images/icons/cms-icon.png" alt="Easy Content Management" /></a>
+                        </td>
+                        <td valign="top">
+                            <h2><a href="/cms">Easy Content<br />Management</a></h2>
+                        </td>
+                        <td valign="top">
+                            <p><a href="/cms">Tendenci makes it easy for you to <strong>create 
+                            search engine friendly content</strong> on the fly with HTML 
+                            and WYSIWYG editing &rarr;</a></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" width="60" align="center">
+                            <a href="/web-site-tracking-and-reporting-tool"><img src="{{ THEME_URL }}media/images/icons/reports-icon.png" alt="Reports and Site Analytics" /></a>
+                        </td>
+                        <td valign="top">
+                            <h2><a href="/web-site-tracking-and-reporting-tool">Reports and<br />Site Analytics</a></h2>
+                        </td>
+                        <td valign="top">
+                            <p><a href="/web-site-tracking-and-reporting-tool"><strong>Built-in search engine marketing tools</strong> 
+                            to help control search engine optimization in the CMS &rarr;</a></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" width="60" align="center">
+                            <a href="/calendarevents"><img src="{{ THEME_URL }}media/images/icons/events-icon.png" alt="Easy Calendar of Events" /></a>
+                        </td>
+                        <td valign="top">
+                            <h2><a href="/calendarevents">Control Over<br />Your Events</a></h2>
+                        </td>
+                        <td valign="top">
+                            <p><a href="/calendarevents">Use our <strong>on-line calendar tools</strong> 
+                            to ensure your event's success &rarr;</a></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" width="60" align="center">
+                            <a href="/memberships"><img src="{{ THEME_URL }}media/images/icons/trainings-icon.png" alt="Membership Management" /></a>
+                        </td>
+                        <td valign="top">
+                            <h2><a href="/memberships">Grow with our<br />memberships</a></h2>
+                        </td>
+                        <td valign="top">
+                            <p><a href="/memberships">Use your Web site to create <strong>on-line membership 
+                            applications</strong>, accept payments and maximize your member benefits 
+                            with secure <strong>member-only access features</strong>. &rarr;</a></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" width="60" align="center">
+                            <a href="/emailmarketing"><img src="{{ THEME_URL }}media/images/icons/newsletters-icon.png" alt="Newsletters Made Easy" /></a>
+                        </td>
+                        <td valign="top">
+                            <h2><a href="/emailmarketing">Newsletters<br />Made Easy</a></h2>
+                        </td>
+                        <td valign="top">
+                            <p><a href="/emailmarketing"><strong>Automatically populate newsletters</strong> 
+                            with content from your site giving you the power to connect 
+                            with multiple list management &rarr;</a></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" width="60" align="center">
+                            <a href="/online-job-board"><img src="{{ THEME_URL }}media/images/icons/jobs-icon.png" alt="Jobs and Job Boards Made Easy" /></a>
+                        </td>
+                        <td valign="top">
+                            <h2><a href="/online-job-board">Post and<br />Add Jobs</a></h2>
+                        </td>
+                        <td valign="top">
+                            <p><a href="/online-job-board">Further increase your site's value by <strong>including 
+                            job boards and resume classifieds</strong> for your visitors &rarr;</a></p>
+                        </td>
+                    </tr>
+                </table>
+            </div><!-- /features -->
+        
+        </div><!-- /main-content -->
+        
+        <div id="sidebar">
+        
+          <div id="blog">
+                <h4><a href="http://blog.tendenci.com">From the blog &rarr;</a></h4>
+
+                {% get_rss "http://blog.tendenci.com/feed/" as rss %}
+                <ul>
+                {% for entry in rss.entries|slice:":1" %}
+                    <li>
+                        <h3><a href="{{ entry.link }}">{{ entry.title }}</a></h3>
+                        <p><em>{{ entry.updated_parsed|rss_date:"F j, Y" }}</em></p>
+                        <p>{{ entry.summary }}</p>
+                        <p><a href="{{ entry.link }}">Read on &rarr;</a></p>
+                    </li>
+                {% endfor %}
+                </ul>
+      </div><!-- /blog -->
+            
+            <div id="twitter">
+              <h4><a href="http://twitter.com/tendenci">Tendenci on Twitter &rarr;</a></h4>
+                <div id="tweets"></div>
+            </div><!-- /twitter -->
+            
+        </div>
+    
+    <div class="clear"></div>
+    </div>
+    
+    <div id="support">
+        <h4>Support Software</h4>
+        <table cellpadding="5" cellspacing="0" border="0">
+            <tr>
+                <td valign="top" width="33%">
+                  <div id="support-section">
+                        <h3>Support</h3>
+                        <p>We love our clients and support many membership organizations 
+                        with Web design and association management solutions.</p>
+                        
+                        <h4>(281) 497-6567 ext. 411</h4>
+                        
+                        <p>Call us today to speak with an actual human!
+                        We take pride in providing amazing customer support and 
+                        online solutions.</p>
+                        
+                        <h3>Software Help Files</h3>
+                        
+                        <p>You can also <a href="http://support.tendenci.com/en/helpfiles/">quickly 
+                        search our helpfiles database</a>. It's most likely 
+                        your question has already been answered!
+                    </div>
+                </td>
+                <td valign="top" width="33%">
+                  <div id="press-releases">
+                        <h3>Press Releases</h3>
+                        {% get_rss "http://tendenci.com/news/feed/" as rss %}
+                        <ul>
+                        {% for entry in rss.entries|slice:":4" %}
+                            <li>
+                                <p><a href="{{ entry.link }}">{{ entry.title }}</a></p>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        
+                        <p><a href="/news/search/">View all Tendenci press releases &rarr;</a></p>
+                    </div>
+                </td>
+                <td valign="top" width="33%">
+                  <div id="upcoming-trainings">
+                    
+                        <h3>Upcoming Training</h3>
+                        
+                        {% get_rss "http://support.tendenci.com/en/rss/calendarevents/" as rss %}
+                        <ul>
+                        {% for entry in rss.entries|slice:":5" %}
+                            <li>
+                                <p><a href="{{ entry.link }}">{{ entry.title }}</a></p>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        
+                        <p><a href="http://support.tendenci.com/en/cev/cmon/">View all upcoming trainings &rarr;</a></p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div><!-- /support -->
+    
+    <div id="footer">
+      {% spaceless %}{% include "footer.html" %}{% endspaceless %}
+    </div>
+    
+</div><!-- /container -->
+
+</body>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.min.js"></script>
+{% if not user.is_authenticated %}
+  <script type="text/javascript" src="{{ THEME_URL }}media/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
+{% endif %}
+<script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.cycle.all.min.js"></script>
+<script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.twitter.js"></script>
+<script type="text/javascript" src="{{ THEME_URL }}media/js/jquery.hoverIntent.minified.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#ctas").cycle({
+        timeout: 6000,
+        speed: 2000,
+        pager: '#nav',
+        pagerEvent: 'mouseover'
+    });
+    $("#tweets").getTwitter({
+        userName: "tendenci",
+        numTweets: 2,
+        loaderText: "Loading tweets...",
+        slideIn: false,
+        showHeading: false
+    });
+  function megaHoverOver(){
+    $(this).find(".sub").stop().fadeTo(0, 1).show();
+    (function($) { 
+      jQuery.fn.calcSubWidth = function() {
+        rowWidth = 0;
+        $(this).find("ul").each(function() {          
+          rowWidth += $(this).width(); 
+        });  
+      };
+    })(jQuery);
+    if ( $(this).find(".row").length > 0 ) {
+      var biggestRow = 0;
+      $(this).find(".row").each(function() {                 
+        $(this).calcSubWidth();
+        if(rowWidth > biggestRow) {
+          biggestRow = rowWidth;
+        }
+      });
+      $(this).find(".sub").css({'width' :biggestRow});
+      $(this).find(".row:last").css({'margin':'0'});
+    } else {
+      $(this).calcSubWidth();
+      $(this).find(".sub").css({'width' : rowWidth});
+    }
+  }
+  
+  function megaHoverOut(){ 
+    $(this).find(".sub").stop().fadeTo(0, 0, function() {
+      $(this).hide(); 
+    });
+  }
+  var config = {    
+     sensitivity: 2, // number = sensitivity threshold (must be 1 or higher)    
+     interval: 0, // number = milliseconds for onMouseOver polling interval    
+     over: megaHoverOver, // function = onMouseOver callback (REQUIRED)    
+     timeout: 0, // number = milliseconds delay before onMouseOut    
+     out: megaHoverOut // function = onMouseOut callback (REQUIRED)    
+  };
+  $("#menu ul li .sub").css({'opacity':'0'});
+  $("#menu ul li").hoverIntent(config);
+});
+</script>
+{% if not user.is_authenticated %}
+<script type="text/javascript">
+   $(document).ready(function() { $("a#modal").fancybox(); });
+function clearDefault(el) {
+  if (el.defaultValue==el.value) el.value = ""
+}
+   </script>
+{% endif %}
+{% block extra_body %}{% endblock %}
+</html>

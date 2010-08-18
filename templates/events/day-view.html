@@ -1,0 +1,164 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load category_tags %}
+
+{% block title %}{{ block.super }} {% endblock %}
+{% block meta_description %} {% endblock %}
+{% block meta_keywords %} {% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+{% endblock %}
+
+{% block body %}
+
+<style type="text/css">
+
+	.event-wrap {
+		background-color: #EEE;
+		border: 1px solid silver;
+		margin-bottom: 10px;
+	}
+	.event-wrap h3 {
+	}
+	.event-wrap div.description {
+	}
+	.event-wrap div.time-stamp {
+		float: left;
+		width: 80px;
+		text-align: center;
+		font-size: 1.1em;
+		font-weight: bold;
+		margin: 15px 0 0 0
+
+	}
+	.event-wrap .event-info {
+		background-color: white;
+		padding: 10px;
+		margin-left: 90px;
+		
+	}
+	.day-view .no-events {
+		font-size: 1.4em;
+		background-color: #FFC;
+		padding: 10px;
+	}
+	
+	.day-view .event-info .attend-wrap {
+		border-top: 1px solid #DDD;
+	}
+	.day-view .event-info .attend-wrap .attend {
+		border: 1px solid silver;
+		float: right;
+		margin-top: 10px;
+		padding: 5px;
+		background-color: #F7F7F7;
+	}
+	.day-view .event-info .attend-wrap .attend a {
+		text-decoration: none;
+	}
+	.day-view .event-info .options {
+		float: right;
+	}
+	
+	.day-view .event-info .registered .attend {
+		background-color: orange;
+		border: 1px solid orange;
+	}
+	.day-view .event-info .registered .attend a {
+		color: white;
+	}
+
+	.day-view .event-info .closed .attend {
+		background-color: darkred;
+		border: 1px solid darkred;
+	}
+	.day-view .event-info .closed .attend a {
+		color: white;
+	}
+	
+
+</style>
+
+<div class="day-view">
+
+	{% event_nav user %}
+
+	<h2>{{ date|date:"l, F j Y" }}</h2>
+
+	{% for event in events %}
+		<div class="event-wrap">
+			<div class="time-stamp">{{ event.start_dt|date:"f A" }}</div>
+			<div class="event-info">
+
+				<div class="options">{% event_options user event %}</div>
+				
+				<h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
+				<div class="description">{{ event.description|safe }}</div>
+
+				{% if event.registration_configuration.enabled %}
+
+					{% if now > event.end_dt or now > event.registration_configuration.late_dt %}
+
+					<div class="attend-wrap closed">
+						<div class="attend"><a href="">Registration Closed</a></div>
+						<div style="clear:both;"></div>
+					</div>
+					
+					{% else %}
+
+					{% is_registered_user user event as registered_user %}
+					{% if registered_user %}
+					<div class="attend-wrap registered">
+						<div class="attend"><a href="{% url event.register event.pk %}">You are registered</a></div>
+						<div style="clear:both;"></div>
+					</div>
+					{% else %}
+					<div class="attend-wrap">
+						<div class="attend"><a href="{% url event.register event.pk %}">Attend this event</a></div>
+						<div style="clear:both;"></div>
+					</div>
+					{% endif %}
+						
+					{% endif %}
+
+				{% endif %}
+
+			</div>
+			<div style="clear:both;"></div>
+
+            <!-- delete-event form -->
+            <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+		</div>
+	{% empty %}
+		<div class="no-events">No events happening on this date. <a href="javascript:;">Add event on this date.</a></div>
+	{% endfor %}
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_object = confirm("Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?");	// confirm
+				if(delete_object) $(this).parents('.event-wrap').find('form[name="event-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+	</script>
+{% endblock %}

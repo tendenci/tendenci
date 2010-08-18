@@ -11,7 +11,7 @@
 {% block body %}
 <div class="t">
 
-    {% location_nav request.user %}
+    {% location_nav request.user location %}
 
     <h1>{% firstof MODULE_LOCATIONS_LABEL 'Location' %} Edit</h1>
 

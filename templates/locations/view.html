@@ -24,17 +24,14 @@
         <div class="content">
         
         <div class="description">{{ location.description|safe }}</div>
-	         <p>    
-	         <div class="contact"><h3>Contact:</h3>
-		         {{ location.contact_name|safe }}<br>	
-		         {{ location.address|safe }} {{ location.address2|safe }} {{ location.city|safe }} {{ location.state|safe }} {{ location.zipcode|safe }} {{ location.country|safe }}<br>	
-		         
-		         {{ location.phone|safe }}  {{ location.fax|safe }}<br>
-		         {{ location.email|safe }}<br>
-		         {{ location.website|safe }}
-	         </div>  
-  		 </p>
-      
+	         
+         <div class="contact">
+	         <div>{{ location.contact_name }}</div>
+	         <div>{{ location.address }} {{ location.address2 }} {{ location.city }} {{ location.state }} {{ location.zipcode }} {{ location.country }}</div>	
+	         <div>{{ location.phone }}  {{ location.fax }}</div>
+	         <div>{{ location.email|urlize }}</div>
+	         <div>{{ location.website|urlize }}</div>
+         </div>  
         
         </div>
 

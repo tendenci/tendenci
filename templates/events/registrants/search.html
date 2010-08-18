@@ -1,0 +1,119 @@
+{% extends "events/base.html" %}
+{% load pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load avatar_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url event.feed %}" />
+{% endblock %}
+
+{% block body %}
+
+
+<style type="text/css">
+	.image-wrap img {
+		background-color: white;
+		float: left;
+		margin-right: 10px;
+		padding: 2px;
+		border: 1px solid gray;
+	}
+	
+	.event-wrap-search h2 {
+		margin-bottom: 0;
+	}
+	
+</style>
+
+
+<div class="t">
+{% event_nav request.user %}
+    <h1>Registrant Search</h1>  
+
+	{% registrant_search event %}
+
+    {% autopaginate registrants 10 %}
+	
+	<div class="events-wrap">
+    {% for registrant in registrants %}
+		{% with registrant.object as registrant %}
+    	{# has_perm user events.view_event event as can_view #}
+    	{# if can_view #}
+		<div class="event-wrap-search">
+
+			<div class="options">
+                <div class="quick-options">
+					{% registrant_options request.user registrant %} 	       
+                </div>
+			</div>
+
+			<div class="image-wrap">
+				{% avatar registrant.user 80 %}
+			</div>
+			
+			<div class="registrant-info">
+            	<h2>{% firstof registrant.name registrant.email %}</h2>
+
+				{% if registrant.phone and registrant.email %}
+				<div>{{ registrant.phone }} &middot; {{ registrant.email }}</div>
+				{% else %}
+					{% if registrant.phone %}
+					<div>{{ registrant.phone }}</div>	
+					{% else %}
+						{% if registrant.email %}
+						<div>{{ registrant.email }}</div>
+						{% endif %}
+					{% endif %}
+				{% endif %}
+
+				{% if registrant.title and registrant.company %}
+				<div>Web Developer at {{ registrant.company_name }}</div>
+				{% else %}
+					{% if registrant.title %}
+					<div>Web Developer</div>
+					{% else %}
+						{% if registrant.company_name %}
+						<div>Works at {{ registrant.company_name }}</div>
+						{% endif %}
+					{% endif %}
+				{% endif %}
+
+			</div>
+
+			<div style="clear:both;"></div>
+
+
+
+            <div class="content"></div>
+			<div class="meta">
+            	<div class="submitted">Registered on {{ registrant.registration.create_dt|date:"D d M" }}</div>
+            	<div style="clear:both;"></div>
+            </div>
+
+		</div>
+		{# endif #}
+		{% endwith %}
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+	</script>
+{% endblock %}
