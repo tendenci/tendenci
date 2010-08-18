@@ -98,9 +98,11 @@ ul { /* remove bullets and spacing */
 .modules li.forms {
 	background-image: url('/site_media/static/images/icons/cms-forms-bw-64x64.png');
 }
-
 .modules li.rss {
 	background-image: url('/site_media/static/images/icons/rss-bw-64x64.png');
+}
+.modules li.redirects {
+	background-image: url('/site_media/static/images/icons/redirects-bw-64x64.png');
 }
 
 .side-panel {
