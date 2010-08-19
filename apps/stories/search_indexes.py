@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.utils.html import strip_tags, strip_entities
 
 from haystack import indexes
@@ -30,6 +31,8 @@ class StoryIndex(indexes.RealTimeSearchIndex):
     category = indexes.CharField()
     sub_category = indexes.CharField()
 
+    can_syndicate = indexes.BooleanField()
+
     def prepare_category(self, obj):
         category = Category.objects.get_for_object(obj, 'category')
         if category: return category.name
@@ -49,6 +52,10 @@ class StoryIndex(indexes.RealTimeSearchIndex):
             return ','.join(user_list)
         else: 
             return ''
+
+    def prepare_can_syndicate(self, obj):
+        return obj.syndicate and obj.status==1  and obj.status_detail=='active' \
+                and datetime.now() > obj.end_dt
             
     def prepare_content(self, obj):
         content = obj.content
