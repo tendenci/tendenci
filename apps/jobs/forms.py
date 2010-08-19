@@ -75,6 +75,7 @@ class JobForm(TendenciBaseForm):
         'allow_member_view',
         'allow_user_edit',
         'allow_member_edit',
+        'syndicate',
         'status',
         'status_detail',
        )
