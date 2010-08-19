@@ -1,5 +1,7 @@
 from datetime import datetime
+
 from django import template
+from django.contrib.auth.models import AnonymousUser
 from events.models import Event, Registration
 
 register = template.Library()
@@ -105,9 +107,13 @@ class IsRegisteredUserNode(template.Node):
         user = self.user.resolve(context)
         event = self.event.resolve(context)
 
-        exists = Registration.objects.filter(
-            event = event,
-            registrant__user=user).exists()
+        if isinstance(user, AnonymousUser):
+            exists = False
+        else:
+            exists = Registration.objects.filter(
+                event = event,
+                registrant__user=user
+            ).exists()
 
         context[self.context_var] = exists
         return ''
