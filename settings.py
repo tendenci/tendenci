@@ -197,7 +197,7 @@ INSTALLED_APPS = (
     'meta',
     'redirects',
     'directories',
-    'helpfiles',
+    'help_files',
 
     # celery task system, must stay at the bottom
     # of installed apps

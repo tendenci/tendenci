@@ -1,0 +1,24 @@
+{% extends "help_files/base.html" %}
+{% load help_file_tags %}
+
+{% block title %}{{ block.super }}{{ topic }} Topic{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+	<h2>Help Files {{ topic }}</h2>
+	{% if topic.content %}
+		<p>{{ topic.content }}</p>
+	{% endif %}
+	{% if topic.helpfile_set.all %}
+		<ul>
+		{% for help_file in topic.helpfile_set.all %}
+			<li><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file }}">{{ help_file }}</a></li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+</div>
+{% endblock %}
