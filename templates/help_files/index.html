@@ -1,5 +1,6 @@
 {% extends "help_files/base.html" %}
 {% load help_file_tags %}
+{% load perm_tags %}
 
 {% block title %}{{ block.super }}{% endblock %}
 
@@ -8,6 +9,8 @@
 {% endblock %}
 
 {% block body %}
+
+{% has_perm request.user help_files.add_helpfile as can_add %}
 <div class="t">
 	<h1>Help Files</h1>
 	{% help_file_search %}
@@ -31,6 +34,9 @@
 	<div class="right-col">
 		<div>
 			<ul class="request-help-file">
+				{% if can_add %}
+					<li><a href="{% url admin:help_files_helpfile_add  %}">Add Help File</a></li>
+				{% endif %}
 				<li><a href="{% url help_files.request %}">Request Help File</a></li>
 			</ul>
 		</div>
