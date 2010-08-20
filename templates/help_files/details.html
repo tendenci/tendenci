@@ -1,0 +1,35 @@
+{% extends "help_files/base.html" %}
+{% load help_file_tags %}
+
+{% block title %}{{ help_file.question|striptags|safe }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <div class="help-file-wrap">
+        <h2>{{ help_file.question|striptags|safe }}</h2>
+
+		<div class="options">
+             <div class="quick-options">
+				{% help_file_options request.user help_file %} 	       
+             </div>
+		</div>
+
+		<div class="content">
+			{{ help_file.answer|safe }}  
+		</div>
+
+        <div class="meta">
+            <div class="submitted">
+            	Created on {{ help_file.create_dt|date:"D d M Y P" }} by 
+				{% firstof help_file.creator.get_profile.display_name help_file.creator %}
+			</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}{% endblock %}
