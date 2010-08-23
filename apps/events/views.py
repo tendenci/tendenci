@@ -460,26 +460,15 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
         return response
 
 def month_view(request, year=None, month=None, template_name='events/month-view.html'):
-
+    from events.utils import next_month, prev_month
     year = int(year)
     month = int(month)
 
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar
 
-    # TODO: cleaner way to get next date
-    next_month = (month+1)%13
-    next_year = year
-    if next_month == 0:
-        next_month = 1
-        next_year += 1
-
-    # TODO: cleaner way to get next date
-    prev_month = (month-1)%13
-    prev_year = year
-    if prev_month == 0:
-        prev_month = 12
-        prev_year -= 1
+    next_month, next_year = next_month(month, year)
+    prev_month, prev_year = prev_month(month, year)
 
     next_month_url = reverse('event.month', args=(next_year, next_month))
     prev_month_url = reverse('event.month', args=(prev_year, prev_month))
