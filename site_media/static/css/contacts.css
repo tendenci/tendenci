@@ -114,3 +114,52 @@ div.forms div.form-field div.id_phone .field input {
 div.forms div.form-field div.id_fax .field input {
 	width: 18%;
 }
+
+
+/* View Submission Page
+------------------------------- */
+.row {
+	margin-bottom: 5px;
+	border: 1px solid #DDD;
+	background-color: #F7F7F7;
+}
+.row .label {
+	float: left;
+	width: 50px;
+	padding: 10px;
+	text-align: right;
+}
+.row .value {
+	padding: 10px;
+	margin-left: 80px;
+	background-color: white;
+}
+
+.phone-row {
+	width: 250px;
+	float: left;
+	margin-bottom: 0;
+}
+
+.email-row {
+	margin-left: 260px;
+
+}
+
+.the-message {
+	border: 1px solid #DDD;
+	position: relative;
+}
+.the-message .content {
+	padding: 10px;
+}
+
+.the-message .label {
+	background-color: #F7F7F7;
+	padding: 10px;
+}
+.the-message .submitted-dt {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
