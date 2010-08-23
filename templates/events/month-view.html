@@ -1,4 +1,4 @@
-{% extends "events/base.html" %}
+{% extends "events/base-wide.html" %}
 {% load event_tags %}
 {% load tagging_tags %}
 {% load base_tags %}
@@ -25,7 +25,17 @@
 		float: left;
 		text-align: center;
 	}
-	.month-view div.month-wrap {
+	
+	.month-view .calendar-wrap {
+		background-color: #F7F7F7;
+	}
+	.month-view .month-wrap {
+		float: left;
+		background-color: white;
+		padding-right: 10px;
+		width: 80%;
+	}
+	.month-view div.month-grid {
 		border: 1px solid silver;
 		border-right: none;
 		border-bottom: none;
@@ -113,47 +123,71 @@
 	</div>
 	<div style="clear:both;"></div>
 
-	<div class="weekdays">
-	{% for weekday in weekdays %}
-		<div class="weekday">{{ weekday }}</div>
-	{% endfor %}
-	<div style="clear:both;"></div>
-	</div>
+	<div class="calendar-wrap">
 
 	<div class="month-wrap">
-	{% for week in month %}
-		{% for day in week %}
-			<div class="day">
-				<div class="date-numeral"><a href="{% url event.day day.year day.month day.day %}">{{ day.day }}</a></div>
 
-				{% event_list day as events %}
-				
-				{% if events %}
-					{% for event in events|slice:"2" %}
-						<div class="event-item">
-							<span cla5ss="time-stamp">{{ event.start_dt|date:"P" }}</span>
-							<span class="event-title">
-							<a class="event-item-link" href="{{ event.get_absolute_url }}" title="{{ event.start_dt|date:"P" }}&nbsp;{{ event }}">
-								{{ event.title|slice:":13 " }} ...
-							</a>
-							</span>
-						</div>
-					{% endfor %}
-
-					{% if events|length|add:"-2" > 0 %}
-						<div class="more-events">
-							<a href="{% url event.day day.year day.month day.day %}">+{{ events|length|add:"-2" }} more</a>
-						</div>
+		<div class="month-labels">
+		{% for weekday in weekdays %}
+			<div class="weekday">{{ weekday }}</div>
+		{% endfor %}
+		<div style="clear:both;"></div>
+		</div>
+	
+		<div class="month-grid">
+		{% for week in month %}
+			{% for day in week %}
+				<div class="day">
+					<div class="date-numeral"><a href="{% url event.day day.year day.month day.day %}">{{ day.day }}</a></div>
+	
+					{% event_list day as events %}
+					
+					{% if events %}
+						{% for event in events|slice:"2" %}
+							<div class="event-item">
+								<span cla5ss="time-stamp">{{ event.start_dt|date:"P" }}</span>
+								<span class="event-title">
+								<a class="event-item-link" href="{{ event.get_absolute_url }}" title="{{ event }}">
+									{{ event.title|slice:":13 " }} ...
+								</a>
+								</span>
+							</div>
+						{% endfor %}
+	
+						{% if events|length|add:"-2" > 0 %}
+							<div class="more-events">
+								<a href="{% url event.day day.year day.month day.day %}">+{{ events|length|add:"-2" }} more</a>
+							</div>
+						{% endif %}
+	
+	
 					{% endif %}
-
-
-				{% endif %}
-				
-			</div>
-		{% endfor %}	
-	{% endfor %}
-	<div style="clear:both;"></div>
+					
+				</div>
+			{% endfor %}	
+		{% endfor %}
+		<div style="clear:both;"></div>
+		</div> <!-- END month-grid -->
 	</div> <!-- END month-wrap -->
+
+<style type="text/css">
+
+	.side-bar {
+		text-align: center;
+		font-size: 1.4em;
+		padding-top: 20px;
+	}
+	.side-bar div {
+	}
+	
+</style>
+
+	<div class="side-bar">
+		<div>Types of events</div>
+	</div>
+
+	<div style="clear:both;"></div>
+	</div> <!-- END calendar-wrap -->
 
 </div>
 
