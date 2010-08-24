@@ -135,12 +135,12 @@
 		</div>
 	
 		<div class="month-grid">
-		{% for week in month %}
+		{% for week in cal %}
 			{% for day in week %}
 				<div class="day">
 					<div class="date-numeral"><a href="{% url event.day day.year day.month day.day %}">{{ day.day }}</a></div>
-	
-					{% event_list day as events %}
+
+					{% event_list day type as events %}
 					
 					{% if events %}
 						{% for event in events|slice:"2" %}
@@ -172,18 +172,40 @@
 
 <style type="text/css">
 
-	.side-bar {
+	.side-bar .header {
 		text-align: center;
 		font-size: 1.4em;
-		padding-top: 20px;
+		padding: 20px 0 10px;
+		margin-bottom: 10px;
+		border-bottom: 1px solid #DDD;
 	}
-	.side-bar div {
+	.side-bar .types {
+		margin: 0 10px;
+		float: left;
 	}
-	
+	.side-bar .types .type a {
+		text-decoration: none;
+		padding: 5px;
+		background-color: #FFC;
+		display: block;
+		margin: 5px 0;
+		width: 130px;
+	}
 </style>
 
 	<div class="side-bar">
-		<div>Types of events</div>
+
+		<div class="header">Types of Events</div>
+		<div class="types">
+			<div class="type"><a href="{% url event.month year month %}">All Event Types</a></div>
+			{% for type in types %}
+				<div class="type"><a href="{% url event.month year month type.slug %}">{{ type }}</a></div>
+			{% endfor %}
+			
+			{{ type.theme.fg_color }}
+			{{ type.theme.bg_color }}
+
+		</div>
 	</div>
 
 	<div style="clear:both;"></div>
