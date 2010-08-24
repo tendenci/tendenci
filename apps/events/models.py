@@ -11,6 +11,8 @@ from perms.models import TendenciBaseModel
 from meta.models import Meta as MetaTags
 from events.module_meta import EventMeta
 
+from django.template.defaultfilters import slugify
+
 
 class Type(models.Model):
     """
@@ -20,9 +22,14 @@ class Type(models.Model):
     A type can have multiple events
     """
     name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=50, editable=False)
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(self.__class__, self).save(*args, **kwargs)
 
 class Place(models.Model):
     """
