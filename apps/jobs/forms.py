@@ -8,6 +8,7 @@ from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
+from jobs.models import JobPricing
 
 class JobForm(TendenciBaseForm):
 
@@ -110,4 +111,30 @@ class JobForm(TendenciBaseForm):
         if not is_admin(user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+
+
+DURATION_CHOICES = ((14,'14 Days from Activation date'), 
+                    (30,'30 Days from Activation date'), 
+                    (60,'60 Days from Activation date'), 
+                    (90,'90 Days from Activation date'),
+                    (120,'120 Days from Activation date'),
+                    (180,'180 Days from Activation date'),
+                    (365,'365 Days from Activation date'),
+                    )
+STATUS_CHOICES = ((1, 'Active'),
+                   (0, 'Inactive'),)
+       
+class JobPricingForm(forms.ModelForm): 
+    duration = forms.ChoiceField(initial=14, choices=DURATION_CHOICES)
+    status = forms.ChoiceField(initial=1, choices=STATUS_CHOICES, required=False)
+    class Meta:
+        model = JobPricing
+        fields = ('duration',
+                  'regular_price',
+                  'premium_price',
+                  'regular_price_member',
+                  'premium_price_member',
+                  'show_member_pricing',
+                  'status',)
+    
         
