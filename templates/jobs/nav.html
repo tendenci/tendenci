@@ -41,7 +41,9 @@
 			<li><a href="{% url job.search %}">Search</a></li>
 			{% if can_add_job %}
 			<li><a href="{% url job.add %}">Add</a></li>
+			<li><a href="{% url job_pricing.search %}">Pricing</a></li>
 			{% endif %}
+			
 			{% if user.is_authenticated %}
 			<li><a href="{% url auth_logout %}">Log Off</a></li> 
 			{% endif %}
