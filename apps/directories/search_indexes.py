@@ -39,9 +39,18 @@ class DirectoryIndex(indexes.RealTimeSearchIndex):
     order = indexes.DateTimeField()
     
     def prepare_can_syndicate(self, obj):
-        return obj.allow_anonymous_view and obj.syndicate \
-                and obj.status==1  and obj.status_detail=='active' \
-                and obj.activation_dt <= datetime.now()
+
+        args = [
+            obj.allow_anonymous_view,
+            obj.syndicate,
+            obj.status,
+            obj.status_detail=='active',
+        ]
+
+        if obj.activation_dt:
+            args.append(obj.activation_dt <= datetime.now())
+
+        return all(args)
         
     def prepare_order(self, obj):
         return obj.activation_dt
