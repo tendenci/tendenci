@@ -109,6 +109,7 @@ class EventLogManager(Manager):
         # object parameters
         if 'request' in kwargs:
             request = kwargs['request']
+            
         if 'user' in kwargs:
             user = kwargs['user']
                 
@@ -139,6 +140,12 @@ class EventLogManager(Manager):
         
         # set up the user information
         if user:
+#            # check for impersonation and set the correct user, descriptions, etc
+            impersonator = getattr(user,'_impersonator', None)
+            if impersonator:
+                event_log.event_data = '%s (impersonated by %s)' % (event_log.event_data, impersonator.username,)
+                user = impersonator
+                
             if isinstance(user,AnonymousUser):
                 event_log.username = 'anonymous'
             else:    

@@ -1,27 +1,5 @@
 [
     {
-        "pk": 3, 
-        "model": "events.paymentmethod", 
-        "fields": {
-            "label": "Cash"
-        }
-    }, 
-    {
-        "pk": 2, 
-        "model": "events.paymentmethod", 
-        "fields": {
-            "label": "Check"
-        }
-    }, 
-    {
-        "pk": 1, 
-        "model": "events.paymentmethod", 
-        "fields": {
-            "label": "Credit Card"
-        }
-    },
-
-    {
         "pk": 1, 
         "model": "events.typecolorset", 
         "fields": {
@@ -399,5 +377,4 @@
             "fg_color": "FFF"
         }
     }
-
 ]

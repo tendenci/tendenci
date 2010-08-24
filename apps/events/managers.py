@@ -48,6 +48,28 @@ class EventManager(Manager):
 
         return sqs.models(self.model)
 
+    def search_filter(self, filters=None, *args, **kwargs):
+        sqs = SearchQuerySet()
+        user = kwargs.get('user', None)
+        admin = is_admin(user)
+
+        # permission filters
+        if user:
+            if not admin:
+                if not user.is_anonymous():
+                    sqs = sqs.filter(allow_user_view=True)
+                    sqs = sqs.filter_or(who_can_view__exact=user.username)
+                else:
+                    sqs = sqs.filter(allow_anonymous_view=True)               
+        else:
+            sqs = sqs.filter(allow_anonymous_view=True) 
+
+        # custom filters
+        for filter in filters:
+            sqs = sqs.filter(content='"%s"' % filter)
+
+        return sqs.models(self.model)
+
 class RegistrantManager(Manager):
     def search(self, query=None, *args, **kwargs):
         """
