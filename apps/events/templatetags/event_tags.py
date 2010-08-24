@@ -45,28 +45,36 @@ def registrant_search(context, event=None):
 
 class EventListNode(template.Node):    
     
-    def __init__(self, day, limit, context_var):
+    def __init__(self, day, type, context_var):
+
         self.day = template.Variable(day)
-        self.limit = template.Variable(limit)
+        self.type = template.Variable(type)
         self.context_var = context_var
     
     def render(self, context):
 
         day = self.day.resolve(context)
-        limit = self.limit.resolve(context)
-        kwargs = {
-            # i'm being explicit about each date part
-            # because I do not want to include the time
-            'start_dt__day': day.day,
-            'start_dt__month': day.month,
-            'start_dt__year': day.year,
-        }
+        type = self.type.resolve(context)
 
-        events = Event.objects.filter(**kwargs).order_by('start_dt')
+#        kwargs = {
+#            # i'm being explicit about each date part
+#            # because I do not want to include the time
+#            'start_dt__day': day.day,
+#            'start_dt__month': day.month,
+#            'start_dt__year': day.year,
+#        }
+#        if type: kwargs['type__slug'] = type
+#        events = Event.objects.filter(**kwargs).order_by('start_dt')
 
-        if limit > 0:
-            try: events = events[:limit]
-            except: pass
+        args = [
+            'start_day:%s'% day.day,
+            'start_month:%s'% day.month,
+            'start_year:%s'% day.year,
+        ]
+        if type: args.append('type:%s' % type)
+        sqs = Event.objects.search(*args)
+
+        events = [sq.object for sq in sqs] 
 
         context[self.context_var] = events
         return ''
@@ -74,24 +82,26 @@ class EventListNode(template.Node):
 @register.tag
 def event_list(parser, token):
     """
-    Example: {% event_list day as events limit 3 %}
+    Example: {% event_list day as events %}
+             {% event_list day type as events %}
     """
     bits = token.split_contents()
-    limit = '0'
+    type = None
 
-    if len(bits) != 4 and len(bits) != 6:
-        message = '%s tag requires 4 or 6 arguments' % bits[0]
+    if len(bits) != 4 and len(bits) != 5:
+        message = '%s tag requires 4 or 5 arguments' % bits[0]
         raise template.TemplateSyntaxError(message)
 
     if len(bits) == 4:
         day = bits[1]
         context_var = bits[3]
 
-    if len(bits) == 6:
-        limit = bits[5]
-
+    if len(bits) == 5:
+        day = bits[1]
+        type = bits[2]
+        context_var = bits[4]
     
-    return EventListNode(day, limit, context_var)
+    return EventListNode(day, type, context_var)
 
 class IsRegisteredUserNode(template.Node):    
     
