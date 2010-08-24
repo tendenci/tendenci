@@ -9,8 +9,8 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
-from events.models import Event, RegistrationConfiguration, Registration, Registrant, Speaker, Organizer
-from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm
+from events.models import Event, RegistrationConfiguration, Registration, Registrant, Speaker, Organizer, Type
+from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm, TypeForm
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
 from event_logs.models import EventLog
@@ -21,6 +21,10 @@ try: from notification import models as notification
 except: notification = None
 
 def index(request, id=None, template_name="events/view.html"):
+
+    if not id:
+        return HttpResponseRedirect(reverse('event.month'))
+
     event = get_object_or_404(Event, pk=id)
     
     if request.user.has_perm('events.view_event', event):
@@ -459,42 +463,44 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
 
         return response
 
-def month_view(request, year=None, month=None, template_name='events/month-view.html'):
+def month_view(request, year=None, month=None, type=None, template_name='events/month-view.html'):
+    from events.utils import next_month, prev_month
 
-    year = int(year)
-    month = int(month)
+    # default/convert month and year
+    if month: month = int(month)
+    else: month = datetime.now().month
+    if year: year = int(year)
+    else: year = datetime.now().year
 
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar
 
-    # TODO: cleaner way to get next date
-    next_month = (month+1)%13
-    next_year = year
-    if next_month == 0:
-        next_month = 1
-        next_year += 1
+    next_month, next_year = next_month(month, year)
+    prev_month, prev_year = prev_month(month, year)
 
-    # TODO: cleaner way to get next date
-    prev_month = (month-1)%13
-    prev_year = year
-    if prev_month == 0:
-        prev_month = 12
-        prev_year -= 1
+    # remove any params that aren't set (e.g. type)
+    next_month_params = [i for i in (next_year, next_month, type) if i]
+    prev_month_params = [i for i in (prev_year, prev_month, type) if i]
 
-    next_month_url = reverse('event.month', args=(next_year, next_month))
-    prev_month_url = reverse('event.month', args=(prev_year, prev_month))
+    next_month_url = reverse('event.month', args=next_month_params)
+    prev_month_url = reverse('event.month', args=prev_month_params)
 
     month_names = calendar.month_name[month-1:month+2]
     weekdays = calendar.weekheader(10).split()
-    month = Calendar(calendar.SUNDAY).monthdatescalendar(year, month)
+    cal = Calendar(calendar.SUNDAY).monthdatescalendar(year, month)
 
-    return render_to_response(template_name, { 
+    types = Type.objects.all().order_by('name')
+
+    return render_to_response(template_name, {
+        'cal':cal, 
         'month':month,
         'prev_month_url':prev_month_url,
         'next_month_url':next_month_url,
         'month_names':month_names,
         'year':year,
         'weekdays':weekdays,
+        'types':types,
+        'type':type,
         }, 
         context_instance=RequestContext(request))
 
@@ -517,12 +523,21 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
         }, 
         context_instance=RequestContext(request))
 
+def types(request, template_name='events/types/index.html'):
+    from django.forms.models import modelformset_factory
+    TypeFormSet = modelformset_factory(Type, extra=2, can_delete=True)
 
-#@login_required
-#def register_confirm(request, event_id=0, template_name="events/reg8n/register-confirm.html"):
-#        event = get_object_or_404(Event, pk=event_id)
-#        return render_to_response(template_name, {'event':event}, 
-#            context_instance=RequestContext(request))
+    print request.POST
+
+    if request.method == 'POST':
+        formset = TypeFormSet(request.POST)
+        if formset.is_valid():
+            formset.save()
+
+    formset = TypeFormSet()
+
+    return render_to_response(template_name, {'formset': formset}, 
+        context_instance=RequestContext(request))
 
 @login_required
 def registrant_search(request, event_id=0, template_name='events/registrants/search.html'):

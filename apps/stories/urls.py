@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, url
-from articles.feeds import LatestEntriesFeed
+from stories.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('',                  
     url(r'^$', 'stories.views.index', name="stories"),
