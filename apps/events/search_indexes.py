@@ -25,11 +25,16 @@ class EventIndex(indexes.RealTimeSearchIndex):
     status_detail = indexes.CharField(model_attr='status_detail')
 
     who_can_view = indexes.CharField()
+    can_syndicate = indexes.BooleanField()
 
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('events.view_event', obj)
         if not users: users = []
         return ','.join([user.username for user in users])
+
+    def prepare_can_syndicate(self, obj):
+        return obj.allow_anonymous_view and obj.status==1 \
+                and obj.status_detail=='active'
     
     def prepare_description(self, obj):
         description = obj.description

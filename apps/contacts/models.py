@@ -12,6 +12,9 @@ class Address(models.Model):
     zipcode = models.CharField(max_length=100, blank=True)
     country = models.CharField(max_length=100, blank=True)
 
+    def city_state(self):
+        return [s for s in (self.city, self.state) if s]
+
 class Phone(models.Model):
     number = models.CharField(max_length=50, blank=True)
 
@@ -81,4 +84,4 @@ class Contact(TendenciBaseModel):
         super(self.__class__, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return "%s %s " % (self.first_name, self.last_name)
+        return "%s %s" % (self.first_name, self.last_name)

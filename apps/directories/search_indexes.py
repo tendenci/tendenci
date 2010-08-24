@@ -12,7 +12,6 @@ class DirectoryIndex(indexes.RealTimeSearchIndex):
     headline = indexes.CharField(model_attr='headline')
     body = indexes.CharField(model_attr='body')
     activation_dt = indexes.DateTimeField(model_attr='activation_dt', null=True)
-    
     syndicate = indexes.BooleanField(model_attr='syndicate')
     
     # authority fields
@@ -30,16 +29,15 @@ class DirectoryIndex(indexes.RealTimeSearchIndex):
     status_detail = indexes.CharField(model_attr='status_detail')
     
     who_can_view = indexes.CharField()
-    
+
     category = indexes.CharField()
     sub_category = indexes.CharField()
-    
+
     # for rss
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
     
     def prepare_can_syndicate(self, obj):
-
         args = [
             obj.allow_anonymous_view,
             obj.syndicate,
