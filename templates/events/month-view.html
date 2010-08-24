@@ -15,102 +15,6 @@
 
 {% block body %}
 
-<style type="text/css">
-
-	.month-view h1 {
-		text-align: center;
-	}
-	.month-view div.weekday {
-		width: 14.28%;
-		float: left;
-		text-align: center;
-	}
-	
-	.month-view .calendar-wrap {
-		background-color: #F7F7F7;
-	}
-	.month-view .month-wrap {
-		float: left;
-		background-color: white;
-		padding-right: 10px;
-		width: 80%;
-	}
-	.month-view div.month-grid {
-		border: 1px solid silver;
-		border-right: none;
-		border-bottom: none;
-	}
-	.month-view div.day {
-		width: 14.13%;
-		height: 116px;
-		border: 1px solid silver;
-
-		border-top: none;
-		border-left: none;
-
-		float: left;
-	}
-	.month-view div.day div.date-numeral {
-		text-align: right;
-		background-color: #EEE;
-		position: relative;
-	}
-	.month-view div.day div.date-numeral a {
-		display: block;
-		text-decoration: none;
-		padding-right: 5px;
-	}
-	.month-view div.day div.event-item {
-		font-size: 11px;
-		line-height: 1.1em;
-		border-bottom: 1px dashed silver;
-		padding: 5px 0;
-		margin-left: 2px;
-	}
-	.month-view div.day div.event-item span.event-title a {
-		text-decoration: none;
-	}
-	.month-view div.day div.more-events {
-		background-color: #FFC;
-		padding: 5px;
-	}
-
-
-	.month-names {
-		margin-bottom: 10px;
-	}
-	.month-names .month-name {
-		font-size: 1.4em;
-		float: left;
-		margin-right: 0;
-	}
-	.month-names .month-name a {
-		text-decoration: none;
-		display: block;
-		padding: 10px;
-	}
-	.month-names .month-name a:active,
-	.month-names .month-name a:hover {
-		background-color: #DDD;
-	}
-	.month-names .previous a {
-		background-color: #EEE;
-	}
-	.month-names .current a {
-		background-color: #EEE;
-		width: 140px;
-		text-align: center;
-	}
-	.month-names .next a {
-		background-color: #EEE;
-	}
-	
-	.event-item {
-		word-wrap: break-word;
-	}
-
-</style>
-
 <div class="month-view">
 
 	{% event_nav user %}
@@ -144,13 +48,11 @@
 					
 					{% if events %}
 						{% for event in events|slice:"2" %}
-							<div class="event-item">
-								<span cla5ss="time-stamp">{{ event.start_dt|date:"P" }}</span>
-								<span class="event-title">
-								<a class="event-item-link" href="{{ event.get_absolute_url }}" title="{{ event }}">
-									{{ event.title|slice:":13 " }} ...
-								</a>
-								</span>
+							<div class="event-item" title="{{ event }}" 
+								style="color:{{ event.type.fg_color }}; background-color:{{ event.type.bg_color }}">
+								<span class="time-stamp">{{ event.start_dt|date:"P" }}</span>
+								<span class="event-title">{{ event.title|slice:":15 " }} ...</span>
+								<a class='click-mask' href="{{ event.get_absolute_url }}"></a>
 							</div>
 						{% endfor %}
 	
@@ -170,40 +72,28 @@
 		</div> <!-- END month-grid -->
 	</div> <!-- END month-wrap -->
 
-<style type="text/css">
-
-	.side-bar .header {
-		text-align: center;
-		font-size: 1.4em;
-		padding: 20px 0 10px;
-		margin-bottom: 10px;
-		border-bottom: 1px solid #DDD;
-	}
-	.side-bar .types {
-		margin: 0 10px;
-		float: left;
-	}
-	.side-bar .types .type a {
-		text-decoration: none;
-		padding: 5px;
-		background-color: #FFC;
-		display: block;
-		margin: 5px 0;
-		width: 130px;
-	}
-</style>
-
 	<div class="side-bar">
 
 		<div class="header">Types of Events</div>
 		<div class="types">
 			<div class="type"><a href="{% url event.month year month %}">All Event Types</a></div>
+			{% with type as curr_type %}
 			{% for type in types %}
-				<div class="type"><a href="{% url event.month year month type.slug %}">{{ type }}</a></div>
+
+				{% if curr_type == type.slug %}
+
+				<div class="type">
+					<a style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.border_color }};" 
+					href="{% url event.month year month type.slug %}">{{ type }}</a>
+				</div>
+				{% else %}
+				<div class="type">
+					<a style="color:{{ type.fg_color }}; background-color:{{ type.bg_color }}; border-color:{{ type.bg_color }};" 
+					href="{% url event.month year month type.slug %}">{{ type }}</a>
+				</div>
+				{% endif %}
 			{% endfor %}
-			
-			{{ type.theme.fg_color }}
-			{{ type.theme.bg_color }}
+			{% endwith %}
 
 		</div>
 	</div>
@@ -218,7 +108,7 @@
 {% block extra_body %}
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
 <script type="text/javascript">
-	$('a.event-item-link').tipsy({
+	$('.event-item').tipsy({
 		gravity: 's', 
 		live: true 
 	});
