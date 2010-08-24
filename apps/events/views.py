@@ -10,7 +10,7 @@ from django.contrib import messages
 
 from base.http import Http403
 from events.models import Event, RegistrationConfiguration, Registration, Registrant, Speaker, Organizer, Type
-from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm
+from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm, TypeForm
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
 from event_logs.models import EventLog
@@ -21,6 +21,10 @@ try: from notification import models as notification
 except: notification = None
 
 def index(request, id=None, template_name="events/view.html"):
+
+    if not id:
+        return HttpResponseRedirect(reverse('event.month'))
+
     event = get_object_or_404(Event, pk=id)
     
     if request.user.has_perm('events.view_event', event):
@@ -461,8 +465,12 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
 
 def month_view(request, year=None, month=None, type=None, template_name='events/month-view.html'):
     from events.utils import next_month, prev_month
-    year = int(year)
-    month = int(month)
+
+    # default/convert month and year
+    if month: month = int(month)
+    else: month = datetime.now().month
+    if year: year = int(year)
+    else: year = datetime.now().year
 
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar
@@ -481,7 +489,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     weekdays = calendar.weekheader(10).split()
     cal = Calendar(calendar.SUNDAY).monthdatescalendar(year, month)
 
-    types = Type.objects.all()
+    types = Type.objects.all().order_by('name')
 
     return render_to_response(template_name, {
         'cal':cal, 
@@ -515,12 +523,21 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
         }, 
         context_instance=RequestContext(request))
 
+def types(request, template_name='events/types/index.html'):
+    from django.forms.models import modelformset_factory
+    TypeFormSet = modelformset_factory(Type, extra=2, can_delete=True)
 
-#@login_required
-#def register_confirm(request, event_id=0, template_name="events/reg8n/register-confirm.html"):
-#        event = get_object_or_404(Event, pk=event_id)
-#        return render_to_response(template_name, {'event':event}, 
-#            context_instance=RequestContext(request))
+    print request.POST
+
+    if request.method == 'POST':
+        formset = TypeFormSet(request.POST)
+        if formset.is_valid():
+            formset.save()
+
+    formset = TypeFormSet()
+
+    return render_to_response(template_name, {'formset': formset}, 
+        context_instance=RequestContext(request))
 
 @login_required
 def registrant_search(request, event_id=0, template_name='events/registrants/search.html'):

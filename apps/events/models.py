@@ -13,16 +13,38 @@ from events.module_meta import EventMeta
 
 from django.template.defaultfilters import slugify
 
+class TypeColorSet(models.Model):
+    """
+    Colors representing a type [color-scheme]
+    The values can be hex or literal color names
+    """
+    fg_color = models.CharField(max_length=20)
+    bg_color = models.CharField(max_length=20)
+    border_color = models.CharField(max_length=20)
+
+    def __unicode__(self):
+        return '%s #%s' % (self.pk, self.bg_color)
 
 class Type(models.Model):
+    
     """
-    Event Type
     Types is a way of grouping events
     An event can only be one type
     A type can have multiple events
     """
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, editable=False)
+    color_set = models.ForeignKey('TypeColorSet')
+
+    @property
+    def fg_color(self):
+        return '#%s' % self.color_set.fg_color
+    @property
+    def bg_color(self):
+        return '#%s' % self.color_set.bg_color
+    @property
+    def border_color(self):
+        return '#%s' % self.color_set.border_color
 
     def __unicode__(self):
         return self.name

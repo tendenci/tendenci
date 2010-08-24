@@ -17,7 +17,5 @@ class EventAdmin(admin.ModelAdmin):
         'status_detail',
     )
 
-
-
 admin.site.register(Event, EventAdmin)
 admin.site.register(Type)

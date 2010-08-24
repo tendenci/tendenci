@@ -363,5 +363,123 @@ div.id_end_dt .field input#id_end_dt_1 {
 	margin: 15px;
 }
 
+/* Monthly View
+----------------------------- */
+.month-view h1 {
+	text-align: center;
+}
+.month-view div.weekday {
+	width: 14.28%;
+	float: left;
+	text-align: center;
+}
 
+.month-view .calendar-wrap {
+	background-color: #F7F7F7;
+}
+.month-view .month-wrap {
+	float: left;
+	background-color: white;
+	padding-right: 10px;
+	width: 80%;
+}
+.month-view div.month-grid {
+	border: 1px solid silver;
+	border-right: none;
+	border-bottom: none;
+}
+.month-view div.day {
+	width: 14.13%;
+	height: 116px;
+	border: 1px solid silver;
+
+	border-top: none;
+	border-left: none;
+
+	float: left;
+}
+.month-view div.day div.date-numeral {
+	text-align: right;
+	background-color: #EEE;
+	position: relative;
+}
+.month-view div.day div.date-numeral a {
+	display: block;
+	text-decoration: none;
+	padding-right: 5px;
+}
+.month-view div.day div.event-item {
+	font-size: 11px;
+	line-height: 1.1em;
+	/* border-bottom: 1px dashed silver; */
+	padding: 5px 5px;
+}
+.month-view div.day div.event-item span.event-title a {
+	text-decoration: none;
+}
+.month-view div.day div.more-events {
+	background-color: #FFC;
+	padding: 5px;
+}
+
+
+.month-names {
+	margin-bottom: 10px;
+}
+.month-names .month-name {
+	font-size: 1.4em;
+	float: left;
+	margin-right: 0;
+}
+.month-names .month-name a {
+	text-decoration: none;
+	display: block;
+	padding: 10px;
+}
+.month-names .month-name a:active,
+.month-names .month-name a:hover {
+	background-color: #DDD;
+}
+.month-names .previous a {
+	background-color: #EEE;
+}
+.month-names .current a {
+	background-color: #EEE;
+	width: 140px;
+	text-align: center;
+}
+.month-names .next a {
+	background-color: #EEE;
+}
+
+.event-item {
+	word-wrap: break-word;
+	position: relative;
+}
+
+.event-item .click-mask {
+	position: absolute;
+	top:0; right:0; bottom:0; left:0;
+}
+
+	.side-bar .header {
+	text-align: center;
+	font-size: 1.4em;
+	padding: 20px 0 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #DDD;
+}
+.side-bar .types {
+	margin: 0 10px;
+	float: left;
+}
+.side-bar .types .type a {
+	text-decoration: none;
+	padding: 2px 5px;
+	background-color: #FFC;
+	display: block;
+	margin: 5px 0;
+	width: 130px;
+	border: 2px solid #FFC;
+}
 

@@ -58,24 +58,14 @@ class EventListNode(template.Node):
         day = self.day.resolve(context)
         type = self.type.resolve(context)
 
-#        kwargs = {
-#            # i'm being explicit about each date part
-#            # because I do not want to include the time
-#            'start_dt__day': day.day,
-#            'start_dt__month': day.month,
-#            'start_dt__year': day.year,
-#        }
-#        if type: kwargs['type__slug'] = type
-#        events = Event.objects.filter(**kwargs).order_by('start_dt')
-
-        args = [
-            'start_day:%s'% day.day,
-            'start_month:%s'% day.month,
-            'start_year:%s'% day.year,
+        filters = [
+            'start_day:%s' % day.day,
+            'start_month:%s' % day.month,
+            'start_year:%s' % day.year,
         ]
-        if type: args.append('type:%s' % type)
-        sqs = Event.objects.search(*args)
+        if type: filters.append('type:%s' % type)
 
+        sqs = Event.objects.search_filter(filters=filters, user=context['user'])
         events = [sq.object for sq in sqs] 
 
         context[self.context_var] = events
