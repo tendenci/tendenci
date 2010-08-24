@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
-from events.models import Event, RegistrationConfiguration, Registration, Registrant, Speaker, Organizer
+from events.models import Event, RegistrationConfiguration, Registration, Registrant, Speaker, Organizer, Type
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
@@ -459,7 +459,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
 
         return response
 
-def month_view(request, year=None, month=None, template_name='events/month-view.html'):
+def month_view(request, year=None, month=None, type=None, template_name='events/month-view.html'):
     from events.utils import next_month, prev_month
     year = int(year)
     month = int(month)
@@ -470,20 +470,29 @@ def month_view(request, year=None, month=None, template_name='events/month-view.
     next_month, next_year = next_month(month, year)
     prev_month, prev_year = prev_month(month, year)
 
-    next_month_url = reverse('event.month', args=(next_year, next_month))
-    prev_month_url = reverse('event.month', args=(prev_year, prev_month))
+    # remove any params that aren't set (e.g. type)
+    next_month_params = [i for i in (next_year, next_month, type) if i]
+    prev_month_params = [i for i in (prev_year, prev_month, type) if i]
+
+    next_month_url = reverse('event.month', args=next_month_params)
+    prev_month_url = reverse('event.month', args=prev_month_params)
 
     month_names = calendar.month_name[month-1:month+2]
     weekdays = calendar.weekheader(10).split()
-    month = Calendar(calendar.SUNDAY).monthdatescalendar(year, month)
+    cal = Calendar(calendar.SUNDAY).monthdatescalendar(year, month)
 
-    return render_to_response(template_name, { 
+    types = Type.objects.all()
+
+    return render_to_response(template_name, {
+        'cal':cal, 
         'month':month,
         'prev_month_url':prev_month_url,
         'next_month_url':next_month_url,
         'month_names':month_names,
         'year':year,
         'weekdays':weekdays,
+        'types':types,
+        'type':type,
         }, 
         context_instance=RequestContext(request))
 
