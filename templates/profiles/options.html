@@ -51,6 +51,9 @@
 				<li>
 				<a href="{% url profile.edit_perms user_this.id %}" class="permissions" title=="Edit Permissions">Permissions</a>
 				</li>
+				<li>
+				<a href="{{ request.path }}?_impersonate={{ user_this.username }}" class="permissions" title=="Impersontae">Impersonate</a>
+				</li>
 				{% endif %}
 				
 				<li>               

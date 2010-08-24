@@ -66,6 +66,7 @@ def index(request, form_class=ContactForm, template_name="form.html"):
 
             if address or city or state or zipcode or country:
                 address_kwargs = {
+                    'address': address,
                     'city': city,
                     'state': state,
                     'zipcode': zipcode,
