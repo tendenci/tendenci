@@ -172,7 +172,9 @@
     	<!-- <li><a href="{% url settings %}">Change website settings</a></li> -->
     	<li><a href="{% url settings %}">Enable/Disable modules</a></li>
     	<!-- <li><a href="javascript:;">Update SEM</a></li> -->
+    	{% if user.is_super_user %}
         <li><a href="/admin/">Admin Panel</a></li>
+        {% endif %}
     </ul>
     </div>
     	
