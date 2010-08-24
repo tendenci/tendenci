@@ -9,6 +9,9 @@ from articles.models import Article
 from pages.models import Page
 from news.models import News
 from jobs.models import Job
+from directories.models import Directory
+from help_files.models import HelpFile
+from stories.models import Story
 
 def bind_files(sender, **kwargs):
     # get content type and instance
@@ -24,7 +27,9 @@ def bind_files(sender, **kwargs):
 signals.post_save.connect(bind_files, sender=Page, weak=False)
 signals.post_save.connect(bind_files, sender=News, weak=False)
 signals.post_save.connect(bind_files, sender=Article, weak=False)
-signals.post_save.connect(bind_files, sender=Job, weak=False)
+signals.post_save.connect(bind_files, sender=Directory, weak=False)
+signals.post_save.connect(bind_files, sender=HelpFile, weak=False)
+signals.post_save.connect(bind_files, sender=Story, weak=False)
 
 def delete_files(sender, **kwargs):
     # get content type and instance
@@ -39,4 +44,6 @@ def delete_files(sender, **kwargs):
 signals.post_delete.connect(delete_files, sender=Page, weak=False)
 signals.post_delete.connect(delete_files, sender=News, weak=False)
 signals.post_delete.connect(delete_files, sender=Article, weak=False)
-signals.post_delete.connect(delete_files, sender=Job, weak=False)
+signals.post_delete.connect(delete_files, sender=Directory, weak=False)
+signals.post_delete.connect(delete_files, sender=HelpFile, weak=False)
+signals.post_delete.connect(delete_files, sender=Story, weak=False)

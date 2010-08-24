@@ -6,8 +6,8 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
-from jobs.models import Job
-from jobs.forms import JobForm
+from jobs.models import Job, JobPricing
+from jobs.forms import JobForm, JobPricingForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
@@ -238,3 +238,104 @@ def delete(request, id, template_name="jobs/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
+    
+@login_required
+def pricing_add(request, form_class=JobPricingForm, template_name="jobs/pricing-add.html"):
+    if request.user.has_perm('jobs.add_jobpricing'):
+        if request.method == "POST":
+            form = form_class(request.POST)
+            if form.is_valid():           
+                job_pricing = form.save(commit=False)
+                job_pricing.status = 1
+                job_pricing.save(request.user)
+                
+                log_defaults = {
+                    'event_id' : 265100,
+                    'event_data': '%s (%d) added by %s' % (job_pricing._meta.object_name, job_pricing.pk, request.user),
+                    'description': '%s added' % job_pricing._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': job_pricing,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                return HttpResponseRedirect(reverse('job_pricing.view', args=[job_pricing.id]))
+        else:
+            form = form_class()
+           
+        return render_to_response(template_name, {'form':form}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
+    
+@login_required
+def pricing_edit(request, id, form_class=JobPricingForm, template_name="jobs/pricing-edit.html"):
+    job_pricing = get_object_or_404(JobPricing, pk=id)
+    if not request.user.has_perm('jobs.change_jobpricing', job_pricing): Http403
+    
+    if request.method == "POST":
+        form = form_class(request.POST, instance=job_pricing)
+        if form.is_valid():           
+            job_pricing = form.save(commit=False)
+            job_pricing.save(request.user)
+            
+            log_defaults = {
+                'event_id' : 265110,
+                'event_data': '%s (%d) edited by %s' % (job_pricing._meta.object_name, job_pricing.pk, request.user),
+                'description': '%s edited' % job_pricing._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': job_pricing,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            return HttpResponseRedirect(reverse('job_pricing.view', args=[job_pricing.id]))
+    else:
+        form = form_class(instance=job_pricing)
+       
+    return render_to_response(template_name, {'form':form}, 
+        context_instance=RequestContext(request))
+
+
+@login_required
+def pricing_view(request, id, template_name="jobs/pricing-view.html"):
+    job_pricing = get_object_or_404(JobPricing, id=id)
+    
+    if request.user.has_perm('jobs.view_jobpricing', job_pricing):        
+        return render_to_response(template_name, {'job_pricing': job_pricing}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
+    
+@login_required
+def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
+    job_pricing = get_object_or_404(JobPricing, pk=id)
+
+    if not request.user.has_perm('jobs.delete_jobpricing'): raise Http403
+       
+    if request.method == "POST":
+        log_defaults = {
+            'event_id' : 265120,
+            'event_data': '%s (%d) deleted by %s' % (job_pricing._meta.object_name, job_pricing.pk, request.user),
+            'description': '%s deleted' % job_pricing._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': job_pricing,
+        }
+        
+        EventLog.objects.log(**log_defaults)
+        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % job_pricing)
+        
+        job_pricing.delete()
+            
+        return HttpResponseRedirect(reverse('job_pricing.search'))
+    
+    return render_to_response(template_name, {'job_pricing': job_pricing}, 
+        context_instance=RequestContext(request))
+
+def pricing_search(request, template_name="jobs/pricing-search.html"):
+    job_pricings = JobPricing.objects.all().order_by('-create_dt')
+    
+    return render_to_response(template_name, {'job_pricings':job_pricings}, 
+        context_instance=RequestContext(request))
+    

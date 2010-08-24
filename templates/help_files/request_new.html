@@ -1,0 +1,25 @@
+{% extends "help_files/base.html" %}
+{% load help_file_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}{{ topic }} Request{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+<h3>Request Help File</h3>
+
+Please provide as much detail as possible.<br>
+If you would like to, also include your name and email:
+<form method="POST">
+	<div class="forms">
+	{{ form|styled_form }}
+	<input type="submit" value="Request Help File">
+	</div>
+</form>
+</div>
+{% endblock %}
