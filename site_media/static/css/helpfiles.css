@@ -1,37 +1,179 @@
-div.left-col {
+.t {
+	width: 90%;
+}
+.t-iconrow {
+	float: right;
+}
+.clear-right{
+	clear: right;
+}
+.clear-both{
+	clear: both;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t .help-files-wrap {
+	margin-bottom: 20px;
+}
+
+.t .help-file-wrap {
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.t .help-files-wrap .help-file-wrap {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .help-files-wrap .help-file-wrap h2 {
+	width: 85%;
+}
+.t .help-files-wrap .help-file-wrap .content {
+	margin-bottom: 10px;
+}
+.t .help-files-wrap .help-file-wrap .submitted {
+	background-color: #EEE;
+}
+
+.t div.options {
+	text-align: right;
+	position: absolute;
+	top: 0; right: 0;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}
+
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: -30px; right: 0;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+.t .quick-options ul li {
+	display: inline;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+.t .add-help-file-link{
+	margin-bottom: 20px;
+}
+
+
+.t ul.help-files-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.help-files-nav li {
+	display: inline;
+}
+.help-file-wrap .delete-form{
+	margin-top: 1em;
+}
+.help-file-wrap .delete-prompt{
+	font-size: 1.2em;
+	color: red;
+}
+
+/* index */
+.t div.left-col {
 	float: left;
 	width: 400px;
 }
 
-div.right-col {
+.t div.right-col {
 	float: left;
 	width: 200px;
 }
 
-.topics .col {
+.t div.right-col ul {
+	list-style-type: none;	
+	margin: 0;
+	padding: 5px;
+}
+
+.t div.right-col ul.request-help-file a {
+	font-weight: bold;
+	font-size: 18px;
+}
+
+.t div.right-col div.sub-column h3 {
+	margin: 5px 0 5px 0;	
+	padding: 0;
+}
+
+.t div.right-col div.sub-column {
+	background-color: #EFEFEF;	
+	padding: 8px;
+}
+
+.t .topics .col {
 	width: 180px;
 	float: left;
 }
 
-div.question {
-	border: 1px solid #dddddd;
-	margin-bottom: 1px;
-	padding: 2px;
+/* form */
+div.forms div.form-field div.id_start_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
 }
 
-div.question a {
-	font-weight: bold;
+div.forms div.form-field div.id_start_dt .field input#id_start_dt_1 {
+	width: 80px;
 }
 
-div.question span {
-	display: block;
-	padding-left: 10px;
+div.forms div.form-field div.id_end_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
 }
 
-div.question span a {
-	font-weight: normal !important;
+div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
+	width: 80px;
 }
 
-div.searchform {
-	float: right;
-}
+
