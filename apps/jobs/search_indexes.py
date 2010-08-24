@@ -34,6 +34,8 @@ class JobIndex(indexes.RealTimeSearchIndex):
     category = indexes.CharField()
     sub_category = indexes.CharField()
 
+    can_syndicate = indexes.BooleanField()
+
     def prepare_category(self, obj):
         category = Category.objects.get_for_object(obj, 'category')
         if category: return category.name
@@ -42,7 +44,11 @@ class JobIndex(indexes.RealTimeSearchIndex):
     def prepare_sub_category(self, obj):
         category = Category.objects.get_for_object(obj, 'sub_category')
         if category: return category.name
-        return ''      
+        return ''
+
+    def prepare_can_syndicate(self, obj):
+        return obj.allow_anonymous_view and obj.syndicate \
+                and obj.status==1  and obj.status_detail=='active'
 
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('jobs.view_job', obj)
