@@ -3,25 +3,25 @@
 <head>
 	<title>{#stormeimage_dlg.dialog_title}</title>
 
-	<link href="/site_media/static/tinymce/plugins/stormeimage/css/stormeimage.css" rel="stylesheet" type="text/css" />
-	<link rel="stylesheet" type="text/css" href="/site_media/static/tinymce/plugins/stormeimage/css/swfupload.visual.css">
+	<link href="{{ STATIC_URL }}tinymce/plugins/stormeimage/css/stormeimage.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}tinymce/plugins/stormeimage/css/swfupload.visual.css">
 
 	<!-- tinymce -->
-	<script type="text/javascript" src="/site_media/static/tinymce/tiny_mce_popup.js"></script>
-	<script type="text/javascript" src="/site_media/static/tinymce/utils/mctabs.js"></script>
-	<script type="text/javascript" src="/site_media/static/tinymce/utils/form_utils.js"></script>
-	<script type="text/javascript" src="/site_media/static/tinymce/utils/validate.js"></script>
-	<script type="text/javascript" src="/site_media/static/tinymce/utils/editable_selects.js"></script>
-	<script type="text/javascript" src="/site_media/static/tinymce/plugins/stormeimage/js/image.js"></script>
-    <script type="text/javascript" src="/site_media/static/tinymce/plugins/stormeimage/js/json2.min.packed.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce_popup.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}tinymce/utils/mctabs.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}tinymce/utils/form_utils.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}tinymce/utils/validate.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}tinymce/utils/editable_selects.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}tinymce/plugins/stormeimage/js/image.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}tinymce/plugins/stormeimage/js/json2.min.packed.js"></script>
 
 	<!-- swfupload (and jquery) -->
-	<script src="/site_media/static/js/jquery-1.4.2.min.js" type="text/javascript"></script>
-	<script src="/site_media/static/swfupload/swfupload.js" type="text/javascript"></script>
-	<script src="/site_media/static/swfupload/swfupload.cookies.js" type="text/javascript"></script>
-	<script src="/site_media/static/tinymce/plugins/stormeimage/js/swfupload.handlers.js" type="text/javascript"></script>
-	<script src="/site_media/static/swfupload/swfupload.swfobject.js" type="text/javascript"></script>
-	<script language="javascript" type="text/javascript">
+	<script src="{{ STATIC_URL }}js/jquery-1.4.2.min.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}swfupload/swfupload.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}swfupload/swfupload.cookies.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}tinymce/plugins/stormeimage/js/swfupload.handlers.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}swfupload/swfupload.swfobject.js" type="text/javascript"></script>
+	<script type="text/javascript">
 		var swfupload;
 
 		window.onload = function() {
