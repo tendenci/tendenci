@@ -467,10 +467,10 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     from events.utils import next_month, prev_month
 
     # default/convert month and year
-    if month: month = int(month)
-    else: month = datetime.now().month
-    if year: year = int(year)
-    else: year = datetime.now().year
+    if month and year:
+        month, year = int(month), int(year)
+    else:
+        month, year = datetime.now().month, datetime.now().year
 
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar
@@ -525,9 +525,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
 
 def types(request, template_name='events/types/index.html'):
     from django.forms.models import modelformset_factory
-    TypeFormSet = modelformset_factory(Type, extra=2, can_delete=True)
-
-    print request.POST
+    TypeFormSet = modelformset_factory(Type, form=TypeForm, extra=2, can_delete=True)
 
     if request.method == 'POST':
         formset = TypeFormSet(request.POST)
