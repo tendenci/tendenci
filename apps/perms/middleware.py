@@ -3,6 +3,7 @@ from os.path import basename, splitext
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 
 def get_imp_message(request, user):
     """
@@ -97,26 +98,26 @@ class ImpersonationMiddleware(object):
         # stop the impersonation process
         if '_stop_impersonate' in request.GET:
             stop_impersonation(request.session)
-            return
-            
-        # kill impersonation on post requests
-        # it means they are adding, editing, deleting stuff
-        if request.method == 'POST':
-            stop_impersonation(request.session)
-            return            
+            return         
             
         # check for a session based impersonation
         if 'imp' in request.session.keys():
             session_impersonation = request.session['imp']
-            
-        # check for no file extension, if this is true 
-        # then push the message to the message framework
-        # this way it ignores css, jpg, etc
-        if len(splitext(basename(request.path))[1]) == 0:
-            message = True
-            
+        
         # check for session impersonation
         if session_impersonation and request.user.is_superuser:
+            # kill impersonation on post requests
+            # it means they are adding, editing, deleting stuff
+            if request.method == 'POST':
+                stop_impersonation(request.session)
+                return   
+
+            # check for no file extension, if this is true 
+            # then push the message to the message framework
+            # this way it ignores css, jpg, etc
+            if len(splitext(basename(request.path))[1]) == 0:
+                message = True
+                    
             new_user = request.session['imp_u']
             current_user = request.user    
                
@@ -130,15 +131,28 @@ class ImpersonationMiddleware(object):
                 else:
                     # log this to event logs
                     log_impersonation(request, new_user)
-                
-            request.user = new_user
-            request.user._impersonator = current_user
 
             # show the impersonation message
             if message:
-                messages.add_message(request, messages.INFO, get_imp_message(request,new_user))  
+                request.impersonation_message = get_imp_message(request,new_user)
                       
+            # set the new user, and impersonator 
+            request.user = new_user
+            request.user._impersonator = current_user
+            
         elif '_impersonate' in request.GET and request.user.is_superuser: # GET
+            # kill impersonation on post requests
+            # it means they are adding, editing, deleting stuff
+            if request.method == 'POST':
+                stop_impersonation(request.session)
+                return  
+            
+            # check for no file extension, if this is true 
+            # then push the message to the message framework
+            # this way it ignores css, jpg, etc
+            if len(splitext(basename(request.path))[1]) == 0:
+                message = True
+                        
             current_user = request.user
 
             new_user = get_imp_user(request.GET['_impersonate'])
@@ -151,15 +165,12 @@ class ImpersonationMiddleware(object):
             # you are impersonating
             request.session['imp'] = True
             request.session['imp_u'] = new_user
-                
-            # set the person doing the impersonation
-            # on the impersonated user object
-            request.user = new_user
-            request.user._impersonator = current_user
         
             # show the impersonation message
             if message:
-                messages.add_message(request, messages.INFO, get_imp_message(request, new_user)) 
+                request.impersonation_message = get_imp_message(request,new_user)
             
-                
+            # set the new user, and impersonator 
+            request.user = new_user
+            request.user._impersonator = current_user
             
