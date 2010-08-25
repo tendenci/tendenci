@@ -58,15 +58,7 @@
 				<div class="help">{{ form.description.help_text }}</div>
 				<div class="clear"></div>
 			</div>
-
-			<div class="item">
-				<div class="errs">{{ form.list_type.errors }}</div>
-				<div class="label">{{ form.list_type.label_tag }}</div>
-				<div class="field">{{ form.list_type }}</div>
-				<div class="help">{{ form.list_type.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
+			
 			<div class="item">
 				<div class="errs">{{ form.code.errors }}</div>
 				<div class="label">{{ form.code.label_tag }}</div>
@@ -176,14 +168,6 @@
 				<div class="label label-wrap">{{ form.computer_skills.label_tag }}</div>
 				<div class="field">{{ form.computer_skills }}</div>
 				<div class="help">{{ form.computer_skills.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form.requested_duration.errors }}</div>
-				<div class="label label-wrap"><label for="id_requested_duration">Duration</label></div>
-				<div class="field">{{ form.requested_duration }}</div>
-				<div class="help">{{ form.requested_duration.help_text }}</div>
 				<div class="clear"></div>
 			</div>
 
@@ -382,6 +366,22 @@
 				<div class="label">{{ form.user_perms.label_tag }}</div>
 				<div class="field">{{ form.user_perms }}</div>
 				<div class="help">{{ form.user_perms.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+			
+			<div class="item">
+				<div class="errs">{{ form.requested_duration.errors }}</div>
+				<div class="label label-wrap"><label for="id_requested_duration">Duration</label></div>
+				<div class="field">{{ form.requested_duration }}</div>
+				<div class="help">{{ form.requested_duration.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+			
+			<div class="item">
+				<div class="errs">{{ form.list_type.errors }}</div>
+				<div class="label">{{ form.list_type.label_tag }}</div>
+				<div class="field">{{ form.list_type }}</div>
+				<div class="help">{{ form.list_type.help_text }}</div>
 				<div class="clear"></div>
 			</div>
 
