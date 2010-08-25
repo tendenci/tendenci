@@ -5,6 +5,11 @@ by {{ object.creator }}
 by {{ object.object.creator.get_profile.display_name }}
 {{ object.description }}
 
+start_day:{{ object.start_dt.day }}
+start_month:{{ object.start_dt.month }}
+start_year:{{ object.start_dt.year }}
+type:{{ object.type.slug }}
+
 {% tags_for_object object as tags %}
 {% for tag in tags %}
 {{ tag }} 

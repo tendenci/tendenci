@@ -41,5 +41,5 @@ urlpatterns = patterns('',
     url(r'^set/(?P<id>\d+)/$', 'photos.views.photoset_details', name="photoset_details"),
 
     url(r'^feeds/latest-albums/$', LatestAlbums(), name='photo.feed.latest-albums'),
-    url(r'^feeds/latest-album-photos/(?P<set_id>\d+)/$', LatestAlbumPhotos(), name='photo.feed.latest-album-photos'),
+#    url(r'^feeds/latest-album-photos/(?P<set_id>\d+)/$', LatestAlbumPhotos(), name='photo.feed.latest-album-photos'),
 )
