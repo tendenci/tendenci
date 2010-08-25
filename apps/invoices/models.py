@@ -200,6 +200,46 @@ class Invoice(models.Model):
         self.ship_date = datetime.now()
         self.message = 'Thank You.'
         self.status = True
+        
+    def assign_job_info(self, user, job, **kwargs):
+        self.title = "Job Add Invoice"
+        self.invoice_date = datetime.now()
+        self.bill_to = job.contact_name
+        first_name = ''
+        last_name = ''
+        if job.contact_name:
+            name_list = job.contact_name.split(' ')
+            if len(name_list) >= 2:
+                first_name = name_list[0]
+                last_name = ' '.join(name_list[1:])
+        self.bill_to_first_name = first_name
+        self.bill_to_last_name = last_name
+        self.bill_to_company = job.contact_company
+        self.bill_to_address = job.contact_address
+        self.bill_to_city = job.contact_city
+        self.bill_to_state = job.contact_state
+        self.bill_to_zip_code = job.contact_zip_code
+        self.bill_to_country = job.contact_country
+        self.bill_to_phone = job.contact_phone
+        self.bill_to_fax = job.contact_fax
+        self.bill_to_email = job.contact_email
+        self.ship_to = job.contact_name
+        self.ship_to_first_name = first_name
+        self.ship_to_last_name = last_name
+        self.ship_to_company = job.contact_company
+        self.ship_to_address = job.contact_address
+        self.ship_to_city = job.contact_city
+        self.ship_to_state = job.contact_state
+        self.ship_to_zip_code = job.contact_zip_code
+        self.ship_to_country = job.contact_country
+        self.ship_to_phone = job.contact_phone
+        self.ship_to_fax = job.contact_fax
+        self.ship_to_email =job.contact_email
+        self.terms = "Due on Receipt"
+        self.due_date = datetime.now()
+        self.ship_date = datetime.now()
+        self.message = 'Thank You.'
+        self.status = True
      
     # this function is to make accounting entries    
     def make_payment(self, user, amount):
