@@ -42,7 +42,7 @@ class Payment(models.Model):
     ship_to_state = models.CharField(max_length=40, default='', null=True)
     ship_to_zip = models.CharField(max_length=20, default='', null=True)
     ship_to_country = models.CharField(max_length=60, default='', null=True)
-    method = models.CharField(max_length=10)
+    method = models.CharField(max_length=50)
     freight = models.CharField(max_length=16, blank=True)
     tax_exempt = models.CharField(max_length=16, blank=True)
     md5_hash = models.CharField(max_length=255)
@@ -139,7 +139,18 @@ class Payment(models.Model):
             
             # description
             if inv.invoice_object_type == 'make_payment':
-                self.description = 'Tendenci Invoice %d Payment (ID# %d).' % (inv.id, inv.invoice_object_type_id) 
+                self.description = 'Tendenci Invoice %d Payment (ID# %d).' % (inv.id, inv.invoice_object_type_id)
+            elif  inv.invoice_object_type == 'job':
+                from jobs.models import Job
+                try:
+                    job = Job.objects.get(id=inv.invoice_object_type_id)
+                except:
+                    job = None
+                if job:
+                    self.description = 'Tendenci Invoice %d Payment for job posting: %s(ID# %d).' \
+                             % (inv.id, job.title, inv.invoice_object_type_id)
+                else:
+                    self.description = 'Tendenci Invoice %d Payment for job posting: (ID# %d).' % (inv.id, inv.invoice_object_type_id)                
             else:
                 self.description = 'Tendenci Invoice %d Payment.' % (inv.id)
                 
