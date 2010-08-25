@@ -23,11 +23,115 @@
 
      <div class="job-wrap">
         <h2>{{ job.title }}</h2>
-        <div class="content">{{ job.description|safe }}</div>
-        <div class="meta">
-            <div class="submitted">Submitted on {{ job.create_dt|date:"D d M Y P" }} by {{ job.creator }}</div>
-        </div>
-    </div>
+{% if job.description %}
+		<div class="section-block">
+			<div class="label">Description</div>
+			<div class="value">{{ job.description|safe }}</div>
+		</div>
+{% endif %}
+
+{% if job.period %}
+		<div class="section-line">
+			<div class="label">Position Type</div>
+			<div class="value">{{ job.period }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+{% if job.position_reports_to %}
+		<div class="section-line">
+			<div class="label">Position Reports To</div>
+			<div class="value">{{ job.position_reports_to }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+{% if job.location %}
+		<div class="section-line">
+			<div class="label">Location</div>
+			<div class="value">{{ job.location }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+{% if job.percent_travel %}
+		<div class="section-line">
+			<div class="label">Travel Required</div>
+			<div class="value">{{ job.percent_travel }} of the time (approximate)</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+{% if job.start_dt %}
+		<div class="section-line">
+			<div class="label">Starts On</div>
+			<div class="value">{{ job.start_dt }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+{% if job.salary_from %}
+		<div class="section-line">
+			<div class="label">Salary</div>
+			<div class="value">{{ job.salary_from }} to {{ job.salary_to }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+{% if job.code %}
+		<div class="section-line">
+			<div class="label">Code</div>
+			<div class="value">{{ job.code }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+
+		<h2>Job Requirements</h2>
+{% if job.experience %}
+		<div class="section-block">
+			<div class="label">Experience</div>
+			<div class="value">{{ job.experience }}</div>
+		</div>
+{% endif %}
+
+{% if job.skills %}
+		<div class="section-block">
+			<div class="label">Skills</div>
+			<div class="value">{{ job.skills }}</div>
+		</div>
+{% endif %}
+
+{% if job.education %}
+		<div class="section-line">
+			<div class="label">Education Required</div>
+			<div class="value">{{ job.education }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+
+		<h2>Company Information</h2>
+{% if job.contact_company %}
+		<div class="company-wrap">
+			{{ job.contact_company }}<br />
+			{{ job.contact_address }}<br />
+			{{ job.contact_city }} {{ job.contact_state }} {{ job.contact_zip_code }}<br />
+			{{ job.contact_country }}
+		</div>
+{% endif %}
+
+
+		<h2>Contact Information</h2>
+{% if job.contact_name %}
+		<div class="contact-wrap">
+			<div>{{ job.contact_name }}</div>
+			<div>{{ job.contact_phone }}</div>
+			<div>{{ job.contact_fax }}</div>
+			<div><a href="">{{ job.contact_email|urlize }}</a></div>
+		</div>
+{% endif %}
+     </div>
 
 </div>
 {% endblock %}
