@@ -336,3 +336,41 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 	border-bottom: 1px dotted #ccc;
 	margin-bottom: 1em;
 }
+
+/* embeded pricing table */
+.pricing-table-block{
+	margin-left: 120px;
+	margin-bottom: 1em;
+} 
+table.job-pricing-rate{
+	width: 320px;
+	border: 1px solid #809d89;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+table.job-pricing-rate tr td{
+	text-align: right;
+}
+.job-pricing-rate .header-row{
+	font-weight: bold;
+}
+.job-pricing-rate .header-row td{
+	color: #fff;
+	background-color: #809DB9;
+	font-weight: bold;
+	
+}
+.job-pricing-rate .row2{
+	background-color: #d3d9e5;
+}
+
+/* payment method */
+.payment-method-item ul{
+	padding: 0px;
+}
+.payment-method-item ul li{
+	list-style: none;
+}
+.payment-method-item input{
+	width: 0 !important;
+}
