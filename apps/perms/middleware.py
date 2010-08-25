@@ -46,30 +46,63 @@ def get_imp_message(request, user):
               '<p><a href="%s">Stop impersonating %s</a></p>'
     
     return message % message_repl
-    
+
+def get_imp_user(username):
+    """
+        Search for an impersonated user
+        and return the user object
+    """
+    user = None
+    if username == 'anonymous':
+        user = AnonymousUser()
+    else:
+        try:
+            user = User.objects.get(username=username)
+        except:
+            pass
+    return user
+        
+def stop_impersonation(session):
+    """
+        Reset the session of a user
+        impersonating.
+    """
+    session['imp'] = False
+    session['imp_u'] = None    
+
+def log_impersonation(request, new_user):
+    """
+        Log the impersonation in event logs
+    """
+    from event_logs.models import EventLog
+    log_defaults = {
+        'event_id' : 1080000,
+        'event_data': '%s impersonated by %s' % (new_user, request.user),
+        'description': '%s impersonated' % new_user,
+        'user': request.user,
+        'request': request,
+        'instance': request.user,
+    }
+    EventLog.objects.log(**log_defaults)    
+        
 class ImpersonationMiddleware(object):
     """
         Allows you to impersonate another user. 
         Persists with sessions. 
     """
     def process_request(self, request):
-        username = None
         session_impersonation = False
         message = False
         
         # stop the impersonation process
         if '_stop_impersonate' in request.GET:
-            request.session['imp'] = False
-            request.session['imp_u'] = None
-            session_impersonation = False
+            stop_impersonation(request.session)
             return
             
         # kill impersonation on post requests
         # it means they are adding, editing, deleting stuff
         if request.method == 'POST':
-            request.session['imp'] = False
-            request.session['imp_u'] = None
-            session_impersonation = False
+            stop_impersonation(request.session)
             return            
             
         # check for a session based impersonation
@@ -84,54 +117,49 @@ class ImpersonationMiddleware(object):
             
         # check for session impersonation
         if session_impersonation and request.user.is_superuser:
-            user = request.session['imp_u']
+            new_user = request.session['imp_u']
             current_user = request.user    
+               
+            # switch impersonated user if they request someone
+            # else
+            if '_impersonate' in request.GET:
+                new_user = get_imp_user(request.GET['_impersonate'])
+                if not new_user: 
+                    stop_impersonation(request.session)
+                    return
+                else:
+                    # log this to event logs
+                    log_impersonation(request, new_user)
                 
-            request.user = user
+            request.user = new_user
             request.user._impersonator = current_user
 
             # show the impersonation message
             if message:
-                messages.add_message(request, messages.INFO, get_imp_message(request,user))  
+                messages.add_message(request, messages.INFO, get_imp_message(request,new_user))  
                       
-        elif '_impersonate' in request.GET and request.user.is_superuser:
-            username = request.GET['_impersonate']
+        elif '_impersonate' in request.GET and request.user.is_superuser: # GET
             current_user = request.user
 
-            try:
-                new_user = None
-                if username == 'anonymous':
-                    new_user = AnonymousUser()
-                else:
-                    user = User.objects.get(username=username)
-                    new_user = user
-                
-                from event_logs.models import EventLog
-                log_defaults = {
-                    'event_id' : 1080000,
-                    'event_data': '%s impersonated by %s' % (new_user, request.user),
-                    'description': '%s impersonated' % new_user,
-                    'user': request.user,
-                    'request': request,
-                    'instance': request.user,
-                }
-                EventLog.objects.log(**log_defaults)
-                
-                # set the session up to let it be known
-                # you are impersonating
-                request.session['imp'] = True
-                request.session['imp_u'] = new_user
-                    
-                # set the person doing the impersonation
-                # on the impersonated user object
-                request.user = new_user
-                request.user._impersonator = current_user
+            new_user = get_imp_user(request.GET['_impersonate'])
+            if not new_user: return                
             
-                # show the impersonation message
-                if message:
-                    messages.add_message(request, messages.INFO, get_imp_message(request,user)) 
-            except:
-                pass # user could not be found so do not imperonsate
+            # log this to event logs
+            log_impersonation(request, new_user)
+            
+            # set the session up to let it be known
+            # you are impersonating
+            request.session['imp'] = True
+            request.session['imp_u'] = new_user
+                
+            # set the person doing the impersonation
+            # on the impersonated user object
+            request.user = new_user
+            request.user._impersonator = current_user
+        
+            # show the impersonation message
+            if message:
+                messages.add_message(request, messages.INFO, get_imp_message(request, new_user)) 
             
                 
             
