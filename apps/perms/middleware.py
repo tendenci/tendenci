@@ -2,8 +2,6 @@ from os.path import basename, splitext
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.models import User
-from django.contrib import messages
-from django.http import HttpResponseRedirect
 
 def get_imp_message(request, user):
     """
