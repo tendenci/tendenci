@@ -203,6 +203,12 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 .clear {
 	clear: both;
 }
+.clear-left {
+	clear: left;
+}
+.clear-right {
+	clear: right;
+}
 .wrap {
 	white-space: pre-wrap;
 }
@@ -299,4 +305,34 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 .item-hr-clear {
 	height: 10px;
 	width: 100%;
+}
+
+/* pricing */
+.jobpricing{
+	padding: 1em;
+	border: 1px solid silver;
+	width: 500px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+.pricing-item{
+	margin-bottom: 0.8em;
+}
+.pricing-item .label{
+	float: left;
+	width: 35%;
+	text-align: right;
+	margin-right: 1em;	
+	white-space: nowrap;
+}
+#pricing-submit{
+	float: right;
+}
+.jobpricing-details{
+	width: 500px;
+}
+.sep-line{
+	height: 1px; 
+	border-bottom: 1px dotted #ccc;
+	margin-bottom: 1em;
 }

@@ -1,5 +1,5 @@
 from django.contrib.syndication.views import Feed
-
+from haystack.query import SearchQuerySet
 from site_settings.utils import get_setting
 from photos.models import Image, PhotoSet
 
@@ -9,7 +9,8 @@ class LatestAlbums(Feed):
     description =  "Latest Photo Albums from %s" % get_setting('site','global','sitedisplayname')
 
     def items(self):
-        return PhotoSet.objects.order_by('-create_dt')[:20]
+        sqs = SearchQuerySet().filter(can_syndicate=True).models(PhotoSet).order_by('-update_dt')[:20]
+        return [sq.object for sq in sqs]
     
     def item_title(self, item):
         return item.name

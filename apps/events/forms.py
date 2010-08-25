@@ -4,11 +4,43 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from events.models import Event, Place, RegistrationConfiguration, \
-    Payment, PaymentMethod, Sponsor, Organizer, Speaker
+    Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, TypeColorSet
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
+
+class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
+
+    def __iter__(self):
+        for i, choice in enumerate(self.choices):
+            yield RadioImageInput(self.name, self.value, self.attrs.copy(), choice, i)
+
+    def __getitem__(self, idx):
+        choice = self.choices[idx] # Let the IndexError propogate
+        return RadioImageInput(self.name, self.value, self.attrs.copy(), choice, idx)
+
+class RadioImageInput(forms.widgets.RadioInput):
+
+    def __unicode__(self):        
+        if 'id' in self.attrs:
+            label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
+        else:
+            label_for = ''
+        choice_label = self.choice_label
+        return u'<label%s>%s %s</label>' % (label_for, self.tag(), choice_label)
+
+    def tag(self):
+        from django.utils.safestring import mark_safe
+        from django.forms.util import flatatt
+
+        if 'id' in self.attrs:
+            self.attrs['id'] = '%s_%s' % (self.attrs['id'], self.index)
+        final_attrs = dict(self.attrs, type='radio', name=self.name, value=self.choice_value)
+        if self.is_checked():
+            final_attrs['checked'] = 'checked'
+        return mark_safe(u'<input%s />' % flatatt(final_attrs))
+
 
 class EventForm(TendenciBaseForm):
     description = forms.CharField(required=False,
@@ -30,6 +62,7 @@ class EventForm(TendenciBaseForm):
             'start_dt',
             'end_dt',
             'timezone',
+            'type',
             'allow_anonymous_view',
             'allow_user_view',
             'allow_user_edit',
@@ -43,6 +76,44 @@ class EventForm(TendenciBaseForm):
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+
+class TypeChoiceField(forms.ModelChoiceField):
+
+    def __init__(self, queryset, empty_label=u"---------", cache_choices=False,
+                 required=True, widget=None, label=None, initial=None, choices=None,
+                 help_text=None, to_field_name=None, *args, **kwargs):
+
+        if required and (initial is not None):
+            self.empty_label = None
+        else:
+            self.empty_label = empty_label
+        self.cache_choices = cache_choices
+
+        if choices:
+            self._choices = choices
+        
+        forms.fields.ChoiceField.__init__(self, choices=self._choices, widget=widget)
+
+        self.queryset = queryset
+        self.choice_cache = None
+        self.to_field_name = to_field_name
+
+
+class TypeForm(forms.ModelForm):
+
+    color_set_choices = [(color_set.pk, 
+        '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s" />'
+        % color_set.bg_color) for color_set in TypeColorSet.objects.all()]
+
+    color_set = TypeChoiceField(
+        choices=color_set_choices,
+        queryset=TypeColorSet.objects.all(),
+        widget=forms.RadioSelect(renderer=RadioImageFieldRenderer),
+    )
+
+
+    class Meta:
+        model = Type
 
 class PlaceForm(forms.ModelForm):
     class Meta:
