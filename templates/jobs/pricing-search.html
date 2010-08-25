@@ -3,6 +3,7 @@
 {% load job_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load base_filters %}
 
 {% block title %}Job Pricing Search{% endblock %}
 
@@ -30,10 +31,10 @@
 			</div>
 
             <h2><a href="{% url job_pricing.view jp.pk %}">Duration: {{ jp.duration }}</a></h2>
-            <div class="content">Regular Price: {{ jp.regular_price }}</div>
-            <div class="content">Premium Price: {{ jp.premium_price }}</div>
-            <div class="content">Member Regular Price: {{ jp.regular_price_member }}</div>
-            <div class="content">Member Premium Price: {{ jp.premium_price_member }}</div>
+            <div class="content">Regular Price: {{ jp.regular_price|format_currency }}</div>
+            <div class="content">Premium Price: {{ jp.premium_price|format_currency }}</div>
+            <div class="content">Member Regular Price: {{ jp.regular_price_member|format_currency }}</div>
+            <div class="content">Member Premium Price: {{ jp.premium_price_member|format_currency }}</div>
             <div class="content">Show Member Pricing: {{ jp.show_member_pricing }}</div>
             <div class="content">Status: <b>{% if jp.status %}Active{%else%}Inactive{%endif%}</b></div>
 			<div class="meta">

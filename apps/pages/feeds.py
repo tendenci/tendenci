@@ -1,5 +1,5 @@
 from django.contrib.syndication.views import Feed
-
+from haystack.query import SearchQuerySet
 from site_settings.utils import get_setting
 from pages.models import Page
 
@@ -12,10 +12,11 @@ class LatestEntriesFeed(Feed):
     description_template = 'feeds/page_description.html'
 
     def items(self):
-        return Page.objects.order_by('-create_dt')[:20]
+        sqs = SearchQuerySet().filter(can_syndicate=True).models(Page).order_by('-create_dt')[:20]
+        return [sq.object for sq in sqs]
     
-#    def item_title(self, item):
-#        return item.title
-#
-#    def item_description(self, item):
-#        return item.content
+    def item_title(self, item):
+        return item.title
+
+    def item_description(self, item):
+        return item.content
