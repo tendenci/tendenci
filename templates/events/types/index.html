@@ -8,6 +8,21 @@
 {% endblock %}
 
 {% block body %}
+
+<style type="text/css">
+	.colors ul {
+		list-style-type: none;
+		padding-left: 0; /* remove default */
+		margin: 0 auto; /* remove default */
+	}
+	.colors li {
+		float: left;
+	}
+	
+	
+</style>
+
+
 <div class="t">
     {% event_nav request.user %}
 
@@ -38,8 +53,8 @@
 	
 				<div class="item">
 					<div class="errs">{{ form.color_set.errors }}</div>
-					<div class="label">Colors</div>
-					<div class="field">{{ form.color_set }}</div>
+					<div class="label">Color</div>
+					<div class="field colors">{{ form.color_set }}</div>
 					<div class="help">{{ form.color_set.help_text }}</div>
 					<div class="clear"></div>
 				</div>
