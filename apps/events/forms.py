@@ -4,7 +4,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from events.models import Event, Place, RegistrationConfiguration, \
-    Payment, PaymentMethod, Sponsor, Organizer, Speaker
+    Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
@@ -30,6 +30,7 @@ class EventForm(TendenciBaseForm):
             'start_dt',
             'end_dt',
             'timezone',
+            'type',
             'allow_anonymous_view',
             'allow_user_view',
             'allow_user_edit',
@@ -43,6 +44,11 @@ class EventForm(TendenciBaseForm):
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+
+class TypeForm(forms.ModelForm):
+
+    class Meta:
+        model = Type
 
 class PlaceForm(forms.ModelForm):
     class Meta:

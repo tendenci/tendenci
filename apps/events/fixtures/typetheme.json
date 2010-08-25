@@ -1,0 +1,1378 @@
+[
+    {
+        "pk": 1, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "Background Color", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d96666", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e67399", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b373b3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8c66d9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "668cb3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "668CD9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "59BFB3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "65ad89", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "4cb052", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8cbf40", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "bfbf4d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e0c240", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "f2a640", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e6804d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "be9494", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a992a9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8997a5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "94a2be", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "85aaa5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a7a77d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c4a883", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c7561e", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b5515d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c244ab", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "603f99", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "536ca6", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "3640ad", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "3c995b", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "5ca632", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 31, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "7ec225", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a7b828", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 33, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "cf9911", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d47f1e", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 35, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b56414", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 36, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "914d14", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 37, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "ab2671", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 38, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "9643a5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 39, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "4585a3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 40, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "737373", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 41, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "41a587", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 42, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d1bc36", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 43, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "ad2d2d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 44, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "Background Color", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 45, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d96666", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 46, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e67399", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 47, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b373b3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 48, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8c66d9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 49, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "668cb3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 50, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "668CD9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 51, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "59BFB3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 52, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "65ad89", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 53, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "4cb052", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 54, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8cbf40", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 55, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "bfbf4d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 56, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e0c240", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 57, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "f2a640", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 58, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e6804d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 59, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "be9494", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 60, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a992a9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 61, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8997a5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 62, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "94a2be", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 63, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "85aaa5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 64, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a7a77d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 65, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c4a883", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 66, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c7561e", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 67, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b5515d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 68, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c244ab", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 69, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "603f99", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 70, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "536ca6", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 71, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "3640ad", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 72, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "3c995b", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 73, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "5ca632", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 74, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "7ec225", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 75, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a7b828", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 76, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "cf9911", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 77, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d47f1e", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 78, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b56414", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 79, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "914d14", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 80, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "ab2671", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 81, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "9643a5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 82, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "4585a3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 83, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "737373", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 84, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "41a587", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 85, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d1bc36", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 86, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "ad2d2d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 87, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "Background Color", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 88, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d96666", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 89, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e67399", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 90, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b373b3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 91, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8c66d9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 92, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "668cb3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 93, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "668CD9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 94, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "59BFB3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 95, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "65ad89", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 96, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "4cb052", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 97, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8cbf40", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 98, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "bfbf4d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 99, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e0c240", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 100, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "f2a640", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 101, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e6804d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 102, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "be9494", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 103, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a992a9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 104, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8997a5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 105, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "94a2be", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 106, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "85aaa5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 107, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a7a77d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 108, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c4a883", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 109, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c7561e", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 110, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b5515d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 111, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c244ab", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 112, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "603f99", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 113, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "536ca6", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 114, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "3640ad", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 115, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "3c995b", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 116, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "5ca632", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 117, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "7ec225", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 118, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a7b828", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 119, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "cf9911", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 120, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d47f1e", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 121, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b56414", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 122, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "914d14", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 123, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "ab2671", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 124, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "9643a5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 125, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "4585a3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 126, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "737373", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 127, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "41a587", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 128, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d1bc36", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 129, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "ad2d2d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 130, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "Background Color", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 131, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d96666", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 132, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e67399", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 133, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b373b3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 134, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8c66d9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 135, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "668cb3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 136, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "668CD9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 137, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "59BFB3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 138, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "65ad89", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 139, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "4cb052", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 140, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8cbf40", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 141, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "bfbf4d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 142, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e0c240", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 143, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "f2a640", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 144, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "e6804d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 145, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "be9494", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 146, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a992a9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 147, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "8997a5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 148, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "94a2be", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 149, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "85aaa5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 150, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a7a77d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 151, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c4a883", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 152, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c7561e", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 153, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b5515d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 154, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "c244ab", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 155, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "603f99", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 156, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "536ca6", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 157, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "3640ad", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 158, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "3c995b", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 159, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "5ca632", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 160, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "7ec225", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 161, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "a7b828", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 162, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "cf9911", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 163, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d47f1e", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 164, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "b56414", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 165, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "914d14", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 166, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "ab2671", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 167, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "9643a5", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 168, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "4585a3", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 169, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "737373", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 170, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "41a587", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 171, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "d1bc36", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 172, 
+        "model": "events.typetheme", 
+        "fields": {
+            "bg_color": "ad2d2d", 
+            "fg_color": "FFF"
+        }
+    }
+]

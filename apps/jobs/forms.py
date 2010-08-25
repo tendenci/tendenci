@@ -9,6 +9,7 @@ from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from jobs.models import JobPricing
+from jobs.utils import get_duration_choices
 
 class JobForm(TendenciBaseForm):
 
@@ -29,13 +30,17 @@ class JobForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
     
+    requested_duration = forms.ChoiceField()
+    
+    list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
+                                                              ('premium', 'Premium'),))
+    
     class Meta:
         model = Job
         fields = (
         'title',
         'slug',
         'description',
-        'list_type',
         'code',
         'location',
         'skills',
@@ -51,6 +56,7 @@ class JobForm(TendenciBaseForm):
         'salary_to',
         'computer_skills',
         'requested_duration',
+        'list_type',
         'activation_dt',
         'post_dt',
         'expiration_dt',
@@ -76,6 +82,7 @@ class JobForm(TendenciBaseForm):
         'allow_member_view',
         'allow_user_edit',
         'allow_member_edit',
+        'syndicate',
         'status',
         'status_detail',
        )
@@ -111,6 +118,8 @@ class JobForm(TendenciBaseForm):
         if not is_admin(user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+            
+        self.fields['requested_duration'].choices = get_duration_choices()
 
 
 DURATION_CHOICES = ((14,'14 Days from Activation date'), 
