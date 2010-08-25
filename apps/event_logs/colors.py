@@ -220,8 +220,11 @@ colors = {
     '444000':'CCCC33', # search 
     '445000':'CCCC33', # view    
     '445001':'CCCC33', # print view  
-    '442210':'CCCC33', # renew      
-
+    '442210':'CCCC33', # renew     
+    
+    # impersonation
+    '1080000':'FF0000', 
+    
 }
 
 def get_color(event_id):
