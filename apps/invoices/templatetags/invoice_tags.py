@@ -28,6 +28,14 @@ def invoices_search_results_line(request, invoice):
         except Registration.DoesNotExist:
             reg8n = None
         return {'request':request, 'invoice':invoice, 'reg8n':reg8n}
+    elif invoice.invoice_object_type == 'job':
+        from jobs.models import Job
+        
+        try:
+            job = Job.objects.get(id=invoice.invoice_object_type_id)
+        except Job.DoesNotExist:
+            job = None
+        return {'request':request, 'invoice':invoice, 'job':job}
     else:
         return {'request':request, 'invoice':invoice}
     
@@ -58,6 +66,16 @@ def invoice_event_display(request, invoice):
         reg8n = None
     return {'request':request, 'invoice':invoice, 'reg8n':reg8n}
 
+# display job on invoice view
+@register.inclusion_tag("invoices/job_display.html")
+def invoice_job_display(request, invoice):
+    from jobs.models import Job
+    #item_display = invoices_display_make_payments(request, invoice)
+    try:
+        job = Job.objects.get(id=invoice.invoice_object_type_id)
+    except Job.DoesNotExist:
+        job = None
+    return {'request':request, 'invoice':invoice, 'job':job}
 
 # display invoice total on invoice view
 @register.inclusion_tag("invoices/total_display.html")
