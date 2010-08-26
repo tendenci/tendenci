@@ -523,8 +523,10 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
         }, 
         context_instance=RequestContext(request))
 
+@login_required
 def types(request, template_name='events/types/index.html'):
     from django.forms.models import modelformset_factory
+
     TypeFormSet = modelformset_factory(Type, form=TypeForm, extra=2, can_delete=True)
 
     if request.method == 'POST':
