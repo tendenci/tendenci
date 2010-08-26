@@ -4,7 +4,9 @@ import sys
 # Paths
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 APPS_PATH = os.path.join(PROJECT_ROOT, 'apps')
+LIBS_PATH = os.path.join(PROJECT_ROOT, 'libs')
 sys.path.insert(0, APPS_PATH)
+sys.path.insert(0, LIBS_PATH)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
