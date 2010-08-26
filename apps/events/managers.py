@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db.models import Manager
 
 from haystack.query import SearchQuerySet
@@ -40,8 +42,8 @@ class EventManager(Manager):
             else:
                 sqs = sqs.filter(allow_anonymous_view=True)
 
-            sqs = sqs.order_by('-create_dt')
-
+            sqs = sqs.filter(start_dt__gt = datetime.now())
+            sqs = sqs.order_by('start_dt')
 
         if event:
             sqs = sqs.filter(event=event)
