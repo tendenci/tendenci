@@ -65,7 +65,12 @@
     
       <div id="main-content-wide">
         {% block messages %}
-             {% if messages %}
+        	{% if request.impersonation_message %}
+        	<ul class="messages">
+            	<li>{{ request.impersonation_message|safe }}</li>
+            </ul>
+            {% endif %}
+            {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
                 <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>

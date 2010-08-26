@@ -170,31 +170,7 @@
 				<div class="help">{{ form.computer_skills.help_text }}</div>
 				<div class="clear"></div>
 			</div>
-
-			<div class="item-dt">
-				<div class="errs">{{ form.activation_dt.errors }}</div>
-				<div class="label">{{ form.activation_dt.label_tag }}</div>
-				<div class="field">{{ form.activation_dt }}</div>
-				<div class="help">{{ form.activation_dt.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-dt">
-				<div class="errs">{{ form.post_dt.errors }}</div>
-				<div class="label">{{ form.post_dt.label_tag }}</div>
-				<div class="field">{{ form.post_dt }}</div>
-				<div class="help">{{ form.post_dt.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-dt">
-				<div class="errs">{{ form.expiration_dt.errors }}</div>
-				<div class="label">{{ form.expiration_dt.label_tag }}</div>
-				<div class="field">{{ form.expiration_dt }}</div>
-				<div class="help">{{ form.expiration_dt.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
+			
 			<div class="item">
 				<div class="errs">{{ form.job_url.errors }}</div>
 				<div class="label">{{ form.job_url.label_tag }}</div>
@@ -211,13 +187,6 @@
 				<div class="clear"></div>
 			</div>
 
-			<div class="item">
-				<div class="errs">{{ form.entity.errors }}</div>
-				<div class="label">{{ form.entity.label_tag }}</div>
-				<div class="field">{{ form.entity }}</div>
-				<div class="help">{{ form.entity.help_text }}</div>
-				<div class="clear"></div>
-			</div>
 
 			<div class="item-text">
 				Contact Information
@@ -377,13 +346,27 @@
 				<div class="clear"></div>
 			</div>
 			
-			<div class="item">
-				<div class="errs">{{ form.list_type.errors }}</div>
-				<div class="label">{{ form.list_type.label_tag }}</div>
-				<div class="field">{{ form.list_type }}</div>
-				<div class="help">{{ form.list_type.help_text }}</div>
-				<div class="clear"></div>
-			</div>
+			{# need a setting here - if jobs require payment, then display pricing table, payment method and list type.  #}
+			
+				<div class="item">
+					<div class="errs">{{ form.list_type.errors }}</div>
+					<div class="label">{{ form.list_type.label_tag }}</div>
+					<div class="field">{{ form.list_type }}</div>
+					<div class="help">{{ form.list_type.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+				
+				<div class="pricing-table-block">
+				{% job_pricing_table %}
+				</div>
+				
+				<div class="item payment-method-item">
+					<div class="errs">{{ form.payment_method.errors }}</div>
+					<div class="label label-wrap">{{ form.payment_method.label_tag }}</div>
+					<div class="field">{{ form.payment_method }}</div>
+					<div class="help">{{ form.payment_method.help_text }}</div>
+					<div class="clear"></div>
+				</div>
 
 			{% is_admin user as admin %}
 			{% if admin %}
@@ -391,6 +374,22 @@
 
 				<div class="item-text">
 					Administrators Only
+				</div>
+				
+				<div class="item-dt">
+					<div class="errs">{{ form.activation_dt.errors }}</div>
+					<div class="label">{{ form.activation_dt.label_tag }}</div>
+					<div class="field">{{ form.activation_dt }}</div>
+					<div class="help">{{ form.activation_dt.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+				
+				<div class="item">
+					<div class="errs">{{ form.entity.errors }}</div>
+					<div class="label">{{ form.entity.label_tag }}</div>
+					<div class="field">{{ form.entity }}</div>
+					<div class="help">{{ form.entity.help_text }}</div>
+					<div class="clear"></div>
 				</div>
 
 				<div class="item-checkbox">

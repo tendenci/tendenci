@@ -2,26 +2,26 @@
 	width: 90%;
 }
 
-.t ul.jobs-nav {
+.t ul.resumes-nav {
 	margin: 0; padding: 0;
 	list-style-type: none;
 	margin-bottom: 20px;
 }
-.t ul.jobs-nav li {
+.t ul.resumes-nav li {
 	display: inline;
 }
 
-.t .jobs-wrap {
+.t .resumes-wrap {
 	margin-bottom: 20px;
 }
 
-.t .job-wrap {
+.t .resume-wrap {
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
 }
 
-.t .jobs-wrap .job-wrap-search {
+.t .resumes-wrap .resume-wrap-search {
 	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
@@ -29,10 +29,10 @@
 	background-color: white;
 }
 
-.t .jobs-wrap .job-wrap h2 {
+.t .resumes-wrap .resume-wrap h2 {
 	width: 85%;
 }
-.t .jobs-wrap .job-wrap .content {
+.t .resumes-wrap .resume-wrap .content {
 	margin-bottom: 10px;
 }
 .t .options {
@@ -113,15 +113,15 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 
 
 
-/* Job View
+/* Resume View
  ------------------------- */
-.t .job-wrap .meta, .t .job-wrap-search .meta {
+.t .resume-wrap .meta, .t .resume-wrap-search .meta {
 	border: 1px solid silver;
 	padding: 10px;
 	background-color: #F7F7F7;
 	margin-top: 10px;
 }
-.t .job-wrap .meta .tags {
+.t .resume-wrap .meta .tags {
 	margin-bottom: 5px;
 }
 
@@ -156,10 +156,10 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 }
 
 
-/* Job Print View
+/* Resume Print View
  ------------------------- */
 
-.t-print .job-wrap {
+.t-print .resume-wrap {
 	width: 8in;
 	padding: .25in;
 	margin: 20px 0;
@@ -182,14 +182,14 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 	.hide-this {
 		display: none;
 	}
-	.t-print .job-wrap {
+	.t-print .resume-wrap {
 		width: 100%;
 		border: none;
 		padding: 0; margin: 0;
 	}
 }
 
-/* Jobs Add/Edit
+/* Resume Add/Edit
  ------------------------- */
 
 .errors {
@@ -202,12 +202,6 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 }
 .clear {
 	clear: both;
-}
-.clear-left {
-	clear: left;
-}
-.clear-right {
-	clear: right;
 }
 .wrap {
 	white-space: pre-wrap;
@@ -305,72 +299,4 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 .item-hr-clear {
 	height: 10px;
 	width: 100%;
-}
-
-/* pricing */
-.jobpricing{
-	padding: 1em;
-	border: 1px solid silver;
-	width: 500px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-}
-.pricing-item{
-	margin-bottom: 0.8em;
-}
-.pricing-item .label{
-	float: left;
-	width: 35%;
-	text-align: right;
-	margin-right: 1em;	
-	white-space: nowrap;
-}
-#pricing-submit{
-	float: right;
-}
-.jobpricing-details{
-	width: 500px;
-}
-.sep-line{
-	height: 1px; 
-	border-bottom: 1px dotted #ccc;
-	margin-bottom: 1em;
-}
-
-/* embeded pricing table */
-.pricing-table-block{
-	margin-left: 120px;
-	margin-bottom: 1em;
-} 
-table.job-pricing-rate{
-	width: 320px;
-	border: 1px solid #809d89;
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-table.job-pricing-rate tr td{
-	text-align: right;
-}
-.job-pricing-rate .header-row{
-	font-weight: bold;
-}
-.job-pricing-rate .header-row td{
-	color: #fff;
-	background-color: #809DB9;
-	font-weight: bold;
-	
-}
-.job-pricing-rate .row2{
-	background-color: #d3d9e5;
-}
-
-/* payment method */
-.payment-method-item ul{
-	padding: 0px;
-}
-.payment-method-item ul li{
-	list-style: none;
-}
-.payment-method-item input{
-	width: 0 !important;
 }

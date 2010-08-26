@@ -1,0 +1,127 @@
+{% extends "resumes/base.html" %}
+{% load resume_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load category_tags %}
+
+{% block title %}{{ resume.get_title }}{% endblock %}
+{% block meta_description %}{{ resume.get_description }}{% endblock %}
+{% block meta_keywords %}{{ resume.get_keywords }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/resumes.css">
+{% endblock %}
+
+{% block body %}
+{% tags_for_object resume as tags %}
+
+<div class="t">
+    {% resume_nav request.user resume %}
+
+    <div class="resume-wrap">
+		<div class="options">
+             <div class="quick-options">
+				{% resume_options request.user resume %} 	       
+             </div>
+		</div>
+			
+        <h1>{{ resume.title }}</h1>
+
+		<h2>Resume Information</h2>
+
+{% if resume.description %}
+		<div class="section-block">
+			<div class="label">Description</div>
+			<div class="value">{{ resume.description|safe }}</div>
+		</div>
+{% endif %}
+
+{% if resume.location %}
+		<div class="section-block">
+			<div class="label">Location</div>
+			<div class="value">{{ resume.location }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+
+{% if resume.experience %}
+		<div class="section-block">
+			<div class="label">Experience</div>
+			<div class="value">{{ resume.experience }}</div>
+		</div>
+{% endif %}
+
+{% if resume.skills %}
+		<div class="section-block">
+			<div class="label">Skills</div>
+			<div class="value">{{ resume.skills }}</div>
+		</div>
+{% endif %}
+
+{% if resume.education %}
+		<div class="section-block">
+			<div class="label">Education</div>
+			<div class="value">{{ resume.education }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+		<h2>Contact Information</h2>
+{% if resume.contact_name %}
+		<div class="contact-wrap">
+			<div>{{ resume.contact_name }}</div>
+			<div>{{ resume.contact_phone }}</div>
+			<div>{{ resume.contact_phone2 }}</div>
+			<div>{{ resume.contact_fax }}</div>
+			<div><a href="">{{ resume.contact_email|urlize }}</a></div>
+		</div>
+{% endif %}
+
+        <div class="meta">
+			<div class="tags">
+				{% if tags %}
+					Tags: 
+					{% for tag in tags %}
+						<a href="{% url resume.search %}?q={{ tag }}">{{ tag }}</a>
+					{% endfor %}
+				{% endif %}
+			</div>
+
+            <div class="submitted">Submitted on {{ resume.create_dt|date:"D d M Y P" }} 
+			by {% firstof resume.creator.get_profile.display_name resume.creator %}</div>
+        </div>
+        
+		<br />
+        {% url resume resume.pk as the_url %}
+        <p>{% fb_like_button_iframe the_url %}</p>
+    </div>
+
+    <!-- delete-resume form -->
+    <form name="resume-delete" method="POST" action="{% url resume.delete resume.pk %}">
+        <input type="hidden" name="action" value="delete">
+    </form>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_resume = confirm('Permenantly delete {% firstof MODULE_RESUMES_LABEL 'Resume' %}?');	// confirm
+				if(delete_resume) $('.t').find('form[name="resume-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+	var iconrow = new dropdown({
+		container:	'more-options-wrap',
+		trigger:	'more-options-trigger',
+		target:		'more-options-target'
+	});
+	</script>
+{% endblock %}
