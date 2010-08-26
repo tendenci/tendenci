@@ -1,5 +1,4 @@
 # Ignore all local development files
-libs/
 local_settings.py
 local_urls.py
 schema.xml
