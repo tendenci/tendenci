@@ -204,9 +204,6 @@
 		{% endif %}
 		{% endwith %}
 	{% empty %}
-		{% if not request.GET.q %}
-		<div class="highlight">0 Upcoming Events Found</div>
-		{% endif %}
     {% endfor %}
 	</div>
 
