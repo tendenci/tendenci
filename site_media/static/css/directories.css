@@ -267,3 +267,71 @@ div.forms div.form-field div.id_fax .field input {
 	height: 10px;
 	width: 100%;
 }
+
+/* pricing */
+.directory-pricing{
+	padding: 1em;
+	border: 1px solid silver;
+	width: 500px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+.pricing-item{
+	margin-bottom: 0.8em;
+}
+.pricing-item .label{
+	float: left;
+	width: 35%;
+	text-align: right;
+	margin-right: 1em;	
+	white-space: nowrap;
+}
+#pricing-submit{
+	float: right;
+}
+.directory-pricing-details{
+	width: 500px;
+}
+.sep-line{
+	height: 1px; 
+	border-bottom: 1px dotted #ccc;
+	margin-bottom: 1em;
+}
+
+/* embeded pricing table */
+.pricing-table-block{
+	margin-left: 120px;
+	margin-bottom: 1em;
+} 
+table.directory-pricing-rate{
+	width: 320px;
+	border: 1px solid #809d89;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+table.directory-pricing-rate tr td{
+	text-align: right;
+}
+.directory-pricing-rate .header-row{
+	font-weight: bold;
+}
+.directory-pricing-rate .header-row td{
+	color: #fff;
+	background-color: #809DB9;
+	font-weight: bold;
+	
+}
+.directory-pricing-rate .row2{
+	background-color: #d3d9e5;
+}
+
+/* payment method */
+.payment-method-item ul{
+	padding: 0px;
+}
+.payment-method-item ul li{
+	list-style: none;
+}
+.payment-method-item input{
+	width: 0 !important;
+}
