@@ -12,6 +12,7 @@ from entities.models import Entity
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from jobs.module_meta import JobMeta
+from invoices.models import Invoice
 
 class Job(TendenciBaseModel ):
     guid = models.CharField(max_length=40)
@@ -64,14 +65,14 @@ class Job(TendenciBaseModel ):
     meta = models.OneToOneField(MetaTags, null=True)
     entity = models.ForeignKey(Entity,null=True)
     tags = TagField(blank=True)
-                 
-    #integrate with payment (later)
-    #invoice_id = models.ForeignKey(Invoice, blank=True, null=True)   
-    #payment_method = models.CharField(max_length=50)
-    #member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
-    #member_count = models.IntegerField(blank=True)
-    #non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
-    #non_member_count = models.IntegerField(blank=True)
+    
+    invoice = models.ForeignKey(Invoice, blank=True, null=True)   
+    payment_method = models.CharField(max_length=50, blank=True, default='')
+    member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
+    member_count = models.IntegerField(blank=True, null=True)
+    non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
+    non_member_count = models.IntegerField(blank=True, null=True)
+    
     #override_price = models.DecimalField(null=True, max_digits=20, decimal_places=2, blank=True)
     #override_userid = models.IntegerField(null=True, blank=True)
  
@@ -127,6 +128,10 @@ class JobPricing(models.Model):
         if user and user.id:
             self.owner=user
             self.owner_username=user.username
+        if not self.regular_price_member: self.regular_price_member = 0
+        if not self.premium_price_member: self.premium_price_member = 0
+        if not self.regular_price: self.regular_price = 0
+        if not self.premium_price: self.premium_price = 0
             
         super(self.__class__, self).save(*args, **kwargs)
 

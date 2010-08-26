@@ -1,27 +1,27 @@
-{% extends "jobs/base.html" %}
-{% load job_tags %}
+{% extends "resumes/base.html" %}
+{% load resume_tags %}
 {% load perm_tags %}
 
-{% block title %}{% firstof MODULE_JOBS_LABEL 'Job' %} Edit{% endblock %}
+{% block title %}{% firstof MODULE_RESUMES_LABEL 'Resume' %} Edit{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
-<link rel="stylesheet" href="/site_media/static/css/jobs.css">
+<link rel="stylesheet" href="/site_media/static/css/resumes.css">
 <script type="text/javascript" src="/site_media/static/tinymce/tiny_mce.js"></script>
 {% endblock %}
 
 {% block body %}
 <div class="t">
 
-    {% job_nav request.user job %}
+    {% resume_nav request.user resume %}
 
-    <h1>{% firstof MODULE_JOBS_LABEL 'Job' %} Edit</h1>
+    <h1>{% firstof MODULE_RESUMES_LABEL 'Resume' %} Edit</h1>
 
-    <div class="job-wrap">
+    <div class="resume-wrap">
 		<div class="options">
              <div class="quick-options">
-				{% job_options request.user job %} 	       
+				{% resume_options request.user resume %} 	       
              </div>
 		</div>
 
@@ -38,7 +38,7 @@
 	</div>
 	{% endif %}
 
-    <form action="{% url job.edit job.id %}" method="post">
+    <form action="{% url resume.edit resume.id %}" method="post">
     	<div class="forms">
 
 			<div class="item">
@@ -65,7 +65,13 @@
 				<div class="clear"></div>
 			</div>
 
-			
+			<div class="item">
+				<div class="errs">{{ form.list_type.errors }}</div>
+				<div class="label">{{ form.list_type.label_tag }}</div>
+				<div class="field">{{ form.list_type }}</div>
+				<div class="help">{{ form.list_type.help_text }}</div>
+				<div class="clear"></div>
+			</div>
 
 			<div class="item">
 				<div class="errs">{{ form.code.errors }}</div>
@@ -147,43 +153,44 @@
 				<div class="clear"></div>
 			</div>
 
+
 			<div class="item">
-				<div class="errs">{{ form.position_reports_to.errors }}</div>
-				<div class="label"><label for="id_position_reports_to">Reports to</label></div>
-				<div class="field">{{ form.position_reports_to }}</div>
-				<div class="help">{{ form.position_reports_to.help_text }}</div>
+				<div class="errs">{{ form.requested_duration.errors }}</div>
+				<div class="label label-wrap"><label for="id_requested_duration">Duration</label></div>
+				<div class="field">{{ form.requested_duration }}</div>
+				<div class="help">{{ form.requested_duration.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item-dt">
+				<div class="errs">{{ form.activation_dt.errors }}</div>
+				<div class="label">{{ form.activation_dt.label_tag }}</div>
+				<div class="field">{{ form.activation_dt }}</div>
+				<div class="help">{{ form.activation_dt.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item-dt">
+				<div class="errs">{{ form.post_dt.errors }}</div>
+				<div class="label">{{ form.post_dt.label_tag }}</div>
+				<div class="field">{{ form.post_dt }}</div>
+				<div class="help">{{ form.post_dt.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+
+			<div class="item-dt">
+				<div class="errs">{{ form.expiration_dt.errors }}</div>
+				<div class="label">{{ form.expiration_dt.label_tag }}</div>
+				<div class="field">{{ form.expiration_dt }}</div>
+				<div class="help">{{ form.expiration_dt.help_text }}</div>
 				<div class="clear"></div>
 			</div>
 
 			<div class="item">
-				<div class="errs">{{ form.salary_from.errors }}</div>
-				<div class="label">{{ form.salary_from.label_tag }}</div>
-				<div class="field">{{ form.salary_from }}</div>
-				<div class="help">{{ form.salary_from.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form.salary_to.errors }}</div>
-				<div class="label">{{ form.salary_to.label_tag }}</div>
-				<div class="field">{{ form.salary_to }}</div>
-				<div class="help">{{ form.salary_to.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form.computer_skills.errors }}</div>
-				<div class="label label-wrap">{{ form.computer_skills.label_tag }}</div>
-				<div class="field">{{ form.computer_skills }}</div>
-				<div class="help">{{ form.computer_skills.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-			
-			<div class="item">
-				<div class="errs">{{ form.job_url.errors }}</div>
-				<div class="label">{{ form.job_url.label_tag }}</div>
-				<div class="field">{{ form.job_url }}</div>
-				<div class="help">{{ form.job_url.help_text }}</div>
+				<div class="errs">{{ form.resume_url.errors }}</div>
+				<div class="label">{{ form.resume_url.label_tag }}</div>
+				<div class="field">{{ form.resume_url }}</div>
+				<div class="help">{{ form.resume_url.help_text }}</div>
 				<div class="clear"></div>
 			</div>
 
@@ -195,17 +202,16 @@
 				<div class="clear"></div>
 			</div>
 
-			
-			<div class="item-text">
-				Contact Information
+			<div class="item">
+				<div class="errs">{{ form.entity.errors }}</div>
+				<div class="label">{{ form.entity.label_tag }}</div>
+				<div class="field">{{ form.entity }}</div>
+				<div class="help">{{ form.entity.help_text }}</div>
+				<div class="clear"></div>
 			</div>
 
-			<div class="item">
-				<div class="errs">{{ form.contact_company.errors }}</div>
-				<div class="label"><label for="id_contact_company">Company</label></div>
-				<div class="field">{{ form.contact_company }}</div>
-				<div class="help">{{ form.contact_company.help_text }}</div>
-				<div class="clear"></div>
+			<div class="item-text">
+				Contact Information
 			</div>
 
 			<div class="item">
@@ -273,6 +279,14 @@
 			</div>
 
 			<div class="item">
+				<div class="errs">{{ form.contact_phone2.errors }}</div>
+				<div class="label"><label for="id_contact_phone2">Phone 2</label></div>
+				<div class="field">{{ form.contact_phone2 }}</div>
+				<div class="help">{{ form.contact_phone2.help_text }}</div>
+				<div class="clear"></div>
+			</div>
+			
+			<div class="item">
 				<div class="errs">{{ form.contact_fax.errors }}</div>
 				<div class="label"><label for="id_contact_fax">Fax</label></div>
 				<div class="field">{{ form.contact_fax }}</div>
@@ -295,8 +309,6 @@
 				<div class="help">{{ form.contact_website.help_text }}</div>
 				<div class="clear"></div>
 			</div>
-
-			<div class="item-hr-long"></div>
 
 			<div class="item">
 				<div class="errs">{{ form.tags.errors }}</div>
@@ -330,14 +342,6 @@
 				<div class="clear"></div>
 			</div>
 
-			<div class="item-checkbox">
-				<div class="errs">{{ form.syndicate.errors }}</div>
-				<div class="field">{{ form.syndicate }}</div>
-				<div class="label">{{ form.syndicate.label_tag }}</div>
-				<div class="help">{{ form.syndicate.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
 			<div class="item-hr-clear"></div>
 
 			<div class="item">
@@ -354,54 +358,6 @@
 
 				<div class="item-text">
 					Administrators Only
-				</div>
-				
-				<div class="item">
-					<div class="errs">{{ form.requested_duration.errors }}</div>
-					<div class="label label-wrap"><label for="id_requested_duration">Duration</label></div>
-					<div class="field">{{ form.requested_duration }}</div>
-					<div class="help">{{ form.requested_duration.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-			
-				<div class="item">
-					<div class="errs">{{ form.list_type.errors }}</div>
-					<div class="label">{{ form.list_type.label_tag }}</div>
-					<div class="field">{{ form.list_type }}</div>
-					<div class="help">{{ form.list_type.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-				
-				<div class="item-dt">
-					<div class="errs">{{ form.post_dt.errors }}</div>
-					<div class="label">{{ form.post_dt.label_tag }}</div>
-					<div class="field">{{ form.post_dt }}</div>
-					<div class="help">{{ form.post_dt.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-				
-				<div class="item-dt">
-					<div class="errs">{{ form.activation_dt.errors }}</div>
-					<div class="label">{{ form.activation_dt.label_tag }}</div>
-					<div class="field">{{ form.activation_dt }}</div>
-					<div class="help">{{ form.activation_dt.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-	
-				<div class="item-dt">
-					<div class="errs">{{ form.expiration_dt.errors }}</div>
-					<div class="label">{{ form.expiration_dt.label_tag }}</div>
-					<div class="field">{{ form.expiration_dt }}</div>
-					<div class="help">{{ form.expiration_dt.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-				
-				<div class="item">
-					<div class="errs">{{ form.entity.errors }}</div>
-					<div class="label">{{ form.entity.label_tag }}</div>
-					<div class="field">{{ form.entity }}</div>
-					<div class="help">{{ form.entity.help_text }}</div>
-					<div class="clear"></div>
 				</div>
 
 				<div class="item-checkbox">
@@ -439,8 +395,8 @@
 		$(document).ready(function(){
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_job = confirm('Permenantly delete {% firstof MODULE_JOBS_LABEL 'Job' %}?');	// confirm
-				if(delete_job) $('.t').find('form[name="job-delete"]').submit() // delete: if OK
+				var delete_resume = confirm('Permenantly delete {% firstof MODULE_RESUMES_LABEL 'Resume' %}?');	// confirm
+				if(delete_resume) $('.t').find('form[name="resume-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});

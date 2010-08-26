@@ -6,10 +6,10 @@ from django.db.models import Q
 from haystack.query import SearchQuerySet
 from perms.utils import is_admin
 
-class JobManager(Manager):
+class ResumeManager(Manager):
     def search(self, query=None, *args, **kwargs):
         """
-            Uses haystack to query jobs. 
+            Uses haystack to query resumes. 
             Returns a SearchQuerySet
         """
         sqs = SearchQuerySet()
@@ -72,6 +72,6 @@ class JobManager(Manager):
                 sqs = sqs.filter(status=1).filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True)
 
-        sqs = sqs.order_by('-create_dt')
-            
+            sqs = sqs.order_by('-create_dt')
+    
         return sqs.models(self.model)
