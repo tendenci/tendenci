@@ -3,6 +3,7 @@ import re
 from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
 
 from tagging.fields import TagField
 from base.fields import SlugField
@@ -97,3 +98,33 @@ class Directory(TendenciBaseModel):
     
     def age(self):
         return datetime.now() - self.create_dt
+    
+class DirectoryPricing(models.Model):
+    guid = models.CharField(max_length=40)
+    duration = models.IntegerField(blank=True)
+    regular_price =models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    premium_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    category_threshold = models.IntegerField(blank=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(User, related_name="directory_pricing_creator",  null=True)
+    creator_username = models.CharField(max_length=50, null=True)
+    owner = models.ForeignKey(User, related_name="directory_pricing_owner", null=True)
+    owner_username = models.CharField(max_length=50, null=True)
+    status = models.BooleanField(default=True)
+    
+    def save(self, user=None, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            if user and user.id:
+                self.creator=user
+                self.creator_username=user.username
+        if user and user.id:
+            self.owner=user
+            self.owner_username=user.username
+        if not self.regular_price: self.regular_price = 0
+        if not self.premium_price: self.premium_price = 0
+        if not self.category_threshold: self.category_threshold = 0
+            
+        super(self.__class__, self).save(*args, **kwargs)
+
