@@ -11,6 +11,7 @@ from django.contrib import messages
 from base.http import Http403
 from events.models import Event, RegistrationConfiguration, Registration, Registrant, Speaker, Organizer, Type
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm, TypeForm
+from events.search_indexes import EventIndex
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
 from event_logs.models import EventLog
@@ -535,6 +536,14 @@ def types(request, template_name='events/types/index.html'):
             formset.save()
 
     formset = TypeFormSet()
+
+    # TODO: Find more optimal way of keeping
+    # the events object properly indexed
+    # Maybe index by something that doesn't change
+    # such as the primary-key
+    events = Event.objects.all()
+    for event in events:
+        EventIndex(Event).update_object(event)
 
     return render_to_response(template_name, {'formset': formset}, 
         context_instance=RequestContext(request))
