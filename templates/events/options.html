@@ -14,8 +14,9 @@
 
 	<span class="event-type-label"
 	style="color:#{{ opt_object.type.color_set.fg_color }}; 
-	background-color:#{{ opt_object.type.color_set.bg_color }}">
-	{{ opt_object.type.name }}</span>
+	background-color:#{{ opt_object.type.color_set.bg_color }}"
+	title="{{ opt_object.type.name }}">
+	{{ opt_object.type.name|truncatewords:3 }}</span>
 
 	<a class="option-link print" href="{% url event.print_view opt_object.pk %}">Print</a>
 
