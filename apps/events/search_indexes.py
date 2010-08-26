@@ -9,6 +9,7 @@ class EventIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr='title')
     description = indexes.CharField(model_attr='description')
+    start_dt = indexes.DateTimeField(model_attr='start_dt')
 
     # authority fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
