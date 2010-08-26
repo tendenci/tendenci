@@ -9,7 +9,7 @@ from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from jobs.models import JobPricing
-from jobs.utils import get_duration_choices
+from jobs.utils import get_duration_choices, get_payment_method_choices
 
 class JobForm(TendenciBaseForm):
 
@@ -34,6 +34,7 @@ class JobForm(TendenciBaseForm):
     
     list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
                                                               ('premium', 'Premium'),))
+    payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
     
     class Meta:
         model = Job
@@ -85,6 +86,7 @@ class JobForm(TendenciBaseForm):
         'syndicate',
         'status',
         'status_detail',
+        'payment_method',
        )
  
     #integrate with payment (later)
@@ -118,8 +120,10 @@ class JobForm(TendenciBaseForm):
         if not is_admin(user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-            
-        self.fields['requested_duration'].choices = get_duration_choices()
+        if self.fields.has_key('payment_method'):
+            self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(user))
+        if self.fields.has_key('requested_duration'):
+            self.fields['requested_duration'].choices = get_duration_choices()
 
 
 DURATION_CHOICES = ((14,'14 Days from Activation date'), 
