@@ -83,13 +83,6 @@
 				<div class="clear"></div>
 			</div>
 
-			<div class="item-dt">
-				<div class="errs">{{ form.activation_dt.errors }}</div>
-				<div class="label">{{ form.activation_dt.label_tag }}</div>
-				<div class="field">{{ form.activation_dt }}</div>
-				<div class="help">{{ form.activation_dt.help_text }}</div>
-				<div class="clear"></div>
-			</div>
 
 			<div class="item">
 				<div class="errs">{{ form.timezone.errors }}</div>
@@ -218,6 +211,38 @@
 				<div class="help">{{ form.tags.help_text }}</div>
 				<div class="clear"></div>
 			</div>
+			
+			{% if MODULE_DIRECTORIES_DIRECTORIESREQUIRESPAYMENT %}
+				<div class="item">
+					<div class="errs">{{ form.requested_duration.errors }}</div>
+					<div class="label label-wrap"><label for="id_requested_duration">Duration</label></div>
+					<div class="field">{{ form.requested_duration }}</div>
+					<div class="help">{{ form.requested_duration.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+							
+				<div class="item">
+					<div class="errs">{{ form.list_type.errors }}</div>
+					<div class="label">{{ form.list_type.label_tag }}</div>
+					<div class="field">{{ form.list_type }}</div>
+					<div class="help">{{ form.list_type.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+				
+				<div class="pricing-table-block">
+				{% directory_pricing_table %}
+				</div>
+				
+				<div class="item payment-method-item">
+					<div class="errs">{{ form.payment_method.errors }}</div>
+					<div class="label label-wrap">{{ form.payment_method.label_tag }}</div>
+					<div class="field">{{ form.payment_method }}</div>
+					<div class="help">{{ form.payment_method.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+			
+			
+			{% endif %}
 
 			<div class="item-checkbox">
 				<div class="errs">{{ form.allow_anonymous_view.errors }}</div>
@@ -276,6 +301,14 @@
 					<div class="label">{{ form.admin_notes.label_tag }}</div>
 					<div class="field">{{ form.admin_notes }}</div>
 					<div class="help">{{ form.admin_notes.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+				
+				<div class="item">
+					<div class="errs">{{ form.entity.errors }}</div>
+					<div class="label">{{ form.entity.label_tag }}</div>
+					<div class="field">{{ form.entity }}</div>
+					<div class="help">{{ form.entity.help_text }}</div>
 					<div class="clear"></div>
 				</div>
 

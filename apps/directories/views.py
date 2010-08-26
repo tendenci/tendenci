@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from PIL import Image
 
 from django.contrib.auth.decorators import login_required
@@ -10,11 +11,14 @@ from django.contrib import messages
 from base.http import Http403
 from directories.models import Directory, DirectoryPricing
 from directories.forms import DirectoryForm, DirectoryPricingForm
+from directories.utils import directory_set_inv_payment
 from perms.models import ObjectPermission
 from perms.utils import get_notice_recipients
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
+from site_settings.utils import get_setting
+from perms.utils import is_admin
 
 try:
     from notification import models as notification
@@ -80,47 +84,58 @@ def print_view(request, slug, template_name="directories/print-view.html"):
 def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.html"):
     directory = get_object_or_404(Directory, pk=id)
 
-    if request.user.has_perm('directories.change_directory', directory):    
-        if request.method == "POST":
+    if not request.user.has_perm('directories.change_directory', directory):  raise Http403 
+    
+    require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
+    
+    if request.method == "POST":
 
-            form = form_class(request.user, request.POST, request.FILES, instance=directory)
+        form = form_class(request.user, request.POST, request.FILES, instance=directory)
+        
+        del form.fields['payment_method']
+        del form.fields['requested_duration']
+        if not is_admin(request.user):
+            del form.fields['activation_dt']
+            del form.fields['expiration_dt']
+            del form.fields['list_type']
+            del form.fields['entity']
 
-            if form.is_valid():
-                directory = form.save(commit=False)
+        if form.is_valid():
+            directory = form.save(commit=False)
 
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(directory)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, directory)  
-                # assign creator permissions
-                ObjectPermission.objects.assign(directory.creator, directory)
-                
-                directory.save()
+            # remove all permissions on the object
+            ObjectPermission.objects.remove_all(directory)
+            # assign new permissions
+            user_perms = form.cleaned_data['user_perms']
+            if user_perms:
+                ObjectPermission.objects.assign(user_perms, directory)  
+            # assign creator permissions
+            ObjectPermission.objects.assign(directory.creator, directory)
+            
+            directory.save()
 
-                # resize the image that has been uploaded
-                try:
-                    logo = Image.open(directory.logo.path)
-                    logo.thumbnail((200,200),Image.ANTIALIAS)
-                    logo.save(directory.logo.path)
-                except:
-                    pass
-                
-                log_defaults = {
-                    'event_id' : 442000,
-                    'event_data': '%s (%d) edited by %s' % (directory._meta.object_name, directory.pk, request.user),
-                    'description': '%s edited' % directory._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': directory,
-                }
-                EventLog.objects.log(**log_defaults)
-                
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % directory)
-                
-                # send notification to administrators
-                # commenting out - there is no notification on edit in T4
+            # resize the image that has been uploaded
+            try:
+                logo = Image.open(directory.logo.path)
+                logo.thumbnail((200,200),Image.ANTIALIAS)
+                logo.save(directory.logo.path)
+            except:
+                pass
+            
+            log_defaults = {
+                'event_id' : 442000,
+                'event_data': '%s (%d) edited by %s' % (directory._meta.object_name, directory.pk, request.user),
+                'description': '%s edited' % directory._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': directory,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % directory)
+            
+            # send notification to administrators
+            # commenting out - there is no notification on edit in T4
 #                if notification:
 #                    extra_context = {
 #                        'object': directory,
@@ -130,15 +145,21 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
 #                    #admins = [request.user]
 #                    #notification.send(get_administrators(),'directory_edited', extra_context)
 #                    notification.send(admins,'directory_edited', extra_context)
-                                                                             
-                return HttpResponseRedirect(reverse('directory', args=[directory.slug]))             
-        else:
-            form = form_class(request.user, instance=directory)
-
-        return render_to_response(template_name, {'directory': directory, 'form':form}, 
-            context_instance=RequestContext(request))
+                                                                         
+            return HttpResponseRedirect(reverse('directory', args=[directory.slug]))             
     else:
-        raise Http403
+        form = form_class(request.user, instance=directory)
+        del form.fields['payment_method']
+        del form.fields['requested_duration']
+        if not is_admin(request.user):
+            del form.fields['activation_dt']
+            del form.fields['expiration_dt']
+            del form.fields['list_type']
+            del form.fields['entity']
+
+    return render_to_response(template_name, {'directory': directory, 'form':form}, 
+        context_instance=RequestContext(request))
+
 
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-meta.html"):
@@ -172,65 +193,107 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 
 @login_required
 def add(request, form_class=DirectoryForm, template_name="directories/add.html"):
-    if request.user.has_perm('directories.add_directory'):
-        if request.method == "POST":
-            form = form_class(request.user, request.POST, request.FILES)
-            if form.is_valid():           
-                directory = form.save(commit=False)
-                # set up the user information
-                directory.creator = request.user
-                directory.creator_username = request.user.username
-                directory.owner = request.user
-                directory.owner_username = request.user.username
-                directory.save() # get pk
-
-                # resize the image that has been uploaded
-                try:
-                    logo = Image.open(directory.logo.path)
-                    logo.thumbnail((200,200),Image.ANTIALIAS)
-                    logo.save(directory.logo.path)
-                except:
-                    pass
+    if not request.user.has_perm('directories.add_directory'): raise Http403
+    
+    require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
+    
+    if request.method == "POST":
+        form = form_class(request.user, request.POST, request.FILES)
+        del form.fields['expiration_dt']
+        if not is_admin(request.user):
+            del form.fields['activation_dt']
+            del form.fields['entity']
         
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, directory)
-                # assign creator permissions
-                ObjectPermission.objects.assign(directory.creator, directory)
-
-                directory.save() # update search-index w/ permissions
- 
-                log_defaults = {
-                    'event_id' : 441000,
-                    'event_data': '%s (%d) added by %s' % (directory._meta.object_name, directory.pk, request.user),
-                    'description': '%s added' % directory._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': directory,
-                }
-                EventLog.objects.log(**log_defaults)
-                
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % directory)
-                
-                # send notification to administrators
-                # get admin notice recipients
-                recipients = get_notice_recipients('module', 'directories', 'directoryrecipients')
-                if recipients:
-                    if notification:
-                        extra_context = {
-                            'object': directory,
-                            'request': request,
-                        }
-                        notification.send_emails(recipients,'directory_added', extra_context)
+        if not require_payment:
+            del form.fields['payment_method']
+            del form.fields['list_type']
+            del form.fields['requested_duration']
+            
+        if form.is_valid():           
+            directory = form.save(commit=False)
+            # set up the user information
+            directory.creator = request.user
+            directory.creator_username = request.user.username
+            directory.owner = request.user
+            directory.owner_username = request.user.username
+            directory.save() # get pk
+    
+            # resize the image that has been uploaded
+            try:
+                logo = Image.open(directory.logo.path)
+                logo.thumbnail((200,200),Image.ANTIALIAS)
+                logo.save(directory.logo.path)
+            except:
+                pass
+            
+            if directory.payment_method: 
+                directory.payment_method = directory.payment_method.lower()
+            if not directory.requested_duration:
+                directory.requested_duration = 30
+            if not directory.list_type:
+                directory.list_type = 'regular'
+            directory.activation_dt = datetime.now()
+            
+            # set the expiration date
+            directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
+            
+            if not directory.status_detail: directory.status_detail = 'Pending Approval'
+    
+            # assign permissions for selected users
+            user_perms = form.cleaned_data['user_perms']
+            if user_perms: ObjectPermission.objects.assign(user_perms, directory)
+            # assign creator permissions
+            ObjectPermission.objects.assign(directory.creator, directory)
+    
+            directory.save() # update search-index w/ permissions
+            
+            # create invoice
+            directory_set_inv_payment(request.user, directory)
+    
+            log_defaults = {
+                'event_id' : 441000,
+                'event_data': '%s (%d) added by %s' % (directory._meta.object_name, directory.pk, request.user),
+                'description': '%s added' % directory._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': directory,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            messages.add_message(request, messages.INFO, 'Successfully added %s' % directory)
+            
+            # send notification to administrators
+            # get admin notice recipients
+            recipients = get_notice_recipients('module', 'directories', 'directoryrecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': directory,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'directory_added', extra_context)
                     
-                return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
-        else:
-            form = form_class(request.user)
-           
-        return render_to_response(template_name, {'form':form}, 
-            context_instance=RequestContext(request))
+            if directory.payment_method.lower() in ['credit card', 'cc']:
+                if directory.invoice and directory.invoice.balance > 0:
+                    return HttpResponseRedirect(reverse('payments.views.pay_online', args=[directory.invoice.id, directory.invoice.guid])) 
+                
+            return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
     else:
-        raise Http403
+        form = form_class(request.user)
+        
+        del form.fields['expiration_dt']
+        if not is_admin(request.user):
+            del form.fields['activation_dt']
+            del form.fields['entity']
+        
+        if not require_payment:
+            del form.fields['payment_method']
+            del form.fields['list_type']
+            del form.fields['requested_duration']
+       
+    return render_to_response(template_name, {'form':form}, 
+        context_instance=RequestContext(request))
+
     
 @login_required
 def delete(request, id, template_name="directories/delete.html"):

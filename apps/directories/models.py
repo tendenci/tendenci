@@ -14,6 +14,7 @@ from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from directories.module_meta import DirectoryMeta
 from entities.models import Entity
+from invoices.models import Invoice
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
@@ -51,7 +52,7 @@ class Directory(TendenciBaseModel):
     requested_duration = models.IntegerField(_('Requested Duration'), default=0)
     activation_dt = models.DateTimeField(_('Activation Date/Time'), null=True, blank=True)
     expiration_dt = models.DateTimeField(_('Expiration Date/Time'), null=True, blank=True)
-    invoiceid = models.IntegerField(_('Enclosure Length'), default=0)
+    invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     payment_method = models.CharField(_('Payment Method'), max_length=50, blank=True)
 
     syndicate = models.BooleanField(_('Include in RSS feed'),)
