@@ -127,8 +127,7 @@
 
 	{% if not request.GET.q %}
 	<div class="highlight">
-	There {{ events|length|pluralize:"is,are" }} {{ events|length }} upcoming event{{ events|length|pluralize }}. 
-	Search <strong>past</strong>, <strong>present</strong>, and <strong>future</strong> events.
+		There {{ events|length|pluralize:"is,are" }} {{ events|length }} upcoming event{{ events|length|pluralize }}. 
 	</div>
 	{% else %}
 	<div class="highlight">You found {{ events|length }} event{{ events|length|pluralize }}</div>
@@ -229,5 +228,9 @@
 			trigger:	'more-options-trigger',
 			target:		'more-options-target'
 		});
+	</script>
+	<script src="{{ STATIC_URL }}js/jquery.inputfieldtext.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		$('.search-form input[type="text"]').inputFieldText('Search past, present, and future events', 'search-hint');
 	</script>
 {% endblock %}
