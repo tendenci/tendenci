@@ -72,6 +72,6 @@ class JobManager(Manager):
                 sqs = sqs.filter(status=1).filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True)
 
-            sqs = sqs.order_by('-create_dt')
-    
+        sqs = sqs.order_by('-create_dt')
+            
         return sqs.models(self.model)
