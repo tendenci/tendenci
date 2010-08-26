@@ -120,6 +120,7 @@ class JobForm(TendenciBaseForm):
         if not is_admin(user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+            
         if self.fields.has_key('payment_method'):
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(user))
         if self.fields.has_key('requested_duration'):

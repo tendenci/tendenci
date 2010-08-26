@@ -1,14 +1,6 @@
 {% load base_filters %}
-{%if job_pricings %}
-	<table class="job-pricing-rate">
-	
-	{% if show_member_price %}
-		<tr class="header-row">
-		<td>&nbsp;</td>
-		<td colspan="2">Member</td>
-		<td colspan="2">Non-Member</td>
-		</tr>
-	{% endif %}
+{%if directory_pricings %}
+	<table class="directory-pricing-rate">
 	
 	<tr class="header-row">
 	<td>Duration</td>
@@ -27,22 +19,14 @@
 		<td colspan="2">Price</td>
 	{% endif %}
 	</tr>
-	{%for jp in job_pricings %}
+	{%for dp in directory_pricings %}
 		<tr class="{% cycle 'row1' 'row2' %}">
-			<td>{{ jp.duration  }} days</td>
-			{% if show_member_price %}
-				{% if show_premium_price %}
-					<td>{{ jp.regular_price_member|format_currency }}</td>
-					<td>{{ jp.premium_price_member|format_currency }}</td>
-				{% else %}
-					<td colspan="2">{{ jp.regular_price_member|format_currency }}</td>
-				{% endif %}
-			{% endif %}
+			<td>{{ dp.duration  }} days</td>
 			{% if show_premium_price %}
-				<td>{{ jp.regular_price|format_currency }}</td>
-				<td>{{ jp.premium_price|format_currency }}</td>
+				<td>{{ dp.regular_price|format_currency }}</td>
+				<td>{{ dp.premium_price|format_currency }}</td>
 			{% else %}
-				<td colspan="2">{{ jp.regular_price|format_currency }}</td>
+				<td colspan="2">{{ dp.regular_price|format_currency }}</td>
 			{% endif %}
 		</tr>
 	
