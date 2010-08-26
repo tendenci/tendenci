@@ -150,6 +150,17 @@ class Payment(models.Model):
                     self.description = 'Tendenci Invoice %d Payment for job posting: %s(ID# %d).' \
                              % (inv.id, job.title, inv.invoice_object_type_id)
                 else:
+                    self.description = 'Tendenci Invoice %d Payment for job posting: (ID# %d).' % (inv.id, inv.invoice_object_type_id)  
+            elif  inv.invoice_object_type == 'directory':
+                from directories.models import Directory
+                try:
+                    directory = Directory.objects.get(id=inv.invoice_object_type_id)
+                except:
+                    directory = None
+                if directory:
+                    self.description = 'Tendenci Invoice %d Payment for directory posting: %s(ID# %d).' \
+                             % (inv.id, directory.headline, inv.invoice_object_type_id)
+                else:
                     self.description = 'Tendenci Invoice %d Payment for job posting: (ID# %d).' % (inv.id, inv.invoice_object_type_id)                
             else:
                 self.description = 'Tendenci Invoice %d Payment.' % (inv.id)
