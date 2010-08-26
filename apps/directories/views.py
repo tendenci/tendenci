@@ -8,8 +8,8 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
-from directories.models import Directory
-from directories.forms import DirectoryForm
+from directories.models import Directory, DirectoryPricing
+from directories.forms import DirectoryForm, DirectoryPricingForm
 from perms.models import ObjectPermission
 from perms.utils import get_notice_recipients
 from event_logs.models import EventLog
@@ -269,3 +269,105 @@ def delete(request, id, template_name="directories/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
+    
+
+@login_required
+def pricing_add(request, form_class=DirectoryPricingForm, template_name="directories/pricing-add.html"):
+    if request.user.has_perm('directories.add_directorypricing'):
+        if request.method == "POST":
+            form = form_class(request.POST)
+            if form.is_valid():           
+                directory_pricing = form.save(commit=False)
+                directory_pricing.status = 1
+                directory_pricing.save(request.user)
+                
+                log_defaults = {
+                    'event_id' : 265100,
+                    'event_data': '%s (%d) added by %s' % (directory_pricing._meta.object_name, directory_pricing.pk, request.user),
+                    'description': '%s added' % directory_pricing._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': directory_pricing,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
+        else:
+            form = form_class()
+           
+        return render_to_response(template_name, {'form':form}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
+    
+@login_required
+def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="directories/pricing-edit.html"):
+    directory_pricing = get_object_or_404(DirectoryPricing, pk=id)
+    if not request.user.has_perm('directories.change_directorypricing', directory_pricing): Http403
+    
+    if request.method == "POST":
+        form = form_class(request.POST, instance=directory_pricing)
+        if form.is_valid():           
+            directory_pricing = form.save(commit=False)
+            directory_pricing.save(request.user)
+            
+            log_defaults = {
+                'event_id' : 265110,
+                'event_data': '%s (%d) edited by %s' % (directory_pricing._meta.object_name, directory_pricing.pk, request.user),
+                'description': '%s edited' % directory_pricing._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': directory_pricing,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
+    else:
+        form = form_class(instance=directory_pricing)
+       
+    return render_to_response(template_name, {'form':form}, 
+        context_instance=RequestContext(request))
+
+
+@login_required
+def pricing_view(request, id, template_name="directories/pricing-view.html"):
+    directory_pricing = get_object_or_404(DirectoryPricing, id=id)
+    
+    if request.user.has_perm('directories.view_directorypricing', directory_pricing):        
+        return render_to_response(template_name, {'directory_pricing': directory_pricing}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
+    
+@login_required
+def pricing_delete(request, id, template_name="directories/pricing-delete.html"):
+    directory_pricing = get_object_or_404(DirectoryPricing, pk=id)
+
+    if not request.user.has_perm('directories.delete_directorypricing'): raise Http403
+       
+    if request.method == "POST":
+        log_defaults = {
+            'event_id' : 265120,
+            'event_data': '%s (%d) deleted by %s' % (directory_pricing._meta.object_name, directory_pricing.pk, request.user),
+            'description': '%s deleted' % directory_pricing._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': directory_pricing,
+        }
+        
+        EventLog.objects.log(**log_defaults)
+        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % directory_pricing)
+        
+        directory_pricing.delete()
+            
+        return HttpResponseRedirect(reverse('directory_pricing.search'))
+    
+    return render_to_response(template_name, {'directory_pricing': directory_pricing}, 
+        context_instance=RequestContext(request))
+
+def pricing_search(request, template_name="directories/pricing-search.html"):
+    directory_pricing = DirectoryPricing.objects.all().order_by('duration')
+    
+    return render_to_response(template_name, {'directory_pricings':directory_pricing}, 
+        context_instance=RequestContext(request))
+    
