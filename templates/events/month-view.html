@@ -9,6 +9,7 @@
 {% block meta_keywords %} {% endblock %}
 
 {% block extra_head %}
+<link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url event.feed %}" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 {% endblock %}
