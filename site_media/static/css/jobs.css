@@ -254,7 +254,7 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 }
 .item .field-short input,
 .item .field-short select {
-	width: 20%;
+	width: 40%;
 }
 
 /* date-time item */
@@ -372,5 +372,5 @@ table.job-pricing-rate tr td{
 	list-style: none;
 }
 .payment-method-item input{
-	width: 0 !important;
+	width: 1em !important;
 }

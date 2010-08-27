@@ -346,8 +346,7 @@
 				<div class="clear"></div>
 			</div>
 			
-			{# need a setting here - if jobs require payment, then display pricing table, payment method and list type.  #}
-			
+			{% if MODULE_JOBS_JOBSREQUIRESPAYMENT %}			
 				<div class="item">
 					<div class="errs">{{ form.list_type.errors }}</div>
 					<div class="label">{{ form.list_type.label_tag }}</div>
@@ -357,7 +356,7 @@
 				</div>
 				
 				<div class="pricing-table-block">
-				{% job_pricing_table %}
+					{% job_pricing_table %}
 				</div>
 				
 				<div class="item payment-method-item">
@@ -367,7 +366,9 @@
 					<div class="help">{{ form.payment_method.help_text }}</div>
 					<div class="clear"></div>
 				</div>
-
+				
+			{% endif %}
+			
 			{% is_admin user as admin %}
 			{% if admin %}
 			<div class="admin-block">

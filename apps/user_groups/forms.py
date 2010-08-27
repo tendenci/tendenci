@@ -5,7 +5,8 @@ from user_groups.models import Group, GroupMembership
 # this is the list of apps whose permissions will be displayed on the permission edit page
 APPS = ['profiles', 'user_groups', 'articles', 
         'news', 'pages', 'jobs', 'locations', 
-        'stories', 'actions']
+        'stories', 'actions', 'photos', 'entities',
+        'locations', 'files', 'directories', 'resumes']
 
 class GroupForm(forms.ModelForm):
     STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
