@@ -44,19 +44,10 @@
 						<div>Registration ended {{ event.registration_configuration.late_dt|naturalday }}</div>
 
 					{% else %}
-
 						<div class="register-wrap">
-						{% with event.registration_configuration.price as price %}
-						{% if price %}
 							<div class="register-btn registered">
 								<a href="{% url event.register event.pk %}">You are Registered</a>
 							</div>
-						{% else %}
-							<div class="register-btn">
-								<a href="{% url event.register event.pk %}">Register for Free</a>
-							</div>
-						{% endif %}
-						{% endwith %}
 						</div>
 						<div>Registration ends {{ event.registration_configuration.late_dt|naturalday }}</div>
 
