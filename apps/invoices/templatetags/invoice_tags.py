@@ -36,6 +36,14 @@ def invoices_search_results_line(request, invoice):
         except Job.DoesNotExist:
             job = None
         return {'request':request, 'invoice':invoice, 'job':job}
+    elif invoice.invoice_object_type == 'directory':
+        from directories.models import Directory
+        
+        try:
+            directory = Directory.objects.get(id=invoice.invoice_object_type_id)
+        except Directory.DoesNotExist:
+            directory = None
+        return {'request':request, 'invoice':invoice, 'directory':directory}
     else:
         return {'request':request, 'invoice':invoice}
     
@@ -76,6 +84,17 @@ def invoice_job_display(request, invoice):
     except Job.DoesNotExist:
         job = None
     return {'request':request, 'invoice':invoice, 'job':job}
+
+# display directory on invoice view
+@register.inclusion_tag("invoices/directory_display.html")
+def invoice_directory_display(request, invoice):
+    from directories.models import Directory
+    #item_display = invoices_display_make_payments(request, invoice)
+    try:
+        directory = Directory.objects.get(id=invoice.invoice_object_type_id)
+    except Directory.DoesNotExist:
+        directory = None
+    return {'request':request, 'invoice':invoice, 'directory':directory}
 
 # display invoice total on invoice view
 @register.inclusion_tag("invoices/total_display.html")
