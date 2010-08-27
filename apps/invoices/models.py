@@ -240,6 +240,40 @@ class Invoice(models.Model):
         self.ship_date = datetime.now()
         self.message = 'Thank You.'
         self.status = True
+        
+    def assign_directory_info(self, user, directory, **kwargs):
+        profile = user.get_profile()
+        self.title = "Directory Add Invoice"
+        self.invoice_date = datetime.now()
+        self.bill_to = '%s %s' % (user.first_name, user.last_name)
+        self.bill_to_first_name = user.first_name
+        self.bill_to_last_name = user.last_name
+        self.bill_to_company = profile.company
+        self.bill_to_address = profile.address
+        self.bill_to_city = profile.city
+        self.bill_to_state = profile.state
+        self.bill_to_zip_code = profile.zipcode
+        self.bill_to_country = profile.country
+        self.bill_to_phone = profile.phone
+        self.bill_to_fax = profile.fax
+        self.bill_to_email = profile.email
+        self.ship_to = self.bill_to
+        self.ship_to_first_name = user.first_name
+        self.ship_to_last_name = user.last_name
+        self.ship_to_company = profile.company
+        self.ship_to_address = profile.address
+        self.ship_to_city = profile.city
+        self.ship_to_state = profile.state
+        self.ship_to_zip_code = profile.zipcode
+        self.ship_to_country = profile.country
+        self.ship_to_phone = profile.phone
+        self.ship_to_fax = profile.fax
+        self.ship_to_email = profile.email
+        self.terms = "Due on Receipt"
+        self.due_date = datetime.now()
+        self.ship_date = datetime.now()
+        self.message = 'Thank You.'
+        self.status = True
      
     # this function is to make accounting entries    
     def make_payment(self, user, amount):

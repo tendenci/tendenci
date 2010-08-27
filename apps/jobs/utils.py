@@ -14,7 +14,7 @@ def get_payment_method_choices(user):
     if is_admin(user):
         return (('paid - check', 'User paid by check'),
                 ('paid - cc', 'User paid by credit card'),
-                ('Credit Card', 'Make online payment'),)
+                ('Credit Card', 'Make online payment NOW'),)
     else:
         job_payment_types = get_setting('module', 'jobs', 'jobspaymenttypes')
         if job_payment_types:

@@ -43,6 +43,7 @@
 			<li><a href="{% url directory.search %}">Search</a></li>
 			{% if can_add_directory %}
 			<li><a href="{% url directory.add %}">Add</a></li>
+			<li><a href="{% url directory_pricing.search %}">Pricing</a></li>
 			{% endif %}
 
 			{% if user.is_authenticated %}
