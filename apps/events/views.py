@@ -12,9 +12,11 @@ from base.http import Http403
 from events.models import Event, RegistrationConfiguration, Registration, Registrant, Speaker, Organizer, Type
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm, TypeForm
 from events.search_indexes import EventIndex
+from events.utils import create_registration_record
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
 from event_logs.models import EventLog
+from invoices.models import Invoice
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
@@ -393,63 +395,28 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
         if not RegistrationConfiguration.objects.filter(event=event).exists():
             raise Http404
 
-        try: reg8n = Registration.objects.get(event=event, registrant=request.user)
-        except: reg8n = None
+        try: # if they're registered (already); show them their confirmation
+            reg8n = Registration.objects.get(event=event, registrant=request.user)
+            return HttpResponseRedirect(reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
+        except: pass
 
-        if reg8n:
-            return HttpResponseRedirect(
-                reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
+        # if the event has passed or registration deadline has passed;
+        # redirect to detail page; this page explains the closed event
+        if event.end_dt < datetime.now() or event.registration_configuration.late_dt < datetime.now():
+            return HttpResponseRedirect(reverse('event', args=(event_id)))
 
-        if datetime.now() > event.end_dt:
-            raise Http404
-
-        if datetime.now() > event.registration_configuration.late_dt:
-            raise Http404
-
-        
         if request.method == "POST":
             form = form_class(event_id, request.POST)
             if form.is_valid():
 
-                # get user information
-                user_account = request.user
-                user_profile = user_account.get_profile()
+                reg8n = create_registration_record(user=request.user, event=event, 
+                    payment_method=form.cleaned_data['payment_method'], price=form.cleaned_data['price'])
 
-                try: # update registration
-                    reg8n = Registration.objects.get(
-                        event=event, creator=request.user, owner=request.user)
-                    reg8n.payment_method = form.cleaned_data['payment_method']
-                    reg8n.amount_paid = form.cleaned_data['price']
+                invoice = Invoice.objects.get(
+                    invoice_object_type = 'event_registration', # TODO: remove hard-coded object_type (content_type)
+                    invoice_object_type_id = reg8n.pk,
+                )
 
-                except: # add registration
-                    reg8n = Registration.objects.create(
-                        event = event, 
-                        creator = request.user, 
-                        owner = request.user,
-                        payment_method = form.cleaned_data['payment_method'],
-                        amount_paid = form.cleaned_data['price']
-                    )
-
-                # get or create registrant
-                registrant = reg8n.registrant_set.get_or_create(user=user_account)[0]
-
-                # update registrant information                
-                registrant.name = ' '.join((user_account.first_name, user_account.last_name))
-                registrant.name = registrant.name.strip()
-                registrant.mail_name = user_profile.display_name
-                registrant.address = user_profile.address
-                registrant.city = user_profile.city
-                registrant.state = user_profile.state
-                registrant.zip = user_profile.zipcode
-                registrant.country = user_profile.country
-                registrant.phone = user_profile.phone
-                registrant.email = user_profile.email
-                registrant.company_name = user_profile.company
-                registrant.save()
-
-                reg8n.save() # save registration record
-                invoice = reg8n.save_invoice() # adds and updates invoice
-                
                 if (reg8n.payment_method.label).lower() == 'credit card':
                     return HttpResponseRedirect(reverse('payments.views.pay_online', args=[invoice.id, invoice.guid]))
 
@@ -457,10 +424,17 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
             else:
                 response = render_to_response(template_name, {'event':event, 'form':form}, 
                 context_instance=RequestContext(request))
-        else:
-            form = form_class(event_id)
-            response = render_to_response(template_name, {'event':event, 'form':form}, 
-                context_instance=RequestContext(request))
+
+        else: # request.method != "POST"
+
+            # if Free event
+            if event.registration_configuration.price == 0:
+                reg8n = create_registration_record(user=request.user, event=event, payment_method=3, price='0.00')
+                response = HttpResponseRedirect(reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
+            else:
+                form = form_class(event_id)
+                response = render_to_response(template_name, {'event':event, 'form':form}, 
+                    context_instance=RequestContext(request))
 
         return response
 

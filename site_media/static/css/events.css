@@ -64,7 +64,7 @@
 
 .t .dropdown-options {
 	float: right;
-	display: none; /* todo: port-over dropdown js */
+	display: none;
 }
 .t .dropdown-options span {
 	font-size: .7em;
@@ -91,8 +91,44 @@
 	cursor: pointer;
 }
 
-/* Article View
+/*= Details View
  ------------------------- */
+ 
+ /* speaker and organizer */
+.t .speaker-wrap,
+.t .organizer-wrap {
+	border: 1px solid silver;
+	margin: 0 15px 10px;
+	text-align: left;
+	padding: 10px 10px 0;
+	background-color: white;
+}
+.t .speaker,
+.t .organizer {
+	margin-bottom: 5px;
+}
+
+/* registered and closed btn */
+.t .event-wrap .vitals .registered a {
+	background-color: orange;
+	border: 1px solid orange;
+}
+.t .event-wrap .vitals .registered a:active,
+.t .event-wrap .vitals .registered a:hover {
+	background-color: orange;
+	border: 1px solid orange;
+}
+.t .event-wrap .vitals .closed a {
+	background-color: darkred;
+	border: 1px solid darkred;
+}
+.t .event-wrap .vitals .closed a:active,
+.t .event-wrap .vitals .closed a:hover {
+	background-color: darkred;
+	border: 1px solid darkred;
+}
+ 
+
 .t .event-wrap .meta, .t .event-wrap-search .meta {
 	border: 1px solid silver;
 	padding: 10px;
@@ -158,7 +194,7 @@ div.id_end_dt .field input#id_end_dt_1 {
 	width: 80px;
 }
 
-/* Article Print View
+/*= Print View
  ------------------------- */
 .t-print .event-wrap {
 	width: 8in;
@@ -191,7 +227,7 @@ div.id_end_dt .field input#id_end_dt_1 {
 }
 
 
-/* Event Add/Edit
+/*= Add and Edit View
  ------------------------- */
 
 .errors {
@@ -363,7 +399,7 @@ div.id_end_dt .field input#id_end_dt_1 {
 	margin: 15px;
 }
 
-/* Monthly View
+/*= Monthly View
 ----------------------------- */
 .month-view h1 {
 	text-align: center;
