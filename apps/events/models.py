@@ -139,6 +139,8 @@ class Registration(models.Model):
                 invoice_object_type_id = self.pk,
             )
         except: # else; create invoice
+            # cannot use get_or_create method
+            # because so many fields are required
             invoice = Invoice()
             invoice.invoice_object_type = 'event_registration'
             invoice.invoice_object_type_id = self.pk
@@ -151,7 +153,7 @@ class Registration(models.Model):
         invoice.balance = self.amount_paid
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
-        invoice.save(self.creator) # TODO: update to user once field exists 
+        invoice.save(self.creator)
 
         return invoice
             
@@ -205,6 +207,7 @@ class RegistrationConfiguration(models.Model):
 
         return True
 
+    @property
     def price(self):
 
         price = 0.00
