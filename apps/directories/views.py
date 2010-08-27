@@ -207,7 +207,6 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
         if not require_payment:
             del form.fields['payment_method']
             del form.fields['list_type']
-            del form.fields['requested_duration']
             
         if form.is_valid():           
             directory = form.save(commit=False)
@@ -237,7 +236,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             # set the expiration date
             directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
             
-            if not directory.status_detail: directory.status_detail = 'Pending Approval'
+            if not directory.status_detail: directory.status_detail = 'pending'
     
             # assign permissions for selected users
             user_perms = form.cleaned_data['user_perms']
@@ -289,7 +288,6 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
         if not require_payment:
             del form.fields['payment_method']
             del form.fields['list_type']
-            del form.fields['requested_duration']
        
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))

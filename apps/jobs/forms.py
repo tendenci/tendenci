@@ -114,6 +114,11 @@ class JobForm(TendenciBaseForm):
         super(JobForm, self).__init__(user, *args, **kwargs)
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            if is_admin(user):
+                self.fields['status_detail'].choices = (('active','Active'),
+                                                        ('inactive','Inactive'), 
+                                                        ('pending','Pending'),
+                                                        ('paid - pending approval', 'Paid - Pending Approval'),)
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0        
         

@@ -46,6 +46,9 @@
 	{% if invoice.invoice_object_type == 'job'  %}
 		{% invoice_job_display request invoice %}
 	{% endif %}
+	{% if invoice.invoice_object_type == 'directory'  %}
+		{% invoice_directory_display request invoice %}
+	{% endif %}
 
 	{% invoice_total_display request invoice %}
 	
