@@ -87,15 +87,7 @@
 				<div class="help">{{ form.source.help_text }}</div>
 				<div class="clear"></div>
 			</div>
-
-			<div class="item-dt">
-				<div class="errs">{{ form.activation_dt.errors }}</div>
-				<div class="label">{{ form.activation_dt.label_tag }}</div>
-				<div class="field">{{ form.activation_dt }}</div>
-				<div class="help">{{ form.activation_dt.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
+			
 			<div class="item">
 				<div class="errs">{{ form.timezone.errors }}</div>
 				<div class="label">{{ form.timezone.label_tag }}</div>
@@ -281,6 +273,38 @@
 					<div class="label">{{ form.admin_notes.label_tag }}</div>
 					<div class="field">{{ form.admin_notes }}</div>
 					<div class="help">{{ form.admin_notes.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+				
+				<div class="item-dt">
+					<div class="errs">{{ form.activation_dt.errors }}</div>
+					<div class="label">{{ form.activation_dt.label_tag }}</div>
+					<div class="field">{{ form.activation_dt }}</div>
+					<div class="help">{{ form.activation_dt.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+				
+				<div class="item-dt">
+					<div class="errs">{{ form.expiration_dt.errors }}</div>
+					<div class="label">{{ form.expiration_dt.label_tag }}</div>
+					<div class="field">{{ form.expiration_dt }}</div>
+					<div class="help">{{ form.expiration_dt.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+				
+				<div class="item">
+					<div class="errs">{{ form.list_type.errors }}</div>
+					<div class="label">{{ form.list_type.label_tag }}</div>
+					<div class="field field-short">{{ form.list_type }}</div>
+					<div class="help">{{ form.list_type.help_text }}</div>
+					<div class="clear"></div>
+				</div>
+				
+				<div class="item">
+					<div class="errs">{{ form.entity.errors }}</div>
+					<div class="label">{{ form.entity.label_tag }}</div>
+					<div class="field">{{ form.entity }}</div>
+					<div class="help">{{ form.entity.help_text }}</div>
 					<div class="clear"></div>
 				</div>
 
