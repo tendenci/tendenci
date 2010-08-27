@@ -164,4 +164,4 @@ class Reg8nForm(forms.Form):
             queryset=payment_method, widget=forms.RadioSelect(), initial=1)
 
         self.fields['price'] = forms.DecimalField(
-            widget=forms.HiddenInput(), initial=event.registration_configuration.price())
+            widget=forms.HiddenInput(), initial=event.registration_configuration.price)
