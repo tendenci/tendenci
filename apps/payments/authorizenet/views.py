@@ -4,7 +4,7 @@ from payments.authorizenet.utils import authorizenet_thankyou_processing
 from event_logs.models import EventLog
 
 def sim_thank_you(request, payment_id, template_name='payments/authorizenet/thankyou.html'):
-    payment = authorizenet_thankyou_processing(request.user, dict(request.GET.items()))
+    payment = authorizenet_thankyou_processing(request.user, dict(request.POST.items()))
     
     # log an event for payment edit
     if payment:
