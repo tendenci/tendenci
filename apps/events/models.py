@@ -99,7 +99,7 @@ class Registrant(models.Model):
     state = models.CharField(max_length=100)
     zip = models.CharField(max_length=50)
     country = models.CharField(max_length=100)
-    
+
     phone = models.CharField(max_length=50)
     email = models.CharField(max_length=100)
     groups = models.CharField(max_length=100)     
@@ -197,7 +197,6 @@ class RegistrationConfiguration(models.Model):
             self.PERIODS = None
 
     def available(self):
-        
         if not self.enabled:
             return False
 
@@ -209,7 +208,6 @@ class RegistrationConfiguration(models.Model):
 
     @property
     def price(self):
-
         price = 0.00
         for period in self.PERIODS:
             if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
@@ -222,6 +220,22 @@ class RegistrationConfiguration(models.Model):
         if period in self.PERIODS:
             return getattr(self, '%s_price' % period)
         else: return None
+
+    @property
+    def is_open(self):
+        status = [
+            self.enabled,
+            self.within_time,
+        ]
+
+        return all(status)
+
+    @property
+    def within_time(self):
+        for period in self.PERIODS:
+            if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
+                return True
+        return False
     
 
 
