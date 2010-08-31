@@ -240,10 +240,12 @@ def get_formatted_messages(formats, label, context):
 
 def send_emails(emails, label, extra_context=None, on_site=True):
     """
+    This method accepts a list of email addresses
+    as opposed to a list of users. This is a custom method
+    as opposed to send(), send_now(), and queue()
+
     Just send the notice to a list of emails immediately.
-
     No new notice created here
-
     notification.send_emails(email_list, 'friends_invite_sent', {
         'spam': 'eggs',
         'foo': 'bar',
@@ -262,8 +264,6 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         unicode(current_site),
         reverse("notification_notices"),
     )
-
-    #current_language = get_language()
 
     formats = (
         'full.txt',
@@ -312,7 +312,6 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     else:
         recipient_bcc = None
 
-
     for email_addr in emails:
         recipients = [email_addr]
        
@@ -332,7 +331,6 @@ def send_emails(emails, label, extra_context=None, on_site=True):
             email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, 
                                  recipients, headers=headers)
         email.content_subtype = content_type
-        #email.send()
         email.send(fail_silently=True)  # should we raise exception or not?
     
 
