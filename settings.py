@@ -183,6 +183,7 @@ INSTALLED_APPS = (
     'emails',
     'email_blocks',
     'actions',
+    'donations',
     'files',
     'contacts',
     'event_logs',

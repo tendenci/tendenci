@@ -274,6 +274,39 @@ class Invoice(models.Model):
         self.ship_date = datetime.now()
         self.message = 'Thank You.'
         self.status = True
+        
+    def assign_donation_info(self, user, donation, **kwargs):
+        self.title = "Donation Invoice"
+        self.invoice_date = datetime.now()
+        self.bill_to = donation.first_name + ' ' + donation.last_name
+        self.bill_to_first_name = donation.first_name
+        self.bill_to_last_name = donation.last_name
+        self.bill_to_company = donation.company
+        self.bill_to_address = donation.address
+        self.bill_to_city = donation.city
+        self.bill_to_state = donation.state
+        self.bill_to_zip_code = donation.zip_code
+        self.bill_to_country = donation.country
+        self.bill_to_phone = donation.phone
+        #self.bill_to_fax = make_payment.fax
+        self.bill_to_email = donation.email
+        self.ship_to = donation.first_name + ' ' + donation.last_name
+        self.ship_to_first_name = donation.first_name
+        self.ship_to_last_name = donation.last_name
+        self.ship_to_company = donation.company
+        self.ship_to_address = donation.address
+        self.ship_to_city = donation.city
+        self.ship_to_state = donation.state
+        self.ship_to_zip_code = donation.zip_code
+        self.ship_to_country = donation.country
+        self.ship_to_phone = donation.phone
+        #self.ship_to_fax = make_payment.fax
+        self.ship_to_email =donation.email
+        self.terms = "Due on Receipt"
+        self.due_date = datetime.now()
+        self.ship_date = datetime.now()
+        self.message = 'Thank You.'
+        self.status = True
      
     # this function is to make accounting entries    
     def make_payment(self, user, amount):
