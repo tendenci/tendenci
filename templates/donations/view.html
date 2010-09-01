@@ -1,0 +1,51 @@
+{% extends "donations/base.html" %}
+{% load i18n %}
+{% load donation_tags %}
+
+{% block title %}View a Donation{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/donations.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ {% donation_nav request.user donation %}
+
+<h1>View a Donation</h1>
+<div class="donation-view">
+<div class="label">Donation Amount:</div><div><b>{{ donation.donation_amount }}</b></div>
+<div class="clear-left"></div>
+{% if donation.allocation %}
+<div class="label">Allocated to:</div><div>{{donation.allocation }}</div>
+<div class="clear-left"></div>
+{% endif %}
+<div class="label">Invoice ID:</div><div><a href="{% url invoices.views.view donation.invoice.id %}">{{ donation.invoice.id }}</a></div>
+<div class="clear-left"></div>
+{% if donation.user %}
+<div class="label">User:</div><div><a href="{% url profile donation.user.username %}">{{donation.user.username }}</a></div>
+<div class="clear-left"></div>
+{% endif %}
+<br />
+<div class="label">Name:</div><div>{{ donation.first_name }} {{ donation.last_name }}</div>
+<div class="clear-left"></div>
+<div class="label">Company:</div><div>{{ donation.company }}</div>
+<div class="clear-left"></div>
+<div class="label">Address:</div><div>{{ donation.address }} {{ donation.address2 }} 
+		{{ donation.city }} {{ donation.state }} {{ donation.zip_code }} {{ donation.country }}</div>
+<div class="clear-left"></div>
+<div class="label">Phone:</div><div>{{ donation.phone }}</div>
+<div class="clear-left"></div>
+<div class="label">Email:</div><div><a href="mailto:{{ donation.email }}">{{ donation.email }}</a></div>
+<div class="clear-left"></div>
+<br />
+<div class="label">Referred By:</div><div>{{ donation.referral_source }}</div>
+<div class="clear-left"></div>
+<div class="label">Comments:</div><div>{{ donation.comments|safe }}</div>
+<div class="clear-left"></div>
+<br />
+<div class="label">Create Date:</div><div>{{ donation.create_dt|date:'N j, Y h:i a' }}</div>
+<div class="clear-left"></div>
+</div>
+</div>
+{% endblock %}

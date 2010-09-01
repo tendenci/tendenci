@@ -1,0 +1,76 @@
+{% load base_filters %}
+<p><font face="Arial, Helvetica, sans-serif" size="2">A donation has been made for 
+	{{ SITE_GLOBAL_SITEDISPLAYNAME }} 
+</font></p>
+
+	<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr> 
+	<td width="2%">&nbsp;</td>
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Name: </font></td>
+	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> 
+	 {{ donation.first_name }} {{ donation.last_name }}
+	</font></b></td>
+	</tr>
+
+	<tr> 
+	<td width="2%">&nbsp;</td>
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Company: </font></td>
+	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> 
+	{{ donation.company }}
+	</font></b></td>
+	</tr>
+
+	<tr>
+	<td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Donation Amount: 
+	</font></td>
+	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2">{{ donation.donation_amount|format_currency }}</font></b></td>
+	</tr>
+	
+	{% if donation.allocation %}
+		<tr>
+		<td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
+		<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Allocate Donation to: 
+		</font></td>
+		<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> {{ donation.allocation }}</font></b></td>
+		</tr>
+	{% endif %}
+	
+	<tr>
+	<td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Payment Method: 
+	</font></td>
+	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> {{ donation.payment_method }}</font></b></td>
+	</tr>
+
+	<tr>
+	<td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Referred By: 
+	</font></td>
+	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> {{ donation.referral_source }}</font></b></td>
+	</tr>
+
+	<tr>
+	<td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Comments:
+	</font></td>
+	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> {{donation.comments }}</font></b></td>
+	</tr>
+	</table>
+	
+	{#to view donation details  #}
+	<p><font face="Arial, Helvetica, sans-serif" size="2">To view the donation details, 
+	go to: <b><font face="Arial, Helvetica, sans-serif" size="2">
+	<a href="{{ SITE_GLOBAL_SITEURL }}{# link to donation view#}">{{ SITE_GLOBAL_SITEURL }}{# link to donation view#}</a>			
+	</font></b></font></p>
+	
+	<p><font face="Arial, Helvetica, sans-serif" size="2">To view the user details, 
+	go to: <b><font face="Arial, Helvetica, sans-serif" size="2">
+	<a href="{{ SITE_GLOBAL_SITEURL }}{% url profile donation.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url profile donation.user.username %}</a>			
+	</font></b></font></p>
+	
+
+	
+	{# time stamp  #}
+	<p><font face="Arial, Helvetica, sans-serif" size="2">
+	Time submitted: {% now "D d M Y P" %}</font></p>
