@@ -2,7 +2,7 @@
 def get_account_number(invoice, d):
     discount_account = ''
     overage_account = ''
-    if invoice.invoice_object_type == 'calendar_event':
+    if invoice.invoice_object_type == 'event_registration':
         discount_account = '462000'
         overage_account = '402000'
     elif invoice.invoice_object_type == 'catalog_cart':

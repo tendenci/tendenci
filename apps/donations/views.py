@@ -54,7 +54,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                 user.save()
                 
                 profile = Profile.objects.create(user=user,
-                                        company=donation.compay,
+                                        company=donation.company,
                                         address=donation.address,
                                         address2=donation.address2,
                                         city=donation.city,

@@ -1,5 +1,5 @@
 # settings: label, donationspaymenttypes, donationsallocations, 
-#           donationsrecipients, donationsrecipients
+#           donationsrecipients, 
 from invoices.models import Invoice
 from perms.utils import is_admin
 from site_settings.utils import get_setting
