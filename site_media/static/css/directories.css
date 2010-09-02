@@ -215,7 +215,7 @@ div.forms div.form-field div.id_fax .field input {
 }
 .item .field-short input,
 .item .field-short select {
-	width: 20%;
+	width: 40%;
 }
 
 /* date-time item */
@@ -333,5 +333,5 @@ table.directory-pricing-rate tr td{
 	list-style: none;
 }
 .payment-method-item input{
-	width: 0 !important;
+	width: 1em !important;
 }
