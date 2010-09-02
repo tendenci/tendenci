@@ -14,6 +14,7 @@ from perms.models import ObjectPermission
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
+from site_settings.utils import get_setting
 
 from perms.utils import get_notice_recipients, is_admin
 
@@ -81,10 +82,15 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
 @login_required
 def add(request, form_class=JobForm, template_name="jobs/add.html"):
     
+    require_payment = get_setting('module', 'jobs', 'jobsrequirespayment')
+    
     if not request.user.has_perm('jobs.add_job'): raise Http403
     
     if request.method == "POST":
         form = form_class(request.user, request.POST)
+        if not require_payment:
+            del form.fields['payment_method']
+            del form.fields['list_type']
         if not is_admin(request.user):
             del form.fields['activation_dt']
             del form.fields['entity']
@@ -110,7 +116,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             # set the expiration date
             job.expiration_dt = job.activation_dt + timedelta(days=job.requested_duration)
             
-            if not job.status_detail: job.status_detail = 'Pending Approval'
+            if not job.status_detail: job.status_detail = 'pending'
             
     
             # assign permissions for selected users
@@ -154,6 +160,9 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
     else:
         form = form_class(request.user)
+        if not require_payment:
+            del form.fields['payment_method']
+            del form.fields['list_type']
         if not is_admin(request.user):
             del form.fields['activation_dt']
             del form.fields['entity']

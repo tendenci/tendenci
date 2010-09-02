@@ -13,7 +13,8 @@ THIS_YEAR = datetime.date.today().year
 # this is the list of apps whose permissions will be displayed on the permission edit page
 APPS = ['profiles', 'user_groups', 'articles', 
         'news', 'pages', 'jobs', 'locations', 
-        'stories', 'actions']
+        'stories', 'actions', 'photos', 'entities',
+        'locations', 'files', 'directories', 'resumes']
 
 class ProfileForm(TendenciBaseForm):
 
