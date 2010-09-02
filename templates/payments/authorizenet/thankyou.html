@@ -1,15 +1,18 @@
 {% extends "site_base_authnet.html" %}
 
 {% block body %}
+<h1>
 {% if job %}
-<h1>Job Posting - Payment Status</h1>
-{% else %}
-	{% if directory %}
-		<h1>Directory Posting - Payment Status</h1>
-	{% else %}
-		<h1>Payment Status</h1>
-	{% endif %}
+Job Posting - 
 {% endif %}
+{% if directory %}
+Directory Posting - 
+{% endif %}
+{% if donation %}
+Donation - 
+{% endif %}
+Payment Status</h1>
+
 <p>&nbsp;</p>
     <p>
     {% if not payment.is_approved %}
@@ -42,7 +45,11 @@
         <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.print_view payment.invoice.id %}">Print Friendly Invoice.</a>
         </p>
         <p><a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id %}">View my Invoice</a></p>
-        <p>Thank you for your payment!</p>
+       {% if donation %}
+       		<p>Thank you for your donation!</p>
+       {% else %}
+        	<p>Thank you for your payment!</p>
+       {% endif %}
    {% endif %}
     
 	{% if job %}

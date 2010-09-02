@@ -61,7 +61,7 @@
 	{#to view donation details  #}
 	<p><font face="Arial, Helvetica, sans-serif" size="2">To view the donation details, 
 	go to: <b><font face="Arial, Helvetica, sans-serif" size="2">
-	<a href="{{ SITE_GLOBAL_SITEURL }}{# link to donation view#}">{{ SITE_GLOBAL_SITEURL }}{# link to donation view#}</a>			
+	<a href="{{ SITE_GLOBAL_SITEURL }}{% url donation.view donation.id %}">{{ SITE_GLOBAL_SITEURL }}{% url donation.view donation.id %}</a>			
 	</font></b></font></p>
 	
 	<p><font face="Arial, Helvetica, sans-serif" size="2">To view the user details, 
