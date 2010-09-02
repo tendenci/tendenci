@@ -61,7 +61,7 @@ def prepare_authorizenet_sim_form(request, payment):
     
     return form
 
-def authorizenet_thankyou_processing(user, response_d, **kwargs):
+def authorizenet_thankyou_processing(request, response_d, **kwargs):
     from django.shortcuts import get_object_or_404
 
     x_invoice_num = response_d.get('x_invoice_num', 0)
@@ -72,11 +72,11 @@ def authorizenet_thankyou_processing(user, response_d, **kwargs):
     payment = get_object_or_404(Payment, pk=x_invoice_num)
     
     if payment.invoice.balance > 0:     # if balance=0, it means already processed
-        payment_update_authorizenet(user, response_d, payment)
-        payment_processing_object_updates(user, payment)
+        payment_update_authorizenet(request, response_d, payment)
+        payment_processing_object_updates(request, payment)
     return payment
         
-def payment_update_authorizenet(user, response_d, payment, **kwargs):
+def payment_update_authorizenet(request, response_d, payment, **kwargs):
     from decimal import Decimal
     payment.response_code = response_d.get('x_response_code', '')
     payment.response_subcode = response_d.get('x_response_subcode', '')
@@ -110,7 +110,7 @@ def payment_update_authorizenet(user, response_d, payment, **kwargs):
     if payment.is_approved:
         payment.mark_as_paid()
         payment.save()
-        payment.invoice.make_payment(user, payment.amount)
+        payment.invoice.make_payment(request.user, payment.amount)
     else:
         if payment.status_detail == '':
             payment.status_detail = 'not approved'

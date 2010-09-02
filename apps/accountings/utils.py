@@ -18,6 +18,8 @@ def make_acct_entries(user, invoice, amount, **kwargs):
             make_acct_entries_job(user, ae, amount)
         elif invoice.invoice_object_type == 'directory':
             make_acct_entries_directory(user, ae, amount)
+        elif invoice.invoice_object_type == 'donation':
+            make_acct_entries_donation(user, ae, amount)
 
 def make_acct_entries_initial(user, acct_entry, amount, **kwargs):
     """Make the first set of accounting entries when the invoice is tendered
@@ -90,6 +92,12 @@ def make_acct_entries_job(user, acct_entry, amount, **kwargs):
     
 def make_acct_entries_directory(user, acct_entry, amount, **kwargs):
     acct_number = 404400
+    #CREDIT event SALES
+    acct = Acct.objects.get(account_number=acct_number)
+    AcctTran.objects.create_acct_tran(user, acct_entry, acct, amount*(-1)) 
+    
+def make_acct_entries_donation(user, acct_entry, amount, **kwargs):
+    acct_number = 405100
     #CREDIT event SALES
     acct = Acct.objects.get(account_number=acct_number)
     AcctTran.objects.create_acct_tran(user, acct_entry, acct, amount*(-1)) 
