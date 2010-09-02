@@ -73,7 +73,7 @@ def authorizenet_thankyou_processing(user, response_d, **kwargs):
     
     if payment.invoice.balance > 0:     # if balance=0, it means already processed
         payment_update_authorizenet(user, response_d, payment)
-        payment_processing_object_updates(payment)
+        payment_processing_object_updates(user, payment)
     return payment
         
 def payment_update_authorizenet(user, response_d, payment, **kwargs):

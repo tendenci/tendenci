@@ -80,6 +80,33 @@ def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_
                                       start_dt.strftime(format_time),
                                       end_dt.strftime(format_date),
                                       end_dt.strftime(format_time))
+            
+def get_unique_username(user):
+    import uuid
+    from django.contrib.auth.models import User
+    if not user.username:
+        if user.email:
+            user.username = user.email
+    if not user.username:
+        if user.first_name and user.last_name:
+            user.username = '%s%s' % (user.first_name[0], user.last_name)
+    if not user.username:
+        user.username = str(uuid.uuid1())[:7]
+    if len(user.username) > 20:
+        user.username = user.username[:7]
+        
+    # check if this username already exists
+    users = User.objects.filter(username__istartswith=user.username)
+    
+    if users:
+        t_list = [u.username[len(user.username):] for u in users]
+        num = 1
+        while str(num) in t_list:
+            num += 1
+            
+        user.username = '%s%s' % (user.username, str(num))
+   
+    return user.username
                                        
 def generate_meta_keywords(value):
     """ 
