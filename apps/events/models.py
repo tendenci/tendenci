@@ -89,7 +89,7 @@ class Registrant(models.Model):
     The names do not change nor does their information
     This is the information that was used while registering
     """
-    registration = models.ForeignKey('Registration', null=True)
+    registration = models.ForeignKey('Registration')
     user = models.ForeignKey(User)
 
     name = models.CharField(max_length=100)
@@ -182,6 +182,8 @@ class RegistrationConfiguration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    
+
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
 
@@ -192,7 +194,6 @@ class RegistrationConfiguration(models.Model):
                 'regular': (self.regular_dt, self.late_dt),
                 'late': (self.late_dt, self.event.start_dt),
             }
-
         else:
             self.PERIODS = None
 
@@ -227,7 +228,6 @@ class RegistrationConfiguration(models.Model):
             self.enabled,
             self.within_time,
         ]
-
         return all(status)
 
     @property

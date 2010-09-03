@@ -44,6 +44,13 @@
 
 </style>
 
+	<div class="regconf-section event">
+		<h2>Event Details</h2>
+		<h3>{{ event.title }}</h3>
+		<h3>Price Paid: ${{ registration.amount_paid|floatformat:"2" }}</h3>
+		<div>{{ event.description|safe }}</div>
+	</div>
+
 	<div class="regconf-section registration">
 		<h2>Your Details</h2>
 		<h3>Registration Number: {{ registration.pk }}</h3>
@@ -54,12 +61,6 @@
 			<div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
 		</div>
 		<div style="clear:both;"></div>
-	</div>
-
-	<div class="regconf-section event">
-		<h2>Event Details</h2>
-		<h3>{{ event.title }}</h3>
-		<div>{{ event.description|safe }}</div>
 	</div>
 
 </div>
