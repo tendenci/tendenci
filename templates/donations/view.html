@@ -20,7 +20,12 @@
 <div class="label">Allocated to:</div><div>{{donation.allocation }}</div>
 <div class="clear-left"></div>
 {% endif %}
-<div class="label">Invoice ID:</div><div><a href="{% url invoices.views.view donation.invoice.id %}">{{ donation.invoice.id }}</a></div>
+<div class="label">Invoice ID:</div>
+{% if donation.invoice %}
+	<div><a href="{% url invoices.views.view donation.invoice.id %}">{{ donation.invoice.id }}</a></div>
+{% else %}
+	<div>n/a</div>
+{% endif %}
 <div class="clear-left"></div>
 {% if donation.user %}
 <div class="label">User:</div><div><a href="{% url profile donation.user.username %}">{{donation.user.username }}</a></div>

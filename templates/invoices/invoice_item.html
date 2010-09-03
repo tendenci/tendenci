@@ -1,68 +1,11 @@
 {% load perm_tags %}
 {% load base_filters %}
+{% load invoice_tags %}
 
 {% is_admin request.user as isadmin %}
 {% if invoice.invoice_object_type == 'make_payment'  %}
        <table width="100%">
-            <tr>
-                <td colspan="6">
-                    <div style="background-color: #66CC00; height: 5px;">&nbsp;</div>
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                
-                    <a href="{% url invoice.view invoice.pk %}">{{ invoice.pk}}</a>  
-                    {% if invoice.estimate  %}
-                        {% if 'cancel' in invoice.status_detail %}
-                            <span class="body_copy_yellow">CANCELLED</span>
-                        {% else %}
-                            EST
-                         {% endif %}
-                    {% else %}
-                        <a href="{% url invoice.view invoice.pk %}" class="links"><img src="/site_media/static/images/icons/tendered65x12.gif" border="0" width="65"  height="12" alt="Tendered {{ invoice.tender_date|date:'N j, Y h:i a'}}"></a>&nbsp;
-                     {% endif %} 
-                    {% if isadmin %}
-                        <a href="{% url invoice.detail invoice.pk %}" class="links">
-                        <img src="/site_media/static/images/icons/accounting12x12.gif"
-                               border="0" width="12" height="12" alt="View Accounting Entries"></a>
-                     {% endif %}
-                </td>
-            
-                {# createor username #}
-                <td>
-                    {% if invoice.creator %}
-                        <a href="{% url profile invoice.creator_username %}">{{ invoice.creator_username }}</a>
-                    {% else %}
-                        &nbsp;
-                     {% endif %}
-                </td>
-            
-                {# create_dt  #}
-                <td colspan="3">
-                     {% if invoice.create_dt %}
-                       {{ invoice.create_dt|date:'N j, Y h:i a'}} 
-                    {% else  %}
-                        &nbsp;
-                     {% endif %}
-                </td>
-            
-                {# total #}
-                <td>
-	                {% if not invoice.estimate and invoice.total > 0  %}
-	                   {{ invoice.total|format_currency }}
-	                {% else %}
-	                    ----
-	                {% endif %}
-                </td>
-            
-            </tr>
-            
-            
-            <tr>
-            <td colspan="6"><div style="background-color: #333; height: 2px;">&nbsp;</div></td>
-            </tr>
+         {% invoices_search_line_header request invoice '#66cc00' %}  
             
           {# display make payment info #} 
           <tr>
@@ -88,62 +31,7 @@
 {% endif %}
 {% if invoice.invoice_object_type == 'event_registration'  %}
        <table width="100%">
-            <tr>
-                <td colspan="6">
-                    <div style="background-color: #FF6600; height: 5px;">&nbsp;</div>
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                
-                    <a href="{% url invoice.view invoice.pk %}">{{ invoice.pk}}</a>  
-                    {% if invoice.estimate  %}
-                        {% if 'cancel' in invoice.status_detail %}
-                            <span class="body_copy_yellow">CANCELLED</span>
-                        {% else %}
-                            EST
-                         {% endif %}
-                    {% else %}
-                        <a href="{% url invoice.view invoice.pk %}" class="links"><img src="/site_media/static/images/icons/tendered65x12.gif" border="0" width="65"  height="12" alt="Tendered {{ invoice.tender_date|date:'N j, Y h:i a'}}"></a>&nbsp;
-                     {% endif %} 
-                    {% if isadmin %}
-                        <a href="{% url invoice.detail invoice.pk %}" class="links">
-                        <img src="/site_media/static/images/icons/accounting12x12.gif"
-                               border="0" width="12" height="12" alt="View Accounting Entries"></a>
-                     {% endif %}
-                </td>
-            
-                {# createor username #}
-                <td>
-                    {% if invoice.creator %}
-                        <a href="{% url profile invoice.creator_username %}">{{ invoice.creator_username }}</a>
-                    {% else %}
-                        &nbsp;
-                     {% endif %}
-                </td>
-            
-                {# create_dt  #}
-                <td colspan="3">
-                     {% if invoice.create_dt %}
-                       {{ invoice.create_dt|date:'N j, Y h:i a'}} 
-                    {% else  %}
-                        &nbsp;
-                     {% endif %}
-                </td>
-            
-                {# total #}
-                <td>
-	                {% if not invoice.estimate and invoice.total > 0  %}
-	                   {{ invoice.total|format_currency }}
-	                {% else %}
-	                    ----
-	                {% endif %}
-                </td>      
-            </tr>          
-            <tr>
-            <td colspan="6"><div style="background-color: #333; height: 2px;">&nbsp;</div></td>
-            </tr>
+          {% invoices_search_line_header request invoice '#ff6600' %}  
             
           {# display event registration #} 
           <tr>
@@ -166,62 +54,7 @@
 
 {% if invoice.invoice_object_type == 'job'  %}
        <table width="100%">
-            <tr>
-                <td colspan="6">
-                    <div style="background-color: #669900; height: 5px;">&nbsp;</div>
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    <a href="{% url invoice.view invoice.pk %}">{{ invoice.pk}}</a>  
-                    {% if invoice.estimate  %}
-                        {% if 'cancel' in invoice.status_detail %}
-                            <span class="body_copy_yellow">CANCELLED</span>
-                        {% else %}
-                            EST
-                         {% endif %}
-                    {% else %}
-                        <a href="{% url invoice.view invoice.pk %}" class="links"><img src="/site_media/static/images/icons/tendered65x12.gif" border="0" width="65"  height="12" alt="Tendered {{ invoice.tender_date|date:'N j, Y h:i a'}}"></a>&nbsp;
-                     {% endif %} 
-                    {% if isadmin %}
-                        <a href="{% url invoice.detail invoice.pk %}" class="links">
-                        <img src="/site_media/static/images/icons/accounting12x12.gif"
-                               border="0" width="12" height="12" alt="View Accounting Entries"></a>
-                     {% endif %}
-                </td>
-            
-                {# createor username #}
-                <td>
-                    {% if invoice.creator %}
-                        <a href="{% url profile invoice.creator_username %}">{{ invoice.creator_username }}</a>
-                    {% else %}
-                        &nbsp;
-                     {% endif %}
-                </td>
-            
-                {# create_dt  #}
-                <td colspan="3">
-                     {% if invoice.create_dt %}
-                       {{ invoice.create_dt|date:'N j, Y h:i a'}} 
-                    {% else  %}
-                        &nbsp;
-                     {% endif %}
-                </td>
-            
-                {# total #}
-                <td>
-	                {% if not invoice.estimate and invoice.total > 0  %}
-	                   {{ invoice.total|format_currency }}
-	                {% else %}
-	                    ----
-	                {% endif %}
-                </td>           
-            </tr>
-    
-            <tr>
-            <td colspan="6"><div style="background-color: #333; height: 2px;">&nbsp;</div></td>
-            </tr>
+          {% invoices_search_line_header request invoice '#669900' %}  
             
           {# display job info #} 
           <tr>
@@ -247,64 +80,7 @@
 
 {% if invoice.invoice_object_type == 'directory'  %}
        <table width="100%">
-            <tr>
-                <td colspan="6">
-                    <div style="background-color: #cccc33; height: 5px;">&nbsp;</div>
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    <a href="{% url invoice.view invoice.pk %}">{{ invoice.pk}}</a>  
-                    {% if invoice.estimate  %}
-                        {% if 'cancel' in invoice.status_detail %}
-                            <span class="body_copy_yellow">CANCELLED</span>
-                        {% else %}
-                            EST
-                         {% endif %}
-                    {% else %}
-                        <a href="{% url invoice.view invoice.pk %}" class="links"><img src="/site_media/static/images/icons/tendered65x12.gif" border="0" width="65"  height="12" alt="Tendered {{ invoice.tender_date|date:'N j, Y h:i a'}}"></a>&nbsp;
-                     {% endif %} 
-                    {% if isadmin %}
-                        <a href="{% url invoice.detail invoice.pk %}" class="links">
-                        <img src="/site_media/static/images/icons/accounting12x12.gif"
-                               border="0" width="12" height="12" alt="View Accounting Entries"></a>
-                     {% endif %}
-                </td>
-            
-                {# createor username #}
-                <td>
-                    {% if invoice.creator %}
-                        <a href="{% url profile invoice.creator_username %}">{{ invoice.creator_username }}</a>
-                    {% else %}
-                        &nbsp;
-                     {% endif %}
-                </td>
-            
-                {# create_dt  #}
-                <td colspan="3">
-                     {% if invoice.create_dt %}
-                       {{ invoice.create_dt|date:'N j, Y h:i a'}} 
-                    {% else  %}
-                        &nbsp;
-                     {% endif %}
-                </td>
-            
-                {# total #}
-                <td>
-	                {% if not invoice.estimate and invoice.total > 0  %}
-	                   {{ invoice.total|format_currency }}
-	                {% else %}
-	                    ----
-	                {% endif %}
-                </td>
-            
-            </tr>
-            
-            
-            <tr>
-            <td colspan="6"><div style="background-color: #333; height: 2px;">&nbsp;</div></td>
-            </tr>
+          {% invoices_search_line_header request invoice '#cccc33' %}  
             
           {# display directory info #} 
           <tr>
@@ -323,8 +99,31 @@
           	<td>{{directory.activation_dt|date:'N j, Y h:i a'}}</td>
           	<td>{{invoice.total|format_currency}}</td>
           	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
-          </tr>  
-        
+          </tr>        
         </table>
+{% endif %}
 
+{% if invoice.invoice_object_type == 'donation'  %}
+       <table width="100%">
+          {% invoices_search_line_header request invoice '#663300' %}  
+            
+          {# display donation info #} 
+          <tr>
+          	<td>DonationID</td>
+          	<td>First Name</td>
+          	<td>Last Name</td>
+          	<td>Date</td>
+          	<td>Amount</td>
+          	<td>Balance</td>
+          </tr>
+           
+          <tr>
+          	<td><a href="{% url donations.views.view donation.id %}">{{donation.id}}</a></td>
+          	<td>{{donation.first_name}}</td>
+          	<td>{{donation.last_name}}</td>
+          	<td>{{donation.create_dt|date:'N j, Y h:i a'}}</td>
+          	<td>{{donation.donation_amount|format_currency}}</td>
+          	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+          </tr>         
+        </table>
 {% endif %}
