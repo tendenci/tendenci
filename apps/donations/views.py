@@ -149,6 +149,16 @@ def view(request, id=None, template_name="donations/view.html"):
     donation.donation_amount = tcurrency(donation.donation_amount)
     return render_to_response(template_name, {'donation':donation}, 
         context_instance=RequestContext(request))
+    
+def receipt(request, id, guid, template_name="donations/receipt.html"):
+    donation = get_object_or_404(Donation, pk=id, guid=guid)
+    
+    donation.donation_amount = tcurrency(donation.donation_amount)
+    
+    if (not donation.invoice) or donation.invoice.balance > 0 or (not donation.invoice.is_tendered):
+        template_name="donations/view.html"
+    return render_to_response(template_name, {'donation':donation}, 
+        context_instance=RequestContext(request))
   
 @login_required  
 def search(request, template_name="donations/search.html"):
