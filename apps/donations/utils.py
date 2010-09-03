@@ -1,5 +1,5 @@
 # settings: label, donationspaymenttypes, donationsallocations, 
-#           donationsrecipients, donationsrecipients
+#           donationsrecipients, 
 from invoices.models import Invoice
 from perms.utils import is_admin
 from site_settings.utils import get_setting
@@ -68,6 +68,16 @@ def get_allocation_choices(user, allocation_str):
         return [(item, item) for item in allocation_list]
     else:
         return ()
+    
+def get_preset_amount_choices(preset_amount_str):
+    if preset_amount_str:
+        preset_amount_list = preset_amount_str.split(',')
+        preset_amount_list = [item.strip() for item in preset_amount_list]
+        
+        return [(item, item) for item in preset_amount_list]
+    else:
+        return ()
+    
         
         
 

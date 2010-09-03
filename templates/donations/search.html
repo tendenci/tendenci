@@ -30,9 +30,14 @@
 		<div class="donation-wrap-search">
 
             <h2><a href="{% url donation.view donation.id %}">{{ donation.first_name}} {{ donation.last_name }}</a></h2>
-            <div class="donation-item-left">{% avatar donation.user 56 %}</div>
+            <div class="donation-item-left"><a href="{% url profile donation.user.username %}">{% avatar donation.user 56 %}</a></div>
             <div class="donation-item-right">
-	            <div class="content">Invoice: <a href="{% url invoice.view donation.invoice.id %}">{{ donation.invoice.id }}</a>
+	            <div class="content">Invoice: 
+	            {% if donation.invoice %}
+	            	<a href="{% url invoice.view donation.invoice.id %}">{{ donation.invoice.id }}</a>
+	            {% else %}
+	            	n/a
+	            {% endif %}
 	            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	            Amount: <b>{{ donation.donation_amount|format_currency }}</b>
