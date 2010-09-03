@@ -35,7 +35,7 @@
 	
 	<p><font face="Arial, Helvetica, sans-serif" size="2">
 	To view and print your receipt, click here, 
-	<a href="{{ SITE_GLOBAL_SITEURL }}{# link to donation receipt #}">{{ SITE_GLOBAL_SITEURL }}{# link to donation receipt #}</a>					
+	<a href="{{ SITE_GLOBAL_SITEURL }}{% url donation.receipt donation.id donation.guid %}">{{ SITE_GLOBAL_SITEURL }}{% url donation.receipt donation.id donation.guid %}</a>					
 	</font></p>
 
 </body>
