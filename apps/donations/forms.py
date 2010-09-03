@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from donations.models import Donation
-from donations.utils import get_allocation_choices, get_payment_method_choices
+from donations.utils import get_allocation_choices, get_payment_method_choices, get_preset_amount_choices
 from site_settings.utils import get_setting
 
 class DonationForm(forms.ModelForm):
@@ -69,4 +70,17 @@ class DonationForm(forms.ModelForm):
             self.fields['allocation'].choices = get_allocation_choices(user, allocation_str)
         else:
             del self.fields['allocation']
+        preset_amount_str = (get_setting('module', 'donations', 'donationspresetamounts')).strip('')
+        if preset_amount_str:
+            self.fields['donation_amount'] = forms.ChoiceField(choices=get_preset_amount_choices(preset_amount_str))
+            
+            
+    def clean_donation_amount(self):
+        #raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+        try:
+            if float(self.cleaned_data['donation_amount']) <= 0:
+                raise forms.ValidationError(_(u'Please enter a positive number'))
+        except:
+            raise forms.ValidationError(_(u'Please enter a numeric positive number'))                       
+        return self.cleaned_data['donation_amount']
         

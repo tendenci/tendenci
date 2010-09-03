@@ -44,9 +44,22 @@ def invoices_search_results_line(request, invoice):
         except Directory.DoesNotExist:
             directory = None
         return {'request':request, 'invoice':invoice, 'directory':directory}
+    elif invoice.invoice_object_type == 'donation':
+        from donations.models import Donation
+        
+        try:
+            donation = Donation.objects.get(id=invoice.invoice_object_type_id)
+        except Donation.DoesNotExist:
+            donation = None
+        return {'request':request, 'invoice':invoice, 'donation':donation}
     else:
         return {'request':request, 'invoice':invoice}
-    
+ 
+ 
+@register.inclusion_tag("invoices/search_line_header.html")
+def invoices_search_line_header(request, invoice, obj_color):
+    return {'request':request, 'invoice':invoice, 'obj_color':obj_color}
+       
     
 @register.inclusion_tag("invoices/search-form.html", takes_context=True)
 def invoice_search(context):
@@ -95,6 +108,18 @@ def invoice_directory_display(request, invoice):
     except Directory.DoesNotExist:
         directory = None
     return {'request':request, 'invoice':invoice, 'directory':directory}
+
+# display donation on invoice view
+@register.inclusion_tag("invoices/donation_display.html")
+def invoice_donation_display(request, invoice):
+    from donations.models import Donation
+    #item_display = invoices_display_make_payments(request, invoice)
+    try:
+        donation = Donation.objects.get(id=invoice.invoice_object_type_id)
+    except Donation.DoesNotExist:
+        donation = None
+    return {'request':request, 'invoice':invoice, 'donation':donation}
+
 
 # display invoice total on invoice view
 @register.inclusion_tag("invoices/total_display.html")
