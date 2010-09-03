@@ -23,11 +23,11 @@ def feed_for_user(request):
 def notices(request):
     if not is_admin(request.user):
         raise Http403
-        
+
     notice_types = NoticeType.objects.all()
     notices = Notice.objects.notices_for(request.user, on_site=True)
     settings_table = []
-    for notice_type in NoticeType.objects.all():
+    for notice_type in notice_types:
         settings_row = []
         for medium_id, medium_display in NOTICE_MEDIA:
             form_label = "%s_%s" % (notice_type.label, medium_id)
