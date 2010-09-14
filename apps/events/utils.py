@@ -21,30 +21,36 @@ def prev_month(month, year):
 
     return (prev_month, prev_year)
 
-def create_registration_record(*args, **kwargs):
+def save_registration(*args, **kwargs):
+    """
+    Adds or Updates Registration Record.
+    """
     from events.models import Registration
 
-    event = kwargs.get('event')
-    user_account = kwargs.get('user')
-    payment_method = kwargs.get('payment_method')
-    price = kwargs.get('price')
+    event = kwargs.get('event', None)
+    user_account = kwargs.get('user', None)
+    payment_method = kwargs.get('payment_method', None)
+    price = kwargs.get('price', None)
 
     # user profile shortcut
     user_profile = user_account.get_profile()
 
     try: # update registration
         reg8n = Registration.objects.get(
-            event=event, creator=user_account, owner=user_account, 
-            payment_method=payment_method, amount_paid=price)
+            event=event, creator=user_account, owner=user_account,
+            payment_method=payment_method, amount_paid=price
+        )
+        created = False
 
     except: # add registration
         reg8n = Registration.objects.create(
             event = event, 
             creator = user_account, 
             owner = user_account,
-            payment_method_id = payment_method,
+            payment_method_id = payment_method.pk,
             amount_paid = price
         )
+        created = True
 
     # get or create registrant
     registrant = reg8n.registrant_set.get_or_create(user=user_account)[0]
@@ -69,7 +75,7 @@ def create_registration_record(*args, **kwargs):
     # TODO: Debating on whether I should pass
     # the invoice object as well
 
-    return reg8n
+    return (reg8n, created)
 
 
 
