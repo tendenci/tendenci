@@ -601,6 +601,22 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
         context_instance=RequestContext(request))
 
 @login_required
+def registrant_roster(request, event_id=0, template_name='events/registrants/roster.html'):
+    from django.db.models import Sum
+
+    query = request.GET.get('q', None)
+
+    event = get_object_or_404(Event, pk=event_id)
+    registrants = Registrant.objects.search(query, user=request.user, event=event)
+
+    total_balance = Registration.objects.filter(event=event).aggregate(Sum('amount_paid'))['amount_paid__sum']
+    
+
+    return render_to_response(template_name, {
+        'event':event, 'registrants':registrants, 'total_balance':total_balance}, 
+        context_instance=RequestContext(request))
+
+@login_required
 def registrant_details(request, id=0, template_name='events/registrants/details.html'):
     registrant = get_object_or_404(Registrant, pk=id)
     
