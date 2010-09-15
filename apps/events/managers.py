@@ -136,7 +136,6 @@ class RegistrantManager(Manager):
             if user:
                 if is_an_admin:
                     sqs = sqs.all()
-                    print sqs
                 else:
                     if not user.is_anonymous():
                         # (status+status_detail+(anon OR user)) OR (who_can_view__exact)
