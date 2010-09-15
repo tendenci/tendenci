@@ -102,14 +102,19 @@ class Registrant(models.Model):
 
     phone = models.CharField(max_length=50)
     email = models.CharField(max_length=100)
-    groups = models.CharField(max_length=100)     
+    groups = models.CharField(max_length=100)
 
+    position_title = models.CharField(max_length=100)
     company_name = models.CharField(max_length=100)
     
     objects = RegistrantManager()
 
     class Meta:
         permissions = (("view_registrant","Can view registrant"),)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('event.registration_confirmation', [self.pk, self.registration.pk])
 
 class Registration(models.Model):
 
@@ -128,6 +133,17 @@ class Registration(models.Model):
     owner = models.ForeignKey(User, related_name='owned_registrations')
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
+
+    @property
+    def invoice(self):
+        from invoices.models import Invoice
+
+        if self.pk:
+            invoice = Invoice.objects.get(
+                invoice_object_type = 'event_registration', # TODO: remove hard-coded object_type (content_type)
+                invoice_object_type_id = self.pk,
+            )
+            return invoice
 
     def save_invoice(self, *args, **kwargs):
         from invoices.models import Invoice
