@@ -89,9 +89,8 @@ class TypeChoiceField(forms.ModelChoiceField):
             self.empty_label = empty_label
         self.cache_choices = cache_choices
 
-        if choices:
-            self._choices = choices
-        
+        self._choices = choices
+
         forms.fields.ChoiceField.__init__(self, choices=self._choices, widget=widget)
 
         self.queryset = queryset
