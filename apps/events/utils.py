@@ -48,7 +48,7 @@ def save_registration(*args, **kwargs):
             creator = user_account, 
             owner = user_account,
             payment_method_id = payment_method.pk,
-            amount_paid = price
+            amount_paid = str(price)
         )
         created = True
 
@@ -67,6 +67,7 @@ def save_registration(*args, **kwargs):
     registrant.phone = user_profile.phone
     registrant.email = user_profile.email
     registrant.company_name = user_profile.company
+    registrant.position_title = user_profile.position_title
     registrant.save()
 
     reg8n.save() # save registration record
