@@ -29,7 +29,8 @@
 	    <a href="javascript:;" class="more-options-trigger">More <small>&#9660;</small></a>
 	    <div class="more-options-target">
 	        <ul>
-				<li><a href="{% url event.registrant.search opt_object.pk %}">View Registrants</a></li>
+				<li><a href="{% url event.registrant.search opt_object.pk %}">Registrants</a></li>
+				<li><a href="{% url event.registrant.roster opt_object.pk %}">Registrant Roster</a></li>
 				<li class="divider"></li>
 				<li><a href="{% url event.edit.meta opt_object.pk %}">Edit Meta</a></li>
 
