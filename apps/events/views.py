@@ -196,6 +196,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         # response
         return render_to_response(template_name, {
             'event': event,
+            'multi_event_forms':[form_event,form_place,form_speaker,form_organizer,form_regconf],
             'form_event':form_event,
             'form_place':form_place,
             'form_speaker':form_speaker,
@@ -330,6 +331,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
 
                 return render_to_response(template_name, {
+                    'multi_event_forms':[form_event,form_place,form_speaker,form_organizer,form_regconf],
                     'form_event':form_event,
                     'form_place':form_place,
                     'form_speaker':form_speaker,
@@ -352,6 +354,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
 
             # response
             return render_to_response(template_name, {
+                'multi_event_forms':[form_event,form_place,form_speaker,form_organizer,form_regconf],
                 'form_event':form_event,
                 'form_place':form_place,
                 'form_speaker':form_speaker,

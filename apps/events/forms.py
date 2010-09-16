@@ -140,14 +140,17 @@ class TypeForm(forms.ModelForm):
         model = Type
 
 class PlaceForm(forms.ModelForm):
+    label = 'Location Information'
     class Meta:
         model = Place
 
 class SponsorForm(forms.ModelForm):
+    label = 'Sponsor'
     class Meta:
         model = Sponsor 
 
 class SpeakerForm(forms.ModelForm):
+    label = 'Speaker'
     class Meta:
         model = Speaker
         
@@ -157,6 +160,7 @@ class SpeakerForm(forms.ModelForm):
         )
 
 class OrganizerForm(forms.ModelForm):
+    label = 'Organizer'
     class Meta:
         model = Organizer
 
@@ -170,7 +174,7 @@ class PaymentForm(forms.ModelForm):
         model = Payment
 
 class Reg8nEditForm(forms.ModelForm):
-
+    label = 'Registration'
     payment_method = forms.ModelMultipleChoiceField(
         queryset=PaymentMethod.objects.all(),
         widget=forms.CheckboxSelectMultiple(),
@@ -188,7 +192,6 @@ class Reg8nForm(forms.Form):
     Registration form.  People who want to attend the event
     register using this form.
     """
-
     name = forms.CharField(max_length=50)
     username = forms.CharField(max_length=50)
     email = forms.EmailField()

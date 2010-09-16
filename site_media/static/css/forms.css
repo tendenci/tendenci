@@ -8,6 +8,13 @@ div.forms .errors {
 	font-weight: bold;
 }
 
+div.forms .form-label {
+	font-size: 1.4em;
+	border-bottom: 1px solid silver;
+	margin: 35px 0 10px 0;
+	font-weight: bold;	
+}
+
 div.forms .form-field {
 	margin-bottom: 15px;
 }
