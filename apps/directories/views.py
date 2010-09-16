@@ -88,14 +88,13 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             if form.is_valid():
                 directory = form.save(commit=False)
 
-                # remove all permissions on the object
+                # set up user permission
+                directory.allow_user_view, directory.allow_user_edit = form.cleaned_data['user_perms']
+                
+                # assign permissions
                 ObjectPermission.objects.remove_all(directory)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, directory)  
-                # assign creator permissions
-                ObjectPermission.objects.assign(directory.creator, directory)
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], directory)
+                ObjectPermission.objects.assign(directory.creator, directory) 
                 
                 directory.save()
 
@@ -118,18 +117,6 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                 EventLog.objects.log(**log_defaults)
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % directory)
-                
-                # send notification to administrators
-                # commenting out - there is no notification on edit in T4
-#                if notification:
-#                    extra_context = {
-#                        'object': directory,
-#                        'request': request,
-#                    }
-#                    admins = get_administrators()
-#                    #admins = [request.user]
-#                    #notification.send(get_administrators(),'directory_edited', extra_context)
-#                    notification.send(admins,'directory_edited', extra_context)
                                                                              
                 return HttpResponseRedirect(reverse('directory', args=[directory.slug]))             
         else:
@@ -182,6 +169,10 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.creator_username = request.user.username
                 directory.owner = request.user
                 directory.owner_username = request.user.username
+                
+                # set up user permission
+                directory.allow_user_view, directory.allow_user_edit = form.cleaned_data['user_perms']
+                
                 directory.save() # get pk
 
                 # resize the image that has been uploaded
@@ -192,11 +183,10 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 except:
                     pass
         
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, directory)
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], directory)
                 # assign creator permissions
-                ObjectPermission.objects.assign(directory.creator, directory)
+                ObjectPermission.objects.assign(directory.creator, directory) 
 
                 directory.save() # update search-index w/ permissions
  

@@ -1,13 +1,16 @@
 from django import forms
 from django.contrib.auth.models import User
+
 from user_groups.models import Group, GroupMembership
+from perms.forms import TendenciBaseForm
+from perms.utils import is_admin
 
 # this is the list of apps whose permissions will be displayed on the permission edit page
 APPS = ['profiles', 'user_groups', 'articles', 
         'news', 'pages', 'jobs', 'locations', 
         'stories', 'actions']
 
-class GroupForm(forms.ModelForm):
+class GroupForm(TendenciBaseForm):
     STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
     email_recipient = forms.CharField(label="Recipient Email", required=False, max_length=100, 
         help_text='Recipient email(s), comma delimited')
@@ -26,21 +29,50 @@ class GroupForm(forms.ModelForm):
                   'allow_self_add',
                   'allow_self_remove',
                   'description',
-                  'allow_anonymous_view',
-                  'allow_user_view',
-                  'allow_member_view',
-                  'allow_anonymous_edit',
-                  'allow_user_edit',
-                  'allow_member_edit',
                   'auto_respond',
                   'auto_respond_template',
                   'auto_respond_priority',
                   'notes',
+                  'allow_anonymous_view',
+                  'user_perms',
                   'status',
                   'status_detail',
                   )
-        exclude = ('members',)
-       
+        exclude = ('members','group_perms')
+
+        fieldsets = [('Group Information', {
+                      'fields': ['name',
+                                 'label',
+                                 'entity',
+                                 'email_recipient',
+                                 'show_as_option',
+                                 'allow_self_add', 
+                                 'allow_self_remove',
+                                 'description'
+                                 'auto_respond',
+                                 'auto_respond_template',
+                                 'auto_respond_priority'
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Permissions', {
+                      'fields': ['allow_anonymous_view',
+                                 'user_perms',
+                                 ],
+                      'classes': ['permissions'],
+                      }),
+                     ('Administrator Only', {
+                      'fields': ['status',
+                                 'status_detail'], 
+                      'classes': ['admin-only'],
+                    })]
+
+    def __init__(self, user=None, *args, **kwargs):
+        self.user = user 
+        super(GroupForm, self).__init__(user, *args, **kwargs)
+        if not is_admin(user):
+            if 'status' in self.fields: self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')               
 
 class GroupMembershipForm(forms.ModelForm):
     def __init__(self, mygroup=None, user_id=None, *args, **kwargs):

@@ -78,12 +78,13 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
 
                 location = form.save(commit=False)
 
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(location)                
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, location)
+                # set up user permission
+                location.allow_user_view, location.allow_user_edit = form.cleaned_data['user_perms']
+                
+                # assign permissions
+                ObjectPermission.objects.remove_all(location)
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], location)
+                ObjectPermission.objects.assign(location.creator, location) 
 
                 location.save()
 
@@ -124,14 +125,15 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                 location.owner = request.user
                 location.owner_username = request.user.username
 
+                # set up user permission
+                location.allow_user_view, location.allow_user_edit = form.cleaned_data['user_perms']
+                
                 location.save() # get pk
 
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, location)                
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], location)
                 # assign creator permissions
-                ObjectPermission.objects.assign(location.creator, location)
+                ObjectPermission.objects.assign(location.creator, location) 
 
                 location.save() # update search-index w/ permissions
  

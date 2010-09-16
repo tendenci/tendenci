@@ -22,14 +22,32 @@ class PageForm(TendenciBaseForm):
         'content',
         'tags',
         'allow_anonymous_view',
-        'allow_user_view',
-        'allow_member_view',
-        'allow_user_edit',
-        'allow_member_edit',
         'syndicate',
         'status',
         'status_detail',
         )
+
+        fieldsets = [('Page Information', {
+                      'fields': ['title',
+                                 'slug',
+                                 'content',
+                                 'tags',
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Permissions', {
+                      'fields': ['allow_anonymous_view',
+                                 'user_perms',
+                                 'group_perms',
+                                 ],
+                      'classes': ['permissions'],
+                      }),
+                     ('Administrator Only', {
+                      'fields': ['syndicate',
+                                 'status',
+                                 'status_detail'], 
+                      'classes': ['admin-only'],
+                    })]
       
     def __init__(self, user=None, *args, **kwargs): 
         self.user = user
@@ -40,5 +58,6 @@ class PageForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
 
         if not is_admin(user):
+            if 'syndicate' in self.fields: self.fields.pop('syndicate')
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')

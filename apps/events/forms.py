@@ -64,12 +64,35 @@ class EventForm(TendenciBaseForm):
             'timezone',
             'type',
             'allow_anonymous_view',
-            'allow_user_view',
-            'allow_user_edit',
+            'user_perms',
+            'group_perms',
             'status',
             'status_detail',
             )
 
+        fieldsets = [('Event Information', {
+                      'fields': ['title',
+                                 'description',
+                                 'start_dt',
+                                 'end_dt',
+                                 'timezone',
+                                 'type', 
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Permissions', {
+                      'fields': ['allow_anonymous_view',
+                                 'user_perms',
+                                 'group_perms',
+                                 ],
+                      'classes': ['permissions'],
+                      }),
+                     ('Administrator Only', {
+                      'fields': ['status',
+                                 'status_detail'], 
+                      'classes': ['admin-only'],
+                    })]
+        
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super(self.__class__, self).__init__(self.user, *args, **kwargs)
@@ -89,6 +112,7 @@ class TypeChoiceField(forms.ModelChoiceField):
             self.empty_label = empty_label
         self.cache_choices = cache_choices
 
+        self._choices = ()
         if choices:
             self._choices = choices
         
@@ -121,15 +145,25 @@ class PlaceForm(forms.ModelForm):
 
 class SponsorForm(forms.ModelForm):
     class Meta:
-        model = Sponsor
+        model = Sponsor 
 
 class SpeakerForm(forms.ModelForm):
     class Meta:
         model = Speaker
+        
+        fields = (
+            'name',
+            'description',
+        )
 
 class OrganizerForm(forms.ModelForm):
     class Meta:
         model = Organizer
+
+        fields = (
+            'name',
+            'description',
+        )
 
 class PaymentForm(forms.ModelForm):
     class Meta:

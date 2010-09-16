@@ -91,13 +91,35 @@ class FormForm(TendenciBaseForm):
                   # 'send_email', removed per ed's request
                   'email_from',
                   'email_copies',
+                  'user_perms',
+                  'group_perms',
                   'allow_anonymous_view',
-                  'allow_user_view',
-                  'allow_user_edit',
                   'status',
                   'status_detail',
                  )
-        
+
+        fieldsets = [('Form Information', {
+                      'fields': ['title',
+                                 'intro',
+                                 'response',
+                                 'email_from',
+                                 'email_copies',
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Permissions', {
+                      'fields': ['allow_anonymous_view',
+                                 'user_perms',
+                                 'group_perms',
+                                 ],
+                      'classes': ['permissions'],
+                      }),
+                     ('Administrator Only', {
+                      'fields': ['status',
+                                 'status_detail'], 
+                      'classes': ['admin-only'],
+                    })]
+                
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
         super(self.__class__, self).__init__(user, *args, **kwargs) 
