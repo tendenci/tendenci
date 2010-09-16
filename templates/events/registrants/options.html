@@ -1,3 +1,4 @@
 <div class="t-iconrow">
 	<a class="option-link print" href="{% url profile registrant.user.username %}">View Profile</a>
+	<a href="{% url event.registration_confirmation opt_object.registration.event.pk opt_object.registration.pk %}">View Registration</a>
 </div>
