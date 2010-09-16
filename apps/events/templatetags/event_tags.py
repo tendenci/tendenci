@@ -65,7 +65,7 @@ class EventListNode(template.Node):
         ]
         if type: filters.append('type:%s' % type)
 
-        sqs = Event.objects.search_filter(filters=filters, user=context['user'])
+        sqs = Event.objects.search_filter(filters=filters, user=context['user']).order_by('start_dt')
         events = [sq.object for sq in sqs] 
 
         context[self.context_var] = events
