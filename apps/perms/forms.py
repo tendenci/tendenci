@@ -2,6 +2,7 @@ from os.path import join
 from django.conf import settings
 from perms.fields import GroupPermissionField, groups_with_perms
 from perms.fields import UserPermissionField, user_perm_bits
+from perms.fields import group_choices
 from form_utils.forms import BetterModelForm
 
 class TendenciBaseForm(BetterModelForm):
@@ -43,6 +44,11 @@ class TendenciBaseForm(BetterModelForm):
     def __init__(self, user=None, *args, **kwargs):
         self.user = user
         super(TendenciBaseForm, self).__init__(*args, **kwargs)
+       
+        # needs to update the choices on every pull
+        # in case groups get added
+        if 'group_perms' in self.fields:
+            self.fields['group_perms'].choices = group_choices()
         
         if 'instance' in kwargs:
             instance = kwargs['instance']
