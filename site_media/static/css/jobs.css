@@ -110,7 +110,18 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 	width: 80px;
 }
 
+div.forms fieldset.payment_method {
+	background-color: #EFEFEF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
 
+div.forms fieldset.payment_method legend {
+	padding: 5px;
+}
 
 
 /* Job View
@@ -254,7 +265,7 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 }
 .item .field-short input,
 .item .field-short select {
-	width: 20%;
+	width: 40%;
 }
 
 /* date-time item */
@@ -348,4 +359,77 @@ div.forms fieldset.contact {
 
 div.forms fieldset.contact legend {
 	padding: 5px;
+}
+
+/* embeded pricing table
+.pricing-table-block{
+	margin-left: 120px;
+	margin-bottom: 1em;
+} 
+table.job-pricing-rate{
+	width: 320px;
+	border: 1px solid #809d89;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+table.job-pricing-rate tr td{
+	text-align: right;
+}
+.job-pricing-rate .header-row{
+	font-weight: bold;
+}
+.job-pricing-rate .header-row td{
+	color: #fff;
+	background-color: #809DB9;
+	font-weight: bold;
+	
+}
+.job-pricing-rate .row2{
+	background-color: #d3d9e5;
+}
+ */
+
+div.pricing-table-block {
+	margin-bottom: 20px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #ccc;
+}
+
+div.pricing-table-block h4 {
+	margin: 5px 0 5px 0;
+	padding: 0;
+	text-transform: none;
+	font-size: 13px;	
+}
+
+div.pricing-table-block table {
+	text-align: left;
+	border: 1px solid #DDD;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+div.pricing-table-block table tr.alt {
+	background-color: #FFFFFF;
+}
+
+div.pricing-table-block table td {
+	padding: 5px;	
+}
+
+div.pricing-table-block table tr.header-row td {
+	width: 180px;
+	background-color: #EFEFEF;
+}
+
+/* payment method */
+div.id_payment_method ul{
+	padding: 0px;
+}
+div.id_payment_method ul li{
+	list-style: none;
+}
+div.id_payment_method input{
+	width: 1em !important;
 }

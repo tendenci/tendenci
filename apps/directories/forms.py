@@ -1,20 +1,22 @@
 import imghdr
+from datetime import datetime
 from os.path import splitext
 
 from django import forms
 
-from directories.models import Directory
+from directories.models import Directory, DirectoryPricing
+from directories.utils import get_payment_method_choices, get_duration_choices
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
+from base.fields import SplitDateTimeField
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
     '.jpeg',
     '.gif',
     '.png' 
-)
-                    
+)   
                     
 class DirectoryForm(TendenciBaseForm):
     body = forms.CharField(required=False,
@@ -24,7 +26,16 @@ class DirectoryForm(TendenciBaseForm):
     
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+    
+    requested_duration = forms.ChoiceField()
+    
+    list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
+                                                              ('premium', 'Premium'),))
+    payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
 
+    activation_dt = SplitDateTimeField(initial=datetime.now())
+    expiration_dt = SplitDateTimeField(initial=datetime.now())
+    
     class Meta:
         model = Directory
         fields = (
@@ -50,6 +61,12 @@ class DirectoryForm(TendenciBaseForm):
             'email2',
             'website',
             'tags',
+            'requested_duration',
+            'list_type',
+            'payment_method',
+            'activation_dt',
+            'expiration_dt',
+            'entity',
             'allow_anonymous_view',
             'allow_user_view',
             'allow_user_edit',
@@ -67,8 +84,18 @@ class DirectoryForm(TendenciBaseForm):
                                  'tags',
                                  'source', 
                                  'timezone',
+                                 'activation_dt',
+                                 'requested_duration',
+                                 'expiration_dt',
+                                 'entity'
                                  ],
                       'legend': ''
+                      }),
+                      ('Payment', {
+                      'fields': ['list_type',
+                                 'payment_method'
+                                 ],
+                        'classes': ['payment_method'],
                       }),
                       ('Contact', {
                       'fields': ['first_name',
@@ -115,7 +142,7 @@ class DirectoryForm(TendenciBaseForm):
             image_type = '.%s' % imghdr.what('', logo.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
-        
+
         return logo
 
     def __init__(self, user=None, *args, **kwargs):
@@ -123,10 +150,41 @@ class DirectoryForm(TendenciBaseForm):
         super(DirectoryForm, self).__init__(user, *args, **kwargs)
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            if is_admin(user):
+                self.fields['status_detail'].choices = (('active','Active'),
+                                                        ('inactive','Inactive'), 
+                                                        ('pending','Pending'),
+                                                        ('paid - pending approval', 'Paid - Pending Approval'),)
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
         if not is_admin(user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+            
+        if self.fields.has_key('payment_method'):
+            self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(user))
+        if self.fields.has_key('requested_duration'):
+            self.fields['requested_duration'].choices = get_duration_choices()
+
+DURATION_CHOICES = ((14,'14 Days from Activation date'), 
+                    (30,'30 Days from Activation date'), 
+                    (60,'60 Days from Activation date'), 
+                    (90,'90 Days from Activation date'),
+                    (120,'120 Days from Activation date'),
+                    (365,'1 Year from Activation date'),
+                    )
+STATUS_CHOICES = ((1, 'Active'),
+                   (0, 'Inactive'),)
+            
+class DirectoryPricingForm(forms.ModelForm): 
+    duration = forms.ChoiceField(initial=14, choices=DURATION_CHOICES)
+    status = forms.ChoiceField(initial=1, choices=STATUS_CHOICES, required=False)
+    class Meta:
+        model = DirectoryPricing
+        fields = ('duration',
+                  'regular_price',
+                  'premium_price',
+                  'category_threshold',
+                  'status',)
 

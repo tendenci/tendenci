@@ -1,0 +1,33 @@
+{% load base_filters %}
+
+{# user info #}
+<div class="invoice-view-box">
+	{# make 3 blocks in the first box #}
+	<div class="invoice-view-detail-left">
+		{% if directory %}
+			<a href="{% url directory directory.slug %}" title="View Make Payment">{{ directory.id }}</a>
+		{% else %}
+			{{ invoice.invoice_object_type_id }}
+		{% endif%}
+	</div>
+	
+	<div class="invoice-view-detail-middle">
+		<div class="invoice-item">
+			{% if directory %}
+				{{ directory.headline|truncatewords:5 }}
+			{% else %}
+				Directory Information not available
+			{% endif%}
+		</div>
+		<div class="invoice-item">Duration: {{ directory.requested_duration }}</div>
+		<div class="invoice-item">Summary: {{ directory.summary|truncatewords:30 }}</div>
+	</div>
+	
+	<div class="invoice-view-detail-right">
+		Amount: {{ invoice.total|format_currency }}
+	</div>
+	<div class="clear-both"></div>
+</div>
+
+	
+

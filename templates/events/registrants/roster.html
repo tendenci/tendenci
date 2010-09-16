@@ -1,0 +1,238 @@
+{% extends "events/base-print.html" %}
+{% load pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load avatar_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+{% endblock %}
+
+{% block body %}
+<style type="text/css">
+	#container {
+		width: 100%;
+		margin: 0;
+	}
+	#body {
+		border: none; /* remove styles.css property */
+		padding: 20px 10px;
+	}
+	#main-content {
+		width: 100%;
+	}
+	h1{
+		margin-bottom: 0;
+	}
+	h3 {
+		margin-bottom: 3px;
+	}
+	#event-time {
+		font-size: 1.2em;
+	}
+	.hr {
+		height: 1px;
+		xbackground-color: #EEE;
+		margin: 10px auto;
+	}
+	#registrant-table {
+		width: 98%;
+		border-collapse: collapse;
+		border: 1px solid #DDD;
+		margin-bottom: 20px;
+	}
+	th {
+		text-align: left;
+		background-color: #EEE;
+		margin-bottom: 10px;
+		padding: 10px 0;
+	}
+	td {
+
+	}
+	#registrant-table td.counter {
+		text-align: center;
+	}
+	
+	.row-spacer {
+		height: 10px;
+	}
+	
+	#registrant-table td {
+
+	}
+	
+	table tr.even {
+		background-color: #F7F7F7;
+	}
+
+	th.attended {
+		xpadding: 0 5px 0 0;
+		xbackground-color: red;
+	}
+	td.attended-checkbox {
+		text-align: left;		
+	}
+	td.attended-checkbox div {
+		text-align: left;
+		border: 1px solid silver;
+		width: 25px;
+		height: 25px;
+		margin: 5px 0;
+	}
+
+	table#registrant-table a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	table#registrant-table a:active,
+	table#registrant-table a:hover {
+		text-decoration: underline;
+	}
+
+	.back-button {
+		font-size: 1.4em;
+		margin-bottom: 10px;
+		background-color: #F7F7F7;
+	}
+
+	#body, body {
+		margin: 0;
+		padding: 0;
+	}
+
+	.back-button a {
+		display: block;
+		padding: 10px;
+	}
+
+	.bottom-row {
+		xcolor: white;
+		xbackground-color: #AAA;
+		border-top: 1px solid silver;
+	}
+
+	.event-info {
+		margin: 10px;
+	}
+
+</style>
+
+<style type="text/css" media="screen">
+	.total {
+		position: absolute;
+		top: 40px; right: 40px;
+	}
+	.total .int {
+		color: #AAA;
+		font-weight: bold;
+		font-size: 5em;
+		line-height: 1em;
+	}
+
+	.total .label {
+		font-size: 1em;
+		line-height: .2em;
+	}
+</style>
+
+<style type="text/css" media="print">
+	.back-button {
+		display: none;
+	}
+	.total {
+		text-align: right;
+		font-size: 2em;
+		font-weight: bold;
+	}
+	.total .int,
+	.total .label {
+		display: inline;
+	}
+	
+</style>
+
+
+<div class='back-button'><a href="{{ event.get_absolute_url }}">&laquo; Back to event</a></div>
+
+<div class='event-info'>
+	<h1>{{ event.title }} - Registrant Roster</h1>
+	<h3>{{ event.place.address }} {{ event.place.city_state|join:", "}} {{ event.place.zip }}</h3>
+	<div id="event-time">{{ event.start_dt|date }} {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}</div>
+</div>
+
+<div class="hr"></div>
+
+
+<div class="total">
+	<div class="int">{{ registrants|length }}</div>
+	<div class="label">Registrant{{ registrants|length|pluralize }}</div>
+</div>
+
+<center>
+<table id="registrant-table">
+<tr>
+	<th></th>
+	<th class='attended' title="Attendance Checkbox"></th>
+	<th title="Name and Phone Number">Name & Phone</th>
+	<th title="Title and Company">Title &amp; Company</th>
+	<th title="Invoice Number">Inv#</th>
+	<th title="Invoice Amount">Inv$</th>
+	<th title="Registration Number">Reg#</th>
+	<th title="Registration Amount">Reg$</th>
+	<th title="Balance">Balance</th>
+</tr>
+<tr class='row-spacer'><td colspan="9"></td></tr>
+
+{% for registrant in registrants %}
+{% with registrant.object as registrant %}
+	<tr class="{% cycle 'odd' 'even' %}">
+		<td class="counter">{{ forloop.counter }}</td>
+		<td class="attended-checkbox"><div></div></td>
+
+		<td> <!-- name & phone -->
+			<div><a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.name registrant.email %}</a></div>
+			<div>{{ registrant.phone }}</div>
+		</td>
+
+		<td> <!-- title & company -->
+			<div>{{ registrant.title }}</div>
+			<div>{{ registrant.company_name }}</div>
+		</td> 
+
+		<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
+		<td>${{ registrant.registration.invoice.total }}</td> <!-- invoice amount -->
+		<td><a href="{{ registrant.get_absolute_url }}">{{ registrant.registration.pk }}</a></td> <!-- registration number -->
+		<td>${{ registrant.registration.amount_paid }}</td> <!-- registration amount -->
+		<td>${{ registrant.registration.invoice.balance }}</td> <!-- balance -->
+	</tr>
+
+{% endwith %}
+{% endfor %}
+<tr class='row-spacer'><td colspan="9"></td></tr>
+<tr class="bottom-row">
+	<td></td>
+	<td colspan="2" class="total-label">Total</td>
+	<td colspan="5"></td>
+	<td>${{ total_balance }}</td>
+</tr>
+</table>
+</center>
+
+
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+	</script>
+{% endblock %}

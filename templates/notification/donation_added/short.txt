@@ -1,0 +1,1 @@
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} Donation Submitted by {{ donation.first_name }} {{ donation.last_name }}

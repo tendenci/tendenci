@@ -1,6 +1,5 @@
 {% load styled_forms %}
 
-
 {% if form.errors %}
 <div class="errors">
 There were some problems in the form. Please review. Thanks!
@@ -9,6 +8,7 @@ There were some problems in the form. Please review. Thanks!
 
 {% if form.fieldsets %}
 	{% for fieldset in form.fieldsets %}
+	  {% if fieldset.boundfields %}
 	  <fieldset class="{{ fieldset.classes }}">
 		{% if fieldset.legend %}
 		  <legend>{{ fieldset.legend }}</legend>
@@ -65,6 +65,7 @@ There were some problems in the form. Please review. Thanks!
 		{% endif %}
 		{% endfor %}   	
 	  </fieldset>
+	  {% endif %}
 	{% endfor %}
 {% else %}
 	{% for field in form %}
