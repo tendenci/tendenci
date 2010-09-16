@@ -1,57 +1,222 @@
-from django.forms import ModelMultipleChoiceField
-from django.contrib.auth.models import User
+from itertools import groupby
+from django.forms import MultipleChoiceField, CheckboxInput
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
-from django.db.models.query import QuerySet
+from django.forms.widgets import CheckboxSelectMultiple
+from django.utils.safestring import mark_safe
+from django.utils.encoding import force_unicode
+from django.utils.html import conditional_escape
 
 from perms.models import ObjectPermission
+from user_groups.models import Group
 
-__ALL__ = ('UserPermissionField','users_with_perms','user_perm_queryset',)
+all_groups = Group.objects.filter(status=1, status_detail='active').order_by('name')
 
 user_perm_options = {
-    'label':'People',
-    'help_text':'People who have admin permissions',
+    'label':'User Permissions',
+    'help_text':'Select view/change to allow all authenticated users to view or change',
     'required':False,
-    'queryset': User.objects.filter(is_active=True),                   
+    'choices': (('allow_user_view','User'),('allow_user_edit','User'))                
 }
 
-def user_perm_queryset(user_or_users):
-    """
-        Create a users queryset that does not include 
-        a specified user or list of users
-    """
-    multi_user = False
-    if isinstance(user_or_users,list):
-        multi_user = True
-    if isinstance(user_or_users,QuerySet):
-        multi_user = True
+def group_choices(groups):
+    choices = []
+    if groups:
+        for g in groups:
+            choices.append(('%s_%s' % ('view', g.pk), g.name))
+            choices.append(('%s_%s' % ('change', g.pk), g.name))               
+        return tuple(choices)
+    return None
 
-    if multi_user:
-        pks = [u.id for u in user_or_users]
-        user_qs = User.objects.filter(Q(is_active=True) & ~Q(pk__in=pks))
-    else:
-        user_qs = User.objects.filter(Q(is_active=True) & ~Q(pk=user_or_users.pk))
-    return user_qs
+group_perm_options = {
+    'label':'Group Permissions',
+    'help_text':'Groups who have view/change permissions',
+    'required':False,
+    'choices': group_choices(all_groups)                        
+}                      
     
-def users_with_perms(instance):
+def user_perm_bits(instance):
     """
         Return a list of users that have permissions
         on a model instance. 
     """
+    user_bits = []
+    if hasattr(instance,'allow_user_view') and hasattr(instance,'allow_user_edit'):
+        if instance.allow_user_view:
+            user_bits.append('allow_user_view')
+        if instance.allow_user_edit:
+            user_bits.append('allow_user_edit')
+    return user_bits
+
+def groups_with_perms(instance):
+    """
+        Return a list of groups that have permissions
+        on a model instance. 
+    """
+    group_perms = []
     content_type = ContentType.objects.get_for_model(instance)
     filters = {
-        'user__in': User.objects.filter(is_active=True),
+        'group__in': Group.objects.filter(status=1, status_detail='active'),
         'content_type':content_type,
         'object_id':instance.pk       
     }
-    users = ObjectPermission.objects.filter(**filters)
-    return list(set([u.user.pk for u in users]))  
+    object_perms = ObjectPermission.objects.filter(**filters)
+    for perm in object_perms:
+        if 'view' in perm.codename:
+            group_perms.append('%s_%s' % ('view', perm.group.pk))
+        if 'change' in perm.codename:
+            group_perms.append('%s_%s' % ('change', perm.group.pk))
+
+    return list(set(group_perms))      
+
         
-class UserPermissionField(ModelMultipleChoiceField): 
+class UserPermissionWidget(CheckboxSelectMultiple):
+    def render(self, name, value, attrs=None, choices=()):
+        if value is None: value = []
+        has_id = attrs and 'id' in attrs
+        final_attrs = self.build_attrs(attrs, name=name)
+        
+        # set up output attributes
+        html = u''
+        table_rows = u''
+        
+        # Normalize to strings
+        str_values = set([force_unicode(v) for v in value])
+        
+        # setup the id attr
+        if has_id:
+            id = attrs['id']
+        else:
+            id = u''
+        
+        # set up the html for output
+        html += """
+            <table border="0" cellspacing="0" cellpadding="0" id="%(id)s">
+            <tr>
+                <th class="header-col-1">&nbsp;</th>
+                <th class="header-col-2">View</th>
+                <th class="header-col-3">Change</th>
+            </tr>
+            %(table_rows)s
+            </table>
+        """
+        for i, (user_label, user_perm) in enumerate(groupby(self.choices,lambda x: x[1])):
+            view_input_value = force_unicode(user_perm.next()[0])
+            change_input_value = force_unicode(user_perm.next()[0])
+            
+            if has_id:
+                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                
+            cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
+            cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
+            rendered_cb_view = cb_view.render(name, view_input_value)
+            rendered_cb_change = cb_change.render(name, change_input_value)
+            
+            if (i % 2) == 0:
+                tr_class = ' class="alt" '
+            else:
+                tr_class = ''
+                
+            table_rows += """
+                <tr%(tr_class)s>
+                    <td>%(user_label)s</td>
+                    <td>%(view_checkbox)s</td>
+                    <td>%(change_checkbox)s</td>
+                </tr>
+            """ % {'tr_class':tr_class,  
+                   'user_label': conditional_escape(force_unicode(user_label)),
+                   'view_checkbox': rendered_cb_view,
+                   'change_checkbox': rendered_cb_change
+                  }
+        
+        html = html % { 
+                'id': id, 
+                'table_rows': table_rows
+                }
+        return mark_safe(html)
+                    
+class UserPermissionField(MultipleChoiceField): 
     """
-        Inherits from ModelMultipleChoiceField and
+        Inherits from MultipleChoiceField and
         sets some default meta data
-    """
+    """    
+    widget = UserPermissionWidget
     def __init__(self, *args, **kwargs):
-        kwargs.update(user_perm_options)
+        kwargs.update(user_perm_options)   
         super(UserPermissionField, self).__init__(*args, **kwargs)
+        
+class GroupPermissionWidget(CheckboxSelectMultiple):
+    def render(self, name, value, attrs=None, choices=()):
+        if value is None: value = []
+        has_id = attrs and 'id' in attrs
+        final_attrs = self.build_attrs(attrs, name=name)
+        
+        # set up output attributes
+        html = u''
+        table_rows = u''
+        
+        # Normalize to strings
+        str_values = set([force_unicode(v) for v in value])
+        
+        # setup the id attr
+        if has_id:
+            id = attrs['id']
+        else:
+            id = u''
+        
+        # set up the html for output
+        html += """
+            <table border="0" cellspacing="0" cellpadding="0" id="%(id)s">
+            <tr>
+                <th class="header-col-1">&nbsp;</th>
+                <th class="header-col-2">View</th>
+                <th class="header-col-3">Change</th>
+            </tr>
+            %(table_rows)s
+            </table>
+        """
+        for i, (group_name, group) in enumerate(groupby(self.choices,lambda x: x[1])):
+            view_input_value = force_unicode(group.next()[0])
+            change_input_value = force_unicode(group.next()[0])
+            
+            if has_id:
+                final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
+                
+            cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
+            cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
+            rendered_cb_view = cb_view.render(name, view_input_value)
+            rendered_cb_change = cb_change.render(name, change_input_value)
+            
+            if (i % 2) == 0:
+                tr_class = ' class="alt" '
+            else:
+                tr_class = ''
+                
+            table_rows += """
+                <tr%(tr_class)s>
+                    <td>%(group_name)s</td>
+                    <td>%(view_checkbox)s</td>
+                    <td>%(change_checkbox)s</td>
+                </tr>
+            """ % {'tr_class':tr_class,  
+                   'group_name': conditional_escape(force_unicode(group_name)),
+                   'view_checkbox': rendered_cb_view,
+                   'change_checkbox': rendered_cb_change
+                  }
+        
+        html = html % { 
+                'id': id, 
+                'table_rows': table_rows
+                }
+        return mark_safe(html)
+
+class GroupPermissionField(MultipleChoiceField):
+    """
+        Inherits from MultipleChoiceField and
+        sets some default meta data
+    """    
+    widget = GroupPermissionWidget
+    def __init__(self, *args, **kwargs):
+        kwargs.update(group_perm_options)   
+        super(GroupPermissionField, self).__init__(*args, **kwargs)
+      
+        

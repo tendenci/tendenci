@@ -89,14 +89,13 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
             if form.is_valid():
                 article = form.save(commit=False)
 
-                # remove all permissions on the object
+                # set up user permission
+                article.allow_user_view, article.allow_user_edit = form.cleaned_data['user_perms']
+                
+                # assign permissions
                 ObjectPermission.objects.remove_all(article)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, article)  
-                # assign creator permissions
-                ObjectPermission.objects.assign(article.creator, article)
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], article)
+                ObjectPermission.objects.assign(article.creator, article) 
                 
                 article.save()
 
@@ -111,18 +110,6 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                 EventLog.objects.log(**log_defaults)
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % article)
-                
-                # send notification to administrators
-                # commenting out - there is no notification on edit in T4
-#                if notification:
-#                    extra_context = {
-#                        'object': article,
-#                        'request': request,
-#                    }
-#                    admins = get_administrators()
-#                    #admins = [request.user]
-#                    #notification.send(get_administrators(),'article_edited', extra_context)
-#                    notification.send(admins,'article_edited', extra_context)
                                                                              
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))             
         else:
@@ -175,13 +162,16 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 article.creator_username = request.user.username
                 article.owner = request.user
                 article.owner_username = request.user.username
+
+                # set up user permission
+                article.allow_user_view, article.allow_user_edit = form.cleaned_data['user_perms']
+                
                 article.save() # get pk
 
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, article)
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], article)
                 # assign creator permissions
-                ObjectPermission.objects.assign(article.creator, article)
+                ObjectPermission.objects.assign(article.creator, article) 
 
                 article.save() # update search-index w/ permissions
  

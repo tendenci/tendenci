@@ -58,18 +58,63 @@ class DirectoryForm(TendenciBaseForm):
             'status_detail',
         )
 
+        fieldsets = [('Directory Information', {
+                      'fields': ['headline',
+                                 'slug',
+                                 'summary',
+                                 'body',
+                                 'logo',
+                                 'tags',
+                                 'source', 
+                                 'timezone',
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Contact', {
+                      'fields': ['first_name',
+                                 'last_name',
+                                  'address',
+                                  'address2',
+                                  'city',
+                                  'state',
+                                  'zip_code',
+                                  'country',
+                                  'phone',
+                                  'phone2',
+                                  'fax',
+                                  'email',
+                                  'email2',
+                                  'website'
+                                 ],
+                        'classes': ['contact'],
+                      }),
+                      ('Permissions', {
+                      'fields': ['allow_anonymous_view',
+                                 'user_perms',
+                                 'group_perms',
+                                 ],
+                      'classes': ['permissions'],
+                      }),
+                     ('Administrator Only', {
+                      'fields': ['syndicate',
+                                 'status',
+                                 'status_detail'], 
+                      'classes': ['admin-only'],
+                    })]   
+        
     def clean_logo(self):
         logo = self.cleaned_data['logo']
-        extension = splitext(logo.name)[1]
-        
-        # check the extension
-        if extension.lower() not in ALLOWED_LOGO_EXT:
-            raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
-        
-        # check the image header
-        image_type = '.%s' % imghdr.what('', logo.read())
-        if image_type not in ALLOWED_LOGO_EXT:
-            raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
+        if logo:
+            extension = splitext(logo.name)[1]
+            
+            # check the extension
+            if extension.lower() not in ALLOWED_LOGO_EXT:
+                raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
+            
+            # check the image header
+            image_type = '.%s' % imghdr.what('', logo.read())
+            if image_type not in ALLOWED_LOGO_EXT:
+                raise forms.ValidationError('The logo is an invalid image. Try uploading another logo.')
         
         return logo
 

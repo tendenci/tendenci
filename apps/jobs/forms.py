@@ -61,7 +61,6 @@ class JobForm(TendenciBaseForm):
         'post_dt',
         'expiration_dt',
         'job_url',
-        'syndicate',
         'design_notes',
         'entity',
         'contact_company',
@@ -78,35 +77,70 @@ class JobForm(TendenciBaseForm):
         'contact_website',
         'tags',        
         'allow_anonymous_view',
-        'allow_user_view',
-        'allow_member_view',
-        'allow_user_edit',
-        'allow_member_edit',
         'syndicate',
         'status',
         'status_detail',
        )
- 
-    #integrate with payment (later)
-    #invoice_id  
-    #payment_method
-    #member_price
-    #member_count
-    #non_member_price
-    #non_member_count
-    #override_price
-    #override_userid
-    
-    #don't need
-    #contactcompanyindustry
-    #duration
-    #citizenship_required
-    #security_clearance
-    #expertise
-    #benefits
-    #is_offsite
-    #language
 
+        fieldsets = [('Job Information', {
+                      'fields': ['title',
+                                'slug',
+                                'description',
+                                'code',
+                                'location',
+                                'skills',
+                                'experience',
+                                'education',
+                                'level',
+                                'period',
+                                'is_agency',
+                                'percent_travel',
+                                'contact_method',
+                                'position_reports_to',
+                                'salary_from',
+                                'salary_to',
+                                'computer_skills',
+                                'requested_duration',
+                                'list_type',
+                                'activation_dt',
+                                'post_dt',
+                                'expiration_dt',
+                                'job_url',
+                                'design_notes',
+                                'entity'
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Contact', {
+                      'fields': ['contact_company',
+                                'contact_name',
+                                'contact_address',
+                                'contact_address2',
+                                'contact_city',
+                                'contact_state',
+                                'contact_zip_code',
+                                'contact_country',
+                                'contact_phone',
+                                'contact_fax',
+                                'contact_email',
+                                'contact_website'
+                                 ],
+                        'classes': ['contact'],
+                      }),
+                      ('Permissions', {
+                      'fields': ['allow_anonymous_view',
+                                 'user_perms',
+                                 'group_perms',
+                                 ],
+                      'classes': ['permissions'],
+                      }),
+                     ('Administrator Only', {
+                      'fields': ['syndicate',
+                                 'status',
+                                 'status_detail'], 
+                      'classes': ['admin-only'],
+                    })]
+        
     def __init__(self, user=None, *args, **kwargs): 
         self.user = user
         super(JobForm, self).__init__(user, *args, **kwargs)
