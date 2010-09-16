@@ -29,23 +29,7 @@
 
     	<form action="{% url event.edit event.pk %}" method="post">
     	<div class="forms">
-			{{ form_event|styled_form }}			
-			<div class="item-text">
-				Location Information
-			</div>			
-            {{ form_place|styled_form }}
-			<div class="item-text">
-				Speaker
-			</div>
-            {{ form_speaker|styled_form }}
-			<div class="item-text">
-				Organizer
-			</div>
-            {{ form_organizer|styled_form }}
-			<div class="item-text">
-				Registration
-			</div>
-            {{ form_regconf|styled_form }}
+			{{ multi_event_forms|styled_multi_forms }}
 			<input type="submit" value="Save Changes" />
 		</div>
         </form>
