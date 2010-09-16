@@ -122,6 +122,15 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 event.creator_username = request.user.username
                 event.owner_username = request.user.username
                 event.owner = request.user
+
+                # set up user permission
+                event.allow_user_view, event.allow_user_edit = form_event.cleaned_data['user_perms']
+                
+                # assign permissions
+                ObjectPermission.objects.remove_all(event)
+                ObjectPermission.objects.assign_group(form_event.cleaned_data['group_perms'], event)
+                ObjectPermission.objects.assign(event.creator, event) 
+                
                 event.save()
 
                 EventLog.objects.log(
@@ -132,15 +141,6 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     request = request,
                     instance = event,
                 )
-
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(event)
-                
-                # assign new permissions
-                user_perms = form_event.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, event)               
-                # assign creator permissions
-                ObjectPermission.objects.assign(event.creator, event)
 
                 # location validation
                 form_place = PlaceForm(request.POST, instance=event.place, prefix='place')
@@ -247,6 +247,10 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 event.creator_username = request.user.username
                 event.owner = request.user
                 event.owner_username = request.user.username
+
+                # set up user permission
+                event.allow_user_view, event.allow_user_edit = form_event.cleaned_data['user_perms']
+                
                 event.save()
 
                 EventLog.objects.log(
@@ -258,9 +262,8 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     instance = event
                 )
                                
-                # assign permissions for selected users
-                user_perms = form_event.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, event)
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form_event.cleaned_data['group_perms'], event)
                 # assign creator permissions
                 ObjectPermission.objects.assign(event.creator, event) 
 

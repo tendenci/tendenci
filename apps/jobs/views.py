@@ -87,15 +87,17 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                 job.creator_username = request.user.username
                 job.owner = request.user
                 job.owner_username = request.user.username
+
+                # set up user permission
+                job.allow_user_view, job.allow_user_edit = form.cleaned_data['user_perms']
+                
                 job.save()
 
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, job)
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], job)
                 # assign creator permissions
                 ObjectPermission.objects.assign(job.creator, job) 
-
+                
                 job.save() # update search-index w/ permissions
  
                 log_defaults = {
@@ -139,14 +141,13 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
             if form.is_valid():
                 job = form.save(commit=False)
 
-                # remove all permissions on the object
+                # set up user permission
+                job.allow_user_view, job.allow_user_edit = form.cleaned_data['user_perms']
+                
+                # assign permissions
                 ObjectPermission.objects.remove_all(job)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, job)               
-                # assign creator permissions
-                ObjectPermission.objects.assign(job.creator, job)
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], job)
+                ObjectPermission.objects.assign(job.creator, job) 
 
                 job.save()
 

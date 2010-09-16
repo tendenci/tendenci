@@ -88,12 +88,10 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
 
             story.save() # get pk
 
-            # assign permissions for selected users
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms:
-                ObjectPermission.objects.assign(user_perms, story)
+            # assign permissions for selected groups
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], story)
             # assign creator permissions
-            ObjectPermission.objects.assign(story.creator, story)
+            ObjectPermission.objects.assign(story.creator, story) 
 
             story.save() # update search-index w/ permissions
 
@@ -130,14 +128,10 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
         if form.is_valid():
             story = form.save(commit=False)
 
-            # remove all permissions on the object
-            ObjectPermission.objects.remove_all(story)               
-            # assign new permissions
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms:
-                ObjectPermission.objects.assign(user_perms, story)
-            # assign creator permissions
-            ObjectPermission.objects.assign(story.creator, story)
+            # assign permissions
+            ObjectPermission.objects.remove_all(story)
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], story)
+            ObjectPermission.objects.assign(story.creator, story) 
 
             story.save()
             

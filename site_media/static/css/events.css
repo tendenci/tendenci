@@ -158,6 +158,55 @@ div.id_end_dt .field input#id_end_dt_1 {
 	width: 80px;
 }
 
+/* id_regconf-early_dt */
+div.forms div.form-field 
+div.id_regconf-early_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+div.forms div.form-field 
+div.id_regconf-early_dt .field input#id_regconf-early_dt_1 {
+	width: 80px;
+}
+
+/* id_regconf-regular_dt */
+div.forms div.form-field 
+div.id_regconf-regular_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+div.forms div.form-field 
+div.id_regconf-regular_dt .field input#id_regconf-regular_dt_1 {
+	width: 80px;
+}
+
+/* id_regconf-late_dt */
+div.forms div.form-field 
+div.id_regconf-late_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+div.forms div.form-field 
+div.id_regconf-late_dt .field input#id_regconf-late_dt_1 {
+	width: 80px;
+}
+
+input#id_regconf-early_price {
+	width: 100px;	
+}
+
+input#id_regconf-regular_price {
+	width: 100px;	
+}
+
+input#id_regconf-late_price {
+	width: 100px;	
+}
+
+input#id_regconf-limit {
+	width: 100px;	
+}
+
 /* Article Print View
  ------------------------- */
 .t-print .event-wrap {
@@ -211,7 +260,7 @@ div.id_end_dt .field input#id_end_dt_1 {
 .item-text {
 	font-size: 1.4em;
 	border-bottom: 1px solid silver;
-	margin: 20px 0;
+	margin: 35px 0 10px 0;
 	font-weight: bold;
 }
 
@@ -306,7 +355,7 @@ div.id_end_dt .field input#id_end_dt_1 {
 
 /* details page */
 .t .event-wrap {
-	background-color: #F7F7F7;
+	xbackground-color: #F7F7F7;
 	padding: 0;
 }
 .event-wrap .info {

@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
@@ -6,20 +7,18 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db.models import Count
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 
 from user_groups.models import Group, GroupMembership
 from user_groups.forms import GroupForm, GroupMembershipForm, GroupPermissionForm
-
 from base.http import Http403
 from perms.utils import is_admin
 from event_logs.models import EventLog
-#from perms.decorators import PageSecurityCheck
 from perms.utils import get_notice_recipients
-from django.contrib.admin.views.decorators import staff_member_required
 from entities.models import Entity
-from django.contrib.sites.models import Site
 from event_logs.utils import request_month_range, day_bars
-from django.contrib.contenttypes.models import ContentType
 from event_logs.views import event_colors
 
 try:
@@ -84,7 +83,7 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
 def group_add_edit(request, group_slug=None, 
                    form_class=GroupForm, 
                    template_name="user_groups/add_edit.html"):
-    add, edit = None, None
+    add, edit = False, False
     if group_slug:
         group = get_object_or_404(Group, slug=group_slug)
        
@@ -99,12 +98,19 @@ def group_add_edit(request, group_slug=None,
         add = True
 
     if request.method == 'POST':
-        form = form_class(request.POST, request.FILES, instance=group)
+        if edit:
+            form = form_class(request.user, request.POST, instance=group)
+        else:
+            form = form_class(request.user, request.POST)
         if form.is_valid():
             group = form.save(commit=False)
             if not group.id:
                 group.creator = request.user
                 group.creator_username = request.user.username
+                
+            # set up user permission
+            group.allow_user_view, group.allow_user_edit = form.cleaned_data['user_perms']
+                            
             group.owner =  request.user
             group.owner_username = request.user.username
             group = form.save()
@@ -142,7 +148,10 @@ def group_add_edit(request, group_slug=None,
                 
             return HttpResponseRedirect(group.get_absolute_url())
     else:
-        form = form_class(instance=group)
+        if edit:
+            form = form_class(request.user, instance=group)
+        else:
+            form = form_class(request.user)
       
     return render_to_response(template_name, {'form':form, 'titie':title, 'group':group}, context_instance=RequestContext(request))
 

@@ -35,12 +35,31 @@ class StoryForm(TendenciBaseForm):
         'status',
         'status_detail',
         )
-      
+
+        fieldsets = [('Story Information', {
+                      'fields': ['title',
+                                 'content',
+                                 'fullstorylink',
+                                 'start_dt',
+                                 'end_dt',
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Permissions', {
+                      'fields': ['group_perms'],
+                      'classes': ['permissions'],
+                      }),
+                     ('Administrator Only', {
+                      'fields': ['syndicate',
+                                 'status',
+                                 'status_detail'], 
+                      'classes': ['admin-only'],
+                    })]   
+             
     def __init__(self, user=None, *args, **kwargs):
-        super(StoryForm, self).__init__(user, *args, **kwargs)
         self.user = user
-        self.fields['user_perms'].label = "Owner"
-        self.fields['user_perms'].help_text = "Non-admin who can edit this story"
+        super(StoryForm, self).__init__(user, *args, **kwargs)
+       
         if self.instance.pk:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:

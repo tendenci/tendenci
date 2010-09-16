@@ -1,6 +1,7 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
 {% load perm_tags %}
+{% load styled_forms %}
 
 {% block title %}{{ block.super }}Add{% endblock %}
 
@@ -65,305 +66,23 @@
     <div class="event-wrap">
     	<form action="{% url event.add %}" method="post">
     	<div class="forms">
-			<div class="item-text">
-				Event Information
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_event.title.errors }}</div>
-				<div class="label">{{ form_event.title.label_tag }}</div>
-				<div class="field">{{ form_event.title }}</div>
-				<div class="help">{{ form_event.title.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_event.description.errors }}</div>
-				<div class="label">{{ form_event.description.label_tag }}</div>
-				<div class="field">{{ form_event.description }}</div>
-				<div class="help">{{ form_event.description.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-dt">
-				<div class="errs">{{ form_event.start_dt.errors }}</div>
-				<div class="label">{{ form_event.start_dt.label_tag }}</div>
-				<div class="field">{{ form_event.start_dt }}</div>
-				<div class="help">{{ form_event.start_dt.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-dt">
-				<div class="errs">{{ form_event.end_dt.errors }}</div>
-				<div class="label">{{ form_event.end_dt.label_tag }}</div>
-				<div class="field">{{ form_event.end_dt }}</div>
-				<div class="help">{{ form_event.end_dt.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_event.timezone.errors }}</div>
-				<div class="label">{{ form_event.timezone.label_tag }}</div>
-				<div class="field">{{ form_event.timezone }}</div>
-				<div class="help">{{ form_event.timezone.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_event.type.errors }}</div>
-				<div class="label">{{ form_event.type.label_tag }}</div>
-				<div class="field">{{ form_event.type }}</div>
-				<div class="help">{{ form_event.type.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
+			{{ form_event|styled_form }}			
 			<div class="item-text">
 				Location Information
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_place.name.errors }}</div>
-				<div class="label">{{ form_place.name.label_tag }}</div>
-				<div class="field">{{ form_place.name }}</div>
-				<div class="help">{{ form_place.name.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_place.address.errors }}</div>
-				<div class="label">{{ form_place.address.label_tag }}</div>
-				<div class="field">{{ form_place.address }}</div>
-				<div class="help">{{ form_place.address.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_place.city.errors }}</div>
-				<div class="label">{{ form_place.city.label_tag }}</div>
-				<div class="field">{{ form_place.city }}</div>
-				<div class="help">{{ form_place.city.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_place.state.errors }}</div>
-				<div class="label">{{ form_place.state.label_tag }}</div>
-				<div class="field">{{ form_place.state }}</div>
-				<div class="help">{{ form_place.state.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_place.zip.errors }}</div>
-				<div class="label">{{ form_place.zip.label_tag }}</div>
-				<div class="field">{{ form_place.zip }}</div>
-				<div class="help">{{ form_place.zip.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_place.country.errors }}</div>
-				<div class="label">{{ form_place.country.label_tag }}</div>
-				<div class="field">{{ form_place.country }}</div>
-				<div class="help">{{ form_place.country.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_place.url.errors }}</div>
-				<div class="label">{{ form_place.url.label_tag }}</div>
-				<div class="field">{{ form_place.url }}</div>
-				<div class="help">{{ form_place.url.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_place.description.errors }}</div>
-				<div class="label">{{ form_place.description.label_tag }}</div>
-				<div class="field">{{ form_place.description }}</div>
-				<div class="help">{{ form_place.description.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
+			</div>			
+            {{ form_place|styled_form }}
 			<div class="item-text">
 				Speaker
 			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_speaker.name.errors }}</div>
-				<div class="label">{{ form_speaker.name.label_tag }}</div>
-				<div class="field">{{ form_speaker.name }}</div>
-				<div class="help">{{ form_speaker.name.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_speaker.description.errors }}</div>
-				<div class="label">{{ form_speaker.description.label_tag }}</div>
-				<div class="field">{{ form_speaker.description }}</div>
-				<div class="help">{{ form_speaker.description.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
+            {{ form_speaker|styled_form }}
 			<div class="item-text">
 				Organizer
 			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_organizer.name.errors }}</div>
-				<div class="label">{{ form_organizer.name.label_tag }}</div>
-				<div class="field">{{ form_organizer.name }}</div>
-				<div class="help">{{ form_organizer.name.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_organizer.description.errors }}</div>
-				<div class="label">{{ form_organizer.description.label_tag }}</div>
-				<div class="field">{{ form_organizer.description }}</div>
-				<div class="help">{{ form_organizer.description.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
+            {{ form_organizer|styled_form }}
 			<div class="item-text">
 				Registration
 			</div>
-
-			<div class="item-checkbox">
-				<div class="errs">{{ form_regconf.enabled.errors }}</div>
-				<div class="field">{{ form_regconf.enabled }}</div>
-				<div class="label">{{ form_regconf.enabled.label_tag }}</div>
-				<div class="help">{{ form_regconf.enabled.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_regconf.payment_method.errors }}</div>
-				<div class="field">{{ form_regconf.payment_method }}</div>
-				<div class="help">{{ form_regconf.payment_method.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_regconf.early_price.errors }}</div>
-				<div class="label">{{ form_regconf.early_price.label_tag }}</div>
-				<div class="field">{{ form_regconf.early_price }}</div>
-				<div class="help">{{ form_regconf.early_price.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_regconf.regular_price.errors }}</div>
-				<div class="label">{{ form_regconf.regular_price.label_tag }}</div>
-				<div class="field">{{ form_regconf.regular_price }}</div>
-				<div class="help">{{ form_regconf.regular_price.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_regconf.late_price.errors }}</div>
-				<div class="label">{{ form_regconf.late_price.label_tag }}</div>
-				<div class="field">{{ form_regconf.late_price }}</div>
-				<div class="help">{{ form_regconf.late_price.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-dt">
-				<div class="errs">{{ form_regconf.early_dt.errors }}</div>
-				<div class="label">{{ form_regconf.early_dt.label_tag }}</div>
-				<div class="field">{{ form_regconf.early_dt }}</div>
-				<div class="help">{{ form_regconf.early_dt.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-dt">
-				<div class="errs">{{ form_regconf.regular_dt.errors }}</div>
-				<div class="label">{{ form_regconf.regular_dt.label_tag }}</div>
-				<div class="field">{{ form_regconf.regular_dt }}</div>
-				<div class="help">{{ form_regconf.regular_dt.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-dt">
-				<div class="errs">{{ form_regconf.late_dt.errors }}</div>
-				<div class="label">{{ form_regconf.late_dt.label_tag }}</div>
-				<div class="field">{{ form_regconf.late_dt }}</div>
-				<div class="help">{{ form_regconf.late_dt.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form_regconf.limit.errors }}</div>
-				<div class="label">{{ form_regconf.limit.label_tag }}</div>
-				<div class="field">{{ form_regconf.limit }}</div>
-				<div class="help">{{ form_regconf.limit.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-text">
-				Permission
-			</div>
-
-			<div class="item-checkbox">
-				<div class="errs">{{ form_event.allow_anonymous_view.errors }}</div>
-				<div class="field">{{ form_event.allow_anonymous_view }}</div>
-				<div class="label">{{ form_event.allow_anonymous_view.label_tag }}</div>
-				<div class="help">{{ form_event.allow_anonymous_view.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-checkbox">
-				<div class="errs">{{ form_event.allow_user_view.errors }}</div>
-				<div class="field">{{ form_event.allow_user_view }}</div>
-				<div class="label">{{ form_event.allow_user_view.label_tag }}</div>
-				<div class="help">{{ form_event.allow_user_view.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-checkbox">
-				<div class="errs">{{ form_event.allow_user_edit.errors }}</div>
-				<div class="field">{{ form_event.allow_user_edit }}</div>
-				<div class="label">{{ form_event.allow_user_edit.label_tag }}</div>
-				<div class="help">{{ form_event.allow_user_edit.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-
-			<div class="item">
-				<div class="errs">{{ form_event.user_perms.errors }}</div>
-				<div class="label">{{ form_event.user_perms.label_tag }}</div>
-				<div class="field">{{ form_event.user_perms }}</div>
-				<div class="help">{{ form_event.user_perms.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-
-			{% is_admin user as admin %}
-			{% if admin %}
-			<div class="admin-block">
-
-				<div class="item-text">
-					Administrators Only
-				</div>
-
-				<div class="item-checkbox">
-					<div class="errs">{{ form_event.status.errors }}</div>
-					<div class="field">{{ form_event.status }}</div>
-					<div class="label">{{ form_event.status.label_tag }}</div>
-					<div class="help">{{ form_event.status.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-	
-				<div class="item">
-					<div class="errs">{{ form_event.status_detail.errors }}</div>
-					<div class="label">{{ form_event.status_detail.label_tag }}</div>
-					<div class="field field-short">{{ form_event.status_detail }}</div>
-					<div class="help">{{ form_event.status_detail.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-			</div>
-			{% endif %}
-
+            {{ form_regconf|styled_form }}
         	<input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL 'Event' %}" />
 		</div>
         </form>

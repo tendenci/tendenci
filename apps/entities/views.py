@@ -79,13 +79,15 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
                 entity.creator = request.user
                 entity.creator_username = request.user.username
                 entity.owner = request.user
-                entity.owner_username = request.user.username               
+                entity.owner_username = request.user.username          
+
+                # set up user permission
+                entity.allow_user_view, entity.allow_user_edit = form.cleaned_data['user_perms']
+                     
                 entity.save() # get pk
 
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, entity)
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], entity)
                 # assign creator permissions
                 ObjectPermission.objects.assign(entity.creator, entity) 
 
@@ -122,13 +124,13 @@ def edit(request, id, form_class=EntityForm, template_name="entities/edit.html")
             if form.is_valid():               
                 entity = form.save(commit=False)
 
-                # remove all permissions on the object
+                # set up user permission
+                entity.allow_user_view, entity.allow_user_edit = form.cleaned_data['user_perms']
+                
+                # assign permissions
                 ObjectPermission.objects.remove_all(entity)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, entity)
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % entity)   
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], entity)
+                ObjectPermission.objects.assign(entity.creator, entity) 
 
                 entity.save()
 

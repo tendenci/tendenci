@@ -61,7 +61,7 @@ def index(request, username="", template_name="profiles/index.html"):
     # security check 
     if not profile.allow_view_by(request.user): 
         raise Http403
-    
+
     # content counts
     content_counts = {'total':0, 'invoice':0}
     from django.db.models import Q
@@ -75,11 +75,10 @@ def index(request, username="", template_name="profiles/index.html"):
     if additional_owners:
         if profile.owner in additional_owners:
             additional_owners.remove(profile.owner)
-        
+    
     # group list
     group_memberships = user_this.group_member.all()
-                                       
- 
+                                    
     log_defaults = {
         'event_id' : 125000,
         'event_data': '%s (%d) viewed by %s' % (profile._meta.object_name, profile.pk, request.user),
@@ -89,7 +88,7 @@ def index(request, username="", template_name="profiles/index.html"):
         'instance': profile,
     }
     EventLog.objects.log(**log_defaults)
-       
+ 
     return render_to_response(template_name, {"user_this": user_this, 
                                               "profile":profile,
                                               'content_counts': content_counts,
@@ -162,13 +161,9 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                 else:
                     new_user.is_superuser = 0
                     new_user.is_staff = 0
-                
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, profile)
-                    # assign creator permissions
-                    ObjectPermission.objects.assign(profile.creator, profile) 
+
+                # set up user permission
+                profile.allow_user_view, profile.allow_user_edit = form.cleaned_data['user_perms']
                     
             else:
                 new_user.is_superuser = 0
@@ -186,6 +181,7 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
             else:
                 new_user.is_active = 0
 
+            profile.save()
             new_user.save()
             
             log_defaults = {
@@ -242,7 +238,6 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
             # get the old profile, so we know what has been changed in admin notification
             old_user = User.objects.get(id=id)
             old_profile = Profile.objects.get(user=old_user)
-            
             profile = form.save(request, user_edit)
            
             if is_admin(request.user):
@@ -258,15 +253,9 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                     user_edit.is_superuser = 0
                     user_edit.is_staff = 0
                     
-                # remove all permissions on the object
-                ObjectPermission.objects.remove_all(profile)
-                 
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, profile)
-                    # assign creator permissions
-                    ObjectPermission.objects.assign(profile.creator, profile) 
+                # set up user permission
+                profile.allow_user_view, profile.allow_user_edit = form.cleaned_data['user_perms']
+                
             else:
                 user_edit.is_superuser = 0
                 user_edit.is_staff = 0
@@ -281,7 +270,8 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 user_edit.is_active = 1
             else:
                 user_edit.is_active = 0
-                
+               
+            profile.save()
             user_edit.save()
             
             # notify ADMIN of update to a user's record
@@ -309,7 +299,6 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 'instance': user_edit,
             }
             EventLog.objects.log(**log_defaults)
-            
             return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
     else:
         if profile:
@@ -317,7 +306,6 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
             
         else:
             form = form_class(request.user, user_edit, required_fields_list)
-        #form2 = form_class2(instance=user_edit)
 
     return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form,
                                               'required_fields_list':required_fields_list}, 
@@ -443,8 +431,7 @@ def edit_user_groups(request, id, template_name="profiles/edit_groups.html"):
             
             
         groups_joined = user_edit.group_set.all()
-        #print new_groups
-        #print request.POST 
+
     return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'groups':groups, 'groups_joined':groups_joined}, 
         context_instance=RequestContext(request))
  

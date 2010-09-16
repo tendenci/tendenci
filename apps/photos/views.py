@@ -257,14 +257,16 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                 photo_set.owner = request.user
                 photo_set.owner_username = request.user.username
                 photo_set.author = request.user
-                
+
+                # set up user permission
+                photo_set.allow_user_view, photo_set.allow_user_edit = form.cleaned_data['user_perms']
+                            
                 photo_set.save() # get pk
 
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, photo_set)
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], photo_set)
                 # assign creator permissions
-                ObjectPermission.objects.assign(photo_set.creator, photo_set)
+                ObjectPermission.objects.assign(photo_set.creator, photo_set) 
 
                 photo_set.save() # update search-index w/ permissions
 
@@ -302,11 +304,13 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
             if form.is_valid():
                 photo_set = form.save(commit=False)
 
-                # remove all permissions on the object
+                # set up user permission
+                photo_set.allow_user_view, photo_set.allow_user_edit = form.cleaned_data['user_perms']
+                
+                # assign permissions
                 ObjectPermission.objects.remove_all(photo_set)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, photo_set)
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], photo_set)
+                ObjectPermission.objects.assign(photo_set.creator, photo_set) 
                 
                 photo_set.save()
 

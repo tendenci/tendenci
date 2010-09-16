@@ -29,13 +29,16 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
             form_instance.creator_username = request.user.username
             form_instance.owner = request.user
             form_instance.owner_username = request.user.username
+
+            # set up user permission
+            form_instance.allow_user_view, form_instance.allow_user_edit = form.cleaned_data['user_perms']
+                
             form_instance.save()
 
-            # assign permissions for selected users
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms: ObjectPermission.objects.assign(user_perms, form_instance)
+            # assign permissions for selected groups
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], form_instance)
             # assign creator permissions
-            ObjectPermission.objects.assign(form_instance.creator, form_instance)
+            ObjectPermission.objects.assign(form_instance.creator, form_instance) 
 
             log_defaults = {
                 'event_id' : 587100,
@@ -64,14 +67,13 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         if form.is_valid():           
             form_instance = form.save(commit=False)
             
-            # remove all permissions on the object
+            # set up user permission
+            form_instance.allow_user_view, form_instance.allow_user_edit = form.cleaned_data['user_perms']
+            
+            # assign permissions
             ObjectPermission.objects.remove_all(form_instance)
-            # assign new permissions
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms:
-                ObjectPermission.objects.assign(user_perms, form_instance)  
-            # assign creator permissions
-            ObjectPermission.objects.assign(form_instance.creator, form_instance)
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], form_instance)
+            ObjectPermission.objects.assign(form_instance.creator, form_instance) 
                 
             form_instance.save()
 

@@ -67,7 +67,7 @@ class Form(TendenciBaseModel):
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000)
-    response = models.TextField(_("Response"), max_length=2000)
+    response = models.TextField(_("Confirmation Text"), max_length=2000)
 #    status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
 #        default=STATUS_PUBLISHED)
     send_email = models.BooleanField(_("Send email"), default=False, help_text=

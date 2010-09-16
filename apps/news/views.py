@@ -90,19 +90,17 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
     if request.method == "POST":
         form = form_class(request.user, request.POST, instance=news)
         if form.is_valid():
-
             news = form.save(commit=False)
 
-            # remove all permissions on the object
+            # set up user permission
+            news.allow_user_view, news.allow_user_edit = form.cleaned_data['user_perms']
+            
+            # assign permissions
             ObjectPermission.objects.remove_all(news)
-            # assign new permissions
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms: ObjectPermission.objects.assign(user_perms, news)
-            # assign creator permissions
-            ObjectPermission.objects.assign(news.creator, news)
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], news)
+            ObjectPermission.objects.assign(news.creator, news) 
 
             news.save()
-
 
             log_defaults = {
                 'event_id' : 305200,
@@ -168,14 +166,16 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             news.creator_username = request.user.username
             news.owner = request.user
             news.owner_username = request.user.username
-            
+
+            # set up user permission
+            news.allow_user_view, news.allow_user_edit = form.cleaned_data['user_perms']
+                            
             news.save() # get pk
 
-            # assign permissions for selected users
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms: ObjectPermission.objects.assign(user_perms, news)
+            # assign permissions for selected groups
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], news)
             # assign creator permissions
-            ObjectPermission.objects.assign(news.creator, news)
+            ObjectPermission.objects.assign(news.creator, news) 
 
             news.save() # update search-index w/ permissions
 

@@ -88,12 +88,14 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
             if form.is_valid():
                 page = form.save(commit=False)
 
-                # remove all permissions on the object
+                # set up user permission
+                page.allow_user_view, page.allow_user_edit = form.cleaned_data['user_perms']
+                
+                # assign permissions
                 ObjectPermission.objects.remove_all(page)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, page)
-
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], page)
+                ObjectPermission.objects.assign(page.creator, page) 
+                
                 page.save()
 
                 log_defaults = {
@@ -105,10 +107,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
                     'instance': page,
                 }
                 EventLog.objects.log(**log_defaults)               
- 
-                # assign creator permissions
-                ObjectPermission.objects.assign(page.creator, page) 
-                
+  
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % page)
                 
                 if not is_admin(request.user):
@@ -169,18 +168,20 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
             form = form_class(request.user, request.POST)
             if form.is_valid():           
                 page = form.save(commit=False)
+                
                 # set up the user information
                 page.creator = request.user
                 page.creator_username = request.user.username
                 page.owner = request.user
                 page.owner_username = request.user.username
-
+                
+                # set up user permission
+                page.allow_user_view, page.allow_user_edit = form.cleaned_data['user_perms']
+                
                 page.save() # get pk
 
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, page)
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], page)
                 # assign creator permissions
                 ObjectPermission.objects.assign(page.creator, page) 
 
