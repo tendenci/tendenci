@@ -9,8 +9,6 @@ from django.utils.html import conditional_escape
 from perms.models import ObjectPermission
 from user_groups.models import Group
 
-all_groups = Group.objects.filter(status=1, status_detail='active').order_by('name')
-
 user_perm_options = {
     'label':'User Permissions',
     'help_text':'Select view/change to allow all authenticated users to view or change',
@@ -18,7 +16,8 @@ user_perm_options = {
     'choices': (('allow_user_view','User'),('allow_user_edit','User'))                
 }
 
-def group_choices(groups):
+def group_choices():
+    groups = Group.objects.filter(status=1, status_detail='active').order_by('name')
     choices = []
     if groups:
         for g in groups:
@@ -31,7 +30,7 @@ group_perm_options = {
     'label':'Group Permissions',
     'help_text':'Groups who have view/change permissions',
     'required':False,
-    'choices': group_choices(all_groups)                        
+    'choices': group_choices()                        
 }                      
     
 def user_perm_bits(instance):
