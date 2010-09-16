@@ -9,6 +9,10 @@ if "notification" in settings.INSTALLED_APPS:
         notification.create_notice_type("event_added", _("Event Added"), _("An event has been added."))
         notification.create_notice_type("event_edited", _("Event Edited"), _("An event has been edited."))
         notification.create_notice_type("event_deleted", _("Event Deleted"), _("An event has been deleted"))
+        notification.create_notice_type(
+            "event_registration_confirmation", _("Event Registration Confirmation"), 
+            _("The email you receive confirming your registration"))
+
 
     post_syncdb.connect(create_notice_types, sender=notification)
 else:

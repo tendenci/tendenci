@@ -1,0 +1,35 @@
+{% load base_filters %}
+{%if directory_pricings %}
+	<table class="directory-pricing-rate">
+	
+	<tr class="header-row">
+	<td>Duration</td>
+	{% if show_member_price %}
+		{% if show_premium_price %}
+			<td>Regular</td>
+			<td>Premium</td>
+		{% else %}
+			<td colspan="2">Price</td>
+		{% endif %}
+	{% endif %}
+	{% if show_premium_price %}
+		<td>Regular</td>
+		<td>Premium</td>
+	{% else %}
+		<td colspan="2">Price</td>
+	{% endif %}
+	</tr>
+	{%for dp in directory_pricings %}
+		<tr class="{% cycle 'row1' 'row2' %}">
+			<td>{{ dp.duration  }} days</td>
+			{% if show_premium_price %}
+				<td>{{ dp.regular_price|format_currency }}</td>
+				<td>{{ dp.premium_price|format_currency }}</td>
+			{% else %}
+				<td colspan="2">{{ dp.regular_price|format_currency }}</td>
+			{% endif %}
+		</tr>
+	
+	{%endfor%}
+	</table>
+{%endif%}

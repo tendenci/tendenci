@@ -22,6 +22,13 @@
     <div class="job-wrap">
     <form action="{% url job.add %}" method="post">
     	<div class="forms">
+    		{% if MODULE_JOBS_JOBSREQUIRESPAYMENT %}
+	    	 	<div class="pricing-table-block">
+	    	 	<h4>Jobs Pricing</h4>
+				{% job_pricing_table %}
+				<a href="{% url job_pricing.add %}">Add pricing options</a>
+				</div>
+				{% endif %}
 			{{ form|styled_form }}
 			<input type="submit" value="Add {% firstof MODULE_JOBS_LABEL 'Job' %}" />
         </div>        

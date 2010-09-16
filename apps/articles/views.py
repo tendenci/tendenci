@@ -187,18 +187,14 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % article)
                 
-                # send notification to administrators
-                # get admin notice recipients
+                # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
-                if recipients:
-                    if notification:
-                        extra_context = {
-                            'object': article,
-                            'request': request,
-                        }
-                        #notification.send(get_administrators(),'article_added', extra_context)
-                        notification.send_emails(recipients,'article_added', extra_context)
-                    
+                if recipients and notification: 
+                    notification.send_emails(recipients,'article_added', {
+                        'object': article,
+                        'request': request,
+                    })
+
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
             form = form_class(request.user)

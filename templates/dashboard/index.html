@@ -33,6 +33,7 @@
 {% has_perm user eventlogs.view_eventlog as view_eventlogs %}
 {% has_perm user eventlogs.view_setting as view_settings %}
 {% has_perm user forms.view_form as view_forms %}
+{% has_perm user resumes.view_reume as view_resumes %}
 {% is_developer user as is_developer %}
 {% is_admin user as admin %}
 
@@ -66,7 +67,11 @@
     	<li class="jobs"><a href="{% url job.search %}"><span>{% firstof MODULE_JOBS_LABEL "Jobs" %}</span></a></li>
 		{% endif %}
 
-        <li class="events"><a href="{% url event.search %}"><span>{% firstof MODULE_EVENTS_ENABLED "Events" %}</span></a></li>
+ 		{% if MODULE_RESUMES_ENABLED %}
+    	<li class="resumes"><a href="{% url resume.search %}"><span>{% firstof MODULE_RESUMES_LABEL "Resumes" %}</span></a></li>
+		{% endif %}
+ 
+        <li class="events"><a href="{% url event.month %}"><span>{% firstof MODULE_EVENTS_ENABLED "Events" %}</span></a></li>
 
 		{% if MODULE_PHOTOS_ENABLED %}
         <li class="photo-albums"><a href="{% url photoset_latest %}"><span>{% firstof MODULE_PHOTOSETS_LABEL "Albums" %}</span></a></li>

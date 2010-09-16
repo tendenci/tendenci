@@ -4,7 +4,9 @@ import sys
 # Paths
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 APPS_PATH = os.path.join(PROJECT_ROOT, 'apps')
+LIBS_PATH = os.path.join(PROJECT_ROOT, 'libs')
 sys.path.insert(0, APPS_PATH)
+sys.path.insert(0, LIBS_PATH)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -181,6 +183,7 @@ INSTALLED_APPS = (
     'emails',
     'email_blocks',
     'actions',
+    'donations',
     'files',
     'contacts',
     'event_logs',
@@ -200,7 +203,7 @@ INSTALLED_APPS = (
 
     # celery task system, must stay at the bottom
     # of installed apps
-    'djcelery',
+    #'djcelery',
 )
 
 # This is the number of days users will have to activate their

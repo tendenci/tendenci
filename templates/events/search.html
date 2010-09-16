@@ -51,6 +51,11 @@
 
 
 	}
+	.event-wrap div.time-stamp .age-msg {
+		font-weight: normal;
+		font-size: .8em;
+	}
+	
 	.event-wrap .event-info {
 		background-color: white;
 		padding: 10px;
@@ -103,6 +108,16 @@
 	.search-view .event-info .closed .attend a {
 		color: white;
 	}
+	.highlight {
+		xbackground-color: #FFC;
+		xpadding: 10px;
+		xborder: 1px solid #E0C240;
+		margin-bottom: 10px;
+	}
+	
+	.search-hint {
+		color: gray;
+	}
 
 
 </style>
@@ -113,14 +128,33 @@
 
 	{% event_search %}
     {% autopaginate events 10 %}
-	
+
+	{% if not request.GET.q %}
+	<div class="highlight">
+		There {{ events|length|pluralize:"is,are" }} {{ events|length }} upcoming event{{ events|length|pluralize }}. 
+	</div>
+	{% else %}
+	<div class="highlight">You found {{ events|length }} event{{ events|length|pluralize }}</div>
+	{% endif %}
+
 	<div class="events-wrap">
     {% for event in events %}
 		{% with event.object as event %}
     	{% has_perm user events.view_event event as can_view %}
     	{% if can_view %}
 		<div class="event-wrap">
-			<div class="time-stamp">{{ event.start_dt|date:"M j, Y" }}</div>
+			<div class="time-stamp">
+				{{ event.start_dt|date:"M j, Y" }}
+				
+				{% if event.start_dt < now %}
+				<div class="age-msg" title="about {{ event.start_dt|timesince }} ago">
+				Past event</div>
+				{% else %}
+				<div class="age-msg" title ="in about {{ event.start_dt|timeuntil }}">
+					{{ event.start_dt|timeuntil }}
+				</div>
+				{% endif %}
+			</div>
 			<div class="event-info">
 
 				<div class="options">{% event_options user event %}</div>
@@ -173,7 +207,6 @@
 		{% endif %}
 		{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
     {% endfor %}
 	</div>
 
@@ -199,5 +232,9 @@
 			trigger:	'more-options-trigger',
 			target:		'more-options-target'
 		});
+	</script>
+	<script src="{{ STATIC_URL }}js/jquery.inputfieldtext.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		$('.search-form input[type="text"]').inputFieldText('Search past, present, and future events', 'search-hint');
 	</script>
 {% endblock %}

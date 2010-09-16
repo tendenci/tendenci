@@ -15,27 +15,6 @@
 
 {% block body %}
 
-<style type="text/css">
-	.t .event-wrap .registered a {
-		background-color: orange;
-		border: 1px solid orange;
-	}
-	.t .event-wrap .registered a:active,
-	.t .event-wrap .registered a:hover {
-		background-color: orange;
-		border: 1px solid orange;
-	}
-	.t .event-wrap .closed a {
-		background-color: darkred;
-		border: 1px solid darkred;
-	}
-	.t .event-wrap .closed a:active,
-	.t .event-wrap .closed a:hover {
-		background-color: darkred;
-		border: 1px solid darkred;
-	}
-</style>
-
 <div class="t">
 
     {% event_nav user event %}
@@ -50,71 +29,84 @@
 		<div class="vitals">
 
 			{% if event.registration_configuration.enabled %}
-			
-				{% is_registered_user user event as registered_user %}
 
-				{% if registered_user %}
+				{% if event.registration_configuration.is_open %}
 
-					{% if now > event.end_dt or now > event.registration_configuration.late_dt %}
-
-						<div class="register-wrap">
-							<div class="register-btn closed">
-								<a href="">Registration Closed</a>
+					{% is_registered_user user event as registered_user %}
+	
+					{% if registered_user %}
+	
+						{% if event.end_dt < now or event.registration_configuration.late_dt < now %}
+	
+							<div class="register-wrap">
+								<div class="register-btn closed">
+									<a href="">Registration Closed</a>
+								</div>
 							</div>
-						</div>
-						<div>Registration ended {{ event.registration_configuration.late_dt|naturalday }}</div>
-
-					{% else %}
-
-						<div class="register-wrap">
-						{% with event.registration_configuration.price as price %}
-						{% if price %}
-							<div class="register-btn registered">
-								<a href="{% url event.register event.pk %}">You are Registered</a>
-							</div>
+							<div>Registration ended {{ event.registration_configuration.late_dt|naturalday }}</div>
+	
 						{% else %}
-							<div class="register-btn">
-								<a href="{% url event.register event.pk %}">Register for Free</a>
+							<div class="register-wrap">
+								<div class="register-btn registered">
+									<a href="{% url event.register event.pk %}">You are Registered</a>
+								</div>
 							</div>
+							<div>Registration ends {{ event.registration_configuration.late_dt|naturalday }}</div>
+	
 						{% endif %}
-						{% endwith %}
-						</div>
-						<div>Registration ends {{ event.registration_configuration.late_dt|naturalday }}</div>
-
+					{% else %}
+	
+						{% if event.end_dt < now or event.registration_configuration.late_dt < now %}
+	
+							<div class="register-wrap">
+								<div class="register-btn closed">
+									<a href="">Registration Closed</a>
+								</div>
+							</div>
+							<div>Registration ended {{ event.registration_configuration.late_dt|naturalday }}</div>
+	
+						{% else %}
+	
+							<div class="register-wrap">
+							{% with event.registration_configuration.price as price %}
+							{% if price %}
+								<div class="register-btn">
+									<a href="{% url event.register event.pk %}">${{ price|floatformat:"2" }} to Register</a>
+								</div>
+							{% else %}
+								<div class="register-btn">
+									<a href="{% url event.register event.pk %}">Register for Free</a>
+								</div>
+							{% endif %}
+							{% endwith %}
+							</div>
+							<div>Registration ends {{ event.registration_configuration.late_dt|naturalday }}</div>
+	
+						{% endif %}
+	
 					{% endif %}
+	
+					<div class="hr"></div>
+
 				{% else %}
 
-					{% if now > event.end_dt or now > event.registration_configuration.late_dt %}
-
-						<div class="register-wrap">
-							<div class="register-btn closed">
-								<a href="">Registration Closed</a>
-							</div>
+					{% if event.registration_configuration.early_dt > now %}
+					<div class="register-wrap">
+						<div class="register-btn closed">
+							<a href="">Registration Closed</a>
 						</div>
-						<div>Registration ended {{ event.registration_configuration.late_dt|naturalday }}</div>
-
+					</div>
+					<div>Registration opens {{ event.registration_configuration.early_dt|naturalday }}</div>
 					{% else %}
-
-						<div class="register-wrap">
-						{% with event.registration_configuration.price as price %}
-						{% if price %}
-							<div class="register-btn">
-								<a href="{% url event.register event.pk %}">${{ price|floatformat:"2" }} to Register</a>
-							</div>
-						{% else %}
-							<div class="register-btn">
-								<a href="{% url event.register event.pk %}">Register for Free</a>
-							</div>
-						{% endif %}
-						{% endwith %}
+					<div class="register-wrap">
+						<div class="register-btn closed">
+							<a href="">Registration Closed</a>
 						</div>
-						<div>Registration ends {{ event.registration_configuration.late_dt|naturalday }}</div>
-
+					</div>
+					<div>Registration ended {{ event.registration_configuration.late_dt|naturalday }}</div>
 					{% endif %}
 
 				{% endif %}
-
-				<div class="hr"></div>
 
 			{% endif %}
 			
@@ -131,8 +123,19 @@
 			
 			<div class="hr"></div>
 
-			{% if speaker.name %}<div class="speaker"><strong>Speaker</strong> {{ speaker.name }}</div>{% endif %}
-			{% if organizer.name %}<div class="organizer"><strong>Organizer</strong> {{ organizer.name }}</div>{% endif %}
+			{% if speaker.name %}
+			<div class="speaker-wrap">
+				<div class="speaker"><strong>Speaker</strong> {{ speaker.name }}</div>
+				<div>{{ speaker.description|linebreaks }}</div>
+			</div>
+			{% endif %}
+
+			{% if organizer.name %}
+			<div class="organizer-wrap">
+				<div class="organizer"><strong>Organizer</strong> {{ organizer.name }}</div>
+				<div>{{ organizer.description|linebreaks }}</div>
+			</div>
+			{% endif %}
 
 		</div>
 
