@@ -57,6 +57,7 @@ def get_notice_recipients(scope, scope_category, setting_name):
     m_recipients = (get_setting(scope, scope_category, setting_name)).split(',')
     m_recipients = [r.strip() for r in m_recipients]
 
+    # consolidate [remove duplicate email address]
     for recipient in list(set(g_recipients+m_recipients)):
         if email_re.match(recipient):
             recipients.append(recipient)

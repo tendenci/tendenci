@@ -1,0 +1,1 @@
+{{ site_label }} Event Confirmed - {{ event.title }} on {{ event.start_dt|date:"N j, Y \a\t f A" }}

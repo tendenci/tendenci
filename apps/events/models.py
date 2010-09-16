@@ -89,7 +89,7 @@ class Registrant(models.Model):
     The names do not change nor does their information
     This is the information that was used while registering
     """
-    registration = models.ForeignKey('Registration', null=True)
+    registration = models.ForeignKey('Registration')
     user = models.ForeignKey(User)
 
     name = models.CharField(max_length=100)
@@ -99,17 +99,22 @@ class Registrant(models.Model):
     state = models.CharField(max_length=100)
     zip = models.CharField(max_length=50)
     country = models.CharField(max_length=100)
-    
+
     phone = models.CharField(max_length=50)
     email = models.CharField(max_length=100)
-    groups = models.CharField(max_length=100)     
+    groups = models.CharField(max_length=100)
 
+    position_title = models.CharField(max_length=100)
     company_name = models.CharField(max_length=100)
     
     objects = RegistrantManager()
 
     class Meta:
         permissions = (("view_registrant","Can view registrant"),)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('event.registration_confirmation', [self.pk, self.registration.pk])
 
 class Registration(models.Model):
 
@@ -129,6 +134,17 @@ class Registration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    @property
+    def invoice(self):
+        from invoices.models import Invoice
+
+        if self.pk:
+            invoice = Invoice.objects.get(
+                invoice_object_type = 'event_registration', # TODO: remove hard-coded object_type (content_type)
+                invoice_object_type_id = self.pk,
+            )
+            return invoice
+
     def save_invoice(self, *args, **kwargs):
         from invoices.models import Invoice
         status_detail = kwargs.get('status_detail', 'estimate')
@@ -139,6 +155,8 @@ class Registration(models.Model):
                 invoice_object_type_id = self.pk,
             )
         except: # else; create invoice
+            # cannot use get_or_create method
+            # because so many fields are required
             invoice = Invoice()
             invoice.invoice_object_type = 'event_registration'
             invoice.invoice_object_type_id = self.pk
@@ -151,7 +169,7 @@ class Registration(models.Model):
         invoice.balance = self.amount_paid
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
-        invoice.save(self.creator) # TODO: update to user once field exists 
+        invoice.save(self.creator)
 
         return invoice
             
@@ -180,6 +198,8 @@ class RegistrationConfiguration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    
+
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
 
@@ -190,12 +210,10 @@ class RegistrationConfiguration(models.Model):
                 'regular': (self.regular_dt, self.late_dt),
                 'late': (self.late_dt, self.event.start_dt),
             }
-
         else:
             self.PERIODS = None
 
     def available(self):
-        
         if not self.enabled:
             return False
 
@@ -205,8 +223,8 @@ class RegistrationConfiguration(models.Model):
 
         return True
 
+    @property
     def price(self):
-
         price = 0.00
         for period in self.PERIODS:
             if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
@@ -219,6 +237,21 @@ class RegistrationConfiguration(models.Model):
         if period in self.PERIODS:
             return getattr(self, '%s_price' % period)
         else: return None
+
+    @property
+    def is_open(self):
+        status = [
+            self.enabled,
+            self.within_time,
+        ]
+        return all(status)
+
+    @property
+    def within_time(self):
+        for period in self.PERIODS:
+            if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
+                return True
+        return False
     
 
 

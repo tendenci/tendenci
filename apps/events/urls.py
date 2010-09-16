@@ -28,5 +28,6 @@ urlpatterns = patterns('events',
 
     # registrants (search/view); admin-only
     url(r'^(?P<event_id>\d+)/registrants/search/$', 'views.registrant_search', name="event.registrant.search"),
+    url(r'^(?P<event_id>\d+)/registrants/roster/$', 'views.registrant_roster', name="event.registrant.roster"),
     url(r'^registrants/(?P<id>\d+)/$', 'views.registrant_details', name="event.registrant"),
 )

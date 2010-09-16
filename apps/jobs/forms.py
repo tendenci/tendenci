@@ -2,6 +2,8 @@ from datetime import datetime
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
 
 from jobs.models import Job
 from perms.utils import is_admin
@@ -9,7 +11,11 @@ from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from jobs.models import JobPricing
-from jobs.utils import get_duration_choices
+from jobs.utils import get_duration_choices, get_payment_method_choices
+
+request_duration_defaults = {
+    'help_text': mark_safe('<a href="%s">Add pricing options</a>' % '/jobs/pricing/add/'),                             
+}
 
 class JobForm(TendenciBaseForm):
 
@@ -30,10 +36,11 @@ class JobForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
     
-    requested_duration = forms.ChoiceField()
+    requested_duration = forms.ChoiceField(**request_duration_defaults)
     
     list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
                                                               ('premium', 'Premium'),))
+    payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
     
     class Meta:
         model = Job
@@ -61,7 +68,6 @@ class JobForm(TendenciBaseForm):
         'post_dt',
         'expiration_dt',
         'job_url',
-        'design_notes',
         'entity',
         'contact_company',
         'contact_name',
@@ -80,36 +86,41 @@ class JobForm(TendenciBaseForm):
         'syndicate',
         'status',
         'status_detail',
+        'payment_method',
        )
 
         fieldsets = [('Job Information', {
                       'fields': ['title',
                                 'slug',
                                 'description',
+                                'job_url',
                                 'code',
                                 'location',
                                 'skills',
+                                'computer_skills',
                                 'experience',
                                 'education',
                                 'level',
-                                'period',
-                                'is_agency',
+                                'period',   
                                 'percent_travel',
                                 'contact_method',
                                 'position_reports_to',
                                 'salary_from',
-                                'salary_to',
-                                'computer_skills',
+                                'salary_to',     
+                                'is_agency',
                                 'requested_duration',
-                                'list_type',
-                                'activation_dt',
-                                'post_dt',
+                                'activation_dt',                                
                                 'expiration_dt',
-                                'job_url',
-                                'design_notes',
+                                'post_dt',
                                 'entity'
                                  ],
                       'legend': ''
+                      }),
+                      ('Payment', {
+                      'fields': ['list_type',
+                                 'payment_method'
+                                 ],
+                        'classes': ['payment_method'],
                       }),
                       ('Contact', {
                       'fields': ['contact_company',
@@ -146,14 +157,23 @@ class JobForm(TendenciBaseForm):
         super(JobForm, self).__init__(user, *args, **kwargs)
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            if is_admin(user):
+                self.fields['status_detail'].choices = (('active','Active'),
+                                                        ('inactive','Inactive'), 
+                                                        ('pending','Pending'),
+                                                        ('paid - pending approval', 'Paid - Pending Approval'),)
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0        
         
         if not is_admin(user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+            if 'syndicate' in self.fields: self.fields.pop('syndicate')
             
-        self.fields['requested_duration'].choices = get_duration_choices()
+        if self.fields.has_key('payment_method'):
+            self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(user))
+        if self.fields.has_key('requested_duration'):
+            self.fields['requested_duration'].choices = get_duration_choices()
 
 
 DURATION_CHOICES = ((14,'14 Days from Activation date'), 
