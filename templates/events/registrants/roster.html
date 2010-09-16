@@ -5,7 +5,7 @@
 {% load perm_tags %}
 {% load avatar_tags %}
 
-{% block title %}{{ block.super }}Search{% endblock %}
+{% block title %}{{ event.title }} - {{ event.start_dt|date }} - Registrant Roster{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
