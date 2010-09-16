@@ -1,8 +1,27 @@
 {% load styled_forms %}
 
-{% if form.errors %}
+{% if form.errors.values %}
 <div class="errors">
 There were some problems in the form. Please review. Thanks!
+{% if form.fieldsets %}
+	{% for fieldset in form.fieldsets %}
+		{% for field in fieldset %}
+			{% if field.errors %}
+            {% for error in field.errors %}
+            	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+            {% endfor %}
+			{% endif %}
+		{% endfor %}
+	{% endfor %}
+{% else %}
+	{% for field in form %}
+		{% if field.errors %}
+	          {% for error in field.errors %}
+	          	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+	          {% endfor %}
+		{% endif %}
+	{% endfor %}
+{% endif %}
 </div>
 {% endif %}
 
