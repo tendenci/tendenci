@@ -19,7 +19,7 @@ class Group(TendenciBaseModel):
                                                              ('distribution','Distribution'),
                                                              ('security','Security'),), default='distribution')
     email_recipient = models.CharField(_('Recipient Email'), max_length=255, blank=True)
-    show_as_option = models.BooleanField(_('Display Option'), default=1)
+    show_as_option = models.BooleanField(_('Display Option'), default=1, blank=True)
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=1)
     allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=1)
     description = models.TextField(blank=True)
