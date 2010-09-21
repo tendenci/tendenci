@@ -24,7 +24,7 @@ def group_choices():
             choices.append(('%s_%s' % ('view', g.pk), g.name))
             choices.append(('%s_%s' % ('change', g.pk), g.name))               
         return tuple(choices)
-    return None
+    return choices
 
 group_perm_options = {
     'label':'Group Permissions',
