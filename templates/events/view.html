@@ -11,6 +11,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
 {% endblock %}
 
 {% block body %}
@@ -159,6 +160,7 @@ by {% firstof event.creator.get_profile.display_name event.creator %}</div>
 <p>{% fb_like_button_iframe the_url %}</p>
 
 {% block extra_body %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation
@@ -166,6 +168,24 @@ by {% firstof event.creator.get_profile.display_name event.creator %}</div>
 				var delete_event = confirm('Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?');	// confirm
 				if(delete_event) $('.t').find('form[name="event-delete"]').submit() // delete: if OK
 				return false;	// cancel
+			});
+
+			// Dialog			
+			$('#event_export_dialog').dialog({
+				autoOpen: false,
+				width: 600,
+				buttons: { 
+					"Close": function() { 
+						$(this).dialog("close"); 
+					} 
+				}
+			});
+			// Dialog Link
+			$('#event_export_link').click(function(){
+				$('#event_export_dialog').show();
+		        $('#event_export_dialog').dialog('open'); 
+		 
+				return false;
 			});
 		});
     </script>
