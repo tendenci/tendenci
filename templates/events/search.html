@@ -8,6 +8,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
 <link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url event.feed %}" />
 {% endblock %}
 
@@ -236,5 +237,25 @@
 	<script src="{{ STATIC_URL }}js/jquery.inputfieldtext.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		$('.search-form input[type="text"]').inputFieldText('Search past, present, and future events', 'search-hint');
+	</script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
+	<script type="text/javascript">
+		// Dialog			
+		$('#event_export_dialog').dialog({
+			autoOpen: false,
+			width: 600,
+			buttons: { 
+				"Close": function() { 
+					$(this).dialog("close"); 
+				} 
+			}
+		});
+		// Dialog Link
+		$('#event_export_link').click(function(){
+			$('#event_export_dialog').show();
+	        $('#event_export_dialog').dialog('open'); 
+	 
+			return false;
+		});
 	</script>
 {% endblock %}

@@ -18,10 +18,9 @@ def get_vevents(request, d):
         
         # organizer
         organizers = event.organizer_set.all()
-        if len(organizers) > 0:
-            organizer = organizers[0]
-            if organizer.user:
-                e_str += "ORGANIZER:MAILTO:%s\n" % (organizer.user.email)
+        if organizers:
+            organizer_name_list = [organizer.name for organizer in organizers]
+            e_str += "ORGANIZER:%s\n" % (', '.join(organizer_name_list))
         
         # date time 
         if event.start_dt:
@@ -75,16 +74,19 @@ def build_ical_text(event, d):
     ical_text += 'Start Date / Time: %s %s\n' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
     
     # location
-    ical_text += 'Event Location: %s\n' % (event.place.name)
+    ical_text += 'Location: %s\n' % (event.place.name)
     
-    # sponsor
-    ical_text += 'Event Sponsor: %s\n' % ('')
+#    # sponsor
+#    sponsors = event.sponsor_set.all()
+#    if sponsors:
+#        sponsor_name_list = [sponsor.name for sponsor in sponsors]
+#        ical_text += 'Sponsor: %s\n' % (', '.join(sponsor_name_list))
     
     # speaker
     speakers = event.speaker_set.all()
     if speakers:
         speaker_name_list = [speaker.name for speaker in speakers]
-        ical_text += 'Event Speaker: %s\n' % (', '.join(speaker_name_list))
+        ical_text += 'Speaker: %s\n' % (', '.join(speaker_name_list))
         
     # maps
     show_map_link = False
@@ -112,7 +114,7 @@ def build_ical_text(event, d):
     
     ical_text += "--- This iCal file does *NOT* confirm registration."
     ical_text += "Event details subject to change. ---\n\n"
-    ical_text += "--- Tendenci(tm) Software by Schipul.com - 'The Web Marketing Company' ---\n"
+    ical_text += "--- Tendenci(tm) Software by Schipul.com - The Web Marketing Company ---\n"
     
     ical_text  = ical_text.replace(';', '\;')
     ical_text  = ical_text.replace('\n', '\\n')
@@ -122,7 +124,7 @@ def build_ical_text(event, d):
 def build_ical_html(event, d):
     # disclaimer: registration
     ical_html = "<div>--- This iCal file does *NOT* confirm registration."
-    ical_html += "Event details subject to change. ---</div><br />"
+    ical_html += "Event details subject to change. ---</div>"
     
     # title
     ical_html += "<h1>Event Title: %s</h1>" % (event.title)
@@ -132,14 +134,17 @@ def build_ical_html(event, d):
     # start_dt
     ical_html += '<div>When: %s %s</div>' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
     
-    # sponsor
-    ical_html += '<div>Sponsor: %s</div>' % ('')
+#    # sponsor
+#    sponsors = event.sponsor_set.all()
+#    if sponsors:
+#        sponsor_name_list = [sponsor.name for sponsor in sponsors]
+#        ical_html += '<div>Sponsor: %s</div>' % (', '.join(sponsor_name_list))
     
     # speaker
     speakers = event.speaker_set.all()
     if speakers:
         speaker_name_list = [speaker.name for speaker in speakers]
-        ical_html += '<div>Event Speaker: %s</div>' % (', '.join(speaker_name_list))
+        ical_html += '<div>Speaker: %s</div>' % (', '.join(speaker_name_list))
         
     ical_html += '<br />'
     
@@ -179,32 +184,33 @@ def build_ical_html(event, d):
     
     ical_html += "<div>--- This iCal file does *NOT* confirm registration."
     ical_html += "Event details subject to change. ---</div>"
-    ical_html += "<div>--- Tendenci(tm) Software by Schipul.com - 'The Web Marketing Company' ---</div>"
+    ical_html += "<div>--- Tendenci&reg; Software by <a href=\"http://www.schipul.com\">schipul.com</a>"
+    ical_html += " - The Web Marketing Company ---</div>"
     
-    #ical_html  = ical_html.replace(';', '\;')
-    ical_html  = degrade_tags(ical_html.replace(';', '\;'))
+    ical_html  = ical_html.replace(';', '\;')
+    #ical_html  = degrade_tags(ical_html.replace(';', '\;'))
    
     return ical_html
 
 # degrade header tags h1, h2..., h6 to font tags for MS outlook
 def degrade_tags(str):
     # h1 --> font size 6
-    str = re.sub(r'<h1[^>]*>(.+)</h1>', r'<div><strong><font size="6">\1</font></strong></div>', str)
+    str = re.sub(r'<h1[^>]*>(.*?)</h1>', r'<div><strong><font size="6">\1</font></strong></div>', str)
     
     # h2 --> font size 5
-    str = re.sub(r'<h2[^>]*>(.+)</h2>', r'<div><strong><font size="5">\1</font></strong></div>', str)
+    str = re.sub(r'<h2[^>]*>(.*?)</h2>', r'<div><strong><font size="5">\1</font></strong></div>', str)
     
     # h3 --> font size 4
-    str = re.sub(r'<h3[^>]*>(.+)</h3>', r'<div><strong><font size="4">\1</font></strong></div>', str)
+    str = re.sub(r'<h3[^>]*>(.*?)</h3>', r'<div><strong><font size="4">\1</font></strong></div>', str)
     
     # h4 --> font size 3
-    str = re.sub(r'<h4[^>]*>(.+)</h4>', r'<div><strong><font size="3">\1</font></strong></div>', str)
+    str = re.sub(r'<h4[^>]*>(.*?)</h4>', r'<div><strong><font size="3">\1</font></strong></div>', str)
     
     # h5 --> font size 2
-    str = re.sub(r'<h5[^>]*>(.+)</h5>', r'<div><strong><font size="2">\1</font></strong></div>', str)
+    str = re.sub(r'<h5[^>]*>(.*?)</h5>', r'<div><strong><font size="2">\1</font></strong></div>', str)
     
     # h6 --> font size 1
-    str = re.sub(r'<h6[^>]*>(.+)</h6>', r'<div><strong><font size="1">\1</font></strong></div>', str)
+    str = re.sub(r'<h6[^>]*>(.*?)</h6>', r'<div><strong><font size="1">\1</font></strong></div>', str)
     
     return str
       
