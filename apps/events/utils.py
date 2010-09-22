@@ -205,7 +205,7 @@ def degrade_tags(str):
     
     # h6 --> font size 1
     str = re.sub(r'<h6[^>]*>(.+)</h6>', r'<div><strong><font size="1">\1</font></strong></div>', str)
-    print str
+    
     return str
       
 
