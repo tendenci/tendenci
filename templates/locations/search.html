@@ -22,8 +22,6 @@
 	<div class="locations-wrap">
     {% for location in locations %}
 		{% with location.object as location %}
-    	{% has_perm user locations.view_location location as can_view %}
-    	{% if can_view %}
 		<div class="location-wrap-search">
 			<div class="options">
                 <div class="quick-options">
@@ -41,7 +39,6 @@
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>
-		{% endif %}
 		{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>

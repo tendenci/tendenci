@@ -11,12 +11,13 @@ from locations.forms import LocationForm
 from perms.utils import is_admin
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
+from perms.utils import has_perm
 
 def index(request, id=None, template_name="locations/view.html"):
     if not id: return HttpResponseRedirect(reverse('location.search'))
     location = get_object_or_404(Location, pk=id)
     
-    if request.user.has_perm('locations.view_location', location):
+    if has_perm(request.user,'locations.view_location',location):
         log_defaults = {
             'event_id' : 835000,
             'event_data': '%s (%d) viewed by %s' % (location._meta.object_name, location.pk, request.user),
@@ -61,7 +62,7 @@ def print_view(request, id, template_name="locations/print-view.html"):
     }
     EventLog.objects.log(**log_defaults)
        
-    if request.user.has_perm('locations.view_location', location):
+    if has_perm(request.user,'locations.view_location',location):
         return render_to_response(template_name, {'location': location}, 
             context_instance=RequestContext(request))
     else:
@@ -71,7 +72,7 @@ def print_view(request, id, template_name="locations/print-view.html"):
 def edit(request, id, form_class=LocationForm, template_name="locations/edit.html"):
     location = get_object_or_404(Location, pk=id)
 
-    if request.user.has_perm('locations.change_location', location):    
+    if has_perm(request.user,'locations.change_location',location):    
         if request.method == "POST":
             form = form_class(request.user, request.POST, instance=location)
             if form.is_valid():
@@ -114,7 +115,7 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
 
 @login_required
 def add(request, form_class=LocationForm, template_name="locations/add.html"):
-    if request.user.has_perm('locations.add_location'):
+    if has_perm(request.user,'locations.add_location'):
         if request.method == "POST":
             form = form_class(request.user, request.POST)
             if form.is_valid():           
@@ -162,7 +163,7 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
 def delete(request, id, template_name="locations/delete.html"):
     location = get_object_or_404(Location, pk=id)
 
-    if request.user.has_perm('locations.delete_location'):   
+    if has_perm(request.user,'locations.delete_location'):   
         if request.method == "POST":
             log_defaults = {
                 'event_id' : 833000,
