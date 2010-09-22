@@ -9,6 +9,7 @@ from base.http import Http403
 from resumes.models import Resume
 from resumes.forms import ResumeForm
 from perms.models import ObjectPermission
+from perms.utils import has_perm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
@@ -24,7 +25,7 @@ def index(request, slug=None, template_name="resumes/view.html"):
     if not slug: return HttpResponseRedirect(reverse('resume.search'))
     resume = get_object_or_404(Resume, slug=slug)
     
-    if request.user.has_perm('resumes.view_resume', resume):
+    if has_perm(request.user,'resumes.view_resume',resume):
         log_defaults = {
             'event_id' : 355000,
             'event_data': '%s (%d) viewed by %s' % (resume._meta.object_name, resume.pk, request.user),
@@ -69,7 +70,7 @@ def print_view(request, slug, template_name="resumes/print-view.html"):
     }
     EventLog.objects.log(**log_defaults)
        
-    if request.user.has_perm('resumes.view_resume', resume):
+    if has_perm(request.user,'resumes.view_resume',resume):
         return render_to_response(template_name, {'resume': resume}, 
             context_instance=RequestContext(request))
     else:
@@ -77,7 +78,7 @@ def print_view(request, slug, template_name="resumes/print-view.html"):
     
 @login_required
 def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
-    if request.user.has_perm('resumes.add_resume'):
+    if has_perm(request.user,'resumes.add_resume'):
         if request.method == "POST":
             form = form_class(request.user, request.POST)
             if form.is_valid():           
@@ -133,7 +134,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
 def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
     resume = get_object_or_404(Resume, pk=id)
 
-    if request.user.has_perm('resumes.change_resume', resume):    
+    if has_perm(request.user,'resumes.change_resume',resume):    
         if request.method == "POST":
             form = form_class(request.user, request.POST, instance=resume)
             if form.is_valid():
@@ -176,7 +177,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta
 
     # check permission
     resume = get_object_or_404(Resume, pk=id)
-    if not request.user.has_perm('resumes.change_resume', resume):
+    if not has_perm(request.user,'resumes.change_resume',resume):
         raise Http403
 
     defaults = {
@@ -206,7 +207,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta
 def delete(request, id, template_name="resumes/delete.html"):
     resume = get_object_or_404(Resume, pk=id)
 
-    if request.user.has_perm('resumes.delete_resume'):   
+    if has_perm(request.user,'resumes.delete_resume'):   
         if request.method == "POST":
             log_defaults = {
                 'event_id' : 433000,

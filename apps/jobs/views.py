@@ -17,6 +17,7 @@ from meta.forms import MetaForm
 from site_settings.utils import get_setting
 
 from perms.utils import get_notice_recipients, is_admin
+from perms.utils import has_perm
 
 
 try:
@@ -28,7 +29,7 @@ def index(request, slug=None, template_name="jobs/view.html"):
     if not slug: return HttpResponseRedirect(reverse('job.search'))
     job = get_object_or_404(Job, slug=slug)
     
-    if request.user.has_perm('jobs.view_job', job):
+    if has_perm(request.user,'jobs.view_job',job):
         log_defaults = {
             'event_id' : 255000,
             'event_data': '%s (%d) viewed by %s' % (job._meta.object_name, job.pk, request.user),
@@ -73,7 +74,7 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
     }
     EventLog.objects.log(**log_defaults)
        
-    if request.user.has_perm('jobs.view_job', job):
+    if has_perm(request.user,'jobs.view_job',job):
         return render_to_response(template_name, {'job': job}, 
             context_instance=RequestContext(request))
     else:
@@ -83,7 +84,7 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
 def add(request, form_class=JobForm, template_name="jobs/add.html"):    
     require_payment = get_setting('module', 'jobs', 'jobsrequirespayment')
     
-    if not request.user.has_perm('jobs.add_job'): raise Http403
+    if not has_perm(request.user,'jobs.add_job'): raise Http403
     
     if request.method == "POST":
         form = form_class(request.user, request.POST)
@@ -178,7 +179,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
 def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
     job = get_object_or_404(Job, pk=id)
 
-    if request.user.has_perm('jobs.change_job', job):    
+    if has_perm(request.user,'jobs.change_job',job):    
         if request.method == "POST":
             form = form_class(request.user, request.POST, instance=job)
             
@@ -239,7 +240,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.ht
 
     # check permission
     job = get_object_or_404(Job, pk=id)
-    if not request.user.has_perm('jobs.change_job', job):
+    if not has_perm(request.user,'jobs.change_job',job):
         raise Http403
 
     defaults = {
@@ -269,7 +270,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.ht
 def delete(request, id, template_name="jobs/delete.html"):
     job = get_object_or_404(Job, pk=id)
 
-    if request.user.has_perm('jobs.delete_job'):   
+    if has_perm(request.user,'jobs.delete_job'):   
         if request.method == "POST":
             log_defaults = {
                 'event_id' : 433000,
@@ -304,7 +305,7 @@ def delete(request, id, template_name="jobs/delete.html"):
     
 @login_required
 def pricing_add(request, form_class=JobPricingForm, template_name="jobs/pricing-add.html"):
-    if request.user.has_perm('jobs.add_jobpricing'):
+    if has_perm(request.user,'jobs.add_jobpricing'):
         if request.method == "POST":
             form = form_class(request.POST)
             if form.is_valid():           
@@ -334,7 +335,7 @@ def pricing_add(request, form_class=JobPricingForm, template_name="jobs/pricing-
 @login_required
 def pricing_edit(request, id, form_class=JobPricingForm, template_name="jobs/pricing-edit.html"):
     job_pricing = get_object_or_404(JobPricing, pk=id)
-    if not request.user.has_perm('jobs.change_jobpricing', job_pricing): Http403
+    if not has_perm(request.user,'jobs.change_jobpricing',job_pricing): Http403
     
     if request.method == "POST":
         form = form_class(request.POST, instance=job_pricing)
@@ -364,7 +365,7 @@ def pricing_edit(request, id, form_class=JobPricingForm, template_name="jobs/pri
 def pricing_view(request, id, template_name="jobs/pricing-view.html"):
     job_pricing = get_object_or_404(JobPricing, id=id)
     
-    if request.user.has_perm('jobs.view_jobpricing', job_pricing):        
+    if has_perm(request.user,'jobs.view_jobpricing',job_pricing):        
         return render_to_response(template_name, {'job_pricing': job_pricing}, 
             context_instance=RequestContext(request))
     else:
@@ -374,7 +375,7 @@ def pricing_view(request, id, template_name="jobs/pricing-view.html"):
 def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
     job_pricing = get_object_or_404(JobPricing, pk=id)
 
-    if not request.user.has_perm('jobs.delete_jobpricing'): raise Http403
+    if not has_perm(request.user,'jobs.delete_jobpricing'): raise Http403
        
     if request.method == "POST":
         log_defaults = {

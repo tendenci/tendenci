@@ -8,13 +8,13 @@ from base.http import Http403
 from contacts.models import Contact
 from contacts.forms import ContactForm
 from perms.models import ObjectPermission
-
+from perms.utils import has_perm
 
 def index(request, id=None, template_name="contacts/view.html"):
     if not id: return HttpResponseRedirect(reverse('contact.search'))
     contact = get_object_or_404(Contact, pk=id)
     
-    if request.user.has_perm('contacts.view_contact', contact):
+    if has_perm(request.user,'contacts.view_contact',contact):
         return render_to_response(template_name, {'contact': contact}, 
             context_instance=RequestContext(request))
     else:
@@ -22,7 +22,7 @@ def index(request, id=None, template_name="contacts/view.html"):
 
 def search(request, template_name="contacts/search.html"):
 
-    if not request.user.has_perm('contacts.view_contact'):
+    if not has_perm(request.user,'contacts.view_contact'):
         raise Http403
 
     query = request.GET.get('q', None)
@@ -34,7 +34,7 @@ def search(request, template_name="contacts/search.html"):
 def print_view(request, id, template_name="contacts/print-view.html"):
     contact = get_object_or_404(Contact, pk=id)
 
-    if request.user.has_perm('contacts.view_contact', contact):
+    if has_perm(request.user,'contacts.view_contact',contact):
         return render_to_response(template_name, {'contact': contact}, 
             context_instance=RequestContext(request))
     else:
@@ -42,7 +42,7 @@ def print_view(request, id, template_name="contacts/print-view.html"):
 
 @login_required
 def add(request, form_class=ContactForm, template_name="contacts/add.html"):
-    if request.user.has_perm('contacts.add_contact'):
+    if has_perm(request.user,'contacts.add_contact'):
 
         if request.method == "POST":
             form = form_class(request.POST)
@@ -71,7 +71,7 @@ def add(request, form_class=ContactForm, template_name="contacts/add.html"):
 def delete(request, id, template_name="contacts/delete.html"):
     contact = get_object_or_404(Contact, pk=id)
 
-    if request.user.has_perm('contacts.delete_contact'):   
+    if has_perm(request.user,'contacts.delete_contact'):   
         if request.method == "POST":
             contact.delete()
             return HttpResponseRedirect(reverse('contact.search'))

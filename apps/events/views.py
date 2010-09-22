@@ -16,6 +16,7 @@ from events.search_indexes import EventIndex
 from events.utils import save_registration
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
+from perms.utils import has_perm
 from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
@@ -32,7 +33,7 @@ def index(request, id=None, template_name="events/view.html"):
 
     event = get_object_or_404(Event, pk=id)
     
-    if request.user.has_perm('events.view_event', event):
+    if has_perm(request.user,'events.view_event',event):
 
         EventLog.objects.log(
             event_id =  175000, # view event
@@ -121,7 +122,7 @@ def print_view(request, id, template_name="events/print-view.html"):
         instance = event
     )
 
-    if request.user.has_perm('events.view_event', event):
+    if has_perm(request.user,'events.view_event',event):
         return render_to_response(template_name, {'event': event}, 
             context_instance=RequestContext(request))
     else:
@@ -149,7 +150,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         organizer.event = [event]
         organizer.save()
 
-    if request.user.has_perm('events.change_event', event):    
+    if has_perm(request.user,'events.change_event',event):    
         if request.method == "POST":
 
             form_event = form_class(request.POST, instance=event, user=request.user)
@@ -245,7 +246,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 
     # check permission
     event = get_object_or_404(Event, pk=id)
-    if not request.user.has_perm('events.change_event', event):
+    if not has_perm(request.user,'events.change_event',event):
         raise Http403
 
     defaults = {
@@ -274,7 +275,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 def add(request, form_class=EventForm, template_name="events/add.html"):
 #    event = get_object_or_404(Event, pk=id)
 
-    if request.user.has_perm('events.add_event'):
+    if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
 
             form_event = form_class(request.POST, user=request.user)
@@ -402,7 +403,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
 def delete(request, id, template_name="events/delete.html"):
     event = get_object_or_404(Event, pk=id)
 
-    if request.user.has_perm('events.delete_event'):   
+    if has_perm(request.user,'events.delete_event'):   
         if request.method == "POST":
 
             EventLog.objects.log(
@@ -659,7 +660,7 @@ def registrant_roster(request, event_id=0, template_name='events/registrants/ros
 def registrant_details(request, id=0, template_name='events/registrants/details.html'):
     registrant = get_object_or_404(Registrant, pk=id)
     
-    if request.user.has_perm('registrans.view_registrant', registrant):
+    if has_perm(request.user,'registrans.view_registrant',registrant):
         return render_to_response(template_name, {'registrant': registrant}, 
             context_instance=RequestContext(request))
     else:

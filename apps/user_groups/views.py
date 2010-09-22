@@ -17,6 +17,7 @@ from base.http import Http403
 from perms.utils import is_admin
 from event_logs.models import EventLog
 from perms.utils import get_notice_recipients
+from perms.utils import has_perm
 from entities.models import Entity
 from event_logs.utils import request_month_range, day_bars
 from event_logs.views import event_colors
@@ -32,7 +33,7 @@ def group_search(request, template_name="user_groups/search.html"):
     if is_admin(request.user):
         groups = Group.objects.search(query)
     else:
-        if request.user.has_perm('user_groups.view_group'):
+        if has_perm(request.user,'user_groups.view_group'):
             groups = Group.objects.search(query).filter(show_as_option=1, allow_self_add=1, 
                                                         status=1, status_detail='active')
         else:
@@ -61,7 +62,7 @@ def group_search(request, template_name="user_groups/search.html"):
 def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
     
-    if not request.user.has_perm('user_groups.view_group', group): raise Http403
+    if not has_perm(request.user,'user_groups.view_group',group): raise Http403
     
     log_defaults = {
         'event_id' : 165000,
@@ -87,13 +88,13 @@ def group_add_edit(request, group_slug=None,
     if group_slug:
         group = get_object_or_404(Group, slug=group_slug)
        
-        if not request.user.has_perm('user_groups.change_group', group):
+        if not has_perm(request.user,'user_groups.change_group',group):
             raise Http403
         title = "Edit Group"
         edit = True
     else:
         group = None
-        if not request.user.has_perm('user_groups.add_group'):raise Http403
+        if not has_perm(request.user,'user_groups.add_group'):raise Http403
         title = "Add Group"
         add = True
 
@@ -176,7 +177,7 @@ def group_edit_perms(request, id, form_class=GroupPermissionForm, template_name=
 def group_delete(request, id, template_name="user_groups/delete.html"):
     group = get_object_or_404(Group, pk=id)
     
-    if not request.user.has_perm('user_groups.delete_group', group): raise Http403
+    if not has_perm(request.user,'user_groups.delete_group',group): raise Http403
 
     if request.method == "POST":
         # send notification to administrators
@@ -214,12 +215,12 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
     if user_id:
         user = get_object_or_404(User, pk=user_id)
         groupmembership = get_object_or_404(GroupMembership, member=user, group=group)
-        if not request.user.has_perm('user_groups.change_groupmembership', groupmembership):
+        if not has_perm(request.user,'user_groups.change_groupmembership',groupmembership):
             raise Http403
         edit = True
     else:
         groupmembership = None
-        if not request.user.has_perm('user_groups.add_groupmembership'):
+        if not has_perm(request.user,'user_groups.add_groupmembership'):
             raise Http403
         add = True
 
@@ -269,7 +270,7 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
     group = get_object_or_404(Group, slug=group_slug)
     user = get_object_or_404(User, pk=user_id)
     groupmembership = get_object_or_404(GroupMembership, group=group, member=user)
-    if not request.user.has_perm('user_groups.delete_groupmembership', groupmembership):
+    if not has_perm(request.user,'user_groups.delete_groupmembership',groupmembership):
         raise Http403
     
     if request.method == 'POST':

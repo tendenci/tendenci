@@ -24,8 +24,6 @@
 	<div class="news-wrap">
     {% for n in news %}
 		{% with n.object as n %}
-    	{% has_perm user news.view_news n as can_view %}
-    	{% if can_view %}
 		<div class="news-wrap-search">
 
 			<div class="options options-search">
@@ -49,7 +47,6 @@
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>
-		{% endif %}
 		{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>

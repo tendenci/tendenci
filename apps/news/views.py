@@ -9,6 +9,7 @@ from news.models import News
 from news.forms import NewsForm
 from base.http import Http403
 from perms.models import ObjectPermission
+from perms.utils import has_perm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
@@ -24,7 +25,7 @@ def index(request, slug=None, template_name="news/view.html"):
     news = get_object_or_404(News, slug=slug)
 
     # check permission
-    if not request.user.has_perm('news.view_news', news):
+    if not has_perm(request.user,'news.view_news',news):
         raise Http403
 
     log_defaults = {
@@ -61,7 +62,7 @@ def print_view(request, slug, template_name="news/print-view.html"):
     news = get_object_or_404(News, slug=slug)
 
     # check permission
-    if not request.user.has_perm('news.view_news', news):
+    if not has_perm(request.user,'news.view_news',news):
         raise Http403
 
     log_defaults = {
@@ -82,7 +83,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
     news = get_object_or_404(News, pk=id)
 
     # check permission
-    if not request.user.has_perm('news.change_news', news):  
+    if not has_perm(request.user,'news.change_news',news):  
         raise Http403
 
     form = form_class(request.user, instance=news)
@@ -124,7 +125,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
 
     # check permission
     news = get_object_or_404(News, pk=id)
-    if not request.user.has_perm('news.change_news', news):
+    if not has_perm(request.user,'news.change_news',news):
         raise Http403
 
     defaults = {
@@ -153,7 +154,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
 def add(request, form_class=NewsForm, template_name="news/add.html"):
 
     # check permission
-    if not request.user.has_perm('news.add_news'):  
+    if not has_perm(request.user,'news.add_news'):  
         raise Http403
 
     if request.method == "POST":
@@ -213,7 +214,7 @@ def delete(request, id, template_name="news/delete.html"):
     news = get_object_or_404(News, pk=id)
 
     # check permission
-    if not request.user.has_perm('news.delete_news'): 
+    if not has_perm(request.user,'news.delete_news'): 
         raise Http403
 
     if request.method == "POST":
