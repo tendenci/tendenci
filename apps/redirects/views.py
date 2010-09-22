@@ -9,11 +9,12 @@ from redirects.models import Redirect
 from redirects.forms import RedirectForm
 from redirects import dynamic_urls
 from base.http import Http403
+from perms.utils import has_perm
 
 @login_required
 def search(request, template_name="redirects/search.html"):
     # check permission
-    if not request.user.has_perm('redirects.add_redirect'):  
+    if not has_perm(request.user,'redirects.add_redirect'):  
         raise Http403
     
     query = request.GET.get('q', None)
@@ -27,7 +28,7 @@ def search(request, template_name="redirects/search.html"):
 def add(request, form_class=RedirectForm, template_name="redirects/add.html"):
 
     # check permission
-    if not request.user.has_perm('redirects.add_redirect'):  
+    if not has_perm(request.user,'redirects.add_redirect'):  
         raise Http403
 
     if request.method == "POST":
@@ -52,7 +53,7 @@ def edit(request, id, form_class=RedirectForm, template_name="redirects/edit.htm
     redirect = get_object_or_404(Redirect, pk=id)
 
     # check permission
-    if not request.user.has_perm('redirects.add_redirect'):  
+    if not has_perm(request.user,'redirects.add_redirect'):  
         raise Http403
 
     form = form_class(instance=redirect)
@@ -77,7 +78,7 @@ def delete(request, id, template_name="redirects/delete.html"):
     redirect = get_object_or_404(Redirect, pk=id)
 
     # check permission
-    if not request.user.has_perm('redirects.delete_redirect'):  
+    if not has_perm(request.user,'redirects.delete_redirect'):  
         raise Http403
 
     if request.method == "POST":

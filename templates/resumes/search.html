@@ -24,8 +24,6 @@
 	<div class="resumes-wrap">
     {% for resume in resumes %}
 		{% with resume.object as resume %}
-    	{% has_perm user resumes.view_resume resume as can_view %}
-    	{% if can_view %}
 		<div class="resume-wrap-search">
 
 			<div class="options options-search">
@@ -45,7 +43,6 @@
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>
-		{% endif %}
 		{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>

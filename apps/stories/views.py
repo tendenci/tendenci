@@ -11,6 +11,7 @@ from base.http import Http403
 from stories.models import Story
 from stories.forms import StoryForm, UploadStoryImageForm
 from perms.models import ObjectPermission
+from perms.utils import has_perm
 from event_logs.models import EventLog
 
 def index(request, id=None, template_name="stories/view.html"):
@@ -161,7 +162,7 @@ def delete(request, id, template_name="stories/delete.html"):
     # permission check
     if not story.allow_edit_by(request.user): raise Http403
 
-    if request.user.has_perm('stories.delete_stories'):   
+    if has_perm(request.user,'stories.delete_stories'):   
         if request.method == "POST":
             # delete files first
             imagepath = os.path.join(settings.MEDIA_ROOT, 'stories/'+str(story.id))

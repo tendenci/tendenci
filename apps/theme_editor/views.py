@@ -15,6 +15,7 @@ from theme_editor.forms import FileForm
 from theme_editor.utils import get_file_attr, get_files_list, get_file_content
 
 from base.http import Http403
+from perms.utils import has_perm
 
 DEFAULT_FILE = 'templates/nav.html'
 
@@ -22,7 +23,7 @@ DEFAULT_FILE = 'templates/nav.html'
 def edit_file(request, form_class=FileForm, template_name="theme_editor/index.html"):
 
     # if no permission; raise 403 exception
-    if not request.user.has_perm('theme_editor.view_themefileversion'):
+    if not has_perm(request.user,'theme_editor.view_themefileversion'):
         raise Http403  
 
     file_relative_path = request.GET.get("file", DEFAULT_FILE)

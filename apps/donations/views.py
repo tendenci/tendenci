@@ -12,6 +12,7 @@ from base.http import Http403
 from base.utils import tcurrency
 from event_logs.models import EventLog
 from perms.utils import get_notice_recipients, is_admin
+from perms.utils import has_perm
 from base.utils import get_unique_username
 from profiles.models import Profile
 
@@ -144,7 +145,7 @@ def add_confirm(request, id, template_name="donations/add_confirm.html"):
 @login_required
 def view(request, id=None, template_name="donations/view.html"):
     donation = get_object_or_404(Donation, pk=id)
-    if not request.user.has_perm('donations.view_donation'): raise Http403
+    if not has_perm(request.user,'donations.view_donation'): raise Http403
     
     donation.donation_amount = tcurrency(donation.donation_amount)
     return render_to_response(template_name, {'donation':donation}, 

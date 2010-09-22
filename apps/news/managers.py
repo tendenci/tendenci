@@ -2,6 +2,7 @@ import operator
 
 from django.db.models import Manager
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 from haystack.query import SearchQuerySet
 from perms.utils import is_admin
@@ -14,6 +15,12 @@ class NewsManager(Manager):
         """
         sqs = SearchQuerySet()
         user = kwargs.get('user', None)
+        
+        # check to see if there is impersonation
+        if hasattr(user,'impersonated_user'):
+            if isinstance(user.impersonated_user, User):
+                user = user.impersonated_user
+                
         is_an_admin = is_admin(user)
             
         if query:

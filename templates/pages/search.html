@@ -26,8 +26,6 @@
 	<div class="pages-wrap">
     {% for page in pages %}
 		{% with page.object as page %}
-    	{% has_perm user pages.view_article page as can_view %}
-    	{% if can_view %}
 		<div class="page-wrap-search">
 
 			<div class="options options-search">
@@ -48,7 +46,6 @@
             </form>
 
 		</div>
-        {% endif %}
 		{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>
