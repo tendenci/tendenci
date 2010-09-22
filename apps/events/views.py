@@ -4,7 +4,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
@@ -75,6 +75,39 @@ def search(request, template_name="events/search.html"):
 
     return render_to_response(template_name, {'events':events, 'now':datetime.now()}, 
         context_instance=RequestContext(request))
+    
+def icalendar(request):
+    import re
+    from events.utils import get_vevents
+    p = re.compile(r'http(s)?://(www.)?([^/]+)')
+    d = {}
+    
+    d['site_url'] = get_setting('site', 'global', 'siteurl')
+    match = p.search(d['site_url'])
+    if match:
+        d['domain_name'] = match.group(3)
+    else:
+        d['domain_name'] = ""
+        
+    ics_str = "BEGIN:VCALENDAR\n"
+    ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
+    ics_str += "VERSION:2.0\n"
+    ics_str += "METHOD:PUBLISH\n"
+    
+    # function get_vevents in events.utils
+    ics_str += get_vevents(request, d)
+    
+    ics_str += "END:VCALENDAR\n"
+    
+    response = HttpResponse(ics_str)
+    response['Content-Type'] = 'text/calendar'
+    if d['domain_name']:
+        file_name = '%s.ics' % (d['domain_name'])
+    else:
+        file_name = "event.ics"
+    response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
+    return response
+    
 
 def print_view(request, id, template_name="events/print-view.html"):
     event = get_object_or_404(Event, pk=id)    
