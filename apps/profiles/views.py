@@ -8,18 +8,18 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.translation import ugettext as _
+from django.db.models import get_app
+from django.core.exceptions import ImproperlyConfigured
 
 # for password change
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.csrf import csrf_protect
 
-
 # for avatar
 from avatar.models import Avatar, avatar_file_path
 from avatar.forms import PrimaryAvatarForm
-from django.utils.translation import ugettext as _
-from django.db.models import get_app
-from django.core.exceptions import ImproperlyConfigured
+from perms.utils import has_perm
 
 
 try:
@@ -54,7 +54,7 @@ def index(request, username="", template_name="profiles/index.html"):
     try:
         #profile = Profile.objects.get(user=user)
         profile = user_this.get_profile()
-        #if not request.user.has_perm('profiles.view_profile', profile):raise Http403
+        #if not has_perm(request.user,'profiles.view_profile',profile):raise Http403
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
         
@@ -133,7 +133,7 @@ def search(request, template_name="profiles/search.html"):
 
 @login_required
 def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
-    if not request.user.has_perm('profiles.add_profile'):raise Http403
+    if not has_perm(request.user,'profiles.add_profile'):raise Http403
     
     required_fields = get_setting('module', 'users', 'usersrequiredfields')
     if required_fields:
@@ -321,7 +321,7 @@ def delete(request, id, template_name="profiles/delete.html"):
     except:
         profile = None
     
-    if not request.user.has_perm('profiles.delete_profile', profile): raise Http403
+    if not has_perm(request.user,'profiles.delete_profile',profile): raise Http403
 
     if request.method == "POST":
         recipients = get_notice_recipients('module', 'users', 'userrecipients')
@@ -462,7 +462,7 @@ def change_avatar(request, id, extra_context={}, next_override=None):
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
         
-    #if not request.user.has_perm('profiles.change_profile', profile): raise Http403
+    #if not has_perm(request.user,'profiles.change_profile',profile): raise Http403
     if not profile.allow_edit_by(request.user): raise Http403
     
     avatars = Avatar.objects.filter(user=user_edit).order_by('-primary')

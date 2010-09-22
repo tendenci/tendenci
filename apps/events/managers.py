@@ -3,6 +3,7 @@ import operator
 
 from django.db.models import Manager
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 from haystack.query import SearchQuerySet
 from perms.utils import is_admin
@@ -18,6 +19,11 @@ class EventManager(Manager):
         user = kwargs.get('user', None)
         event = kwargs.get('event', None)
 
+        # check to see if there is impersonation
+        if hasattr(user,'impersonated_user'):
+            if isinstance(user.impersonated_user, User):
+                user = user.impersonated_user
+                
         admin = is_admin(user)
             
         if query:

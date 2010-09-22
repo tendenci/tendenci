@@ -140,11 +140,10 @@ class EventLogManager(Manager):
         
         # set up the user information
         if user:
-#            # check for impersonation and set the correct user, descriptions, etc
-            impersonator = getattr(user,'_impersonator', None)
-            if impersonator:
-                event_log.event_data = '%s (impersonated by %s)' % (event_log.event_data, impersonator.username,)
-                user = impersonator
+            # check for impersonation and set the correct user, descriptions, etc
+            impersonated_user = getattr(user,'impersonated_user', None)
+            if impersonated_user:
+                event_log.event_data = '%s (impersonating %s)' % (event_log.event_data, impersonated_user.username,)
                 
             if isinstance(user,AnonymousUser):
                 event_log.username = 'anonymous'

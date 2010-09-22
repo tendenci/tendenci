@@ -15,6 +15,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from perms.utils import get_notice_recipients
 from perms.utils import is_admin
+from perms.utils import has_perm
 
 try:
     from notification import models as notification
@@ -25,7 +26,7 @@ def index(request, slug=None, template_name="pages/view.html"):
     if not slug: return HttpResponseRedirect(reverse('page.search'))
     page = get_object_or_404(Page, slug=slug)
 
-    if request.user.has_perm('pages.view_page', page):
+    if has_perm(request.user,'pages.view_page',page):
         log_defaults = {
             'event_id' : 585000,
             'event_data': '%s (%d) viewed by %s' % (page._meta.object_name, page.pk, request.user),
@@ -62,7 +63,7 @@ def print_view(request, slug, template_name="pages/print-view.html"):
     print 'blah!'
     page = get_object_or_404(Page, slug=slug)
 
-    if request.user.has_perm('pages.view_page', page):
+    if has_perm(request.user,'pages.view_page',page):
         log_defaults = {
             'event_id' : 585001,
             'event_data': '%s (%d) viewed by %s' % (page._meta.object_name, page.pk, request.user),
@@ -82,7 +83,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
 
     page = get_object_or_404(Page, pk=id)
 
-    if request.user.has_perm('pages.change_page', page):    
+    if has_perm(request.user,'pages.change_page',page):    
         if request.method == "POST":
             form = form_class(request.user, request.POST, instance=page)
             if form.is_valid():
@@ -135,7 +136,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
 
     # check permission
     page = get_object_or_404(Page, pk=id)
-    if not request.user.has_perm('pages.change_page', page):
+    if not has_perm(request.user,'pages.change_page',page):
         raise Http403
 
     defaults = {
@@ -163,7 +164,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
 @login_required
 def add(request, form_class=PageForm, template_name="pages/add.html"):
 
-    if request.user.has_perm('pages.add_page'):
+    if has_perm(request.user,'pages.add_page'):
         if request.method == "POST":
             form = form_class(request.user, request.POST)
             if form.is_valid():           
@@ -223,7 +224,7 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
 def delete(request, id, template_name="pages/delete.html"):
     page = get_object_or_404(Page, pk=id)
 
-    if request.user.has_perm('pages.delete_page'):   
+    if has_perm(request.user,'pages.delete_page'):   
         if request.method == "POST":
             log_defaults = {
                 'event_id' : 583000,
