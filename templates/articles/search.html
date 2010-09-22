@@ -24,8 +24,6 @@
 	<div class="articles-wrap">
     {% for article in articles %}
 		{% with article.object as article %}
-    	{% has_perm user articles.view_article article as can_view %}
-    	{% if can_view %}
 		<div class="article-wrap-search">
 			<div class="options options-search">
                 <div class="quick-options">
@@ -49,7 +47,6 @@
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>
-		{% endif %}
 		{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>
