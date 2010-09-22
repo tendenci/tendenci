@@ -1,4 +1,5 @@
 import os
+
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
@@ -6,10 +7,11 @@ from django.conf import settings
 from django.http import Http404
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+
 from newsletters.forms import NewsletterAddForm
-#from user_groups.models import Group
 from site_settings.utils import get_setting
 from base.http import Http403
+from perms.utils import has_perm
 
 
 def view_template(request, template_name='', template_path='newsletters/templates/'):
@@ -25,7 +27,7 @@ def view_template(request, template_name='', template_path='newsletters/template
 
 @login_required 
 def add(request, form_class=NewsletterAddForm, template_name="newsletters/add.html"):
-    if not request.user.has_perm('actions.add_action'): raise Http403
+    if not has_perm(request.user,'actions.add_action'): raise Http403
     
     template_selected = ''
     if request.method == "POST":

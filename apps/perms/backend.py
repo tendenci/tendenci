@@ -68,7 +68,7 @@ class ObjectPermBackend(object):
             user_obj._object_perm_cache =  set([u"%s.%s.%s" % (p.object_id, p.content_type.app_label, p.codename) for p in perms])
             user_obj._object_perm_cache.update(self.get_group_object_permissions(user_obj, obj, codename))            
         return user_obj._object_perm_cache
-                
+        
     def has_perm(self, user, perm, obj=None):
         # check codename, return false if its a malformed codename
         try:
@@ -109,7 +109,8 @@ class ObjectPermBackend(object):
         # check the permissions on the object level of groups or user
         perm = '%s.%s' % (obj.pk, perm)
         if perm in self.get_all_object_permissions(user, obj, codename):
-            return True
+            return True            
+    
 
     def has_module_perms(self, user_obj, app_label):
         """

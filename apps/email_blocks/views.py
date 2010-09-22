@@ -7,7 +7,7 @@ from email_blocks.forms import EmailBlockForm
 from email_blocks.models import EmailBlock
 #from site_settings.utils import get_setting
 from base.http import Http403
-from perms.utils import is_admin
+from perms.utils import is_admin, has_perm
 
 @login_required 
 def add(request, form_class=EmailBlockForm, template_name="email_blocks/edit.html"):
@@ -69,7 +69,7 @@ def search(request, template_name="email_blocks/search.html"):
 def delete(request, id, template_name="email_blocks/delete.html"):
     email_block = get_object_or_404(EmailBlock, pk=id)
     
-    if not request.user.has_perm('email_blocks.delete_email_block', email_block): raise Http403
+    if not has_perm(request.user,'email_blocks.delete_email_block',email_block): raise Http403
 
     if request.method == "POST":
         email_block.delete()

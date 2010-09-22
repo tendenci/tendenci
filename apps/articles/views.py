@@ -10,7 +10,7 @@ from base.http import Http403
 from articles.models import Article
 from articles.forms import ArticleForm
 from perms.models import ObjectPermission
-from perms.utils import get_notice_recipients
+from perms.utils import get_notice_recipients, has_perm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
@@ -26,7 +26,7 @@ def index(request, slug=None, template_name="articles/view.html"):
     if not slug: return HttpResponseRedirect(reverse('article.search'))
     article = get_object_or_404(Article, slug=slug)
     
-    if request.user.has_perm('articles.view_article', article):
+    if has_perm(request.user, 'articles.view_article', article):
         log_defaults = {
             'event_id' : 435000,
             'event_data': '%s (%d) viewed by %s' % (article._meta.object_name, article.pk, request.user),
@@ -71,7 +71,7 @@ def print_view(request, slug, template_name="articles/print-view.html"):
     }
     EventLog.objects.log(**log_defaults)
        
-    if request.user.has_perm('articles.view_article', article):
+    if has_perm(request.user,'articles.view_article', article):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
@@ -81,7 +81,7 @@ def print_view(request, slug, template_name="articles/print-view.html"):
 def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"):
     article = get_object_or_404(Article, pk=id)
 
-    if request.user.has_perm('articles.change_article', article):    
+    if has_perm(request.user,'articles.change_article', article):    
         if request.method == "POST":
 
             form = form_class(request.user, request.POST, instance=article)
@@ -125,7 +125,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
 
     # check permission
     article = get_object_or_404(Article, pk=id)
-    if not request.user.has_perm('articles.change_article', article):
+    if not has_perm(request.user,'articles.change_article', article):
         raise Http403
 
     defaults = {
@@ -152,7 +152,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
 
 @login_required
 def add(request, form_class=ArticleForm, template_name="articles/add.html"):
-    if request.user.has_perm('articles.add_article'):
+    if has_perm(request.user,'articles.add_article'):
         if request.method == "POST":
             form = form_class(request.user, request.POST)
             if form.is_valid():           
@@ -208,7 +208,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
 def delete(request, id, template_name="articles/delete.html"):
     article = get_object_or_404(Article, pk=id)
 
-    if request.user.has_perm('articles.delete_article'):   
+    if has_perm(request.user,'articles.delete_article'):   
         if request.method == "POST":
             log_defaults = {
                 'event_id' : 433000,

@@ -66,8 +66,8 @@ def stop_impersonation(session):
         Reset the session of a user
         impersonating.
     """
-    session['imp'] = False
-    session['imp_u'] = None    
+    session['is_impersonating'] = False
+    session['impersonated_user'] = None    
 
 def log_impersonation(request, new_user):
     """
@@ -99,8 +99,8 @@ class ImpersonationMiddleware(object):
             return         
             
         # check for a session based impersonation
-        if 'imp' in request.session.keys():
-            session_impersonation = request.session['imp']
+        if 'is_impersonating' in request.session.keys():
+            session_impersonation = request.session['is_impersonating']
         
         # check for session impersonation
         if session_impersonation and request.user.is_superuser:
@@ -116,8 +116,7 @@ class ImpersonationMiddleware(object):
             if len(splitext(basename(request.path))[1]) == 0:
                 message = True
                     
-            new_user = request.session['imp_u']
-            current_user = request.user    
+            new_user = request.session['impersonated_user']
                
             # switch impersonated user if they request someone
             # else
@@ -134,9 +133,8 @@ class ImpersonationMiddleware(object):
             if message:
                 request.impersonation_message = get_imp_message(request,new_user)
                       
-            # set the new user, and impersonator 
-            request.user = new_user
-            request.user._impersonator = current_user
+            # set the impersonated user
+            request.user.impersonated_user = new_user
             
         elif '_impersonate' in request.GET and request.user.is_superuser: # GET
             # kill impersonation on post requests
@@ -150,8 +148,6 @@ class ImpersonationMiddleware(object):
             # this way it ignores css, jpg, etc
             if len(splitext(basename(request.path))[1]) == 0:
                 message = True
-                        
-            current_user = request.user
 
             new_user = get_imp_user(request.GET['_impersonate'])
             if not new_user: return                
@@ -161,14 +157,13 @@ class ImpersonationMiddleware(object):
             
             # set the session up to let it be known
             # you are impersonating
-            request.session['imp'] = True
-            request.session['imp_u'] = new_user
+            request.session['is_impersonating'] = True
+            request.session['impersonated_user'] = new_user
         
             # show the impersonation message
             if message:
                 request.impersonation_message = get_imp_message(request,new_user)
             
-            # set the new user, and impersonator 
-            request.user = new_user
-            request.user._impersonator = current_user
+            # set the impersonated user
+            request.user.impersonated_user = new_user
             

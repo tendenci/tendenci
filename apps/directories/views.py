@@ -19,6 +19,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from site_settings.utils import get_setting
 from perms.utils import is_admin
+from perms.utils import has_perm
 
 try:
     from notification import models as notification
@@ -29,7 +30,7 @@ def index(request, slug=None, template_name="directories/view.html"):
     if not slug: return HttpResponseRedirect(reverse('directory.search'))
     directory = get_object_or_404(Directory, slug=slug)
     
-    if request.user.has_perm('directories.view_directory', directory):
+    if has_perm(request.user,'directories.view_directory',directory):
         log_defaults = {
             'event_id' : 445000,
             'event_data': '%s (%d) viewed by %s' % (directory._meta.object_name, directory.pk, request.user),
@@ -74,7 +75,7 @@ def print_view(request, slug, template_name="directories/print-view.html"):
     }
     EventLog.objects.log(**log_defaults)
        
-    if request.user.has_perm('directories.view_directory', directory):
+    if has_perm(request.user,'directories.view_directory',directory):
         return render_to_response(template_name, {'directory': directory}, 
             context_instance=RequestContext(request))
     else:
@@ -84,7 +85,7 @@ def print_view(request, slug, template_name="directories/print-view.html"):
 def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.html"):
     directory = get_object_or_404(Directory, pk=id)
 
-    if not request.user.has_perm('directories.change_directory', directory):  raise Http403 
+    if not has_perm(request.user,'directories.change_directory',directory):  raise Http403 
     
     if request.method == "POST":
 
@@ -157,7 +158,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 
     # check permission
     directory = get_object_or_404(Directory, pk=id)
-    if not request.user.has_perm('directories.change_directory', directory):
+    if not has_perm(request.user,'directories.change_directory',directory):
         raise Http403
 
     defaults = {
@@ -184,7 +185,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 
 @login_required
 def add(request, form_class=DirectoryForm, template_name="directories/add.html"):
-    if not request.user.has_perm('directories.add_directory'): raise Http403
+    if not has_perm(request.user,'directories.add_directory'): raise Http403
     
     require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
     
@@ -291,7 +292,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
 def delete(request, id, template_name="directories/delete.html"):
     directory = get_object_or_404(Directory, pk=id)
 
-    if request.user.has_perm('directories.delete_directory'):   
+    if has_perm(request.user,'directories.delete_directory'):   
         if request.method == "POST":
             log_defaults = {
                 'event_id' : 443000,
@@ -328,7 +329,7 @@ def delete(request, id, template_name="directories/delete.html"):
 
 @login_required
 def pricing_add(request, form_class=DirectoryPricingForm, template_name="directories/pricing-add.html"):
-    if request.user.has_perm('directories.add_directorypricing'):
+    if has_perm(request.user,'directories.add_directorypricing'):
         if request.method == "POST":
             form = form_class(request.POST)
             if form.is_valid():           
@@ -358,7 +359,7 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
 @login_required
 def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="directories/pricing-edit.html"):
     directory_pricing = get_object_or_404(DirectoryPricing, pk=id)
-    if not request.user.has_perm('directories.change_directorypricing', directory_pricing): Http403
+    if not has_perm(request.user,'directories.change_directorypricing',directory_pricing): Http403
     
     if request.method == "POST":
         form = form_class(request.POST, instance=directory_pricing)
@@ -388,7 +389,7 @@ def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="di
 def pricing_view(request, id, template_name="directories/pricing-view.html"):
     directory_pricing = get_object_or_404(DirectoryPricing, id=id)
     
-    if request.user.has_perm('directories.view_directorypricing', directory_pricing):        
+    if has_perm(request.user,'directories.view_directorypricing',directory_pricing):        
         return render_to_response(template_name, {'directory_pricing': directory_pricing}, 
             context_instance=RequestContext(request))
     else:
@@ -398,7 +399,7 @@ def pricing_view(request, id, template_name="directories/pricing-view.html"):
 def pricing_delete(request, id, template_name="directories/pricing-delete.html"):
     directory_pricing = get_object_or_404(DirectoryPricing, pk=id)
 
-    if not request.user.has_perm('directories.delete_directorypricing'): raise Http403
+    if not has_perm(request.user,'directories.delete_directorypricing'): raise Http403
        
     if request.method == "POST":
         log_defaults = {
