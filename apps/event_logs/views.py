@@ -18,20 +18,21 @@ from django.db.models import Count
 from django.contrib.admin.views.decorators import staff_member_required
 from base.http import Http403
 from forms import EventsFilterForm
+from perms.utils import has_perm
 
 
 def index(request, id=None, template_name="event_logs/view.html"):
     if not id: return HttpResponseRedirect(reverse('event_log.search'))
     event_log = get_object_or_404(EventLog, pk=id)
 
-    if request.user.has_perm('event_logs.view_eventlog'):
+    if has_perm(request.user,'event_logs.view_eventlog'):
         return render_to_response(template_name, {'event_log': event_log}, 
             context_instance=RequestContext(request))
     else:
         raise Http403
 
 def search(request, template_name="event_logs/search.html"):
-    if not request.user.has_perm('event_logs.view_eventlog'): raise Http403
+    if not has_perm(request.user,'event_logs.view_eventlog'): raise Http403
     
     event_logs = EventLog.objects.search(request.GET)
         
@@ -41,7 +42,7 @@ def search(request, template_name="event_logs/search.html"):
 def print_view(request, id, template_name="event_logs/print-view.html"):
     event_log = get_object_or_404(EventLog, pk=id)
      
-    if request.user.has_perm('event_logs.view_eventlog'):
+    if has_perm(request.user,'event_logs.view_eventlog'):
         return render_to_response(template_name, {'event_log': event_log}, 
             context_instance=RequestContext(request))
     else:

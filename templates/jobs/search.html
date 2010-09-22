@@ -24,8 +24,6 @@
 	<div class="jobs-wrap">
     {% for job in jobs %}
 		{% with job.object as job %}
-    	{% has_perm user jobs.view_job job as can_view %}
-    	{% if can_view %}
 		<div class="job-wrap-search">
 
 			<div class="options options-search">
@@ -45,7 +43,6 @@
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>
-		{% endif %}
 		{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>
