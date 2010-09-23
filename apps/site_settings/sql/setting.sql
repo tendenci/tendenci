@@ -88,7 +88,7 @@ VALUES  ('articlerecipients','Article admin notice recipients','A list of email 
  ('label','Label','The name of the module.','string','Forms','Forms','text','',0,1,'2010-08-13 09:33:29','','module','forms',0),
  ('contactrecipients','Contact Form Recipients','A list of email address that recieve an email when the contact form is submitted','string','','','text','',1,1,'2010-08-12 17:19:11','','module','contacts',0),
  ('enabled','Enabled','Module is enabled or not.','boolean','true','true','select','true,false',0,1,'2010-08-13 09:33:29','','module','resumes',0),
- ('label','Label','The name of the module.','string','Forms','Forms','text','',0,1,'2010-08-13 09:33:29','','module','resumes',0),
+ ('label','Label','The name of the module.','string','Resumes','Resumes','text','',0,1,'2010-08-13 09:33:29','','module','resumes',0),
  ('runuserresumesrenewalreminders','Renewal Reminders','Renewal Reminders is a bit field defining whether or not to run the script that generates an email remionding the user to renew their resume.','boolean','false','true','select','true,false',0,1,'2010-08-12 17:19:13','','module','resumes',0),
  ('userresumesrequiresmembership','Requires Membership','Determines whether user resume postings require membership to post.','boolean','false','false','select','true,false',0,1,'2010-08-12 17:19:13','','module','resumes',0),
  ('donationsrecipients','Donation admin notice recipients','A list of email addresses that receive admin notices from donations module on the site. Comma delimited.','string','','','text','',1,1,'2010-09-02 17:19:11','','module','donations',0),
