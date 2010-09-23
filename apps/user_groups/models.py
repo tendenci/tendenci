@@ -51,6 +51,10 @@ class Group(TendenciBaseModel):
             
         super(self.__class__, self).save(force_insert, force_update)
 
+    def is_member(self, user):
+        if user:
+            return user in self.members.all()
+        return False
 
 class GroupMembership(models.Model):
     group = models.ForeignKey(Group)

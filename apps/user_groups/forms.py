@@ -76,15 +76,14 @@ class GroupForm(TendenciBaseForm):
             if 'status_detail' in self.fields: self.fields.pop('status_detail')               
 
 class GroupMembershipForm(forms.ModelForm):
-    def __init__(self, mygroup=None, user_id=None, *args, **kwargs):
-        super(GroupMembershipForm, self).__init__(*args, **kwargs)
-        self.fields['member'].queryset = User.objects.filter(is_active=1)
-        if mygroup:
+    def __init__(self, group=None, user_id=None, *args, **kwargs):
+        super(GroupMembershipForm, self).__init__(*args, **kwargs)        
+        if group:
             # exclude those already joined
-            exclude_userid = [user.id for user in mygroup.members.all()]
+            exclude_userid = [user.id for user in group.members.all()]
             self.fields['member'].queryset = User.objects.all().exclude(id__in=exclude_userid)
         else:
-            self.fields['member'].queryset = User.objects.all()
+            self.fields['member'].queryset = User.objects.all(is_active=1)
         if user_id:
             del self.fields["member"]
             

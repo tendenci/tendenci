@@ -12,10 +12,10 @@
 		<li><a href="{% url profile.search %}">Users</a></li>
 		
 		<li>
-			<span>User Groups</span>
+			<span>{% firstof MODULE_GROUPS_LABEL 'Groups' %}</span>
 			<ul id="secondary">
 				<li>
-				<a href="/groups/">User Groups:</a>
+				<a href="/groups/">{% firstof MODULE_GROUPS_LABEL 'Groups' %}:</a>
 				</li> 
 				{% has_perm user site_settings.change_setting as can_edit_setting %}
 				{% if can_edit_setting %}
