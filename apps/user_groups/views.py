@@ -10,6 +10,7 @@ from django.db.models import Count
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.contrib import messages
 
 from user_groups.models import Group, GroupMembership
 from user_groups.forms import GroupForm, GroupMembershipForm, GroupPermissionForm
@@ -29,22 +30,7 @@ except:
 
 def group_search(request, template_name="user_groups/search.html"):
     query = request.GET.get('q', None)
-    
-    if is_admin(request.user):
-        groups = Group.objects.search(query)
-    else:
-        if has_perm(request.user,'user_groups.view_group'):
-            groups = Group.objects.search(query).filter(show_as_option=1, allow_self_add=1, 
-                                                        status=1, status_detail='active')
-        else:
-            if not request.user.is_anonymous():
-                groups = Group.objects.search(query).filter(show_as_option=1, allow_self_add=1, 
-                                                            status=1, status_detail='active',
-                                                            allow_user_view=1)
-            else:
-                groups = Group.objects.search(query).filter(show_as_option=1, allow_self_add=1, 
-                                                            status=1, status_detail='active',
-                                                            allow_anonymous_view=1)
+    groups = Group.objects.search(query, user=request.user)
 
     log_defaults = {
         'event_id' : 164000,
@@ -206,6 +192,72 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
     return render_to_response(template_name, {'group':group}, 
         context_instance=RequestContext(request))
 
+def group_membership_self_add(request, slug, user_id):
+    group = get_object_or_404(Group, slug=slug)
+    user = get_object_or_404(User, pk=user_id)
+    
+    if not has_perm(request.user,'user_groups.view_group') and not group.allow_self_add:
+        raise Http403
+    
+    group_membership = GroupMembership.objects.filter(member=user, group=group)
+    
+    if not group_membership:  
+        group_membership = GroupMembership()
+        
+        group_membership.group = group
+        group_membership.member = user
+        group_membership.creator_id = user.id
+        group_membership.creator_username = user.username
+        group_membership.owner_id =  user.id
+        group_membership.owner_username = user.username   
+        
+        group_membership.save()
+    
+        log_defaults = {
+            'event_id' : 221000,
+            'event_data': '%s (%d) added by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
+            'description': '%s added' % group_membership._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': group_membership,
+        }
+        EventLog.objects.log(**log_defaults)     
+        
+        messages.add_message(request, messages.INFO, 'Successfully added yourself to group %s' % group)
+    else:
+        messages.add_message(request, messages.INFO, 'You are already in the group %s' % group)
+        
+    return HttpResponseRedirect(reverse('group.search'))
+
+def group_membership_self_remove(request, slug, user_id):
+    group = get_object_or_404(Group, slug=slug)
+    
+    if not has_perm(request.user,'user_groups.view_group') and not group.allow_self_remove:
+        raise Http403
+
+    user = get_object_or_404(User, pk=user_id)
+    
+    group_membership = GroupMembership.objects.filter(member=user, group=group)
+    
+    if group_membership:
+        group_membership = group_membership[0]
+        if group_membership.member == user:
+            log_defaults = {
+                'event_id' : 223000,
+                'event_data': '%s (%d) deleted by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
+                'description': '%s deleted' % group_membership._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': group_membership,
+            }
+            EventLog.objects.log(**log_defaults)
+            group_membership.delete()
+            messages.add_message(request, messages.INFO, 'Successfully removed yourself from group %s' % group)
+    else:
+        messages.add_message(request, messages.INFO, 'You are not in the group %s' % group)
+                    
+    return HttpResponseRedirect(reverse('group.search'))
+
 def groupmembership_add_edit(request, group_slug, user_id=None, 
                              form_class=GroupMembershipForm, 
                              template_name="user_groups/member_add_edit.html"):
@@ -214,54 +266,53 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
     
     if user_id:
         user = get_object_or_404(User, pk=user_id)
-        groupmembership = get_object_or_404(GroupMembership, member=user, group=group)
-        if not has_perm(request.user,'user_groups.change_groupmembership',groupmembership):
+        group_membership = get_object_or_404(GroupMembership, member=user, group=group)
+        if not has_perm(request.user,'user_groups.change_groupmembership',group_membership):
             raise Http403
         edit = True
     else:
-        groupmembership = None
+        group_membership = None
         if not has_perm(request.user,'user_groups.add_groupmembership'):
             raise Http403
         add = True
 
     if request.method == 'POST':
-        form = form_class(None, user_id, request.POST, instance=groupmembership)
+        form = form_class(None, user_id, request.POST, instance=group_membership)
         if form.is_valid():
-            groupmembership = form.save(commit=False)
-            groupmembership.group = group
-            if not groupmembership.id:
-                groupmembership.creator_id = request.user.id
-                groupmembership.creator_username = request.user.username
-            groupmembership.owner_id =  request.user.id
-            groupmembership.owner_username = request.user.username
+            group_membership = form.save(commit=False)
+            group_membership.group = group
+            if not group_membership.id:
+                group_membership.creator_id = request.user.id
+                group_membership.creator_username = request.user.username
+            group_membership.owner_id =  request.user.id
+            group_membership.owner_username = request.user.username
 
-            groupmembership.save()
+            group_membership.save()
             if add:
                 log_defaults = {
                     'event_id' : 221000,
-                    'event_data': '%s (%d) added by %s' % (groupmembership._meta.object_name, groupmembership.pk, request.user),
-                    'description': '%s added' % groupmembership._meta.object_name,
+                    'event_data': '%s (%d) added by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
+                    'description': '%s added' % group_membership._meta.object_name,
                     'user': request.user,
                     'request': request,
-                    'instance': groupmembership,
+                    'instance': group_membership,
                 }
                 EventLog.objects.log(**log_defaults)                
             if edit:
                 log_defaults = {
                     'event_id' : 222000,
-                    'event_data': '%s (%d) edited by %s' % (groupmembership._meta.object_name, groupmembership.pk, request.user),
-                    'description': '%s edited' % groupmembership._meta.object_name,
+                    'event_data': '%s (%d) edited by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
+                    'description': '%s edited' % group_membership._meta.object_name,
                     'user': request.user,
                     'request': request,
-                    'instance': groupmembership,
+                    'instance': group_membership,
                 }
                 EventLog.objects.log(**log_defaults)
                             
             
             return HttpResponseRedirect(group.get_absolute_url())
     else:
-
-        form = form_class(group, user_id, instance=groupmembership)
+        form = form_class(group, user_id, instance=group_membership)
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
@@ -269,21 +320,21 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
 def groupmembership_delete(request, group_slug, user_id, template_name="user_groups/member_delete.html"):
     group = get_object_or_404(Group, slug=group_slug)
     user = get_object_or_404(User, pk=user_id)
-    groupmembership = get_object_or_404(GroupMembership, group=group, member=user)
-    if not has_perm(request.user,'user_groups.delete_groupmembership',groupmembership):
+    group_membership = get_object_or_404(GroupMembership, group=group, member=user)
+    if not has_perm(request.user,'user_groups.delete_groupmembership',group_membership):
         raise Http403
     
     if request.method == 'POST':
         log_defaults = {
             'event_id' : 223000,
-            'event_data': '%s (%d) deleted by %s' % (groupmembership._meta.object_name, groupmembership.pk, request.user),
-            'description': '%s deleted' % groupmembership._meta.object_name,
+            'event_data': '%s (%d) deleted by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
+            'description': '%s deleted' % group_membership._meta.object_name,
             'user': request.user,
             'request': request,
-            'instance': groupmembership,
+            'instance': group_membership,
         }
         EventLog.objects.log(**log_defaults)
-        groupmembership.delete()
+        group_membership.delete()
         return HttpResponseRedirect(group.get_absolute_url())
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))

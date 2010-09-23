@@ -26,9 +26,9 @@ def order_by(queryset, args):
     return queryset.order_by(*args)
 
 @register.filter_function
-def in_group(user, arg):
-    if arg:
-        return arg.lower() in [dict['name'].lower() for dict in user.groups.values('name')]
+def in_group(user, group):
+    if group:
+        return group in [dict['pk'] for dict in user.group_set.values('pk')]
     else:
         return False
 
