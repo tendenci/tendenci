@@ -274,7 +274,7 @@ HAYSTACK_SEARCH_ENGINE = 'solr'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
 HAYSTACK_SOLR_URL = 'http://127.0.0.1:8000/tendenci50/'
 HAYSTACK_SOLR_TIMEOUT = 60
-HAYSTACK_INCLUDED_APPS = ('article','page','news','story')
+HAYSTACK_INCLUDED_APPS = ('article','directory','event','photoset','job','page','news','resume','story')
 
 #---------------------------------------------------------------
 # payment gateway settings - LOGIN and KEY need to be moved to local_urls.py later
