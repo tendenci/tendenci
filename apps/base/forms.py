@@ -25,6 +25,8 @@ class SlugField(CharField):
         self.validate(value)
         self.run_validators(value)
         
+        value = value.replace('//','')
         value = value.strip('/')
+        
         return value
         
