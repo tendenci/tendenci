@@ -74,6 +74,7 @@ class Directory(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_directory","Can view directory"),)
+        verbose_name_plural = 'directories'
 
     def get_meta(self, name):
         """
