@@ -21,12 +21,12 @@ class SlugField(CharField):
         super(SlugField, self).__init__(*args, **kwargs)
         
     def clean(self, value):
-        value = self.to_python(value)
-        self.validate(value)
-        self.run_validators(value)
-        
+        value = self.to_python(value)     
         value = value.replace('//','')
         value = value.strip('/')
+
+        self.validate(value)
+        self.run_validators(value)
         
         return value
         

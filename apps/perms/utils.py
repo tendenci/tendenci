@@ -29,7 +29,11 @@ def has_perm(user, perm, obj=None):
 def is_admin(user):
     if not user or user.is_anonymous():
         return False
-    
+
+    if hasattr(user,'impersonated_user'):
+        if isinstance(user.impersonated_user, User):
+            user = user.impersonated_user
+       
     if hasattr(user, 'is_admin'):
         return getattr(user, 'is_admin')
     else:

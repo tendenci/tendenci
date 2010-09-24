@@ -70,6 +70,8 @@ class IsAdminNode(Node):
         
     def render(self, context):
         user = self.resolve(self.user, context)
+
+
         if isinstance(user, User):
             is_admin = utils.is_admin(user)
         else:
