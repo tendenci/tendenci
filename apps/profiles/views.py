@@ -108,7 +108,7 @@ def search(request, template_name="profiles/search.html"):
             raise Http403
     
     query = request.GET.get('q', None)
-    profiles = Profile.objects.search(query)
+    profiles = Profile.objects.search(query, user=request.user)
     
     if not is_admin(request.user):
         if not allow_user_search:
