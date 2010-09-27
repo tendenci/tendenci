@@ -35,9 +35,11 @@ class Group(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_group","Can view group"),)
-        
+            
     def __unicode__(self):
-        return self.name
+        if not self.label:
+            return self.name
+        return self.label
 
     @models.permalink
     def get_absolute_url(self):

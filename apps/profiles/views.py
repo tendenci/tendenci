@@ -386,8 +386,10 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
 def edit_user_groups(request, id, template_name="profiles/edit_groups.html"):
     user_edit = get_object_or_404(User, pk=id)
     profile = user_edit.get_profile()
-    # a list of groups - need to figure out which ones to pull based on user's security level. 
-    groups = Group.objects.all()
+    
+    # get the groups with permissions
+    groups = Group.objects.search(user=request.user)
+    
     # a list of groups this user in
     groups_joined = user_edit.group_set.all()
 
