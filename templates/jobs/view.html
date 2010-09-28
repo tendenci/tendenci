@@ -116,20 +116,21 @@
 {% if job.contact_company or job.contact_address or job.contact_city or job.contact_state  %}
 		<h2>Company Information</h2>
 		<div class="company-wrap">
-			{{ job.contact_company }}<br />
-			{{ job.contact_address }}<br />
-			{{ job.contact_city }} {{ job.contact_state }} {{ job.contact_zip_code }}<br />
-			{{ job.contact_country }}
+			<div>{{ job.contact_company }}</div>
+			<div>{{ job.contact_address }}</div>
+			<div>{{ job.contact_city }} {{ job.contact_state }} {{ job.contact_zip_code }}</div>
+			<div>{{ job.contact_country }}</div>
 		</div>
 {% endif %}
 
-{% if job.contact_name or job.contact_phone or job.contact_email or job.contact_fax  %}
-		<h2>Contact Information</h2>
+{% if job.contact_name and job.contact_phone and job.contact_email and job.contact_fax  %}
+		<h2>Contact Information</h2><br />
 		<div class="contact-wrap">
 			<div>{{ job.contact_name }}</div>
 			<div>{{ job.contact_phone }}</div>
 			<div>{{ job.contact_fax }}</div>
-			<div><a href="">{{ job.contact_email|urlize }}</a></div>
+			<div>{{ job.contact_email|urlize }}</div>
+			<div>{{ contact_website|urlize }}>/div>
 		</div>
 {% endif %}
 
