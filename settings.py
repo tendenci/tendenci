@@ -163,6 +163,7 @@ INSTALLED_APPS = (
     
     # tendenci applications
     'base',
+    'accounts',
     'perms',
     'dashboard',
     'profiles',
