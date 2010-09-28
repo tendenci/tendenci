@@ -30,7 +30,25 @@
         {% if not user.is_authenticated %}
             {% if MODULE_USERS_SELFREGISTRATION %}<a href="{% url registration_register %}">Register</a>&nbsp;&ndash;&nbsp;{% endif %}<a id="modal" href="#login-screen">Log In</a>
             <div style="display: none;">
-                {% login_form %}
+                <div id="login-screen" style="width: 300px; height: 280px;">
+                    <div style="padding-bottom: 20px; border-bottom: 1px solid #d8d8d8;">
+                    <h2>Log In</h2>
+                    {% login_form %}
+                    </div>
+                    {% if MODULE_USERS_SELFREGISTRATION %}
+                    <div style="margin-top: 20px; border-top: 1px solid #fff;">
+                    <h4 style=" margin-bottom: 4px;">Forgot your password?</h4>
+                    <p style=" margin-bottom: 14px;"><a href="/accounts/password/reset/">Reset your password &rarr;</a></p>
+                    
+                    <h4 style=" margin-bottom: 4px;">Don't have an account?</h4>
+                    <p><a href="/accounts/register/">Register Now &rarr;</a></p>
+                    </div>
+                    {% else %}
+                    <div style="margin-top: 20px; border-top: 1px solid #fff;">
+          <img align="middle" src="{{ THEME_URL }}/media/images/tendenci-logo.png" alt="Tendenci" />
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         {% endif %}
     </div>
