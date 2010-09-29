@@ -1,1 +1,1 @@
-Resume Deleted on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+Resume (({{ object.title }})) deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}

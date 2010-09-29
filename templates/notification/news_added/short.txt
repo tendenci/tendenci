@@ -1,1 +1,1 @@
-New News Posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+New news ({{ object.headline }}) posting on {{ SITE_GLOBAL_SITEDISPLAYNAME }}

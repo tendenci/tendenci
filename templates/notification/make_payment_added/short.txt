@@ -1,1 +1,1 @@
-{{ SITE_GLOBAL_SITEDISPLAYNAME }} Payment Attempt Submitted by {{ mp.first_name }} {{ mp.last_name }}
+Payment attempt by {{ mp.last_name }}, {{ mp.first_name }} on {{ SITE_GLOBAL_SITEDISPLAYNAME }}

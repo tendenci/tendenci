@@ -388,14 +388,13 @@ def edit_user_groups(request, id, template_name="profiles/edit_groups.html"):
     profile = user_edit.get_profile()
     
     # get the groups with permissions
-    groups = Group.objects.search(user=request.user)
+    groups = [g.object for g in Group.objects.search(user=request.user)]
     
     # a list of groups this user in
     groups_joined = user_edit.group_set.all()
 
     if request.method == "POST":
         selected_groups = request.POST.getlist("user_groups")    # list of ids
-        
         selected_groups = [Group.objects.get(id=g) for g in selected_groups] # list of objects
         groups_to_add = [g for g in selected_groups if g not in groups_joined]
         for g in groups_to_add:
