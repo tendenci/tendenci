@@ -36,9 +36,25 @@
 		</div>
 {% endif %}
 
+{% if job.job_url %}
+		<div class="section-line">
+			<div class="label">URL</div>
+			<div class="value">{{ job.job_url|urlize }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+{% if job.level %}
+		<div class="section-line">
+			<div class="label">Level</div>
+			<div class="value">{{ job.level }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
 {% if job.period %}
 		<div class="section-line">
-			<div class="label">Position Type</div>
+			<div class="label">Period</div>
 			<div class="value">{{ job.period }}</div>
 			<div class="clear"></div>
 		</div>
@@ -63,7 +79,7 @@
 {% if job.percent_travel %}
 		<div class="section-line">
 			<div class="label">Travel Required</div>
-			<div class="value">{{ job.percent_travel }} of the time (approximate)</div>
+			<div class="value">{{ job.percent_travel }} percent of the time (approximate)</div>
 			<div class="clear"></div>
 		</div>
 {% endif %}
@@ -76,7 +92,7 @@
 		</div>
 {% endif %}
 
-{% if job.salary_from %}
+{% if job.salary_from and job.salary_to %}
 		<div class="section-line">
 			<div class="label">Salary</div>
 			<div class="value">{{ job.salary_from }} to {{ job.salary_to }}</div>
@@ -110,8 +126,6 @@
 			<div class="clear"></div>
 		</div>
 {% endif %}
-
-
 		
 {% if job.contact_company or job.contact_address or job.contact_city or job.contact_state  %}
 		<h2>Company Information</h2>
@@ -124,14 +138,30 @@
 {% endif %}
 
 {% if job.contact_name and job.contact_phone and job.contact_email and job.contact_fax  %}
-		<h2>Contact Information</h2><br />
+		<h2>Contact Information</h2>
 		<div class="contact-wrap">
 			<div>{{ job.contact_name }}</div>
-			<div>{{ job.contact_phone }}</div>
-			<div>{{ job.contact_fax }}</div>
+			<div>Phone: {{ job.contact_phone }}</div>
+			<div>Fax: {{ job.contact_fax }}</div>
 			<div>{{ job.contact_email|urlize }}</div>
-			<div>{{ contact_website|urlize }}>/div>
+			<div>{{ job.contact_website|urlize }}</div>
 		</div>
+		
+		{% if job.contact_method %}
+				<div class="section-line">
+					<div class="label">Contact Method</div>
+					<div class="value">{{ job.contact_method }}</div>
+					<div class="clear"></div>
+				</div>
+		{% endif %}
+		
+		{% if job.is_agency %}
+				<div class="section-line">
+					<div class="label">Agency</div>
+					<div class="value">{{ job.is_agency }}</div>
+					<div class="clear"></div>
+				</div>
+		{% endif %}
 {% endif %}
 
         <div class="meta">
