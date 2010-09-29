@@ -28,10 +28,10 @@ def get_imp_message(request, user):
         url = site_url + request.path
                 
     if query_string:
-        imp_path = '%s&impersonate=%s' % (url, user,)
+        imp_path = '%s&_impersonate=%s' % (url, user,)
         stop_path = '%s&_stop_impersonate=%s' % (url, user,)
     else:
-        imp_path = '%s?impersonate=%s' % (url, user,)
+        imp_path = '%s?_impersonate=%s' % (url, user,)
         stop_path = '%s?_stop_impersonate=%s' % (url, user,)
         
     message_repl = (user.get_absolute_url(),
