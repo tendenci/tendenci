@@ -30,7 +30,6 @@ class ProfileIndex(indexes.RealTimeSearchIndex):
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('profiles.view_profile', obj)
         user_list = []
-        print users
         if users:
             for user in users:
                 user_list.append(user.username)

@@ -1,1 +1,1 @@
-New User Posting to {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+New user ({{ object.username }}) added on {{ SITE_GLOBAL_SITEDISPLAYNAME }}

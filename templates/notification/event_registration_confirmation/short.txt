@@ -1,1 +1,2 @@
-{{ site_label }} Event Confirmed - {{ event.title }} on {{ event.start_dt|date:"N j, Y \a\t f A" }}
+{% load base_filters %}
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} Event Confirmed - {{ event.title }} on {{ event.start_dt|date_short }}

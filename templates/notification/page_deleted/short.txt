@@ -1,1 +1,1 @@
-Page Deleted on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+Page ({{ object.title }}) deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}
