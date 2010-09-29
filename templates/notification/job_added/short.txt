@@ -1,1 +1,1 @@
-New Job Posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+New Job ({{ object.title }}) posting on {{ SITE_GLOBAL_SITEDISPLAYNAME }}

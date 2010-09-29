@@ -83,7 +83,7 @@ class GroupMembershipForm(forms.ModelForm):
             exclude_userid = [user.id for user in group.members.all()]
             self.fields['member'].queryset = User.objects.all().exclude(id__in=exclude_userid)
         else:
-            self.fields['member'].queryset = User.objects.all(is_active=1)
+            self.fields['member'].queryset = User.objects.filter(is_active=1)
         if user_id:
             del self.fields["member"]
             

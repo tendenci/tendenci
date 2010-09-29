@@ -2,6 +2,7 @@
 from django.template import Library
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
+from django.utils import formats
 
 register = Library()
 
@@ -19,6 +20,50 @@ def localize_date(value, to_tz=None):
         return ''
 
 localize_date.is_safe = True
+
+@register.filter_function
+def date_short(value, arg=None):
+    """Formats a date according to the given format."""
+    from django.utils.dateformat import format
+    from site_settings.utils import get_setting
+    if not value:
+        return u''
+    if arg is None:
+        s_date_format = get_setting('site','global','dateformat')
+        if s_date_format:
+            arg = s_date_format
+        else:
+            arg = settings.SHORT_DATETIME_FORMAT
+    try:
+        return formats.date_format(value, arg)
+    except AttributeError:
+        try:
+            return format(value, arg)
+        except AttributeError:
+            return ''
+date_short.is_safe = False
+
+@register.filter_function
+def date_long(value, arg=None):
+    """Formats a date according to the given format."""
+    from django.utils.dateformat import format
+    from site_settings.utils import get_setting
+    if not value:
+        return u''
+    if arg is None:
+        s_date_format = get_setting('site','global','dateformatlong')
+        if s_date_format:
+            arg = s_date_format
+        else:
+            arg = settings.DATE_FORMAT
+    try:
+        return formats.date_format(value, arg)
+    except AttributeError:
+        try:
+            return format(value, arg)
+        except AttributeError:
+            return ''
+date_long.is_safe = False
 
 @register.filter_function
 def order_by(queryset, args):

@@ -1,1 +1,1 @@
-New Page Posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}: {{ object.title }}
+New page ({{ object.title }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}
