@@ -21,7 +21,7 @@
   <tr> 
     <td width="2%">&nbsp;</td>
     <td width="23%"> Body:</td>
-    <td width="75%"><b>{{ object.body }}</b></td>
+    <td width="75%"><b>{{ object.body|striptags|safe }}</b></td>
   </tr>
 </table>
 <p>To view the details of this 

@@ -1,1 +1,1 @@
-New Article Posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ object.headline|truncatewords:8}}
+New article ({{ object.headline }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}

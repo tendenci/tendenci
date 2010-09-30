@@ -17,6 +17,7 @@ from photos.models import Image, Pool, PhotoSet
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 from base.http import Http403
 from perms.models import ObjectPermission
+from perms.utils import has_perm
 from event_logs.models import EventLog
 
 def details(request, id, set_id=0, template_name="photos/details.html"):
@@ -25,7 +26,7 @@ def details(request, id, set_id=0, template_name="photos/details.html"):
     set_id = int(set_id)
 
     # permissions
-    if not request.user.has_perm('photos.view_image', photo):
+    if not has_perm(request.user,'photos.view_image',photo):
         raise Http403
 
     # if not public
@@ -54,7 +55,7 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
     set_id = int(set_id)
 
     # permissions
-    if not request.user.has_perm('photos.view_image', photo):
+    if not has_perm(request.user,'photos.view_image',photo):
         raise Http403
 
     # if private
@@ -155,7 +156,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
     set_id = int(set_id)
 
     # permissions
-    if not request.user.has_perm('photos.change_image', photo):
+    if not has_perm(request.user,'photos.change_image',photo):
         raise Http403
 
     # get available photo sets
@@ -214,7 +215,7 @@ def delete(request, id, set_id=0):
     photo = get_object_or_404(Image, id=id)
 
     # permissions
-    if not request.user.has_perm('photos.delete_image', photo):
+    if not has_perm(request.user,'photos.delete_image',photo):
         raise Http403
 
     if request.method == "POST":
@@ -242,7 +243,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
     """ Add a photo set """
 
     # if no permission; permission exception
-    if not request.user.has_perm('photos.add_photoset'):
+    if not has_perm(request.user,'photos.add_photoset'):
         raise Http403
 
     if request.method == "POST":
@@ -257,14 +258,16 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                 photo_set.owner = request.user
                 photo_set.owner_username = request.user.username
                 photo_set.author = request.user
-                
+
+                # set up user permission
+                photo_set.allow_user_view, photo_set.allow_user_edit = form.cleaned_data['user_perms']
+                            
                 photo_set.save() # get pk
 
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, photo_set)
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], photo_set)
                 # assign creator permissions
-                ObjectPermission.objects.assign(photo_set.creator, photo_set)
+                ObjectPermission.objects.assign(photo_set.creator, photo_set) 
 
                 photo_set.save() # update search-index w/ permissions
 
@@ -293,7 +296,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
-    if not request.user.has_perm('photos.edit_photoset', photo_set):
+    if not has_perm(request.user,'photos.edit_photoset',photo_set):
         raise Http403
     
     if request.method == "POST":
@@ -302,11 +305,13 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
             if form.is_valid():
                 photo_set = form.save(commit=False)
 
-                # remove all permissions on the object
+                # set up user permission
+                photo_set.allow_user_view, photo_set.allow_user_edit = form.cleaned_data['user_perms']
+                
+                # assign permissions
                 ObjectPermission.objects.remove_all(photo_set)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, photo_set)
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], photo_set)
+                ObjectPermission.objects.assign(photo_set.creator, photo_set) 
                 
                 photo_set.save()
 
@@ -338,7 +343,7 @@ def photoset_delete(request, id, template_name="photos/photo_set/delete.html"):
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
-    if not request.user.has_perm('photos.delete_photoset', photo_set):
+    if not has_perm(request.user,'photos.delete_photoset',photo_set):
         raise Http403
 
     log_defaults = {
@@ -395,7 +400,7 @@ def photos_batch_add(request, photoset_id=0):
     """
 
     # if no permission; permission exception
-    if not request.user.has_perm('photos.add_image'):
+    if not has_perm(request.user,'photos.add_image'):
         raise Http403
 
     if request.method == 'POST':
@@ -531,7 +536,7 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
             else: raise Http404
         else:
             # if permission; get photos for editing
-            if request.user.has_perm('photos.change_photoset'):
+            if has_perm(request.user,'photos.change_photoset'):
                 # my latest uploaded photos
                 photo_queryset = Image.objects.filter(Q(safetylevel=3, member=request.user))
                 photo_queryset = photo_queryset.order_by("-date_added")[:60] # limit when pulling all
@@ -551,7 +556,7 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     photo_set = get_object_or_404(PhotoSet, id=id)
     photos = photo_set.image_set.all().order_by('date_added', 'id')
 
-    if not request.user.has_perm('photos.view_photoset', photo_set):
+    if not has_perm(request.user,'photos.view_photoset',photo_set):
         raise Http403
 
     log_defaults = {

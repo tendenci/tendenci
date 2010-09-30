@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
+from django.contrib.auth.models import User
 
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from haystack.query import SearchQuerySet
@@ -44,6 +45,12 @@ class FormManager(models.Manager):
         """
         sqs = SearchQuerySet()
         user = kwargs.get('user', None)
+
+        # check to see if there is impersonation
+        if hasattr(user,'impersonated_user'):
+            if isinstance(user.impersonated_user, User):
+                user = user.impersonated_user
+                
         is_an_admin = is_admin(user)
             
         if query:
@@ -67,7 +74,7 @@ class Form(TendenciBaseModel):
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000)
-    response = models.TextField(_("Response"), max_length=2000)
+    response = models.TextField(_("Confirmation Text"), max_length=2000)
 #    status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
 #        default=STATUS_PUBLISHED)
     send_email = models.BooleanField(_("Send email"), default=False, help_text=

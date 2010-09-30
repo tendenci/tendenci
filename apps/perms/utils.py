@@ -1,10 +1,39 @@
 from profiles.models import Profile
 from django.contrib.auth.models import User
 
+def has_perm(user, perm, obj=None):
+    """
+        A simple wrapper around the user.has_perm
+        functionality.
+        
+        It checks for impersonation and has high 
+        hopes for future checks with friends and 
+        settings functionalities. 
+    """
+    # check to see if there is impersonation
+    if hasattr(user,'impersonated_user'):
+        if isinstance(user.impersonated_user, User):
+            # check the logged in users permissions
+            logged_in_has_perm = user.has_perm(perm,obj)
+            if not logged_in_has_perm:
+                return False
+            else:
+                impersonated_has_perm = user.impersonated_user.has_perm(perm, obj)
+                if not impersonated_has_perm:
+                    return False
+                else:
+                    return True
+    else:
+        return user.has_perm(perm, obj)
+
 def is_admin(user):
     if not user or user.is_anonymous():
         return False
-    
+
+    if hasattr(user,'impersonated_user'):
+        if isinstance(user.impersonated_user, User):
+            user = user.impersonated_user
+       
     if hasattr(user, 'is_admin'):
         return getattr(user, 'is_admin')
     else:
@@ -57,6 +86,7 @@ def get_notice_recipients(scope, scope_category, setting_name):
     m_recipients = (get_setting(scope, scope_category, setting_name)).split(',')
     m_recipients = [r.strip() for r in m_recipients]
 
+    # consolidate [remove duplicate email address]
     for recipient in list(set(g_recipients+m_recipients)):
         if email_re.match(recipient):
             recipients.append(recipient)

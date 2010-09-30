@@ -8,6 +8,13 @@ div.forms .errors {
 	font-weight: bold;
 }
 
+div.forms .form-label {
+	font-size: 1.4em;
+	border-bottom: 1px solid silver;
+	margin: 35px 0 10px 0;
+	font-weight: bold;	
+}
+
 div.forms .form-field {
 	margin-bottom: 15px;
 }
@@ -75,6 +82,15 @@ div.forms div.checkbox .help-text {
 	clear: both;
 }
 
+div.forms fieldset {
+	border: 0;	
+}
+
+div.forms fieldset legend {
+  font-size:1.4em;
+  font-weight:bold;	
+}
+
 div.forms div.form-grouping {
 	margin-bottom: 15px;	
 	padding: 5px 0 5px 10px;
@@ -90,4 +106,111 @@ div.forms div.alt {
 
 img.captcha {
 	display: block;
+}
+
+/* groups */
+table#id_group_perms {
+	text-align: left;
+	border: 1px solid #DDD;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+table#id_group_perms tr.alt {
+	background-color: #FFFFFF;
+}
+
+table#id_group_perms td {
+	padding: 5px;	
+}
+
+table#id_group_perms td input {
+	cursor: pointer;	
+}
+
+table#id_group_perms th.header-col-1 {
+	width: 150px;
+}
+
+table#id_group_perms th.header-col-2 {
+	width: 70px;
+}
+
+table#id_group_perms th.header-col-3 {
+	width: 70px;
+}
+
+
+/* users */
+table#id_user_perms {
+	text-align: left;
+	border: 1px solid #DDD;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+}
+
+table#id_user_perms tr.alt {
+	background-color: #FFFFFF;
+}
+
+table#id_user_perms td {
+	padding: 5px;	
+}
+
+table#id_user_perms td input {
+	cursor: pointer;	
+}
+
+table#id_user_perms th.header-col-1 {
+	width: 150px;
+}
+
+table#id_user_perms th.header-col-2 {
+	width: 70px;
+}
+
+table#id_user_perms th.header-col-3 {
+	width: 70px;
+}
+
+/* admin-only section */
+div.forms fieldset.admin-only {
+	background-color: #EFEFEF;	
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+
+div.forms fieldset.admin-only legend {
+	padding: 5px;
+}
+
+/* permission section */
+
+div.id_group_perms {
+	padding-top: 10px;
+	border-top: 1px solid #CCC;	
+}
+
+div.id_user_perms {
+	padding-top: 10px;
+	border-top: 1px solid #CCC;	
+}
+
+div.forms fieldset.permissions {
+	background-color: #EFEFEF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+div.forms fieldset.permissions legend {
+	padding: 5px;
 }

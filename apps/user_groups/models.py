@@ -19,7 +19,7 @@ class Group(TendenciBaseModel):
                                                              ('distribution','Distribution'),
                                                              ('security','Security'),), default='distribution')
     email_recipient = models.CharField(_('Recipient Email'), max_length=255, blank=True)
-    show_as_option = models.BooleanField(_('Display Option'), default=1)
+    show_as_option = models.BooleanField(_('Display Option'), default=1, blank=True)
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=1)
     allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=1)
     description = models.TextField(blank=True)
@@ -35,9 +35,11 @@ class Group(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_group","Can view group"),)
-        
+            
     def __unicode__(self):
-        return self.name
+        if not self.label:
+            return self.name
+        return self.label
 
     @models.permalink
     def get_absolute_url(self):
@@ -51,6 +53,10 @@ class Group(TendenciBaseModel):
             
         super(self.__class__, self).save(force_insert, force_update)
 
+    def is_member(self, user):
+        if user:
+            return user in self.members.all()
+        return False
 
 class GroupMembership(models.Model):
     group = models.ForeignKey(Group)

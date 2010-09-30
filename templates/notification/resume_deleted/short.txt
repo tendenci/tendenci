@@ -1,0 +1,1 @@
+Resume (({{ object.title }})) deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}

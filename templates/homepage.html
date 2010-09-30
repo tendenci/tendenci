@@ -25,8 +25,9 @@
     	<li class="online"><a href="{% url groups %}">{% firstof MODULE_GROUPS_LABEL "Groups" %}</a></li>
     	<li class="offline"><a href="javascript:;">{% firstof MODULE_EVENTS_LABEL "Events" %}</a></li>
     	<li class="online"><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL "Articles" %}</a></li>
-    	<li class="offline"><a href="javascript:;">{% firstof MODULE_JOBS_LABEL "Jobs" %}</a></li>
     	<li class="online"><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL "News" %}</a></li>
+    	<li class="offline"><a href="javascript:;">{% firstof MODULE_JOBS_LABEL "Jobs" %}</a></li>
+    	<li class="offline"><a href="javascript:;">{% firstof MODULE_RESUMES_LABEL "Resumes" %}</a></li>
     	<li class="offline"><a href="javascript:;">{% firstof MODULE_DIRECTORIES_LABEL "Directories" %}</a></li>
         <li class="online"><a href="{% url photoset_latest %}">{% firstof MODULE_PHOTOSETS_LABEL "Pages" %}</a></li>
     	<li class="online"><a href="{% url stories %}">{% firstof MODULE_STORIES_LABEL "Pages" %}</a></li>

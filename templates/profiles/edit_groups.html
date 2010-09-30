@@ -37,7 +37,9 @@
 		<label for="id_user_groups" style="float:left; padding-right: 1em;"><b>Groups:</b></label>
 		<select multiple="multiple" name="user_groups" id="id_user_groups">
 		{% for g in groups %}
-		<option value="{{ g.id }}"{% if g in groups_joined %} selected="selected"{% endif %}>{{ g.label}}</option>
+		<option value="{{ g.id }}"{% if g in groups_joined %} selected="selected"{% endif %}>
+			{% firstof g.label g.name 'Untitled' %}
+		</option>
 		{% endfor %}
 		</select>
 		

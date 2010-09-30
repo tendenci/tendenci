@@ -28,6 +28,7 @@
 }
 .invoice-view-detail-middle{
 	float: left;
+	width: 60%;
 }
 .invoice-view-detail-right{
 	float: right;

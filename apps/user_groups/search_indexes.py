@@ -24,6 +24,8 @@ class GroupIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
     
+    who_can_view = indexes.CharField()
+    
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('user_groups.view_group', obj)
         user_list = []

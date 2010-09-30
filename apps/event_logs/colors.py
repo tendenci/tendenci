@@ -86,6 +86,15 @@ colors = {
     '255000':'00CC66', # view    
     '255001':'336600', # print view    
     
+     # resumes
+    '350000':'0099CC', # base
+    '351000':'0099CC', # add
+    '352000':'0099CC', # edit
+    '353000':'0099CC', # delete
+    '354000':'0099CC', # search 
+    '355000':'0099CC', # view    
+    '355001':'0099CC', # print view    
+    
     # pages
     '580000':'009900', # base
     '581000':'009933', # add
@@ -211,8 +220,11 @@ colors = {
     '444000':'CCCC33', # search 
     '445000':'CCCC33', # view    
     '445001':'CCCC33', # print view  
-    '442210':'CCCC33', # renew      
-
+    '442210':'CCCC33', # renew     
+    
+    # impersonation
+    '1080000':'FF0000', 
+    
 }
 
 def get_color(event_id):
