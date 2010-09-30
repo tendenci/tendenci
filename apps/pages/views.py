@@ -15,6 +15,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from perms.utils import get_notice_recipients
 from perms.utils import is_admin
+from perms.utils import has_perm
 
 try:
     from notification import models as notification
@@ -25,7 +26,7 @@ def index(request, slug=None, template_name="pages/view.html"):
     if not slug: return HttpResponseRedirect(reverse('page.search'))
     page = get_object_or_404(Page, slug=slug)
 
-    if request.user.has_perm('pages.view_page', page):
+    if has_perm(request.user,'pages.view_page',page):
         log_defaults = {
             'event_id' : 585000,
             'event_data': '%s (%d) viewed by %s' % (page._meta.object_name, page.pk, request.user),
@@ -62,7 +63,7 @@ def print_view(request, slug, template_name="pages/print-view.html"):
     print 'blah!'
     page = get_object_or_404(Page, slug=slug)
 
-    if request.user.has_perm('pages.view_page', page):
+    if has_perm(request.user,'pages.view_page',page):
         log_defaults = {
             'event_id' : 585001,
             'event_data': '%s (%d) viewed by %s' % (page._meta.object_name, page.pk, request.user),
@@ -82,18 +83,20 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
 
     page = get_object_or_404(Page, pk=id)
 
-    if request.user.has_perm('pages.change_page', page):    
+    if has_perm(request.user,'pages.change_page',page):    
         if request.method == "POST":
             form = form_class(request.user, request.POST, instance=page)
             if form.is_valid():
                 page = form.save(commit=False)
 
-                # remove all permissions on the object
+                # set up user permission
+                page.allow_user_view, page.allow_user_edit = form.cleaned_data['user_perms']
+                
+                # assign permissions
                 ObjectPermission.objects.remove_all(page)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, page)
-
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], page)
+                ObjectPermission.objects.assign(page.creator, page) 
+                
                 page.save()
 
                 log_defaults = {
@@ -105,10 +108,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
                     'instance': page,
                 }
                 EventLog.objects.log(**log_defaults)               
- 
-                # assign creator permissions
-                ObjectPermission.objects.assign(page.creator, page) 
-                
+  
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % page)
                 
                 if not is_admin(request.user):
@@ -136,7 +136,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
 
     # check permission
     page = get_object_or_404(Page, pk=id)
-    if not request.user.has_perm('pages.change_page', page):
+    if not has_perm(request.user,'pages.change_page',page):
         raise Http403
 
     defaults = {
@@ -164,23 +164,25 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
 @login_required
 def add(request, form_class=PageForm, template_name="pages/add.html"):
 
-    if request.user.has_perm('pages.add_page'):
+    if has_perm(request.user,'pages.add_page'):
         if request.method == "POST":
             form = form_class(request.user, request.POST)
             if form.is_valid():           
                 page = form.save(commit=False)
+                
                 # set up the user information
                 page.creator = request.user
                 page.creator_username = request.user.username
                 page.owner = request.user
                 page.owner_username = request.user.username
-
+                
+                # set up user permission
+                page.allow_user_view, page.allow_user_edit = form.cleaned_data['user_perms']
+                
                 page.save() # get pk
 
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, page)
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], page)
                 # assign creator permissions
                 ObjectPermission.objects.assign(page.creator, page) 
 
@@ -222,7 +224,7 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
 def delete(request, id, template_name="pages/delete.html"):
     page = get_object_or_404(Page, pk=id)
 
-    if request.user.has_perm('pages.delete_page'):   
+    if has_perm(request.user,'pages.delete_page'):   
         if request.method == "POST":
             log_defaults = {
                 'event_id' : 583000,

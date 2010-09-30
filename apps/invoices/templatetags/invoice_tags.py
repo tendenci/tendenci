@@ -28,9 +28,38 @@ def invoices_search_results_line(request, invoice):
         except Registration.DoesNotExist:
             reg8n = None
         return {'request':request, 'invoice':invoice, 'reg8n':reg8n}
+    elif invoice.invoice_object_type == 'job':
+        from jobs.models import Job
+        
+        try:
+            job = Job.objects.get(id=invoice.invoice_object_type_id)
+        except Job.DoesNotExist:
+            job = None
+        return {'request':request, 'invoice':invoice, 'job':job}
+    elif invoice.invoice_object_type == 'directory':
+        from directories.models import Directory
+        
+        try:
+            directory = Directory.objects.get(id=invoice.invoice_object_type_id)
+        except Directory.DoesNotExist:
+            directory = None
+        return {'request':request, 'invoice':invoice, 'directory':directory}
+    elif invoice.invoice_object_type == 'donation':
+        from donations.models import Donation
+        
+        try:
+            donation = Donation.objects.get(id=invoice.invoice_object_type_id)
+        except Donation.DoesNotExist:
+            donation = None
+        return {'request':request, 'invoice':invoice, 'donation':donation}
     else:
         return {'request':request, 'invoice':invoice}
-    
+ 
+ 
+@register.inclusion_tag("invoices/search_line_header.html")
+def invoices_search_line_header(request, invoice, obj_color):
+    return {'request':request, 'invoice':invoice, 'obj_color':obj_color}
+       
     
 @register.inclusion_tag("invoices/search-form.html", takes_context=True)
 def invoice_search(context):
@@ -57,6 +86,39 @@ def invoice_event_display(request, invoice):
     except Registration.DoesNotExist:
         reg8n = None
     return {'request':request, 'invoice':invoice, 'reg8n':reg8n}
+
+# display job on invoice view
+@register.inclusion_tag("invoices/job_display.html")
+def invoice_job_display(request, invoice):
+    from jobs.models import Job
+    #item_display = invoices_display_make_payments(request, invoice)
+    try:
+        job = Job.objects.get(id=invoice.invoice_object_type_id)
+    except Job.DoesNotExist:
+        job = None
+    return {'request':request, 'invoice':invoice, 'job':job}
+
+# display directory on invoice view
+@register.inclusion_tag("invoices/directory_display.html")
+def invoice_directory_display(request, invoice):
+    from directories.models import Directory
+    #item_display = invoices_display_make_payments(request, invoice)
+    try:
+        directory = Directory.objects.get(id=invoice.invoice_object_type_id)
+    except Directory.DoesNotExist:
+        directory = None
+    return {'request':request, 'invoice':invoice, 'directory':directory}
+
+# display donation on invoice view
+@register.inclusion_tag("invoices/donation_display.html")
+def invoice_donation_display(request, invoice):
+    from donations.models import Donation
+    #item_display = invoices_display_make_payments(request, invoice)
+    try:
+        donation = Donation.objects.get(id=invoice.invoice_object_type_id)
+    except Donation.DoesNotExist:
+        donation = None
+    return {'request':request, 'invoice':invoice, 'donation':donation}
 
 
 # display invoice total on invoice view

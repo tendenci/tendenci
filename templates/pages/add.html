@@ -1,6 +1,7 @@
 {% extends "pages/base.html" %}
 {% load page_tags %}
 {% load perm_tags %}
+{% load styled_forms %}
 
 {% block title %}{% firstof MODULE_PAGE_LABEL 'Page' %} Add{% endblock %}
 
@@ -18,123 +19,10 @@
 
     <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} Add</h1>
 
-	{% if form.errors %}
-	<div class="errors">
-		<p>Please review the fields below. Thank you.</p>
-		<ul>
-		{% for field in form %}
-			{% if field.errors %}
-				<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
-			{% endif %}
-		{% endfor %}
-		</ul>
-	</div>
-	{% endif %}
-
     <div class="page-wrap">
     	<form action="{% url page.add %}" method="post">
-    	<div class="forms">
-
-			<div class="item">
-				<div class="errs">{{ form.title.errors }}</div>
-				<div class="label">{{ form.title.label_tag }}</div>
-				<div class="field">{{ form.title }}</div>
-				<div class="help">{{ form.title.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form.slug.errors }}</div>
-				<div class="label">{{ form.slug.label_tag }}</div>
-				<div class="field">{{ form.slug }}</div>
-				<div class="help">{{ form.slug.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form.content.errors }}</div>
-				<div class="label">{{ form.content.label_tag }}</div>
-				<div class="field">{{ form.content }}</div>
-				<div class="help">{{ form.content.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item">
-				<div class="errs">{{ form.tags.errors }}</div>
-				<div class="label">{{ form.tags.label_tag }}</div>
-				<div class="field">{{ form.tags }}</div>
-				<div class="help">{{ form.tags.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-checkbox">
-				<div class="errs">{{ form.allow_anonymous_view.errors }}</div>
-				<div class="field">{{ form.allow_anonymous_view }}</div>
-				<div class="label">{{ form.allow_anonymous_view.label_tag }}</div>
-				<div class="help">{{ form.allow_anonymous_view.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-checkbox">
-				<div class="errs">{{ form.allow_user_view.errors }}</div>
-				<div class="field">{{ form.allow_user_view }}</div>
-				<div class="label">{{ form.allow_user_view.label_tag }}</div>
-				<div class="help">{{ form.allow_user_view.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-checkbox">
-				<div class="errs">{{ form.allow_user_edit.errors }}</div>
-				<div class="field">{{ form.allow_user_edit }}</div>
-				<div class="label">{{ form.allow_user_edit.label_tag }}</div>
-				<div class="help">{{ form.allow_user_edit.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			<div class="item-hr"></div>
-
-			<div class="item">
-				<div class="errs">{{ form.user_perms.errors }}</div>
-				<div class="label">{{ form.user_perms.label_tag }}</div>
-				<div class="field">{{ form.user_perms }}</div>
-				<div class="help">{{ form.user_perms.help_text }}</div>
-				<div class="clear"></div>
-			</div>
-
-			{% is_admin user as admin %}
-			{% if admin %}
-			<div class="admin-block">
-
-				<div class="item-text">
-					Administrators Only
-				</div>
-
-				<div class="item-checkbox">
-					<div class="errs">{{ form.syndicate.errors }}</div>
-					<div class="field">{{ form.syndicate }}</div>
-					<div class="label">{{ form.syndicate.label_tag }}</div>
-					<div class="help">{{ form.syndicate.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-
-				<div class="item-checkbox">
-					<div class="errs">{{ form.status.errors }}</div>
-					<div class="field">{{ form.status }}</div>
-					<div class="label">{{ form.status.label_tag }}</div>
-					<div class="help">{{ form.status.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-	
-				<div class="item">
-					<div class="errs">{{ form.status_detail.errors }}</div>
-					<div class="label">{{ form.status_detail.label_tag }}</div>
-					<div class="field field-short">{{ form.status_detail }}</div>
-					<div class="help">{{ form.status_detail.help_text }}</div>
-					<div class="clear"></div>
-				</div>
-			</div>
-			{% endif %}
-
+    	<div class="forms">			
+			{{ form|styled_form }}
         	<input type="submit" value="Add {% firstof MODULE_PAGES_LABEL 'Page' %}" />
 		</div>
         </form>

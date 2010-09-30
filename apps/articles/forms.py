@@ -39,15 +39,52 @@ class ArticleForm(TendenciBaseForm):
             'email',
             'tags',
             'allow_anonymous_view',
-            'allow_user_view',
-            'allow_user_edit',
             'syndicate',
             'featured',
             'not_official_content',
+            'user_perms',
+            'group_perms',
             'status',
             'status_detail',
         )
 
+        fieldsets = [('Article Information', {
+                      'fields': ['headline',
+                                 'slug',
+                                 'summary',
+                                 'body',
+                                 'tags',
+                                 'source', 
+                                 'website',
+                                 'release_dt',
+                                 'timezone',
+                                 'featured',
+                                 'not_official_content'
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Contact', {
+                      'fields': ['first_name',
+                                 'last_name',
+                                 'phone',
+                                 'fax',
+                                 'email',
+                                 ],
+                        'classes': ['contact'],
+                      }),
+                      ('Permissions', {
+                      'fields': ['allow_anonymous_view',
+                                 'user_perms',
+                                 'group_perms',
+                                 ],
+                      'classes': ['permissions'],
+                      }),
+                     ('Administrator Only', {
+                      'fields': ['syndicate',
+                                 'status',
+                                 'status_detail'], 
+                      'classes': ['admin-only'],
+                    })]
 
     def __init__(self, user=None, *args, **kwargs):
         self.user = user 

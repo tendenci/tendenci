@@ -19,6 +19,9 @@
 {% if invoice.invoice_object_type == 'event_registration'  %}
 	for Event Registration
 {% endif %}
+{% if invoice.invoice_object_type == 'job'  %}
+	for Job
+{% endif %}
 </h1>
 <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ SITE_GLOBAL_SITEMAILINGADDRESS }}</div>
 <div>{{ SITE_GLOBAL_NONPROFITSTATEMENT }}</div>
@@ -36,11 +39,20 @@
 	
 	{% if invoice.invoice_object_type == 'make_payment'  %}
 		{% invoice_makepayments_display request invoice %}
-	{% else %}
-		{% if invoice.invoice_object_type == 'event_registration'  %}
-			{% invoice_event_display request invoice %}
-		{% endif %}
 	{% endif %}
+	{% if invoice.invoice_object_type == 'event_registration'  %}
+		{% invoice_event_display request invoice %}
+	{% endif %}
+	{% if invoice.invoice_object_type == 'job'  %}
+		{% invoice_job_display request invoice %}
+	{% endif %}
+	{% if invoice.invoice_object_type == 'directory'  %}
+		{% invoice_directory_display request invoice %}
+	{% endif %}
+	{% if invoice.invoice_object_type == 'donation'  %}
+		{% invoice_donation_display request invoice %}
+	{% endif %}
+
 	{% invoice_total_display request invoice %}
 	
 	{% if invoice.balance > 0 and merchant_login %}

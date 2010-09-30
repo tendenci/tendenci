@@ -22,7 +22,7 @@
 				{% if can_edit_setting %}
 					<li><a href="{% url settings.index "module" "users" %}">Settings</a></li>
 				{% endif %}
-				<li><a href="{% url profile.index %}">View</a></li>
+				<li><a href="{% url profile.index %}">My Profile ({{ user.username }})</a></li>
 				<li><a href="{% url profile.edit user.pk %}">Edit</a></li>
 				<li><a href="{% url profile.search %}">Search</a></li>
 				{% if can_add_user %}

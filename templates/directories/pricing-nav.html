@@ -1,0 +1,52 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user directories.add_directorypricing as can_add_directory_pricing %}
+
+{% if nav_object %}
+	{% has_perm user directories.view_directorypricing nav_object as can_view_directory_pricing %}
+	{% has_perm user directories.change_directorypricing nav_object as can_edit_directory_pricing %}
+{% else %}
+	{% has_perm user directories.view_directorypricing as can_view_directory_pricing %}
+	{% has_perm user directories.change_directorypricing as can_edit_directory_pricing %}
+{% endif %}
+
+<div id="showh">
+	<ul id="primary">
+	
+	<li>		
+	<a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+
+	<li>
+		<span>Directory Pricing</span>
+		<ul id="secondary">
+			<li><a href="{% url directories %}">{% firstof MODULE_DIRECTORIES_LABEL 'Directories' %}:</a></li> 
+			
+				<li><a href="{% url directory_pricing.search %}">Pricing:</a></li>
+			
+			{% if nav_object %}
+				{% if can_view_directory_pricing %}
+				<li><a href="{% url directory_pricing.view nav_object.pk %}">View</a></li>
+				{% endif %}
+				{% if can_edit_directory_pricing %}
+				<li><a href="{% url directory_pricing.edit nav_object.pk %}">Edit</a></li>
+				{% endif %}
+			{% endif %}
+			<li><a href="{% url directory_pricing.search %}">Search</a></li>
+			{% if can_add_directory_pricing %}
+			<li><a href="{% url directory_pricing.add %}">Add</a></li>
+			{% endif %}
+			{% if user.is_authenticated %}
+			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			{% endif %}
+		</ul>
+		
+	</li>
+	{% if MODULE_NEWS_ENABLED %}
+	<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
+	{% endif %}
+	</ul>
+</div>

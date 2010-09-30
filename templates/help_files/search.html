@@ -1,0 +1,35 @@
+{% extends "help_files/base.html" %}
+{% load pagination_tags %}
+{% load help_file_tags %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>Help Files Search</h1>
+	 
+	{% help_file_search %}
+    {% autopaginate help_files 10 %}
+	
+	<div class="help-files-wrap">
+    {% for help_file in help_files %}
+		<div class="help-file-wrap">
+            <div class="quick-options">
+			{% help_file_options request.user help_file %}
+		    </div>
+		    <h3><a href="{{ help_file.object.get_absolute_url }}" alt="{{ help_file.question|striptags|safe }}">{{ help_file.question|striptags|safe }}</a></h3>
+		</div>
+	{% empty %}
+		<div>0 Results Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}{% endblock %}

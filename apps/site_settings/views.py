@@ -5,9 +5,10 @@ from django.template import RequestContext
 from base.http import Http403
 from site_settings.models import Setting
 from site_settings.forms import build_settings_form
+from perms.utils import has_perm
 
 def list(request, scope, scope_category, template_name="site_settings/list.html"):
-    if not request.user.has_perm('site_settings.change_setting'):
+    if not has_perm(request.user,'site_settings.change_setting'):
         raise Http403
     
     settings = Setting.objects.filter(scope=scope, scope_category=scope_category)
@@ -25,7 +26,7 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
     return render_to_response(template_name, {'form': form }, context_instance=RequestContext(request))
 
 def index(request, template_name="site_settings/settings.html"):
-    if not request.user.has_perm('site_settings.change_setting'):
+    if not has_perm(request.user,'site_settings.change_setting'):
         raise Http403
     settings = Setting.objects.all().order_by('scope_category')
     return render_to_response(template_name, {'settings':settings}, context_instance=RequestContext(request))

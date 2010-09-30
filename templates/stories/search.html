@@ -21,8 +21,6 @@
 	
 	<div class="stories-wrap">
     {% for story in stories %}
-    	{% has_perm user stories.view_story story as can_view %}
-    	{% if can_view %}
 		<div class="story-wrap">
                 <div class="quick-options">
  					{% stories_options request.user story %}
@@ -40,7 +38,6 @@
             </form>
 
 		</div>
-		{% endif %}
 	{% empty %}
 		<div>0 Results Found</div>
     {% endfor %}

@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
 
 from tagging.fields import TagField
 from base.fields import SlugField
@@ -11,6 +12,7 @@ from entities.models import Entity
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from jobs.module_meta import JobMeta
+from invoices.models import Invoice
 
 class Job(TendenciBaseModel ):
     guid = models.CharField(max_length=40)
@@ -61,16 +63,16 @@ class Job(TendenciBaseModel ):
     contact_website = models.CharField(max_length=300, blank=True)
  
     meta = models.OneToOneField(MetaTags, null=True)
-    entity = models.ForeignKey(Entity,null=True)
+    entity = models.ForeignKey(Entity,null=True, blank=True)
     tags = TagField(blank=True)
-                 
-    #integrate with payment (later)
-    #invoice_id = models.ForeignKey(Invoice, blank=True, null=True)   
-    #payment_method = models.CharField(max_length=50)
-    #member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
-    #member_count = models.IntegerField(blank=True)
-    #non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True)
-    #non_member_count = models.IntegerField(blank=True)
+    
+    invoice = models.ForeignKey(Invoice, blank=True, null=True)   
+    payment_method = models.CharField(max_length=50, blank=True, default='')
+    member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
+    member_count = models.IntegerField(blank=True, null=True)
+    non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
+    non_member_count = models.IntegerField(blank=True, null=True)
+    
     #override_price = models.DecimalField(null=True, max_digits=20, decimal_places=2, blank=True)
     #override_userid = models.IntegerField(null=True, blank=True)
  
@@ -99,4 +101,37 @@ class Job(TendenciBaseModel ):
 
     def __unicode__(self):
         return self.title
+    
+    
+class JobPricing(models.Model):
+    guid = models.CharField(max_length=40)
+    duration =models.IntegerField(blank=True)
+    regular_price =models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    premium_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    regular_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    premium_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    show_member_pricing = models.BooleanField()
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(User, related_name="job_pricing_creator",  null=True)
+    creator_username = models.CharField(max_length=50, null=True)
+    owner = models.ForeignKey(User, related_name="job_pricing_owner", null=True)
+    owner_username = models.CharField(max_length=50, null=True)
+    status = models.BooleanField(default=True)
+    
+    def save(self, user=None, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+            if user and user.id:
+                self.creator=user
+                self.creator_username=user.username
+        if user and user.id:
+            self.owner=user
+            self.owner_username=user.username
+        if not self.regular_price_member: self.regular_price_member = 0
+        if not self.premium_price_member: self.premium_price_member = 0
+        if not self.regular_price: self.regular_price = 0
+        if not self.premium_price: self.premium_price = 0
+            
+        super(self.__class__, self).save(*args, **kwargs)
 

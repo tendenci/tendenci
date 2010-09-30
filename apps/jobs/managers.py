@@ -2,6 +2,7 @@ import operator
 
 from django.db.models import Manager
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 from haystack.query import SearchQuerySet
 from perms.utils import is_admin
@@ -14,6 +15,12 @@ class JobManager(Manager):
         """
         sqs = SearchQuerySet()
         user = kwargs.get('user', None)
+
+        # check to see if there is impersonation
+        if hasattr(user,'impersonated_user'):
+            if isinstance(user.impersonated_user, User):
+                user = user.impersonated_user
+                
         is_an_admin = is_admin(user)
             
         if query:
@@ -72,6 +79,6 @@ class JobManager(Manager):
                 sqs = sqs.filter(status=1).filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True)
 
-            sqs = sqs.order_by('-create_dt')
-    
+        sqs = sqs.order_by('-create_dt')
+            
         return sqs.models(self.model)

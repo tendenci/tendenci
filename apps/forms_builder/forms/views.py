@@ -13,11 +13,12 @@ from forms_builder.forms.forms import FormForForm, FormForm
 from forms_builder.forms.models import Form, Field, FormEntry
 from forms_builder.forms.utils import generate_email_body
 from perms.models import ObjectPermission
+from perms.utils import has_perm
 from event_logs.models import EventLog
 
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
-    if not request.user.has_perm('forms.add_form'):
+    if not has_perm(request.user,'forms.add_form'):
         raise Http403
     
     if request.method == "POST":
@@ -29,13 +30,16 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
             form_instance.creator_username = request.user.username
             form_instance.owner = request.user
             form_instance.owner_username = request.user.username
+
+            # set up user permission
+            form_instance.allow_user_view, form_instance.allow_user_edit = form.cleaned_data['user_perms']
+                
             form_instance.save()
 
-            # assign permissions for selected users
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms: ObjectPermission.objects.assign(user_perms, form_instance)
+            # assign permissions for selected groups
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], form_instance)
             # assign creator permissions
-            ObjectPermission.objects.assign(form_instance.creator, form_instance)
+            ObjectPermission.objects.assign(form_instance.creator, form_instance) 
 
             log_defaults = {
                 'event_id' : 587100,
@@ -58,20 +62,19 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
 def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
     form_instance = get_object_or_404(Form, pk=id)
     
-    if not request.user.has_perm('forms.change_form', form_instance):
+    if not has_perm(request.user,'forms.change_form',form_instance):
         raise Http403    if request.method == "POST":
         form = form_class(request.user, request.POST, instance=form_instance)
         if form.is_valid():           
             form_instance = form.save(commit=False)
             
-            # remove all permissions on the object
+            # set up user permission
+            form_instance.allow_user_view, form_instance.allow_user_edit = form.cleaned_data['user_perms']
+            
+            # assign permissions
             ObjectPermission.objects.remove_all(form_instance)
-            # assign new permissions
-            user_perms = form.cleaned_data['user_perms']
-            if user_perms:
-                ObjectPermission.objects.assign(user_perms, form_instance)  
-            # assign creator permissions
-            ObjectPermission.objects.assign(form_instance.creator, form_instance)
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], form_instance)
+            ObjectPermission.objects.assign(form_instance.creator, form_instance) 
                 
             form_instance.save()
 
@@ -97,7 +100,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
 def update_fields(request, id, template_name="forms/update_fields.html"):
     form_instance = get_object_or_404(Form, id=id)
     
-    if not request.user.has_perm('forms.add_form', form_instance):
+    if not has_perm(request.user,'forms.add_form',form_instance):
         raise Http403
     form_class=inlineformset_factory(Form, Field, extra=3)
     
@@ -119,7 +122,7 @@ def delete(request, id, template_name="forms/delete.html"):
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
-    if not request.user.has_perm('forms.delete_form', form_instance):
+    if not has_perm(request.user,'forms.delete_form',form_instance):
         raise Http403
 
     if request.method == "POST":
@@ -144,7 +147,7 @@ def delete(request, id, template_name="forms/delete.html"):
 @login_required
 def entries(request, id, template_name="forms/entries.html"):
     form = get_object_or_404(Form, pk=id)
-    if not request.user.has_perm('forms.change_form', form):
+    if not has_perm(request.user,'forms.change_form',form):
         raise Http403
 
     entries = form.entries.all()
@@ -157,7 +160,7 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
     entry = get_object_or_404(FormEntry, pk=id)
     
     # check permission
-    if not request.user.has_perm('forms.delete_form', entry.form):
+    if not has_perm(request.user,'forms.delete_form',entry.form):
         raise Http403
 
     if request.method == "POST":
@@ -172,7 +175,7 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     entry = get_object_or_404(FormEntry, pk=id)
     
     # check permission
-    if not request.user.has_perm('forms.view_form', entry.form):
+    if not has_perm(request.user,'forms.view_form',entry.form):
         raise Http403
     return render_to_response(template_name, {'entry':entry}, 
         context_instance=RequestContext(request))
@@ -181,7 +184,7 @@ def entries_export(request, id):
     form_instance = get_object_or_404(Form, pk=id)
     
     # check permission
-    if not request.user.has_perm('forms.change_form', form_instance):
+    if not has_perm(request.user,'forms.change_form',form_instance):
         raise Http403
 
     log_defaults = {
@@ -283,7 +286,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     published = Form.objects.published(for_user=request.user)
     form = get_object_or_404(published, slug=slug)
 
-    if not request.user.has_perm('forms.view_form', form):
+    if not has_perm(request.user,'forms.view_form',form):
         raise Http403
     
     form_for_form = FormForForm(form, request.POST or None, request.FILES or None)

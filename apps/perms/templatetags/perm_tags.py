@@ -21,9 +21,9 @@ class HasPermNode(Node):
         user = self.user.resolve(context)
         if self.object:
             object = self.object.resolve(context)
-            has_perm = user.has_perm(self.perm, object)
+            has_perm = utils.has_perm(user, self.perm, object)
         else:
-            has_perm = user.has_perm(self.perm)
+            has_perm = utils.has_perm(user, self.perm)
             
         if self.context_var:
             context[self.context_var] = has_perm
@@ -70,6 +70,8 @@ class IsAdminNode(Node):
         
     def render(self, context):
         user = self.resolve(self.user, context)
+
+
         if isinstance(user, User):
             is_admin = utils.is_admin(user)
         else:

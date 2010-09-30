@@ -1,1 +1,1 @@
-User Profile Modification Notice for {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+User ({{ object.username }}) edited on {{ SITE_GLOBAL_SITEDISPLAYNAME }}

@@ -7,7 +7,7 @@ from emails.forms import EmailForm
 from emails.models import Email
 from site_settings.utils import get_setting
 from base.http import Http403
-from perms.utils import is_admin
+from perms.utils import is_admin, has_perm
 
 @login_required 
 def add(request, form_class=EmailForm, template_name="emails/edit.html"):
@@ -72,7 +72,7 @@ def search(request, template_name="emails/search.html"):
 def delete(request, id, template_name="emails/delete.html"):
     email = get_object_or_404(Email, pk=id)
     
-    if not request.user.has_perm('emails.delete_email', email): raise Http403
+    if not has_perm(request.user,'emails.delete_email',email): raise Http403
 
     if request.method == "POST":
         email.delete()

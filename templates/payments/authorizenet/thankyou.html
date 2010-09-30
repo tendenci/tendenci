@@ -1,7 +1,18 @@
 {% extends "site_base_authnet.html" %}
 
 {% block body %}
-<h1>Payment Status</h1>
+<h1>
+{% if job %}
+Job Posting - 
+{% endif %}
+{% if directory %}
+Directory Posting - 
+{% endif %}
+{% if donation %}
+Donation - 
+{% endif %}
+Payment Status</h1>
+
 <p>&nbsp;</p>
     <p>
     {% if not payment.is_approved %}
@@ -24,7 +35,6 @@
     {{ payment.response_reason_text }}
     </b>
     
-    <p>&nbsp;</p>
 	<p>&nbsp;</p>
 	{% if not payment.is_approved %}
         <p>
@@ -35,10 +45,35 @@
         <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.print_view payment.invoice.id %}">Print Friendly Invoice.</a>
         </p>
         <p><a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id %}">View my Invoice</a></p>
-        <p>Thank you for your payment!</p>
+       {% if donation %}
+       		<p>Thank you for your donation!</p>
+       {% else %}
+        	<p>Thank you for your payment!</p>
+       {% endif %}
    {% endif %}
-    <p>&nbsp;</p>
-
+    
+	{% if job %}
+		<p>
+		<b>What would you like to do now?</b>
+		<ul>
+			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url job job.slug %}" class="links">View Job</a></li>
+			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url job.search %}" class="links">Search Job Bank</a></li>
+			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url job.add %}" class="links">Add a Job </a></li>
+		</ul>
+		</p>
+	{% endif %}
+	
+	{% if directory %}
+		<p>
+		<b>What would you like to do now?</b>
+		<ul>
+			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url directory directory.slug %}" class="links">View Directory</a></li>
+			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url directory.search %}" class="links">Search Directories</a></li>
+			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url directory.add %}" class="links">Add a Directory </a></li>
+		</ul>
+		</p>
+	{% endif %}
+	
 	 <p>&nbsp;</p>
 	 <p>&nbsp;</p>
 {% endblock %}
