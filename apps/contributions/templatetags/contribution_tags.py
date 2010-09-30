@@ -31,7 +31,6 @@ class LatestContributionsNode(Node):
 
     def render(self, context):
         limit = self.limit.resolve(context)
-        print limit, type(limit)
         contributions = Contribution.objects.filter(owner=self.user.resolve(context))[:limit]
         context[self.context_var] = contributions
         return ''

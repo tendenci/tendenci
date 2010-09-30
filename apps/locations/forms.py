@@ -31,7 +31,45 @@ class LocationForm(TendenciBaseForm):
         'status',
         'status_detail',
         )
-   
+
+        fieldsets = [('Location Information', {
+                      'fields': ['location_name',
+                                 'description',
+                                 'entity',
+                                 'latitude',
+                                 'longitude',
+                                 'hq',
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Contact', {
+                      'fields': ['contact',
+                                 'address',
+                                 'address2',
+                                 'city',
+                                 'state',
+                                 'zip_code',
+                                 'country',
+                                 'phone',
+                                 'fax',
+                                 'email',
+                                 'website'
+                                 ],
+                        'classes': ['contact'],
+                      }),
+                      ('Permissions', {
+                      'fields': ['allow_anonymous_view',
+                                 'user_perms',
+                                 'group_perms',
+                                 ],
+                      'classes': ['permissions'],
+                      }),
+                     ('Administrator Only', {
+                      'fields': ['status',
+                                 'status_detail'], 
+                      'classes': ['admin-only'],
+                    })]   
+           
     def __init__(self, user=None, *args, **kwargs): 
         self.user = user
         super(LocationForm, self).__init__(user, *args, **kwargs)

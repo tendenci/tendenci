@@ -1,1 +1,1 @@
-Job Deleted on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+Job ({% firstof object.title "Untitled" %}) deleted from {{ SITE_GLOBAL_SITEDISPLAYNAME }}

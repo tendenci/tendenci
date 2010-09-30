@@ -1,8 +1,16 @@
+import operator
+
 from django import forms
 from django.db import models
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.db.models import Q
+from django.contrib.auth.models import User
+
+from perms.utils import is_admin
+from site_settings.utils import get_setting
+
 import haystack
 from haystack.query import SearchQuerySet
 
@@ -15,8 +23,11 @@ def model_choices(site=None):
     choices = []
     for m in site.get_indexed_models():
         if m._meta.module_name in INCLUDED_APPS:
-            choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
-                            capfirst(unicode(m._meta.verbose_name_plural))))
+            setting_args = ['module',m._meta.app_label,'enabled']
+            is_enabled = get_setting(*setting_args)
+            if is_enabled:
+                choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
+                                capfirst(unicode(m._meta.verbose_name_plural))))
             
     return sorted(choices, key=lambda x: x[1])
 
@@ -52,20 +63,74 @@ class SearchForm(forms.Form):
     def search(self):
         self.clean()
 
-        # check permissions and then query
-        if self.user:
-            if not self.user.is_authenticated():
-                sqs = self.searchqueryset.filter(content=self.cleaned_data['q'])
-                sqs = sqs.filter(allow_anonymous_view=True)
+        sqs = SearchQuerySet()
+        user = self.user
+        query = self.cleaned_data['q']
+
+        # check to see if there is impersonation
+        if hasattr(user,'impersonated_user'):
+            if isinstance(user.impersonated_user, User):
+                user = user.impersonated_user
+                
+        is_an_admin = is_admin(user)
+            
+        if query:
+            sqs = sqs.auto_query(sqs.query.clean(query)) 
+            if user:
+                if not is_an_admin:
+                    if not user.is_anonymous():
+                    # if b/w admin and anon
+
+                        # (status+status_detail+(anon OR user)) OR (who_can_view__exact)
+                        anon_query = Q(**{'allow_anonymous_view':True,})
+                        user_query = Q(**{'allow_user_view':True,})
+                        sec1_query = Q(**{
+                            'status':1,
+                            'status_detail':'active',
+                        })
+                        sec2_query = Q(**{
+                            'who_can_view__exact':user.username
+                        })
+                        query = reduce(operator.or_, [anon_query, user_query])
+                        query = reduce(operator.and_, [sec1_query, query])
+                        query = reduce(operator.or_, [query, sec2_query])
+
+                        sqs = sqs.filter(query)
+                    else:
+                    # if anonymous
+                        sqs = sqs.filter(status=1).filter(status_detail='active')
+                        sqs = sqs.filter(allow_anonymous_view=True)
             else:
-                if self.user.is_superuser:
-                    sqs = self.searchqueryset.auto_query(self.cleaned_data['q'])
-                else:
-                    sqs = self.searchqueryset.filter(content=self.cleaned_data['q'])
-                    sqs = sqs.filter(allow_user_view=True)
-                    sqs = sqs.filter_or(creator_username=self.user.username)            
+                # if anonymous
+                sqs = sqs.filter(status=1).filter(status_detail='active')
+                sqs = sqs.filter(allow_anonymous_view=True)
         else:
-            sqs = self.searchqueryset.auto_query(self.cleaned_data['q'])
+            if user:
+                if is_an_admin:
+                    sqs = sqs.all()
+                else:
+                    if not user.is_anonymous():
+                        # (status+status_detail+anon OR who_can_view__exact)
+                        sec1_query = Q(**{
+                            'status':1,
+                            'status_detail':'active',
+                            'allow_anonymous_view':True,
+                        })
+                        sec2_query = Q(**{
+                            'who_can_view__exact':user.username
+                        })
+                        query = reduce(operator.or_, [sec1_query, sec2_query])
+                        sqs = sqs.filter(query)
+                    else:
+                        # if anonymous
+                        sqs = sqs.filter(status=1).filter(status_detail='active')
+                        sqs = sqs.filter(allow_anonymous_view=True)               
+            else:
+                # if anonymous
+                sqs = sqs.filter(status=1).filter(status_detail='active')
+                sqs = sqs.filter(allow_anonymous_view=True)
+
+            sqs = sqs.order_by('-create_dt')
         
         if self.load_all:
             sqs = sqs.load_all()

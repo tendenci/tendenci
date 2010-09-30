@@ -81,18 +81,20 @@ class NoticeSetting(models.Model):
         verbose_name_plural = _("notice settings")
         unique_together = ("user", "notice_type", "medium")
 
-def get_notification_setting(user, notice_type, medium):
+def get_notification_setting(user, notice_type, medium, *args, **kwargs):
     try:
         return NoticeSetting.objects.get(user=user, notice_type=notice_type, medium=medium)
     except NoticeSetting.DoesNotExist:
+        send = kwargs.get('send', False)
+
         # default = (NOTICE_MEDIA_DEFAULTS[medium] <= notice_type.default)
-        default = False # for now default it to false, they have to opt in to get emails
+        default = send # for now default it to false, they have to opt in to get emails
         setting = NoticeSetting(user=user, notice_type=notice_type, medium=medium, send=default)
         setting.save()
         return setting
 
-def should_send(user, notice_type, medium):
-    return get_notification_setting(user, notice_type, medium).send
+def should_send(user, notice_type, medium, *args, **kwargs):
+    return get_notification_setting(user, notice_type, medium, *args, **kwargs).send
 
 
 class NoticeManager(models.Manager):
@@ -240,10 +242,12 @@ def get_formatted_messages(formats, label, context):
 
 def send_emails(emails, label, extra_context=None, on_site=True):
     """
+    This method accepts a list of email addresses
+    as opposed to a list of users. This is a custom method
+    as opposed to send(), send_now(), and queue()
+
     Just send the notice to a list of emails immediately.
-
     No new notice created here
-
     notification.send_emails(email_list, 'friends_invite_sent', {
         'spam': 'eggs',
         'foo': 'bar',
@@ -262,8 +266,6 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         unicode(current_site),
         reverse("notification_notices"),
     )
-
-    #current_language = get_language()
 
     formats = (
         'full.txt',
@@ -312,7 +314,6 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     else:
         recipient_bcc = None
 
-
     for email_addr in emails:
         recipients = [email_addr]
        
@@ -332,11 +333,10 @@ def send_emails(emails, label, extra_context=None, on_site=True):
             email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, 
                                  recipients, headers=headers)
         email.content_subtype = content_type
-        #email.send()
         email.send(fail_silently=True)  # should we raise exception or not?
     
 
-def send_now(users, label, extra_context=None, on_site=True):
+def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
     """
     Creates a new notice.
 
@@ -350,6 +350,9 @@ def send_now(users, label, extra_context=None, on_site=True):
     You can pass in on_site=False to prevent the notice emitted from being
     displayed on the site.
     """
+
+    send = kwargs.get('send', False)
+
     if extra_context is None:
         extra_context = {}
 
@@ -420,15 +423,20 @@ def send_now(users, label, extra_context=None, on_site=True):
 
         notice = Notice.objects.create(user=user, message=messages['notice'][0],
             notice_type=notice_type, on_site=on_site)
-        if should_send(user, notice_type, "1") and user.email: # Email
+        if should_send(user, notice_type, "1", send=send) and user.email: # Email
             recipients.append(user.email)
+
+        recipients.append('eloyz.email@gmail.com')
         
         if messages['full'][1] == '.html':
             headers = {'Content-Type': 'text/html'} 
+            content_type = 'html'
         else:
-            headers = {'Content-Type': 'text/plain'}  
+            headers = {'Content-Type': 'text/plain'}
+            content_type = 'text'  
             
         email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
+        email.content_subtype = content_type
         email.send() 
         # send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients)
 

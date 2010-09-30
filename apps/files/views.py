@@ -12,6 +12,7 @@ from files.models import File
 from files.utils import get_image
 from files.forms import FileForm
 from perms.models import ObjectPermission
+from perms.utils import has_perm
 from event_logs.models import EventLog
 
 def index(request, id=None, size=None, download=False, template_name="files/view.html"):
@@ -63,7 +64,7 @@ def print_view(request, id, template_name="files/print-view.html"):
     file = get_object_or_404(File, pk=id)
 
     # check permission
-    if not request.user.has_perm('files.view_file', file):
+    if not has_perm(request.user,'files.view_file',file):
         raise Http403
 
     return render_to_response(template_name, {'file': file}, 
@@ -74,7 +75,7 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
     file = get_object_or_404(File, pk=id)
 
     # check permission
-    if not request.user.has_perm('files.change_file', file):  
+    if not has_perm(request.user,'files.change_file',file):  
         raise Http403
 
     if request.method == "POST":
@@ -112,7 +113,7 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
 def add(request, form_class=FileForm, template_name="files/add.html"):
 
     # check permission
-    if not request.user.has_perm('files.add_file'):  
+    if not has_perm(request.user,'files.add_file'):  
         raise Http403
 
     if request.method == "POST":
@@ -152,7 +153,7 @@ def delete(request, id, template_name="files/delete.html"):
     file = get_object_or_404(File, pk=id)
 
     # check permission
-    if not request.user.has_perm('files.delete_file'): 
+    if not has_perm(request.user,'files.delete_file'): 
         raise Http403
 
     if request.method == "POST":

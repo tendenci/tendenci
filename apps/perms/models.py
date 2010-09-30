@@ -1,17 +1,18 @@
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 
 from perms.managers import ObjectPermissionManager
 
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):    
     # authority fields
-    allow_anonymous_view = models.BooleanField()
-    allow_user_view = models.BooleanField()
+    allow_anonymous_view = models.BooleanField(_("Public can view"))
+    allow_user_view = models.BooleanField(_("Signed in user can view"))
     allow_member_view = models.BooleanField()
     allow_anonymous_edit = models.BooleanField()
-    allow_user_edit = models.BooleanField()
+    allow_user_edit = models.BooleanField(_("Signed in user can change"))
     allow_member_edit = models.BooleanField()
 
     create_dt = models.DateTimeField(auto_now_add=True)

@@ -1,5 +1,3 @@
-
-
 .t {
 	width: 660px;
 }
@@ -25,15 +23,11 @@
 .t .groups-wrap .group-wrap .content {
 	margin-bottom: 10px;
 }
-.t .groups-wrap .group-wrap .submitted {
-	background-color: #EEE;
-}
 
 .t .options {
 	text-align: right;
 	position: absolute;
-	top: 0; right: 0;
-	background-color: #EEE;
+	top: -30px; right: 0;
 	padding: 5px;
 	white-space: nowrap;
 }
@@ -41,7 +35,7 @@
 	position: static;
 }
 .t .quick-options {
-	xfloat: right;
+	float: right;
 	margin: 0 0 15px 0;
 	text-align: right;
 }
@@ -51,6 +45,16 @@
 }
 .t .quick-options ul li {
 	display: inline;
+}
+
+.t .groups-wrap .meta, .t .group-wrap .meta {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F7F7F7;
+	margin-top: 10px;
+}
+.t .group-wrap .meta .tags {
+	margin-bottom: 5px;
 }
 
 .t .dropdown-options {

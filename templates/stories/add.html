@@ -19,7 +19,7 @@
     <div class="article-wrap">
     	<form action="{% url story.add %}" method="post">
     	<div class="forms">
-            {{ form|styled_form_set }}
+            {{ form|styled_form }}
         	<input type="submit" value="Add {{ MODULE_STORIES_LABEL }}" />
 		</div>
         </form>

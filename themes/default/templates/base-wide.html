@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load account_tags %}
 
 {% block html_body %}
 
@@ -15,14 +16,7 @@
                 <div id="login-screen" style="width: 300px; height: 280px;">
                     <div style="padding-bottom: 20px; border-bottom: 1px solid #d8d8d8;">
                     <h2>Log In</h2>
-                    <form method="post" action="/accounts/login/">
-                        <div style='display:none'>
-                            <input type='hidden' name='csrfmiddlewaretoken' value='6ac6961402db882ac98130550df13e57' />
-                        </div>
-                        <input id="id_username" value="Username" onfocus="clearDefault(this)" type="text" name="username" maxlength="30" style="margin-bottom: 6px; width: 250px; padding: 4px; color: #999; border: 1px solid #666;" />
-                        <input value="password" onfocus="clearDefault(this)" type="password" name="password" id="id_password" style="margin-bottom: 6px; width: 250px; padding: 4px; color: #999; border: 1px solid #666;" /></p>
-                        <input type="image" src="{{ THEME_URL }}media/images/login-btn.png" name="submit" value="Log in" />
-                    </form>
+                    {% login_form %}
                     </div>
                     {% if MODULE_USERS_SELFREGISTRATION %}
                     <div style="margin-top: 20px; border-top: 1px solid #fff;">
@@ -65,10 +59,15 @@
     
       <div id="main-content-wide">
         {% block messages %}
-             {% if messages %}
+        	{% if request.impersonation_message %}
+        	<ul class="messages">
+            	<li>{{ request.impersonation_message|safe }}</li>
+            </ul>
+            {% endif %}
+            {% if messages %}
             <ul class="messages">
                 {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
                 {% endfor %}
             </ul>
           {% endif %}

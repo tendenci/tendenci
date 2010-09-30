@@ -1,0 +1,9 @@
+<h1>{% firstof MODULE_RESUMES_LABEL 'Resumes' %} Index Page</h1>
+
+<ul>
+	<li><a href="{% url resume.search %}">Search</a></li>
+	<li><a href="{% url resume.view %}">View</a></li>
+	<li><a href="{% url resume.print_view %}">Print View</a></li>
+	<li><a href="{% url resume.edit %}">Edit</a></li>
+	<li><a href="{% url resume.delete %}">Delete</a></li>
+</ul>

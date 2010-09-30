@@ -95,3 +95,16 @@
 .t .location-wrap .meta .tags {
 	margin-bottom: 5px;
 }
+
+div.forms fieldset.contact {
+	background-color: #EFEFEF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+div.forms fieldset.contact legend {
+	padding: 5px;
+}

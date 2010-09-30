@@ -4,7 +4,9 @@ import sys
 # Paths
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 APPS_PATH = os.path.join(PROJECT_ROOT, 'apps')
+LIBS_PATH = os.path.join(PROJECT_ROOT, 'libs')
 sys.path.insert(0, APPS_PATH)
+sys.path.insert(0, LIBS_PATH)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -32,9 +34,7 @@ DATABASES = {
 
 # email
 EMAIL_HOST = '4.78.3.131'
-#EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
-#EMAIL_PORT = 1025
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
@@ -163,6 +163,7 @@ INSTALLED_APPS = (
     
     # tendenci applications
     'base',
+    'accounts',
     'perms',
     'dashboard',
     'profiles',
@@ -183,6 +184,7 @@ INSTALLED_APPS = (
     'emails',
     'email_blocks',
     'actions',
+    'donations',
     'files',
     'contacts',
     'event_logs',
@@ -197,11 +199,12 @@ INSTALLED_APPS = (
     'meta',
     'redirects',
     'directories',
-    'helpfiles',
+    'help_files',
+    'resumes',
 
     # celery task system, must stay at the bottom
     # of installed apps
-    'djcelery',
+    #'djcelery',
 )
 
 # This is the number of days users will have to activate their
@@ -272,7 +275,7 @@ HAYSTACK_SEARCH_ENGINE = 'solr'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
 HAYSTACK_SOLR_URL = 'http://127.0.0.1:8000/tendenci50/'
 HAYSTACK_SOLR_TIMEOUT = 60
-HAYSTACK_INCLUDED_APPS = ('article','page','news','story')
+HAYSTACK_INCLUDED_APPS = ('article','directory','event','photoset','job','page','news','resume','story')
 
 #---------------------------------------------------------------
 # payment gateway settings - LOGIN and KEY need to be moved to local_urls.py later

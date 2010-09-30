@@ -30,17 +30,15 @@
 				</div>
 			</div>
 
-            <h2><a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+            <h2><a href="{{ group.get_absolute_url }}">{% firstof group.name group.label 'Untitled' %}</a></h2>
             <div class="clear-right"></div>
-            
             <div class="content">{{ group.notes|striptags|truncatewords:20 }}</div>
-            <div><a href="{{ group.get_absolute_url }}">View Group Members: 
-            {% with group.members.count as count_members %}
-            {{ count_members  }} member{{count_members|pluralize }}
-            {% endwith %}
-            </a>
-            </div>
 			<div class="meta">
+				<a href="{{ group.get_absolute_url }}">View Group Members: 
+            	{% with group.members.count as count_members %}
+            		{{ count_members  }} member{{count_members|pluralize }}
+            	{% endwith %}
+            	</a>
             	<div class="submitted">Created on {{ group.create_dt|date:"D d M Y P" }} by {{ group.creator }}</div>
             </div>
 

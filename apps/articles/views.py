@@ -10,7 +10,7 @@ from base.http import Http403
 from articles.models import Article
 from articles.forms import ArticleForm
 from perms.models import ObjectPermission
-from perms.utils import get_notice_recipients
+from perms.utils import get_notice_recipients, has_perm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
@@ -26,7 +26,7 @@ def index(request, slug=None, template_name="articles/view.html"):
     if not slug: return HttpResponseRedirect(reverse('article.search'))
     article = get_object_or_404(Article, slug=slug)
     
-    if request.user.has_perm('articles.view_article', article):
+    if has_perm(request.user, 'articles.view_article', article):
         log_defaults = {
             'event_id' : 435000,
             'event_data': '%s (%d) viewed by %s' % (article._meta.object_name, article.pk, request.user),
@@ -71,7 +71,7 @@ def print_view(request, slug, template_name="articles/print-view.html"):
     }
     EventLog.objects.log(**log_defaults)
        
-    if request.user.has_perm('articles.view_article', article):
+    if has_perm(request.user,'articles.view_article', article):
         return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
@@ -81,7 +81,7 @@ def print_view(request, slug, template_name="articles/print-view.html"):
 def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"):
     article = get_object_or_404(Article, pk=id)
 
-    if request.user.has_perm('articles.change_article', article):    
+    if has_perm(request.user,'articles.change_article', article):    
         if request.method == "POST":
 
             form = form_class(request.user, request.POST, instance=article)
@@ -89,14 +89,13 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
             if form.is_valid():
                 article = form.save(commit=False)
 
-                # remove all permissions on the object
+                # set up user permission
+                article.allow_user_view, article.allow_user_edit = form.cleaned_data['user_perms']
+                
+                # assign permissions
                 ObjectPermission.objects.remove_all(article)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms:
-                    ObjectPermission.objects.assign(user_perms, article)  
-                # assign creator permissions
-                ObjectPermission.objects.assign(article.creator, article)
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], article)
+                ObjectPermission.objects.assign(article.creator, article) 
                 
                 article.save()
 
@@ -111,18 +110,6 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                 EventLog.objects.log(**log_defaults)
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % article)
-                
-                # send notification to administrators
-                # commenting out - there is no notification on edit in T4
-#                if notification:
-#                    extra_context = {
-#                        'object': article,
-#                        'request': request,
-#                    }
-#                    admins = get_administrators()
-#                    #admins = [request.user]
-#                    #notification.send(get_administrators(),'article_edited', extra_context)
-#                    notification.send(admins,'article_edited', extra_context)
                                                                              
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))             
         else:
@@ -138,7 +125,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
 
     # check permission
     article = get_object_or_404(Article, pk=id)
-    if not request.user.has_perm('articles.change_article', article):
+    if not has_perm(request.user,'articles.change_article', article):
         raise Http403
 
     defaults = {
@@ -165,7 +152,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
 
 @login_required
 def add(request, form_class=ArticleForm, template_name="articles/add.html"):
-    if request.user.has_perm('articles.add_article'):
+    if has_perm(request.user,'articles.add_article'):
         if request.method == "POST":
             form = form_class(request.user, request.POST)
             if form.is_valid():           
@@ -175,13 +162,16 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 article.creator_username = request.user.username
                 article.owner = request.user
                 article.owner_username = request.user.username
+
+                # set up user permission
+                article.allow_user_view, article.allow_user_edit = form.cleaned_data['user_perms']
+                
                 article.save() # get pk
 
-                # assign permissions for selected users
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, article)
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], article)
                 # assign creator permissions
-                ObjectPermission.objects.assign(article.creator, article)
+                ObjectPermission.objects.assign(article.creator, article) 
 
                 article.save() # update search-index w/ permissions
  
@@ -197,18 +187,14 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % article)
                 
-                # send notification to administrators
-                # get admin notice recipients
+                # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
-                if recipients:
-                    if notification:
-                        extra_context = {
-                            'object': article,
-                            'request': request,
-                        }
-                        #notification.send(get_administrators(),'article_added', extra_context)
-                        notification.send_emails(recipients,'article_added', extra_context)
-                    
+                if recipients and notification: 
+                    notification.send_emails(recipients,'article_added', {
+                        'object': article,
+                        'request': request,
+                    })
+
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
             form = form_class(request.user)
@@ -222,7 +208,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
 def delete(request, id, template_name="articles/delete.html"):
     article = get_object_or_404(Article, pk=id)
 
-    if request.user.has_perm('articles.delete_article'):   
+    if has_perm(request.user,'articles.delete_article'):   
         if request.method == "POST":
             log_defaults = {
                 'event_id' : 433000,

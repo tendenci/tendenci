@@ -19,5 +19,385 @@
         "fields": {
             "label": "Credit Card"
         }
+    },
+
+    {
+        "pk": 1, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "d96666", 
+            "border_color": "c33", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "e67399", 
+            "border_color": "d47", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "b373b3", 
+            "border_color": "949", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "8c66d9", 
+            "border_color": "63c", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "668cb3", 
+            "border_color": "369", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "668CD9", 
+            "border_color": "36c", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "59BFB3", 
+            "border_color": "2a9", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "65ad89", 
+            "border_color": "329262", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "4cb052", 
+            "border_color": "109618", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "8cbf40", 
+            "border_color": "6a0", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "bfbf4d", 
+            "border_color": "aa1", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "e0c240", 
+            "border_color": "d6ae00", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "f2a640", 
+            "border_color": "e80", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "e6804d", 
+            "border_color": "d51", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "be9494", 
+            "border_color": "a87070", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "a992a9", 
+            "border_color": "8c6d8c", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "8997a5", 
+            "border_color": "627487", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "94a2be", 
+            "border_color": "7083a8", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "85aaa5", 
+            "border_color": "5c8d87", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "a7a77d", 
+            "border_color": "898951", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "c4a883", 
+            "border_color": "b08b59", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "c7561e", 
+            "border_color": "9f3501", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "b5515d", 
+            "border_color": "8a2d38", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "c244ab", 
+            "border_color": "962181", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "603f99", 
+            "border_color": "402175", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "536ca6", 
+            "border_color": "30487e", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "3640ad", 
+            "border_color": "182186", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "3c995b", 
+            "border_color": "1f753c", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "5ca632", 
+            "border_color": "3d8215", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "7ec225", 
+            "border_color": "5a9a08", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 31, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "a7b828", 
+            "border_color": "81910b", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "cf9911", 
+            "border_color": "9d7000", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 33, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "d47f1e", 
+            "border_color": "aa5a00", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "b56414", 
+            "border_color": "8d4500", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 35, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "914d14", 
+            "border_color": "743500", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 36, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "ab2671", 
+            "border_color": "870b50", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 37, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "9643a5", 
+            "border_color": "70237f", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 38, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "4585a3", 
+            "border_color": "25617d", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 39, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "737373", 
+            "border_color": "515151", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 40, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "41a587", 
+            "border_color": "227f63", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 41, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "d1bc36", 
+            "border_color": "a59114", 
+            "fg_color": "FFF"
+        }
+    }, 
+    {
+        "pk": 42, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "ad2d2d", 
+            "border_color": "871111", 
+            "fg_color": "FFF"
+        }
     }
+
 ]

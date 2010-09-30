@@ -13,7 +13,8 @@ THIS_YEAR = datetime.date.today().year
 # this is the list of apps whose permissions will be displayed on the permission edit page
 APPS = ['profiles', 'user_groups', 'articles', 
         'news', 'pages', 'jobs', 'locations', 
-        'stories', 'actions']
+        'stories', 'actions', 'photos', 'entities',
+        'locations', 'files', 'directories', 'resumes']
 
 class ProfileForm(TendenciBaseForm):
 
@@ -128,6 +129,7 @@ class ProfileForm(TendenciBaseForm):
                   'admin_notes',
                   'entity',
                   'security_level',
+                  'user_perms',
                   'status',
                   'status_detail',
                 )
@@ -135,9 +137,6 @@ class ProfileForm(TendenciBaseForm):
     def __init__(self, user_current=None, user_this=None, required_fields_list=None, *args, **kwargs):
         super(ProfileForm, self).__init__(user_current, *args, **kwargs)
         self.user_this = user_this
-        
-        self.fields['user_perms'].label = "Owner"
-        self.fields['user_perms'].help_text = "People who can edit this user"
         
         if user_this:
             self.fields['first_name'].initial = user_this.first_name
