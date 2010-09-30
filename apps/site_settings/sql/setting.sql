@@ -1,4 +1,4 @@
-INSERT INTO `tendenci50`.`site_settings_setting` 
+INSERT INTO site_settings_setting
 (name,label,description,data_type,value,default_value,input_type,input_value,client_editable,store,update_dt,updated_by,scope,scope_category,parent_id)
 VALUES  ('articlerecipients','Article admin notice recipients','A list of email addresses that receive admin notices from Articles module on the site. Comma delimited.','string','','','text','',1,1,'2010-08-12 17:19:11','','module','articles',0),
  ('jobrecipients','Job admin notice recipients','A list of email addresses that receive admin notices from Jobs module on the site. Comma delimited.','string','','','text','',1,1,'2010-08-12 17:19:11','','module','jobs',0),
