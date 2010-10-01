@@ -3,6 +3,7 @@ from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 
 from timezones.fields import TimeZoneField
 from entities.models import Entity
@@ -11,7 +12,7 @@ from perms.models import TendenciBaseModel
 from meta.models import Meta as MetaTags
 from events.module_meta import EventMeta
 
-from django.template.defaultfilters import slugify
+from invoices.models import Invoice
 
 class TypeColorSet(models.Model):
     """
@@ -90,7 +91,7 @@ class Registrant(models.Model):
     This is the information that was used while registering
     """
     registration = models.ForeignKey('Registration')
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, blank=True, null=True)
 
     name = models.CharField(max_length=100)
     mail_name = models.CharField(max_length=100)
@@ -124,9 +125,11 @@ class Registration(models.Model):
     reminder = models.BooleanField(default=False)
     note = models.TextField(blank=True)
 
+    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+
     # TODO: Payment-Method must be soft-deleted
     # so that it may always be referenced
-    payment_method = models.ForeignKey('PaymentMethod')
+    payment_method = models.ForeignKey('PaymentMethod', null=True)
     amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
 
     creator = models.ForeignKey(User, related_name='created_registrations')
@@ -134,16 +137,16 @@ class Registration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
-    @property
-    def invoice(self):
-        from invoices.models import Invoice
-
-        if self.pk:
-            invoice = Invoice.objects.get(
-                invoice_object_type = 'event_registration', # TODO: remove hard-coded object_type (content_type)
-                invoice_object_type_id = self.pk,
-            )
-            return invoice
+#    @property
+#    def invoice(self):
+#        from invoices.models import Invoice
+#
+#        if self.pk:
+#            invoice = Invoice.objects.get(
+#                invoice_object_type = 'event_registration', # TODO: remove hard-coded object_type (content_type)
+#                invoice_object_type_id = self.pk,
+#            )
+#            return invoice
 
     def save_invoice(self, *args, **kwargs):
         from invoices.models import Invoice
