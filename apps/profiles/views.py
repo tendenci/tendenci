@@ -109,13 +109,6 @@ def search(request, template_name="profiles/search.html"):
     
     query = request.GET.get('q', None)
     profiles = Profile.objects.search(query, user=request.user)
-    
-    if not is_admin(request.user):
-        if not allow_user_search:
-            # should only be able to view his own record
-            profiles = profiles.filter(user=request.user, status=1, status_detail='active')
-        else:
-            profiles = profiles.filter(status=1, status_detail='active')
 
     log_defaults = {
         'event_id' : 124000,
@@ -163,7 +156,7 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                     new_user.is_staff = 0
 
                 # set up user permission
-                profile.allow_user_view, profile.allow_user_edit = form.cleaned_data['user_perms']
+                profile.allow_user_view, profile.allow_user_edit = False, False
                     
             else:
                 new_user.is_superuser = 0
@@ -254,7 +247,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                     user_edit.is_staff = 0
                     
                 # set up user permission
-                profile.allow_user_view, profile.allow_user_edit = form.cleaned_data['user_perms']
+                profile.allow_user_view, profile.allow_user_edit = False, False
                 
             else:
                 user_edit.is_superuser = 0
