@@ -46,7 +46,7 @@ class Invoice(models.Model):
     ship_to_fax = models.CharField(max_length=50, blank=True, null=True)
     ship_to_email = models.CharField(max_length=100, blank=True, null=True)
     ship_to_address_type = models.CharField(max_length=50, blank=True, null=True)
-    receip= models.BooleanField(default=0)
+    receipt = models.BooleanField(default=0)
     gift = models.BooleanField(default=0)
     arrival_date_time = models.DateTimeField(blank=True, null=True)   
     greeting = models.CharField(max_length=500, blank=True, null=True)   
