@@ -129,7 +129,6 @@ class ProfileForm(TendenciBaseForm):
                   'admin_notes',
                   'entity',
                   'security_level',
-                  'user_perms',
                   'status',
                   'status_detail',
                 )
