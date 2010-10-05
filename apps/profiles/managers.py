@@ -31,7 +31,6 @@ class ProfileManager(Manager):
         # site settings that modify search
         allow_user_search = get_setting('module', 'users', 'allowusersearch')
         allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
-        print allow_user_search, allow_anonymous_search
 
         # check to see if there is impersonation
         if hasattr(user,'impersonated_user'):
@@ -51,7 +50,6 @@ class ProfileManager(Manager):
                                 'status_detail':'active',
                             })
                         else:
-                            print 'here'
                             query = Q(**{
                                 'hide_in_search': False,
                                 'status':1,
