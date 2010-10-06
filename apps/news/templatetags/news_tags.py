@@ -55,17 +55,15 @@ class ListNewsNode(Node):
 def list_news(parser, token):
     """
     Example:
-        {% list_articles as articles [user=user limit=3] %}
-        {% for article in articles %}
-            {{ article }}
+        {% list_news as news [user=user limit=3] %}
+        {% for news_item in news %}
+            {{ news_item.headline }}
         {% endfor %}
 
     """
     args, kwargs = [], {}
     bits = token.split_contents()
     context_var = bits[2]
-
-    print bits
 
     for bit in bits:
         if "limit=" in bit:
