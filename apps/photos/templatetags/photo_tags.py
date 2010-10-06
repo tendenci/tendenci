@@ -1,10 +1,10 @@
 import re
-from django import template
+from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
 from photos.models import Image, Pool
-register = template.Library()
+register = Library()
 
 
-class PrintExifNode(template.Node):
+class PrintExifNode(Node):
 
     def __init__(self, exif):
         self.exif = exif
@@ -12,7 +12,7 @@ class PrintExifNode(template.Node):
     def render(self, context):
         try:
             exif = unicode(self.exif.resolve(context, True))
-        except template.VariableDoesNotExist:
+        except VariableDoesNotExist:
             exif = u''
 
         EXPR =  "'(?P<key>[^:]*)'\:(?P<value>[^,]*),"
@@ -32,18 +32,18 @@ def do_print_exif(parser, token):
         tag_name, exif = token.contents.split()
     except ValueError:
         msg = '%r tag requires a single argument' % token.contents[0]
-        raise template.TemplateSyntaxError(msg)
+        raise TemplateSyntaxError(msg)
 
     exif = parser.compile_filter(exif)
     return PrintExifNode(exif)
 
 
-class PublicPhotosNode(template.Node):
+class PublicPhotosNode(Node):
     
     def __init__(self, context_var, user_var=None, use_pool=False):
         self.context_var = context_var
         if user_var is not None:
-            self.user_var = template.Variable(user_var)
+            self.user_var = Variable(user_var)
         else:
             self.user_var = None
         self.use_pool = use_pool
@@ -76,33 +76,28 @@ def public_photos(parser, token, use_pool=False):
     
     if len(bits) != 3 and len(bits) != 5:
         message = "'%s' tag requires three or five arguments" % bits[0]
-        raise template.TemplateSyntaxError(message)
+        raise TemplateSyntaxError(message)
     else:
         if len(bits) == 3:
             if bits[1] != 'as':
                 message = "'%s' second argument must be 'as'" % bits[0]
-                raise template.TemplateSyntaxError(message)
+                raise TemplateSyntaxError(message)
             
             return PublicPhotosNode(bits[2], use_pool=use_pool)
             
         elif len(bits) == 5:
             if bits[1] != 'for':
                 message = "'%s' second argument must be 'for'" % bits[0]
-                raise template.TemplateSyntaxError(message)
+                raise TemplateSyntaxError(message)
             if bits[3] != 'as':
                 message = "'%s' forth argument must be 'as'" % bits[0]
-                raise template.TemplateSyntaxError(message)
+                raise TemplateSyntaxError(message)
             
             return PublicPhotosNode(bits[4], bits[2], use_pool=use_pool)
-
 
 @register.tag
 def public_pool_photos(parser, token):
     return public_photos(parser, token, use_pool=True)
-
-
-from django.template import Library
-register = Library()
 
 @register.inclusion_tag("photos/options.html", takes_context=True)
 def photo_options(context, user, photo):
@@ -139,4 +134,64 @@ def photo_set_nav(context, user, photo_set=None):
 @register.inclusion_tag("photos/photo-set/search-form.html", takes_context=True)
 def photo_set_search(context):
     return context
+
+
+class ListPhotosNode(Node):
+    
+    def __init__(self, context_var, *args, **kwargs):
+
+        self.limit = 3
+        self.user = None
+
+        if "limit" in kwargs:
+            self.limit = Variable(kwargs["limit"])
+
+        if "user" in kwargs:
+            self.user = Variable(kwargs["user"])
+
+        self.context_var = context_var
+
+    def render(self, context):
+
+        if self.user:
+            self.user = self.user.resolve(context)
+
+        if hasattr(self.limit, "resolve"):
+            self.limit = self.limit.resolve(context)
+
+        photos = Image.objects.search(user=self.user)
+
+        photos = [photo.object for photo in photos[:self.limit]]
+        context[self.context_var] = photos
+        return ""
+
+@register.tag
+def list_photos(parser, token):
+    """
+    Example:
+        {% list_photos as photos [user=user limit=3] %}
+        {% for photo in photos %}
+            {{ photo.title }}
+        {% endfor %}
+
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    context_var = bits[2]
+
+    for bit in bits:
+        if "limit=" in bit:
+            kwargs["limit"] = bit.split("=")[1]
+        if "user=" in bit:
+            kwargs["user"] = bit.split("=")[1]
+
+    if len(bits) < 3:
+        message = "'%s' tag requires more than 3" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    if bits[1] != "as":
+        message = "'%s' second argument must be 'as" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    return ListPhotosNode(context_var, *args, **kwargs)
 
