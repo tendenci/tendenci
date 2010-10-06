@@ -41,3 +41,41 @@ class PhotoSetIndex(indexes.RealTimeSearchIndex):
         return description
     
 site.register(PhotoSet, PhotoSetIndex)
+
+class PhotoIndex(indexes.RealTimeSearchIndex):
+    text = indexes.CharField(document=True, use_template=True)
+    title = indexes.CharField(model_attr='title')
+    caption = indexes.CharField(model_attr='caption')
+    update_dt = indexes.DateTimeField(model_attr='update_dt')
+    
+    # authority fields
+    allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
+    allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
+    allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
+    allow_anonymous_edit = indexes.BooleanField(model_attr='allow_anonymous_edit')
+    allow_user_edit = indexes.BooleanField(model_attr='allow_user_edit')
+    allow_member_edit = indexes.BooleanField(model_attr='allow_member_edit')
+    creator = indexes.CharField(model_attr='creator')
+    creator_username = indexes.CharField(model_attr='creator_username')
+    owner = indexes.CharField(model_attr='owner')
+    owner_username = indexes.CharField(model_attr='owner_username')
+    status = indexes.IntegerField(model_attr='status')
+    status_detail = indexes.CharField(model_attr='status_detail')
+    
+    # for rss
+    can_syndicate = indexes.BooleanField()
+    order = indexes.DateTimeField()
+    
+    def prepare_can_syndicate(self, obj):
+        return obj.allow_anonymous_view and obj.status==1 and obj.status_detail=='active'
+        
+    def prepare_syndicate_order(self, obj):
+        return obj.update_dt
+    
+    def prepare_caption(self, obj):
+        caption = obj.caption
+        caption = strip_tags(caption)
+        caption = strip_entities(caption)
+        return caption
+    
+site.register(Image, PhotoIndex)

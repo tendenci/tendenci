@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from photologue.models import *
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
-from photos.managers import PhotoSetManager
+from photos.managers import PhotoManager, PhotoSetManager
 
 class PhotoSet(TendenciBaseModel):
     """
@@ -142,6 +142,8 @@ class Image(ImageModel, TendenciBaseModel):
         images = images.order_by('date_added')
         try: return Image.objects.get(id=max(images))
         except ValueError: return None
+
+    objects = PhotoManager()
 
     def __unicode__(self):
         return self.title
