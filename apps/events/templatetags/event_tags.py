@@ -1,10 +1,11 @@
 from datetime import datetime
 
-from django import template
+from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser
 from events.models import Event, Registration
 
-register = template.Library()
+
+register = Library()
 
 @register.inclusion_tag("events/options.html", takes_context=True)
 def event_options(context, user, event):
@@ -45,12 +46,12 @@ def registrant_search(context, event=None):
     return context
 
 
-class EventListNode(template.Node):    
+class EventListNode(Node):    
     
     def __init__(self, day, type, context_var):
 
-        self.day = template.Variable(day)
-        self.type = template.Variable(type)
+        self.day = Variable(day)
+        self.type = Variable(type)
         self.context_var = context_var
     
     def render(self, context):
@@ -82,7 +83,7 @@ def event_list(parser, token):
 
     if len(bits) != 4 and len(bits) != 5:
         message = '%s tag requires 4 or 5 arguments' % bits[0]
-        raise template.TemplateSyntaxError(message)
+        raise TemplateSyntaxError(message)
 
     if len(bits) == 4:
         day = bits[1]
@@ -95,11 +96,11 @@ def event_list(parser, token):
     
     return EventListNode(day, type, context_var)
 
-class IsRegisteredUserNode(template.Node):    
+class IsRegisteredUserNode(Node):    
     
     def __init__(self, user, event, context_var):
-        self.user = template.Variable(user)
-        self.event = template.Variable(event)
+        self.user = Variable(user)
+        self.event = Variable(event)
         self.context_var = context_var
     
     def render(self, context):
@@ -127,7 +128,7 @@ def is_registered_user(parser, token):
 
     if len(bits) != 5:
         message = '%s tag requires 5 arguments' % bits[0]
-        raise template.TemplateSyntaxError(message)
+        raise TemplateSyntaxError(message)
 
     user = bits[1]
     event = bits[2]
@@ -136,4 +137,65 @@ def is_registered_user(parser, token):
     
     return IsRegisteredUserNode(user, event, context_var)
 
+
+class ListEventsNode(Node):
+    
+    def __init__(self, context_var, *args, **kwargs):
+
+        self.limit = 3
+        self.user = None
+
+        if "limit" in kwargs:
+            self.limit = Variable(kwargs["limit"])
+
+        if "user" in kwargs:
+            self.user = Variable(kwargs["user"])
+
+        self.context_var = context_var
+
+    def render(self, context):
+
+        if self.user:
+            self.user = self.user.resolve(context)
+
+        print hasattr(self.limit, "resolve")
+
+        if hasattr(self.limit, "resolve"):
+            self.limit = self.limit.resolve(context)
+
+        events = Event.objects.search(user=self.user)
+
+        events = [event.object for event in events[:self.limit]]
+        context[self.context_var] = events
+        return ""
+
+@register.tag
+def list_events(parser, token):
+    """
+    Example:
+        {% list_events as events [user=user limit=3] %}
+        {% for event in events %}
+            {{ event.title }}
+        {% endfor %}
+
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    context_var = bits[2]
+
+    for bit in bits:
+        if "limit=" in bit:
+            kwargs["limit"] = bit.split("=")[1]
+        if "user=" in bit:
+            kwargs["user"] = bit.split("=")[1]
+
+    if len(bits) < 3:
+        message = "'%s' tag requires more than 3" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    if bits[1] != "as":
+        message = "'%s' second argument must be 'as" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    return ListEventsNode(context_var, *args, **kwargs)
 
