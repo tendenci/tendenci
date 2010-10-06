@@ -1,7 +1,7 @@
 {% load tagging_tags %}
 {% firstof object.title "Untitled" %}
-by {{ object.creator }}
-by {{ object.object.creator.get_profile.display_name }}
+by {{ object.member }}
+by {{ object.object.member.get_profile.display_name }}
 {{ object.caption }}
 
 {% tags_for_object object as tags %}
