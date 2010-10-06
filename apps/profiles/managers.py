@@ -42,78 +42,106 @@ class ProfileManager(Manager):
             if user:
                 if not is_an_admin:
                     if not user.is_anonymous():
-                        if not allow_user_search:
-                            query = Q(**{
-                                'user': user,
+                        if allow_anonymous_search:
+                            sub_query1 = Q(**{
                                 'hide_in_search': False,
                                 'status':1,
                                 'status_detail':'active',
-                            })
-                        else:
-                            query = Q(**{
-                                'hide_in_search': False,
-                                'status':1,
-                                'status_detail':'active',
+                            })        
+                            sub_query2 = Q(**{
+                                'user_object_exact': user,
                             })                           
+                            query = reduce(operator.or_, [sub_query1,sub_query2])
+                        else:
+                            if not allow_user_search:
+                                query = Q(**{
+                                    'user_object_exact': user,
+                                    'status':1,
+                                    'status_detail':'active',
+                                })
+                            else:
+                                sub_query1 = Q(**{
+                                    'hide_in_search': False,
+                                    'status':1,
+                                    'status_detail':'active',
+                                })        
+                                sub_query2 = Q(**{
+                                    'user_object_exact': user,
+                                })                           
+                                query = reduce(operator.or_, [sub_query1,sub_query2])                  
 
                         sqs = sqs.filter(query)
                     else: # anonymous
+                        if not allow_user_search or not allow_anonymous_search:
+                            return sqs.none()
                         query = Q(**{
                             'hide_in_search': False,
                             'status':1,
                             'status_detail':'active',
                         })  
                         sqs = sqs.filter(query)
-                        if not allow_anonymous_search:
-                            return sqs.none()
+
             else: # anonymous
+                if not allow_user_search or not allow_anonymous_search:
+                    return sqs.none()
                 query = Q(**{
                     'hide_in_search': False,
                     'status':1,
                     'status_detail':'active',
                 })  
                 sqs = sqs.filter(query)
-                if not allow_anonymous_search:
-                    return sqs.none()
         else:
             if user:
                 if is_an_admin:
                     sqs = sqs.all()
                 else:
                     if not user.is_anonymous():
-                        if not allow_user_search:
-                            query = Q(**{
-                                'user': user,
+                        if allow_anonymous_search:
+                            sub_query1 = Q(**{
                                 'hide_in_search': False,
                                 'status':1,
                                 'status_detail':'active',
-                            })
-                        else:
-                            query = Q(**{
-                                'hide_in_search': False,
-                                'status':1,
-                                'status_detail':'active',
+                            })        
+                            sub_query2 = Q(**{
+                                'user_object_exact': user,
                             })                           
-
+                            query = reduce(operator.or_, [sub_query1,sub_query2])
+                        else:
+                            if not allow_user_search:
+                                query = Q(**{
+                                    'user_object_exact': user,
+                                    'status':1,
+                                    'status_detail':'active',
+                                })
+                            else:
+                                sub_query1 = Q(**{
+                                    'hide_in_search': False,
+                                    'status':1,
+                                    'status_detail':'active',
+                                })        
+                                sub_query2 = Q(**{
+                                    'user_object_exact': user,
+                                })                           
+                                query = reduce(operator.or_, [sub_query1,sub_query2])
                         sqs = sqs.filter(query)
                     else: # anonymous
+                        if not allow_user_search or not allow_anonymous_search:
+                            return sqs.none()
                         query = Q(**{
                             'hide_in_search': False,
                             'status':1,
                             'status_detail':'active',
                         })  
                         sqs = sqs.filter(query)
-                        if not allow_anonymous_search:
-                            return sqs.none()
             else: # anonymous
+                if not allow_user_search or not allow_anonymous_search:
+                    return sqs.none()
                 query = Q(**{
                     'hide_in_search': False,
                     'status':1,
                     'status_detail':'active',
                 })  
                 sqs = sqs.filter(query)
-                if not allow_anonymous_search:
-                    return sqs.none()
 
         sqs = sqs.order_by('-create_dt')
         return sqs.models(self.model)
