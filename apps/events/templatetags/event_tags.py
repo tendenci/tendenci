@@ -158,8 +158,6 @@ class ListEventsNode(Node):
         if self.user:
             self.user = self.user.resolve(context)
 
-        print hasattr(self.limit, "resolve")
-
         if hasattr(self.limit, "resolve"):
             self.limit = self.limit.resolve(context)
 
