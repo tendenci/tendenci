@@ -11,9 +11,9 @@ class GroupIndex(indexes.RealTimeSearchIndex):
     description = indexes.CharField(model_attr='description')
    
     # authority fields
-    show_as_option = indexes.IntegerField(model_attr='show_as_option')
-    allow_self_add = indexes.IntegerField(model_attr='allow_self_add')
-    allow_self_remove = indexes.IntegerField(model_attr='allow_self_remove')
+    show_as_option = indexes.BooleanField(model_attr='show_as_option')
+    allow_self_add = indexes.BooleanField(model_attr='allow_self_add')
+    allow_self_remove = indexes.BooleanField(model_attr='allow_self_remove')
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
