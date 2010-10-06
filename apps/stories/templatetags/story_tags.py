@@ -1,4 +1,5 @@
-from django.template import Library
+from django.template import Node, Library, TemplateSyntaxError, Variable
+from stories.models import Story
 
 register = Library()
 
@@ -21,3 +22,64 @@ def stories_nav(context, user, story=None):
 @register.inclusion_tag("stories/search-form.html", takes_context=True)
 def stories_search(context):
     return context
+
+class ListStoriesNode(Node):
+    
+    def __init__(self, context_var, *args, **kwargs):
+
+        self.limit = 3
+        self.user = None
+
+        if "limit" in kwargs:
+            self.limit = Variable(kwargs["limit"])
+
+        if "user" in kwargs:
+            self.user = Variable(kwargs["user"])
+
+        self.context_var = context_var
+
+    def render(self, context):
+
+        if self.user:
+            self.user = self.user.resolve(context)
+
+        print hasattr(self.limit, "resolve")
+
+        if hasattr(self.limit, "resolve"):
+            self.limit = self.limit.resolve(context)
+
+        stories = Story.objects.search(user=self.user)
+
+        stories = [story.object for story in stories[:self.limit]]
+        context[self.context_var] = stories
+        return ""
+
+@register.tag
+def list_stories(parser, token):
+    """
+    Example:
+        {% list_stories as stories [user=user limit=3] %}
+        {% for story in stories %}
+            {{ story.title }}
+        {% endfor %}
+
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    context_var = bits[2]
+
+    for bit in bits:
+        if "limit=" in bit:
+            kwargs["limit"] = bit.split("=")[1]
+        if "user=" in bit:
+            kwargs["user"] = bit.split("=")[1]
+
+    if len(bits) < 3:
+        message = "'%s' tag requires more than 3" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    if bits[1] != "as":
+        message = "'%s' second argument must be 'as" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    return ListStoriesNode(context_var, *args, **kwargs)
