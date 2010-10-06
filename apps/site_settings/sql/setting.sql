@@ -83,8 +83,80 @@ VALUES  ('articlerecipients','Article admin notice recipients','A list of email 
  ('constantcontactapicredentials','Constant Contact API Credentials','These are the API Credentials required to access the ConstantContact.com API.  It consist of the account username, account password, and developer API key in this format (e.g. username:password:key).','string','',' ','text','',0,1,'2010-08-12 17:19:14','','site','global',0),
  ('semgoogleanalyticsprofileid','SEM Google Analytics Profile ID','This is the URL specific profile ID for Google Analytics.','string','823433',' ','text','',1,0,'2010-08-12 17:19:14','','site','global',0),
  ('googleapikey','Google API Key','The Google API key is used to integrate with Google tools (e.g. GeoCoding) We can continue to benefit from Google tools with 1 API key per domain.','string','\n',' ','text','',1,1,'2010-08-12 17:19:14','','site','global',0),
- ('dateformat','Date Format','Use the following characters to format the date.<br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D    : 0 prefixed day number  - 01 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;d    : day number             - 1 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M    : month name  - September <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m    : short month name             - Sep <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;O    : 0 prefixed month number      - 09 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o    : month number     - 9 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y    : 4 digit year       - 2010 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y    : 2 digit year - 0 prefixed if needed - 10 <br   /><br   />\r\nExamples: <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m d, y => Dec 8, 2009 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; d-m-Y  => 8-Dec-09 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; d/o/y  => 8/12/2009 <br   />\r\n	 ','string','d-m-Y','d-m-Y','text','\n',1,1,'2010-08-12 17:19:14','','site','global',0),
- ('dateformatlong','Date Format Long','Same as the Date Format, but shows the day of the week as well.<br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;W    : long weekday name      - Thursday <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;w    : short weekday name     - Thu <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;D    : 0 prefixed day number  - 01 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;d    : day number             - 1 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M    : month name  - September <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m    : short month name             - Sep <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;O    : 0 prefixed month number      - 09 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o    : month number     - 9 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y    : 4 digit year       - 2010 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Y    : 2 digit year - 0 prefixed if needed - 10 <br   /><br   />\r\nExamples: <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; w d-m-Y =>  Tue 8-Dec-09 <br   />\r\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; W, m d y =>  Tuesday, Dec 8 2009 <br   />\r\n\r\n	 ','string','W d-m-Y','W d-m-Y','text','\n',1,1,'2010-08-12 17:19:14','','site','global',0),
+ ('dateformat','Date Format','<div><strong>a</strong>&nbsp;&nbsp;\'a.m.\' or \'p.m.\' (Note that this is slightly different than PHP\'s output, because this includes periods to match Associated Press style.)</div>
+<div><strong>A</strong>&nbsp;&nbsp;\'AM\' or \'PM\'.</div>
+<div><strong>b</strong>&nbsp;&nbsp;Month, textual, 3 letters, lowercase.</div>
+<div><strong>B</strong>&nbsp;&nbsp;Not implemented.</div>
+<div><strong>c</strong>&nbsp;&nbsp;ISO 8601 Format.</div>
+<div><strong>d</strong>&nbsp;&nbsp;Day of the month, 2 digits with leading zeros.</div>
+<div><strong>D</strong>&nbsp;&nbsp;Day of the week, textual, 3 letters.</div>
+<div><strong>f</strong>&nbsp;&nbsp;Time, in 12-hour hours and minutes, with minutes left off if they\'re zero. Proprietary extension.</div>
+<div><strong>F</strong>&nbsp;&nbsp;Month, textual, long.</div>
+<div><strong>g</strong>&nbsp;&nbsp;Hour, 12-hour format without leading zeros.</div>
+<div><strong>G</strong>&nbsp;&nbsp;Hour, 24-hour format without leading zeros.</div>
+<div><strong>h</strong>&nbsp;&nbsp;Hour, 12-hour format.</div>
+<div><strong>H</strong>&nbsp;&nbsp;Hour, 24-hour format.</div>
+<div><strong>i</strong>&nbsp;&nbsp;Minutes.</div>
+<div><strong>I</strong>&nbsp;&nbsp;Not implemented.</div>
+<div><strong>j</strong>&nbsp;&nbsp;Day of the month without leading zeros.</div>
+<div><strong>l</strong>&nbsp;&nbsp;Day of the week, textual, long.</div>
+<div><strong>L</strong>&nbsp;&nbsp;Boolean for whether it\'s a leap year.</div>
+<div><strong>m</strong>&nbsp;&nbsp;Month, 2 digits with leading zeros.</div>
+<div><strong>M</strong>&nbsp;&nbsp;Month, textual, 3 letters.</div>
+<div><strong>n</strong>&nbsp;&nbsp;Month without leading zeros.</div>
+<div><strong>N</strong>&nbsp;&nbsp;Month abbreviation in Associated Press style. Proprietary extension.</div>
+<div><strong>O</strong>&nbsp;&nbsp;Difference to Greenwich time in hours.</div>
+<div><strong>P</strong>&nbsp;&nbsp;Time, in 12-hour hours, minutes and \'a.m.\'/\'p.m.\', with minutes left off if they\'re zero and the special-case strings \'midnight\ and \'noon\' if appropriate. Proprietary extension.</div>
+<div><strong>r</strong>&nbsp;&nbsp;RFC 2822 formatted date.</div>
+<div><strong>s</strong>&nbsp;&nbsp;Seconds, 2 digits with leading zeros.</div>
+<div><strong>S</strong>&nbsp;&nbsp;English ordinal suffix for day of the month, 2 characters.</div>
+<div><strong>t</strong>&nbsp;&nbsp;Number of days in the given month.</div>
+<div><strong>T</strong>&nbsp;&nbsp;Time zone of this machine.</div>
+<div><strong>u</strong>&nbsp;&nbsp;Microseconds.</div>
+<div><strong>U</strong>&nbsp;&nbsp;Seconds since the Unix Epoch (January 1 1970 00:00:00 UTC).</div>
+<div><strong>w</strong>&nbsp;&nbsp;Day of the week, digits without leading zeros.</div>
+<div><strong>W</strong>&nbsp;&nbsp;ISO-8601 week number of year, with weeks starting on Monday.</div>
+<div><strong>y</strong>&nbsp;&nbsp;Year, 2 digits.</div>
+<div><strong>Y</strong>&nbsp;&nbsp;Year, 4 digits.</div>
+<div><strong>z</strong>&nbsp;&nbsp;Day of the year.</div>
+<div><strong>Z</strong>&nbsp;&nbsp;Time zone offset in seconds. The offset for timezones west of UTC is always negative, and for those east of UTC is always positive.</div>','string','m-d-Y h:i A','m-d-Y h:i A','text','\n',1,1,'2010-08-12 17:19:14','','site','global',0),
+ ('dateformatlong','Date Format Long','<div><strong>a</strong>&nbsp;&nbsp;\'a.m.\' or \'p.m.\' (Note that this is slightly different than PHP\'s output, because this includes periods to match Associated Press style.)</div>
+<div><strong>A</strong>&nbsp;&nbsp;\'AM\' or \'PM\'.</div>
+<div><strong>b</strong>&nbsp;&nbsp;Month, textual, 3 letters, lowercase.</div>
+<div><strong>B</strong>&nbsp;&nbsp;Not implemented.</div>
+<div><strong>c</strong>&nbsp;&nbsp;ISO 8601 Format.</div>
+<div><strong>d</strong>&nbsp;&nbsp;Day of the month, 2 digits with leading zeros.</div>
+<div><strong>D</strong>&nbsp;&nbsp;Day of the week, textual, 3 letters.</div>
+<div><strong>f</strong>&nbsp;&nbsp;Time, in 12-hour hours and minutes, with minutes left off if they\'re zero. Proprietary extension.</div>
+<div><strong>F</strong>&nbsp;&nbsp;Month, textual, long.</div>
+<div><strong>g</strong>&nbsp;&nbsp;Hour, 12-hour format without leading zeros.</div>
+<div><strong>G</strong>&nbsp;&nbsp;Hour, 24-hour format without leading zeros.</div>
+<div><strong>h</strong>&nbsp;&nbsp;Hour, 12-hour format.</div>
+<div><strong>H</strong>&nbsp;&nbsp;Hour, 24-hour format.</div>
+<div><strong>i</strong>&nbsp;&nbsp;Minutes.</div>
+<div><strong>I</strong>&nbsp;&nbsp;Not implemented.</div>
+<div><strong>j</strong>&nbsp;&nbsp;Day of the month without leading zeros.</div>
+<div><strong>l</strong>&nbsp;&nbsp;Day of the week, textual, long.</div>
+<div><strong>L</strong>&nbsp;&nbsp;Boolean for whether it\'s a leap year.</div>
+<div><strong>m</strong>&nbsp;&nbsp;Month, 2 digits with leading zeros.</div>
+<div><strong>M</strong>&nbsp;&nbsp;Month, textual, 3 letters.</div>
+<div><strong>n</strong>&nbsp;&nbsp;Month without leading zeros.</div>
+<div><strong>N</strong>&nbsp;&nbsp;Month abbreviation in Associated Press style. Proprietary extension.</div>
+<div><strong>O</strong>&nbsp;&nbsp;Difference to Greenwich time in hours.</div>
+<div><strong>P</strong>&nbsp;&nbsp;Time, in 12-hour hours, minutes and \'a.m.\'/\'p.m.\', with minutes left off if they\'re zero and the special-case strings \'midnight\ and \'noon\' if appropriate. Proprietary extension.</div>
+<div><strong>r</strong>&nbsp;&nbsp;RFC 2822 formatted date.</div>
+<div><strong>s</strong>&nbsp;&nbsp;Seconds, 2 digits with leading zeros.</div>
+<div><strong>S</strong>&nbsp;&nbsp;English ordinal suffix for day of the month, 2 characters.</div>
+<div><strong>t</strong>&nbsp;&nbsp;Number of days in the given month.</div>
+<div><strong>T</strong>&nbsp;&nbsp;Time zone of this machine.</div>
+<div><strong>u</strong>&nbsp;&nbsp;Microseconds.</div>
+<div><strong>U</strong>&nbsp;&nbsp;Seconds since the Unix Epoch (January 1 1970 00:00:00 UTC).</div>
+<div><strong>w</strong>&nbsp;&nbsp;Day of the week, digits without leading zeros.</div>
+<div><strong>W</strong>&nbsp;&nbsp;ISO-8601 week number of year, with weeks starting on Monday.</div>
+<div><strong>y</strong>&nbsp;&nbsp;Year, 2 digits.</div>
+<div><strong>Y</strong>&nbsp;&nbsp;Year, 4 digits.</div>
+<div><strong>z</strong>&nbsp;&nbsp;Day of the year.</div>
+<div><strong>Z</strong>&nbsp;&nbsp;Time zone offset in seconds. The offset for timezones west of UTC is always negative, and for those east of UTC is always positive.</div>','string','F dS, Y h:i A','F dS, Y h:i A','text','\n',1,1,'2010-08-12 17:19:14','','site','global',0),
  ('enabled','Enabled','Module is enabled or not.','boolean','true','true','select','true,false',0,1,'2010-08-13 09:33:29','','module','forms',0),
  ('label','Label','The name of the module.','string','Forms','Forms','text','',0,1,'2010-08-13 09:33:29','','module','forms',0),
  ('contactrecipients','Contact Form Recipients','A list of email address that recieve an email when the contact form is submitted','string','','','text','',1,1,'2010-08-12 17:19:11','','module','contacts',0),
