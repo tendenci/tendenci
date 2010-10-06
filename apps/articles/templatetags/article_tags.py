@@ -57,7 +57,7 @@ def list_articles(parser, token):
     Example:
         {% list_articles as articles [user=user limit=3] %}
         {% for article in articles %}
-            {{ article }}
+            {{ article.headline }}
         {% endfor %}
 
     """
