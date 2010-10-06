@@ -375,59 +375,75 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         context_instance=RequestContext(request))
     
     
-@login_required
-def edit_user_groups(request, id, template_name="profiles/edit_groups.html"):
-    user_edit = get_object_or_404(User, pk=id)
-    profile = user_edit.get_profile()
-    
-    # get the groups with permissions
-    groups = [g.object for g in Group.objects.search(user=request.user)]
-    
-    # a list of groups this user in
-    groups_joined = user_edit.group_set.all()
-
-    if request.method == "POST":
-        selected_groups = request.POST.getlist("user_groups")    # list of ids
-        selected_groups = [Group.objects.get(id=g) for g in selected_groups] # list of objects
-        groups_to_add = [g for g in selected_groups if g not in groups_joined]
-        for g in groups_to_add:
-            gm = GroupMembership(group=g, member=user_edit)
-            gm.creator_id = request.user.id
-            gm.creator_username = request.user.username
-            gm.owner_id = request.user.id
-            gm.owner_username = request.user.username
-            gm.save()    
-            log_defaults = {
-                'event_id' : 221000,
-                'event_data': '%s (%d) added by %s' % (gm._meta.object_name, gm.pk, request.user),
-                'description': '%s added' % gm._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': gm,
-            }
-            EventLog.objects.log(**log_defaults)    
-
-        # remove those not selected but already in GroupMembership  
-        groups_to_remove = [g for g in groups_joined if g not in selected_groups]
-        for g in groups_to_remove:
-            gm = GroupMembership.objects.get(group=g, member=user_edit)
-            log_defaults = {
-                'event_id' : 223000,
-                'event_data': '%s (%d) deleted by %s' % (gm._meta.object_name, gm.pk, request.user),
-                'description': '%s deleted' % gm._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': gm,
-            }
-            EventLog.objects.log(**log_defaults)            
-            
-            gm.delete()
-            
-            
-        groups_joined = user_edit.group_set.all()
-
-    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'groups':groups, 'groups_joined':groups_joined}, 
-        context_instance=RequestContext(request))
+#@login_required
+#def edit_user_groups(request, id, template_name="profiles/edit_groups.html"):
+#    user_edit = get_object_or_404(User, pk=id)
+#    profile = user_edit.get_profile()
+#    
+#    # get the groups with permissions
+#    groups = Group.objects.search(user=request.user)
+#    groups = [g.object for g in groups.filter(allow_self_add=True)]
+#    groups = [g for g in groups if not g.is_member(user_edit)]
+#    
+#    if is_admin(request.user):
+#        groups = Group.objects.all()
+#    
+#    print 'groups', groups
+#    
+#    # groups the user is in that have allow_self_remove true
+#    groups_joined = user_edit.group_set.filter(allow_self_remove=True)
+#    
+#    if is_admin(request.user):
+#        groups_joined = user_edit.group_set.all()
+#    
+#    print 'groups_joined', groups_joined
+#
+#    if request.method == "POST":
+#        selected_groups = request.POST.getlist("user_groups")    # list of ids
+#        selected_groups = [Group.objects.get(id=g) for g in selected_groups] # list of objects
+#        
+#        print 'selected_groups', selected_groups
+#        
+#        groups_to_add = [g for g in selected_groups if g not in groups_joined]
+#        print 'groups_to_add', groups_to_add
+#        for g in groups_to_add:
+#            gm = GroupMembership(group=g, member=user_edit)
+#            gm.creator_id = request.user.id
+#            gm.creator_username = request.user.username
+#            gm.owner_id = request.user.id
+#            gm.owner_username = request.user.username
+#            gm.save()    
+#            log_defaults = {
+#                'event_id' : 221000,
+#                'event_data': '%s (%d) added by %s' % (gm._meta.object_name, gm.pk, request.user),
+#                'description': '%s added' % gm._meta.object_name,
+#                'user': request.user,
+#                'request': request,
+#                'instance': gm,
+#            }
+#            EventLog.objects.log(**log_defaults)    
+#
+#        # remove those not selected but already in GroupMembership 
+#        groups_to_check = [groups_joined] + selected_groups 
+#        print 'groups_to_check', groups_to_check
+#        groups_to_remove = [g for g in groups_joined if g not in groups_to_check]
+#        print 'groups_to_remove', groups_to_remove
+#        for g in groups_to_remove:
+#            gm = GroupMembership.objects.get(group=g, member=user_edit)
+#            log_defaults = {
+#                'event_id' : 223000,
+#                'event_data': '%s (%d) deleted by %s' % (gm._meta.object_name, gm.pk, request.user),
+#                'description': '%s deleted' % gm._meta.object_name,
+#                'user': request.user,
+#                'request': request,
+#                'instance': gm,
+#            }
+#            EventLog.objects.log(**log_defaults)            
+#            
+#            gm.delete()
+#            
+#    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'groups':groups, 'groups_joined':groups_joined}, 
+#        context_instance=RequestContext(request))
  
 def _get_next(request):
     """
