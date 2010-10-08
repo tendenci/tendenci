@@ -142,16 +142,21 @@ class ListPhotosNode(Node):
 
         self.limit = 3
         self.user = None
+        self.tags = []
+        self.q = []
+        self.context_var = context_var
 
         if "limit" in kwargs:
             self.limit = Variable(kwargs["limit"])
-
         if "user" in kwargs:
             self.user = Variable(kwargs["user"])
-
-        self.context_var = context_var
+        if "tags" in kwargs:
+            self.tags = kwargs["tags"]
+        if "q" in kwargs:
+            self.q = kwargs["q"]
 
     def render(self, context):
+        query = ''
 
         if self.user:
             self.user = self.user.resolve(context)
@@ -159,7 +164,15 @@ class ListPhotosNode(Node):
         if hasattr(self.limit, "resolve"):
             self.limit = self.limit.resolve(context)
 
-        photos = Image.objects.search(user=self.user)
+        for tag in self.tags:
+            tag = tag.strip()
+            query = '%s "tag:%s"' % (query, tag)
+
+        for q_item in self.q:
+            q_item = q_item.strip()
+            query = '%s "%s"' % (query, q_item)
+
+        photos = Image.objects.search(user=self.user, query=query)
 
         photos = [photo.object for photo in photos[:self.limit]]
         context[self.context_var] = photos
@@ -184,6 +197,10 @@ def list_photos(parser, token):
             kwargs["limit"] = bit.split("=")[1]
         if "user=" in bit:
             kwargs["user"] = bit.split("=")[1]
+        if "tags=" in bit:
+            kwargs["tags"] = bit.split("=")[1].replace('"','').split(',')
+        if "q=" in bit:
+            kwargs["q"] = bit.split("=")[1].replace('"','').split(',')
 
     if len(bits) < 3:
         message = "'%s' tag requires more than 3" % bits[0]
