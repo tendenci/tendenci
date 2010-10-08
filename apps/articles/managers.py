@@ -79,7 +79,6 @@ class ArticleManager(Manager):
                 sqs = sqs.filter(status=1).filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True)
 
-            sqs = sqs.filter()
             sqs = sqs.order_by('-release_dt')
     
         return sqs.models(self.model)
