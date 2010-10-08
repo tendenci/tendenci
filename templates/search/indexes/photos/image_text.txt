@@ -6,5 +6,6 @@ by {{ object.object.member.get_profile.display_name }}
 
 {% tags_for_object object as tags %}
 {% for tag in tags %}
-{{ tag }}
+{% load tagging_tags %}
+tag:{{ tag }}
 {% endfor %}
