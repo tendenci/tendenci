@@ -20,5 +20,5 @@ sub_category:{{ sub_category }}
 
 {% tags_for_object object as tags %}
 {% for tag in tags %}
-{{ tag }} 
+tag:{{ tag }} 
 {% endfor %}

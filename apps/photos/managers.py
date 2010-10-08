@@ -39,8 +39,6 @@ class PhotoManager(Manager):
                 
         is_an_admin = is_admin(user)
 
-        print sqs.models(self.model)
-
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query)) 
             if user:
