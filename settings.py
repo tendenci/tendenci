@@ -4,11 +4,9 @@ import sys
 # Paths
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 APPS_PATH = os.path.join(PROJECT_ROOT, 'apps')
-LIBS_PATH = os.path.join(PROJECT_ROOT, 'libs')
 sys.path.insert(0, APPS_PATH)
-sys.path.insert(0, LIBS_PATH)
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 SITE_THEME = "default"
 
@@ -23,12 +21,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tendenci50',
-        'USER': 'tendenci50',
-        'PASSWORD': 'Ly89e1c',
-        'HOST': 'NTSERVER17',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'tendenci50.db',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -271,10 +269,9 @@ BROKER_VHOST = "/"
 # Hackstack Search
 # --------------------------------------#
 HAYSTACK_SITECONF = 'search'
-HAYSTACK_SEARCH_ENGINE = 'solr'
+HAYSTACK_SEARCH_ENGINE = 'xapian'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
-HAYSTACK_SOLR_URL = 'http://127.0.0.1:8000/tendenci50/'
-HAYSTACK_SOLR_TIMEOUT = 60
+HAYSTACK_XAPIAN_PATH = os.path.join(PROJECT_ROOT,'index')
 HAYSTACK_INCLUDED_APPS = ('article','directory','event','photoset','job','page','news','resume','story')
 
 #---------------------------------------------------------------

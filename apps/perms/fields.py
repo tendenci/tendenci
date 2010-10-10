@@ -29,8 +29,7 @@ def group_choices():
 group_perm_options = {
     'label':'Group Permissions',
     'help_text':'Groups who have view/change permissions',
-    'required':False,
-    'choices': group_choices()                        
+    'required':False,                       
 }                      
     
 def user_perm_bits(instance):
@@ -140,7 +139,12 @@ class UserPermissionField(MultipleChoiceField):
     """    
     widget = UserPermissionWidget
     def __init__(self, *args, **kwargs):
-        kwargs.update(user_perm_options)   
+        try:
+            kwargs.update(user_perm_options)
+        except:
+            # in database setup we can't get database entries
+            # when they do not exist           
+            pass
         super(UserPermissionField, self).__init__(*args, **kwargs)
         
 class GroupPermissionWidget(CheckboxSelectMultiple):
@@ -215,7 +219,13 @@ class GroupPermissionField(MultipleChoiceField):
     """    
     widget = GroupPermissionWidget
     def __init__(self, *args, **kwargs):
-        kwargs.update(group_perm_options)   
+        kwargs.update(group_perm_options)
+        try:
+            kwargs.update({'choices': group_choices()})
+        except:
+            # in database setup we can't get database entries
+            # when they do not exist
+            pass
         super(GroupPermissionField, self).__init__(*args, **kwargs)
       
         
