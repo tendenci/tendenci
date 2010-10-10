@@ -85,7 +85,18 @@ try:
     from local_urls import MEDIA_PATTERNS
     urlpatterns += MEDIA_PATTERNS
 except ImportError:
-    pass
+    from django.conf import settings
+    from os.path import join
+    # serve static files
+    if settings.DEBUG:
+        urlpatterns += patterns('',
+            (r'^site_media/(?P<path>.*)$', 
+            'django.views.static.serve',
+            {'document_root': join(settings.PROJECT_ROOT,'site_media')}),
+            (r'^themes/%s/(?P<path>.*)$' % settings.SITE_THEME, 
+            'django.views.static.serve',
+            {'document_root': settings.THEME_ROOT}),           
+        )
 
 # tack on the pages pattern at the very end so let custom and software patterns
 # happen first

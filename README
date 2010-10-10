@@ -1,0 +1,35 @@
+Tendenci 5.0 README
+-------------------
+
+XAPIAN REQUIREMENTS
+-------------------
+Since some fields are faceted in the search indexes so xapian is required.
+For Ubuntu:
+sudo apt-get install libxapian15
+sudo apt-get install python-xapian
+
+OSX/Windows installation instructions are here:
+http://xapian.org/download
+
+INSTALLATION
+------------
+* With virtualenvwrapper:
+http://www.doughellmann.com/projects/virtualenvwrapper/
+
+git clone git@github.com:schipul/Tendenci-5.0.git
+mkvirtualenv Tendenci50-env
+workon Tendenci50-env
+source scripts/tendenci-boot.sh
+
+* Without virtualenvwrapper:
+
+git clone git@github.com:schipul/Tendenci-5.0.git
+virtualenv Tendenci50-env
+source  Tendenci50-env/bin/activate
+source scripts/tendenci-boot.sh
+
+SETUP DATABASE AND INDEX
+------------------------
+From root site folder (eg Tendenci50):
+python manage.py syncdb
+python manage.py rebuild_index
