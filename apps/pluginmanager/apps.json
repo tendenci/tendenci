@@ -1,0 +1,9 @@
+[
+    {
+        "is_enabled": true, 
+        "is_installed": true, 
+        "package": "plugins.donations", 
+        "id": 2, 
+        "title": "donation"
+    }
+]

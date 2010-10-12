@@ -4,7 +4,9 @@ import sys
 # Paths
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 APPS_PATH = os.path.join(PROJECT_ROOT, 'apps')
+LIBS_PATH = os.path.join(PROJECT_ROOT, 'libs')
 sys.path.insert(0, APPS_PATH)
+sys.path.insert(0, LIBS_PATH)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -21,18 +23,20 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'tendenci50.db',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'tendenci50',
+        'USER': 'tendenci50',
+        'PASSWORD': 'Ly89e1c',
+        'HOST': 'NTSERVER17',
+        'PORT': '3306',
     }
 }
 
 # email
 EMAIL_HOST = '4.78.3.131'
+#EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
+#EMAIL_PORT = 1025
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
@@ -159,6 +163,8 @@ INSTALLED_APPS = (
     'south',
     'forms_builder.forms',
     
+    'pluginmanager',
+    
     # tendenci applications
     'base',
     'accounts',
@@ -182,7 +188,7 @@ INSTALLED_APPS = (
     'emails',
     'email_blocks',
     'actions',
-    'donations',
+    #'donations',
     'files',
     'contacts',
     'event_logs',
@@ -307,3 +313,13 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+
+#THIS MUST BE AT THE END!
+#Plugin configuration
+DEFAULT_INSTALLED_APPS = INSTALLED_APPS
+import pluginmanager
+INSTALLED_APPS = pluginmanager.plugin_apps(INSTALLED_APPS)
+# add the plugins to the sys path - GJQ 10/12/2010
+PLUGINS_PATH = os.path.join(PROJECT_ROOT, 'plugins')
+sys.path.insert(0, PLUGINS_PATH)

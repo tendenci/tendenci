@@ -1,0 +1,7 @@
+{% for obj in object_list %}
+    {{ obj.title }}<br>
+    {{ obj.intro }} <a href="{% url blog-detail obj.id %}">More >></a><br>
+    <br>
+{% empty %}
+    No entries
+{% endfor %}
