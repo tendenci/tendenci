@@ -19,6 +19,7 @@ from base.http import Http403
 from perms.models import ObjectPermission
 from perms.utils import has_perm
 from event_logs.models import EventLog
+from photos.utils import dynamic_image
 
 def details(request, id, set_id=0, template_name="photos/details.html"):
     """ show the photo details """
@@ -113,6 +114,36 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
         "set_id": set_id,
         "is_me": is_me,
     }, context_instance=RequestContext(request))
+
+def photo_size(request, id=None, size=None, crop=False):
+    """
+    Renders image and returns response
+    Does not use template
+    Saves resized image within cache system
+    Returns 404 if if image rendering fails
+    """
+
+    if id and size:
+        photo = get_object_or_404(Image, id=id)
+        size = [int(s) for s in size.split('x')]
+
+    # check permissions
+    if not has_perm(request.user,'photos.view_image',photo):
+        raise Http403
+
+    if crop: crop = True
+
+    # gets resized image from cache or rebuild
+    image = dynamic_image(photo.image, size, crop)
+
+    # if image not rendered; quit
+    if not image: raise Http404
+
+    response = HttpResponse(mimetype='image/jpeg')
+    response['Content-Disposition'] = 'filename=%s'% photo.image.file.name
+    image.save(response, "JPEG", quality=100)
+
+    return response
 
 
 @login_required
