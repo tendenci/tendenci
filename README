@@ -10,6 +10,9 @@ sudo apt-get install python-xapian
 
 OSX/Windows installation instructions are here:
 http://xapian.org/download
+sudo port selfupdate
+sudo port install xapian-core
+sudo port install xapian-bindings +python26
 
 INSTALLATION
 ------------

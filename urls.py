@@ -49,7 +49,7 @@ urlpatterns = patterns('',
     (r'^actions/', include('actions.urls')),
     (r'^rss/', include('rss.urls')),
     (r'^imports/', include('imports.urls')),
-    (r'^donations/', include('donations.urls')),
+    #(r'^donations/', include('donations.urls')),
     (r'^news/', include('news.urls')),
     (r'^settings/', include('site_settings.urls')),
     (r'^files/', include('files.urls')),
@@ -97,6 +97,10 @@ except ImportError:
             'django.views.static.serve',
             {'document_root': settings.THEME_ROOT}),           
         )
+
+#PLUGINS:
+import pluginmanager
+urlpatterns += pluginmanager.get_url_patterns()
 
 # tack on the pages pattern at the very end so let custom and software patterns
 # happen first
