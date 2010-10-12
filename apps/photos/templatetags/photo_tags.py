@@ -212,3 +212,47 @@ def list_photos(parser, token):
 
     return ListPhotosNode(context_var, *args, **kwargs)
 
+class PhotoSizeNode(Node):
+    
+    def __init__(self, *args, **kwargs):
+
+        self.size = (100, 100)
+        self.crop = False
+
+        if "size" in kwargs:
+            self.size = kwargs["size"]
+        if "crop" in kwargs:
+            self.crop = kwargs["crop"]
+
+        # convert strings to integers
+        self.size = tuple([int(size) for size in self.size])
+
+    def render(self, context):
+
+        print self.size, self.crop
+
+        return "javascript:;"
+
+@register.tag
+def photo_size(parser, token):
+    """
+    Example:
+        {% list_photos as photos user=user limit=3 %}
+        {% for photo in photos %}
+            {% photo_size photo size=100x100 crop=False %}
+        {% endfor %}
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+
+    for bit in bits:
+        if "size=" in bit:
+            kwargs["size"] = bit.split("=")[1].split("x")
+        if "crop=" in bit:
+            kwargs["crop"] = bit.split("=")[1]
+
+    if len(bits) < 1:
+        message = "'%s' tag requires more than 1 argument" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    return PhotoSizeNode(*args, **kwargs)
