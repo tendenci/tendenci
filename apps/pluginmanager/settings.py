@@ -2,7 +2,10 @@ import os
 from django.utils import simplejson
 
 def rel(*x):
-    return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
+    #return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
+    # cannot import settings.py in this file 'cause it is called by setting.
+    # it is ugly but there is no other way unless we move this file to the same location where apps.json is. - GJQ
+    return os.path.join(os.path.join(os.path.split(os.path.split(os.path.abspath(os.path.dirname(__file__)))[0])[0], 'plugins'), *x)
 
 def get_apps():
     """ Get apps from json files"""
