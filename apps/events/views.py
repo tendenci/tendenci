@@ -273,7 +273,6 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 
 @login_required
 def add(request, form_class=EventForm, template_name="events/add.html"):
-#    event = get_object_or_404(Event, pk=id)
 
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
@@ -286,70 +285,25 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 event.owner = request.user
                 event.owner_username = request.user.username
 
-                # set up user permission
-                event.allow_user_view, event.allow_user_edit = form_event.cleaned_data['user_perms']
-                
-                event.save()
-
-                EventLog.objects.log(
-                    event_id =  171000, # add event
-                    event_data = '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                    description = '%s added' % event._meta.object_name,
-                    user = request.user,
-                    request = request,
-                    instance = event
-                )
-                               
-                # assign permissions for selected groups
-                ObjectPermission.objects.assign_group(form_event.cleaned_data['group_perms'], event)
-                # assign creator permissions
-                ObjectPermission.objects.assign(event.creator, event) 
-
-                # tried get_or_create(); but get a keyword argument :(
+                # tried get_or_create();
                 try: # look for a speaker
                     speaker = event.speaker_set.all()[0]
                 except: # else: create a speaker
                     speaker = Speaker()
-                    speaker.save()
-                    speaker.event = [event]
-                    speaker.save()
-            
-                # tried get_or_create(); but get a keyword argument :(
-                try: # look for a speaker
+
+                try: # look for an organizer
                     organizer = event.organizer_set.all()[0]
-                except: # else: create a speaker
+                except: # else: create an organizer
                     organizer = Organizer()
-                    organizer.save()
-                    organizer.event = [event]
-                    organizer.save()
 
-                # location validation
-                form_place = PlaceForm(request.POST, instance=event.place, prefix='place')
-                if form_place.is_valid():
-                    place = form_place.save() # save place
-                    event.place = place
-                    event.save() # save event
-
-                # speaker validation
-                form_speaker = SpeakerForm(request.POST, instance=speaker, prefix='speaker')
-                if form_speaker.is_valid():
-                    speaker = form_speaker.save(commit=False)                   
-                    speaker.event = [event]
-                    speaker.save()
-
-                # organizer validation
-                form_organizer = OrganizerForm(request.POST, instance=organizer, prefix='organizer')
-                if form_organizer.is_valid():
-                    organizer = form_organizer.save(commit=False)                   
-                    organizer.event = [event]
-                    organizer.save()
-
-                # registration configuration validation
-                form_regconf = Reg8nEditForm(request.POST, instance=event.registration_configuration, prefix='regconf')
-                if form_regconf.is_valid():
-                    regconf = form_regconf.save() # save registration configuration
-                    event.registration_configuration = regconf
-                    event.save() # save event
+                form_place = PlaceForm(request.POST, 
+                    instance=event.place, prefix='place')
+                form_speaker = SpeakerForm(request.POST, 
+                    instance=speaker, prefix='speaker')
+                form_organizer = OrganizerForm(request.POST, 
+                    instance=organizer, prefix='organizer')
+                form_regconf = Reg8nEditForm(request.POST, 
+                    instance=event.registration_configuration, prefix='regconf')
 
                 forms = [
                     form_event,
@@ -360,6 +314,41 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 ]
 
                 if all([form.is_valid() for form in forms]):
+
+                    # pks have to exist; before making relationships
+                    place = form_place.save()
+                    regconf = form_regconf.save()
+                    speaker = form_speaker.save()
+                    organizer = form_organizer.save()
+                    event.save()
+
+                    # update supplemental
+                    speaker.event = [event]
+                    organizer.event = [event]
+
+                    speaker.save() # save again
+                    organizer.save() # save again
+
+                    # update event
+                    event.place = place
+                    event.registration_configuration = regconf
+                    
+                    event.save() # save again
+
+                    # event security
+                    event.allow_user_view, event.allow_user_edit = form_event.cleaned_data['user_perms']
+                    ObjectPermission.objects.assign_group(form_event.cleaned_data['group_perms'], event)
+                    ObjectPermission.objects.assign(event.creator, event) 
+
+                    EventLog.objects.log(
+                        event_id =  171000, # add event
+                        event_data = '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
+                        description = '%s added' % event._meta.object_name,
+                        user = request.user,
+                        request = request,
+                        instance = event
+                    )
+
                     messages.add_message(request, messages.INFO, 'Successfully added %s' % event)
                     if notification: notification.send(get_administrators(),'event_added', {'object': event, 'request': request})
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
