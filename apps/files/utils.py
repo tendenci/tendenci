@@ -12,7 +12,7 @@ def get_image(file, size):
     size = validate_image_size(size) # make sure it's not too big
     key = generate_image_cache_key(file, size)
 
-    binary = cache.get(key)
+    binary = cache.get(key) # check if key exists
     if not binary: binary = build_image(file, size)
 
     try: return Image.open(StringIO(binary))
