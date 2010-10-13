@@ -235,7 +235,7 @@ class PhotoImageURL(Node):
                 args=[photo.pk, self.size, "crop"])
         else:
             url = reverse('photo.size', 
-                args=[photo.pk, self.size, "crop"])
+                args=[photo.pk, self.size])
 
         return url
 
