@@ -1,15 +1,15 @@
 [
  {
-  "is_enabled": true, 
-  "is_installed": true, 
-  "package": "plugins.donations", 
+  "is_enabled": false, 
+  "is_installed": false, 
+  "package": "donations", 
   "id": 1, 
   "title": "donation"
  }, 
  {
-  "is_enabled": true, 
-  "is_installed": true, 
-  "package": "plugins.blog", 
+  "is_enabled": false, 
+  "is_installed": false, 
+  "package": "blog", 
   "id": 2, 
   "title": "blog"
  }
