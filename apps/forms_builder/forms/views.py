@@ -22,7 +22,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
         raise Http403
     
     if request.method == "POST":
-        form = form_class(request.user, request.POST)
+        form = form_class(request.POST, user=request.user)
         if form.is_valid():           
             form_instance = form.save(commit=False)
             # set up the user information
@@ -54,7 +54,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
             messages.add_message(request, messages.INFO, 'Successfully added %s' % form_instance)
             return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
-        form = form_class(request.user)
+        form = form_class(user=request.user)
        
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
@@ -64,7 +64,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
     
     if not has_perm(request.user,'forms.change_form',form_instance):
         raise Http403    if request.method == "POST":
-        form = form_class(request.user, request.POST, instance=form_instance)
+        form = form_class(request.POST, instance=form_instance, user=request.user)
         if form.is_valid():           
             form_instance = form.save(commit=False)
             
@@ -91,7 +91,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             messages.add_message(request, messages.INFO, 'Successfully edited %s' % form_instance)
             return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
-        form = form_class(request.user, instance=form_instance)
+        form = form_class(instance=form_instance, user=request.user)
        
     return render_to_response(template_name, {'form':form, 'form_instance':form_instance}, 
         context_instance=RequestContext(request))
