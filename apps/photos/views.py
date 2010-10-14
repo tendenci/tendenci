@@ -134,7 +134,7 @@ def photo_size(request, id=None, size=None, crop=False):
     if crop: crop = True
 
     # gets resized image from cache or rebuild
-    image = dynamic_image(photo.image, size, crop)
+    image = dynamic_image(photo, size, crop)
 
     # if image not rendered; quit
     if not image: raise Http404
