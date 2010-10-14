@@ -85,7 +85,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
 
     if has_perm(request.user,'pages.change_page',page):    
         if request.method == "POST":
-            form = form_class(request.user, request.POST, instance=page)
+            form = form_class(request.POST, instance=page, user=request.user)
             if form.is_valid():
                 page = form.save(commit=False)
 
@@ -124,7 +124,7 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
                                                               
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))             
         else:
-            form = form_class(request.user, instance=page)
+            form = form_class(instance=page, user=request.user)
 
         return render_to_response(template_name, {'page': page, 'form':form}, 
             context_instance=RequestContext(request))
@@ -166,7 +166,7 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
 
     if has_perm(request.user,'pages.add_page'):
         if request.method == "POST":
-            form = form_class(request.user, request.POST)
+            form = form_class(request.POST, user=request.user)
             if form.is_valid():           
                 page = form.save(commit=False)
                 
@@ -213,7 +213,7 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                     
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))
         else:
-            form = form_class(request.user)
+            form = form_class(user=request.user)
            
         return render_to_response(template_name, {'form':form}, 
             context_instance=RequestContext(request))

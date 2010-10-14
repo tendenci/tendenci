@@ -14,12 +14,15 @@ class HelpFileAdmin(admin.ModelAdmin):
         ('Flags', {'fields': (
             ('is_faq', 'is_featured', 'is_video', 'syndicate'),)}),
         ('Administrative', {'fields': (
-            'allow_anonymous_view','status','status_detail' )}),
+            'allow_anonymous_view','user_perms','status','status_detail' )}),
     )
     form = HelpFileForm
     
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
+
+        # set up user permission
+        instance.allow_user_view, instance.allow_user_edit = form.cleaned_data['user_perms']
         
         # adding the helpfile
         if not change:

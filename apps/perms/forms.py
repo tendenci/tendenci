@@ -41,8 +41,11 @@ class TendenciBaseForm(BetterModelForm):
             value = tuple(groups_and_perms)
         return value
     
-    def __init__(self, user=None, *args, **kwargs):
-        self.user = user
+    def __init__(self, *args, **kwargs):
+        if 'user' in kwargs:
+            self.user = kwargs.pop('user', None)
+        else:
+            self.user = None
         super(TendenciBaseForm, self).__init__(*args, **kwargs)
        
         # needs to update the choices on every pull
