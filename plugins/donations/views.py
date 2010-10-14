@@ -24,7 +24,7 @@ except:
 
 def add(request, form_class=DonationForm, template_name="donations/add.html"):
     if request.method == "POST":
-        form = form_class(request.user, request.POST)
+        form = form_class(request.POST, user=request.user)
         
         if form.is_valid():
             donation = form.save(commit=False)
@@ -138,7 +138,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
             else:
                 return HttpResponseRedirect(reverse('donation.add_confirm', args=[donation.id]))
     else:
-        form = form_class(request.user)
+        form = form_class(user=request.user)
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
     if not currency_symbol: currency_symbol = "$"
