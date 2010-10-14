@@ -16,7 +16,7 @@ class HelpFileForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':HelpFile._meta.app_label, 
         'storme_model':HelpFile._meta.module_name.lower()}))
 
-    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('published','Published')))
+    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('active','Active')))
     
     class Meta:
         model = HelpFile
