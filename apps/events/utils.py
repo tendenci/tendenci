@@ -1,6 +1,9 @@
 import re
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
+from django.contrib.auth.models import User
+
+from profiles.models import Profile
 from site_settings.utils import get_setting
 
 def get_vevents(request, d):
@@ -237,60 +240,84 @@ def prev_month(month, year):
 
 def save_registration(*args, **kwargs):
     """
-    Adds or Updates Registration Record.
+    Adds or Updates the Registration Record.
+    Updates Registration, Registrant, and Invoice Table.
     """
+    from events.models import Registrant
     from events.models import Registration
 
     event = kwargs.get('event', None)
     user_account = kwargs.get('user', None)
+
+    user_name = kwargs.get('name', '')
+    user_email = kwargs.get('email', '')
+
     payment_method = kwargs.get('payment_method', None)
     price = kwargs.get('price', None)
 
-    # user profile shortcut
-    user_profile = user_account.get_profile()
+    if not isinstance(user_account, User):
+        user_account = None
 
-    try: # update registration
-        reg8n = Registration.objects.get(
-            event=event, creator=user_account, owner=user_account,
-            payment_method=payment_method, amount_paid=price
+    # standardize user_account & user_profile
+    # consider authenticated and anonymous
+    if user_account:
+        user_profile = user_account.get_profile()
+    else:
+        # account
+        user_account = User()
+        user_account.first_name = user_name.split()[0]
+        user_account.last_name = user_name.split()[1]
+        # profile
+        user_profile = Profile()
+        user_profile.email = user_email
+        user_profile.display_name = user_name
+
+
+    try:
+    # find registrant using event + email
+        registrant = Registrant.objects.get(
+            registration__event=event, 
+            email=user_profile.email
         )
         created = False
+    except:
+    # create registration; then registrant
+        reg8n_attrs = {
+            "event": event,
+            "payment_method": payment_method,
+            "amount_paid": str(price),
+        }
 
-    except: # add registration
-        reg8n = Registration.objects.create(
-            event = event, 
-            creator = user_account, 
-            owner = user_account,
-            payment_method_id = payment_method.pk,
-            amount_paid = str(price)
+        # volatile fields
+        if user_account:
+            reg8n_attrs["creator"] = user_account
+            reg8n_attrs["owner"] = user_account
+
+        # create registration
+        reg8n = Registration.objects.create(**reg8n_attrs)
+
+        # create registrant
+        registrant = reg8n.registrant_set.create(
+            name = user_profile.display_name,
+            email = user_profile.email,
+            mail_name = user_profile.display_name,
+            address = user_profile.address,
+            city = user_profile.city,
+            state = user_profile.state,
+            zip = user_profile.zip,
+            country = user_profile.country,
+            phone = user_profile.phone,
+            company_name = user_profile.company,
+            position_title = user_profile.position_title,
+            
         )
+
         created = True
 
-    # get or create registrant
-    registrant = reg8n.registrant_set.get_or_create(user=user_account)[0]
+    print registrant.pk, registrant.name, created
+    print registrant.registration.pk, registrant.registration
 
-    # update registrant information                
-    registrant.name = ' '.join((user_account.first_name, user_account.last_name))
-    registrant.name = registrant.name.strip()
-    registrant.mail_name = user_profile.display_name
-    registrant.address = user_profile.address
-    registrant.city = user_profile.city
-    registrant.state = user_profile.state
-    registrant.zip = user_profile.zipcode
-    registrant.country = user_profile.country
-    registrant.phone = user_profile.phone
-    registrant.email = user_profile.email
-    registrant.company_name = user_profile.company
-    registrant.position_title = user_profile.position_title
-    registrant.save()
-
-    reg8n.save() # save registration record
-    reg8n.save_invoice() # adds/updates invoice
-
-    # TODO: Debating on whether I should pass
-    # the invoice object as well
-
-    return (reg8n, created)
+    return (registrant.registration, created)
 
 
 

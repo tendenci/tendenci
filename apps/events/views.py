@@ -1,6 +1,8 @@
 import calendar
 from datetime import datetime
 
+from django.contrib.auth.models import User
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -419,6 +421,16 @@ def delete(request, id, template_name="events/delete.html"):
 def register(request, event_id=0, form_class=Reg8nForm, template_name="events/reg8n/register.html"):
         event = get_object_or_404(Event, pk=event_id)
 
+        user_account = None
+        if isinstance(request.user, User):
+            user_account = request.user
+            user_email = user_account.email
+
+        # free or priced event (choose template)
+        free = (event.registration_configuration.price == 0)                
+        if free: template_name = "events/reg8n/register-free.html"
+        else: template_name = "events/reg8n/register-priced.html"
+
         # check for registry; else 404
         if not RegistrationConfiguration.objects.filter(event=event).exists():
             raise Http404
@@ -439,33 +451,38 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
 
                 price = form.cleaned_data['price']
 
+                # anonymous registrant
                 if not request.user.is_authenticated():
 
                     # get user fields
-                    username = form.cleaned_data['username']
-                    email = form.cleaned_data['email']
-                    password = form.cleaned_data['password1']
+                    username = form.cleaned_data.get("username", None)
+                    user_name = form.cleaned_data.get("name", None)
+                    user_email = form.cleaned_data.get("email", None)
+                    password = form.cleaned_data.get("password1", None)
 
-                    from django.contrib.auth.models import User
-                    from django.contrib.auth import login, authenticate
-
-                    try: # if authenticate; then login
-                        user_account = authenticate(username=username, password=password)
-                        login(request, user_account)
-                    except:
-                        # else create user account and user profile
-                        from profiles.models import Profile
-                        user_account = User.objects.create_user(username, email, password)
-                        Profile.objects.create_profile(user_account)
-
-                        # then authenticate; then login
-                        user_account = authenticate(username=user_account.username, password=password)
-                        login(request, user_account)
+#                    try: # if authenticate; then login
+#                        user_account = authenticate(username=username, password=password)
+#                        login(request, user_account)
+#                    except:
+#                        # else create user account and user profile
+#                        from profiles.models import Profile
+#                        user_account = User.objects.create_user(username, user_email, password)
+#                        Profile.objects.create_profile(user_account)
+#
+#                        # then authenticate; then login
+#                        user_account = authenticate(username=user_account.username, password=password)
+#                        login(request, user_account)
 
                 # create registration record; then take payment
                 # this allows someone to be registered with an outstanding balance 
-                reg8n, created = save_registration(user=request.user, event=event, 
-                    payment_method=form.cleaned_data['payment_method'], price=price)
+                reg8n, created = save_registration(
+                    user = user_account,
+                    name = user_name, 
+                    email = user_email, 
+                    event = event, 
+                    payment_method=form.cleaned_data['payment_method'], 
+                    price=price
+                )
 
                 site_label = get_setting('site', 'global', 'sitedisplayname')
                 site_url = get_setting('site', 'global', 'siteurl')
@@ -516,9 +533,15 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
 
                 payment_method = PaymentMethod.objects.get(pk=3)
 
+                if free:
                 # if free event; then register w/o payment method
-                if event.registration_configuration.price == 0:
-                    reg8n, created = save_registration(user=request.user, event=event, payment_method=payment_method, price='0.00')
+                    reg8n, created = save_registration(
+                        user=user_account,
+                        email=user_email, 
+                        event=event, 
+                        payment_method=payment_method, 
+                        price='0.00'
+                    )
                     response = HttpResponseRedirect(reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
                 else:
                 # else prompt registrant w/ registration-form

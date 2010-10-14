@@ -103,6 +103,12 @@
     <div class="clear"></div>
     </div><!-- /spotlight -->
     <div id="border-line"></div>
+
+	{% load photo_tags %}
+    {% list_photos as photos %}
+    {% for photo in photos %}
+    	<img src="{% photo_image_url photo size=100x100 %}" />
+    {% endfor %}
     
     {% if user.is_authenticated %}
       {% block body %}{% endblock %}
