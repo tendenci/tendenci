@@ -15,21 +15,22 @@ urlpatterns = patterns('events',
     url(r'^(?P<id>\d+)/$', 'views.index', name="event"),
     url(r'^(?P<id>\d+)/registrations/(?P<registration_id>\d+)/$', 
         'views.registration_confirmation', name='event.registration_confirmation'),
-    
+   
     # month-view(s) / day-view
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', 'views.day_view', name='event.day'),
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/$', 'views.month_view', name='event.month'),
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
-    url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
-
-    url(r'^types/$', 'views.types', name='event.types'),
 
     # register for event
     url(r'^(?P<event_id>\d+)/register/$', 'views.register', name='event.register'),
+    url(r'^types/$', 'views.types', name='event.types'),
 #    url(r'^(?P<event_id>\d+)/register/confirm/$', 'views.register_confirm', name='event.register.confirm'),
 
     # registrants (search/view); admin-only
     url(r'^(?P<event_id>\d+)/registrants/search/$', 'views.registrant_search', name="event.registrant.search"),
     url(r'^(?P<event_id>\d+)/registrants/roster/$', 'views.registrant_roster', name="event.registrant.roster"),
     url(r'^registrants/(?P<id>\d+)/$', 'views.registrant_details', name="event.registrant"),
+
+    url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
+
 )

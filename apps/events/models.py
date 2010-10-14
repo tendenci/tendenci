@@ -132,8 +132,8 @@ class Registration(models.Model):
     payment_method = models.ForeignKey('PaymentMethod', null=True)
     amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
 
-    creator = models.ForeignKey(User, related_name='created_registrations')
-    owner = models.ForeignKey(User, related_name='owned_registrations')
+    creator = models.ForeignKey(User, related_name='created_registrations', null=True)
+    owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
