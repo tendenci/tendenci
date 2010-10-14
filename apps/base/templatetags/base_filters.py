@@ -160,6 +160,10 @@ def rss_date(value, arg=None):
 rss_date.is_safe = False
 
 
+@register.filter
+def hash_md5():
+    pass
+
 
 
     
