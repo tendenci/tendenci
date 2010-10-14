@@ -7,31 +7,31 @@ from django.core.cache import cache
 from photos.cache import PHOTO_PRE_KEY
 from base.utils import image_rescale
 
-def dynamic_image(file, size, crop):
+def dynamic_image(photo, size, crop):
     """
     Gets resized-image-object from cache or rebuilds
     the resized-image-object using the original image-file.
     """
     # if file does not exist; then quit
-    if not exists(file.path): return None
+    if not exists(photo.image.path): return None
 
     size = validate_image_size(size) # make sure it's not too big
-    key = generate_image_cache_key(file, size, crop)
+    key = generate_image_cache_key(photo, size, crop)
 
     binary = cache.get(key) # check if key exists
 
     if not binary:
-        binary = build_image(file, size, crop)
+        binary = build_image(photo, size, crop)
 
     try: return Image.open(StringIO(binary))
     except: return ''
 
-def build_image(file, size, crop=False):
+def build_image(photo, size, crop=False):
     """
     Builds a resized image based off of the original image.
     """
 
-    image = Image.open(file.path) # get image
+    image = Image.open(photo.image.path) # get image
     if crop:
         # thumbnail does not return image
         # affects itself; weirdo
@@ -45,7 +45,7 @@ def build_image(file, size, crop=False):
     binary = output.getvalue() # mission accomplished
     output.close()
 
-    key = generate_image_cache_key(file, size, crop)
+    key = generate_image_cache_key(photo, size, crop)
 
     cache.add(key, binary, 60*60*24*30) # cache for 30 days
     
@@ -67,7 +67,7 @@ def validate_image_size(size):
 
     return new_size
 
-def generate_image_cache_key(file, size, crop=False):
+def generate_image_cache_key(photo, size, crop=False):
     """
     Generates image cache key. You can use this for adding, 
     retrieving or removing a cache record.
@@ -77,10 +77,10 @@ def generate_image_cache_key(file, size, crop=False):
     if crop: str_crop = "cropped" 
 
     # special method that pulls "last modification"
-    last_modification = stat(file.path)[ST_MODE]
+    last_modification = stat(photo.image.path)[ST_MODE]
 
     str_size = 'x'.join([str(i) for i in size])
-    key = '.'.join((PHOTO_PRE_KEY, str(last_modification), str_size, str_crop))
-    # e.g. photo.33206.200x300.cropped <pre-key>.<last_modification>.<width>x<height>.<cropped>
+    key = '.'.join((PHOTO_PRE_KEY, str(photo.pk), str(last_modification), str_size, str_crop))
+    # e.g. photo.23.33206.200x300.cropped <pre-key>.<pk>.<last_modification>.<width>x<height>.<cropped>
 
     return key
