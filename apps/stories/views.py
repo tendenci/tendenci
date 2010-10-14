@@ -77,7 +77,7 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
     if not story.allow_add_by(request.user): raise Http403
     
     if request.method == "POST":
-        form = form_class(request.user, request.POST)
+        form = form_class(request.POST, user=request.user)
         if form.is_valid():           
             story = form.save(commit=False)
             # set up the user information
@@ -110,7 +110,7 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
             
             return HttpResponseRedirect(reverse('story', args=[story.pk]))
     else:
-        form = form_class(request.user)
+        form = form_class(user=request.user)
     
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
@@ -125,7 +125,7 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
     image_name = story.get_latest_image_name(imagepath)
 
     if request.method == "POST":
-        form = form_class(request.user, request.POST, instance=story)
+        form = form_class(request.POST, instance=story, user=request.user)
         if form.is_valid():
             story = form.save(commit=False)
 
@@ -150,7 +150,7 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
                                                              
             return HttpResponseRedirect(reverse('story', args=[story.pk]))             
     else:
-        form = form_class(request.user, instance=story)
+        form = form_class(instance=story, user=request.user)
     
     return render_to_response(template_name, {'story': story, 'form':form, 'image_name':image_name}, 
         context_instance=RequestContext(request))
@@ -212,7 +212,7 @@ def upload(request, id, form_class=UploadStoryImageForm,
             #filelog(mode='wb+', filename=imagename, path=imagepath)
             return HttpResponseRedirect(reverse('story', args=[story.pk]))
     else:
-        form = form_class()
+        form = form_class(user=request.user)
     return render_to_response(template_name, {'form':form, 'story': story}, 
             context_instance=RequestContext(request))
     

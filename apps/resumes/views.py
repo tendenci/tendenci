@@ -80,7 +80,10 @@ def print_view(request, slug, template_name="resumes/print-view.html"):
 def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
     if has_perm(request.user,'resumes.add_resume'):
         if request.method == "POST":
-            form = form_class(request.user, request.POST)
+
+            print request.user
+
+            form = form_class(request.POST, user=request.user)
             if form.is_valid():           
                 resume = form.save(commit=False)
                 # set up the user information
@@ -123,7 +126,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
                 
                 return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
         else:
-            form = form_class(request.user)
+            form = form_class(user=request.user)
            
         return render_to_response(template_name, {'form':form}, 
             context_instance=RequestContext(request))
@@ -136,7 +139,7 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
 
     if has_perm(request.user,'resumes.change_resume',resume):    
         if request.method == "POST":
-            form = form_class(request.user, request.POST, instance=resume)
+            form = form_class(request.POST, instance=resume, user=request.user)
             if form.is_valid():
                 resume = form.save(commit=False)
 
@@ -165,7 +168,7 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
                                                               
                 return HttpResponseRedirect(reverse('resume', args=[resume.slug]))             
         else:
-            form = form_class(request.user, instance=resume)
+            form = form_class(instance=resume, user=request.user)
 
         return render_to_response(template_name, {'resume': resume, 'form':form}, 
             context_instance=RequestContext(request))
