@@ -41,9 +41,10 @@ from django.utils import simplejson
 import os
 
 def db2json():
-    path = os.path.abspath(os.path.dirname(__file__))
+    #path = os.path.abspath(os.path.dirname(__file__))
+    path = os.path.join(os.path.split(os.path.split(os.path.abspath(os.path.dirname(__file__)))[0])[0], 'plugins')
     plugins = list(PluginApp.objects.all().values('id','title','package','is_enabled','is_installed'))
     data = simplejson.dumps(plugins, indent=1)
-    f = open(os.path.join(path, 'plugins.json'), 'w')
+    f = open(os.path.join(path, 'apps.json'), 'w')
     f.write(data)
     f.close()
