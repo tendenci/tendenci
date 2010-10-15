@@ -50,11 +50,10 @@ class EntityForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })]
               
-    def __init__(self, user=None, *args, **kwargs):
-        self.user = user 
-        super(EntityForm, self).__init__(user, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(EntityForm, self).__init__(*args, **kwargs)
 
-        if not is_admin(user):
+        if not is_admin(self.user):
             if 'admin_notes' in self.fields: self.fields.pop('admin_notes')
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')

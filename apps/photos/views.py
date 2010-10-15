@@ -19,6 +19,7 @@ from base.http import Http403
 from perms.models import ObjectPermission
 from perms.utils import has_perm
 from event_logs.models import EventLog
+from photos.utils import dynamic_image
 
 def details(request, id, set_id=0, template_name="photos/details.html"):
     """ show the photo details """
@@ -114,6 +115,36 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
         "is_me": is_me,
     }, context_instance=RequestContext(request))
 
+def photo_size(request, id=None, size=None, crop=False):
+    """
+    Renders image and returns response
+    Does not use template
+    Saves resized image within cache system
+    Returns 404 if if image rendering fails
+    """
+
+    if id and size:
+        photo = get_object_or_404(Image, id=id)
+        size = [int(s) for s in size.split('x')]
+
+    # check permissions
+    if not has_perm(request.user,'photos.view_image',photo):
+        raise Http403
+
+    if crop: crop = True
+
+    # gets resized image from cache or rebuild
+    image = dynamic_image(photo, size, crop)
+
+    # if image not rendered; quit
+    if not image: raise Http404
+
+    response = HttpResponse(mimetype='image/jpeg')
+    response['Content-Disposition'] = 'filename=%s'% photo.image.file.name
+    image.save(response, "JPEG", quality=100)
+
+    return response
+
 
 @login_required
 def memberphotos(request, username, template_name="photos/memberphotos.html", group_slug=None, bridge=None):
@@ -167,7 +198,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
             request.user.message_set.create(message="You can't edit photos that aren't yours")
             return HttpResponseRedirect(reverse('photo', args=(photo.id, set_id)))
         if request.POST["action"] == "update":
-            form = form_class(request.user, request.POST, instance=photo)
+            form = form_class(request.POST, instance=photo, user=request.user)
             if form.is_valid():
 
                 photo = form.save(commit=False)
@@ -196,10 +227,10 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 request.user.message_set.create(message=_("Successfully updated photo '%s'") % photo.title)
                 return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
         else:
-            form = form_class(request.user, instance=photo)
+            form = form_class(instance=photo, user=request.user)
 
     else:
-        form = form_class(request.user, instance=photo)
+        form = form_class(instance=photo, user=request.user)
 
     return render_to_response(template_name, {
         "photo_form": form,
@@ -249,7 +280,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
     if request.method == "POST":
         if request.POST["action"] == "add":
 
-            form = form_class(request.user, request.POST)
+            form = form_class(request.POST, user=request.user)
             if form.is_valid():
                 photo_set = form.save(commit=False)
 
@@ -284,7 +315,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                 request.user.message_set.create(message=_("Successfully added photo set!") + '')
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))
     else:
-        form = form_class(request.user)
+        form = form_class(user=request.user)
 
     return render_to_response(template_name, {
         "photoset_form": form,
@@ -301,7 +332,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
     
     if request.method == "POST":
         if request.POST["action"] == "edit":
-            form = form_class(request.user, request.POST, instance=photo_set)
+            form = form_class(request.POST, instance=photo_set, user=request.user)
             if form.is_valid():
                 photo_set = form.save(commit=False)
 
@@ -332,7 +363,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
 
                 return HttpResponseRedirect(reverse('photoset_details', args=[photo_set.id]))
     else:
-        form = form_class(request.user, instance=photo_set)
+        form = form_class(instance=photo_set, user=request.user)
 
     return render_to_response(template_name, {
         "photoset_form": form,

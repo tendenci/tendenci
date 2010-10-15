@@ -74,7 +74,7 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
 
     if has_perm(request.user,'locations.change_location',location):    
         if request.method == "POST":
-            form = form_class(request.user, request.POST, instance=location)
+            form = form_class(request.POST, instance=location, user=request.user)
             if form.is_valid():
 
                 location = form.save(commit=False)
@@ -106,7 +106,7 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                                                               
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))             
         else:
-            form = form_class(request.user, instance=location)
+            form = form_class(instance=location, user=request.user)
 
         return render_to_response(template_name, {'location': location, 'form':form}, 
             context_instance=RequestContext(request))
@@ -117,7 +117,7 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
 def add(request, form_class=LocationForm, template_name="locations/add.html"):
     if has_perm(request.user,'locations.add_location'):
         if request.method == "POST":
-            form = form_class(request.user, request.POST)
+            form = form_class(request.POST, user=request.user)
             if form.is_valid():           
                 location = form.save(commit=False)
                 # set up the user information
@@ -152,7 +152,7 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                 
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))
         else:
-            form = form_class(request.user)
+            form = form_class(user=request.user)
            
         return render_to_response(template_name, {'form':form}, 
             context_instance=RequestContext(request))

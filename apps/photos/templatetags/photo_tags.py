@@ -1,5 +1,6 @@
 import re
 from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
+from django.core.urlresolvers import reverse
 from photos.models import Image, Pool
 register = Library()
 
@@ -212,3 +213,53 @@ def list_photos(parser, token):
 
     return ListPhotosNode(context_var, *args, **kwargs)
 
+class PhotoImageURL(Node):
+    
+    def __init__(self, photo, *args, **kwargs):
+
+        self.size = "100x100"
+        self.crop = False
+
+        self.photo = Variable(photo)
+
+        if "size" in kwargs:
+            self.size = kwargs["size"]
+        if "crop" in kwargs:
+            self.crop = kwargs["crop"]
+
+    def render(self, context):
+        photo = self.photo.resolve(context)
+
+        if self.crop:
+            url = reverse('photo.size', 
+                args=[photo.pk, self.size, "crop"])
+        else:
+            url = reverse('photo.size', 
+                args=[photo.pk, self.size])
+
+        return url
+
+@register.tag
+def photo_image_url(parser, token):
+    """
+    Example:
+        {% list_photos as photos user=user limit=3 %}
+        {% for photo in photos %}
+            {% photo_size photo size=100x100 crop=True %}
+        {% endfor %}
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    photo = bits[1]
+
+    for bit in bits:
+        if "size=" in bit:
+            kwargs["size"] = bit.split("=")[1]
+        if "crop=" in bit:
+            kwargs["crop"] = bool(bit.split("=")[1])
+
+    if len(bits) < 1:
+        message = "'%s' tag requires more than 1 argument" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    return PhotoImageURL(photo, *args, **kwargs)

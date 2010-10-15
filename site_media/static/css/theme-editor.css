@@ -6,6 +6,11 @@
 	margin-left: 10px;
 }
 
+#right_files_list ul {
+	list-style-type: none;
+	padding-left: 0;
+}
+
 textarea{
 	width: 98%;
 }

@@ -89,7 +89,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
     
     if request.method == "POST":
 
-        form = form_class(request.user, request.POST, request.FILES, instance=directory)
+        form = form_class(request.POST, request.FILES, instance=directory, user=request.user)
         
         del form.fields['payment_method']
         del form.fields['requested_duration']
@@ -134,13 +134,13 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                                                                          
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))             
         else:
-            form = form_class(request.user, instance=directory)
+            form = form_class(instance=directory, user=request.user)
 
         return render_to_response(template_name, {'directory': directory, 'form':form}, 
             context_instance=RequestContext(request))
 
     else:
-        form = form_class(request.user, instance=directory)
+        form = form_class(instance=directory, user=request.user)
         del form.fields['payment_method']
         del form.fields['requested_duration']
         if not is_admin(request.user):
@@ -190,7 +190,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
     require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
     
     if request.method == "POST":
-        form = form_class(request.user, request.POST, request.FILES)
+        form = form_class(request.POST, request.FILES, user=request.user)
         del form.fields['expiration_dt']
         if not is_admin(request.user):
             del form.fields['activation_dt']
@@ -273,7 +273,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
     else:
-        form = form_class(request.user)
+        form = form_class(user=request.user)
         
         del form.fields['expiration_dt']
         if not is_admin(request.user):
