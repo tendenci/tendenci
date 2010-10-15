@@ -8,6 +8,9 @@ class FileForm(forms.ModelForm):
         'file',
         )
 
-    def __init__(self, user=None, *args, **kwargs): 
-        self.user = user
+    def __init__(self, *args, **kwargs): 
+        if 'user' in kwargs:
+            self.user = kwargs.pop('user', None)
+        else:
+            self.user = None
         super(FileForm, self).__init__(*args, **kwargs)

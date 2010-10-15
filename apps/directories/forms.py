@@ -145,12 +145,11 @@ class DirectoryForm(TendenciBaseForm):
 
         return logo
 
-    def __init__(self, user=None, *args, **kwargs):
-        self.user = user 
-        super(DirectoryForm, self).__init__(user, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(DirectoryForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-            if is_admin(user):
+            if is_admin(self.user):
                 self.fields['status_detail'].choices = (('active','Active'),
                                                         ('inactive','Inactive'), 
                                                         ('pending','Pending'),
@@ -158,12 +157,12 @@ class DirectoryForm(TendenciBaseForm):
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
-        if not is_admin(user):
+        if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
             
         if self.fields.has_key('payment_method'):
-            self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(user))
+            self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
         if self.fields.has_key('requested_duration'):
             self.fields['requested_duration'].choices = get_duration_choices()
 
