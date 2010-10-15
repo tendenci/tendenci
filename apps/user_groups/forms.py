@@ -68,10 +68,9 @@ class GroupForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })]
 
-    def __init__(self, user=None, *args, **kwargs):
-        self.user = user 
-        super(GroupForm, self).__init__(user, *args, **kwargs)
-        if not is_admin(user):
+    def __init__(self, *args, **kwargs):
+        super(GroupForm, self).__init__(*args, **kwargs)
+        if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')               
 
