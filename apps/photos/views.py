@@ -198,7 +198,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
             request.user.message_set.create(message="You can't edit photos that aren't yours")
             return HttpResponseRedirect(reverse('photo', args=(photo.id, set_id)))
         if request.POST["action"] == "update":
-            form = form_class(request.user, request.POST, instance=photo)
+            form = form_class(request.POST, instance=photo, user=request.user)
             if form.is_valid():
 
                 photo = form.save(commit=False)
@@ -227,10 +227,10 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 request.user.message_set.create(message=_("Successfully updated photo '%s'") % photo.title)
                 return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
         else:
-            form = form_class(request.user, instance=photo)
+            form = form_class(instance=photo, user=request.user)
 
     else:
-        form = form_class(request.user, instance=photo)
+        form = form_class(instance=photo, user=request.user)
 
     return render_to_response(template_name, {
         "photo_form": form,
@@ -280,7 +280,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
     if request.method == "POST":
         if request.POST["action"] == "add":
 
-            form = form_class(request.user, request.POST)
+            form = form_class(request.POST, user=request.user)
             if form.is_valid():
                 photo_set = form.save(commit=False)
 
@@ -315,7 +315,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                 request.user.message_set.create(message=_("Successfully added photo set!") + '')
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))
     else:
-        form = form_class(request.user)
+        form = form_class(user=request.user)
 
     return render_to_response(template_name, {
         "photoset_form": form,
@@ -332,7 +332,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
     
     if request.method == "POST":
         if request.POST["action"] == "edit":
-            form = form_class(request.user, request.POST, instance=photo_set)
+            form = form_class(request.POST, instance=photo_set, user=request.user)
             if form.is_valid():
                 photo_set = form.save(commit=False)
 
@@ -363,7 +363,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
 
                 return HttpResponseRedirect(reverse('photoset_details', args=[photo_set.id]))
     else:
-        form = form_class(request.user, instance=photo_set)
+        form = form_class(instance=photo_set, user=request.user)
 
     return render_to_response(template_name, {
         "photoset_form": form,

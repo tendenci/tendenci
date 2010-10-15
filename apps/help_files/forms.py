@@ -3,19 +3,20 @@ from django import forms
 from models import Request, HelpFile
 from tinymce.widgets import TinyMCE
 from captcha.fields import CaptchaField
+from perms.forms import TendenciBaseForm
    
 class RequestForm(forms.ModelForm):
     captcha = CaptchaField()
     class Meta:
         model = Request
 
-class HelpFileForm(forms.ModelForm):
+class HelpFileForm(TendenciBaseForm):
     answer = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':HelpFile._meta.app_label, 
         'storme_model':HelpFile._meta.module_name.lower()}))
 
-    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('published','Published')))
+    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('active','Active')))
     
     class Meta:
         model = HelpFile

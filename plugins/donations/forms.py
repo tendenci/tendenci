@@ -43,15 +43,19 @@ class DonationForm(forms.ModelForm):
                   'comments',
                   )
         
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        if 'user' in kwargs:
+            self.user = kwargs.pop('user', None)
+        else:
+            self.user = None
         super(DonationForm, self).__init__(*args, **kwargs)
         # populate the user fields
-        if user and user.id:
-            self.fields['first_name'].initial = user.first_name
-            self.fields['last_name'].initial = user.last_name
-            self.fields['email'].initial = user.email
+        if self.user and self.user.id:
+            self.fields['first_name'].initial = self.user.first_name
+            self.fields['last_name'].initial = self.user.last_name
+            self.fields['email'].initial = self.user.email
             try:
-                profile = user.get_profile()
+                profile = self.user.get_profile()
                 if profile:
                     self.fields['company'].initial = profile.company
                     self.fields['address'].initial = profile.address
@@ -64,10 +68,10 @@ class DonationForm(forms.ModelForm):
             except:
                 pass
             
-        self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(user))
+        self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
         allocation_str = get_setting('module', 'donations', 'donationsallocations')
         if allocation_str:
-            self.fields['allocation'].choices = get_allocation_choices(user, allocation_str)
+            self.fields['allocation'].choices = get_allocation_choices(self.user, allocation_str)
         else:
             del self.fields['allocation']
         preset_amount_str = (get_setting('module', 'donations', 'donationspresetamounts')).strip('')
