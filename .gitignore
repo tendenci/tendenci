@@ -3,7 +3,7 @@ local_settings.py
 local_urls.py
 schema.xml
 django
-database.db
+*.db
 
 # ignore all django themes except for default theme
 themes/*
@@ -18,9 +18,9 @@ site_media/static/tresources/
 
 # Ignore django cache
 cache/
+index/
 
 # Ignore OS files
-Thumbs.db
 _notes/
 
 # Ignore all dotfiles...

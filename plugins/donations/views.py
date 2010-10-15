@@ -24,7 +24,7 @@ except:
 
 def add(request, form_class=DonationForm, template_name="donations/add.html"):
     if request.method == "POST":
-        form = form_class(request.user, request.POST)
+        form = form_class(request.POST, user=request.user)
         
         if form.is_valid():
             donation = form.save(commit=False)
@@ -54,21 +54,28 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                 user.is_active = 0
                 user.save()
                 
-                profile = Profile.objects.create(user=user,
-                                        company=donation.company,
-                                        address=donation.address,
-                                        address2=donation.address2,
-                                        city=donation.city,
-                                        state=donation.state,
-                                        zipcode=donation.zip_code,
-                                        country=donation.country,
-                                        email=donation.email,
-                                        phone=donation.phone,
-                                        creator=request.user, 
-                                        creator_username=request.user.username,
-                                        owner=request.user, 
-                                        owner_username=request.user.username 
-                                        )
+                profile_kwarg = {'user':user,
+                                 'company':donation.company,
+                                 'address':donation.address,
+                                 'address2':donation.address2,
+                                 'city':donation.city,
+                                 'state':donation.state,
+                                 'zipcode':donation.zip_code,
+                                 'country':donation.country,
+                                 'email':donation.email,
+                                 'phone':donation.phone}
+                if request.user.is_anonymous():
+                    profile_kwarg['creator'] = user
+                    profile_kwarg['creator_username'] = user.username
+                    profile_kwarg['owner'] = user
+                    profile_kwarg['owner_username'] = user.username
+                else:
+                    profile_kwarg['creator'] = request.user
+                    profile_kwarg['creator_username'] = request.user.username
+                    profile_kwarg['owner'] = request.user
+                    profile_kwarg['owner_username'] = request.user.username
+                    
+                profile = Profile.objects.create(**profile_kwarg)
                 profile.save()
                 
             donation.save(user)
@@ -131,7 +138,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
             else:
                 return HttpResponseRedirect(reverse('donation.add_confirm', args=[donation.id]))
     else:
-        form = form_class(request.user)
+        form = form_class(user=request.user)
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
     if not currency_symbol: currency_symbol = "$"
