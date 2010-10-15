@@ -86,15 +86,14 @@ class ArticleForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })]
 
-    def __init__(self, user=None, *args, **kwargs):
-        self.user = user 
-        super(ArticleForm, self).__init__(user, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ArticleForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
-        if not is_admin(user):
+        if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 

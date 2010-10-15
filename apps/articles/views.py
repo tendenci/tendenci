@@ -84,7 +84,7 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
     if has_perm(request.user,'articles.change_article', article):    
         if request.method == "POST":
 
-            form = form_class(request.user, request.POST, instance=article)
+            form = form_class(request.POST, instance=article, user=request.user)
 
             if form.is_valid():
                 article = form.save(commit=False)
@@ -113,7 +113,7 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                                                                              
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))             
         else:
-            form = form_class(request.user, instance=article)
+            form = form_class(instance=article, user=request.user)
 
         return render_to_response(template_name, {'article': article, 'form':form}, 
             context_instance=RequestContext(request))
@@ -154,7 +154,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
 def add(request, form_class=ArticleForm, template_name="articles/add.html"):
     if has_perm(request.user,'articles.add_article'):
         if request.method == "POST":
-            form = form_class(request.user, request.POST)
+            form = form_class(request.POST, user=request.user)
             if form.is_valid():           
                 article = form.save(commit=False)
                 # set up the user information
@@ -197,7 +197,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
 
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
-            form = form_class(request.user)
+            form = form_class(user=request.user)
            
         return render_to_response(template_name, {'form':form}, 
             context_instance=RequestContext(request))

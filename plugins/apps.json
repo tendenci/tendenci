@@ -1,0 +1,16 @@
+[
+ {
+  "is_enabled": false, 
+  "is_installed": false, 
+  "package": "donations", 
+  "id": 1, 
+  "title": "donation"
+ }, 
+ {
+  "is_enabled": false, 
+  "is_installed": false, 
+  "package": "blog", 
+  "id": 2, 
+  "title": "blog"
+ }
+]

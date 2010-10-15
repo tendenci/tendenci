@@ -136,7 +136,10 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
         required_fields_list = None
     
     if request.method == "POST":
-        form = form_class(request.user, None, required_fields_list, request.POST, request.user)
+        form = form_class(request.POST, 
+                          user_current=request.user,
+                          user_this=None,
+                          required_fields_list=required_fields_list)
         
         if form.is_valid():
             profile = form.save(request, None)
@@ -199,7 +202,9 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
            
             return HttpResponseRedirect(reverse('profile', args=[new_user.username]))
     else:
-        form = form_class(request.user, None, required_fields_list)
+        form = form_class(user_current=request.user,
+                          user_this=None,
+                          required_fields_list=required_fields_list)
       
     return render_to_response(template_name, {'form':form, 'user_this':None,
                                               'required_fields_list': required_fields_list}, 
@@ -225,7 +230,11 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
         required_fields_list = None
        
     if request.method == "POST":
-        form = form_class(request.user, user_edit, required_fields_list, request.POST, request.user, instance=profile)
+        form = form_class(request.POST, 
+                          user_current=request.user,
+                          user_this=user_edit,
+                          required_fields_list=required_fields_list,
+                          instance=profile)
         
         if form.is_valid():
             # get the old profile, so we know what has been changed in admin notification
@@ -295,10 +304,15 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
             return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
     else:
         if profile:
-            form = form_class(request.user, user_edit, required_fields_list, instance=profile)
+            form = form_class(user_current=request.user,
+                          user_this=user_edit,
+                          required_fields_list=required_fields_list,
+                          instance=profile)
             
         else:
-            form = form_class(request.user, user_edit, required_fields_list)
+            form = form_class(user_current=request.user,
+                          user_this=user_edit,
+                          required_fields_list=required_fields_list)
 
     return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form,
                                               'required_fields_list':required_fields_list}, 

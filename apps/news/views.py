@@ -86,10 +86,10 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
     if not has_perm(request.user,'news.change_news',news):  
         raise Http403
 
-    form = form_class(request.user, instance=news)
+    form = form_class(instance=news, user=request.user)
 
     if request.method == "POST":
-        form = form_class(request.user, request.POST, instance=news)
+        form = form_class(request.POST, instance=news, user=request.user)
         if form.is_valid():
             news = form.save(commit=False)
 
@@ -158,7 +158,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
         raise Http403
 
     if request.method == "POST":
-        form = form_class(request.user, request.POST)
+        form = form_class(request.POST, user=request.user)
         if form.is_valid():
             news = form.save(commit=False)
             
@@ -204,7 +204,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             
             return HttpResponseRedirect(reverse('news.view', args=[news.slug]))
     else:
-        form = form_class(request.user)
+        form = form_class(user=request.user)
        
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))

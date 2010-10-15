@@ -8,6 +8,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
+
 {% endblock %}
         
 {% block body %}
@@ -15,7 +16,7 @@
 <div class="file_attrs"><big><b><span id="file_type">{{ file_dict.type }}</span></b> (<span id="file_name">{{ file_dict.name }}</span>)</big></div>
         <table width="100%">
         <tr>
-        	<td width="70%">
+        	<td width="80%">
             <form class="uniForm" method="POST" name="edit" action="">
                 {% if file_form.content.errors %}<div>{{ file_form.content.errors }}</div>{% endif %}
 					 <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
@@ -43,7 +44,7 @@
                 {% endif %}
             </div>
         </td>
-        <td width="30%" valign="top">
+        <td width="20%" valign="top">
        		<div id="right_files_list">
        			<h3>Styles</h3>
                 <ul class="files_list">
@@ -70,7 +71,7 @@
 var editor;
 $(document).ready(function(){
 	editor = CodeMirror.fromTextArea('id_content', {
-    height: "350px",
+    height: "500px",
     parserfile: {% ifequal file_dict.type "Stylesheet"%}"parsecss.js"{%else%}"parsexml.js"{%endifequal%},
     stylesheet: {% ifequal file_dict.type "Stylesheet"%}"{{ STATIC_URL }}codemirror/css/csscolors.css"{%else%}"{{ STATIC_URL }}codemirror/css/xmlcolors.css"{%endifequal%},
     path: "{{ STATIC_URL }}codemirror/js/",

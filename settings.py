@@ -8,7 +8,7 @@ LIBS_PATH = os.path.join(PROJECT_ROOT, 'libs')
 sys.path.insert(0, APPS_PATH)
 sys.path.insert(0, LIBS_PATH)
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 SITE_THEME = "default"
 
@@ -34,7 +34,9 @@ DATABASES = {
 
 # email
 EMAIL_HOST = '4.78.3.131'
+#EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
+#EMAIL_PORT = 1025
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
@@ -161,6 +163,8 @@ INSTALLED_APPS = (
     'south',
     'forms_builder.forms',
     
+    'pluginmanager',
+    
     # tendenci applications
     'base',
     'accounts',
@@ -184,7 +188,7 @@ INSTALLED_APPS = (
     'emails',
     'email_blocks',
     'actions',
-    'donations',
+    #'donations',
     'files',
     'contacts',
     'event_logs',
@@ -271,10 +275,9 @@ BROKER_VHOST = "/"
 # Hackstack Search
 # --------------------------------------#
 HAYSTACK_SITECONF = 'search'
-HAYSTACK_SEARCH_ENGINE = 'solr'
+HAYSTACK_SEARCH_ENGINE = 'xapian'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
-HAYSTACK_SOLR_URL = 'http://127.0.0.1:8000/tendenci50/'
-HAYSTACK_SOLR_TIMEOUT = 60
+HAYSTACK_XAPIAN_PATH = os.path.join(PROJECT_ROOT,'index')
 HAYSTACK_INCLUDED_APPS = ('article','directory','event','photoset','job','page','news','resume','story')
 
 #---------------------------------------------------------------
@@ -310,3 +313,13 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+
+#THIS MUST BE AT THE END!
+#Plugin configuration
+DEFAULT_INSTALLED_APPS = INSTALLED_APPS
+import pluginmanager
+INSTALLED_APPS = pluginmanager.plugin_apps(INSTALLED_APPS)
+# add the plugins to the sys path - GJQ 10/12/2010
+PLUGINS_PATH = os.path.join(PROJECT_ROOT, 'plugins')
+sys.path.insert(0, PLUGINS_PATH)

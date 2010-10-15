@@ -133,21 +133,35 @@ class ProfileForm(TendenciBaseForm):
                   'status_detail',
                 )
         
-    def __init__(self, user_current=None, user_this=None, required_fields_list=None, *args, **kwargs):
-        super(ProfileForm, self).__init__(user_current, *args, **kwargs)
-        self.user_this = user_this
+    def __init__(self, *args, **kwargs):
+        if 'user_this' in kwargs:
+            self.user_this = kwargs.pop('user_this', None)
+        else:
+            self.user_this = None
+            
+        if 'user_current' in kwargs:
+            self.user_current = kwargs.pop('user_current', None)
+        else:
+            self.user_current = None            
+
+        if 'required_fields_list' in kwargs:
+            self.required_fields_list = kwargs.pop('required_fields_list', None)
+        else:
+            self.required_fields_list = None      
+                        
+        super(ProfileForm, self).__init__(*args, **kwargs)
         
-        if user_this:
-            self.fields['first_name'].initial = user_this.first_name
-            self.fields['last_name'].initial = user_this.last_name
-            self.fields['username'].initial = user_this.username
-            if user_this.is_superuser and user_this.is_staff:
+        if self.user_this:
+            self.fields['first_name'].initial = self.user_this.first_name
+            self.fields['last_name'].initial = self.user_this.last_name
+            self.fields['username'].initial = self.user_this.username
+            if self.user_this.is_superuser and self.user_this.is_staff:
                 self.fields['security_level'].initial = "developer"
-            elif user_this.is_superuser:
+            elif self.user_this.is_superuser:
                 self.fields['security_level'].initial = "admin"
             else:
                 self.fields['security_level'].initial = "user"
-            if user_this.is_active == 1:
+            if self.user_this.is_active == 1:
                 self.fields['interactive'].initial = 1
             else:
                 self.fields['interactive'].initial = 0
@@ -155,22 +169,22 @@ class ProfileForm(TendenciBaseForm):
             del self.fields['password1']
             del self.fields['password2']
             
-            if not is_admin(user_current):
+            if not is_admin(self.user_current):
                 del self.fields['admin_notes']
                 del self.fields['security_level']
                 del self.fields['status']
                 del self.fields['status_detail']
-            if is_admin(user_current) and not is_developer(user_current):
+            if is_admin(self.user_current) and not is_developer(self.user_current):
                 self.fields['security_level'].choices=(('user','User'), ('admin','Admin'),)
 
-        if not is_admin(user_current):
+        if not is_admin(self.user_current):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
         # we make first_name, last_name, email, username and password as required field regardless
         # the rest of fields will be decided by the setting - UsersRequiredFields
-        if required_fields_list:
-            for field in required_fields_list:
+        if self.required_fields_list:
+            for field in self.required_fields_list:
                 for myfield in self.fields:
                     if field == self.fields[myfield].label:
                         self.fields[myfield].required = True
