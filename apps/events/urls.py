@@ -32,5 +32,4 @@ urlpatterns = patterns('events',
     url(r'^registrants/(?P<id>\d+)/$', 'views.registrant_details', name="event.registrant"),
 
     url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
-
 )
