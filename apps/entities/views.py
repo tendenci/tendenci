@@ -72,7 +72,7 @@ def print_view(request, id, template_name="entities/print-view.html"):
 def add(request, form_class=EntityForm, template_name="entities/add.html"):    
     if has_perm(request.user,'entities.add_entity'):   
         if request.method == "POST":
-            form = form_class(request.user, request.POST)
+            form = form_class(request.POST, user=request.user)
             if form.is_valid():
                 entity = form.save(commit=False)
                 
@@ -108,7 +108,7 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
                 
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))
         else:
-            form = form_class(request.user)
+            form = form_class(user=request.user)
            
         return render_to_response(template_name, {'form':form}, 
             context_instance=RequestContext(request))
@@ -121,7 +121,7 @@ def edit(request, id, form_class=EntityForm, template_name="entities/edit.html")
 
     if has_perm(request.user,'entities.change_entity',entity):   
         if request.method == "POST":
-            form = form_class(request.user, request.POST, instance=entity)
+            form = form_class(request.POST, instance=entity, user=request.user)
             if form.is_valid():               
                 entity = form.save(commit=False)
 
@@ -147,7 +147,7 @@ def edit(request, id, form_class=EntityForm, template_name="entities/edit.html")
 
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))             
         else:
-            form = form_class(request.user, instance=entity)
+            form = form_class(instance=entity, user=request.user)
 
         return render_to_response(template_name, {'entity': entity, 'form':form}, 
             context_instance=RequestContext(request))

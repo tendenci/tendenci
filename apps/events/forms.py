@@ -94,8 +94,7 @@ class EventForm(TendenciBaseForm):
                     })]
         
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(self.__class__, self).__init__(self.user, *args, **kwargs)
+        super(self.__class__, self).__init__(*args, **kwargs)
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
