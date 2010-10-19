@@ -9,6 +9,7 @@ from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
+from emails.models import Email
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -237,5 +238,27 @@ class Reg8nForm(forms.Form):
             user_fields = ['name', 'username', 'email', 'password1', 'password2']
             for user_field in user_fields:
                 self.fields.pop(user_field)
+                
+class MessageAddForm(forms.ModelForm):
+    #events = forms.CharField()
+    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'}, 
+                                          mce_attrs={'storme_app_label':'Message', 
+                                                    'storme_model':Email._meta.module_name.lower()}),
+                            label=_('Email Content'))
+    
+    class Meta:
+        model = Email
+        fields = ('body',
+                  )
+    
+    def __init__(self, event_id=None, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        
+        #self.fields['events'] = forms.ModelChoiceField(queryset=Event.objects.filter(status=1, 
+        #                                                        status_detail='active').order_by('title'),
+        #                                                         empty_label='Select One', 
+        #                                                         initial=event_id,
+        #                                                         required=True)
+       
 
 
