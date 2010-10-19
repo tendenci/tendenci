@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 from profiles.models import Profile
 from site_settings.utils import get_setting
+from events.models import Registration
 
 def get_vevents(request, d):
     from django.conf import settings
@@ -237,6 +238,50 @@ def prev_month(month, year):
         prev_year -= 1
 
     return (prev_month, prev_year)
+
+def email_registrants(event, email, d):
+    # get a list of attendees
+    registrations = Registration.objects.filter(event=event)
+    if not d.has_key('summary'):
+        d['summary'] = ""
+    for reg8n in registrations:
+        registrants = reg8n.registrant_set.all()
+        if registrants:
+            # ideally, we only need user object. But it looks like the user object is not stored
+            # so just get the name and email
+            user = registrants[0].user
+            name = registrants[0].name
+            email.recipient = registrants[0].email
+            
+            first_name = ""
+            last_name = ""
+            
+            if user:
+                first_name = user.first_name
+                last_name = user.last_name
+            else:
+                # split name to get first_name and last_name
+                if name:
+                    name_list = name.split(' ')
+                    if len(name_list) >= 2:
+                        first_name = name_list[0]
+                        last_name = ' '.join(name_list[1:])
+                
+           
+            tmp_body = email.body
+            
+            email.body = email.body.replace('[firstname]', first_name)
+            email.body = email.body.replace('[lastname]', last_name)
+            
+            email.send()
+            
+            # summary
+            if user:
+                d['summary'] += '<a href="%s%s">%s</a> ' % (get_setting('site', 'global', 'siteurl'),
+                                                            reverse('event', args=[event.pk]), str(user.id))
+            d['summary'] += '%s %s <br />' % (name, email.recipient)
+            
+            email.body = tmp_body
 
 def save_registration(*args, **kwargs):
     """

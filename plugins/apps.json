@@ -2,14 +2,14 @@
  {
   "is_enabled": false, 
   "is_installed": false, 
-  "package": "donations", 
+  "package": "plugins.donations", 
   "id": 1, 
   "title": "donation"
  }, 
  {
   "is_enabled": false, 
   "is_installed": false, 
-  "package": "blog", 
+  "package": "plugins.blog", 
   "id": 2, 
   "title": "blog"
  }
