@@ -1,0 +1,57 @@
+{% extends "events/base.html" %}
+{% load i18n %}
+{% load event_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Add{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
+<style type="text/css">
+	.message-item{
+		margin-bottom: 2em;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+	 {% event_nav request.user event %}
+    <h1>Email to Event Registrants</h1>
+    
+
+    <div class="event-message-wrap">
+    	<form action="." method="post" name="form1">
+    	<div class="message-forms">
+    		<div class="message-item">
+    			<h2>Event Title: <a href="{% url event event.id %}">{{ event.title }}</a></h2>
+    		</div>
+    		
+    		<div class="message-item"><a href="{% url event.registrant.roster event.id %}">View all registrant(s)</a></div>
+    		
+    		<div class="message-item">
+    			{{ form.body }}
+    		</div>
+    		
+    		<div class="message-item">
+    			<em><strong>For security a footer will be automatically appended indicating the sender (you!) as well as logging a security event
+                  to prevent abuse of the system</strong></em>.
+            </div>
+            
+            <div class="message-item">
+    			<em><strong><font color="red">This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!</font></strong></em>. 
+            </div>
+            
+			<input type="submit" value="Send Email" />
+		</div>
+        </form>
+    </div>
+
+</div>
+
+
+{% endblock %}
+

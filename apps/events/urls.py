@@ -39,5 +39,8 @@ urlpatterns = patterns('events',
     url(r'^(?P<event_id>\d+)/registrants/roster/$', 'views.registrant_roster', name="event.registrant.roster"),
     url(r'^registrants/(?P<id>\d+)/$', 'views.registrant_details', name="event.registrant"),
 
+    # email registrants
+    url(r'^message/(?P<event_id>\d+)/$', 'views.message_add', name='event.message'),
+
     url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
 )
