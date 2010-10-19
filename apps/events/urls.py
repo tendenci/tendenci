@@ -13,9 +13,13 @@ urlpatterns = patterns('events',
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="event.delete"),
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
     url(r'^(?P<id>\d+)/$', 'views.index', name="event"),
+
+    # registration confirmation
     url(r'^(?P<id>\d+)/registrations/(?P<registration_id>\d+)/$', 
         'views.registration_confirmation', name='event.registration_confirmation'),
-   
+    url(r'^(?P<id>\d+)/registrations/(?P<hash>[\w\-\/]+)/$', 
+        'views.registration_confirmation', name='event.registration_confirmation'),
+
     # month-view(s) / day-view
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', 'views.day_view', name='event.day'),
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/$', 'views.month_view', name='event.month'),
@@ -23,8 +27,12 @@ urlpatterns = patterns('events',
 
     # register for event
     url(r'^(?P<event_id>\d+)/register/$', 'views.register', name='event.register'),
+
+    # cancel event
+    url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<reg8n_id>\d+)$', 
+        'views.cancel_registration', name='event.cancel_registration'),
+
     url(r'^types/$', 'views.types', name='event.types'),
-#    url(r'^(?P<event_id>\d+)/register/confirm/$', 'views.register_confirm', name='event.register.confirm'),
 
     # registrants (search/view); admin-only
     url(r'^(?P<event_id>\d+)/registrants/search/$', 'views.registrant_search', name="event.registrant.search"),

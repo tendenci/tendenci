@@ -134,10 +134,11 @@ class RegistrantManager(Manager):
                         query = reduce(operator.or_, [anon_query, user_query])
                         query = reduce(operator.and_, [sec1_query, query])
                         query = reduce(operator.or_, [query, sec2_query])
+                        sqs = sqs.filter(query)
                     else:
                         sqs = sqs.filter(allow_anonymous_view=True)               
             else:
-                sqs = sqs.filter(allow_anonymous_view=True) 
+                sqs = sqs.filter(allow_anonymous_view=True)
         else:
             if user:
                 if is_an_admin:
@@ -153,11 +154,12 @@ class RegistrantManager(Manager):
                         query = reduce(operator.or_, [anon_query, user_query])
                         query = reduce(operator.and_, [sec1_query, query])
                         query = reduce(operator.or_, [query, sec2_query])
+                        sqs = sqs.filter(query)
                     else:
-                        sqs = sqs.filter(allow_anonymous_view=True)               
+                        sqs = sqs.filter(allow_anonymous_view=True)
             else:
                 sqs = sqs.filter(allow_anonymous_view=True)
 
-            sqs = sqs.order_by('-create_dt')
+            sqs = sqs.order_by('-update_dt')
     
         return sqs.models(self.model)

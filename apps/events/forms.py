@@ -195,31 +195,6 @@ class Reg8nForm(forms.Form):
     username = forms.CharField(max_length=50, required=False)
     email = forms.EmailField()
 
-    password1 = forms.CharField(widget=forms.PasswordInput(), required=False)
-    password2 = forms.CharField(widget=forms.PasswordInput(), required=False)
-
-#    def clean(self):
-#
-#        from django.contrib.auth.models import User
-#        from django.contrib.auth import authenticate
-#        
-#        username = self.cleaned_data['username']
-#        password = self.cleaned_data['password1']
-#
-#        user_account = authenticate(username=username, password=password)
-#        duplicate_username = User.objects.filter(username__iexact=self.cleaned_data['username']).exists()
-#
-#        # if they're credentials are wrong and a duplicate account exists; raise error        
-#        if not user_account and duplicate_username:
-#            raise forms.ValidationError(
-#                _(u'This username is already in use. Please try a different username or password.'))
-#
-#        # matching password
-#        if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
-#            if self.cleaned_data['password1'] != self.cleaned_data['password2']:
-#                raise forms.ValidationError(_(u'You must type the same password each time'))
-#        return self.cleaned_data
-
     def __init__(self, event_id=None, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -232,9 +207,11 @@ class Reg8nForm(forms.Form):
 
         self.fields['price'] = forms.DecimalField(
             widget=forms.HiddenInput(), initial=event.registration_configuration.price)
-        
+
+        print "blah", user and user.is_authenticated()
+
         if user and user.is_authenticated():
-            user_fields = ['name', 'username', 'email', 'password1', 'password2']
+            user_fields = ['name', 'username', 'email']
             for user_field in user_fields:
                 self.fields.pop(user_field)
 

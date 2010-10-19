@@ -92,7 +92,7 @@ class Registrant(models.Model):
     """
     registration = models.ForeignKey('Registration')
     user = models.ForeignKey(User, blank=True, null=True)
-
+    
     name = models.CharField(max_length=100)
     mail_name = models.CharField(max_length=100)
     address = models.CharField(max_length=200)
@@ -107,8 +107,22 @@ class Registrant(models.Model):
 
     position_title = models.CharField(max_length=100)
     company_name = models.CharField(max_length=100)
+
+    cancel_dt = models.DateTimeField(editable=False, null=True)
+
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
     
     objects = RegistrantManager()
+
+    @classmethod
+    def event_registrants(cls, event=None):
+
+        return cls.objects.filter(
+            registration__event = event,
+            cancel_dt = None,
+        )
+        
 
     class Meta:
         permissions = (("view_registrant","Can view registrant"),)
@@ -137,17 +151,6 @@ class Registration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
-#    @property
-#    def invoice(self):
-#        from invoices.models import Invoice
-#
-#        if self.pk:
-#            invoice = Invoice.objects.get(
-#                invoice_object_type = 'event_registration', # TODO: remove hard-coded object_type (content_type)
-#                invoice_object_type_id = self.pk,
-#            )
-#            return invoice
-
     def save_invoice(self, *args, **kwargs):
         from invoices.models import Invoice
         status_detail = kwargs.get('status_detail', 'estimate')
@@ -172,10 +175,15 @@ class Registration(models.Model):
         invoice.balance = self.amount_paid
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
-        invoice.save(self.creator)
+        invoice.save()
 
         return invoice
-            
+
+    def __unicode__(self):
+        if self.owner:
+            return "Event Registration: %s @ %s" % (self.owner, self.event)    
+        else:
+            return "Event Registration: Anonymous User @ %s" % self.event
 
 # TODO: use shorter name
 class RegistrationConfiguration(models.Model):
