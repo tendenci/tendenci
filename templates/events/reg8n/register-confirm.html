@@ -25,7 +25,10 @@
 		padding: 10px;
 	}
 	.regconf-section h3 {
-		margin: 10px;
+		margin: 10px 10px 0;
+	}
+	.regconf-section .event-url {
+		margin-top: 0;
 	}
 	.regconf-section div {
 		margin: 10px;
@@ -47,6 +50,13 @@
 	<div class="regconf-section event">
 		<h2>Event Details</h2>
 		<h3>{{ event.title }}</h3>
+
+		<div class="event-url">
+			<a href="{% url event event.pk %}">
+				{{ SITE_GLOBAL_SITEURL }}{% url event event.pk %}
+			</a>
+		</div>
+
 		<h3>Price Paid: ${{ registration.amount_paid|floatformat:"2" }}</h3>
 		<div>{{ event.description|safe }}</div>
 	</div>

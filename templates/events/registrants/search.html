@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load event_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 {% load avatar_tags %}
 
@@ -26,6 +27,9 @@
 	
 	.event-wrap-search h2 {
 		margin-bottom: 0;
+	}
+	.canceled {
+		float: right;
 	}
 	
 </style>
@@ -87,11 +91,12 @@
 
 			<div style="clear:both;"></div>
 
-
-
             <div class="content"></div>
 			<div class="meta">
-            	<div class="submitted">Registered on {{ registrant.registration.create_dt|date:"D d M" }}</div>
+            	<div class="submitted">Registered on {{ registrant.registration.create_dt|date_short }}</div>
+				{% if registrant.cancel_dt %}
+            	<div class="canceled">Canceled {{ registrant.cancel_dt|date_short }}</div>
+            	{% endif %}
             	<div style="clear:both;"></div>
             </div>
 
