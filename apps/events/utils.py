@@ -277,8 +277,10 @@ def save_registration(*args, **kwargs):
     # find registrant using event + email
         registrant = Registrant.objects.get(
             registration__event=event, 
-            email=user_profile.email
+            email=user_profile.email,
+            cancel_dt=None,
         )
+        reg8n = registrant.registration
         created = False
     except:
     # create registration; then registrant
@@ -304,7 +306,7 @@ def save_registration(*args, **kwargs):
             address = user_profile.address,
             city = user_profile.city,
             state = user_profile.state,
-            zip = user_profile.zip,
+            zip = user_profile.zipcode,
             country = user_profile.country,
             phone = user_profile.phone,
             company_name = user_profile.company,
@@ -312,12 +314,11 @@ def save_registration(*args, **kwargs):
             
         )
 
+        reg8n.save_invoice()
+
         created = True
 
-    print registrant.pk, registrant.name, created
-    print registrant.registration.pk, registrant.registration
-
-    return (registrant.registration, created)
+    return (reg8n, created)
 
 
 

@@ -290,3 +290,28 @@ def get_rss(parser, token):
         return RssParserNode(var_name, url=url[1:-1])
     else:
         return RssParserNode(var_name, url_var_name=url)
+
+class Md5Hash(Node):
+    
+    def __init__(self, *args, **kwargs):
+        self.bits = [Variable(bit) for bit in kwargs.get("bits", [])[1:]]
+
+    def render(self, context):
+        from hashlib import md5
+        bits = [str(b.resolve(context)) for b in self.bits]
+        return md5(".".join(bits)).hexdigest()
+
+@register.tag
+def md5_hash(parser, token):
+    """
+    Example:
+        {% md5_hash obj.pk obj.email %}
+    """
+    args, kwargs = [], {}
+    kwargs["bits"] = token.split_contents()
+
+    if len(kwargs["bits"]) < 2:
+        message = "'%s' tag requires more than 2" % kwargs["bits"][0]
+        raise TemplateSyntaxError(message)
+
+    return Md5Hash(*args, **kwargs)

@@ -1,4 +1,6 @@
+import hashlib
 from datetime import datetime
+
 
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser
@@ -213,4 +215,5 @@ def list_events(parser, token):
         raise TemplateSyntaxError(message)
 
     return ListEventsNode(context_var, *args, **kwargs)
+
 

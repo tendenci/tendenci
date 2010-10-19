@@ -16,6 +16,10 @@
 		<li><a href="{{ site_url }}">{{ site_label }} - {{ site_url }}</a></li>
 	</ol>
 
+	{% if self_reg8n %}
+	<div><a href="{{ site_url }}{% url registration_register %}">You should register for an account!</a></div>
+	{% endif %}
+
 {% else %}
 <!-- priced event -->
 
@@ -36,6 +40,10 @@
 		<li><a href="{{ site_url }}{{ event.get_absolute_url }}">{{ event.title}} Details</a></li>
 		<li><a href="{{ site_url }}">{{ site_label }} - {{ site_url }}</a></li>
 	</ol>
+
+	{% if self_reg8n %}
+	<div><a href="{{ site_url }}{% url registration_register %}">You should register for an account!</a></div>
+	{% endif %}
 
 {% endif %}
 </body></html>

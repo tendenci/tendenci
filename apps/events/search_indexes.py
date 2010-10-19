@@ -47,6 +47,8 @@ class EventIndex(indexes.RealTimeSearchIndex):
 class RegistrantIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     event = indexes.CharField(model_attr='registration__event')
+    create_dt = indexes.DateTimeField(model_attr='create_dt')
+    update_dt = indexes.DateTimeField(model_attr='update_dt')
 
     who_can_view = indexes.CharField()
 

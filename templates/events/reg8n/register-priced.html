@@ -41,8 +41,6 @@
 		{% endif %}
 	{% endfor %}
 
-	<div class="price">Price ${{ event.registration_configuration.price|floatformat:2 }}</div>
-
 	<div class="form-wrap">
     	<form action="{% url event.register event.pk %}" method="post">
     	<div class="forms">
@@ -57,14 +55,6 @@
 			</div>
 			{% endif %}
 
-			{% if form.username %}
-			<div class="form-field">
-				<div class="error">{{ form.username.errors }}</div>
-				<div class="label required">Username</div>
-				<div class="field">{{ form.username }}</div>
-			</div>
-			{% endif %}
-
 			{% if form.email %}
 			<div class="form-field">
 				<div class="error">{{ form.email.errors }}</div>
@@ -73,21 +63,7 @@
 			</div>
 			{% endif %}
 
-			{% if form.password1 %}
-			<div class="form-field">
-				<div class="error">{{ form.password1.errors }}</div>
-				<div class="label required">Password</div>
-				<div class="field">{{ form.password1 }}</div>
-			</div>
-			{% endif %}
-
-			{% if form.password2 %}
-			<div class="form-field">
-				<div class="error">{{ form.password2.errors }}</div>
-				<div class="label required">Password (again)</div>
-				<div class="field">{{ form.password2 }}</div>
-			</div>
-			{% endif %}
+			<div class="price">Price ${{ event.registration_configuration.price|floatformat:2 }}</div>
 
 			<div class="form-field">
 				<div class="error">{{ form.payment_methods.errors }}</div>
