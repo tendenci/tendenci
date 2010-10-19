@@ -1,0 +1,46 @@
+<div>
+	<font color="#000000" face="Arial">Hello [firstname],
+		<br />
+		<br />
+		This is a reminder from your event planner for an upcoming event that you are registered for.
+		<br />
+		<br />
+	</font>
+	
+	<!-- -- start hCalendar Spec -- -->	
+	<h3>
+		<font color="#000000" face="Arial">
+			  <span class="vevent">
+				  	<a class="url" href="{{ SITE_GLOBAL_SITEURL }}{% url event event.id %}">
+						<span class="summary">{{ event.title }}</span>
+					</a>
+			  </span>
+	     </font>
+	 </h3>
+	 
+	<font color="#000000" face="Arial">
+		<span class="vevent">
+			Start: 
+			<abbr class="dtstart" title="{{ event.start_dt|date:"Y-m-j" }}"><b>{{ event.start_dt|date:"M j, Y P" }}</b></abbr> 
+			to <abbr class="dtend" title="{{ event.start_dt|date:"Y-m-j" }}"><b>{{ event.start_dt|date:"M j, Y P" }}</b></abbr><br />
+			
+			Location: <abbr class="location"><b>
+			{%if event.place.address %}{{ event.place.address }}, {%endif%}
+			{%if event.place.city %}{{ event.place.city }}, {%endif%}
+			{%if event.place.state %}{{ event.place.state }} {%endif%}
+			{%if event.place.zip %}{{ event.place.zip }} {%endif%}
+			</b></abbr>
+			<br />
+			<br />
+			<b>Details: </b><br />
+			{{ event.description|striptags|truncatewords:"80"|safe }}
+		</span>
+		<br />
+		<br />
+	</font>
+	<!-- -- end hCalendar Spec -- -->
+	
+	<font color="#000000" face="Arial">
+		<i>You are receiving this email from {% firstof request.user.get_full_name request.user.username %} because you are a registered attendee of the event above.</i>
+	</font>
+</div>

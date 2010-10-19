@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.core.mail.message import EmailMessage
 
 from perms.models import TendenciBaseModel
 from perms.utils import is_admin
@@ -32,8 +33,7 @@ class Email(TendenciBaseModel):
     def __unicode__(self):
         return self.subject
     
-    def send(self):
-        from django.core.mail.message import EmailMessage
+    def send(self, fail_silently=False):
         recipient_list = []
         recipient_bcc_list = []
         if self.recipient:
@@ -59,7 +59,7 @@ class Email(TendenciBaseModel):
                                         'content_type':self.content_type} )
             if self.content_type == 'html' or self.content_type == 'text/html':
                 msg.content_subtype = 'html'
-            msg.send(fail_silently=False)
+            msg.send(fail_silently=fail_silently)
     
     def save(self, user=None):
         if not self.id:
