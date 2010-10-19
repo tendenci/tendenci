@@ -9,13 +9,14 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.template.loader import render_to_string
 
 from base.http import Http403
 from site_settings.utils import get_setting
 from events.models import Event, RegistrationConfiguration, Registration, Registrant, Speaker, Organizer, Type, PaymentMethod
-from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm, TypeForm
+from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm
 from events.search_indexes import EventIndex
-from events.utils import save_registration
+from events.utils import save_registration, email_registrants
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
 from perms.utils import has_perm
@@ -692,6 +693,76 @@ def registration_confirmation(request, id=0, registration_id=0, template_name='e
         'registrant':registrant,
         }, 
         context_instance=RequestContext(request))
+    
+@login_required
+def message_add(request, event_id, form_class=MessageAddForm, template_name='events/message/add.html'):
+    from emails.models import Email
+    event = get_object_or_404(Event, pk=event_id)
+    if not has_perm(request.user,'events.change_event',event): raise Http403
+
+    if request.method == "POST":
+        email = Email()
+        form = form_class(event.id, request.POST, instance=email)
+        if form.is_valid():
+            email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
+            if not email.sender:
+                email.sender = request.user.email
+                
+            email.sender_display = request.user.get_full_name()
+            email.reply_to = request.user.email
+            email.recipient = request.user
+            email.content_type = "text/html"
+            email.subject = '%s notice from %s' % (event.title, get_setting('site', 'global', 'sitedisplayname'))
+            email.save(request.user)
+            subject = email.subject
+            
+            d = {'summary': ''}
+            d['summary'] = '<font face=""Arial"" color=""#000000"">'
+            d['summary'] += 'Emails sent as a result of Calendar Event Notification</font><br><br>'
+            email_registrants(event, email, d)
+            
+            d['summary'] += '<font face=""Arial"" color=""#000000"">'
+            d['summary'] += '<br><br>Email Sent Appears Below in Raw Format'
+            d['summary'] += '</font><br><br>'
+            d['summary'] += email.body
+                    
+            # send summary
+            email.subject = 'SUMMARY: %s' % email.subject
+            email.body = d['summary']
+            email.recipient = request.user.email
+            email.send()
+            
+            # send another copy to the site webmaster
+            email.recipient = get_setting('site', 'global', 'sitewebmasteremail')
+            if email.recipient:
+                email.subject = 'WEBMASTER SUMMARY: %s' % email.subject
+                email.body = '<h2>Site Webmaster Notification of Calendar Event Send</h2>%s' % email.body
+                email.send()
+            
+            # log an event
+            log_defaults = {
+                    'event_id' : 131101,
+                    'event_data': '%s (%d) sent by %s to event registrants' % (email._meta.object_name, email.pk, request.user),
+                    'description': '%s (%d) sent to event registrants of %s' % (email._meta.object_name, email.pk, event.title),
+                    'user': request.user,
+                    'request': request,
+                    'instance': email,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            messages.add_message(request, messages.INFO, 'Successfully sent email "%s" to event registrants for event "%s".' % (subject, event.title))
+            
+            return HttpResponseRedirect(reverse('event', args=(event_id)))
+        
+    else:
+        openingtext = render_to_string('events/message/opening-text.txt', {'event': event}, 
+                                        context_instance=RequestContext(request))
+        form = form_class(event.id, initial={'body': openingtext})
+    
+    return render_to_response(template_name, 
+                              {'event':event,
+                               'form': form}, 
+                               context_instance=RequestContext(request))
 
 
 
