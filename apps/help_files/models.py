@@ -13,6 +13,10 @@ class Topic(models.Model):
     
     class Meta:
         ordering = ['title']
+        
+    @models.permalink
+    def get_absolute_url(self):
+        return ("help_files.topic", [self.pk])
 
     def __unicode__(self):
         return self.title

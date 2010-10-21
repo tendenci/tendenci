@@ -119,6 +119,15 @@
 	font-size: 1.2em;
 	color: red;
 }
+.help-file-wrap .level ul {margin: 0; padding: 0;}
+.help-file-wrap .level ul li {
+	display: inline;
+	margin-right: 5px;
+	padding: 0;
+}
+.help-file-wrap .level ul li.active {
+	background-color: #ffc;}
+
 
 /* index */
 .t div.left-col {

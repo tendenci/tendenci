@@ -3,15 +3,18 @@
 
 {% block title %}{{ block.super }}{{ topic }} Topic{% endblock %}
 
+{% block meta_description %}{{ topic.content|striptags|safe|truncatewords:40 }}{% endblock %}
+
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
-	<h2>Help Files {{ topic }}</h2>
+	<div class="breadcrumbs"><p><a href="{% url help_files %}">All Help Files</a> > {{ topic }} help files</p></div>
+	<h2>{{ topic|title }} Help Files</h2>
 	{% if topic.content %}
-		<p>{{ topic.content }}</p>
+		<p>{{ topic.content|safe }}</p>
 	{% endif %}
 	{% if topic.helpfile_set.all %}
 		<ul>
