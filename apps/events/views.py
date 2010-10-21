@@ -560,7 +560,7 @@ def cancel_registration(request, event_id=0, reg8n_id=0, template_name="events/r
         registrant.cancel_dt = datetime.now()
         registrant.save()
         
-        print registrant.cancel_dt
+        # print registrant.cancel_dt
 
         # back to invoice
         return HttpResponseRedirect(
