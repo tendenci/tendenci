@@ -1,4 +1,3 @@
-{% load base_tags %}
 {{ object.name }}
 {{ object.mail_name }}
 {{ object.address }}
@@ -8,4 +7,9 @@
 {{ object.phone }}
 {{ object.email }}
 {{ object.company_name }}
-hash:{% md5_hash object.registration.event.pk object.email %}
+
+{% if not object.cancel_dt %}
+is:confirmed
+{% endif %}
+
+hash:{{ object.hash }}

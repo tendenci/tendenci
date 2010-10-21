@@ -360,6 +360,7 @@ def save_registration(*args, **kwargs):
 
         created = True
 
+    reg8n.save_invoice()
     return (reg8n, created)
 
 
