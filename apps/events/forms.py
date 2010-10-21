@@ -209,7 +209,7 @@ class Reg8nForm(forms.Form):
         self.fields['price'] = forms.DecimalField(
             widget=forms.HiddenInput(), initial=event.registration_configuration.price)
 
-        print "blah", user and user.is_authenticated()
+        # print "blah", user and user.is_authenticated()
 
         if user and user.is_authenticated():
             user_fields = ['name', 'username', 'email']

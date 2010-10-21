@@ -35,7 +35,7 @@ class HelpFileManager(Manager):
                         user_query = Q(**{'allow_user_view':True,})
                         sec1_query = Q(**{
                             'status':1,
-                            'status_detail':'public',
+                            'status_detail':'active',
                         })
                         sec2_query = Q(**{
                             'who_can_view__exact':user.username
@@ -47,11 +47,11 @@ class HelpFileManager(Manager):
                         sqs = sqs.filter(query)
                     else:
                     # if anonymous
-                        sqs = sqs.filter(status=1).filter(status_detail='public')
+                        sqs = sqs.filter(status=1).filter(status_detail='active')
                         sqs = sqs.filter(allow_anonymous_view=True)
             else:
                 # if anonymous
-                sqs = sqs.filter(status=1).filter(status_detail='public')
+                sqs = sqs.filter(status=1).filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True)
         else:
             if user:
@@ -62,7 +62,7 @@ class HelpFileManager(Manager):
                         # (status+status_detail+anon OR who_can_view__exact)
                         sec1_query = Q(**{
                             'status':1,
-                            'status_detail':'public',
+                            'status_detail':'active',
                             'allow_anonymous_view':True,
                         })
                         sec2_query = Q(**{
@@ -72,11 +72,11 @@ class HelpFileManager(Manager):
                         sqs = sqs.filter(query)
                     else:
                         # if anonymous
-                        sqs = sqs.filter(status=1).filter(status_detail='public')
+                        sqs = sqs.filter(status=1).filter(status_detail='active')
                         sqs = sqs.filter(allow_anonymous_view=True)               
             else:
                 # if anonymous
-                sqs = sqs.filter(status=1).filter(status_detail='public')
+                sqs = sqs.filter(status=1).filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True)
 
             sqs = sqs.order_by('-create_dt')
