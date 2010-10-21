@@ -37,6 +37,7 @@
 	
 					{% if registered_user %}
 	
+						{# event has passed OR registration has passed #}
 						{% if event.end_dt < now or event.registration_configuration.late_dt < now %}
 	
 							<div class="register-wrap">

@@ -15,7 +15,7 @@ urlpatterns = patterns('events',
     url(r'^(?P<id>\d+)/$', 'views.index', name="event"),
 
     # registration confirmation
-    url(r'^(?P<id>\d+)/registrations/(?P<registration_id>\d+)/$', 
+    url(r'^(?P<id>\d+)/registrations/(?P<reg8n_id>\d+)/$', 
         'views.registration_confirmation', name='event.registration_confirmation'),
     url(r'^(?P<id>\d+)/registrations/(?P<hash>[\w\-\/]+)/$', 
         'views.registration_confirmation', name='event.registration_confirmation'),

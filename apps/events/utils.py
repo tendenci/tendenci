@@ -289,7 +289,6 @@ def save_registration(*args, **kwargs):
     Updates Registration, Registrant, and Invoice Table.
     """
     from events.models import Registrant
-    from events.models import Registration
 
     event = kwargs.get('event', None)
     user_account = kwargs.get('user', None)
@@ -358,8 +357,6 @@ def save_registration(*args, **kwargs):
             position_title = user_profile.position_title,
             
         )
-
-        reg8n.save_invoice()
 
         created = True
 

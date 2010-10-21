@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.loader import render_to_string
+from django.template.defaultfilters import date as date_filter
 
 from haystack.query import SearchQuerySet
 
@@ -440,8 +441,17 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
             raise Http404
 
         try: # if they're registered (already); show them their confirmation
-            reg8n = Registration.objects.get(event=event, registrant__user=request.user)
-            return HttpResponseRedirect(reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
+
+            registrant = Registrant.objects.filter(
+                registration__event=event,
+                email = user_email,
+            )
+
+            return HttpResponseRedirect(
+                reverse('event.registration_confirmation', 
+                args=(event_id, registrant.hash)),
+            )
+
         except: pass
 
         # if the event has passed or registration deadline has passed;
@@ -465,7 +475,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
 
                 # create registration record; then take payment
                 # this allows someone to be registered with an outstanding balance 
-                reg8n, created = save_registration(
+                reg8n, reg8n_created = save_registration(
                     user = user_account,
                     name = user_name, 
                     email = user_email, 
@@ -478,7 +488,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 site_url = get_setting('site', 'global', 'siteurl')
                 self_reg8n = get_setting('module', 'users', 'selfregistration')
 
-                if created:
+                if reg8n_created:
                     if notification:
                         notification.send_emails(
                             [user_email], 
@@ -492,16 +502,41 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                             True, # notice object created in DB
                         )
 
-                if reg8n.payment_method and (reg8n.payment_method.label).lower() == 'credit card' and created:
+                if reg8n.payment_method and (reg8n.payment_method.label).lower() == 'credit card' and reg8n_created:
 
                     invoice = Invoice.objects.get(
                         invoice_object_type = 'event_registration', # TODO: remove hard-coded object_type (content_type)
-                        invoice_object_type_id = reg8n.pk,
+                        invoice_object_type_id = reg8n.pk,          # this is an update within the invoice model
                     )
 
-                    response = HttpResponseRedirect(reverse('payments.views.pay_online', args=[invoice.id, invoice.guid]))
+                    response = HttpResponseRedirect(reverse(
+                        'payments.views.pay_online', 
+                        args=[invoice.id, invoice.guid]
+                    ))
                 else:
-                    response = HttpResponseRedirect(reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
+
+                    try:
+                        registrant = Registrant.objects.get(registration__event=event, email=user_email)
+                    except:
+                        registrant = None
+
+                    if registrant:
+                        if registrant.cancel_dt:
+                            messages.add_message(
+                                request, 
+                                messages.INFO, 
+                                'Your registration was canceled on %s' % date_filter(reg8n.cancel_dt))
+                        elif not reg8n_created:
+                            messages.add_message(
+                                request, 
+                                messages.INFO, 
+                                'You were already registered on %s' % date_filter(reg8n.create_dt))                            
+                        
+                    
+                    response = HttpResponseRedirect(reverse(
+                        'event.registration_confirmation', 
+                        args=(event_id, reg8n.registrant.hash)
+                    ))
 
 
             else: # else form is invalid
@@ -533,7 +568,10 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                         payment_method=payment_method, 
                         price='0.00'
                     )
-                    response = HttpResponseRedirect(reverse('event.registration_confirmation', args=(event_id, reg8n.pk)))
+                    response = HttpResponseRedirect(reverse(
+                        'event.registration_confirmation', 
+                        args=(event_id, reg8n.registrant.hash)
+                    ))
                 else:
                 # else prompt registrant w/ registration-form
                     form = form_class(event_id, user=request.user)
@@ -564,7 +602,7 @@ def cancel_registration(request, event_id=0, reg8n_id=0, template_name="events/r
 
         # back to invoice
         return HttpResponseRedirect(
-            reverse('event.registration_confirmation', args=[event.pk, registrant.pk]))
+            reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
 
     return render_to_response(template_name, {
         'event': event,
@@ -663,7 +701,8 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
     query = request.GET.get('q', None)
 
     event = get_object_or_404(Event, pk=event_id)
-    registrants = Registrant.objects.search(query, user=request.user, event=event)
+    registrants = Registrant.objects.search(
+        query, user=request.user, event=event,).order_by("-update_dt")
 
     return render_to_response(template_name, {'event':event, 'registrants':registrants}, 
         context_instance=RequestContext(request))
@@ -672,16 +711,23 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
 def registrant_roster(request, event_id=0, template_name='events/registrants/roster.html'):
     from django.db.models import Sum
 
-    query = request.GET.get('q', None)
+    query = request.GET.get('q', '')
 
     event = get_object_or_404(Event, pk=event_id)
-    registrants = Registrant.objects.search(query, user=request.user, event=event)
+    registrants = Registrant.objects.search(
+        query, user=request.user, event=event).order_by("-update_dt")
+
+    query = "%s is:confirmed" % query
+    confirmed_registrants = Registrant.objects.search(
+        query, user=request.user, event=event)
 
     total_balance = Registration.objects.filter(event=event).aggregate(Sum('amount_paid'))['amount_paid__sum']
-    
 
     return render_to_response(template_name, {
-        'event':event, 'registrants':registrants, 'total_balance':total_balance}, 
+        'event':event, 
+        'registrants':registrants,
+        'confirmed_registrants':confirmed_registrants, 
+        'total_balance':total_balance}, 
         context_instance=RequestContext(request))
 
 @login_required
@@ -694,31 +740,43 @@ def registrant_details(request, id=0, hash='', template_name='events/registrants
     else:
         raise Http403
 
-def registration_confirmation(request, id=0, registration_id=0, hash='', 
+def registration_confirmation(request, id=0, reg8n_id=0, hash='', 
     template_name='events/reg8n/register-confirm.html'):
     """ Registration confirmation """
 
     event = get_object_or_404(Event, pk=id)
 
-    # permission not checked
-    # anyone who has this link is allowed to view
+    if reg8n_id:
 
-    if registration_id:
+        # URL is obvious
+        # permission check
+
         try:
             registrant = Registrant.objects.get(
                 registration__event = event,
-                pk = registration_id,
+                pk = reg8n_id,
             )
+
+            # check permission
+            if not has_perm(request.user, 'events.view_registrant', registrant):
+                raise Http403
+
             registration = registrant.registration
+
         except:
-            registrant, registration = None, None
+            raise Http404
 
     elif hash:
         sqs = SearchQuerySet()
         sqs = sqs.filter(event=event)
         sqs = sqs.auto_query(sqs.query.clean(hash))
-        registrant = sqs[0].object
-        registration = registrant.registration
+        sqs = sqs.order_by("-update_dt")
+
+        try:
+            registrant = sqs[0].object
+            registration = registrant.registration
+        except:
+            raise Http404
 
     return render_to_response(template_name, {
         'event':event,
