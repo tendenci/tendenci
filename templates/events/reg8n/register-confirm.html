@@ -2,6 +2,7 @@
 {% load event_tags %}
 {% load styled_forms %}
 {% load avatar_tags %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}Register{% endblock %}
 
@@ -10,10 +11,6 @@
 {% endblock %}
 
 {% block body %}
-<div class="t">    
-    {% event_nav user %}
-    <h1>Proof of Registration</h1>
-
 <style type="text/css">
 	.regconf-section {
 		background-color: #F7F7F7;
@@ -44,8 +41,25 @@
 	.registration .info .email {
 		margin: 0;
 	}
+	
+	.cancel-notice {
+		background-color: #FFC;
+		border: 1px solid #fcd574;
+		padding: 10px 5px;
+		margin-bottom: 10px;
+	}
 
 </style>
+
+<div class="t">    
+    {% event_nav user %}
+    <h1>Proof of Registration</h1>
+
+	{% if registrant.cancel_dt %}
+		<div class="cancel-notice">
+			Registration Canceled on {{ registrant.cancel_dt|date_short }}
+		</div>
+	{% endif %}
 
 	<div class="regconf-section event">
 		<h2>Event Details</h2>

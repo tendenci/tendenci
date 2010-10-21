@@ -160,6 +160,6 @@ class RegistrantManager(Manager):
             else:
                 sqs = sqs.filter(allow_anonymous_view=True)
 
-            sqs = sqs.order_by('-update_dt')
+#            sqs = sqs.order_by('-update_dt')
     
         return sqs.models(self.model)
