@@ -14,11 +14,13 @@ from perms.models import ObjectPermission
 from perms.utils import has_perm
 from event_logs.models import EventLog
 
+
 def index(request, id=None, template_name="stories/view.html"):
     if not id: return HttpResponseRedirect(reverse('story.search'))
     story = get_object_or_404(Story, pk=id)
     
-    if not story.allow_view_by(request.user): raise Http403
+    if not has_perm(request.user,'stories.view_story', story):
+         raise Http403
 
     log_defaults = {
         'event_id' : 1060500,
@@ -33,26 +35,7 @@ def index(request, id=None, template_name="stories/view.html"):
     return render_to_response(template_name, {'story': story}, 
         context_instance=RequestContext(request))
     
-# get the latest image name
-def get_latest_image_name(images_path):
-    latest_image = ""
-    if os.path.isdir(images_path):
-        image_list = os.listdir(images_path)
-        
-        if image_list <> []:
-            image_full_path_list = [images_path+'/'+image_name for image_name in image_list]
-            
-            latest_image = image_list[0]
-            mtime = os.path.getmtime(image_full_path_list[0])
-            
-            for i in range(1, len(image_full_path_list)):
-                if mtime < os.path.getmtime(image_full_path_list[i]):
-                    latest_image = image_list[i]
-                    mtime = os.path.getmtime(image_full_path_list[i])
-    return latest_image
-        
     
-
 def search(request, template_name="stories/search.html"):
     query = request.GET.get('q', None)
     stories = Story.objects.search(query, user=request.user)
@@ -70,47 +53,49 @@ def search(request, template_name="stories/search.html"):
     return render_to_response(template_name, {'stories':stories}, 
         context_instance=RequestContext(request))
     
+    
 @login_required   
 def add(request, form_class=StoryForm, template_name="stories/add.html"):
-    # permission check
-    story = Story()
-    if not story.allow_add_by(request.user): raise Http403
     
-    if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
-        if form.is_valid():           
-            story = form.save(commit=False)
-            # set up the user information
-            story.allow_anonymous_view = 1
-            story.creator = request.user
-            story.creator_username = request.user.username
-            story.owner = request.user
-            story.owner_username = request.user.username
-
-            story.save() # get pk
-
-            # assign permissions for selected groups
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], story)
-            # assign creator permissions
-            ObjectPermission.objects.assign(story.creator, story) 
-
-            story.save() # update search-index w/ permissions
-
-            log_defaults = {
-                'event_id' : 1060100,
-                'event_data': '%s (%d) added by %s' % (story._meta.object_name, story.pk, request.user),
-                'description': '%s added' % story._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': story,
-            }
-            EventLog.objects.log(**log_defaults)
-            
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % story) 
-            
-            return HttpResponseRedirect(reverse('story', args=[story.pk]))
-    else:
-        form = form_class(user=request.user)
+    if has_perm(request.user,'stories.add_story'):    
+        if request.method == "POST":
+            form = form_class(request.POST, request.FILES,
+                              user=request.user)
+            if form.is_valid():           
+                story = form.save(commit=False)
+                # set up the user information
+                story.creator = request.user
+                story.creator_username = request.user.username
+                story.owner = request.user
+                story.owner_username = request.user.username
+    
+                # set up user permission
+                story.allow_user_view, story.allow_user_edit = form.cleaned_data['user_perms']
+    
+                story.save() # get pk
+    
+                # assign permissions for selected groups
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], story)
+                # assign creator permissions
+                ObjectPermission.objects.assign(story.creator, story) 
+    
+                story.save() # update search-index w/ permissions
+    
+                log_defaults = {
+                    'event_id' : 1060100,
+                    'event_data': '%s (%d) added by %s' % (story._meta.object_name, story.pk, request.user),
+                    'description': '%s added' % story._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': story,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                messages.add_message(request, messages.INFO, 'Successfully added %s' % story) 
+                
+                return HttpResponseRedirect(reverse('story', args=[story.pk]))
+        else:
+            form = form_class(user=request.user)
     
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
@@ -118,59 +103,49 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
 @login_required
 def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
     story = get_object_or_404(Story, pk=id)
-    # permission check
-    if not story.allow_edit_by(request.user): raise Http403
-    # temporarily - need to use file module to store the image
-    imagepath = os.path.join(settings.MEDIA_ROOT, 'stories/'+str(story.id))
-    image_name = story.get_latest_image_name(imagepath)
 
-    if request.method == "POST":
-        form = form_class(request.POST, instance=story, user=request.user)
-        if form.is_valid():
-            story = form.save(commit=False)
+    if has_perm(request.user,'stories.change_story', story):
+        if request.method == "POST":
+            form = form_class(request.POST, request.FILES,
+                              instance=story, user=request.user)
+            if form.is_valid():
+                story = form.save(commit=False)
 
-            # assign permissions
-            ObjectPermission.objects.remove_all(story)
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], story)
-            ObjectPermission.objects.assign(story.creator, story) 
-
-            story.save()
-            
-            log_defaults = {
-                'event_id' : 1060200,
-                'event_data': '%s (%d) edited by %s' % (story._meta.object_name, story.pk, request.user),
-                'description': '%s edited' % story._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': story,
-            }
-            EventLog.objects.log(**log_defaults)
-            
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % story)
-                                                             
-            return HttpResponseRedirect(reverse('story', args=[story.pk]))             
-    else:
-        form = form_class(instance=story, user=request.user)
+                # set up user permission
+                story.allow_user_view, story.allow_user_edit = form.cleaned_data['user_perms']
+        
+                # assign permissions
+                ObjectPermission.objects.remove_all(story)
+                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], story)
+                ObjectPermission.objects.assign(story.creator, story) 
     
-    return render_to_response(template_name, {'story': story, 'form':form, 'image_name':image_name}, 
+                story.save()
+                
+                log_defaults = {
+                    'event_id' : 1060200,
+                    'event_data': '%s (%d) edited by %s' % (story._meta.object_name, story.pk, request.user),
+                    'description': '%s edited' % story._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': story,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                messages.add_message(request, messages.INFO, 'Successfully updated %s' % story)
+                                                                 
+                return HttpResponseRedirect(reverse('story', args=[story.pk]))             
+        else:
+            form = form_class(instance=story, user=request.user)
+    
+    return render_to_response(template_name, {'story': story, 'form':form }, 
         context_instance=RequestContext(request))
-
 
 @login_required
 def delete(request, id, template_name="stories/delete.html"):
     story = get_object_or_404(Story, pk=id)
-    # permission check
-    if not story.allow_edit_by(request.user): raise Http403
 
-    if has_perm(request.user,'stories.delete_stories'):   
+    if has_perm(request.user,'stories.delete_story'):   
         if request.method == "POST":
-            # delete files first
-            imagepath = os.path.join(settings.MEDIA_ROOT, 'stories/'+str(story.id))
-            if os.path.isdir(imagepath):
-                for file in os.listdir(imagepath):
-                    os.remove(os.path.join(imagepath+'/' + file))
-                os.rmdir(imagepath)
-
             log_defaults = {
                 'event_id' : 1060300,
                 'event_data': '%s (%d) deleted by %s' % (story._meta.object_name, story.pk, request.user),
@@ -180,6 +155,7 @@ def delete(request, id, template_name="stories/delete.html"):
                 'instance': story,
             }
             EventLog.objects.log(**log_defaults)
+            
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % story)
             story.delete()
             
