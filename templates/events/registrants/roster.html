@@ -138,6 +138,15 @@
 		font-size: 1em;
 		line-height: .2em;
 	}
+
+	.canceled {
+		text-decoration: line-through;
+	}
+	
+	.canceled .attended-checkbox div {
+		background-color: silver;
+	}
+
 </style>
 
 <style type="text/css" media="print">
@@ -169,8 +178,8 @@
 
 
 <div class="total">
-	<div class="int">{{ registrants|length }}</div>
-	<div class="label">Registrant{{ registrants|length|pluralize }}</div>
+	<div class="int">{{ confirmed_registrants|length }}</div>
+	<div class="label">Confirmed Registrant{{ confirmed_registrants|length|pluralize }}</div>
 </div>
 
 <center>
@@ -187,30 +196,34 @@
 	<th title="Balance">Balance</th>
 </tr>
 <tr class='row-spacer'><td colspan="9"></td></tr>
-
 {% for registrant in registrants %}
 {% with registrant.object as registrant %}
-	<tr class="{% cycle 'odd' 'even' %}">
-		<td class="counter">{{ forloop.counter }}</td>
-		<td class="attended-checkbox"><div></div></td>
 
-		<td> <!-- name & phone -->
-			<div><a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.name registrant.email %}</a></div>
-			<div>{{ registrant.phone }}</div>
-		</td>
+{% if registrant.cancel_dt %}
+<tr class="{% cycle 'odd' 'even' %} canceled">
+{% else%}
+<tr class="{% cycle 'odd' 'even' %}">
+{% endif %}
 
-		<td> <!-- title & company -->
-			<div>{{ registrant.title }}</div>
-			<div>{{ registrant.company_name }}</div>
-		</td> 
+	<td class="counter">{{ forloop.counter }}</td>
+	<td class="attended-checkbox"><div></div></td>
 
-		<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
-		<td>${{ registrant.registration.invoice.total }}</td> <!-- invoice amount -->
-		<td><a href="{{ registrant.get_absolute_url }}">{{ registrant.registration.pk }}</a></td> <!-- registration number -->
-		<td>${{ registrant.registration.amount_paid }}</td> <!-- registration amount -->
-		<td>${{ registrant.registration.invoice.balance }}</td> <!-- balance -->
-	</tr>
+	<td> <!-- name & phone -->
+		<div><a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.name registrant.email %}</a></div>
+		<div>{{ registrant.phone }}</div>
+	</td>
 
+	<td> <!-- title & company -->
+		<div>{{ registrant.title }}</div>
+		<div>{{ registrant.company_name }}</div>
+	</td> 
+
+	<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
+	<td>${{ registrant.registration.invoice.total }}</td> <!-- invoice amount -->
+	<td><a href="{{ registrant.get_absolute_url }}">{{ registrant.registration.pk }}</a></td> <!-- registration number -->
+	<td>${{ registrant.registration.amount_paid }}</td> <!-- registration amount -->
+	<td>${{ registrant.registration.invoice.balance|floatformat:"2" }}</td> <!-- balance -->
+</tr>
 {% endwith %}
 {% endfor %}
 <tr class='row-spacer'><td colspan="9"></td></tr>

@@ -1,4 +1,5 @@
 import uuid
+from hashlib import md5
 from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -122,14 +123,21 @@ class Registrant(models.Model):
             registration__event = event,
             cancel_dt = None,
         )
-        
+
+    @property
+    def hash(self):
+        return md5(".".join([str(self.registration.event.pk), self.email])).hexdigest()
+
+    @models.permalink
+    def hash_url(self):
+        return ('event.registration_confirmation', [self.registration.event.pk, self.hash])
 
     class Meta:
         permissions = (("view_registrant","Can view registrant"),)
 
     @models.permalink
     def get_absolute_url(self):
-        return ('event.registration_confirmation', [self.pk, self.registration.pk])
+        return ('event.registration_confirmation', [self.registration.event.pk, self.pk])
 
 class Registration(models.Model):
 
@@ -151,8 +159,23 @@ class Registration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    @property
+    def registrant(self):
+        """
+        Gets primary registrant.
+        Get first registrant w/ email address
+        Order by insertion (primary key)
+        """
+
+        try:
+            registrant = self.registrant_set.filter(
+                email__isnull=False).order_by("pk")[0]
+        except:
+            registrant = None
+
+        return registrant
+
     def save_invoice(self, *args, **kwargs):
-        from invoices.models import Invoice
         status_detail = kwargs.get('status_detail', 'estimate')
 
         try: # get invoice
@@ -162,7 +185,7 @@ class Registration(models.Model):
             )
         except: # else; create invoice
             # cannot use get_or_create method
-            # because so many fields are required
+            # because too many fields are required
             invoice = Invoice()
             invoice.invoice_object_type = 'event_registration'
             invoice.invoice_object_type_id = self.pk
@@ -177,13 +200,10 @@ class Registration(models.Model):
         invoice.ship_date = datetime.now()
         invoice.save()
 
-        return invoice
+        self.invoice = invoice
+        self.save()
 
-    def __unicode__(self):
-        if self.owner:
-            return "Event Registration: %s @ %s" % (self.owner, self.event)    
-        else:
-            return "Event Registration: Anonymous User @ %s" % self.event
+        return invoice
 
 # TODO: use shorter name
 class RegistrationConfiguration(models.Model):

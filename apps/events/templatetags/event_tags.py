@@ -4,7 +4,7 @@ from datetime import datetime
 
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser
-from events.models import Event, Registration
+from events.models import Event, Registrant
 
 
 register = Library()
@@ -113,9 +113,10 @@ class IsRegisteredUserNode(Node):
         if isinstance(user, AnonymousUser):
             exists = False
         else:
-            exists = Registration.objects.filter(
-                event = event,
-                registrant__user=user
+            exists = Registrant.objects.filter(
+                registration__event = event,
+                email = user.email,
+                cancel_dt = None,
             ).exists()
 
         context[self.context_var] = exists
