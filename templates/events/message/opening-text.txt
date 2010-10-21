@@ -22,7 +22,7 @@
 		<span class="vevent">
 			Start: 
 			<abbr class="dtstart" title="{{ event.start_dt|date:"Y-m-j" }}"><b>{{ event.start_dt|date:"M j, Y P" }}</b></abbr> 
-			to <abbr class="dtend" title="{{ event.start_dt|date:"Y-m-j" }}"><b>{{ event.start_dt|date:"M j, Y P" }}</b></abbr><br />
+			to <abbr class="dtend" title="{{ event.end_dt|date:"Y-m-j" }}"><b>{{ event.end_dt|date:"M j, Y P" }}</b></abbr><br />
 			
 			Location: <abbr class="location"><b>
 			{%if event.place.address %}{{ event.place.address }}, {%endif%}
