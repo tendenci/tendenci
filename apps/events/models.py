@@ -201,6 +201,9 @@ class Registration(models.Model):
         invoice.save()
 
         self.invoice = invoice
+
+        print invoice
+
         self.save()
 
         return invoice
