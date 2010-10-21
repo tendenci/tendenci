@@ -15,9 +15,11 @@
  	{% stories_options user story %}
  	</div>
         <h2>{{ story.title }}</h2>
+        {% if story.photo %}
         <div class="photo">
             <img src="{{ story.photo.url }}" title="{{ story.title }}" />
         </div>
+        {% endif %}
         <div class="content">{{ story.content|safe }}</div>
         <div class="meta">
 			<div class="categories">
