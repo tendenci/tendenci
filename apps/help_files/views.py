@@ -34,9 +34,9 @@ def topic(request, id, template_name="help_files/topic.html"):
     return render_to_response(template_name, {'topic':topic}, 
         context_instance=RequestContext(request))
 
-def details(request, id, template_name="help_files/details.html"):
+def details(request, slug, template_name="help_files/details.html"):
     "Help file details"
-    help_file = get_object_or_404(HelpFile, pk=id)
+    help_file = get_object_or_404(HelpFile, slug=slug)
     help_file.view_totals += 1
     help_file.save()
 
