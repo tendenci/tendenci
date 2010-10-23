@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from entities.models import Entity
 from perms.models import TendenciBaseModel
+from base.fields import SlugField
 from tinymce import models as tinymce_models
 from managers import HelpFileManager
 
@@ -25,7 +26,8 @@ class HelpFile(TendenciBaseModel):
     """Question/Answer infromation"""
     LEVELS = ('basic', 'intermediate', 'advanced', 'expert')
     LEVEL_CHOICES = [(i,i) for i in LEVELS]
-    
+
+    slug = SlugField(_('URL Path'), unique=True)
     topics = models.ManyToManyField(Topic)
     entity = models.ForeignKey(Entity, null=True, blank=True)
     question = models.CharField(max_length=500)
@@ -44,7 +46,7 @@ class HelpFile(TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("help_file.details", [self.pk])
+        return ("help_file.details", [self.slug])
                 
     def __unicode__(self):
         return self.question
