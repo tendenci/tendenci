@@ -55,8 +55,25 @@ class HelpFile(TendenciBaseModel):
         "Template helper: {% if file.level_is.basic %}..."
         return dict([i, self.level==i] for i in HelpFile.LEVELS)
 
+
 class Request(models.Model):
     question = models.TextField()
     
     def __unicode__(self):
         return self.question
+    
+
+class HelpFileMigration(models.Model):
+    """
+        Unmanaged model to map old tendenci 4 id
+        to the new tendenci 5 id
+    """
+    t4_id = models.IntegerField()
+    t5_id = models.IntegerField()
+    
+    class Meta:
+        managed = False
+        db_table = 'mig_help_files_helpfile_t4_to_t5'
+        
+        
+    
