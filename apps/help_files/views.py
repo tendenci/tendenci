@@ -1,10 +1,11 @@
 from django.template.context import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404, \
+                        HttpResponsePermanentRedirect
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 
-from models import Topic, HelpFile
+from models import Topic, HelpFile, HelpFileMigration
 from forms import RequestForm
 
 def index(request, template_name="help_files/index.html"):
@@ -56,3 +57,20 @@ def request_new(request, template_name="help_files/request_new.html"):
         
     return render_to_response(template_name, {'form': form}, 
         context_instance=RequestContext(request))
+    
+def redirects(request, id):
+    """
+        Redirect old Tendenci 4 IDs to new Tendenci 5 slugs
+    """
+    try:
+        help_file_migration = HelpFileMigration.objects.get(t4_id=id)
+        try:
+            help_file = HelpFile.objects.get(pk=help_file_migration.t5_id)
+            return HttpResponsePermanentRedirect(help_file.get_absolute_url())
+        except:
+            return HttpResponsePermanentRedirect(reverse('help_files'))
+    except:
+        return HttpResponsePermanentRedirect(reverse('help_files'))
+
+        
+    
