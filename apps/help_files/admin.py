@@ -10,7 +10,7 @@ class HelpFileAdmin(admin.ModelAdmin):
     filter_horizontal = ['topics']
     search_fields = ['question','answer']
     fieldsets = (
-        (None, {'fields': ('question', 'answer', 'level','topics','entity')}),
+        (None, {'fields': ('question', 'slug', 'answer', 'level','topics','entity')}),
         ('Flags', {'fields': (
             ('is_faq', 'is_featured', 'is_video', 'syndicate'),)}),
         ('Administrative', {'fields': (
