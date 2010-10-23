@@ -79,13 +79,6 @@ urlpatterns = patterns('',
 
 handler500 = 'base.views.custom_error'
 
-# Local url patterns for development
-try:
-    from local_urls import extra_patterns
-    urlpatterns += extra_patterns
-except ImportError:
-    pass
-
 # serve static files
 if settings.DEBUG:
     urlpatterns += patterns('',
@@ -96,6 +89,13 @@ if settings.DEBUG:
         'django.views.static.serve',
         {'document_root': settings.THEME_ROOT}),           
     )
+    
+# Local url patterns for development
+try:
+    from local_urls import extra_patterns
+    urlpatterns += extra_patterns
+except ImportError:
+    pass
 
 #PLUGINS:
 import pluginmanager
