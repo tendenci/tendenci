@@ -1,63 +1,88 @@
-{% extends "base_homepage.html" %}
-{% load account_tags %}
+{% extends "base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load cache %}
 
-{% block title %}Tendenci CMS - Member Management and Events for Associations and Organizations{% endblock %}
-{% block meta_description %}The Tendenci Content Management System CMS offer Businesses, Orgaizations, and Associations the Platform to create an easy to use website and allows web marketing to customers, clients, or members. Tendenci offers Membership support, Event registration, Email Newsletters, and Automatic Search Engine Optimization.{% endblock %}
-{% block meta_keywords %}Tendenci CMS, membership management, content management system, email marketing, electronic newsletters, event registration, business directories, online catalogs, job resume board, RSS, Podcast, {{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }}{% endblock %}
+{% block html_body %}
+<div id="container">
+	<div id="header"> 
+		<h1><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a></h1> 
+		<h2>An example Tendenci 5 site!</h2> 
+	</div> 
 
-{% block extra_head %}
-<style type="text/css">
-  .offline a {
-    color: #DDD;
-  }
-  .online a {
-    color: #551A8B;
-  }
-</style>
-{% endblock %}
-
-{% block menu %}
-    <div id="menu">{% spaceless %}{% include "nav.html" %}{% endspaceless %}<div class="clear"></div></div>
-{% endblock %}
-
-{% block login %}
-<div class="login-container">
-  
-  <div class="login">
-        {% if user.is_authenticated %}
-            <a href="/dashboard">Dashboard</a> | <a id="logout" href="{% url auth_logout %}">Log Out ({{user.username}})</a>            
-        {% endif %}
-        {% if not user.is_authenticated %}
-            {% if MODULE_USERS_SELFREGISTRATION %}<a href="{% url registration_register %}">Register</a>&nbsp;&ndash;&nbsp;{% endif %}<a id="modal" href="#login-screen">Log In</a>
-            <div style="display: none;">
-                <div id="login-screen" style="width: 300px; height: 280px;">
-                    <div style="padding-bottom: 20px; border-bottom: 1px solid #d8d8d8;">
-                    <h2>Log In</h2>
-                    {% login_form %}
-                    </div>
-                    {% if MODULE_USERS_SELFREGISTRATION %}
-                    <div style="margin-top: 20px; border-top: 1px solid #fff;">
-                    <h4 style=" margin-bottom: 4px;">Forgot your password?</h4>
-                    <p style=" margin-bottom: 14px;"><a href="/accounts/password/reset/">Reset your password &rarr;</a></p>
-                    
-                    <h4 style=" margin-bottom: 4px;">Don't have an account?</h4>
-                    <p><a href="/accounts/register/">Register Now &rarr;</a></p>
-                    </div>
-                    {% else %}
-                    <div style="margin-top: 20px; border-top: 1px solid #fff;">
-          <img align="middle" src="{{ THEME_URL }}/media/images/tendenci-logo.png" alt="Tendenci" />
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
+	<div id="headerimage"> 
+		<img src="{{ THEME_URL }}media/images/headers/4.jpg" width="940" height="198" alt="" /> 
+	</div> 
+        
+    <div id="menu"> 
+    	{% spaceless %}{% include "nav.html" %}{% endspaceless %}
     </div>
-
-	<div id="phone-number"><h4>P: 281-497-6567</h4></div>
     
-<div class="clear"></div>
-</div>
-{% endblock %}
+    <div class="content content-middle"> 
+        {% block messages %}
+        	{% if request.impersonation_message %}
+        	<ul class="messages">
+            	<li>{{ request.impersonation_message|safe }}</li>
+            </ul>
+            {% endif %}
+             {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+                {% endfor %}
+            </ul>
+          {% endif %}
+        {% endblock %}
+            
+        {% block body %}
+        	<h2>Welcome to your Tendenci 5 powered Site!</h2>
+        {% endblock %}
+        
+    </div><!-- /content content-middle -->
 
-{% block body %}
+	<div class="primary-sidebar content-middle "> 
+		<ul>
+			<li>
+				<h2>Search</h2> 
+				<form id="searchform" method="get" action="/search"> 
+					<input type="text" value="type, hit enter" onfocus="if (this.value == 'type, hit enter') {this.value = '';}" onblur="if (this.value == '') {this.value = 'type, hit enter';}" size="18" maxlength="50" name="q" id="s" /> 
+				</form> 
+			</li>
+					
+			<li>
+				<h2>What is schipul doing...</h2> 
+				<div class="aktt_tweets"> 
+					{% cache 86400 schipul_rss %}
+               	    {% get_rss "http://twitter.com/statuses/user_timeline/6971652.rss" as rss %}
+		                <ul>
+		                {% for entry in rss.entries|slice:":3" %}
+		                    <li>{{ entry.title }}</li>
+		                {% endfor %}
+		                </ul>
+					{% endcache %}
+				</div>
+			</li> 
+		
+			<li>
+				<h2>Meta</h2>
+				<ul>
+					{% if user.is_authenticated %}
+						<li><a href="{% url dashboard %}">Dashboard</a></li>
+						<li><a href="{% url auth_logout %}">Log Out</a></li>
+					{% else %} 
+						{% if MODULE_USERS_SELFREGISTRATION %}
+						<li><a href="{% url registration_register %}">Register</a></li>
+						{% endif %}
+						<li><a href="{% url auth_login %}">Log in</a></li>
+					{% endif %}					
+				</ul>
+			</li>
+		</ul>
+	</div>
+
+    <div id="footer">
+      {% spaceless %}{% include "footer.html" %}{% endspaceless %}
+    </div>
+        
+</div><!-- /container -->
 {% endblock %}
