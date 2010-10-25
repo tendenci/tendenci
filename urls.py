@@ -1,13 +1,12 @@
+from os.path import join
 from django.conf.urls.defaults import *
+from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
 
 # Django admin
 from django.contrib import admin
 admin.autodiscover()
 
-# authority permissions
-import authority
-authority.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
@@ -80,23 +79,23 @@ urlpatterns = patterns('',
 
 handler500 = 'base.views.custom_error'
 
+# serve static files
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^site_media/(?P<path>.*)$', 
+        'django.views.static.serve',
+        {'document_root': join(settings.PROJECT_ROOT,'site_media')}),
+        (r'^themes/%s/(?P<path>.*)$' % settings.SITE_THEME, 
+        'django.views.static.serve',
+        {'document_root': settings.THEME_ROOT}),           
+    )
+    
 # Local url patterns for development
 try:
-    from local_urls import MEDIA_PATTERNS
-    urlpatterns += MEDIA_PATTERNS
+    from local_urls import extra_patterns
+    urlpatterns += extra_patterns
 except ImportError:
-    from django.conf import settings
-    from os.path import join
-    # serve static files
-    if settings.DEBUG:
-        urlpatterns += patterns('',
-            (r'^site_media/(?P<path>.*)$', 
-            'django.views.static.serve',
-            {'document_root': join(settings.PROJECT_ROOT,'site_media')}),
-            (r'^themes/%s/(?P<path>.*)$' % settings.SITE_THEME, 
-            'django.views.static.serve',
-            {'document_root': settings.THEME_ROOT}),           
-        )
+    pass
 
 #PLUGINS:
 import pluginmanager
