@@ -219,7 +219,7 @@ def swfupload(request):
 
     if request.method == "POST":
 
-        form = FileForm(request.user, request.POST, request.FILES)
+        form = FileForm(request.POST, request.FILES, user=request.user)
 
         if not form.is_valid():
             return HttpResponseServerError(
