@@ -363,7 +363,14 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     )
 
                     messages.add_message(request, messages.INFO, 'Successfully added %s' % event)
-                    if notification: notification.send(get_administrators(),'event_added', {'object': event, 'request': request})
+                    # notification to administrator(s) and module recipient(s)
+                    recipients = get_notice_recipients('module', 'events', 'eventrecipients')
+                    if recipients and notification:
+                        notification.send(recipients, 'event_edited', {
+                            'object': event, 
+                            'request': request
+                        })
+
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
 
                 return render_to_response(template_name, {
