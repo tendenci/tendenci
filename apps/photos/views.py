@@ -453,7 +453,7 @@ def photos_batch_add(request, photoset_id=0):
                 'creator_username': str(request.user),
                 'status_detail': 'active',
             })
-            photo_form = PhotoUploadForm(request.user, request.POST, request.FILES)
+            photo_form = PhotoUploadForm(request.POST, request.FILES, user=request.user)
 
             if photo_form.is_valid():
                 # save photo
