@@ -18,7 +18,7 @@ class PhotoUploadForm(TendenciBaseForm):
         return self.cleaned_data['image']
 
     def __init__(self, *args, **kwargs):
-        super(PhotoUploadForm, self).__init__(user, *args, **kwargs)
+        super(PhotoUploadForm, self).__init__(*args, **kwargs)
 
 class PhotoEditForm(TendenciBaseForm):
     
