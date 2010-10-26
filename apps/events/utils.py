@@ -309,8 +309,15 @@ def save_registration(*args, **kwargs):
     else:
         # account
         user_account = User()
-        user_account.first_name = user_name.split()[0]
-        user_account.last_name = user_name.split()[1]
+
+        # first name
+        if len(user_name.split()) > 0: user_account.first_name = user_name.split()[0]
+        else: user_account.first_name = ''
+
+        # last name
+        if len(user_name.split()) > 1: user_account.last_name = user_name.split()[1]
+        else: user_account.last_name = ''
+
         # profile
         user_profile = Profile()
         user_profile.email = user_email
