@@ -96,9 +96,18 @@ class EventForm(TendenciBaseForm):
         
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
+
+        if self.instance.pk:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+
+
+
 
 class TypeChoiceField(forms.ModelChoiceField):
 
