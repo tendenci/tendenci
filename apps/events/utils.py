@@ -323,6 +323,9 @@ def save_registration(*args, **kwargs):
         user_profile.email = user_email
         user_profile.display_name = user_name
 
+    # if no name; use email address
+    if not user_profile.display_name:
+        user_profile.display_name = user_profile.email
 
     try:
     # find registrant using event + email
@@ -351,6 +354,7 @@ def save_registration(*args, **kwargs):
 
         # create registrant
         registrant = reg8n.registrant_set.create(
+            user = user_account,
             name = user_profile.display_name,
             email = user_profile.email,
             mail_name = user_profile.display_name,
