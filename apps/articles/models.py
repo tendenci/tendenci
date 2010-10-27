@@ -40,7 +40,7 @@ class Article(TendenciBaseModel):
 
     not_official_content = models.BooleanField(_('Official Content'), blank=True)
     entity = models.ForeignKey(Entity, null=True)
-    
+
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 
