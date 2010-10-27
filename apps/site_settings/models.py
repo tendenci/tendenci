@@ -1,16 +1,5 @@
 from django.db import models
 
-SCOPE_CHOICES = (
-    ('module', 'Module'),
-    ('site', 'Site'),
-)
-
-SCOPE_CATEGORY_CHOICES = (
-    ('global','Global'),
-    ('articles','Articles'),
-    ('news','News'),
-)
-
 INPUT_TYPE_CHOICES = (
     ('text','Text'),
     ('select','Select'),         
@@ -35,8 +24,8 @@ class Setting(models.Model):
     store = models.BooleanField(default=True)
     update_dt = models.DateTimeField(auto_now=True, null=True)
     updated_by = models.CharField(max_length=50, blank=True)
-    scope = models.CharField(max_length=50, choices=SCOPE_CHOICES)
-    scope_category = models.CharField(max_length=50, choices=SCOPE_CATEGORY_CHOICES)
+    scope = models.CharField(max_length=50)
+    scope_category = models.CharField(max_length=50)
     parent_id = models.IntegerField(blank=True, default=0)
 
     def get_absolute_url(self):
