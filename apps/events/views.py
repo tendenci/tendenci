@@ -266,6 +266,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
         'title': event.get_title(),
         'description': event.get_description(),
         'keywords': event.get_keywords(),
+        'canonical_url': event.get_canonical_url(),
     }
     event.meta = MetaTags(**defaults)
 
