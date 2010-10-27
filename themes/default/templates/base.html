@@ -7,7 +7,8 @@
 	<meta charset="UTF-8">
 	<meta name="description" content="{% block meta_description %}{% endblock %}" />
 	<meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />
-	
+
+	{% block meta_canonical_url %}{% endblock %} 
 	<link rel="stylesheet" href="{{ THEME_URL }}media/css/style.css" type="text/css" media="screen" />  
 	<link href="{{ STATIC_URL }}css/global_tendenci.css" rel="stylesheet" type="text/css">
 	{% block extra_head %}{% endblock %}

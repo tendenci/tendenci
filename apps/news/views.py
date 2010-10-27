@@ -132,6 +132,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
         'title': news.get_title(),
         'description': news.get_description(),
         'keywords': news.get_keywords(),
+        'canonical_url': news.get_canonical_url(),
     }
     news.meta = MetaTags(**defaults)
 

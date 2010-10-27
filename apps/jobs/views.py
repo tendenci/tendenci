@@ -247,6 +247,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.ht
         'title': job.get_title(),
         'description': job.get_description(),
         'keywords': job.get_keywords(),
+        'canonical_url': job.get_canonical_url(),
     }
     job.meta = MetaTags(**defaults)
 

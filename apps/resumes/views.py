@@ -187,6 +187,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta
         'title': resume.get_title(),
         'description': resume.get_description(),
         'keywords': resume.get_keywords(),
+        'canonical_url': resume.get_canonical_url(),
     }
     resume.meta = MetaTags(**defaults)
 
