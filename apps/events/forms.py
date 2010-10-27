@@ -189,6 +189,20 @@ class Reg8nEditForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(),
         initial=[1,2,3]) # first three items (inserted via fixture)
 
+    def clean(self):
+
+        early_price = self.cleaned_data["early_price"]
+        regular_price = self.cleaned_data["regular_price"]
+        late_price = self.cleaned_data["late_price"]
+
+        # if price is zero
+        if sum([early_price, regular_price, late_price]) == 0:
+            # remove payment_method error
+            if "payment_method" in self._errors:
+                self._errors.pop("payment_method")
+
+        return self.cleaned_data
+
     early_dt = SplitDateTimeField(label=_('Early Date/Time'))
     regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
     late_dt = SplitDateTimeField(label=_('Late Date/Time'))
@@ -198,8 +212,7 @@ class Reg8nEditForm(forms.ModelForm):
 
 class Reg8nForm(forms.Form):
     """
-    Registration form.  People who want to attend the event
-    register using this form.
+    Registration form.
     """
     name = forms.CharField(max_length=50)
     username = forms.CharField(max_length=50, required=False)
@@ -217,8 +230,6 @@ class Reg8nForm(forms.Form):
 
         self.fields['price'] = forms.DecimalField(
             widget=forms.HiddenInput(), initial=event.registration_configuration.price)
-
-        # print "blah", user and user.is_authenticated()
 
         if user and user.is_authenticated():
             user_fields = ['name', 'username', 'email']
@@ -239,12 +250,6 @@ class MessageAddForm(forms.ModelForm):
     
     def __init__(self, event_id=None, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
-        
-        #self.fields['events'] = forms.ModelChoiceField(queryset=Event.objects.filter(status=1, 
-        #                                                        status_detail='active').order_by('title'),
-        #                                                         empty_label='Select One', 
-        #                                                         initial=event_id,
-        #                                                         required=True)
        
 
 
