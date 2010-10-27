@@ -3,7 +3,6 @@ from django.utils.text import unescape_entities
 from meta.utils import generate_meta_keywords
 from site_settings.utils import get_setting
 from django.utils.text import truncate_words
-from django.utils.safestring import mark_safe
 
 from categories.models import Category
 
