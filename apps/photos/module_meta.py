@@ -93,10 +93,16 @@ class PhotoMeta():
 
         return value
 
+    def get_canonical_url(self):
+        object = self.object
+        return "asdf"
+
     def get_meta(self, object, name):
 
         self.object = object
         self.name = name
+
+        print "name", name
 
         if name == 'title':
             if object.meta and object.meta.title: return object.meta.title
@@ -107,6 +113,9 @@ class PhotoMeta():
         elif name =='keywords':
             if object.meta and object.meta.keywords: return object.meta.keywords
             else: return self.get_keywords()
+        elif name =='canonical_url':
+            if object.meta and object.meta.canonical_url: return object.meta.canonical_url
+            else: return self.get_canonical_url()
         return ''
     
     
