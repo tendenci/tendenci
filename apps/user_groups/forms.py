@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Permission
 
 from user_groups.models import Group, GroupMembership
 from perms.forms import TendenciBaseForm
@@ -9,8 +11,44 @@ from perms.utils import is_admin
 APPS = ['profiles', 'user_groups', 'articles', 
         'news', 'pages', 'jobs', 'locations', 
         'stories', 'actions', 'photos', 'entities',
-        'locations', 'files', 'directories', 'resumes']
+        'locations', 'files', 'directories', 'resumes',
+        'help_files']
 
+class GroupAdminForm(TendenciBaseForm):
+    email_recipient = forms.CharField(label="Recipient Email", required=False, max_length=100, 
+        help_text='Recipient email(s), comma delimited') 
+    show_as_option = forms.BooleanField(initial=1, label="Show Option", 
+        help_text='Display this user group as an option to logged-in users.',required=False)
+
+    class Meta:
+        model = Group
+        fields = ('name',
+          'label',
+          'entity',
+          'type',
+          'email_recipient',
+          'show_as_option',
+          'allow_self_add',
+          'allow_self_remove',
+          'description',
+          'auto_respond',
+          'auto_respond_template',
+          'auto_respond_priority',
+          'notes',
+          'allow_anonymous_view',
+          'members',
+          'permissions',
+          'user_perms',
+          'status',
+          'status_detail',
+          )
+
+    def __init__(self, *args, **kwargs):
+        super(GroupAdminForm, self).__init__(*args, **kwargs)   
+        # filter out the unwanted permissions,
+        content_types = ContentType.objects.exclude(app_label='auth') 
+        self.fields['permissions'].queryset = Permission.objects.filter(content_type__in=content_types)  
+       
 class GroupForm(TendenciBaseForm):
     STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
     email_recipient = forms.CharField(label="Recipient Email", required=False, max_length=100, 
@@ -100,8 +138,6 @@ class GroupPermissionForm(forms.ModelForm):
         super(GroupPermissionForm, self).__init__(*args, **kwargs)
         # filter out the unwanted permissions,
         # only display the permissions for the apps in APPS
-        from django.contrib.contenttypes.models import ContentType
-        from django.contrib.auth.models import Permission
         content_types = ContentType.objects.filter(app_label__in=APPS)
         
         self.fields['permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
