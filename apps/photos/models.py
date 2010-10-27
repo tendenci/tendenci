@@ -107,7 +107,7 @@ class Image(ImageModel, TendenciBaseModel):
         return ("photo", [self.pk, photo_set.pk])
 
     def meta_keywords(self):
-        pass
+        return ''
 #        from base.utils import generate_meta_keywords
 #        keywords = caching.cache_get(PHOTOS_KEYWORDS_CACHE, key=self.pk)    
 #        if not keywords:
