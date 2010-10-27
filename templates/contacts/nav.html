@@ -22,9 +22,9 @@
 	</li>
 
 	<li>
-		<span>{% firstof MODULE_CONTACTS_LABEL 'Conacts' %}</span>
+		<span>{% firstof MODULE_CONTACTS_LABEL 'Contacts' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url contact.search %}">{% firstof MODULE_CONTACTS_LABEL 'Conacts' %}:</a></li> 
+			<li><a href="{% url contact.search %}">{% firstof MODULE_CONTACTS_LABEL 'Contacts' %}:</a></li> 
 			{% if nav_object %}
 				{% if can_view_contact %}
 				<li><a href="{% url contact nav_object.pk %}">View</a></li>
