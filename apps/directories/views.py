@@ -165,6 +165,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
         'title': directory.get_title(),
         'description': directory.get_description(),
         'keywords': directory.get_keywords(),
+        'canonical_url': directory.get_canonical_url(),
     }
     directory.meta = MetaTags(**defaults)
 
