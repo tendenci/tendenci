@@ -143,6 +143,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
         'title': page.get_title(),
         'description': page.get_description(),
         'keywords': page.get_keywords(),
+        'canonical_url': page.get_canonical_url(),
     }
     page.meta = MetaTags(**defaults)
 
