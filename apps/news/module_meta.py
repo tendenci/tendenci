@@ -161,6 +161,10 @@ class NewsMeta():
 
         return value
 
+    def get_canonical_url(self):
+        object = self.object
+        return object.get_absolute_url()
+
     def get_meta(self, object, name):
 
         self.object = object
@@ -175,6 +179,9 @@ class NewsMeta():
         elif name =='keywords':
             if object.meta and object.meta.keywords: return object.meta.keywords
             else: return self.get_keywords()
+        elif name =='canonical_url':
+            if object.meta and object.meta.canonical_url: return object.meta.canonical_url
+            else: return self.get_canonical_url()
         return ''
     
     
