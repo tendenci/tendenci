@@ -13,15 +13,26 @@ class ObjectPermBackend(object):
     supports_object_permissions = True
     supports_anonymous_user = True
 
-    # TODO: Model, login attribute name and password attribute name should be
-    # configurable.
-    def authenticate(self, username=None, password=None):
-        try:
-            user = User.objects.get(username=username)
-            if user.check_password(password):
-                return user
-        except User.DoesNotExist:
-            return None
+    def authenticate(self, username=None, password=None, user=None):
+        """
+            Modified version of django's authenticate.
+            
+            Will accept a user object, bypassing the password check.
+            Returns the user for auto_login purposes
+        """
+        if user:
+            if hasattr(user,'auto_login'):
+                if not user.is_anonymous() and user.auto_login:
+                    return user
+            else:
+                return None
+        else:
+            try:
+                user = User.objects.get(username=username)
+                if user.check_password(password):
+                    return user
+            except User.DoesNotExist:
+                return None
 
     def get_group_permissions(self, user_obj):
         """
