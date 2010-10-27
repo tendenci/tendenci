@@ -35,6 +35,9 @@ class Group(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_group","Can view group"),)
+        verbose_name = "User Group"
+        verbose_name_plural = "User Groups"
+        
             
     def __unicode__(self):
         if not self.label:
@@ -73,8 +76,8 @@ class GroupMembership(models.Model):
     owner_username = models.CharField(max_length=50, editable=False)
     status = models.BooleanField(default=True)
     status_detail = models.CharField(max_length=50, choices=(
-                                                             ('active','Active'),
-                                                             ('inactive','Inactive'),),
+                                     ('active','Active'),
+                                     ('inactive','Inactive'),),
                                      default='active')
     
     create_dt = models.DateTimeField(auto_now_add=True, editable=False)
@@ -85,4 +88,6 @@ class GroupMembership(models.Model):
     
     class Meta:
         unique_together = ('group', 'member',)
+        verbose_name = "Group Membership"
+        verbose_name_plural = "Group Memberships"
 

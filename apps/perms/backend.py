@@ -29,10 +29,20 @@ class ObjectPermBackend(object):
         groups.
         """
         if not hasattr(user_obj, '_group_perm_cache'):
-            group_perms = Permission.objects.filter(group_permissions__members=user_obj
+            # tendenci user_groups
+            group_perms = Permission.objects.filter(group_permissions__members=user_obj,
                 ).values_list('content_type__app_label', 'codename'
                 ).order_by()
-            user_obj._group_perm_cache = set(["%s.%s" % (ct, name) for ct, name in group_perms])
+            group_perms_1 = ["%s.%s" % (ct, name) for ct, name in group_perms]
+
+            # django auth groups
+            group_perms = Permission.objects.filter(group__user=user_obj,
+                ).values_list('content_type__app_label', 'codename'
+                ).order_by()
+            group_perms_2 = ["%s.%s" % (ct, name) for ct, name in group_perms]      
+
+            user_obj._group_perm_cache = set(group_perms_1 + group_perms_2)
+
         return user_obj._group_perm_cache
 
     def get_all_permissions(self, user_obj):
