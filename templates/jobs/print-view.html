@@ -4,6 +4,7 @@
 {% block title %}{{ jobs.get_title }}{% endblock %}
 {% block meta_description %}{{ jobs.get_description }}{% endblock %}
 {% block meta_keywords %}{{ jobs.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ job.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
 <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css" />
