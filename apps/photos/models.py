@@ -10,6 +10,8 @@ from photologue.models import *
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from photos.managers import PhotoManager, PhotoSetManager
+from meta.models import Meta as MetaTags
+from photos.module_meta import PhotoMeta
 
 class PhotoSet(TendenciBaseModel):
     """
@@ -80,6 +82,17 @@ class Image(ImageModel, TendenciBaseModel):
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField()
+
+    # html-meta tags
+    meta = models.OneToOneField(MetaTags, blank=True, null=True)
+
+    def get_meta(self, name):
+        """
+        This method is standard across all models that are
+        related to the Meta model.  Used to generate dynamic
+        methods coupled to this instance.
+        """    
+        return PhotoMeta().get_meta(self, name)
 
     class Meta:
         permissions = (("view_image","Can view image"),)
