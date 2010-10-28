@@ -6,7 +6,12 @@
 
 {% block body %}
 {% if account %}
-Your account has been activated. <a href="{% url auth_login %}">Log in</a> now.<br />
+Your account has been activated.
+{% if not user.is_authenticated %}
+	<a href="{% url auth_login %}">Log in</a> now.<br />
+{% else %}
+	<a href="{% url dashboard %}">Go to the dashboard</a><br />
+{% endif %}
 {% else %}
 Activation failed. <br /><br />
 {% endif %}

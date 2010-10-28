@@ -9,7 +9,10 @@
 
 {% block meta_description %}{{ photo.title|striptags|truncatewords:20 }}{% endblock %}
 {% block meta_keywords %}{{ photo.meta_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ photo.get_canonical_url }}" />{% endblock %}
+
 {% block title %}{% firstof photo.title "Untitled" %} - {% blocktrans %}Photo{% endblocktrans %}{% endblock %}
+
 {% block extra_head %}
 <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
 {% endblock %}
