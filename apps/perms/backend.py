@@ -13,15 +13,26 @@ class ObjectPermBackend(object):
     supports_object_permissions = True
     supports_anonymous_user = True
 
-    # TODO: Model, login attribute name and password attribute name should be
-    # configurable.
-    def authenticate(self, username=None, password=None):
-        try:
-            user = User.objects.get(username=username)
-            if user.check_password(password):
-                return user
-        except User.DoesNotExist:
-            return None
+    def authenticate(self, username=None, password=None, user=None):
+        """
+            Modified version of django's authenticate.
+            
+            Will accept a user object, bypassing the password check.
+            Returns the user for auto_login purposes
+        """
+        if user:
+            if hasattr(user,'auto_login'):
+                if not user.is_anonymous() and user.auto_login:
+                    return user
+        else:
+            try:
+                user = User.objects.get(username=username)
+                if user.check_password(password):
+                    return user
+            except User.DoesNotExist:
+                return None
+        
+        return None
 
     def get_group_permissions(self, user_obj):
         """
@@ -29,10 +40,20 @@ class ObjectPermBackend(object):
         groups.
         """
         if not hasattr(user_obj, '_group_perm_cache'):
-            group_perms = Permission.objects.filter(group_permissions__members=user_obj
+            # tendenci user_groups
+            group_perms = Permission.objects.filter(group_permissions__members=user_obj,
                 ).values_list('content_type__app_label', 'codename'
                 ).order_by()
-            user_obj._group_perm_cache = set(["%s.%s" % (ct, name) for ct, name in group_perms])
+            group_perms_1 = ["%s.%s" % (ct, name) for ct, name in group_perms]
+
+            # django auth groups
+            group_perms = Permission.objects.filter(group__user=user_obj,
+                ).values_list('content_type__app_label', 'codename'
+                ).order_by()
+            group_perms_2 = ["%s.%s" % (ct, name) for ct, name in group_perms]      
+
+            user_obj._group_perm_cache = set(group_perms_1 + group_perms_2)
+
         return user_obj._group_perm_cache
 
     def get_all_permissions(self, user_obj):

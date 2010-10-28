@@ -37,6 +37,9 @@
 				{% if can_edit_event %}
 				<li><a href="{% url event.edit nav_object.pk %}">Edit</a></li>
 				<li><a href="{% url event.edit.meta nav_object.pk %}">Edit Meta</a></li>
+
+				<li><a href="{% url event.registrant.search nav_object.pk %}">Registrants</a></li>
+				<li><a href="{% url event.registrant.roster nav_object.pk %}">Registrant Roster</a></li>
 				<li><a href="{% url event.message nav_object.pk %}">E-mail Registrants</a></li>
 				{% endif %}
 

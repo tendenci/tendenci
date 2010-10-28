@@ -12,7 +12,7 @@ class Meta(models.Model):
     title = models.CharField(max_length=200, blank=True)
     keywords = models.TextField(blank=True)
     description = models.TextField(blank=True)
-    canonical_url = models.URLField(max_length=500, blank=True)
+    canonical_url = models.CharField(max_length=500, blank=True)
 
     update_dt = models.DateTimeField(auto_now=True)
     create_dt = models.DateTimeField(auto_now_add=True)
@@ -45,7 +45,7 @@ class Meta(models.Model):
         Dynamically create Meta methods.
         self.get_<type>() method
         """
-        for field in ('keywords','title','description'):
+        for field in ('keywords','title','description', 'canonical_url'):
             setattr(self,'get_%s' % field, curry(self.__get_meta, field))
 
 
@@ -65,11 +65,11 @@ def get_meta_template(object, meta_label):
 
 def add_remote_methods(sender, instance, signal, *args, **kwargs):
     """
-    A listener that calls 'add_accessor_method' on
-    post-init signal
+    A listener that calls 'add_accessor_method' on post-init signal
     """
     if hasattr(instance, 'meta'):
-        for meta_label in ('keywords','title','description'):
+        # make methods (e.g. get_keywords, get_title, etc ...)
+        for meta_label in ('keywords','title','description', 'canonical_url'):
             setattr(instance,'get_%s' % meta_label, curry(get_meta_template, instance, meta_label))
 # connect the add_accessor_methods function to the post_init signal
 post_init.connect(add_remote_methods)
