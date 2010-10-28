@@ -435,7 +435,7 @@ def photos_batch_add(request, photoset_id=0):
         raise Http403
 
     if request.method == 'POST':
-        
+
         for field_name in request.FILES:
             uploaded_file = request.FILES[field_name]
 
@@ -454,6 +454,9 @@ def photos_batch_add(request, photoset_id=0):
                 'status_detail': 'active',
             })
             photo_form = PhotoUploadForm(request.POST, request.FILES, user=request.user)
+
+            print "photo_form.is_valid()", photo_form.is_valid()
+            print "photo_form.errors", photo_form.errors
 
             if photo_form.is_valid():
                 # save photo
