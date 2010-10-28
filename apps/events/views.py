@@ -22,7 +22,7 @@ from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants
 from perms.models import ObjectPermission
 from perms.utils import get_administrators
-from perms.utils import has_perm
+from perms.utils import has_perm, get_notice_recipients
 from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
@@ -223,7 +223,14 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
                 if all([form.is_valid() for form in forms]):
                     messages.add_message(request, messages.INFO, 'Successfully updated %s' % event)
-                    if notification: notification.send(get_administrators(),'event_edited', {'object': event, 'request': request})
+                    # notification to administrator(s) and module recipient(s)
+                    recipients = get_notice_recipients('module', 'events', 'eventrecipients')
+                    if recipients and notification:
+                        notification.send(recipients, 'event_edited', {
+                            'object': event, 
+                            'request': request
+                        })
+
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
         else:
 
@@ -259,6 +266,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
         'title': event.get_title(),
         'description': event.get_description(),
         'keywords': event.get_keywords(),
+        'canonical_url': event.get_canonical_url(),
     }
     event.meta = MetaTags(**defaults)
 
@@ -356,7 +364,14 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     )
 
                     messages.add_message(request, messages.INFO, 'Successfully added %s' % event)
-                    if notification: notification.send(get_administrators(),'event_added', {'object': event, 'request': request})
+                    # notification to administrator(s) and module recipient(s)
+                    recipients = get_notice_recipients('module', 'events', 'eventrecipients')
+                    if recipients and notification:
+                        notification.send(recipients, 'event_edited', {
+                            'object': event, 
+                            'request': request
+                        })
+
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
 
                 return render_to_response(template_name, {

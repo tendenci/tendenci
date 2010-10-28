@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from entities.models import Entity
 from perms.models import TendenciBaseModel
+from base.fields import SlugField
 from tinymce import models as tinymce_models
 from managers import HelpFileManager
 
@@ -25,7 +26,8 @@ class HelpFile(TendenciBaseModel):
     """Question/Answer infromation"""
     LEVELS = ('basic', 'intermediate', 'advanced', 'expert')
     LEVEL_CHOICES = [(i,i) for i in LEVELS]
-    
+
+    slug = SlugField(_('URL Path'), unique=True)
     topics = models.ManyToManyField(Topic)
     entity = models.ForeignKey(Entity, null=True, blank=True)
     question = models.CharField(max_length=500)
@@ -44,7 +46,7 @@ class HelpFile(TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("help_file.details", [self.pk])
+        return ("help_file.details", [self.slug])
                 
     def __unicode__(self):
         return self.question
@@ -53,8 +55,25 @@ class HelpFile(TendenciBaseModel):
         "Template helper: {% if file.level_is.basic %}..."
         return dict([i, self.level==i] for i in HelpFile.LEVELS)
 
+
 class Request(models.Model):
     question = models.TextField()
     
     def __unicode__(self):
         return self.question
+    
+
+class HelpFileMigration(models.Model):
+    """
+        Unmanaged model to map old tendenci 4 id
+        to the new tendenci 5 id
+    """
+    t4_id = models.IntegerField()
+    t5_id = models.IntegerField()
+    
+    class Meta:
+        managed = False
+        db_table = 'mig_help_files_helpfile_t4_to_t5'
+        
+        
+    
