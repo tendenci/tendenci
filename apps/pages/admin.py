@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
@@ -24,14 +23,8 @@ class PageAdmin(admin.ModelAdmin):
         ('Administrative', {'fields': (
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
+    prepopulated_fields = {'slug': ['title']}
     form = PageAdminForm
-    
-    class Media:
-        js = (
-          '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
-          '%sjs/slug.js' % settings.STATIC_URL,
-          '%sjs/apps/slug-pages.js' % settings.STATIC_URL,
-        )
 
     def link(self, obj):
         return '<a href="%s" title="%s">%s</a>' % (
