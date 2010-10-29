@@ -5,7 +5,7 @@
 	<td align="right" width="10%">{{ acctran.account.account_number }}</td>
 	<td align="right" width="10%">{% if acctran.amount > 0 %}{{acctran.amount|format_currency}}{% else %}&nbsp;{% endif %}</td>
 	<td align="right" width="10%">{% if acctran.amount < 0 %}{{acctran.credit|format_currency}}{% else %}&nbsp;{% endif %}</td>
-	<td width="30%">{{acctran.create_dt|date:'N j, Y h:i a'}}</td>
+	<td width="30%">{{acctran.create_dt|date:'long'}}</td>
 	<td width="40%">{{ acctran.account.description }}</td>
 	</tr>
 {% endfor %}
