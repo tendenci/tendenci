@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load email_tags %}
 {% load perm_tags %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
@@ -32,7 +33,7 @@
             <div class="content-type">Content type: {{ email.content_type }}</div>
             <div class="content">{{ email.body|striptags|truncatewords:30 }}</div>
 			<div class="meta">
-            	<div class="submitted">Created on {{ email.create_dt|date:"D d M Y P" }} by {{ email.creator }}</div>
+            	<div class="submitted">Created on {{ email.create_dt|date:"long" }} by {{ email.creator }}</div>
             </div>
 
             <!-- delete-email form -->

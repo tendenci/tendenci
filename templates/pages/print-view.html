@@ -1,5 +1,6 @@
 {% extends "pages/base-print.html" %}
 {% load page_tags %}
+{% load base_filters %}
 
 {% block title %}{{ page.get_title }}{% endblock %}
 {% block meta_description %}{{ page.get_description }}{% endblock %}
@@ -27,7 +28,7 @@
         <h2>{{ page.title }}</h2>
         <div class="content">{{ page.content|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ page.create_dt|date:"D d M Y P" }} by {{ page.creator }}</div>
+            <div class="submitted">Submitted on {{ page.create_dt|date:"long" }} by {{ page.creator }}</div>
         </div>
     </div>
 
