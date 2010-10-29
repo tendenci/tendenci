@@ -53,7 +53,7 @@ class HelpFileAdmin(admin.ModelAdmin):
                                                    object.pk, request.user),
             'description': '%s added' % object._meta.object_name,
             'user': request.user,
-            'request': object,
+            'request': request,
             'instance': object,
         }
         EventLog.objects.log(**log_defaults)
