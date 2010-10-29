@@ -33,7 +33,46 @@ class PageAdmin(admin.ModelAdmin):
             obj.slug                                         
         )
     link.allow_tags = True
-    
+
+    def log_deletion(self, request, object, object_repr):
+        super(PageAdmin, self).log_deletion(request, object, object_repr)
+        log_defaults = {
+            'event_id' : 583000,
+            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, 
+                                                    object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)           
+
+    def log_change(self, request, object, message):
+        super(PageAdmin, self).log_change(request, object, message)
+        log_defaults = {
+            'event_id' : 582000,
+            'event_data': '%s (%d) edited by %s' % (object._meta.object_name, 
+                                                    object.pk, request.user),
+            'description': '%s edited' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)               
+
+    def log_addition(self, request, object):
+        super(PageAdmin, self).log_addition(request, object)
+        log_defaults = {
+            'event_id' : 581000,
+            'event_data': '%s (%d) added by %s' % (object._meta.object_name, 
+                                                   object.pk, request.user),
+            'description': '%s added' % object._meta.object_name,
+            'user': request.user,
+            'request': object,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
+            
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
 
@@ -45,31 +84,7 @@ class PageAdmin(admin.ModelAdmin):
             instance.creator = request.user
             instance.creator_username = request.user.username
             instance.owner = request.user
-            instance.owner_username = request.user.username
-        
-        # event logs
-        if not change:
-            log_defaults = {
-                'event_id' : 581000,
-                'event_data': '%s (%d) added by %s' % (instance._meta.object_name, 
-                                                       instance.pk, request.user),
-                'description': '%s added' % instance._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': instance,
-            }
-            EventLog.objects.log(**log_defaults)
-        else:
-            log_defaults = {
-                'event_id' : 582000,
-                'event_data': '%s (%d) edited by %s' % (instance._meta.object_name, 
-                                                        instance.pk, request.user),
-                'description': '%s edited' % instance._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': instance,
-            }
-            EventLog.objects.log(**log_defaults)      
+            instance.owner_username = request.user.username    
                 
         # save the object
         instance.save()
