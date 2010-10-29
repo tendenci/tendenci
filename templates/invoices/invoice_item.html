@@ -22,7 +22,7 @@
 	          	<td><a href="{% url make_payments.views.view mp.id %}">{{mp.id}}</a></td>
 	          	<td>{{mp.first_name}}</td>
 	          	<td>{{mp.last_name}}</td>
-	          	<td>{{mp.create_dt|date:'N j, Y h:i a'}}</td>
+	          	<td>{{mp.create_dt|date:'long'}}</td>
 	          	<td>{{mp.payment_amount|format_currency}}</td>
 	          	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
 	          </tr>  
@@ -47,7 +47,7 @@
 	           <tr>
 	          	<td><a href="{# eloy - fill out regration view link #}">{{reg8n.id}}</a></td>
 	          	<td colspan="2"><a href="{# url events.views.index reg8n.event.id #}">{{reg8n.event.title|truncatewords:5}}</a></td>
-	          	<td>{{reg8n.event.start_dt|date:'N j, Y h:i a'}}</td>
+	          	<td>{{reg8n.event.start_dt|date:'long'}}</td>
 	          	<td>{{reg8n.amount_paid|format_currency}}</td>
 	          	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
 	          </tr> 
@@ -74,7 +74,7 @@
 		          	<td><a href="{% url job job.slug %}">{{job.id}}</a></td>
 		          	<td>{{job.contact_name}}</td>
 		          	<td><a href="{% url job job.slug %}">{{job.title|truncatewords:5}}</a></td>
-		          	<td>{{job.activation_dt|date:'N j, Y h:i a'}}</td>
+		          	<td>{{job.activation_dt|date:'long'}}</td>
 		          	<td>{{invoice.total|format_currency}}</td>
 		          	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
 		          </tr>  
@@ -102,7 +102,7 @@
           	<td><a href="{% url directory directory.slug %}">{{directory.id}}</a></td>
           	<td>{{directory.first_name}} {{directory.last_name}}</td>
           	<td><a href="{% url directory directory.slug %}">{{directory.headline|truncatewords:5}}</a></td>
-          	<td>{{directory.activation_dt|date:'N j, Y h:i a'}}</td>
+          	<td>{{directory.activation_dt|date:'long'}}</td>
           	<td>{{invoice.total|format_currency}}</td>
           	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
           </tr> 
@@ -129,7 +129,7 @@
 	          	<td><a href="{% url donations.views.view donation.id %}">{{donation.id}}</a></td>
 	          	<td>{{donation.first_name}}</td>
 	          	<td>{{donation.last_name}}</td>
-	          	<td>{{donation.create_dt|date:'N j, Y h:i a'}}</td>
+	          	<td>{{donation.create_dt|date:'long'}}</td>
 	          	<td>{{donation.donation_amount|format_currency}}</td>
 	          	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
 	          </tr> 
