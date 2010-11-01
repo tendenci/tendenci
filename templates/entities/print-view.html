@@ -1,5 +1,6 @@
 {% extends "entities/base.html" %}
 {% load entity_tags %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}Print{% endblock %}
 
@@ -15,7 +16,7 @@
         <h2>{{ entity.entity_name }}</h2>
         <div class="content">{{ entity.entity_name|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ entity.create_dt|date:"D d M Y P" }} by {{ entity.creator }}</div>
+            <div class="submitted">Submitted on {{ entity.create_dt|date:"long" }} by {{ entity.creator }}</div>
         </div>
     </div>
 

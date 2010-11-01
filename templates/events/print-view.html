@@ -1,5 +1,6 @@
 {% extends "events/base-print.html" %}
 {% load event_tags %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}Print - {{ event.get_title }}{% endblock %}
 {% block meta_description %}{{ event.get_description }}{% endblock %}
@@ -26,7 +27,7 @@
         <h2>{{ event.title }}</h2>
         <div class="content">{{ event.description|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ event.create_dt|date:"D d M Y P" }} by {{ event.creator }}</div>
+            <div class="submitted">Submitted on {{ event.create_dt|date:"long" }} by {{ event.creator }}</div>
         </div>
     </div>
 

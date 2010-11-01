@@ -1,5 +1,6 @@
 {% extends "event_logs/base.html" %}
 {% load event_log_tags %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}{{ event_log.event_data }}{% endblock %}
 
@@ -39,10 +40,10 @@
             <p>Request method : {{ event_log.request_method  }}</p>
             <p>Query string : {{ event_log.query_string  }}</p>
             <p>Robot : {{ event_log.robot  }}</p>
-            <p>Create dt : {{ event_log.create_dt  }}</p>
+            <p>Create dt : {{ event_log.create_dt|date:"short"  }}</p>
         </div>
         <div class="meta">
-            <div class="submitted">Logged on {{ event_log.create_dt|date:"D d M Y P" }}</div>
+            <div class="submitted">Logged on {{ event_log.create_dt|date:"long" }}</div>
         </div>
     </div>
 

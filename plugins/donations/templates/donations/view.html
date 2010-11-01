@@ -1,6 +1,7 @@
 {% extends "donations/base.html" %}
 {% load i18n %}
 {% load donation_tags %}
+{% load base_filters %}
 
 {% block title %}View a Donation{% endblock %}
 
@@ -41,7 +42,7 @@
 <div class="clear-left"></div>
 <div class="label">Phone:</div><div>{{ donation.phone }}</div>
 <div class="clear-left"></div>
-<div class="label">Email:</div><div><a href="mailto:{{ donation.email }}">{{ donation.email }}</a></div>
+<div class="label">Email:</div><div>{{ donation.email|obfuscate_email }}</div>
 <div class="clear-left"></div>
 <br />
 <div class="label">Referred By:</div><div>{{ donation.referral_source }}</div>
@@ -49,7 +50,7 @@
 <div class="label">Comments:</div><div>{{ donation.comments|safe }}</div>
 <div class="clear-left"></div>
 <br />
-<div class="label">Create Date:</div><div>{{ donation.create_dt|date:'N j, Y h:i a' }}</div>
+<div class="label">Create Date:</div><div>{{ donation.create_dt|date:"long" }}</div>
 <div class="clear-left"></div>
 </div>
 </div>
