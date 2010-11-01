@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load contact_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
@@ -48,7 +49,7 @@
             <h2><a href="{% url contact contact.pk %}">{% firstof contact "No Name" %}</a></h2>
             <div class="content">{{ contact.message|linebreaks }}</div>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ contact.create_dt|date:"D d M Y P" }}</div>
+            	<div class="submitted">Submitted on {{ contact.create_dt|date:"long" }}</div>
             </div>
 
             <!-- delete-contact form -->

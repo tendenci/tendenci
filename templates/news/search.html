@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load news_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
@@ -39,7 +40,7 @@
 				<div class="content">{{ n.body|striptags|truncatewords:20|safe }}</div>	
 			{% endif %}
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ n.create_dt|date:"D d M Y P" }} by {{ n.creator }}</div>
+            	<div class="submitted">Submitted on {{ n.create_dt|date:"long" }} by {{ n.creator }}</div>
             </div>
 
             <!-- delete-article form -->

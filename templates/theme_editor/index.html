@@ -34,8 +34,8 @@
             	{% if archives %}
                 	<div id="file_versions">
                     	{% for archive in archives %}
-                    		<div data-string="{{ archive.file_name }} versioned on {{ archive.create_dt }} {{ archive.create_dt }} by {{ archive.author}}" title="Click to open in the text area above" class="archived_file archived_file_{{ archive.id }}" onclick="open_archive({{ archive.id }}); return false;">
-                    			<a href="#">{{ archive.file_name }}  versioned on {{ archive.create_dt }} {{ archive.create_dt }} by {{ archive.author}}</a>
+                    		<div data-string="{{ archive.file_name }} versioned on {{ archive.create_dt|date:'long' }} by {{ archive.author}}" title="Click to open in the text area above" class="archived_file archived_file_{{ archive.id }}" onclick="open_archive({{ archive.id }}); return false;">
+                    			<a href="#">{{ archive.file_name }}  versioned on {{ archive.create_dt|date:"long" }} by {{ archive.author}}</a>
                     		</div>
                         {% endfor %}
                     </div>
