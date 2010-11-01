@@ -33,10 +33,12 @@ class CorporateMembershipType(TendenciBaseModel):
                                                                  "equal to the threashold limit receive the " + \
                                                                  "threshold prices."))
 
-    sort_order = models.IntegerField(_('Sort Order'), default=0)
+    order = models.IntegerField(_('Order'), default=0)
     
     expiration_method = models.CharField(_('Expiration Method'), max_length=50)
     expiration_method_custom_dt = models.DateTimeField()
+    
+    cma = models.ForeignKey("CorporateMembershipApplication")
 
     
     def __unicode__(self):
@@ -72,6 +74,8 @@ class CorporateMembership(TendenciBaseModel):
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"))
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"))
     payment_method = models.CharField(_("Payment Method"), max_length=50)
+    
+    cma = models.ForeignKey("CorporateMembershipApplication")
     
     class Meta:
         verbose_name = _("Corporate Membership")
@@ -117,9 +121,9 @@ class CorporateMembershipArchive(models.Model):
     
     create_dt = models.DateTimeField()
     update_dt = models.DateTimeField()
-    creator = models.ForeignKey(User, editable=False, related_name="corp_memb_archives_creator")
+    creator_id = models.IntegerField(default=0)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="corp_memb_archives_owner")    
+    owner_id = models.IntegerField(default=0)   
     owner_username = models.CharField(max_length=50)
     status = models.BooleanField()
     status_detail = models.CharField(max_length=50)
@@ -165,7 +169,7 @@ class CorporateMembershipApplication(TendenciBaseModel):
         
 class CorporateMembershipApplicationPage(models.Model):
     cma = models.ForeignKey("CorporateMembershipApplication", related_name="pages")
-    sort_order = models.IntegerField(_("Sort Order"), default=0)
+    order = models.IntegerField(_("Order"), default=0)
  
 class CorporateMembershipApplicationSection(models.Model):
     cma = models.ForeignKey("CorporateMembershipApplication", related_name="sections")
@@ -175,7 +179,7 @@ class CorporateMembershipApplicationSection(models.Model):
     description = models.CharField(_("Description"), max_length=500)
     admin_only = models.BooleanField(_("Admin Only"), default=0)
     
-    sort_order = models.IntegerField(_("Sort Order"), default=0)
+    order = models.IntegerField(_("Order"), default=0)
     css_class = models.CharField(_("CSS Class Name"), max_length=50)
     
        
@@ -196,7 +200,7 @@ class CorporateMembershipApplicationField(models.Model):
     admin_only = models.BooleanField(_("Admin Only"), default=0)
     editor_only = models.BooleanField(_("Editor Only"), default=0) 
     
-    sort_order = models.IntegerField(_("Sort Order"), default=0)
+    order = models.IntegerField(_("Order"), default=0)
     css_class = models.CharField(_("CSS Class Name"), max_length=50)
 
 
