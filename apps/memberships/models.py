@@ -43,7 +43,7 @@ class MembershipType(TendenciBaseModel):
     
     require_approval = models.BooleanField(_('Require Approval'), default=1)
     renewal = models.BooleanField(default=0)
-    sort_order = models.IntegerField(_('Sort Order'), default=0)
+    order = models.IntegerField(_('Order'), default=0)
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
     
     expiration_method = models.CharField(_('Expiration Method'), max_length=50)
@@ -51,6 +51,8 @@ class MembershipType(TendenciBaseModel):
     
     corporate_membership_only = models.BooleanField(_('Corporate Membership Only'), default=0)
     corporate_membership_type_id = models.IntegerField(default=0)
+    
+    ma = models.ForeignKey("MembershipApplication")
     
     def __unicode__(self):
         return self.name
@@ -82,7 +84,7 @@ class Membership(TendenciBaseModel):
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
     # add membership application id - so we can support multiple applications
-    ma_id = models.IntegerField()
+    ma = models.ForeignKey("MembershipApplication")
     
     class Meta:
         verbose_name = _("Membership")
@@ -109,9 +111,9 @@ class MembershipArchive(models.Model):
     join_dt = models.DateTimeField() 
     renew_dt = models.DateTimeField() 
     expiration_dt = models.DateTimeField()
-    #approved = models.BooleanField(default=0)
-    #approved_denied_dt = models.DateTimeField()
-    #approved_denied_user = models.ForeignKey(User)
+    approved = models.BooleanField(default=0)
+    approved_denied_dt = models.DateTimeField()
+    approved_denied_user_id =  models.IntegerField(default=0)
     # maybe change to foreign key to corporate_membership
     corporate_membership_id = models.IntegerField(default=0)
     payment_method = models.CharField(max_length=50)
@@ -121,9 +123,10 @@ class MembershipArchive(models.Model):
     # these fields should be copied from Membership table
     create_dt = models.DateTimeField()
     update_dt = models.DateTimeField()
-    creator = models.ForeignKey(User, editable=False, related_name="memb_archives_creator")
+    #creator = models.ForeignKey(User, editable=False, related_name="memb_archives_creator")
+    creator_id = models.IntegerField(default=0)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="memb_archives_owner")    
+    owner_id = models.IntegerField(default=0)   
     owner_username = models.CharField(max_length=50)
     status = models.BooleanField()
     status_detail = models.CharField(max_length=50)
@@ -170,7 +173,7 @@ class MembershipApplicationSection(models.Model):
     description = models.CharField(_("Description"), max_length=500)
     admin_only = models.BooleanField(_("Admin Only"), default=0)
     
-    sort_order = models.IntegerField(_("Sort Order"), default=0)
+    order = models.IntegerField(_("Order"), default=0)
     css_class = models.CharField(_("CSS Class Name"), max_length=50)
     
        
@@ -191,7 +194,7 @@ class MembershipApplicationField(models.Model):
     admin_only = models.BooleanField(_("Admin Only"), default=0)
     editor_only = models.BooleanField(_("Editor Only"), default=0) 
     
-    sort_order = models.IntegerField(_("Sort Order"), default=0)
+    order = models.IntegerField(_("Order"), default=0)
     css_class = models.CharField(_("CSS Class Name"), max_length=50)
 
 
