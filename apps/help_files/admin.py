@@ -17,6 +17,7 @@ class HelpFileAdmin(admin.ModelAdmin):
         ('Administrative', {'fields': (
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
+    prepopulated_fields = {'slug': ['question']}
     form = HelpFileForm
 
     def log_deletion(self, request, object, object_repr):
