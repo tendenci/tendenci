@@ -2,6 +2,7 @@
 {% load resume_tags %}
 {% load tagging_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load category_tags %}
 
 {% block title %}{{ resume.get_title }}{% endblock %}
@@ -75,7 +76,7 @@
 			<div>{{ resume.contact_phone }}</div>
 			<div>{{ resume.contact_phone2 }}</div>
 			<div>{{ resume.contact_fax }}</div>
-			<div><a href="">{{ resume.contact_email|urlize }}</a></div>
+			<div><a href="">{{ resume.contact_email|obfuscate_email }}</a></div>
 		</div>
 {% endif %}
 
@@ -89,7 +90,7 @@
 				{% endif %}
 			</div>
 
-            <div class="submitted">Submitted on {{ resume.create_dt|date:"D d M Y P" }} 
+            <div class="submitted">Submitted on {{ resume.create_dt|date:"long" }} 
 			by {% firstof resume.creator.get_profile.display_name resume.creator %}</div>
         </div>
         

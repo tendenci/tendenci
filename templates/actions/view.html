@@ -45,7 +45,7 @@
 	   	<a href="{% url article action.article.slug %}" class="body-copy-yellow" target="_blank">View article</a> 
 	   {% endif %}
 	   	</div>
-	   	Sender: <a href="mailto:{{ action.email.sender }}">{{ action.email.sender }}</a><br />
+	   	Sender: {{ action.email.sender|obfuscate_email }}<br />
 	   
 	   <b>{{ action.email.subject }}</b><br />
 	   	
@@ -104,12 +104,12 @@
 	   	{% if action.status_detail == 'closed' %}
 	   	The e-mail has completed processing - ALL emails have been distributed.<br /><br />
 	   	Total emails sent: {{ action.sent }}<br />
-	   	Emails completed sending at: {{ action.finish_dt|date:"l, d-M-Y h:i A" }} <br />
+	   	Emails completed sending at: {{ action.finish_dt|date:"long" }} <br />
 	   	{% else %}
 	   	This e-mail has entered the queue for processing.<br />
 	   	{% endif %}
-	   	Date Created: {{ action.create_dt|date:"N j, Y f A" }} <br />
-	   	Date Submitted: {{ action.submit_dt|date:"N j, Y f A" }} {# June 30, 2010 6:35 PM  #}
+	   	Date Created: {{ action.create_dt|date:"long" }} <br />
+	   	Date Submitted: {{ action.submit_dt|date:"long" }}
 	   	{% if action.status_detail == 'closed' %}
 		   	<div align="right">
 		   	<a href="{% url action.recap action.id %}" class="body-copy-yellow" target="_blank">View Recap</a>

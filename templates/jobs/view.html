@@ -2,6 +2,7 @@
 {% load job_tags %}
 {% load tagging_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load category_tags %}
 
 {% block title %}{{ job.get_title }}{% endblock %}
@@ -156,7 +157,7 @@
 			<div>{{ job.contact_name }}</div>
 			<div>Phone: {{ job.contact_phone }}</div>
 			<div>Fax: {{ job.contact_fax }}</div>
-			<div>{{ job.contact_email|urlize }}</div>
+			<div>{{ job.contact_email|obfuscate_email }}</div>
 			<div>{{ job.contact_website|urlize }}</div>
 		</div>
 		
@@ -198,7 +199,7 @@
 				{% endif %}
 			</div>
 
-            <div class="submitted">Submitted on {{ job.create_dt|date:"D d M Y P" }} 
+            <div class="submitted">Submitted on {{ job.create_dt|date:"long" }} 
 			by {% firstof job.creator.get_profile.display_name job.creator %}</div>
         </div>
         

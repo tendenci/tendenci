@@ -1,6 +1,7 @@
 {% extends "payments/base.html" %}
 {% load i18n %}
 {% load invoice_tags %}
+{% load base_filters %}
 
 {% block title %}View a Payment{% endblock %}
 
@@ -55,7 +56,7 @@ the payment entries in the general ledger for accounting purposes.
 
 <tr>
 <td width="30%"><div class="label">&nbsp;</div></td>
-<td colspan="2"><b>{{ payment.create_dt|date:'N j, Y h:i a' }}</b></td>
+<td colspan="2"><b>{{ payment.create_dt|date:'long' }}</b></td>
 <td width="20%">&nbsp;</td>
 </tr>
 
@@ -194,7 +195,7 @@ the payment entries in the general ledger for accounting purposes.
 
 <tr>
 <td width="30%"><div class="label">Email:</div></td>
-<td width="20%">{{ payment.email}}</td>
+<td width="20%">{{ payment.email|obfuscate_email }}</td>
 <td colspan="2">&nbsp;</td>
 </tr>
 

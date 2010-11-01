@@ -2,6 +2,7 @@
 {% load entity_tags %}
 {% load tagging_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load category_tags %}
 
 {% block title %}{{ block.super }}{{ entity.entity_name }}{% endblock %}
@@ -45,7 +46,7 @@
         
        
         <div class="meta">
-            <div class="submitted">Submitted on {{ entity.create_dt|date:"D d M Y P" }} 
+            <div class="submitted">Submitted on {{ entity.create_dt|date:"long" }} 
 			by {% firstof entity.creator.get_profile.display_name entity.creator %}</div>
         </div>
         
