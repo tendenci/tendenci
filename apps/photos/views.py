@@ -435,7 +435,7 @@ def photos_batch_add(request, photoset_id=0):
         raise Http403
 
     if request.method == 'POST':
-        
+
         for field_name in request.FILES:
             uploaded_file = request.FILES[field_name]
 

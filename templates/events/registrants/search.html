@@ -1,4 +1,4 @@
-{% extends "events/base.html" %}
+{% extends "events/base-wide.html" %}
 {% load pagination_tags %}
 {% load event_tags %}
 {% load base_tags %}
@@ -31,84 +31,162 @@
 	.canceled {
 		float: right;
 	}
+
+	#wrap {
+		width: 100%;
+	}
+	#event-wrap {
+		vertical-align: top;
+		background-color: #EEE;
+		padding: 10px;
+		width: 20%;
+		border-right: 1px solid silver;
+	}
+	#registrant-wrap {
+		vertical-align: top;
+		padding-left: 10px;
+		
+	}
+	.event-title {
+		padding-bottom: 10px;
+		border-bottom: 1px solid #CCC;
+		margin-bottom: 10px;
+	}
 	
+	.t .speaker-wrap,
+	.t .organizer-wrap {
+		margin: 10px 0;
+		padding: 10px;
+	}
+	.t .speaker,
+	.t .organizer {
+		margin-bottom: 5px;
+	}
+	
+	.hr {
+		height: 1px;
+		background-color: #CCC;
+		margin: 10px 0;
+	}
+
 </style>
 
 
 <div class="t">
-{% event_nav request.user %}
-    <h1>Registrant Search</h1>  
+	{% event_nav request.user %}
 
-	{% registrant_search event %}
+	<table id="wrap">
+		<tr><td id="event-wrap">
+		<!-- column1 -->
 
-    {% autopaginate registrants 10 %}
-	
-	<div class="events-wrap">
-    {% for registrant in registrants %}
-		{% with registrant.object as registrant %}
-    	{# has_perm user events.view_event event as can_view #}
-    	{# if can_view #}
-		<div class="event-wrap-search">
-
-			<div class="options">
-                <div class="quick-options">
-					{% registrant_options request.user registrant %} 	       
-                </div>
+			<div class="event-title">
+				<a href="{{ event.get_absolute_url }}">{{ event.title }}</a>
 			</div>
 
-			<div class="image-wrap">
-				{% avatar registrant.user 80 %}
+			<div class="event-date">
+				<div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
+				<div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
 			</div>
+
+			<div class="hr"></div>
+
+			{% if event.speaker_set.all.0 %}
+			{% with event.speaker_set.all.0 as speaker %}
+			<div class="speaker-wrap">
+				<div class="speaker"><strong>Speaker</strong></div>
+				<div>{{ speaker.name }}</div>
+			</div>
+			{% endwith %}
+			{% endif %}
+
+			{% if event.organizer_set.all.0 %}
+			{% with event.organizer_set.all.0 as organizer %}
+			<div class="organizer-wrap">
+				<div class="organizer"><strong>Organizer</strong></div>
+				<div>{{ organizer.name }}</div>
+			</div>
+			{% endwith %}
+			{% endif %}
+
 			
-			<div class="registrant-info">
-            	<h2>{% firstof registrant.name registrant.email %}</h2>
-
-				{% if registrant.phone and registrant.email %}
-				<div>{{ registrant.phone }} &middot; {{ registrant.email }}</div>
-				{% else %}
-					{% if registrant.phone %}
-					<div>{{ registrant.phone }}</div>	
-					{% else %}
-						{% if registrant.email %}
-						<div>{{ registrant.email }}</div>
+		</td> <!-- END #event-wrap -->
+		<td id="registrant-wrap">
+		<!-- column2 -->
+		    <h1>Event Registrant Search</h1>  
+		
+			{% registrant_search event %}
+		
+		    {% autopaginate registrants 10 %}
+			
+			<div class="events-wrap">
+		    {% for registrant in registrants %}
+				{% with registrant.object as registrant %}
+		    	{# has_perm user events.view_event event as can_view #}
+		    	{# if can_view #}
+				<div class="event-wrap-search">
+		
+					<div class="options">
+		                <div class="quick-options">
+							{% registrant_options request.user registrant %} 	       
+		                </div>
+					</div>
+		
+					<div class="image-wrap">
+						{% avatar registrant.user 80 %}
+					</div>
+					
+					<div class="registrant-info">
+		            	<h2>{% firstof registrant.name registrant.email %}</h2>
+		
+						{% if registrant.phone and registrant.email %}
+						<div>{{ registrant.phone }} &middot; {{ registrant.email }}</div>
+						{% else %}
+							{% if registrant.phone %}
+							<div>{{ registrant.phone }}</div>	
+							{% else %}
+								{% if registrant.email %}
+								<div>{{ registrant.email }}</div>
+								{% endif %}
+							{% endif %}
 						{% endif %}
-					{% endif %}
-				{% endif %}
-
-				{% if registrant.title and registrant.company %}
-				<div>Web Developer at {{ registrant.company_name }}</div>
-				{% else %}
-					{% if registrant.title %}
-					<div>Web Developer</div>
-					{% else %}
-						{% if registrant.company_name %}
-						<div>Works at {{ registrant.company_name }}</div>
+		
+						{% if registrant.title and registrant.company %}
+						<div>Web Developer at {{ registrant.company_name }}</div>
+						{% else %}
+							{% if registrant.title %}
+							<div>Web Developer</div>
+							{% else %}
+								{% if registrant.company_name %}
+								<div>Works at {{ registrant.company_name }}</div>
+								{% endif %}
+							{% endif %}
 						{% endif %}
-					{% endif %}
-				{% endif %}
-
+		
+					</div>
+		
+					<div style="clear:both;"></div>
+		
+		            <div class="content"></div>
+					<div class="meta">
+		            	<div class="submitted">Registered on {{ registrant.registration.create_dt|date_short }}</div>
+						{% if registrant.cancel_dt %}
+		            	<div class="canceled">Canceled {{ registrant.cancel_dt|date_short }}</div>
+		            	{% endif %}
+		            	<div style="clear:both;"></div>
+		            </div>
+		
+				</div>
+				{# endif #}
+				{% endwith %}
+			{% empty %}
+				<div>0 Results Found</div>
+		    {% endfor %}
 			</div>
+		
+		    {% paginate %}
+		</td></tr> <!-- END #registrant-wrap -->
+	</table>
 
-			<div style="clear:both;"></div>
-
-            <div class="content"></div>
-			<div class="meta">
-            	<div class="submitted">Registered on {{ registrant.registration.create_dt|date_short }}</div>
-				{% if registrant.cancel_dt %}
-            	<div class="canceled">Canceled {{ registrant.cancel_dt|date_short }}</div>
-            	{% endif %}
-            	<div style="clear:both;"></div>
-            </div>
-
-		</div>
-		{# endif #}
-		{% endwith %}
-	{% empty %}
-		<div>0 Results Found</div>
-    {% endfor %}
-	</div>
-
-    {% paginate %}
 </div>
 {% endblock %}
 
