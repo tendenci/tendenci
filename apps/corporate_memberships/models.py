@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
@@ -38,7 +39,7 @@ class CorporateMembershipType(TendenciBaseModel):
     expiration_method = models.CharField(_('Expiration Method'), max_length=50)
     expiration_method_custom_dt = models.DateTimeField()
     
-    cma = models.ForeignKey("CorporateMembershipApplication")
+    cma = models.ForeignKey("CorporateMembershipApp")
 
     
     def __unicode__(self):
@@ -52,7 +53,7 @@ class CorporateMembershipType(TendenciBaseModel):
     
 class CorporateMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
-    corporate_membership_type = models.ForeignKey("CorporateMembershipType", verbose_name=_("Membership Type")) 
+    corporate_membership_type = models.ForeignKey("CorporateMembershipType", verbose_name=_("MembershipType")) 
     name = models.CharField(max_length=250)
     address = models.CharField(_('address'), max_length=150, blank=True)
     address2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
@@ -75,7 +76,7 @@ class CorporateMembership(TendenciBaseModel):
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"))
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
-    cma = models.ForeignKey("CorporateMembershipApplication")
+    cma = models.ForeignKey("CorporateMembershipApp")
     
     class Meta:
         verbose_name = _("Corporate Membership")
@@ -146,11 +147,11 @@ class CorporateMembershipArchive(models.Model):
     
 class CorporateMembershipCustomFieldEntry(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership")
-    cma_field = models.ForeignKey("CorporateMembershipApplicationField", related_name="entries")
+    cma_field = models.ForeignKey("CorporateMembershipAppField", related_name="entries")
     value = models.CharField(max_length=500)
     
     
-class CorporateMembershipApplication(TendenciBaseModel):
+class CorporateMembershipApp(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     name = models.CharField(_("Application Name"), max_length=155)
     slug = models.SlugField(editable=False, max_length=155, unique=True)
@@ -167,13 +168,13 @@ class CorporateMembershipApplication(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
         
-class CorporateMembershipApplicationPage(models.Model):
-    cma = models.ForeignKey("CorporateMembershipApplication", related_name="pages")
+class CorporateMembershipAppPage(models.Model):
+    cma = models.ForeignKey("CorporateMembershipApp", related_name="pages")
     order = models.IntegerField(_("Order"), default=0)
  
-class CorporateMembershipApplicationSection(models.Model):
-    cma = models.ForeignKey("CorporateMembershipApplication", related_name="sections")
-    cma_page = models.ForeignKey("CorporateMembershipApplicationPage", related_name="sections")
+class CorporateMembershipAppSection(models.Model):
+    cma = models.ForeignKey("CorporateMembershipApp", related_name="sections")
+    cma_page = models.ForeignKey("CorporateMembershipAppPage", related_name="sections")
     
     label = models.CharField(_("Label"), max_length=120)
     description = models.CharField(_("Description"), max_length=500)
@@ -183,11 +184,12 @@ class CorporateMembershipApplicationSection(models.Model):
     css_class = models.CharField(_("CSS Class Name"), max_length=50)
     
        
-class CorporateMembershipApplicationField(models.Model):
-    cma = models.ForeignKey("CorporateMembershipApplication", related_name="fields")
-    cma_section = models.ForeignKey("CorporateMembershipApplicationSection", related_name="fields")
+class CorporateMembershipAppField(models.Model):
+    cma = models.ForeignKey("CorporateMembershipApp", related_name="fields")
+    cma_section = models.ForeignKey("CorporateMembershipAppSection", related_name="fields")
     
-    object_type = models.CharField(_("Object Type"), max_length=50)
+    #object_type = models.CharField(_("Object Type"), max_length=50)
+    object_type = models.ForeignKey(ContentType, blank=True, null=True)
     label = models.CharField(_("Label"), max_length=200)
     field_name = models.CharField(_("Field Name"), max_length=50)
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=50, 
