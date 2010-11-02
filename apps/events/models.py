@@ -116,6 +116,32 @@ class Registrant(models.Model):
     
     objects = RegistrantManager()
 
+    @property
+    def lastname_firstname(self):
+        
+        name_list = [n for n in self.name.split() if n]
+
+        if len(name_list) == 5:
+            prefix, first, middle, last, suffix = name_list
+        elif len(name_list) == 4:
+            first, middle, last, suffix = name_list
+        elif len(name_list) == 3:
+            first, middle, last = name_list
+        elif len(name_list) == 2:
+            first, last = name_list
+        elif len(name_list) == 1:
+            first = name_list[0]
+        else:
+            first = self.name
+
+        if first and last:
+            return "%s, %s" % (last, first)
+        elif first:
+            return "%s" % first
+
+
+        
+
     @classmethod
     def event_registrants(cls, event=None):
 
@@ -159,6 +185,7 @@ class Registration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+
     @property
     def registrant(self):
         """
@@ -180,7 +207,7 @@ class Registration(models.Model):
 
         try: # get invoice
             invoice = Invoice.objects.get(
-                invoice_object_type = 'event_registration',
+                invoice_object_type = 'calendarevents',
                 invoice_object_type_id = self.pk,
             )
         except: # else; create invoice
@@ -195,14 +222,12 @@ class Registration(models.Model):
         invoice.status_detail = status_detail
         invoice.subtotal = self.amount_paid
         invoice.total = self.amount_paid
-        invoice.balance = self.amount_paid
+        invoice.balance = 0
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
         invoice.save()
 
         self.invoice = invoice
-
-        print invoice
 
         self.save()
 

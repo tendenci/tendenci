@@ -116,9 +116,14 @@ class RegistrantManager(Manager):
         event = kwargs.get('event', None)
             
         is_an_admin = is_admin(user)
-        
+
         if event:
-            sqs = sqs.filter(event=event)
+            sqs = sqs.filter(event_pk=event.pk)
+        
+        sqs = sqs.models(self.model)
+
+        for sq in sqs:
+            sq.object.registration.event.pk
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query)) 
@@ -159,7 +164,5 @@ class RegistrantManager(Manager):
                         sqs = sqs.filter(allow_anonymous_view=True)
             else:
                 sqs = sqs.filter(allow_anonymous_view=True)
-
-#            sqs = sqs.order_by('-update_dt')
     
         return sqs.models(self.model)

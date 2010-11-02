@@ -714,8 +714,9 @@ def registrant_roster(request, event_id=0, template_name='events/registrants/ros
     query = request.GET.get('q', '')
 
     event = get_object_or_404(Event, pk=event_id)
+
     registrants = Registrant.objects.search(
-        query, user=request.user, event=event).order_by("-update_dt")
+        query, user=request.user, event=event).order_by("last_name")
 
     query = "%s is:confirmed" % query
     confirmed_registrants = Registrant.objects.search(
