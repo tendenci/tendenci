@@ -46,12 +46,18 @@ class EventIndex(indexes.RealTimeSearchIndex):
 
 class RegistrantIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-    event = indexes.CharField(model_attr='registration__event')
+    event_pk = indexes.IntegerField(model_attr='registration__event__pk')
     cancel_dt = indexes.DateTimeField(model_attr='cancel_dt', null=True)
     create_dt = indexes.DateTimeField(model_attr='create_dt')
     update_dt = indexes.DateTimeField(model_attr='update_dt')
 
+    last_name = indexes.CharField()
     who_can_view = indexes.CharField()
+
+    def prepare_last_name(self, obj):
+        name = obj.name
+        if len(name.split()) > 1:
+            return name.split()[1]
 
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('registrants.view_registrant', obj)

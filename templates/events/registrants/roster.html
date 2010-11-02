@@ -209,7 +209,15 @@
 	<td class="attended-checkbox"><div></div></td>
 
 	<td> <!-- name & phone -->
-		<div><a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.name registrant.email %}</a></div>
+		{% if registrant.user %}
+		<div title="View {{ registrant.name}}'s profile"><a href="{{ registrant.user.get_absolute_url }}">
+			{% firstof registrant.lastname_firstname registrant.email %}
+		</a></div>
+		{% else %}
+		<div title="{{ registrant.name }} does not have a user-account">
+			{% firstof registrant.lastname_firstname registrant.email %}
+		</div>
+		{% endif %}
 		<div>{{ registrant.phone }}</div>
 	</td>
 
@@ -218,10 +226,10 @@
 		<div>{{ registrant.company_name }}</div>
 	</td> 
 
-	<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
+	<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">I-{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
 	<td>${{ registrant.registration.invoice.total }}</td> <!-- invoice amount -->
-	<td><a href="{{ registrant.get_absolute_url }}">{{ registrant.registration.pk }}</a></td> <!-- registration number -->
-	<td>${{ registrant.registration.amount_paid }}</td> <!-- registration amount -->
+	<td><a href="{{ registrant.get_absolute_url }}">R-{{ registrant.registration.pk }}</a></td> <!-- registration number -->
+	<td>${{ registrant.registration.amount_paid|floatformat:"2" }}</td> <!-- registration amount -->
 	<td>${{ registrant.registration.invoice.balance|floatformat:"2" }}</td> <!-- balance -->
 </tr>
 {% endwith %}
