@@ -45,7 +45,7 @@
 				<h3>Featured</h3>
 				<ul>
 				{% for hfile in featured %}
-					<li><a href="{% url help_file.details hfile.pk %}">{{ hfile.question }}</a></li>
+					<li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
 				{% endfor %}
 				</ul>
 			</div>
@@ -53,7 +53,7 @@
 				<h3>FAQ</h3>
 				<ul>
 				{% for hfile in faq %}	
-					<li><a href="{% url help_file.details hfile.pk %}">{{ hfile.question }}</a></li>
+					<li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
 				{% endfor %}
 				</ul>
 			</div>
@@ -61,7 +61,7 @@
 				<h3>Most viewed</h3>
 				<ul>
 				{% for hfile in most_viewed %}
-					<li><a href="{% url help_file.details hfile.pk %}">{{ hfile }}</a></li>
+					<li><a href="{{ hfile.get_absolute_url }}">{{ hfile }}</a></li>
 				{% endfor %}
 				</ul>
 			</div>
