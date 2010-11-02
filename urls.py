@@ -2,11 +2,11 @@ from os.path import join
 from django.conf.urls.defaults import *
 from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
+from django.conf import settings
 
 # Django admin
 from django.contrib import admin
 admin.autodiscover()
-
 
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
