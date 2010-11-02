@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from event_logs.models import EventLog
 from perms.models import ObjectPermission
 from models import Topic, HelpFile, Request
 from forms import HelpFileForm
@@ -16,8 +17,48 @@ class HelpFileAdmin(admin.ModelAdmin):
         ('Administrative', {'fields': (
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
+    prepopulated_fields = {'slug': ['question']}
     form = HelpFileForm
-    
+
+    def log_deletion(self, request, object, object_repr):
+        super(HelpFileAdmin, self).log_deletion(request, object, object_repr)
+        log_defaults = {
+            'event_id' : 1000300,
+            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, 
+                                                    object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)           
+
+    def log_change(self, request, object, message):
+        super(HelpFileAdmin, self).log_change(request, object, message)
+        log_defaults = {
+            'event_id' : 1000200,
+            'event_data': '%s (%d) edited by %s' % (object._meta.object_name, 
+                                                    object.pk, request.user),
+            'description': '%s edited' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)               
+
+    def log_addition(self, request, object):
+        super(HelpFileAdmin, self).log_addition(request, object)
+        log_defaults = {
+            'event_id' : 1000100,
+            'event_data': '%s (%d) added by %s' % (object._meta.object_name, 
+                                                   object.pk, request.user),
+            'description': '%s added' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
+                     
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
 
@@ -30,7 +71,7 @@ class HelpFileAdmin(admin.ModelAdmin):
             instance.creator_username = request.user.username
             instance.owner = request.user
             instance.owner_username = request.user.username
-        
+ 
         # save the object
         instance.save()
         form.save_m2m()

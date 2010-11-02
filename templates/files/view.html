@@ -1,5 +1,6 @@
 {% extends "files/base.html" %}
 {% load file_tags %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}{{ file.headline }}{% endblock %}
 
@@ -36,7 +37,7 @@
         <div class="file"><a href="{{ file.file.url }}">{{ file.file }}</a></div>
         <div class="content">{{ file.description }}</div>
         <div class="meta">
-            <div class="submitted">Created on {{ file.create_dt|date:"D d M Y P" }} by {{ file.creator }}</div>
+            <div class="submitted">Created on {{ file.create_dt|date:"long" }} by {{ file.creator }}</div>
         </div>
     </div>
 
