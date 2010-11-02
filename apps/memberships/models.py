@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
@@ -27,6 +28,15 @@ OBJECT_TYPE_CHOICES = (
                         ("donation", _("Donation")),
                         ("custom", _("Custom")),
                        )
+PERIOD_CHOICES = (
+                  ("fixed", _("Fixed")),
+                  ("rolling", _("Rolling")),
+                  )
+PERIOD_UNIT_CHOICES = (
+                       ("days", _("Days")),
+                       ("months", _("Months")),
+                       ("years", _("Years")),
+                       )
 
 class MembershipType(TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -34,25 +44,48 @@ class MembershipType(TendenciBaseModel):
     description = models.CharField(_('Description'), max_length=500)
     price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0)
     # for first time processing
-    admin_fee = models.DecimalField(_('Admin Fee for First Time Processing'), 
-                                    max_digits=15, decimal_places=2, blank=True, default=0)
+    admin_fee = models.DecimalField(_('Admin Fee'), 
+                                    max_digits=15, decimal_places=2, blank=True, default=0, 
+                                    help_text="Admin fee for the first time processing")
     
     group = models.ForeignKey(Group, related_name="membership_types")
-    
-    # add membership application id
     
     require_approval = models.BooleanField(_('Require Approval'), default=1)
     renewal = models.BooleanField(default=0)
     order = models.IntegerField(_('Order'), default=0)
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
     
-    expiration_method = models.CharField(_('Expiration Method'), max_length=50)
-    expiration_method_custom_dt = models.DateTimeField()
+    #expiration_method = models.CharField(_('Expiration Method'), max_length=50)
+    #expiration_method_custom_dt = models.DateTimeField()
+    period = models.IntegerField(_('Period'), default=0)
+    period_unit = models.CharField(choices=PERIOD_UNIT_CHOICES, max_length=10)
+    period_type = models.CharField(_("Period Type"), choices=PERIOD_CHOICES, max_length=10)
     
+    expiration_method = models.CharField(_('Expires On'), max_length=50)
+    expiration_method_day = models.IntegerField(default=0)
+    renew_expiration_method = models.CharField(_('Renewal Expires On'), max_length=50)
+    renew_expiration_day = models.IntegerField(default=0)
+    
+    fixed_expiration_method = models.CharField(_('Expires On'), max_length=50)
+    fixed_expiration_day = models.IntegerField(default=0)
+    fixed_expiration_month = models.IntegerField(default=0)
+    fixed_expiration_year = models.IntegerField(default=0)
+    
+    fixed_expiration_rollover = models.BooleanField(_("Allow Rollover"), default=0)
+    fixed_expiration_rollover_days = models.IntegerField(default=0, 
+            help_text=_("Membership signups after this date covers the following calendar year as well."))
+    
+    renewal_period_start = models.IntegerField(_('Renewal Period Start'), default=0, 
+            help_text="How long (in days) before the memberships expires can the member renew their membership.")
+    renewal_period_end = models.IntegerField(_('Renewal Period End'), default=0, 
+            help_text="How long (in days) after the memberships expires can the member renew their membership.")
+    expiration_grace_period = models.IntegerField(_('Expiration Grace Period'), default=0, 
+            help_text="The number of days after the membership expires their membership is still active.")
+   
     corporate_membership_only = models.BooleanField(_('Corporate Membership Only'), default=0)
     corporate_membership_type_id = models.IntegerField(default=0)
     
-    ma = models.ForeignKey("MembershipApplication")
+    ma = models.ForeignKey("MembershipApplication", blank=True, null=True, default=0)
     
     def __unicode__(self):
         return self.name
@@ -181,7 +214,9 @@ class MembershipApplicationField(models.Model):
     ma = models.ForeignKey("MembershipApplication", related_name="fields")
     ma_section = models.ForeignKey("MembershipApplicationSection", related_name="fields")
     
-    object_type = models.CharField(_("Object Type"), choices=OBJECT_TYPE_CHOICES, max_length=50)
+    #object_type = models.CharField(_("Object Type"), choices=OBJECT_TYPE_CHOICES, max_length=50)
+    object_type = models.ForeignKey(ContentType, blank=True, null=True)
+
     label = models.CharField(_("Label"), max_length=200)
     field_name = models.CharField(_("Field Name"), max_length=50)
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=50, 
