@@ -24,8 +24,6 @@ class ObjectPermBackend(object):
             if hasattr(user,'auto_login'):
                 if not user.is_anonymous() and user.auto_login:
                     return user
-            else:
-                return None
         else:
             try:
                 user = User.objects.get(username=username)
@@ -33,6 +31,8 @@ class ObjectPermBackend(object):
                     return user
             except User.DoesNotExist:
                 return None
+        
+        return None
 
     def get_group_permissions(self, user_obj):
         """

@@ -37,7 +37,7 @@
             
             <div class="content">Status: <b>{% if dp.status %}Active{%else%}Inactive{%endif%}</b></div>
 			<div class="meta">
-            	<div class="submitted">Created on {{ dp.create_dt|date:"D d M Y P" }} by {{ dp.creator }}</div>
+            	<div class="submitted">Created on {{ dp.create_dt|date:"long" }} by {{ dp.creator }}</div>
             </div>
 
             <!-- delete-directory form -->
