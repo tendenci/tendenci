@@ -1,6 +1,7 @@
 {% extends "stories/base.html" %}
 {% load story_tags %}
 {% load category_tags %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}{{ story.title }}{% endblock %}
 
@@ -33,7 +34,7 @@
 				{% endif %}				
 			</div>
 
-            <div class="submitted">Submitted on {{ story.create_dt|date:"D d M Y P" }} by {{ story.creator }}</div>
+            <div class="submitted">Submitted on {{ story.create_dt|date:"long" }} by {{ story.creator }}</div>
         </div>
   
 </div>

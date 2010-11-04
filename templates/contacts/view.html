@@ -1,5 +1,6 @@
 {% extends "contacts/base.html" %}
 {% load contact_tags %}
+{% load base_filters %}
 
 {% block title %}{{ block.super }}{{ contact }}{% endblock %}
 
@@ -33,7 +34,7 @@
 		<div class="row email-row">
 			<div class="label">Email</div>
 			<div class="value">
-				<a href="mailto:{{ contact.emails.all.0.email }}">{{ contact.emails.all.0.email }}</a> &nbsp;
+				{{ contact.emails.all.0.email|obfuscate_email }}
 			</div>
 			<div style="clear:both;"></div>
 		</div>
@@ -64,7 +65,7 @@
         <div class="the-message">
         	<div class="label">Message</div>
         	<div class="submitted-dt">
-        		Submitted {{ contact.create_dt|date:"D, M d, Y P" }}
+        		Submitted {{ contact.create_dt|date:"long" }}
         		({{ contact.create_dt|timesince }} ago)
         	</div>
         	<div class="content">

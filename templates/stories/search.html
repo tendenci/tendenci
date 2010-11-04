@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load story_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
@@ -29,7 +30,7 @@
             <h2><a href="{% url story story.pk %}">{{ story.title }}</a></h2>             
             <div class="content">{{ story.content|striptags|truncatewords:20|safe }}</div>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ story.create_dt|date:"D d M Y P" }} by {{ story.creator }}</div>
+            	<div class="submitted">Submitted on {{ story.create_dt|date:"long" }} by {{ story.creator }}</div>
             </div>
 
             <!-- delete-article form -->

@@ -2,6 +2,7 @@
 {% load page_tags %}
 {% load tagging_tags %}
 {% load category_tags %}
+{% load base_filters %}
 
 {% block title %}{{ page.get_title }}{% endblock %}
 {% block meta_description %}{{ page.get_description }}{% endblock %}
@@ -44,7 +45,7 @@
 				{% endif %}
 			</div>
 
-            <div class="submitted">Submitted on {{ page.create_dt|date:"D d M Y P" }} 
+            <div class="submitted">Submitted on {{ page.create_dt|date:"long" }} 
 			by {% firstof page.creator.get_profile.display_name page.creator %}</div>
 
         </div>
