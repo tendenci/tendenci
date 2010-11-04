@@ -31,7 +31,7 @@
         
 	        {# block #3 -payment status #}
 	        <div class="invoice-view-detail-right">
-		        <div class="invoice-item">{{ payment.create_dt|date:'N j, Y h:i a' }}</div>
+		        <div class="invoice-item">{{ payment.create_dt|date:'long' }}</div>
 		        <div class="invoice-item">Invoice: <a href="{% url invoice.view payment.invoice.id %}">{{payment.invoice.id}}</a></div>
 		    
 		        <div class="invoice-item">[Payment Status: 

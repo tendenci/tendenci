@@ -1,6 +1,7 @@
 {% extends "make_payments/base.html" %}
 {% load i18n %}
 {% load make_payment_tags %}
+{% load base_filters %}
 
 {% block title %}Make a Payment{% endblock %}
 
@@ -46,7 +47,7 @@
 <div class="clear-left"></div>
 <div class="label">Phone:</div><div>{{ mp.phone }}</div>
 <div class="clear-left"></div>
-<div class="label">Email:</div><div><a href="mailto:{{ mp.email }}">{{ mp.email }}</a></div>
+<div class="label">Email:</div><div>{{ mp.email|obfuscate_email }}</div>
 <div class="clear-left"></div>
 <br />
 <div class="label">Referred By:</div><div>{{ mp.referral_source }}</div>
@@ -54,7 +55,7 @@
 <div class="label">Comments:</div><div>{{ mp.comments|safe }}</div>
 <div class="clear-left"></div>
 <br />
-<div class="label">Create Date:</div><div>{{ mp.create_dt|date:'N j, Y h:i a' }}</div>
+<div class="label">Create Date:</div><div>{{ mp.create_dt|date:'long' }}</div>
 <div class="clear-left"></div>
 </div>
 </div>

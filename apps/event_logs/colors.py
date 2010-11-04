@@ -221,7 +221,23 @@ colors = {
     '445000':'CCCC33', # view    
     '445001':'CCCC33', # print view  
     '442210':'CCCC33', # renew     
-    
+
+    # help files 
+    '1000000':'D11300', # base
+    '1000100':'D52500', # add
+    '1000200':'DA3800', # edit
+    '1000300':'DF4A00', # delete
+    '1000400':'E35D00', # search 
+    '1000500':'E86F00', # view 
+
+    # help file topics 
+    '1001000':'A20900', # base
+    '1001100':'AC1300', # add
+    '1001200':'B51C00', # edit
+    '1001300':'B51C00', # delete
+    '1001400':'C72E00', # search 
+    '1001500':'D13800', # view       
+        
     # impersonation
     '1080000':'FF0000', 
     

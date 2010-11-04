@@ -24,7 +24,7 @@
     <div class="event-wrap">
 
 		<div class="info">
-	        <h2>{{ event.title }}</h2>
+	        <h1>{{ event.title }}</h1>
 	        <div class="content">{{ event.description|safe }}</div>
 		</div>
 
@@ -130,14 +130,14 @@
 			{% if speaker.name %}
 			<div class="speaker-wrap">
 				<div class="speaker"><strong>Speaker</strong> {{ speaker.name }}</div>
-				<div>{{ speaker.description|urlize|linebreaks }}</div>
+				<div>{{ speaker.description|safe|urlize|linebreaks }}</div>
 			</div>
 			{% endif %}
 
 			{% if organizer.name %}
 			<div class="organizer-wrap">
 				<div class="organizer"><strong>Organizer</strong> {{ organizer.name }}</div>
-				<div>{{ organizer.description|urlize|linebreaks }}</div>
+				<div>{{ organizer.description|safe|urlize|linebreaks }}</div>
 			</div>
 			{% endif %}
 

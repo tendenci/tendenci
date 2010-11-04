@@ -43,7 +43,7 @@
                             {% endif %}
                         </td>
                         <td class="el-sh-dt">
-                            {{ event_log.create_dt }}
+                            {{ event_log.create_dt|date:"short" }}
                             <a href="{% url event_log.search %}?q={{ event_log.create_dt|urlencode }}&range=1">()</a>
                         </td>
                     </tr>
