@@ -21,27 +21,37 @@
     {% article_nav request.user article %}
 
     <div class="article-wrap">
-        <h2>{{ article.headline }}</h2>
+
+        <h2>{{ article.headline }}</h2>
 
 		<div class="options">
              <div class="quick-options">
 				{% article_options request.user article %} 	       
              </div>
 		</div>
-		<div class="content">
-			{{ article.body|safe }}			<p>Release Date: {{ article.release_dt }}</p>			{% if article.source %}<p>Source: {{ article.source|urlize }}{% endif %}</p>
-						<div class="contact">
-				{% if article.first_name and article.last_name %}					<div>{{ article.first_name }} {{ article.last_name }}</div>
+
+		<div class="content">
+			{{ article.body|safe }}
+			<p>Release Date: {{ article.release_dt }}</p>
+			{% if article.source %}<p>Source: {{ article.source|urlize }}{% endif %}</p>
+			
+			<div class="contact">
+				{% if article.first_name and article.last_name %}
+					<div>{{ article.first_name }} {{ article.last_name }}</div>
 				{% endif %}	
-				{% if article.phone %}					<div>{{ article.phone }}</div>	
+				{% if article.phone %}
+					<div>{{ article.phone }}</div>	
 				{% endif %}	
 				{% if article.fax %}
 					<div>{{ article.fax }}</div>	
 				{% endif %}	
-				{% if article.email %}				<div>{{ article.email|obfuscate_email }}</div>
+				{% if article.email %}
+				<div>{{ article.email|obfuscate_email }}</div>
 				{% endif %}
-				{% if article.website %}					<div>{{ article.website|urlize }}</div>	
-				{% endif %}			</div>             
+				{% if article.website %}	
+				<div>{{ article.website|urlize }}</div>	
+				{% endif %}
+			</div>             
 		</div>
 
         <div class="meta">
@@ -53,7 +63,7 @@
 				{% get_sub_category_for_object article as sub_category %}
 				{% if sub_category %}
 					Sub Category:&nbsp;<a href="{% url article.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
-				{% endif %}				
+				{% endif %}
 			</div>
 			
 			<div class="tags">

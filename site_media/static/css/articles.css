@@ -37,6 +37,9 @@
 .t .articles-wrap .article-wrap .content {
 	margin-bottom: 10px;
 }
+.t .articles-wrap .category {
+    margin-top: 5px;
+}
 .t .options {
 	text-align: right;
 	position: absolute;

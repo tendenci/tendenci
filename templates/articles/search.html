@@ -1,6 +1,7 @@
 {% extends "articles/base.html" %}
 {% load pagination_tags %}
 {% load article_tags %}
+{% load category_tags %}
 {% load base_tags %}
 {% load perm_tags %}
 
@@ -27,7 +28,7 @@
 		<div class="article-wrap-search">
 			<div class="options options-search">
                 <div class="quick-options">
-					{% article_options request.user article %} 	       
+					{% article_options request.user article %}
                 </div>
 			</div>
             <h2><a href="{{ article.get_absolute_url }}">{% firstof article.headline "Untitled" %}</a></h2>
@@ -39,7 +40,18 @@
 			{% endif %}
 
 			<div class="meta">
-            	<div class="submitted">Released on {{ article.release_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
+				<div class="submitted">Released on {{ article.release_dt|date:"D d M Y P" }} by {{ article.creator }}</div>
+				
+				<div class="category">
+				{% get_category_for_object article as category %}
+				{% if category %}
+					Category: <a href="{% url article.search %}?q=category:{{ category }}">{{ category }}</a> 
+				{% endif %}
+				{% get_sub_category_for_object article as sub_category %}
+				{% if sub_category %}
+					Sub Category: <a href="{% url article.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a> 
+				{% endif %}
+				</div>
             </div>
 
             <!-- delete-article form -->
