@@ -14,6 +14,8 @@ class GetCategoryForObjectNode(Node):
             return ''  
         object = self.object.resolve(context)  
         category = Category.objects.get_for_object(object, 'category')
+        print category.name
+
         if category: context[self.context] = category.name
         return ''
 
