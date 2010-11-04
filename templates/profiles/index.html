@@ -1,6 +1,7 @@
 {% extends "profiles/base.html" %}
 {% load avatar_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 {% load profile_tags %}
 {% load contribution_tags %}
@@ -69,12 +70,12 @@
 				    	<td class="type">Email:</td> <td class="items">
 				    	{% if user_this.email  %}
 					    	<span class="item">
-					    		{{user_this.email}}
+					    		{{user_this.email|obfuscate_email }}
 					    	</span>
 				    	{% endif %}
 				    	{% if profile.email2  %}
 					    	<span class="item">
-					    		{{profile.email2}}
+					    		{{profile.email2|obfuscate_email }}
 					    	</span>
 				    	{% endif %}
 				    	</td>
@@ -298,7 +299,7 @@
 						<div class="contrib-title">
 							<a href="{{ contribution.object.get_absolute_url }}">{{ contribution.title }}</a>
 						</div>
-						<div class="contrib-create-dt">{{ contribution.create_dt|date:"D d M Y P" }}</div>
+						<div class="contrib-create-dt">{{ contribution.create_dt|date:"long" }}</div>
 						<div style="clear:both;"></div>
 					</div>
 					{% endfor %}

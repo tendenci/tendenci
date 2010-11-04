@@ -3,6 +3,7 @@
 {% load avatar_tags %}
 {% load profile_tags %}
 {% load perm_tags %}
+{% load base_filters %}
 
 {% block title %}Users Search Page{% endblock %}
 
@@ -39,7 +40,7 @@
           
             <div class="content" style="float: left; margin-left:5px;">
             	{% if profile.user.email %}
-            	<b>Email:</b> {{ profile.user.email }}<br />
+            	<b>Email:</b> {{ profile.user.email|obfuscate_email }}<br />
             	{% endif %}
             	{% if profile.phone %}
             	<b>Phone:</b> {{ profile.phone }}<br />
@@ -52,7 +53,7 @@
             <div class="clear-left" style="clear: left;"></div>
             
 			<div class="meta">
-            	<div class="submitted"><small>Added on {{ profile.create_dt|date:"D d M Y P" }} by {{ profile.creator }}</small></div>
+            	<div class="submitted"><small>Added on {{ profile.create_dt|date:"long" }} by {{ profile.creator }}</small></div>
             </div>
 
             <!-- delete-profile form -->

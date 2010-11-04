@@ -38,7 +38,7 @@
             <div class="content">Show Member Pricing: {{ jp.show_member_pricing }}</div>
             <div class="content">Status: <b>{% if jp.status %}Active{%else%}Inactive{%endif%}</b></div>
 			<div class="meta">
-            	<div class="submitted">Created on {{ jp.create_dt|date:"D d M Y P" }} by {{ jp.creator }}</div>
+            	<div class="submitted">Created on {{ jp.create_dt|date:"long" }} by {{ jp.creator }}</div>
             </div>
 
             <!-- delete-job form -->

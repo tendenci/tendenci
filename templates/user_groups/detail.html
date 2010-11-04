@@ -1,7 +1,9 @@
 {% extends "user_groups/base.html" %}
 {% load base_tags %}
+{% load base_filters %}
 {% load user_group_tags %}
 {% load perm_tags %}
+
 
 {% block title %}{{ group.name }} - Group{% endblock %}
 
@@ -64,7 +66,7 @@
 			<h2>Technical Information</h2>
 			<div class="info">
 				<p>Usergroup ID: {{ group.pk }}</p>
-				<p>Created: {{ group.create_dt }}</p>
+				<p>Created: {{ group.create_dt|date:"long" }}</p>
 				<p>Owner: <a href="{{ group.owner.get_absolute_url }}">{{ group.owner }}</a> (ID: {{ group.owner.pk }}) </p>
 				<p>Entity: {{ group.entity }}</p>
 				<p>Status: {{ group.status }}<p>
