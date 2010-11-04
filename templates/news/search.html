@@ -1,6 +1,7 @@
 {% extends "news/base.html" %}
 {% load pagination_tags %}
 {% load news_tags %}
+{% load category_tags %}
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
@@ -41,6 +42,16 @@
 			{% endif %}
 			<div class="meta">
             	<div class="submitted">Submitted on {{ n.create_dt|date:"long" }} by {{ n.creator }}</div>
+				<div class="category">
+				{% get_category_for_object n as category %}
+				{% if category %}
+					Category: <a href="{% url news.search %}?q=category:{{ category }}">{{ category }}</a> 
+				{% endif %}
+				{% get_sub_category_for_object n as sub_category %}
+				{% if sub_category %}
+					Sub Category: <a href="{% url news.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a> 
+				{% endif %}
+				</div>
             </div>
 
             <!-- delete-article form -->
