@@ -784,7 +784,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
     elif hash:
         sqs = SearchQuerySet()
-        sqs = sqs.filter(event=event)
+        sqs = sqs.models(Registrant)
+        sqs = sqs.filter(event_pk=event.pk)
         sqs = sqs.auto_query(sqs.query.clean(hash))
         sqs = sqs.order_by("-update_dt")
 
