@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load entity_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
@@ -47,7 +48,7 @@
 
             <h2><a href="{% url entity entity.pk %}">{{ entity.entity_name|striptags|truncatewords:20|safe }}</a></h2>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ entity.create_dt|date:"D d M Y P" }} by {{ entity.creator }}</div>
+            	<div class="submitted">Submitted on {{ entity.create_dt|date:"long" }} by {{ entity.creator }}</div>
             </div>
 
             <!-- delete-entity form -->

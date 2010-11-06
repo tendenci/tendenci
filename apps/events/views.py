@@ -858,7 +858,7 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             
             messages.add_message(request, messages.INFO, 'Successfully sent email "%s" to event registrants for event "%s".' % (subject, event.title))
             
-            return HttpResponseRedirect(reverse('event', args=(event_id)))
+            return HttpResponseRedirect(reverse('event', args=([event_id])))
         
     else:
         openingtext = render_to_string('events/message/opening-text.txt', {'event': event}, 

@@ -1,5 +1,6 @@
 {% extends "directories/base-print.html" %}
 {% load directory_tags %}
+{% load base_filters %}
 
 {% block title %}{{ directory.get_title }}{% endblock %}
 {% block meta_description %}{{ directory.get_description }}{% endblock %}
@@ -58,10 +59,10 @@
 				<div>{{ directory.fax }} fax.</div>
 			{% endif %}				
 			{% if directory.email %}
-				<div>{{ directory.email }}</div>
+				<div>{{ directory.email|obfuscate_email }}</div>
 			{% endif %}	
 			{% if directory.email2 %}
-				<div>{{ directory.email2 }}</div>
+				<div>{{ directory.email2|obfuscate_email }}</div>
 			{% endif %}	
 			{% if directory.website %}
 				<div>{{ directory.website }}</div>
@@ -69,7 +70,7 @@
 		</div>      
 		{% endif%}   
         <div class="meta">
-            <div class="submitted">Submitted on {{ directory.create_dt|date:"D d M Y P" }} by {{ directory.creator }}</div>
+            <div class="submitted">Submitted on {{ directory.create_dt|date:"long" }} by {{ directory.creator }}</div>
         </div>
     </div>
 
