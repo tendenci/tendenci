@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load resume_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
@@ -35,7 +36,7 @@
             <h2><a href="{{ resume.get_absolute_url }}">{% firstof resume.title "Untitled" %}</a></h2>
             <div class="content">{{ resume.description|striptags|truncatewords:20|safe }}</div>
 			<div class="meta">
-            	<div class="submitted">Released on {{ resume.release_dt|date:"D d M Y P" }} by {{ resume.creator }}</div>
+            	<div class="submitted">Released on {{ resume.release_dt|date:"long" }} by {{ resume.creator }}</div>
             </div>
 
             <!-- delete-resume form -->

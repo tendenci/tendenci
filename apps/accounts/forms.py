@@ -33,6 +33,7 @@ class RegistrationCustomForm(RegistrationForm):
         
         new_user.first_name = self.cleaned_data['first_name']
         new_user.last_name = self.cleaned_data['last_name']
+        new_user.is_active = False
         new_user.save()
         # create registration profile
         registration_profile = RegistrationProfile.objects.create_profile(new_user)

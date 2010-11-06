@@ -14,9 +14,9 @@
 	</li>
 
 	<li>
-		<span>{{ MODULE_FILES_LABEL }}</span>
+		<span>Files</span>
 		<ul id="secondary">
-			<li><a href="{% url files %}">{{ MODULE_FILES_LABEL }}:</a></li> 
+			<li><a href="{% url files %}">Files:</a></li> 
 			<li><a href="{% url file.search %}">Search</a></li>
 			{% if can_add_file %}
 			<li><a href="{% url file.add %}">Add</a></li>

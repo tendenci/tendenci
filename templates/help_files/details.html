@@ -1,5 +1,6 @@
 {% extends "help_files/base.html" %}
 {% load help_file_tags %}
+{% load base_filters %}
 
 {% block title %}{{ help_file.question|striptags|safe }} - Help File{% endblock %}
 {% block meta_description %}{{ help_file.answer|striptags|safe|truncatewords:40 }}{% endblock %}
@@ -43,7 +44,7 @@
         	</div>
         	{% endif %}
             <div class="submitted">
-            	Created on {{ help_file.create_dt|date:"D d M Y P" }} by 
+            	Created on {{ help_file.create_dt|date:"long" }} by 
 				{% firstof help_file.creator.get_profile.display_name help_file.creator %}
 			</div>
         </div>

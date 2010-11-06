@@ -1,8 +1,11 @@
-#django
+import re
+
 from django.template import Library
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
 from django.utils import formats
+from django.utils.safestring import mark_safe
+from django.utils.html import conditional_escape
 
 register = Library()
 
@@ -55,7 +58,29 @@ def date_long(value, arg=None):
         if s_date_format:
             arg = s_date_format
         else:
-            arg = settings.DATE_FORMAT
+            arg = settings.DATETIME_FORMAT
+    try:
+        return formats.date_format(value, arg)
+    except AttributeError:
+        try:
+            return format(value, arg)
+        except AttributeError:
+            return ''
+date_long.is_safe = False
+
+@register.filter_function
+def date(value, arg=None):
+    """Formats a date according to the given format."""
+    from django.utils.dateformat import format
+    if not value:
+        return u''
+    if arg is None:
+        arg = settings.DATETIME_FORMAT
+    else:
+        if arg == 'long':
+            return date_long(value)
+        if arg == 'short':
+            return date_short(value)
     try:
         return formats.date_format(value, arg)
     except AttributeError:
@@ -159,6 +184,34 @@ def rss_date(value, arg=None):
             return ''
 rss_date.is_safe = False
 
+@register.filter()
+def obfuscate_email(email, linktext=None, autoescape=None):
+    """
+    Given a string representing an email address,
+    returns a mailto link with rot13 JavaScript obfuscation.
+    
+    Accepts an optional argument to use as the link text;
+    otherwise uses the email address itself.
+    """
+    if autoescape:
+        esc = conditional_escape
+    else:
+        esc = lambda x: x
+
+    email = re.sub('@','\\\\100', re.sub('\.', '\\\\056', \
+        esc(email))).encode('rot13')
+
+    if linktext:
+        linktext = esc(linktext).encode('rot13')
+    else:
+        linktext = email
+
+    rotten_link = """<script type="text/javascript">document.write \
+        ("<n uers=\\\"znvygb:%s\\\">%s<\\057n>".replace(/[a-zA-Z]/g, \
+        function(c){return String.fromCharCode((c<="Z"?90:122)>=\
+        (c=c.charCodeAt(0)+13)?c:c-26);}));</script>""" % (email, linktext)
+    return mark_safe(rotten_link)
+obfuscate_email.needs_autoescape = True
 
 
     
