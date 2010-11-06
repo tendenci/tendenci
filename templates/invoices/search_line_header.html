@@ -41,7 +41,7 @@
                 {# create_dt  #}
                 <td colspan="3">
                      {% if invoice.create_dt %}
-                       {{ invoice.create_dt|date:'N j, Y h:i a'}} 
+                       {{ invoice.create_dt|date:'long'}} 
                     {% else  %}
                         &nbsp;
                      {% endif %}

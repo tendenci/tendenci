@@ -2,6 +2,7 @@
 {% load directory_tags %}
 {% load tagging_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load category_tags %}
 
 {% block title %}{{ directory.get_title }}{% endblock %}
@@ -66,10 +67,10 @@
 					<div>{{ directory.fax }} fax.</div>
 				{% endif %}				
 				{% if directory.email %}
-					<div>{{ directory.email|urlize }}</div>
+					<div>{{ directory.email|obfuscate_email }}</div>
 				{% endif %}	
 				{% if directory.email2 %}
-					<div>{{ directory.email2|urlize }}</div>
+					<div>{{ directory.email2|obfuscate_email }}</div>
 				{% endif %}	
 				{% if directory.website %}
 					<div>{{ directory.website|urlize }}</div>
@@ -99,7 +100,7 @@
 			</div>
 
             <div class="submitted">
-            	Submitted on {{ directory.create_dt|date:"D d M Y P" }} by 
+            	Submitted on {{ directory.create_dt|date:"long" }} by 
 				{% firstof directory.creator.get_profile.display_name directory.creator %}
 			</div>
         </div>

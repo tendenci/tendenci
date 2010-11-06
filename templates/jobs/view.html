@@ -2,6 +2,7 @@
 {% load job_tags %}
 {% load tagging_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load category_tags %}
 
 {% block title %}{{ job.get_title }}{% endblock %}
@@ -110,23 +111,35 @@
 {% endif %}
 
 
-		
-{% if job.experience or job.skills or job.education %}
+{% if job.experience or job.skills or job.education or job.computer_skills %}
 		<h2>Job Requirements</h2>
-		<div class="section-block">
-			<div class="label">Experience</div>
-			<div class="value">{{ job.experience }}</div>
-		</div>
-		<div class="section-block">
-			<div class="label">Skills</div>
-			<div class="value">{{ job.skills }}</div>
-		</div>
-		<div class="section-line">
-			<div class="label">Education Required</div>
-			<div class="value">{{ job.education }}</div>
-			<div class="clear"></div>
-		</div>
 {% endif %}
+
+{% if job.experience %}
+<div class="section-block">
+	<div class="label">Experience</div>
+	<div class="value">{{ job.experience }}</div>
+</div>
+{% endif %}
+{% if job.skills %}
+<div class="section-block">
+	<div class="label">Skills</div>
+	<div class="value">{{ job.skills }}</div>
+</div>
+{% endif %}
+{% if job.computer_skills %}
+<div class="section-block">
+	<div class="label">Computer Skills</div>
+	<div class="value">{{ job.computer_skills }}</div>
+</div>
+{% endif %}
+{% if job.education %}
+<div class="section-block">
+	<div class="label">Education Required</div>
+	<div class="value">{{ job.education }}</div>
+</div>
+{% endif %}
+
 		
 {% if job.contact_company or job.contact_address or job.contact_city or job.contact_state  %}
 		<h2>Company Information</h2>
@@ -144,7 +157,7 @@
 			<div>{{ job.contact_name }}</div>
 			<div>Phone: {{ job.contact_phone }}</div>
 			<div>Fax: {{ job.contact_fax }}</div>
-			<div>{{ job.contact_email|urlize }}</div>
+			<div>{{ job.contact_email|obfuscate_email }}</div>
 			<div>{{ job.contact_website|urlize }}</div>
 		</div>
 		
@@ -186,7 +199,7 @@
 				{% endif %}
 			</div>
 
-            <div class="submitted">Submitted on {{ job.create_dt|date:"D d M Y P" }} 
+            <div class="submitted">Submitted on {{ job.create_dt|date:"long" }} 
 			by {% firstof job.creator.get_profile.display_name job.creator %}</div>
         </div>
         
