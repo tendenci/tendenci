@@ -120,7 +120,7 @@ def print_view(request, id, template_name="events/print-view.html"):
     event = get_object_or_404(Event, pk=id)    
 
     EventLog.objects.log(
-        event_id =  175001, # print view event
+        event_id =  175001, # print-view event-id
         event_data = '%s (%d) viewed [print] by %s' % (event._meta.object_name, event.pk, request.user),
         description = '%s viewed [print]' % event._meta.object_name,
         user = request.user,
@@ -226,7 +226,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     # notification to administrator(s) and module recipient(s)
                     recipients = get_notice_recipients('module', 'events', 'eventrecipients')
                     if recipients and notification:
-                        notification.send(recipients, 'event_edited', {
+                        notification.send_emails(recipients, 'event_edited', {
                             'object': event, 
                             'request': request
                         })
@@ -367,7 +367,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     # notification to administrator(s) and module recipient(s)
                     recipients = get_notice_recipients('module', 'events', 'eventrecipients')
                     if recipients and notification:
-                        notification.send(recipients, 'event_edited', {
+                        notification.send_emails(recipients, 'event_edited', {
                             'object': event, 
                             'request': request
                         })
@@ -426,7 +426,7 @@ def delete(request, id, template_name="events/delete.html"):
             )
 
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % event)
-            if notification: notification.send(get_administrators(),'event_deleted', {'object': event, 'request': request})
+            if notification: notification.send_emails(get_administrators(),'event_deleted', {'object': event, 'request': request})
 
             event.delete()
 
@@ -612,8 +612,6 @@ def cancel_registration(request, event_id=0, reg8n_id=0, template_name="events/r
         # TODO: invoice updates
         registrant.cancel_dt = datetime.now()
         registrant.save()
-        
-        # print registrant.cancel_dt
 
         # back to invoice
         return HttpResponseRedirect(
@@ -784,7 +782,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
     elif hash:
         sqs = SearchQuerySet()
-        sqs = sqs.filter(event=event)
+        sqs = sqs.models(Registrant)
+        sqs = sqs.filter(event_pk=event.pk)
         sqs = sqs.auto_query(sqs.query.clean(hash))
         sqs = sqs.order_by("-update_dt")
 
