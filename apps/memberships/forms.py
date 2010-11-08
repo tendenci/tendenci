@@ -1,7 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-
-from models import MembershipType
+from perms.forms import TendenciBaseForm
+from models import MembershipType, MembershipApplication, MembershipApplicationPage, \
+MembershipApplicationSection, MembershipApplicationField
 from fields import TypeExpMethodField, TypeExpMethodWidget, PriceInput
 #from fields import PeriodField, PeriodWidget, PriceInput, JoinExpMethodWidget, JoinExpMethodField
 
@@ -98,7 +99,26 @@ class MembershipTypeForm(forms.ModelForm):
         
         # TODO: more work later
         return value
+
     
     def save(self, *args, **kwargs):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
         
+
+
+class MembershipApplicationForm(TendenciBaseForm):
+    class Meta:
+        model = MembershipApplication
+
+class MembershipApplicationPageForm(forms.ModelForm):
+    class Meta:
+        model = MembershipApplicationPage
+
+class MembershipApplicationSectionForm(forms.ModelForm):
+    class Meta:
+        model = MembershipApplicationSection
+
+class MembershipApplicationFieldForm(forms.ModelForm):
+    class Meta:
+        model = MembershipApplicationField
+
