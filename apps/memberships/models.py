@@ -68,11 +68,14 @@ class MembershipType(TendenciBaseModel):
     expiration_method_day = models.IntegerField(default=0)
     renew_expiration_method = models.CharField(_('Renewal Expires On'), max_length=50)
     renew_expiration_day = models.IntegerField(default=0)
+    renew_expiration_day2 = models.IntegerField(default=0)
     
     fixed_expiration_method = models.CharField(_('Expires On'), max_length=50)
     fixed_expiration_day = models.IntegerField(default=0)
     fixed_expiration_month = models.IntegerField(default=0)
     fixed_expiration_year = models.IntegerField(default=0)
+    fixed_expiration_day2 = models.IntegerField(default=0)
+    fixed_expiration_month2 = models.IntegerField(default=0)
     
     fixed_expiration_rollover = models.BooleanField(_("Allow Rollover"), default=0)
     fixed_expiration_rollover_days = models.IntegerField(default=0, 

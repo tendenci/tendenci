@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.conf import settings
 from memberships.models import MembershipType
 from memberships.forms import MembershipTypeForm
 
@@ -23,19 +24,24 @@ class MembershipTypeAdmin(admin.ModelAdmin):
     form = MembershipTypeForm
     
     class Media:
-        js = ("js/admin/jquery-1.4.2.min.js", "js/admin/membtype.js",)
+        js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL, 
+              "%sjs/membtype.js" % settings.STATIC_URL,)
         
     
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         
+        # save the expiration method fields
+        type_exp_method = form.cleaned_data['type_exp_method']
+        type_exp_method_list = type_exp_method.split(",")
+        for i, field in enumerate(form.type_exp_method_fields):
+            exec('instance.%s="%s"' % (field, type_exp_method_list[i]))
+            
         if not change:
             instance.creator = request.user
             instance.creator_username = request.user.username
             instance.owner = request.user
             instance.owner_username = request.user.username
-            
-        # TODO: handle the expiration method here
  
         # save the object
         instance.save()
