@@ -16,8 +16,6 @@ class PageMeta():
         site_name = get_setting('site','global','sitedisplayname')
         category = Category.objects.get_for_object(object, 'category')
         subcategory = Category.objects.get_for_object(object, 'subcategory')
-
-        value = ''
         
         # start w/ title
         value = '%s - %s' % (object.title, site_name)

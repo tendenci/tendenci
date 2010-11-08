@@ -1,14 +1,15 @@
 from django.conf.urls.defaults import patterns
 from sitemaps import ArticleSitemap, NewsSitemap, PageSitemap
-from sitemaps import PhotoSetSitemap, ImageSitemap, StorySitemap
+from sitemaps import PhotoSetSitemap, ImageSitemap
+# from sitemaps import StorySitemap
 
 sitemaps = {
+    'page_sitemap': PageSitemap,
     'article_sitemap': ArticleSitemap,
     'news_sitemap': NewsSitemap,
-    'page_sitemap': PageSitemap,
     'photoset_sitemap': PhotoSetSitemap,
     'image_sitemap': ImageSitemap,
-    'story_sitemap': StorySitemap, 
+#    'story_sitemap': StorySitemap, 
 }
 
 urlpatterns = patterns('',
