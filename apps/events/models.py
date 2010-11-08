@@ -120,6 +120,7 @@ class Registrant(models.Model):
     def lastname_firstname(self):
         
         name_list = [n for n in self.name.split() if n]
+        prefix = first = middle = last = suffix = ""
 
         if len(name_list) == 5:
             prefix, first, middle, last, suffix = name_list
