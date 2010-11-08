@@ -11,7 +11,7 @@ class MembershipTypeAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'price', 'admin_fee', 'description', 'group')}),
         ('Expiration Method', {'fields': (
-            ('period_type', 'c_period', 'c_expiration_method'),)}),
+            ('type_exp_method'),)}),
         ('Other Options', {'fields': (
             'corporate_membership_only','corporate_membership_type_id',
             'require_approval','renewal','renewal_period_start', 
@@ -22,6 +22,10 @@ class MembershipTypeAdmin(admin.ModelAdmin):
     
     form = MembershipTypeForm
     
+    class Media:
+        js = ("js/admin/jquery-1.4.2.min.js", "js/admin/membtype.js",)
+        
+    
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         
@@ -30,6 +34,8 @@ class MembershipTypeAdmin(admin.ModelAdmin):
             instance.creator_username = request.user.username
             instance.owner = request.user
             instance.owner_username = request.user.username
+            
+        # TODO: handle the expiration method here
  
         # save the object
         instance.save()
