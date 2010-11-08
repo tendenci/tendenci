@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.conf import settings
-from memberships.models import MembershipType
-from memberships.forms import MembershipTypeForm
+from memberships.models import MembershipType 
+from memberships.models import MembershipApplication, MembershipApplicationPage, MembershipApplicationSection, MembershipApplicationField
+from memberships.forms import MembershipTypeForm, MembershipApplicationForm
 
 class MembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'admin_fee', 'group', 'require_approval',
@@ -48,4 +49,35 @@ class MembershipTypeAdmin(admin.ModelAdmin):
         #form.save_m2m()
         
         return instance
+
+class MembershipApplicationAdmin(admin.ModelAdmin):
+
+    fieldsets = (
+        (None,
+            {
+                'fields': (
+                    'name','slug', 'notes', 'use_captcha', 'require_login',
+                )
+            },
+        ),
+    )
+
+    prepopulated_fields = {'slug': ('name',)}
+    form = MembershipApplicationForm
+
+class MembershipApplicationPageAdmin(admin.ModelAdmin):
+    list_display = ('ma', 'sort_order',)
+
+class MembershipApplicationSectionAdmin(admin.ModelAdmin):
+    list_display = ('ma', 'ma_page', 'label', 'description', 'admin_only', 'order', 'css_class')
+
+class MembershipApplicationFieldAdmin(admin.ModelAdmin):
+    list_display = ('ma', 'ma_section', 'object_type', 'label', 'field_name', 'field_type', 'size',
+        'choices', 'required', 'visible', 'admin_only', 'editor_only', 'order', 'css_class',
+    )
+
 admin.site.register(MembershipType, MembershipTypeAdmin)
+admin.site.register(MembershipApplication, MembershipApplicationAdmin)
+admin.site.register(MembershipApplicationPage, MembershipApplicationPageAdmin)
+admin.site.register(MembershipApplicationSection, MembershipApplicationSectionAdmin)
+admin.site.register(MembershipApplicationField, MembershipApplicationFieldAdmin)

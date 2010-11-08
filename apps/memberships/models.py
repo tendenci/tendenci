@@ -65,7 +65,7 @@ class MembershipType(TendenciBaseModel):
     period_type = models.CharField(_("Period Type"),default='rolling', choices=PERIOD_CHOICES, max_length=10)
     
     expiration_method = models.CharField(_('Expires On'), max_length=50)
-    expiration_method_day = models.IntegerField(default=0)
+    expiration_method_day = models.IntegerField(_('Expiration Day'), default=0)
     renew_expiration_method = models.CharField(_('Renewal Expires On'), max_length=50)
     renew_expiration_day = models.IntegerField(default=0)
     renew_expiration_day2 = models.IntegerField(default=0)
@@ -187,7 +187,7 @@ class MembershipCustomFieldEntry(models.Model):
 class MembershipApplication(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     name = models.CharField(_("Application Name"), max_length=155)
-    slug = models.SlugField(editable=False, max_length=155, unique=True)
+    slug = models.SlugField(max_length=155, unique=True)
     notes = models.CharField(_("Notes"), max_length=255)
    
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
