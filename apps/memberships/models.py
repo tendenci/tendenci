@@ -40,7 +40,7 @@ PERIOD_UNIT_CHOICES = (
 
 class MembershipType(TendenciBaseModel):
     guid = models.CharField(max_length=50)
-    name = models.CharField(_('Name'), max_length=255)
+    name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
     price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0,
                                 help_text="Set 0 for free membership.")
@@ -92,7 +92,7 @@ class MembershipType(TendenciBaseModel):
     corporate_membership_type_id = models.IntegerField(_('Corporate Membership Type'), default=0,
             help_text='If corporate membership only is checked, select a corporate membership type to associate with.')
     
-    ma = models.ForeignKey("MembershipApplication", blank=True, null=True)
+    #ma = models.ManyToManyField("MembershipApplication", blank=True, null=True)
     
     def __unicode__(self):
         return self.name

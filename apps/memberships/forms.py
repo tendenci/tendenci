@@ -3,8 +3,9 @@ from django.utils.translation import ugettext_lazy as _
 from perms.forms import TendenciBaseForm
 from models import MembershipType, MembershipApplication, MembershipApplicationPage, \
 MembershipApplicationSection, MembershipApplicationField
-from fields import TypeExpMethodField, TypeExpMethodWidget, PriceInput
+from fields import TypeExpMethodField, PriceInput
 #from fields import PeriodField, PeriodWidget, PriceInput, JoinExpMethodWidget, JoinExpMethodField
+from widgets import CustomRadioSelect, TypeExpMethodWidget
 
 type_exp_method_fields = ('period_type', 'period', 'period_unit', 'expiration_method', 
                         'expiration_method_day', 'renew_expiration_method', 'renew_expiration_day',
@@ -16,12 +17,12 @@ type_exp_method_widgets = (
                         forms.Select(),
                         forms.TextInput(),
                         forms.Select(),
-                        forms.RadioSelect(),
+                        CustomRadioSelect(),
                         forms.TextInput(),
-                        forms.RadioSelect(),
+                        CustomRadioSelect(),
                         forms.TextInput(),
                         forms.TextInput(),
-                        forms.RadioSelect(),
+                        CustomRadioSelect(),
                         forms.Select(),
                         forms.Select(),
                         forms.Select(),
@@ -54,7 +55,7 @@ class MembershipTypeForm(forms.ModelForm):
                   'price',
                   'admin_fee',
                   'description',
-                  'group',
+                  #'group',
                   #'period_type',
                   'type_exp_method',
                   #'c_period',
@@ -80,9 +81,15 @@ class MembershipTypeForm(forms.ModelForm):
         initial_list = []
         if self.instance.pk:
             for field in self.type_exp_method_fields:
-                initial_list.append(str(eval('self.instance.%s' % field)))
+                field_value = eval('self.instance.%s' % field)
+                if field == 'fixed_expiration_rollover' and (not field_value):
+                    field_value = ''
+                else:
+                    if not field_value:
+                        field_value = ''
+                initial_list.append(str(field_value))
             self.fields['type_exp_method'].initial = ','.join(initial_list)
-            
+  
         else:
             self.fields['type_exp_method'].initial = "rolling,1,years,0,1,0,1,1,0,1,1,,1,1,,1"
         
@@ -96,14 +103,74 @@ class MembershipTypeForm(forms.ModelForm):
         
     def clean_type_exp_method(self):
         value = self.cleaned_data['type_exp_method']
+        data_list = value.split(',')
+        d = dict(zip(self.type_exp_method_fields, data_list))
+        if d['period_type'] == 'rolling':
+            if d['period']:
+                try:
+                    d['period'] = int(d['period'])
+                except:
+                    raise forms.ValidationError(_("Period must be a numeric number."))
+            else:
+                raise forms.ValidationError(_("Period is a required field."))
+            try:
+                d['expiration_method'] = int(d['expiration_method'])
+            except:
+                raise forms.ValidationError(_("Please select an expiration method."))
+            if d['expiration_method'] not in [0, 1]:
+                raise forms.ValidationError(_("Please select an expiration method."))
+            if d['expiration_method'] == 1:
+                try:
+                    d['expiration_method_day'] = int(d['expiration_method_day'])
+                except:
+                    raise forms.ValidationError(_("Expiration day(s) at signup month must be a numeric number."))
+            # renew expiration
+            try:
+                d['renew_expiration_method'] = int(d['renew_expiration_method'])
+            except:
+                raise forms.ValidationError(_("Please select a renew expiration method."))
+            if d['renew_expiration_method'] not in [0, 1, 2]:
+                raise forms.ValidationError(_("Please select a renew expiration method."))
+            if d['expiration_method'] == 1:
+                try:
+                    d['renew_expiration_day'] = int(d['renew_expiration_day'])
+                except:
+                    raise forms.ValidationError(_("Renew expiration day(s) at signup month must be a numeric number."))
+            if d['renew_expiration_method'] == 2:
+                try:
+                    d['renew_expiration_day2'] = int(d['renew_expiration_day2'])
+                except:
+                    raise forms.ValidationError(_("Renew expiration day(s) at renewal month must be a numeric number."))
         
-        # TODO: more work later
+        else: # d['period_type'] == 'fixed'
+            try:
+                d['fixed_expiration_method'] = int(d['fixed_expiration_method'])
+            except:
+                raise forms.ValidationError(_("Please select an expiration method for fixed period."))
+            if d['fixed_expiration_method'] not in [0, 1]:
+                raise forms.ValidationError(_("Please select an expiration method for fixed period."))
+            if d['fixed_expiration_method'] == 0:
+                try:
+                    d['fixed_expiration_day'] = int(d['fixed_expiration_day'])
+                except:
+                    raise forms.ValidationError(_("Fixed expiration day(s) must be a numeric number."))
+            if d['fixed_expiration_method'] == 1:
+                try:
+                    d['fixed_expiration_day2'] = int(d['fixed_expiration_day2'])
+                except:
+                    raise forms.ValidationError(_("Fixed expiration day(s) of current year must be a numeric number."))
+                
+            if d.has_key('fixed_expiration_rollover') and d['fixed_expiration_rollover']:
+                try:
+                    d['fixed_expiration_rollover_days'] = int(d['fixed_expiration_rollover_days'])
+                except:
+                    raise forms.ValidationError(_("Grace period day(s) must be a numeric number."))
+           
         return value
 
     
     def save(self, *args, **kwargs):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
-        
 
 
 class MembershipApplicationForm(TendenciBaseForm):
