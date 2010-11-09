@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from django.conf import settings
 from user_groups.models import Group
+from event_logs.models import EventLog
 from perms.models import ObjectPermission 
 from memberships.models import MembershipType, App, AppField
 from memberships.forms import MembershipTypeForm, AppForm
@@ -94,6 +95,42 @@ class AppAdmin(admin.ModelAdmin):
     inlines = (AppFieldAdmin,)
     prepopulated_fields = {'slug': ('name',)}
     form = AppForm
+
+    def log_deletion(self, request, object, object_repr):
+        super(AppAdmin, self).log_deletion(request, object, object_repr)
+        log_defaults = {
+            'event_id' : 653000,
+            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)           
+
+    def log_change(self, request, object, message):
+        super(AppAdmin, self).log_change(request, object, message)
+        log_defaults = {
+            'event_id' : 652000,
+            'event_data': '%s (%d) edited by %s' % (object._meta.object_name, object.pk, request.user),
+            'description': '%s edited' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)               
+
+    def log_addition(self, request, object):
+        super(AppAdmin, self).log_addition(request, object)
+        log_defaults = {
+            'event_id' : 651000,
+            'event_data': '%s (%d) added by %s' % (object._meta.object_name, object.pk, request.user),
+            'description': '%s added' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
 
     def save_model(self, request, object, form, change):
         app = form.save(commit=False)
