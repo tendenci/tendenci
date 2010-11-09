@@ -210,11 +210,26 @@ class AppField(models.Model):
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
+    position = models.IntegerField(blank=True)
+
+    def save(self, *args, **kwargs):
+        model = self.__class__
+        
+        if self.position is None:
+            # Append
+            try:
+                last = model.objects.order_by('-position')[0]
+                self.position = last.position + 1
+            except IndexError:
+                # First row
+                self.position = 0
+        
+        return super(AppField, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        order_with_respect_to = "app"
+        ordering = ('position',)
 
     def __unicode__(self):
         return self.label

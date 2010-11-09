@@ -164,6 +164,8 @@ class MembershipTypeForm(forms.ModelForm):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
 
 class AppForm(TendenciBaseForm):
+    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('active','Active')))
+
     class Meta:
         model = App
 
