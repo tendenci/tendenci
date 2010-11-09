@@ -2,9 +2,8 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from perms.forms import TendenciBaseForm
 from models import MembershipType, App, AppField
-from fields import TypeExpMethodField, TypeExpMethodWidget, PriceInput
-#from fields import PeriodField, PeriodWidget, PriceInput, JoinExpMethodWidget, JoinExpMethodField
-from widgets import CustomRadioSelect, TypeExpMethodWidget
+from fields import TypeExpMethodField, PriceInput
+from widgets import CustomRadioSelect
 
 type_exp_method_fields = ('period_type', 'period', 'period_unit', 'expiration_method', 
                         'expiration_method_day', 'renew_expiration_method', 'renew_expiration_day',
@@ -32,12 +31,6 @@ type_exp_method_widgets = (
                         )
 
 class MembershipTypeForm(forms.ModelForm):
-    # custom fields: period, expiration_method, renew_expiration_method, 
-    # fixed_expiration_method, fixed_expiration_rollover
-    #c_period = PeriodField(widget=PeriodWidget(attrs={'id':'period'}), 
-    #                       initial="1,months", label='Period')
-    #c_expiration_method = JoinExpMethodField(widget=JoinExpMethodWidget(), required=False,
-    #                                         label='Expires On')
     type_exp_method = TypeExpMethodField(label='Period Type')
     description = forms.CharField(label=_('Notes'), max_length=500, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
@@ -54,7 +47,7 @@ class MembershipTypeForm(forms.ModelForm):
                   'price',
                   'admin_fee',
                   'description',
-                  #'group',
+                  'group',
                   #'period_type',
                   'type_exp_method',
                   #'c_period',
@@ -171,17 +164,8 @@ class MembershipTypeForm(forms.ModelForm):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
 
 class AppForm(TendenciBaseForm):
-
     class Meta:
         model = App
-
-#class MembershipApplicationPageForm(forms.ModelForm):
-#    class Meta:
-#        model = MembershipApplicationPage
-
-#class MembershipApplicationSectionForm(forms.ModelForm):
-#    class Meta:
-#        model = MembershipApplicationSection
 
 class AppFieldForm(forms.ModelForm):
     class Meta:
