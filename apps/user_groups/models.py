@@ -30,6 +30,7 @@ class Group(TendenciBaseModel):
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
+    use_for_membership = models.BooleanField(_('User for Membership Only'), default=0, blank=True)
     
     objects = GroupManager()
 
