@@ -1,9 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from perms.forms import TendenciBaseForm
-from models import MembershipType, MembershipApplication, MembershipApplicationPage, \
-MembershipApplicationSection, MembershipApplicationField
-from fields import TypeExpMethodField, PriceInput
+from models import MembershipType, App, AppField
+from fields import TypeExpMethodField, TypeExpMethodWidget, PriceInput
 #from fields import PeriodField, PeriodWidget, PriceInput, JoinExpMethodWidget, JoinExpMethodField
 from widgets import CustomRadioSelect, TypeExpMethodWidget
 
@@ -167,25 +166,23 @@ class MembershipTypeForm(forms.ModelForm):
                     raise forms.ValidationError(_("Grace period day(s) must be a numeric number."))
            
         return value
-
     
     def save(self, *args, **kwargs):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
 
+class AppForm(TendenciBaseForm):
 
-class MembershipApplicationForm(TendenciBaseForm):
     class Meta:
-        model = MembershipApplication
+        model = App
 
-class MembershipApplicationPageForm(forms.ModelForm):
+#class MembershipApplicationPageForm(forms.ModelForm):
+#    class Meta:
+#        model = MembershipApplicationPage
+
+#class MembershipApplicationSectionForm(forms.ModelForm):
+#    class Meta:
+#        model = MembershipApplicationSection
+
+class AppFieldForm(forms.ModelForm):
     class Meta:
-        model = MembershipApplicationPage
-
-class MembershipApplicationSectionForm(forms.ModelForm):
-    class Meta:
-        model = MembershipApplicationSection
-
-class MembershipApplicationFieldForm(forms.ModelForm):
-    class Meta:
-        model = MembershipApplicationField
-
+        model = AppField

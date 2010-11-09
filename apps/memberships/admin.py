@@ -1,9 +1,11 @@
 from django.contrib import admin
+
 from django.conf import settings
-from memberships.models import MembershipType 
-from memberships.models import MembershipApplication, MembershipApplicationPage, MembershipApplicationSection, MembershipApplicationField
-from memberships.forms import MembershipTypeForm, MembershipApplicationForm
 from user_groups.models import Group
+from perms.models import ObjectPermission 
+from memberships.models import MembershipType, App, AppField
+from memberships.forms import MembershipTypeForm, AppForm
+
 
 class MembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'admin_fee', 'group', 'require_approval',
@@ -12,17 +14,16 @@ class MembershipTypeAdmin(admin.ModelAdmin):
     list_filter = ['name', 'price']
     
     fieldsets = (
-        (None, {'fields': ('name', 'price', 'admin_fee', 'description')}),
-        ('Expiration Method', {'fields': (
-            ('type_exp_method'),)}),
+        (None, {'fields': ('name', 'price', 'admin_fee', 'description', 'group')}),
+        ('Expiration Method', {'fields': (('type_exp_method'),)}),
+
         ('Other Options', {'fields': (
             'corporate_membership_only','corporate_membership_type_id',
             'require_approval','renewal','renewal_period_start', 
             'renewal_period_end', 'expiration_grace_period', 
-            'admin_only', 'order',
-            'status', 'status_detail')}),
+            'admin_only', 'order', 'status', 'status_detail')}),
     )
-    
+
     form = MembershipTypeForm
     
     class Media:
@@ -81,34 +82,59 @@ class MembershipTypeAdmin(admin.ModelAdmin):
         
         return instance
 
-class MembershipApplicationAdmin(admin.ModelAdmin):
+class AppFieldAdmin(admin.TabularInline):
+    model = AppField
 
+class AppAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None,
-            {
-                'fields': (
-                    'name','slug', 'notes', 'use_captcha', 'require_login',
-                )
-            },
-        ),
+        (None, {'fields': ('name','slug', 'notes', ('use_captcha', 'require_login'))},),
+        ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
 
+    inlines = (AppFieldAdmin,)
     prepopulated_fields = {'slug': ('name',)}
-    form = MembershipApplicationForm
+    form = AppForm
 
-class MembershipApplicationPageAdmin(admin.ModelAdmin):
-    list_display = ('ma', 'sort_order',)
+    def save_model(self, request, object, form, change):
+        app = form.save(commit=False)
 
-class MembershipApplicationSectionAdmin(admin.ModelAdmin):
-    list_display = ('ma', 'ma_page', 'label', 'description', 'admin_only', 'order', 'css_class')
+        # set up user permission
+        app.allow_user_view, app.allow_user_edit = form.cleaned_data['user_perms']
+        
+        # adding the helpfile
+        if not change:
+            app.creator = request.user
+            app.creator_username = request.user.username
+            app.owner = request.user
+            app.owner_username = request.user.username
+ 
+        # save the object
+        app.save()
+        form.save_m2m()
 
-class MembershipApplicationFieldAdmin(admin.ModelAdmin):
-    list_display = ('ma', 'ma_section', 'object_type', 'label', 'field_name', 'field_type', 'size',
-        'choices', 'required', 'visible', 'admin_only', 'editor_only', 'order', 'css_class',
-    )
+        # permissions
+        if not change:
+            # assign permissions for selected groups
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], app)
+            # assign creator permissions
+            ObjectPermission.objects.assign(app.creator, app) 
+        else:
+            # assign permissions
+            ObjectPermission.objects.remove_all(app)
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], app)
+            ObjectPermission.objects.assign(app.creator, app) 
+        
+        return app
 
 admin.site.register(MembershipType, MembershipTypeAdmin)
-admin.site.register(MembershipApplication, MembershipApplicationAdmin)
-admin.site.register(MembershipApplicationPage, MembershipApplicationPageAdmin)
-admin.site.register(MembershipApplicationSection, MembershipApplicationSectionAdmin)
-admin.site.register(MembershipApplicationField, MembershipApplicationFieldAdmin)
+admin.site.register(App, AppAdmin)
+
+
+
+
+
+
+
+
+
+
