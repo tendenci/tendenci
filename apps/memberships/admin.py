@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from django.conf import settings
 from user_groups.models import Group
 from event_logs.models import EventLog
@@ -89,8 +88,16 @@ class AppFieldAdmin(admin.TabularInline):
 class AppAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name','slug', 'notes', ('use_captcha', 'require_login'))},),
-        ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
+        ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail')}),
     )
+
+    class Meta:
+        js = [
+            '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
+            '%sjs/admin/jquery-ui-1.8.2.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/dynamic-inlines-with-sorth.js' % settings.STATIC_URL,
+        ]
+        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
     inlines = (AppFieldAdmin,)
     prepopulated_fields = {'slug': ('name',)}
