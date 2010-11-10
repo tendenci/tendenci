@@ -87,7 +87,7 @@ class AppFieldAdmin(admin.TabularInline):
 
 class AppAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None, {'fields': ('name','slug', 'notes', ('use_captcha', 'require_login'))},),
+        (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'use_captcha')},),
         ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail')}),
     )
 

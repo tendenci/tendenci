@@ -187,9 +187,13 @@ class App(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
     name = models.CharField(_("Name"), max_length=155)
     slug = models.SlugField(max_length=200, unique=True)
-    notes = models.TextField()
+    description = models.TextField(blank=True,
+        help_text="Description of this application. Displays at top of application.")
+    confirmation_text = models.TextField(_("Confirmation Text"), blank=True, 
+        help_text="Text the submitter sees after submitting.")
+    notes = models.TextField(blank=True,
+        help_text="Extra notes about this application for editors.  Hidden actual application.")
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
-    require_login = models.BooleanField(_("Require Login"), default=0)
 
     class Meta:
         verbose_name = "Membership Application"
