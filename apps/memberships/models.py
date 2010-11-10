@@ -65,6 +65,7 @@ class MembershipType(TendenciBaseModel):
     
     #expiration_method = models.CharField(_('Expiration Method'), max_length=50)
     #expiration_method_custom_dt = models.DateTimeField()
+    never_expires = models.BooleanField(_("Never Expires"), default=0)
     period = models.IntegerField(_('Period'), default=0)
     period_unit = models.CharField(choices=PERIOD_UNIT_CHOICES, max_length=10)
     period_type = models.CharField(_("Period Type"),default='rolling', choices=PERIOD_CHOICES, max_length=10)
@@ -93,11 +94,11 @@ class MembershipType(TendenciBaseModel):
     expiration_grace_period = models.IntegerField(_('Expiration Grace Period'), default=0, 
             help_text="The number of days after the membership expires their membership is still active.")
    
-    corporate_membership_only = models.BooleanField(_('Corporate Membership Only'), default=0)
-    corporate_membership_type_id = models.IntegerField(_('Corporate Membership Type'), default=0,
-            help_text='If corporate membership only is checked, select a corporate membership type to associate with.')
+    #corporate_membership_only = models.BooleanField(_('Corporate Membership Only'), default=0)
+    #corporate_membership_type_id = models.IntegerField(_('Corporate Membership Type'), default=0,
+    #        help_text='If corporate membership only is checked, select a corporate membership type to associate with.')
 
-    ma = models.ForeignKey("App", blank=True, null=True)
+    #ma = models.ForeignKey("App", blank=True, null=True)
 
     class Meta:
         verbose_name = "Membership Type"
