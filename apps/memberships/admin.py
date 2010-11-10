@@ -15,19 +15,17 @@ from memberships.forms import AppForm
 class MembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'admin_fee', 'group', 'require_approval',
                      'allow_renewal', 'renewal_price', 'renewal',  
-                     'corporate_membership_only',
                      'admin_only', 'status_detail']
     list_filter = ['name', 'price', 'status_detail']
     
     fieldsets = (
         (None, {'fields': ('name', 'price', 'admin_fee', 'description')}),
-        ('Expiration Method', {'fields': (('type_exp_method'),)}),
+        ('Expiration Method', {'fields': ('never_expires', 'type_exp_method',)}),
         ('Renewal Options', {'fields': ('allow_renewal','renewal', 'renewal_price', 
                                         'renewal_period_start', 
                                         'renewal_period_end',)}),
 
         ('Other Options', {'fields': (
-            'corporate_membership_only','corporate_membership_type_id',
             'expiration_grace_period', 'require_approval', 
             'admin_only', 'order', 'status', 'status_detail')}),
     )
