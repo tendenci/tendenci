@@ -52,8 +52,9 @@ class Group(TendenciBaseModel):
     def save(self, force_insert=False, force_update=False):
         if not self.id:
             name = self.name
-            self.slug = slugify(name)
             self.guid = uuid.uuid1()
+            if not self.slug:
+                self.slug = slugify(name)
             
         super(self.__class__, self).save(force_insert, force_update)
 
