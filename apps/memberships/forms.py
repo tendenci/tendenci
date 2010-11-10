@@ -36,6 +36,8 @@ class MembershipTypeForm(forms.ModelForm):
                                widget=forms.Textarea(attrs={'rows':'3'}))
     price = forms.DecimalField(decimal_places=2, widget=PriceInput(), 
                                help_text="Set 0 for free membership.")
+    renewal_price = forms.DecimalField(decimal_places=2, widget=PriceInput(), required=False, 
+                               help_text="Set 0 for free membership.")
     admin_fee = forms.DecimalField(decimal_places=2, required=False,
                                    widget=PriceInput(),
                                    help_text="Admin fee for the first time processing")
@@ -50,12 +52,14 @@ class MembershipTypeForm(forms.ModelForm):
                   #'group',
                   #'period_type',
                   'type_exp_method',
+                  'renewal_price',
+                  'allow_renewal',
+                  'renewal',
                   #'c_period',
                   #'c_expiration_method',
                   'corporate_membership_only',
                   'corporate_membership_type_id',
                   'require_approval',
-                  'renewal',
                   'admin_only',
                   'renewal_period_start',
                   'renewal_period_end',
