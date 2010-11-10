@@ -45,6 +45,9 @@ class MembershipType(TendenciBaseModel):
     description = models.CharField(_('Description'), max_length=500)
     price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0,
                                 help_text="Set 0 for free membership.")
+    renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15, decimal_places=2, 
+                                        blank=True, default=0, null=True,
+                                        help_text="Set 0 for free membership.")
     # for first time processing
     admin_fee = models.DecimalField(_('Admin Fee'), 
                                     max_digits=15, decimal_places=2, blank=True, default=0, 
@@ -54,6 +57,7 @@ class MembershipType(TendenciBaseModel):
                               help_text="Members joined will be added to this group")
     
     require_approval = models.BooleanField(_('Require Approval'), default=1)
+    allow_renewal = models.BooleanField(_('Allow Renewal'), default=1)
     renewal = models.BooleanField(_('Renewal Only'), default=0)
     order = models.IntegerField(_('Order'), default=0, 
                                 help_text='Types will be displayed in ascending order based on this field')
