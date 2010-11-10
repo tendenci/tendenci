@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.conf import settings
+from django.template.defaultfilters import slugify
 from memberships.models import MembershipType 
 from memberships.models import MembershipApplication, MembershipApplicationPage, MembershipApplicationSection, MembershipApplicationField
 from memberships.forms import MembershipTypeForm, MembershipApplicationForm
@@ -55,14 +56,24 @@ class MembershipTypeAdmin(admin.ModelAdmin):
             # create a group for this type
             group = Group()
             group.name = instance.name
-            # TODO:  a unique slug
+            group.slug = slugify('membership %s' % group.name)
+            # just in case, check if this slug already exists in group. 
+            # if it does, make a unique slug
+            tmp_groups = Group.objects.filter(slug__istartswith=group.slug)
+            if tmp_groups:
+                t_list = [g.slug[len(group.slug):] for g in tmp_groups]
+                num = 1
+                while str(num) in t_list:
+                    num += 1
+                group.slug = '%s%s' % (group.slug, str(num))
+            
             group.label = instance.name
             group.email_recipient = request.user.email
             group.show_as_option = 0
             group.allow_self_add = 0
             group.allow_self_remove = 0
-            group.description = "Auto-generated with the membership type. Used membership only"
-            group.notes = "Auto-generated with the membership type. Used membership only"
+            group.description = "Auto-generated with the membership type. Used for membership only"
+            group.notes = "Auto-generated with the membership type. Used for membership only"
             group.use_for_membership = 1
             
             group.creator = request.user
