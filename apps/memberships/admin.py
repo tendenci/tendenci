@@ -1,10 +1,16 @@
 from django.contrib import admin
 from django.conf import settings
-from django.template.defaultfilters import slugify
-from memberships.models import MembershipType 
-from memberships.models import MembershipApplication, MembershipApplicationPage, MembershipApplicationSection, MembershipApplicationField
-from memberships.forms import MembershipTypeForm, MembershipApplicationForm
+
+from django.template.defaultfilters import slugify 
+#from memberships.models import MembershipApplication, MembershipApplicationPage, MembershipApplicationSection, MembershipApplicationField
+from memberships.forms import MembershipTypeForm
+
 from user_groups.models import Group
+from event_logs.models import EventLog
+from perms.models import ObjectPermission 
+from memberships.models import  MembershipType, App, AppField
+from memberships.forms import AppForm
+
 
 class MembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'admin_fee', 'group', 'require_approval',
@@ -14,16 +20,15 @@ class MembershipTypeAdmin(admin.ModelAdmin):
     
     fieldsets = (
         (None, {'fields': ('name', 'price', 'admin_fee', 'description')}),
-        ('Expiration Method', {'fields': (
-            ('type_exp_method'),)}),
+        ('Expiration Method', {'fields': (('type_exp_method'),)}),
+
         ('Other Options', {'fields': (
             'corporate_membership_only','corporate_membership_type_id',
             'require_approval','renewal','renewal_period_start', 
             'renewal_period_end', 'expiration_grace_period', 
-            'admin_only', 'order',
-            'status', 'status_detail')}),
+            'admin_only', 'order', 'status', 'status_detail')}),
     )
-    
+
     form = MembershipTypeForm
     
     class Media:
@@ -55,8 +60,8 @@ class MembershipTypeAdmin(admin.ModelAdmin):
             
             # create a group for this type
             group = Group()
-            group.name = instance.name
-            group.slug = slugify('membership %s' % group.name)
+            group.name = 'Membership: %s' % instance.name
+            group.slug = slugify(group.name)
             # just in case, check if this slug already exists in group. 
             # if it does, make a unique slug
             tmp_groups = Group.objects.filter(slug__istartswith=group.slug)
@@ -92,34 +97,103 @@ class MembershipTypeAdmin(admin.ModelAdmin):
         
         return instance
 
-class MembershipApplicationAdmin(admin.ModelAdmin):
+class AppFieldAdmin(admin.TabularInline):
+    model = AppField
 
+class AppAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None,
-            {
-                'fields': (
-                    'name','slug', 'notes', 'use_captcha', 'require_login',
-                )
-            },
-        ),
+        (None, {'fields': ('name','slug', 'notes', ('use_captcha', 'require_login'))},),
+        ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail')}),
     )
 
+    class Meta:
+        js = [
+            '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
+            '%sjs/admin/jquery-ui-1.8.2.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/dynamic-inlines-with-sorth.js' % settings.STATIC_URL,
+        ]
+        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
+
+    inlines = (AppFieldAdmin,)
     prepopulated_fields = {'slug': ('name',)}
-    form = MembershipApplicationForm
+    form = AppForm
 
-class MembershipApplicationPageAdmin(admin.ModelAdmin):
-    list_display = ('ma', 'sort_order',)
+    def log_deletion(self, request, object, object_repr):
+        super(AppAdmin, self).log_deletion(request, object, object_repr)
+        log_defaults = {
+            'event_id' : 653000,
+            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)           
 
-class MembershipApplicationSectionAdmin(admin.ModelAdmin):
-    list_display = ('ma', 'ma_page', 'label', 'description', 'admin_only', 'order', 'css_class')
+    def log_change(self, request, object, message):
+        super(AppAdmin, self).log_change(request, object, message)
+        log_defaults = {
+            'event_id' : 652000,
+            'event_data': '%s (%d) edited by %s' % (object._meta.object_name, object.pk, request.user),
+            'description': '%s edited' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)               
 
-class MembershipApplicationFieldAdmin(admin.ModelAdmin):
-    list_display = ('ma', 'ma_section', 'object_type', 'label', 'field_name', 'field_type', 'size',
-        'choices', 'required', 'visible', 'admin_only', 'editor_only', 'order', 'css_class',
-    )
+    def log_addition(self, request, object):
+        super(AppAdmin, self).log_addition(request, object)
+        log_defaults = {
+            'event_id' : 651000,
+            'event_data': '%s (%d) added by %s' % (object._meta.object_name, object.pk, request.user),
+            'description': '%s added' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
+
+    def save_model(self, request, object, form, change):
+        app = form.save(commit=False)
+
+        # set up user permission
+        app.allow_user_view, app.allow_user_edit = form.cleaned_data['user_perms']
+        
+        # adding the helpfile
+        if not change:
+            app.creator = request.user
+            app.creator_username = request.user.username
+            app.owner = request.user
+            app.owner_username = request.user.username
+ 
+        # save the object
+        app.save()
+        form.save_m2m()
+
+        # permissions
+        if not change:
+            # assign permissions for selected groups
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], app)
+            # assign creator permissions
+            ObjectPermission.objects.assign(app.creator, app) 
+        else:
+            # assign permissions
+            ObjectPermission.objects.remove_all(app)
+            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], app)
+            ObjectPermission.objects.assign(app.creator, app) 
+        
+        return app
 
 admin.site.register(MembershipType, MembershipTypeAdmin)
-admin.site.register(MembershipApplication, MembershipApplicationAdmin)
-admin.site.register(MembershipApplicationPage, MembershipApplicationPageAdmin)
-admin.site.register(MembershipApplicationSection, MembershipApplicationSectionAdmin)
-admin.site.register(MembershipApplicationField, MembershipApplicationFieldAdmin)
+admin.site.register(App, AppAdmin)
+
+
+
+
+
+
+
+
+
+

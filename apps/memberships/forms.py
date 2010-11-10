@@ -1,10 +1,8 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from perms.forms import TendenciBaseForm
-from models import MembershipType, MembershipApplication, MembershipApplicationPage, \
-MembershipApplicationSection, MembershipApplicationField
+from models import MembershipType, App, AppField
 from fields import TypeExpMethodField, PriceInput
-#from fields import PeriodField, PeriodWidget, PriceInput, JoinExpMethodWidget, JoinExpMethodField
 from widgets import CustomRadioSelect, TypeExpMethodWidget
 
 type_exp_method_fields = ('period_type', 'period', 'period_unit', 'expiration_method', 
@@ -33,12 +31,6 @@ type_exp_method_widgets = (
                         )
 
 class MembershipTypeForm(forms.ModelForm):
-    # custom fields: period, expiration_method, renew_expiration_method, 
-    # fixed_expiration_method, fixed_expiration_rollover
-    #c_period = PeriodField(widget=PeriodWidget(attrs={'id':'period'}), 
-    #                       initial="1,months", label='Period')
-    #c_expiration_method = JoinExpMethodField(widget=JoinExpMethodWidget(), required=False,
-    #                                         label='Expires On')
     type_exp_method = TypeExpMethodField(label='Period Type')
     description = forms.CharField(label=_('Notes'), max_length=500, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
@@ -167,25 +159,16 @@ class MembershipTypeForm(forms.ModelForm):
                     raise forms.ValidationError(_("Grace period day(s) must be a numeric number."))
            
         return value
-
     
     def save(self, *args, **kwargs):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
 
+class AppForm(TendenciBaseForm):
+    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('active','Active')))
 
-class MembershipApplicationForm(TendenciBaseForm):
     class Meta:
-        model = MembershipApplication
+        model = App
 
-class MembershipApplicationPageForm(forms.ModelForm):
+class AppFieldForm(forms.ModelForm):
     class Meta:
-        model = MembershipApplicationPage
-
-class MembershipApplicationSectionForm(forms.ModelForm):
-    class Meta:
-        model = MembershipApplicationSection
-
-class MembershipApplicationFieldForm(forms.ModelForm):
-    class Meta:
-        model = MembershipApplicationField
-
+        model = AppField
