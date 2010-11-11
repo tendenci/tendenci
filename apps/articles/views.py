@@ -158,6 +158,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
             form = form_class(request.POST, user=request.user)
             if form.is_valid():           
                 article = form.save(commit=False)
+
                 # set up the user information
                 article.creator = request.user
                 article.creator_username = request.user.username
