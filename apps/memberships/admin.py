@@ -1,26 +1,32 @@
 from django.contrib import admin
 from django.conf import settings
+
+from django.template.defaultfilters import slugify 
+#from memberships.models import MembershipApplication, MembershipApplicationPage, MembershipApplicationSection, MembershipApplicationField
+from memberships.forms import MembershipTypeForm
+
 from user_groups.models import Group
 from event_logs.models import EventLog
 from perms.models import ObjectPermission 
-from memberships.models import MembershipType, App, AppField
-from memberships.forms import MembershipTypeForm, AppForm
+from memberships.models import  MembershipType, App, AppField
+from memberships.forms import AppForm
 
 
 class MembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'admin_fee', 'group', 'require_approval',
-                     'renewal', 'expiration_method', 'corporate_membership_only',
+                     'allow_renewal', 'renewal_price', 'renewal',  
                      'admin_only', 'status_detail']
-    list_filter = ['name', 'price']
+    list_filter = ['name', 'price', 'status_detail']
     
     fieldsets = (
-        (None, {'fields': ('name', 'price', 'admin_fee', 'description', 'group')}),
-        ('Expiration Method', {'fields': (('type_exp_method'),)}),
+        (None, {'fields': ('name', 'price', 'admin_fee', 'description')}),
+        ('Expiration Method', {'fields': ('never_expires', 'type_exp_method',)}),
+        ('Renewal Options', {'fields': ('allow_renewal','renewal', 'renewal_price', 
+                                        'renewal_period_start', 
+                                        'renewal_period_end',)}),
 
         ('Other Options', {'fields': (
-            'corporate_membership_only','corporate_membership_type_id',
-            'require_approval','renewal','renewal_period_start', 
-            'renewal_period_end', 'expiration_grace_period', 
+            'expiration_grace_period', 'require_approval', 
             'admin_only', 'order', 'status', 'status_detail')}),
     )
 
@@ -29,6 +35,45 @@ class MembershipTypeAdmin(admin.ModelAdmin):
     class Media:
         js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL, 
               "%sjs/membtype.js" % settings.STATIC_URL,)
+        
+    def log_deletion(self, request, object, object_repr):
+        super(MembershipTypeAdmin, self).log_deletion(request, object, object_repr)
+        log_defaults = {
+            'event_id' : 475300,
+            'event_data': '%s %s(%d) deleted by %s' % (object._meta.object_name, 
+                                                    object.name, object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)           
+
+    def log_change(self, request, object, message):
+        super(MembershipTypeAdmin, self).log_change(request, object, message)
+        log_defaults = {
+            'event_id' : 475200,
+            'event_data': '%s %s(%d) edited by %s' % (object._meta.object_name, 
+                                                    object.name, object.pk, request.user),
+            'description': '%s edited' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)               
+
+    def log_addition(self, request, object):
+        super(MembershipTypeAdmin, self).log_addition(request, object)
+        log_defaults = {
+            'event_id' : 475100,
+            'event_data': '%s %s(%d) added by %s' % (object._meta.object_name, 
+                                                   object.name, object.pk, request.user),
+            'description': '%s added' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
         
     
     def save_model(self, request, object, form, change):
@@ -55,15 +100,27 @@ class MembershipTypeAdmin(admin.ModelAdmin):
             
             # create a group for this type
             group = Group()
-            group.name = instance.name
-            # TODO:  a unique slug
+            group.name = 'Membership: %s' % instance.name
+            group.slug = slugify(group.name)
+            # just in case, check if this slug already exists in group. 
+            # if it does, make a unique slug
+            tmp_groups = Group.objects.filter(slug__istartswith=group.slug)
+            if tmp_groups:
+                t_list = [g.slug[len(group.slug):] for g in tmp_groups]
+                num = 1
+                while str(num) in t_list:
+                    num += 1
+                group.slug = '%s%s' % (group.slug, str(num))
+                # group name is also a unique field
+                group.name = '%s%s' % (group.name, str(num))
+            
             group.label = instance.name
             group.email_recipient = request.user.email
             group.show_as_option = 0
             group.allow_self_add = 0
             group.allow_self_remove = 0
-            group.description = "Auto-generated with the membership type. Used membership only"
-            group.notes = "Auto-generated with the membership type. Used membership only"
+            group.description = "Auto-generated with the membership type. Used for membership only"
+            group.notes = "Auto-generated with the membership type. Used for membership only"
             group.use_for_membership = 1
             
             group.creator = request.user
