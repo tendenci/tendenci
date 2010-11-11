@@ -66,7 +66,8 @@ class MembershipType(TendenciBaseModel):
     
     #expiration_method = models.CharField(_('Expiration Method'), max_length=50)
     #expiration_method_custom_dt = models.DateTimeField()
-    never_expires = models.BooleanField(_("Never Expires"), default=0)
+    never_expires = models.BooleanField(_("Never Expires"), default=0,
+                                        help_text='If selected, skip the Renewal Options.')
     period = models.IntegerField(_('Period'), default=0)
     period_unit = models.CharField(choices=PERIOD_UNIT_CHOICES, max_length=10)
     period_type = models.CharField(_("Period Type"),default='rolling', choices=PERIOD_CHOICES, max_length=10)
