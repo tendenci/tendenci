@@ -21,13 +21,13 @@ class MembershipTypeAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'price', 'admin_fee', 'description')}),
         ('Expiration Method', {'fields': ('never_expires', 'type_exp_method',)}),
-        ('Renewal Options', {'fields': ('allow_renewal','renewal', 'renewal_price', 
+        ('Renewal Options', {'fields': (('allow_renewal','renewal'), 'renewal_price', 
                                         'renewal_period_start', 
                                         'renewal_period_end',)}),
 
         ('Other Options', {'fields': (
-            'expiration_grace_period', 'require_approval', 
-            'admin_only', 'order', 'status', 'status_detail')}),
+            'expiration_grace_period', ('require_approval', 
+            'admin_only'), 'order', 'status', 'status_detail')}),
     )
 
     form = MembershipTypeForm
