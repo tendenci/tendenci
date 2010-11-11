@@ -5,16 +5,15 @@ from datetime import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
-from perms.models import ObjectPermission
 from perms.forms import TendenciBaseForm
-from models import MembershipType, App, AppEntry, AppField, AppFieldEntry
+from models import MembershipType, App, AppEntry, AppField
 from fields import TypeExpMethodField, PriceInput
-from widgets import CustomRadioSelect
-from perms.utils import is_admin
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from django.core.files.storage import FileSystemStorage
+from widgets import CustomRadioSelect, TypeExpMethodWidget
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
+
 
 type_exp_method_fields = ('period_type', 'period', 'period_unit', 'expiration_method', 
                         'expiration_method_day', 'renew_expiration_method', 'renew_expiration_day',
@@ -47,6 +46,8 @@ class MembershipTypeForm(forms.ModelForm):
                                widget=forms.Textarea(attrs={'rows':'3'}))
     price = forms.DecimalField(decimal_places=2, widget=PriceInput(), 
                                help_text="Set 0 for free membership.")
+    renewal_price = forms.DecimalField(decimal_places=2, widget=PriceInput(), required=False, 
+                               help_text="Set 0 for free membership.")
     admin_fee = forms.DecimalField(decimal_places=2, required=False,
                                    widget=PriceInput(),
                                    help_text="Admin fee for the first time processing")
@@ -58,15 +59,18 @@ class MembershipTypeForm(forms.ModelForm):
                   'price',
                   'admin_fee',
                   'description',
-                  'group',
+                  #'group',
                   #'period_type',
                   'type_exp_method',
+                  'renewal_price',
+                  'allow_renewal',
+                  'renewal',
+                  'never_expires',
                   #'c_period',
                   #'c_expiration_method',
-                  'corporate_membership_only',
-                  'corporate_membership_type_id',
+                  #'corporate_membership_only',
+                  #'corporate_membership_type_id',
                   'require_approval',
-                  'renewal',
                   'admin_only',
                   'renewal_period_start',
                   'renewal_period_end',
