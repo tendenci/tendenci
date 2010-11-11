@@ -82,7 +82,7 @@ class FormForForm(forms.ModelForm):
 class FormForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('draft','Draft'),('published','Published'),))
-    
+
     class Meta:
         model = Form
         fields = ('title',

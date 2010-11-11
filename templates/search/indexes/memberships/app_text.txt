@@ -1,0 +1,13 @@
+{{ object.name }}
+slug:{{ object.slug }}
+{{ object.description }}
+{{ object.notes }}
+
+{% if object.captcha %}
+has:captcha
+{% endif %}
+
+by {{ object.creator }}
+by {{ object.object.creator.get_profile.display_name }}
+
+is:{{ object.status_detail }}

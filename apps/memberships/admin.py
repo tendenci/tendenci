@@ -98,7 +98,6 @@ class AppAdmin(admin.ModelAdmin):
             '%sjs/admin/dynamic-inlines-with-sorth.js' % settings.STATIC_URL,
         ]
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
-
     inlines = (AppFieldAdmin,)
     prepopulated_fields = {'slug': ('name',)}
     form = AppForm
