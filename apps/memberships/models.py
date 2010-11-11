@@ -1,13 +1,14 @@
 import uuid
+from hashlib import md5
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
+from memberships.managers import MemberAppManager, MemberAppEntryManager
 from corporate_memberships.models import CorporateMembership
 
 FIELD_CHOICES = (
@@ -186,15 +187,20 @@ class MembershipArchive(models.Model):
     
     def __unicode__(self):
         return "%s (%s)" % (self.user.get_full_name(), self.member_number) 
-    
-    
+
 class App(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
     name = models.CharField(_("Name"), max_length=155)
     slug = models.SlugField(max_length=200, unique=True)
-    notes = models.TextField()
+    description = models.TextField(blank=True,
+        help_text="Description of this application. Displays at top of application.")
+    confirmation_text = models.TextField(_("Confirmation Text"), blank=True, 
+        help_text="Text the submitter sees after submitting.")
+    notes = models.TextField(blank=True,
+        help_text="Extra notes about this application for editors.  Hidden actual application.")
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
-    require_login = models.BooleanField(_("Require Login"), default=0)
+
+    objects = MemberAppManager()
 
     class Meta:
         verbose_name = "Membership Application"
@@ -207,6 +213,13 @@ class App(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
 
+class AppFieldManager(models.Manager):
+    """
+    Only show visible fields when displaying actual form..
+    """
+    def visible(self):
+        return self.filter(visible=True)
+
 class AppField(models.Model):
     app = models.ForeignKey("App", related_name="fields")
     label = models.CharField(_("Label"), max_length=200)
@@ -216,6 +229,8 @@ class AppField(models.Model):
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
     position = models.IntegerField(blank=True)
+
+    objects = AppFieldManager()
 
     def save(self, *args, **kwargs):
         model = self.__class__
@@ -244,16 +259,22 @@ class AppEntry(models.Model):
     An entry submitted via a membership application.
     """
     
-    app = models.ForeignKey("App", related_name="entries")
+    app = models.ForeignKey("App", related_name="entries", editable=False)
     entry_time = models.DateTimeField(_("Date/Time"))
+
+    objects = MemberAppEntryManager()
 
     class Meta:
         verbose_name = _("Application Entry")
         verbose_name = _("Application Entries")
 
-#    @models.permalink
-#    def get_absolute_url(self):
-#        return ("app.entry.detail", (), {"id": self.pk})
+    @property
+    def hash(self):
+        return md5(str(self.pk)).hexdigest()
+
+    @models.permalink
+    def hash_url(self):
+        return ('membership.application_confirmation', (self.hash,))
 
 class AppFieldEntry(models.Model):
     """

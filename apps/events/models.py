@@ -157,7 +157,7 @@ class Registrant(models.Model):
 
     @models.permalink
     def hash_url(self):
-        return ('event.registration_confirmation', [self.registration.event.pk, self.hash])
+        return ('membership.application_confirmation', [self.registration.event.pk, self.hash])
 
     class Meta:
         permissions = (("view_registrant","Can view registrant"),)
