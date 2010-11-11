@@ -49,8 +49,8 @@ class MembershipType(TendenciBaseModel):
                                         blank=True, default=0, null=True,
                                         help_text="Set 0 for free membership.")
     # for first time processing
-    admin_fee = models.DecimalField(_('Admin Fee'), 
-                                    max_digits=15, decimal_places=2, blank=True, default=0, 
+    admin_fee = models.DecimalField(_('Admin Fee'),
+                                    max_digits=15, decimal_places=2, blank=True, default=0, null=True, 
                                     help_text="Admin fee for the first time processing")
     
     group = models.ForeignKey(Group, related_name="membership_types",

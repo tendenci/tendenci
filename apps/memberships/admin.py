@@ -36,6 +36,45 @@ class MembershipTypeAdmin(admin.ModelAdmin):
         js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL, 
               "%sjs/membtype.js" % settings.STATIC_URL,)
         
+    def log_deletion(self, request, object, object_repr):
+        super(MembershipTypeAdmin, self).log_deletion(request, object, object_repr)
+        log_defaults = {
+            'event_id' : 475300,
+            'event_data': '%s %s(%d) deleted by %s' % (object._meta.object_name, 
+                                                    object.name, object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)           
+
+    def log_change(self, request, object, message):
+        super(MembershipTypeAdmin, self).log_change(request, object, message)
+        log_defaults = {
+            'event_id' : 475200,
+            'event_data': '%s %s(%d) edited by %s' % (object._meta.object_name, 
+                                                    object.name, object.pk, request.user),
+            'description': '%s edited' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)               
+
+    def log_addition(self, request, object):
+        super(MembershipTypeAdmin, self).log_addition(request, object)
+        log_defaults = {
+            'event_id' : 475100,
+            'event_data': '%s %s(%d) added by %s' % (object._meta.object_name, 
+                                                   object.name, object.pk, request.user),
+            'description': '%s added' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
+        
     
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
@@ -72,6 +111,8 @@ class MembershipTypeAdmin(admin.ModelAdmin):
                 while str(num) in t_list:
                     num += 1
                 group.slug = '%s%s' % (group.slug, str(num))
+                # group name is also a unique field
+                group.name = '%s%s' % (group.name, str(num))
             
             group.label = instance.name
             group.email_recipient = request.user.email
