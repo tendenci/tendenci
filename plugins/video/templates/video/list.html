@@ -1,5 +1,7 @@
 {% extends "video/base.html" %}
 
+{% block title %}{% if category %}{{category|title}} {% endif %}Videos{% endblock %}
+
 {% block body %}
 <h1>{% if category %}{{category|title}} {% endif %}Videos</h1>
 {% for video in videos %}
