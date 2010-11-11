@@ -1,9 +1,19 @@
+from uuid import uuid4
+from os.path import join
+from datetime import datetime
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.utils.importlib import import_module
 from perms.forms import TendenciBaseForm
-from models import MembershipType, App, AppField
+from models import MembershipType, App, AppEntry, AppField
 from fields import TypeExpMethodField, PriceInput
+from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
+from django.core.files.storage import FileSystemStorage
 from widgets import CustomRadioSelect, TypeExpMethodWidget
+
+fs = FileSystemStorage(location=UPLOAD_ROOT)
+
 
 type_exp_method_fields = ('period_type', 'period', 'period_unit', 'expiration_method', 
                         'expiration_method_day', 'renew_expiration_method', 'renew_expiration_day',
@@ -169,7 +179,7 @@ class MembershipTypeForm(forms.ModelForm):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
 
 class AppForm(TendenciBaseForm):
-    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('active','Active')))
+    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('published','Published')))
 
     class Meta:
         model = App
@@ -177,3 +187,69 @@ class AppForm(TendenciBaseForm):
 class AppFieldForm(forms.ModelForm):
     class Meta:
         model = AppField
+
+class AppEntryForm(forms.ModelForm):
+
+    class Meta:
+        model = AppEntry
+        exclude = ("form", "entry_time",)
+
+    def __init__(self, app, *args, **kwargs):
+        """
+        Dynamically add each of the form fields for the given form model 
+        instance and its related field model instances.
+        """
+        self.app = app
+        self.form_fields = app.fields.visible()
+        super(AppEntryForm, self).__init__(*args, **kwargs)
+
+        for field in self.form_fields:
+            field_key = "field_%s" % field.id
+            if "/" in field.field_type:
+                field_class, field_widget = field.field_type.split("/")
+            else:
+                field_class, field_widget = field.field_type, None
+            field_class = getattr(forms, field_class)
+            field_args = {"label": field.label, "required": field.required}
+            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            if "max_length" in arg_names:
+                field_args["max_length"] = FIELD_MAX_LENGTH
+            if "choices" in arg_names:
+                choices = field.choices.split(",")
+                field_args["choices"] = zip(choices, choices)
+            if field_widget is not None:
+                module, widget = field_widget.rsplit(".", 1)
+                field_args["widget"] = getattr(import_module(module), widget)
+            self.fields[field_key] = field_class(**field_args)
+
+    def save(self, **kwargs):
+        """
+        Create a FormEntry instance and related FieldEntry instances for each 
+        form field.
+        """
+        app_entry = super(AppEntryForm, self).save(commit=False)
+        app_entry.app = self.app
+        app_entry.entry_time = datetime.now()
+        app_entry.save()
+
+        for field in self.form_fields:
+            field_key = "field_%s" % field.id
+            value = self.cleaned_data[field_key]
+            if value and self.fields[field_key].widget.needs_multipart_form:
+                value = fs.save(join("forms", str(uuid4()), value.name), value)
+            # if the value is a list convert is to a comma delimited string
+            if isinstance(value,list):
+                value = ','.join(value)
+            if not value: value=''
+            app_entry.fields.create(field_id=field.id, value=value)
+        return app_entry
+
+    def email_to(self):
+        """
+        Return the value entered for the first field of type EmailField.
+        """
+        for field in self.form_fields:
+            field_class = field.field_type.split("/")[0]
+            if field_class == "EmailField":
+                return self.cleaned_data["field_%s" % field.id]
+        return None
