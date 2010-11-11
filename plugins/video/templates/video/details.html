@@ -3,6 +3,9 @@
 {% load base_tags %}
 {% load perm_tags %}
 
+{% block title %}{{ video.title }} - {{ video.category|title }} Videos{% endblock %}
+{% block meta_description %}{{ video.category }} Videos from {{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ video.title }} - {{ video.description|striptags|truncatewords:40 }}{% endblock %}
+
 {% block body %}
 <h1>{{ video.title }}</h1>
 
