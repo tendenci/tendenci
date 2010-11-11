@@ -144,7 +144,7 @@ class AppFieldAdmin(admin.TabularInline):
 
 class AppAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None, {'fields': ('name','slug', 'notes', ('use_captcha', 'require_login'))},),
+        (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'use_captcha')},),
         ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail')}),
     )
 
@@ -155,7 +155,6 @@ class AppAdmin(admin.ModelAdmin):
             '%sjs/admin/dynamic-inlines-with-sorth.js' % settings.STATIC_URL,
         ]
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
-
     inlines = (AppFieldAdmin,)
     prepopulated_fields = {'slug': ('name',)}
     form = AppForm
