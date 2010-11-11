@@ -1,0 +1,23 @@
+{% extends "video/base.html" %}
+
+{% block body %}
+<h1>{% if category %}{{category|title}} {% endif %}Videos</h1>
+{% for video in videos %}
+    {% with video.object as video %}
+	<div style="width: 200px; height: 300px; float: left;">
+		<a href="{{ video.get_absolute_url }}">
+		<h3>{{ video.title }}</h3>
+		<img src="
+		{% if video.image %}
+		      {{ video.image.url }} 
+        {% else %}
+		      {{ STATIC_URL }}/images/default-photo.jpg
+        {%endif%}
+		   " style="width: 180px;">
+		</a>
+		<br>
+		{{ video.description|safe|truncatewords:"30" }}
+	</div>
+	{% endwith %}
+{% endfor %}
+{% endblock body %}
