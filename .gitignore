@@ -29,5 +29,11 @@ _notes/
 # Ignore all pyc file
 *.pyc
 
+# Ignore deploy files
+deploy/deploy.wsgi
+
+# Ignore plugins json
+plugins/apps.json
+
 # except for .gitignore
 !.gitignore
