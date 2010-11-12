@@ -1,75 +1,89 @@
 import uuid
+from hashlib import md5
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
+from memberships.managers import MemberAppManager, MemberAppEntryManager
 from corporate_memberships.models import CorporateMembership
 
 FIELD_CHOICES = (
-                    ("CharField", _("Text")),
-                    ("CharField/django.forms.Textarea", _("Paragraph Text")),
-                    ("BooleanField", _("Checkbox")),
-                    ("ChoiceField", _("Choose from a list")),
-                    ("MultipleChoiceField", _("Multi select")),
-                    ("EmailField", _("Email")),
-                    ("FileField", _("File upload")),
-                    ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
-                    ("DateTimeField", _("Date/time")),
-                )
+    ("CharField", _("Text")),
+    ("CharField/django.forms.Textarea", _("Paragraph Text")),
+    ("BooleanField", _("Checkbox")),
+    ("ChoiceField", _("Choose from a list")),
+    ("MultipleChoiceField", _("Multi select")),
+    ("EmailField", _("Email")),
+    ("FileField", _("File upload")),
+    ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
+    ("DateTimeField", _("Date/time")),
+)
+
 OBJECT_TYPE_CHOICES = (
-                        ("user", _("User")),
-                        ("membership", _("Membership")),
-                        ("directory", _("Directory")),
-                        ("donation", _("Donation")),
-                        ("custom", _("Custom")),
-                       )
+    ("user", _("User")),
+    ("membership", _("Membership")),
+    ("directory", _("Directory")),
+    ("donation", _("Donation")),
+    ("custom", _("Custom")),
+)
 PERIOD_CHOICES = (
-                  ("fixed", _("Fixed")),
-                  ("rolling", _("Rolling")),
-                  )
+    ("fixed", _("Fixed")),
+    ("rolling", _("Rolling")),
+)
 PERIOD_UNIT_CHOICES = (
-                       ("days", _("Days")),
-                       ("months", _("Months")),
-                       ("years", _("Years")),
-                       )
+    ("days", _("Days")),
+    ("months", _("Months")),
+    ("years", _("Years")),
+)
 
 class MembershipType(TendenciBaseModel):
     guid = models.CharField(max_length=50)
-    name = models.CharField(_('Membership Type'), max_length=255)
+    name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
-    price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0)
+    price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0,
+                                help_text="Set 0 for free membership.")
+    renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15, decimal_places=2, 
+                                        blank=True, default=0, null=True,
+                                        help_text="Set 0 for free membership.")
     # for first time processing
-    admin_fee = models.DecimalField(_('Admin Fee'), 
-                                    max_digits=15, decimal_places=2, blank=True, default=0, 
+    admin_fee = models.DecimalField(_('Admin Fee'),
+                                    max_digits=15, decimal_places=2, blank=True, default=0, null=True, 
                                     help_text="Admin fee for the first time processing")
     
-    group = models.ForeignKey(Group, related_name="membership_types")
+    group = models.ForeignKey(Group, related_name="membership_types",
+                              help_text="Members joined will be added to this group")
     
     require_approval = models.BooleanField(_('Require Approval'), default=1)
-    renewal = models.BooleanField(default=0)
-    order = models.IntegerField(_('Order'), default=0)
+    allow_renewal = models.BooleanField(_('Allow Renewal'), default=1)
+    renewal = models.BooleanField(_('Renewal Only'), default=0)
+    order = models.IntegerField(_('Order'), default=0, 
+                                help_text='Types will be displayed in ascending order based on this field')
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
     
     #expiration_method = models.CharField(_('Expiration Method'), max_length=50)
     #expiration_method_custom_dt = models.DateTimeField()
+    never_expires = models.BooleanField(_("Never Expires"), default=0,
+                                        help_text='If selected, skip the Renewal Options.')
     period = models.IntegerField(_('Period'), default=0)
     period_unit = models.CharField(choices=PERIOD_UNIT_CHOICES, max_length=10)
-    period_type = models.CharField(_("Period Type"), choices=PERIOD_CHOICES, max_length=10)
+    period_type = models.CharField(_("Period Type"),default='rolling', choices=PERIOD_CHOICES, max_length=10)
     
     expiration_method = models.CharField(_('Expires On'), max_length=50)
-    expiration_method_day = models.IntegerField(default=0)
+    expiration_method_day = models.IntegerField(_('Expiration Day'), default=0)
     renew_expiration_method = models.CharField(_('Renewal Expires On'), max_length=50)
     renew_expiration_day = models.IntegerField(default=0)
+    renew_expiration_day2 = models.IntegerField(default=0)
     
     fixed_expiration_method = models.CharField(_('Expires On'), max_length=50)
     fixed_expiration_day = models.IntegerField(default=0)
     fixed_expiration_month = models.IntegerField(default=0)
     fixed_expiration_year = models.IntegerField(default=0)
+    fixed_expiration_day2 = models.IntegerField(default=0)
+    fixed_expiration_month2 = models.IntegerField(default=0)
     
     fixed_expiration_rollover = models.BooleanField(_("Allow Rollover"), default=0)
     fixed_expiration_rollover_days = models.IntegerField(default=0, 
@@ -82,10 +96,14 @@ class MembershipType(TendenciBaseModel):
     expiration_grace_period = models.IntegerField(_('Expiration Grace Period'), default=0, 
             help_text="The number of days after the membership expires their membership is still active.")
    
-    corporate_membership_only = models.BooleanField(_('Corporate Membership Only'), default=0)
-    corporate_membership_type_id = models.IntegerField(default=0)
-    
-    ma = models.ForeignKey("MembershipApplication", blank=True, null=True, default=0)
+    #corporate_membership_only = models.BooleanField(_('Corporate Membership Only'), default=0)
+    #corporate_membership_type_id = models.IntegerField(_('Corporate Membership Type'), default=0,
+    #        help_text='If corporate membership only is checked, select a corporate membership type to associate with.')
+
+    #ma = models.ForeignKey("App", blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Membership Type"
     
     def __unicode__(self):
         return self.name
@@ -117,7 +135,7 @@ class Membership(TendenciBaseModel):
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
     # add membership application id - so we can support multiple applications
-    ma = models.ForeignKey("MembershipApplication")
+    ma = models.ForeignKey("App")
     
     class Meta:
         verbose_name = _("Membership")
@@ -170,22 +188,24 @@ class MembershipArchive(models.Model):
     
     def __unicode__(self):
         return "%s (%s)" % (self.user.get_full_name(), self.member_number) 
-    
-class MembershipCustomFieldEntry(models.Model):
-    membership = models.ForeignKey("Membership", related_name="entries")
-    ma_field = models.ForeignKey("MembershipApplicationField", related_name="entries")
-    value = models.CharField(max_length=500)
-    
-    
-class MembershipApplication(TendenciBaseModel):
-    guid = models.CharField(max_length=50)
-    name = models.CharField(_("Application Name"), max_length=155)
-    slug = models.SlugField(editable=False, max_length=155, unique=True)
-    notes = models.CharField(_("Notes"), max_length=255)
-   
+
+class App(TendenciBaseModel):
+    guid = models.CharField(max_length=50, editable=False)
+    name = models.CharField(_("Name"), max_length=155)
+    slug = models.SlugField(max_length=200, unique=True)
+    description = models.TextField(blank=True,
+        help_text="Description of this application. Displays at top of application.")
+    confirmation_text = models.TextField(_("Confirmation Text"), blank=True, 
+        help_text="Text the submitter sees after submitting.")
+    notes = models.TextField(blank=True,
+        help_text="Extra notes about this application for editors.  Hidden actual application.")
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
-    require_login = models.BooleanField(_("Require User Login"), default=0)
-    
+
+    objects = MemberAppManager()
+
+    class Meta:
+        verbose_name = "Membership Application"
+
     def __unicode__(self):
         return self.name
     
@@ -193,44 +213,81 @@ class MembershipApplication(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
-        
-class MembershipApplicationPage(models.Model):
-    ma = models.ForeignKey("MembershipApplication", related_name="pages")
-    sort_order = models.IntegerField(_("Sort Order"), default=0)
- 
-class MembershipApplicationSection(models.Model):
-    ma = models.ForeignKey("MembershipApplication", related_name="sections")
-    ma_page = models.ForeignKey("MembershipApplicationPage", related_name="sections")
-    
-    label = models.CharField(_("Label"), max_length=120)
-    description = models.CharField(_("Description"), max_length=500)
-    admin_only = models.BooleanField(_("Admin Only"), default=0)
-    
-    order = models.IntegerField(_("Order"), default=0)
-    css_class = models.CharField(_("CSS Class Name"), max_length=50)
-    
-       
-class MembershipApplicationField(models.Model):
-    ma = models.ForeignKey("MembershipApplication", related_name="fields")
-    ma_section = models.ForeignKey("MembershipApplicationSection", related_name="fields")
-    
-    #object_type = models.CharField(_("Object Type"), choices=OBJECT_TYPE_CHOICES, max_length=50)
-    object_type = models.ForeignKey(ContentType, blank=True, null=True)
 
+class AppFieldManager(models.Manager):
+    """
+    Only show visible fields when displaying actual form..
+    """
+    def visible(self):
+        return self.filter(visible=True)
+
+class AppField(models.Model):
+    app = models.ForeignKey("App", related_name="fields")
     label = models.CharField(_("Label"), max_length=200)
-    field_name = models.CharField(_("Field Name"), max_length=50)
-    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=50, 
-                                  blank=True, null=True)
-    size = models.IntegerField(_("Field Size"), default=0)
-    choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
-                                help_text="Comma separated options where applicable")
+    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=50)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
-    admin_only = models.BooleanField(_("Admin Only"), default=0)
-    editor_only = models.BooleanField(_("Editor Only"), default=0) 
+    choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
+        help_text="Comma separated options where applicable")
+    position = models.IntegerField(blank=True)
+
+    objects = AppFieldManager()
+
+    def save(self, *args, **kwargs):
+        model = self.__class__
+        
+        if self.position is None:
+            # Append
+            try:
+                last = model.objects.order_by('-position')[0]
+                self.position = last.position + 1
+            except IndexError:
+                # First row
+                self.position = 0
+        
+        return super(AppField, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _("Field")
+        verbose_name_plural = _("Fields")
+        ordering = ('position',)
+
+    def __unicode__(self):
+        return self.label
+
+class AppEntry(models.Model):
+    """
+    An entry submitted via a membership application.
+    """
     
-    order = models.IntegerField(_("Order"), default=0)
-    css_class = models.CharField(_("CSS Class Name"), max_length=50)
+    app = models.ForeignKey("App", related_name="entries", editable=False)
+    entry_time = models.DateTimeField(_("Date/Time"))
+
+    objects = MemberAppEntryManager()
+
+    class Meta:
+        verbose_name = _("Application Entry")
+        verbose_name = _("Application Entries")
+
+    @property
+    def hash(self):
+        return md5(str(self.pk)).hexdigest()
+
+    @models.permalink
+    def hash_url(self):
+        return ('membership.application_confirmation', (self.hash,))
+
+class AppFieldEntry(models.Model):
+    """
+    A single field value for a form entry submitted via a membership application.
+    """
+    
+    entry = models.ForeignKey("AppEntry", related_name="fields")
+    field = models.ForeignKey("AppField", related_name="field")
+    value = models.CharField(max_length=200)
+    
+    class Meta:
+        verbose_name = _("Application Field Entry")
+        verbose_name = _("Application Field Entries")
 
 
-    
