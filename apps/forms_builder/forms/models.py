@@ -143,8 +143,7 @@ class Field(models.Model):
     
     form = models.ForeignKey("Form", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
-    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, 
-        max_length=50)
+    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=50)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 

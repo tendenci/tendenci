@@ -1,0 +1,42 @@
+{% extends "memberships/base.html" %}
+{% load base_filters %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+	{# forms_nav request.user #}
+	<div class="form-builder-wrap">
+		<h2>{{ app_entry.app.name }}: {{ app_entry.app.confirmation_text }}</h2>
+
+         <div class="quick-options">
+			{# forms_entry_options request.user entry #}       
+         </div>
+    	{% for field in app_entry.fields.all %}
+    		{% if field.field.field_type == 'FileField' %}
+    		<p>
+    			<strong>{{ field.field.label }}</strong><br />
+    			<a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
+    		</p>   		
+    		{% else %}
+    		<p>
+    			<strong>{{ field.field.label }}</strong><br />
+    			<em>{{ field.value }}</em>
+    		</p>
+    		{% endif %}
+    	{% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+{% block extra_body %}
+{% endblock %}
