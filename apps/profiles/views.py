@@ -34,8 +34,9 @@ friends = False
 
 from profiles.models import Profile
 from profiles.forms import ProfileForm, UserPermissionForm
+from profiles.utils import get_admin_auth_group
 from base.http import Http403
-from user_groups.models import Group, GroupMembership
+#from user_groups.models import Group, GroupMembership
 
 from perms.utils import is_admin
 
@@ -152,8 +153,14 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                     new_user.is_superuser = 1
                     new_user.is_staff = 1
                 elif security_level == 'admin':
-                    new_user.is_superuser = 1
-                    new_user.is_staff = 0
+                    new_user.is_superuser = 0
+                    new_user.is_staff = 1
+                    
+                    # add them to admin auth group
+                    auth_group_list = get_admin_auth_group()
+                    if auth_group_list:
+                        new_user.groups = auth_group_list
+                        
                 else:
                     new_user.is_superuser = 0
                     new_user.is_staff = 0
@@ -248,12 +255,23 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 if security_level == 'developer':
                     user_edit.is_superuser = 1
                     user_edit.is_staff = 1
+                    # remove them from auth_group if any - they don't need it
+                    user_edit.groups = []
                 elif security_level == 'admin':
-                    user_edit.is_superuser = 1
-                    user_edit.is_staff = 0
+                    user_edit.is_superuser = 0
+                    user_edit.is_staff = 1
+                    # add them to admin auth group
+                    auth_group_list = get_admin_auth_group()
+                   
+                    if auth_group_list:
+                        # TODO: reassign groups only when it is changed
+                        if user_edit.groups.all() <> auth_group_list:
+                            user_edit.groups = auth_group_list
                 else:
                     user_edit.is_superuser = 0
                     user_edit.is_staff = 0
+                    # remove them from auth_group if any
+                    user_edit.groups = []
                     
                 # set up user permission
                 profile.allow_user_view, profile.allow_user_edit = False, False

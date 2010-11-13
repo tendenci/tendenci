@@ -21,3 +21,11 @@ def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs)
         msg.send()
     except:
         pass
+    
+    
+def get_admin_auth_group(name="Admin"):
+    from django.contrib.auth.models import Group as Auth_Group
+    
+    auth_groups = Auth_Group.objects.filter(name=name)
+    
+    return auth_groups
