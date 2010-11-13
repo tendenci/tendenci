@@ -94,27 +94,7 @@ class Profile(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
             
         super(self.__class__, self).save(*args, **kwargs)
-        
-    def is_admin(self):
-        if hasattr(self.user, 'is_admin'):
-            return getattr(self.user, 'is_admin')
-        else:
-            if self.user.is_superuser and self.user.is_active and self.status==1 \
-                    and self.status_detail=='active':
-                setattr(self.user, 'is_admin', True)
-                return True
-            else:
-                setattr(self.user, 'is_admin', False)
-                return False
-        
-    def is_developer(self):
-        if self.user.is_superuser and self.user.is_staff and self.user.is_active \
-            and self.status==1 and self.status_detail=='active':
-            setattr(self.user, 'is_developer', True)
-            return True
-        else:
-            setattr(self.user, 'is_developer', False)
-            return False
+
         
     # if this profile allows view by user2_compare
     def allow_view_by(self, user2_compare):

@@ -1,6 +1,7 @@
 {% extends "profiles/base.html" %}
 {% load i18n %}
 {% load profile_tags %}
+{% load perm_tags %}
 
 {% block title %}{% trans 'Add User'%}{% endblock %}
 
@@ -20,6 +21,7 @@
 {% block body %}
 {{ block.super }}
 <div class="t">
+{% is_admin request.user as request_user_is_admin %}
 {% users_nav request.user user_this %}
 <div id="t-profile">
 <div id="t-add">
@@ -436,7 +438,7 @@
                       <tr>
                         <td colspan="6" >&nbsp;</td>
                       </tr>
-{% if request.user.get_profile.is_admin  %}
+{% if request_user_is_admin  %}
 					<tr>
                      <td colspan="6" ></td>
                    </tr>

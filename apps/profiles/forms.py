@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
 from profiles.models import Profile
-from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin, is_developer
 
@@ -157,7 +156,7 @@ class ProfileForm(TendenciBaseForm):
             self.fields['username'].initial = self.user_this.username
             if self.user_this.is_superuser and self.user_this.is_staff:
                 self.fields['security_level'].initial = "developer"
-            elif self.user_this.is_superuser:
+            elif self.user_this.is_staff:
                 self.fields['security_level'].initial = "admin"
             else:
                 self.fields['security_level'].initial = "user"
