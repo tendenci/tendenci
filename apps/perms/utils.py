@@ -41,7 +41,7 @@ def is_admin(user):
             profile = user.get_profile()
         except Profile.DoesNotExist:
             profile = Profile.objects.create_profile(user=user)
-        if user.is_superuser and user.is_active and profile.status==1 \
+        if user.is_staff and user.is_active and profile.status==1 \
                 and profile.status_detail.lower()=='active':
             setattr(user, 'is_admin', True)
             return True
