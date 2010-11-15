@@ -173,8 +173,9 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['security_level']
                 del self.fields['status']
                 del self.fields['status_detail']
-            if is_admin(self.user_current) and not is_developer(self.user_current):
-                self.fields['security_level'].choices=(('user','User'), ('admin','Admin'),)
+        
+        if is_admin(self.user_current) and not is_developer(self.user_current):
+            self.fields['security_level'].choices=(('user','User'), ('admin','Admin'),)
 
         if not is_admin(self.user_current):
             if 'status' in self.fields: self.fields.pop('status')
