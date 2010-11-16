@@ -1,14 +1,11 @@
-import os.path
 import uuid
 import re
 
 from django.db import models
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-
+from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from stories.managers import StoryManager
-from perms.utils import is_admin
 from entities.models import Entity
 
 def file_directory(instance, filename):
@@ -27,9 +24,9 @@ class Story(TendenciBaseModel):
     ncsortorder = models.IntegerField(null=True, blank=True)
     entity = models.ForeignKey(Entity,null=True)
     photo = models.FileField(max_length=260, upload_to=file_directory, 
-                             help_text=_('Photo that represents this story.'), 
-                             null=True, blank=True)
-    
+        help_text=_('Photo that represents this story.'), null=True, blank=True)
+    tags = TagField(blank=True, default='')
+
     objects = StoryManager()
     
     class Meta:
