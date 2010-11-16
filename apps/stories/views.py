@@ -59,8 +59,7 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
     
     if has_perm(request.user,'stories.add_story'):    
         if request.method == "POST":
-            form = form_class(request.POST, request.FILES,
-                              user=request.user)
+            form = form_class(request.POST, request.FILES, user=request.user)
             if form.is_valid():           
                 story = form.save(commit=False)
                 # set up the user information
@@ -94,6 +93,9 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % story) 
                 
                 return HttpResponseRedirect(reverse('story', args=[story.pk]))
+            else:
+                from pprint import pprint
+                pprint(form.errors.items())
         else:
             form = form_class(user=request.user)
     
