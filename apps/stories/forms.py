@@ -27,19 +27,21 @@ class StoryForm(TendenciBaseForm):
 
     class Meta:
         model = Story
+
         fields = (
-        'title',
-        'content',
-        'photo',
-        'full_story_link',
-        'start_dt',
-        'end_dt',
-        'syndicate',
-        'allow_anonymous_view',
-        'user_perms',
-        'group_perms',
-        'status',
-        'status_detail',
+            'title',
+            'content',
+            'photo',
+            'full_story_link',
+            'tags',
+            'start_dt',
+            'end_dt',
+            'syndicate',
+            'allow_anonymous_view',
+            'user_perms',
+            'group_perms',
+            'status',
+            'status_detail',
         )
 
         fieldsets = [('Story Information', {
@@ -47,6 +49,7 @@ class StoryForm(TendenciBaseForm):
                                  'content',
                                  'photo',
                                  'full_story_link',
+                                 'tags',
                                  'start_dt',
                                  'end_dt',
                                  ],
