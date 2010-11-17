@@ -6,9 +6,10 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
 
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
-from haystack.query import SearchQuerySet
+from forms_builder.forms.managers import FormManager
 from perms.utils import is_admin
-from perms.models import TendenciBaseModel 
+from perms.models import TendenciBaseModel
+
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -29,43 +30,6 @@ FIELD_CHOICES = (
     ("DateTimeField", _("Date/time")),
 )
 
-class FormManager(models.Manager):
-    """
-    Only show published forms for non-staff users.
-    """
-    def published(self, for_user=None):
-        if for_user is not None and for_user.is_staff:
-            return self.all()
-        return self.filter(status_detail='published')
-    
-    def search(self, query=None, *args, **kwargs):
-        """
-            Uses haystack to query news. 
-            Returns a SearchQuerySet
-        """
-        sqs = SearchQuerySet()
-        user = kwargs.get('user', None)
-
-        # check to see if there is impersonation
-        if hasattr(user,'impersonated_user'):
-            if isinstance(user.impersonated_user, User):
-                user = user.impersonated_user
-                
-        is_an_admin = is_admin(user)
-            
-        if query:
-            sqs = sqs.auto_query(sqs.query.clean(query)) 
-            if user:
-                if not is_an_admin:
-                    return []
-        else:
-            sqs = sqs.all()
-            if user:
-                if not is_an_admin:
-                    return []
-    
-        return sqs.models(self.model).order_by('-create_dt')
-    
 class Form(TendenciBaseModel):
     """
     A user-built form.
