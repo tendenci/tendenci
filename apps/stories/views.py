@@ -20,7 +20,7 @@ def index(request, id=None, template_name="stories/view.html"):
     story = get_object_or_404(Story, pk=id)
     
     if not has_perm(request.user,'stories.view_story', story):
-         raise Http403
+        raise Http403
 
     log_defaults = {
         'event_id' : 1060500,
@@ -39,6 +39,7 @@ def index(request, id=None, template_name="stories/view.html"):
 def search(request, template_name="stories/search.html"):
     query = request.GET.get('q', None)
     stories = Story.objects.search(query, user=request.user)
+    stories = stories.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 1060400,

@@ -1,4 +1,5 @@
 import operator
+from datetime import datetime
 
 from django.db.models import Manager
 from django.db.models import Q
@@ -45,10 +46,6 @@ class StoryManager(Manager):
                         query = reduce(operator.or_, [query, sec2_query])
 
                         sqs = sqs.filter(query)
-                    else:
-                    # if anonymous
-                        sqs = sqs.filter(status=1).filter(status_detail='active')
-                        sqs = sqs.filter(allow_anonymous_view=True)
             else:
                 # if anonymous
                 sqs = sqs.filter(status=1).filter(status_detail='active')
@@ -79,6 +76,8 @@ class StoryManager(Manager):
                 sqs = sqs.filter(status=1).filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True)
 
-            sqs = sqs.order_by('-create_dt')
+        # within date range
+        sqs = sqs.filter(start_dt__lte = datetime.now())
+        sqs = sqs.filter(end_dt__gte = datetime.now())
     
         return sqs.models(self.model)
