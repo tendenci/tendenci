@@ -1,0 +1,366 @@
+{% extends "ebevents/base.html" %}
+
+{% block title %}{{ block.super }} Event{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+.event_image{
+    float: right;
+    margin: 0 0 10px 10px;
+    padding: 2px;
+}
+#event_datetime{
+    border: 1px solid #ccc;
+    padding: 5px;
+    width: 70%;
+    background-color: #E6EEEE;
+    margin-bottom: 1em;
+    font: 12px;
+}
+#event_display{
+    padding-top: 1em;
+    font-family: arial;
+}
+#event_display p{
+    line-height: 1.5em;
+    font-family: arial;
+}
+#event_display h3{
+	margin: 0.7em 0;
+}
+#back_to_event_list{
+    float: right;
+    margin: 3px 1em 0 0;
+}
+#back_to_event_list_link{
+    padding: 0.4em 0.5em;
+    position: relative;
+    text-decoration: none;
+    -moz-border-radius-bottomleft: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+    /*background-color: #73B304; */
+    background-color: #339933;
+    border: 1px solid #77D5F7;
+    color: #FFFFFF;
+    font-weight: bold;
+    outline-color: -moz-use-text-color;
+    
+}
+
+#event_image_block{
+    text-align: center;
+    z-index:-1;
+}
+h1{
+    border-bottom: 1px solid #bbb !important; 
+    padding-bottom: 0.4em;
+}
+#event_bookmarks{
+    clear: both;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    width: 80%;
+    margin: 2em 0;
+    padding: 1em;
+    background: #F0FFFF; 
+}
+#event-description{
+	border-top: 1px dashed silver; 
+	padding-top: 1em;
+}
+</style>
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+	<h1>{{ event.event_name }}</h1>
+
+	<div id="event_display">
+	
+	<div id="back_to_event_list">
+    	<a id="back_to_event_list_link" href="{% url ebevent_list %}">
+    	<span class="back_to_event_list_span">Back to Event List</span></a>
+    </div>
+    	       
+    {% if event.start_date %}
+           {% if event.venue_name %}
+               <div id="event_datetime" style="width:410px;margin-bottom:1em;">
+           {% else %}
+            <div id="event_datetime" style="width:200px;margin-bottom:1em;" >
+           {% endif %}
+           {% if event.venue_name %}
+               <div style="float:left;border-right: 1px dotted #ccc; padding-right:1em;">
+           {% endif %}
+        <h3>Event Time:</h3>
+        
+        <p>
+        {# if start date and end date on the same day #}
+        {% if event.start_date = event.end_date %}
+            {{ event.start_date|date:'l M j, Y'}}<br />
+           
+           {% if event.end_time and event.start_time != event.end_time %}
+                 {{ event.start_time }} - {{ event.end_time }}
+           {% else %}
+                 {{ event.start_time }}
+           {% endif %}
+          
+        {% else %}
+            {{ event.start_date|date:'l M j, Y' }} {{ event.start_time }} 
+            {{ event.end_date|date:'l M j, Y' }} {{ event.end_time }}
+        {% endif %}
+        </p>
+
+           {% if event.venue_name %}
+               </div>
+           
+               <div style="float: left; margin-left: 1em; width:210px;">
+               <h3>Event Venue</h3>
+               <p>{{ event.venue_name }}
+               {% if event.venue_website %}
+                   <br />{{ event.venue_website }}
+               {% endif %}
+               </p>
+               </div>
+           
+               <div style="clear:left;"></div>
+
+        </div>
+  {% else %}
+        <br />
+
+           {% if event.venue_name %}
+               <h3>Event Venue</h3>
+               <p>{{ event.venue_name }}
+               {% if event.venue_website }}
+                   <br />{{ event.venue_website }}
+               {% endif %}
+               </p>
+           {% endif %}
+  {% endif %}
+
+       
+       {% if event.ticket_info or event.ticket_prices or event.ticket_sale_date %}
+           <h3>Ticket Information</h3>
+           {% if event.ticket_info %}
+               <p>{{ event.ticket_info }}</p>
+           {% endif %}
+           {% if event.ticket_prices %}
+               <p>Ticket prices: {{ event.ticket_prices }}</p>
+           {% endif %}
+           {% if event.ticket_sale_date %}
+               <p>Ticket sale date: {{ ticket_saledate|date:'l M j, Y' }} {{ ticket_saletime }}</p>
+           {% endif %}
+       {% endif %}
+
+   
+       <p id="event-description">{{ event.description|safe }}</p><br />
+       
+       {% if event.picture_full %}
+           <div id="event_image_block" {%  if event.picture_full_width < 200 %} style="float:right;margin:1em;" {% else %} style="overflow: auto; width:520px;"{% endif %}>
+	        <img src="{{ event.picture_full }}" width="{{ event.picture_full_width }}" height="{{ event.picture_full_height }}" /><br />
+	        </div>
+	    {% endif %}
+    
+    {% if event.location %}
+           <h3>Location</h3>
+           <p>{{ event.location }}</p>
+     {% endif %}
+       
+       
+       
+       {% if event.TI %}
+           {% if event.TI_caption %}
+               <h3>{{ event.TI_caption }}</h3>
+           {% else %}
+           <h3>Tickets Website</h3>
+           {% endif %}
+           <p>{{ event.TI|urlize }}</p>
+       {% endif %}
+       
+       {% if event.DIRURL %}
+           {% if event.DIRURL_caption %}
+               <h3>{{ event.DIRURL_caption }}</h3>
+           {% else  %}
+           		<h3>Directions Website</h3>
+           {% endif %}
+           
+           <p>{{ event.dirurl|urlize }}</p>
+       {% endif %}
+       
+       {% if event.MI %}
+           {% if event.MI_caption %}
+               <h3>{{ event.MI_caption }}</h3>
+           {% else %}
+           <h3>More Info Website</h3>
+           {% endif %}
+           
+           <p>{{ event.MI|urlize }}</p>
+        {% endif %}
+       
+       {%  if event.SEATCHART %}
+           {%  if event.SEATCHART_caption %}
+               <h3>{{ event.SEATCHART_caption }}</h3>
+           {% else %}
+           <h3>Seating Chart</h3>
+            {% endif %}
+           
+           <p>{{ event.SEATCHART|urlize }}</p>
+       {% endif %}
+       
+       {%  if event.RM %}
+           {%  if event.RM_caption %}
+               <h3>{{ event.RM_caption }}</h3>
+           {% else %}
+           <h3>Room</h3>
+           {% endif %}
+           
+           <p>{{ event.RM|urlize }}</p>
+       {% endif %}
+       
+       {% if event.SPONS %}
+           {% if event.SPONS_caption %}
+               <h3>{{ event.SPONS_caption }}</h3>
+           {% else
+           <h3>Sponsored by</h3>
+           {% endif %}
+           
+           <p>{{ event.SPONS|urlize }}</p>
+       {% endif %}
+       
+       {% if event.PARKING %}
+           {% if event.PARKING_caption %}
+               <h3>{{ event.PARKING_caption }}</h3>
+           {% else %}
+           <h3>Parking Info</h3>
+           {% endif %}
+           
+           <p>{{ event.PARKING|urlize }}</p>
+       {% endif %}
+       
+       {% if event.PROMOTER %}
+           {% if event.PROMOTER_caption %}
+               <h3>{{ event.PROMOTER_caption }}</h3>
+           {% else %}
+           <h3>Promoter</h3>
+           {% endif %}
+           
+           <p>{{ event.PROMOTER|urlize }}</p>
+       {% endif %}
+       
+       {% if event.PRESENTER %}
+           {% if event.PRESENTER_caption %}
+               <h3>{{ event.PRESENTER_caption }}</h3>
+           {% else %}
+           <h3>Presented by</h3>
+           {% endif %}
+           
+               <p>{{ event.PRESENTER|urlize }}</p>
+       {% endif %}
+       
+       {% if event.PRODUCER  %}
+           {% if event.PRODUCER_caption  %}
+               <h3>{{ event.PRODUCER_caption }}</h3>
+           {% else %}
+           <h3>Produced by</h3>
+           {% endif %}
+           <p>{{ event.PRODUCER|urlize }}</p>
+       {% endif %}
+       
+       {% if event.OPENING_ACT %}
+           {% if event.OPENING_ACT_caption  %}
+               <h3>{{ event.OPENING_ACT_caption }}</h3>
+           {% else %}
+           <h3>Opening Act</h3>
+           {% endif %}
+           
+            <p>{{ event.OPENING_ACT|urlize }}</p>
+         
+       {% endif %}
+       
+       {% if event.CONTACT or event.CONTACT_PHONE or event.CONTACT_EMAIL %}
+           <h3>Contact Info</h3>
+           {% if event.CONTACT %}
+               <p>{{ event.CONTACT|urlize }}</p>
+           {% endif %}
+           {% if event.CONTACT_PHONE %}
+               <p>Phone #: {{ event.CONTACT_PHONE}}<p>
+           {% endif %}
+           {% if event.CONTACT_EMAIL %}
+               <p>Email: {{ event.CONTACT_EMAIL }}<p>
+           {% endif %}
+       {% endif %}
+       
+       {% if event.SPECIAL_ENT %}
+           {% if event.SPECIAL_ENT_caption %}
+               <h3>{{ event.SPECIAL_ENT_caption }}</h3>
+           {% else %}
+           <h3>Special Entertainment</h3>
+           {% endif %}
+           <p>{{ event.SPECIAL_ENT|urlize }}</p>
+       {% endif %}
+       
+       {% if event.DOORSOPEN %}
+           {% if event.DOORSOPEN_caption %}
+               <h3>{{ event.DOORSOPEN_caption }}</h3>
+           {% else %}
+           <h3>Time Doors Open</h3>
+           {% endif %}
+           
+           <p>{{ event.DOORSOPEN|urlize }}</p>
+       {% endif %}
+       
+       {% if event.RESTR  %}
+           {% if event.RESTR_caption %}
+               <h3>{{ event.RESTR_caption }}</h3>
+           {% else %}
+           <h3>Restrictions</h3>
+           {% endif %}
+           
+               <p>{{ event.RESTR|urlize }}</p>
+       {% endif %}
+       
+       {% if event.VIDEO  %}
+           {% if event.VIDEO_caption %}
+               <h3>{{ event.VIDEO_caption }}</h3>
+           {% else %}
+           <h3>VIDEO</h3>
+           {% endif %}
+           
+               <p>{{ event.VIDEO|urlize }}</p>
+       {% endif %}
+       
+       {%if event.AUDIO  %}
+           {%if event.AUDIO_caption %}
+               <h3>{{ event.AUDIO_caption }}</h3>
+           {%else %}
+           <h3>AUDIO</h3>
+           {% endif %}
+           
+               <p>{{ event.AUDIO|urlize }}</p>
+       {% endif %}
+       
+       {% if event.GROUPSALES %}
+           {% if event.GROUPSALES_caption %}
+               <h3>{{ event.GROUPSALES_caption }}</h3>
+           {% else %}
+           <h3>Group Sales</h3>
+           {% endif %}
+           
+           <p>{{ event.GROUPSALES|urlize }}</p>
+       {% endif %}
+       
+       
+       {% if event.additional_info %}
+           <h3>Additional Information</h3>
+           <p>{{ event.additional_info|urlize }}</p>
+       {% endif %}
+                
+
+	
+	</div>
+
+</div>
+{% endblock %}
