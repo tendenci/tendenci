@@ -106,7 +106,7 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
     form.fields['event_month'].initial = q_event_month
     
     form.fields['event_year'].initial = q_event_year
-    form.fields['event_year'].choices = [(year, year) for year in event_years]
+    form.fields['event_year'].choices = [("", "Select Year")] + [(year, year) for year in event_years]
     
     form.fields['event_type'].initial = q_event_type
     form.fields['event_type'].choices = [("", "Select Category")] + [(e_type, e_type) for e_type in event_types]
