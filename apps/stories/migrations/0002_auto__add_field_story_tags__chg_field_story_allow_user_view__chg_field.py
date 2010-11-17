@@ -8,14 +8,68 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding field 'Story.photo'
-        db.add_column('stories_story', 'photo', self.gf('django.db.models.fields.files.FileField')(max_length=260, null=True, blank=True), keep_default=False)
+        # Adding field 'Story.tags'
+        db.add_column('stories_story', 'tags', self.gf('tagging.fields.TagField')(default=''), keep_default=False)
+
+        # Changing field 'Story.allow_user_view'
+        db.alter_column('stories_story', 'allow_user_view', self.gf('django.db.models.fields.BooleanField')(blank=True))
+
+        # Changing field 'Story.allow_anonymous_edit'
+        db.alter_column('stories_story', 'allow_anonymous_edit', self.gf('django.db.models.fields.BooleanField')(blank=True))
+
+        # Changing field 'Story.content'
+        db.alter_column('stories_story', 'content', self.gf('django.db.models.fields.TextField')(blank=True))
+
+        # Changing field 'Story.allow_anonymous_view'
+        db.alter_column('stories_story', 'allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')(blank=True))
+
+        # Changing field 'Story.status'
+        db.alter_column('stories_story', 'status', self.gf('django.db.models.fields.BooleanField')(blank=True))
+
+        # Changing field 'Story.syndicate'
+        db.alter_column('stories_story', 'syndicate', self.gf('django.db.models.fields.BooleanField')(blank=True))
+
+        # Changing field 'Story.allow_user_edit'
+        db.alter_column('stories_story', 'allow_user_edit', self.gf('django.db.models.fields.BooleanField')(blank=True))
+
+        # Changing field 'Story.allow_member_view'
+        db.alter_column('stories_story', 'allow_member_view', self.gf('django.db.models.fields.BooleanField')(blank=True))
+
+        # Changing field 'Story.allow_member_edit'
+        db.alter_column('stories_story', 'allow_member_edit', self.gf('django.db.models.fields.BooleanField')(blank=True))
 
 
     def backwards(self, orm):
         
-        # Deleting field 'Story.photo'
-        db.delete_column('stories_story', 'photo')
+        # Deleting field 'Story.tags'
+        db.delete_column('stories_story', 'tags')
+
+        # Changing field 'Story.allow_user_view'
+        db.alter_column('stories_story', 'allow_user_view', self.gf('django.db.models.fields.BooleanField')())
+
+        # Changing field 'Story.allow_anonymous_edit'
+        db.alter_column('stories_story', 'allow_anonymous_edit', self.gf('django.db.models.fields.BooleanField')())
+
+        # Changing field 'Story.content'
+        db.alter_column('stories_story', 'content', self.gf('tinymce.models.HTMLField')())
+
+        # Changing field 'Story.allow_anonymous_view'
+        db.alter_column('stories_story', 'allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')())
+
+        # Changing field 'Story.status'
+        db.alter_column('stories_story', 'status', self.gf('django.db.models.fields.BooleanField')())
+
+        # Changing field 'Story.syndicate'
+        db.alter_column('stories_story', 'syndicate', self.gf('django.db.models.fields.BooleanField')())
+
+        # Changing field 'Story.allow_user_edit'
+        db.alter_column('stories_story', 'allow_user_edit', self.gf('django.db.models.fields.BooleanField')())
+
+        # Changing field 'Story.allow_member_view'
+        db.alter_column('stories_story', 'allow_member_view', self.gf('django.db.models.fields.BooleanField')())
+
+        # Changing field 'Story.allow_member_edit'
+        db.alter_column('stories_story', 'allow_member_edit', self.gf('django.db.models.fields.BooleanField')())
 
 
     models = {
@@ -26,7 +80,7 @@ class Migration(SchemaMigration):
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
         },
         'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
+            'Meta': {'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
             'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -39,9 +93,9 @@ class Migration(SchemaMigration):
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
+            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
@@ -49,7 +103,7 @@ class Migration(SchemaMigration):
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
         'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
+            'Meta': {'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
             'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
@@ -58,12 +112,12 @@ class Migration(SchemaMigration):
         'entities.entity': {
             'Meta': {'object_name': 'Entity'},
             'admin_notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
             'contact_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'entity_creator'", 'to': "orm['auth.User']"}),
@@ -79,7 +133,7 @@ class Migration(SchemaMigration):
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'entity_owner'", 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
-            'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'status': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'summary': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
@@ -87,13 +141,13 @@ class Migration(SchemaMigration):
         },
         'stories.story': {
             'Meta': {'object_name': 'Story'},
-            'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'content': ('tinymce.models.HTMLField', [], {}),
+            'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'content': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'story_creator'", 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
@@ -107,9 +161,10 @@ class Migration(SchemaMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'photo': ('django.db.models.fields.files.FileField', [], {'max_length': '260', 'null': 'True', 'blank': 'True'}),
             'start_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'status': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
-            'syndicate': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'syndicate': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'blank': 'True'}),
+            'tags': ('tagging.fields.TagField', [], {'default': "''"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         }
