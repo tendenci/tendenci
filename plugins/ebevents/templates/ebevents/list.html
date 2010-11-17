@@ -1,0 +1,198 @@
+{% extends "ebevents/base.html" %}
+
+{% block title %}{{ block.super }} {{ SITE_GLOBAL_SITEDISPLAYNAME }} Events{% endblock %}
+
+{% block extra_head %}
+<link type="text/css" href="{{ STATIC_URL }}tablesorter/sortthemes.css" rel="Stylesheet" />	
+<style type="text/css">
+
+#events_tabs_primary{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    margin-top: 1em;
+}
+#events_tabs_primary li {
+	display: inline;
+	line-height: 2em;
+}
+/*
+#events_tabs_primary li a
+{
+    padding: 3px 1em;
+    font-weight: bold;
+}
+#events_tabs_primary li.active a
+{
+    background-color: #A4D3EE;
+    color: #fff;
+    text-decoration: none;
+}
+#events_tabs_primary li a:hover
+{
+    color: #fff;
+    background-color: #A4D3EE;
+    text-decoration: none;
+}
+*/
+#event_search_form{
+    margin: 1em 0 1em 5em;
+    font-size: 12px;
+}
+
+#event_topcms_content{
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    padding: 5px;
+    font-size: 12px;
+}
+#event_topcms{
+    margin-bottom: 1em;
+    margin-top: 0;
+    text-align: center;
+}
+
+.clear-left{
+	clear: left;
+}
+
+/* buttons */
+#events_tabs_primary a:link, #events_tabs_primary a:visited
+{
+	float: left;
+	margin: 2px 5px 2px 5px;
+	padding: 5px;
+	border-top: 1px solid #cccccc;
+	border-bottom: 1px solid black;
+	border-left: 1px solid #cccccc;
+	border-right: 1px solid black;
+	background: #e6eeee;
+	text-align: center;
+	text-decoration: none;
+	font: normal 10px Verdana;
+	color: #000;
+	/*font-weight: bold;*/
+}
+
+#events_tabs_primary a:hover
+{
+	background: #8dbdd8;;
+}
+
+#events_tabs_primary a:active, #events_tabs_primary li.active a
+{
+	border-bottom: 1px solid #8dbdd8;;
+	border-top: 1px solid black;
+	border-right: 1px solid #8dbdd8;;
+	border-left: 1px solid black;
+	background: #8dbdd8;;
+}
+
+
+</style>
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+	<h1>Events</h1>
+	<div id="event_topcms">
+		<div id="event_topcms_content">
+		<p>Don't miss any of the FUN at Discovery Green!</p>
+		<p><b>Click on each activity/event below for more detailed information.</b></p>
+		<p>&nbsp;</p>
+		<p style="color:blue;">You are welcome to bring lawn chairs, blankets even your dogs when coming to an event. </p>
+		<p style="color:blue;">For licensed events (rentals), producers may have different rules.</p>
+		<p style="color:blue;">It is prohibited to bring alcohol, glass containers, tables or pop up tents into the park.</p>
+		<p>&nbsp;</p>
+		<p style="color:red;">Outdoor events may be affected by the weather. </p>
+		<p style="color:red;">Performers, times, dates and other schedule changes may occur. </p>
+		<p style="color:red;">For weather updates re-visit the main page of the website or</p>
+		<p style="color:red;">call 713-400-7336, press option #1.</p>
+		</div>
+	</div>
+	
+	<br />
+	<h3>Select a Category:{{selected_event_type}}</h3>
+	<ul id="events_tabs_primary">
+	
+		<li{% if not selected_event_type %} class="active"{%endif%}><a href="{% url ebevent_list %}">List ALL</a></li>
+		{% for et in event_types %}
+			<li{% if selected_event_type == et %} class="active"{%endif%}><a href="{% url ebevent_list %}?event_type={{ et|urlencode }}">{{ et|safe }}</a></li>
+		{% endfor %}
+	</ul>
+	<div class="clear-left"></div>
+	<br />
+	<h3>Filter by Month:</h3>
+	<div id="event_search_form">
+		<form method="get" action=".">	
+		
+		{{ form.event_month }} {{ form.event_year }} {{ form.event_type }}
+		<input type="submit" value="Search" name="submit">
+		</form>	 
+	</div>
+	
+	{% if events %}
+		<div style="width:98%;">
+            {# table header #}
+            <table cellspacing="1" class="tablesorter">
+	            <thead>
+	            <tr>
+	            <th width="60%">Event</th>
+	            <th width="25%">Category</th>
+	            <th width="15%">Start Date</th>
+	            </tr>
+	            </thead>
+	            
+	            <tbody>
+	            {% for event in events %}
+	            	<tr>
+	                    <td><a href="{% url ebevent_display event.unique_event_id %}">{{ event.event_name|safe }}</a></td>
+	                    <td>{{ event.event_type|safe }}</td>
+	                    <td>{{ event.start_date|date:'n/d/Y' }}</td>
+	                </tr>
+	             {% endfor %}
+	            </tbody>
+            </table>
+        </div>
+	{% else %}
+		<div>No event available.</div>
+    {% endif %}
+
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_body %}
+<script>
+	if (!(window.jQuery)) { 
+		
+		var s = document.createElement('script');
+		s.setAttribute('src', 'http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js'); 
+		s.setAttribute('type', 'text/javascript');
+		document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script> 
+<script type="text/javascript" id="js">
+    $(document).ready(function() {
+         // extend the default setting to always include the zebra widget. 
+        $.tablesorter.defaults.widgets = ['zebra']; 
+        // extend the default setting to always sort on the third column 
+        $.tablesorter.defaults.sortList = [[2,0]]; 
+        // call the tablesorter plugin 
+        $("table").tablesorter({
+             headers: { 
+            // assign the first column (we start counting zero) 
+            0: { 
+                // disable it by setting the property sorter to false 
+                //sorter: false 
+                } 
+            } 
+        }); 
+	    
+    }); 
+</script>
+{% endblock %}
