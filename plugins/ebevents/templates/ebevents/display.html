@@ -98,7 +98,7 @@ h1{
         
         <p>
         {# if start date and end date on the same day #}
-        {% if event.start_date = event.end_date %}
+        {% if event.start_date == event.end_date %}
             {{ event.start_date|date:'l M j, Y'}}<br />
            
            {% if event.end_time and event.start_time != event.end_time %}
@@ -171,18 +171,18 @@ h1{
        
        
        
-       {% if event.TI %}
-           {% if event.TI_caption %}
-               <h3>{{ event.TI_caption }}</h3>
+       {% if event.ti %}
+           {% if event.ti_caption %}
+               <h3>{{ event.ti_caption }}</h3>
            {% else %}
            <h3>Tickets Website</h3>
            {% endif %}
-           <p>{{ event.TI|urlize }}</p>
+           <p>{{ event.ti|urlize }}</p>
        {% endif %}
        
-       {% if event.DIRURL %}
-           {% if event.DIRURL_caption %}
-               <h3>{{ event.DIRURL_caption }}</h3>
+       {% if event.dirurl %}
+           {% if event.event.dirurl_caption %}
+               <h3>{{ event.event.dirurl_caption }}</h3>
            {% else  %}
            		<h3>Directions Website</h3>
            {% endif %}
@@ -190,166 +190,166 @@ h1{
            <p>{{ event.dirurl|urlize }}</p>
        {% endif %}
        
-       {% if event.MI %}
-           {% if event.MI_caption %}
-               <h3>{{ event.MI_caption }}</h3>
+       {% if event.mi %}
+           {% if event.mi_caption %}
+               <h3>{{ event.mi_caption }}</h3>
            {% else %}
            <h3>More Info Website</h3>
            {% endif %}
            
-           <p>{{ event.MI|urlize }}</p>
+           <p>{{ event.mi|urlize }}</p>
         {% endif %}
        
-       {%  if event.SEATCHART %}
-           {%  if event.SEATCHART_caption %}
-               <h3>{{ event.SEATCHART_caption }}</h3>
+       {%  if event.seatchart %}
+           {%  if event.seatchart_caption %}
+               <h3>{{ event.seatchart_caption }}</h3>
            {% else %}
            <h3>Seating Chart</h3>
             {% endif %}
            
-           <p>{{ event.SEATCHART|urlize }}</p>
+           <p>{{ event.seatchart|urlize }}</p>
        {% endif %}
        
-       {%  if event.RM %}
-           {%  if event.RM_caption %}
-               <h3>{{ event.RM_caption }}</h3>
+       {%  if event.rm %}
+           {%  if event.rm_caption %}
+               <h3>{{ event.rm_caption }}</h3>
            {% else %}
            <h3>Room</h3>
            {% endif %}
            
-           <p>{{ event.RM|urlize }}</p>
+           <p>{{ event.rm|urlize }}</p>
        {% endif %}
        
-       {% if event.SPONS %}
-           {% if event.SPONS_caption %}
-               <h3>{{ event.SPONS_caption }}</h3>
+       {% if event.spons %}
+           {% if event.spons_caption %}
+               <h3>{{ event.spons_caption }}</h3>
            {% else
            <h3>Sponsored by</h3>
            {% endif %}
            
-           <p>{{ event.SPONS|urlize }}</p>
+           <p>{{ event.spons|urlize }}</p>
        {% endif %}
        
-       {% if event.PARKING %}
-           {% if event.PARKING_caption %}
-               <h3>{{ event.PARKING_caption }}</h3>
+       {% if event.parking %}
+           {% if event.parking_caption %}
+               <h3>{{ event.parking_caption }}</h3>
            {% else %}
            <h3>Parking Info</h3>
            {% endif %}
            
-           <p>{{ event.PARKING|urlize }}</p>
+           <p>{{ event.parking|urlize }}</p>
        {% endif %}
        
-       {% if event.PROMOTER %}
-           {% if event.PROMOTER_caption %}
-               <h3>{{ event.PROMOTER_caption }}</h3>
+       {% if event.promoter %}
+           {% if event.promoter_caption %}
+               <h3>{{ event.promoter_caption }}</h3>
            {% else %}
            <h3>Promoter</h3>
            {% endif %}
            
-           <p>{{ event.PROMOTER|urlize }}</p>
+           <p>{{ event.promoter|urlize }}</p>
        {% endif %}
        
-       {% if event.PRESENTER %}
-           {% if event.PRESENTER_caption %}
-               <h3>{{ event.PRESENTER_caption }}</h3>
+       {% if event.presenter %}
+           {% if event.presenter_caption %}
+               <h3>{{ event.presenter_caption }}</h3>
            {% else %}
            <h3>Presented by</h3>
            {% endif %}
            
-               <p>{{ event.PRESENTER|urlize }}</p>
+               <p>{{ event.presenter|urlize }}</p>
        {% endif %}
        
-       {% if event.PRODUCER  %}
-           {% if event.PRODUCER_caption  %}
-               <h3>{{ event.PRODUCER_caption }}</h3>
+       {% if event.producer  %}
+           {% if event.producer_caption  %}
+               <h3>{{ event.producer_caption }}</h3>
            {% else %}
            <h3>Produced by</h3>
            {% endif %}
-           <p>{{ event.PRODUCER|urlize }}</p>
+           <p>{{ event.producer|urlize }}</p>
        {% endif %}
        
-       {% if event.OPENING_ACT %}
-           {% if event.OPENING_ACT_caption  %}
-               <h3>{{ event.OPENING_ACT_caption }}</h3>
+       {% if event.opening_act %}
+           {% if event.opening_act_caption  %}
+               <h3>{{ event.opening_act_caption }}</h3>
            {% else %}
            <h3>Opening Act</h3>
            {% endif %}
            
-            <p>{{ event.OPENING_ACT|urlize }}</p>
+            <p>{{ event.opening_act|urlize }}</p>
          
        {% endif %}
        
-       {% if event.CONTACT or event.CONTACT_PHONE or event.CONTACT_EMAIL %}
+       {% if event.contact or event.contact_phone or event.contact_email %}
            <h3>Contact Info</h3>
-           {% if event.CONTACT %}
-               <p>{{ event.CONTACT|urlize }}</p>
+           {% if event.contact %}
+               <p>{{ event.contact|urlize }}</p>
            {% endif %}
-           {% if event.CONTACT_PHONE %}
-               <p>Phone #: {{ event.CONTACT_PHONE}}<p>
+           {% if event.contact_phone %}
+               <p>Phone #: {{ event.contact_phone}}<p>
            {% endif %}
-           {% if event.CONTACT_EMAIL %}
-               <p>Email: {{ event.CONTACT_EMAIL }}<p>
+           {% if event.contact_email %}
+               <p>Email: {{ event.contact_email }}<p>
            {% endif %}
        {% endif %}
        
-       {% if event.SPECIAL_ENT %}
-           {% if event.SPECIAL_ENT_caption %}
-               <h3>{{ event.SPECIAL_ENT_caption }}</h3>
+       {% if event.special_ent %}
+           {% if event.special_ent_caption %}
+               <h3>{{ event.special_ent_caption }}</h3>
            {% else %}
            <h3>Special Entertainment</h3>
            {% endif %}
-           <p>{{ event.SPECIAL_ENT|urlize }}</p>
+           <p>{{ event.special_ent|urlize }}</p>
        {% endif %}
        
-       {% if event.DOORSOPEN %}
-           {% if event.DOORSOPEN_caption %}
-               <h3>{{ event.DOORSOPEN_caption }}</h3>
+       {% if event.doorsopen %}
+           {% if event.doorsopen_caption %}
+               <h3>{{ event.doorsopen_caption }}</h3>
            {% else %}
            <h3>Time Doors Open</h3>
            {% endif %}
            
-           <p>{{ event.DOORSOPEN|urlize }}</p>
+           <p>{{ event.doorsopen|urlize }}</p>
        {% endif %}
        
-       {% if event.RESTR  %}
-           {% if event.RESTR_caption %}
-               <h3>{{ event.RESTR_caption }}</h3>
+       {% if event.restr  %}
+           {% if event.restr_caption %}
+               <h3>{{ event.restr_caption }}</h3>
            {% else %}
            <h3>Restrictions</h3>
            {% endif %}
            
-               <p>{{ event.RESTR|urlize }}</p>
+               <p>{{ event.restr|urlize }}</p>
        {% endif %}
        
-       {% if event.VIDEO  %}
-           {% if event.VIDEO_caption %}
-               <h3>{{ event.VIDEO_caption }}</h3>
+       {% if event.video  %}
+           {% if event.video_caption %}
+               <h3>{{ event.video_caption }}</h3>
            {% else %}
            <h3>VIDEO</h3>
            {% endif %}
            
-               <p>{{ event.VIDEO|urlize }}</p>
+               <p>{{ event.video|urlize }}</p>
        {% endif %}
        
-       {%if event.AUDIO  %}
-           {%if event.AUDIO_caption %}
-               <h3>{{ event.AUDIO_caption }}</h3>
+       {%if event.audio  %}
+           {%if event.audio_caption %}
+               <h3>{{ event.audio_caption }}</h3>
            {%else %}
            <h3>AUDIO</h3>
            {% endif %}
            
-               <p>{{ event.AUDIO|urlize }}</p>
+               <p>{{ event.audio|urlize }}</p>
        {% endif %}
        
-       {% if event.GROUPSALES %}
-           {% if event.GROUPSALES_caption %}
-               <h3>{{ event.GROUPSALES_caption }}</h3>
+       {% if event.groupsales %}
+           {% if event.groupsales_caption %}
+               <h3>{{ event.groupsales_caption }}</h3>
            {% else %}
            <h3>Group Sales</h3>
            {% endif %}
            
-           <p>{{ event.GROUPSALES|urlize }}</p>
+           <p>{{ event.groupsales|urlize }}</p>
        {% endif %}
        
        
