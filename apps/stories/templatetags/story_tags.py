@@ -70,7 +70,7 @@ class ListStoriesNode(Node):
 def list_stories(parser, token):
     """
     Example:
-        {% list_stories as stories [user=user limit=3] %}
+        {% list_stories as stories user=user limit=3 %}
         {% for story in stories %}
             {{ story.title }}
         {% endfor %}
