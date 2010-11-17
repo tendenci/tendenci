@@ -17,7 +17,8 @@ user_perm_options = {
 }
 
 def group_choices():
-    groups = Group.objects.filter(status=1, status_detail='active', use_for_membership=0).order_by('name')
+    # groups = Group.objects.filter(status=1, status_detail='active', use_for_membership=0).order_by('name')
+    groups = Group.objects.filter(status=1, status_detail='active').order_by('name')
     choices = []
     if groups:
         for g in groups:
