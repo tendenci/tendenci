@@ -146,6 +146,7 @@ def display(request, id, template_name="ebevents/display.html"):
         start_date = ''
     try:
         start_time = node.showtimes.subevent['starttime']
+        start_time = start_time.replace(":00 ", " ")   # 04:00:00 PM - fix later by converting to dt
     except:
         start_time = ''
         
@@ -155,7 +156,8 @@ def display(request, id, template_name="ebevents/display.html"):
     except:
         end_date = ''
     try:
-        end_time = node.showtimes.subevent['endtime']
+        end_time = node.showtimes.subevent.string
+        end_time = end_time.replace('-', '')
     except:
         end_time = ''
      
@@ -171,6 +173,9 @@ def display(request, id, template_name="ebevents/display.html"):
     event['start_time'] = start_time
     event['end_date'] = end_date
     event['end_time'] = end_time
+    
+    print event['start_time']
+    print event['end_time']
     
     # description
     event['description'] = node.description.string
@@ -213,12 +218,17 @@ def display(request, id, template_name="ebevents/display.html"):
         event['picture_full_height'] = int(node.picture_full['height'])
         event['picture_full_width'] = int(node.picture_full['width'])
     
+    # weird - those elements appear as upper case in the xml file
+    # but the parser only takes as lower case. Need to change all to lower case
     elements = ['DIRURL', 'TI', 'MI', 'SEATCHART', 'RM', 'SPONS',
                 'PARKING', 'PROMOTER', 'PRESENTER', 'PRODUCER', 
                 'OPENING_ACT', 'CONTACT', 'SPECIAL_ENT', 'DOORSOPEN',
                 'RESTR', 'CONTACT_PHONE', 'CONTACT_EMAIL', 'VIDEO', 
                 'AUDIO', 'GROUPSALES']
+    elements = [e.lower() for e in elements]
+    
     for e in elements:
+        print e
         try:
             event[e] = eval("node.%s.string" % e) 
             event[e + '_caption'] = eval("node.%s['caption']" %e)
