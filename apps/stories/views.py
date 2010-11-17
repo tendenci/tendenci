@@ -20,7 +20,7 @@ def index(request, id=None, template_name="stories/view.html"):
     story = get_object_or_404(Story, pk=id)
     
     if not has_perm(request.user,'stories.view_story', story):
-         raise Http403
+        raise Http403
 
     log_defaults = {
         'event_id' : 1060500,
@@ -39,6 +39,7 @@ def index(request, id=None, template_name="stories/view.html"):
 def search(request, template_name="stories/search.html"):
     query = request.GET.get('q', None)
     stories = Story.objects.search(query, user=request.user)
+    stories = stories.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 1060400,
@@ -59,8 +60,7 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
     
     if has_perm(request.user,'stories.add_story'):    
         if request.method == "POST":
-            form = form_class(request.POST, request.FILES,
-                              user=request.user)
+            form = form_class(request.POST, request.FILES, user=request.user)
             if form.is_valid():           
                 story = form.save(commit=False)
                 # set up the user information
@@ -94,6 +94,9 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 messages.add_message(request, messages.INFO, 'Successfully added %s' % story) 
                 
                 return HttpResponseRedirect(reverse('story', args=[story.pk]))
+            else:
+                from pprint import pprint
+                pprint(form.errors.items())
         else:
             form = form_class(user=request.user)
     

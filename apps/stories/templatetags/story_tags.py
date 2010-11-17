@@ -60,6 +60,7 @@ class ListStoriesNode(Node):
             query = '%s "%s"' % (query, q_item)
 
         stories = Story.objects.search(user=self.user, query=query)
+        stories = stories.order_by('start_dt')
 
         stories = [story.object for story in stories[:self.limit]]
         context[self.context_var] = stories
