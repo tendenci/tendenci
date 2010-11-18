@@ -8,40 +8,14 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding model 'Story'
-        db.create_table('stories_story', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('allow_user_view', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('allow_member_view', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('allow_anonymous_edit', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('allow_user_edit', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('allow_member_edit', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('create_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('update_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('creator', self.gf('django.db.models.fields.related.ForeignKey')(related_name='story_creator', to=orm['auth.User'])),
-            ('creator_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('owner', self.gf('django.db.models.fields.related.ForeignKey')(related_name='story_owner', to=orm['auth.User'])),
-            ('owner_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('status', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True)),
-            ('status_detail', self.gf('django.db.models.fields.CharField')(default='active', max_length=50)),
-            ('guid', self.gf('django.db.models.fields.CharField')(max_length=40)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
-            ('content', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('syndicate', self.gf('django.db.models.fields.BooleanField')(default=False, blank=True)),
-            ('full_story_link', self.gf('django.db.models.fields.CharField')(max_length=300, blank=True)),
-            ('start_dt', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('end_dt', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('ncsortorder', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['entities.Entity'], null=True)),
-        ))
-        db.send_create_signal('stories', ['Story'])
+        # Adding field 'Story.photo'
+        db.add_column('stories_story', 'photo', self.gf('django.db.models.fields.files.FileField')(max_length=260, null=True, blank=True), keep_default=False)
 
 
     def backwards(self, orm):
         
-        # Deleting model 'Story'
-        db.delete_table('stories_story')
+        # Deleting field 'Story.photo'
+        db.delete_column('stories_story', 'photo')
 
 
     models = {
@@ -131,6 +105,7 @@ class Migration(SchemaMigration):
             'ncsortorder': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'story_owner'", 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'photo': ('django.db.models.fields.files.FileField', [], {'max_length': '260', 'null': 'True', 'blank': 'True'}),
             'start_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
