@@ -30,7 +30,9 @@ except:
 
 def group_search(request, template_name="user_groups/search.html"):
     query = request.GET.get('q', None)
-    groups = Group.objects.search(query, user=request.user).filter(use_for_membership=0)
+    groups = Group.objects.search(query, user=request.user)
+    # exclude the membership
+    groups = groups.exclude(type='membership')
 
     log_defaults = {
         'event_id' : 164000,
