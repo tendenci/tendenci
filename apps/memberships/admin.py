@@ -115,13 +115,14 @@ class MembershipTypeAdmin(admin.ModelAdmin):
                 group.name = '%s%s' % (group.name, str(num))
             
             group.label = instance.name
+            group.type = 'membership'
             group.email_recipient = request.user.email
             group.show_as_option = 0
             group.allow_self_add = 0
             group.allow_self_remove = 0
             group.description = "Auto-generated with the membership type. Used for membership only"
             group.notes = "Auto-generated with the membership type. Used for membership only"
-            group.use_for_membership = 1
+            #group.use_for_membership = 1
             
             group.creator = request.user
             group.creator_username = request.user.username
