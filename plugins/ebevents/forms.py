@@ -19,8 +19,8 @@ MONTHS_CHOICES = (
 
 class EventSearchForm(forms.Form):
     event_month = forms.ChoiceField(required=False, choices=MONTHS_CHOICES)
-    event_year = forms.ChoiceField(required=False, choices=())
-    event_type = forms.ChoiceField(required=False, choices=())
+    event_year = forms.ChoiceField(required=False)
+    event_type = forms.ChoiceField(required=False)
     
     def __init__(self, *args, **kwargs): 
         super(EventSearchForm, self).__init__(*args, **kwargs)
