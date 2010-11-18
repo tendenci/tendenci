@@ -1,16 +1,16 @@
 [
  {
-  "is_enabled": false, 
-  "is_installed": false, 
-  "package": "plugins.donations", 
+  "is_enabled": true, 
+  "is_installed": true, 
+  "package": "plugins.blog", 
   "id": 1, 
-  "title": "donation"
+  "title": "Blog"
  }, 
  {
-  "is_enabled": false, 
-  "is_installed": false, 
-  "package": "plugins.blog", 
+  "is_enabled": true, 
+  "is_installed": true, 
+  "package": "plugins.ebevents", 
   "id": 2, 
-  "title": "blog"
+  "title": "Event Booking Events"
  }
 ]
