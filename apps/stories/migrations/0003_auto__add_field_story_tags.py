@@ -11,65 +11,11 @@ class Migration(SchemaMigration):
         # Adding field 'Story.tags'
         db.add_column('stories_story', 'tags', self.gf('tagging.fields.TagField')(default=''), keep_default=False)
 
-        # Changing field 'Story.allow_user_view'
-        db.alter_column('stories_story', 'allow_user_view', self.gf('django.db.models.fields.BooleanField')(blank=True))
-
-        # Changing field 'Story.allow_anonymous_edit'
-        db.alter_column('stories_story', 'allow_anonymous_edit', self.gf('django.db.models.fields.BooleanField')(blank=True))
-
-        # Changing field 'Story.content'
-        db.alter_column('stories_story', 'content', self.gf('django.db.models.fields.TextField')(blank=True))
-
-        # Changing field 'Story.allow_anonymous_view'
-        db.alter_column('stories_story', 'allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')(blank=True))
-
-        # Changing field 'Story.status'
-        db.alter_column('stories_story', 'status', self.gf('django.db.models.fields.BooleanField')(blank=True))
-
-        # Changing field 'Story.syndicate'
-        db.alter_column('stories_story', 'syndicate', self.gf('django.db.models.fields.BooleanField')(blank=True))
-
-        # Changing field 'Story.allow_user_edit'
-        db.alter_column('stories_story', 'allow_user_edit', self.gf('django.db.models.fields.BooleanField')(blank=True))
-
-        # Changing field 'Story.allow_member_view'
-        db.alter_column('stories_story', 'allow_member_view', self.gf('django.db.models.fields.BooleanField')(blank=True))
-
-        # Changing field 'Story.allow_member_edit'
-        db.alter_column('stories_story', 'allow_member_edit', self.gf('django.db.models.fields.BooleanField')(blank=True))
-
 
     def backwards(self, orm):
         
         # Deleting field 'Story.tags'
         db.delete_column('stories_story', 'tags')
-
-        # Changing field 'Story.allow_user_view'
-        db.alter_column('stories_story', 'allow_user_view', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Story.allow_anonymous_edit'
-        db.alter_column('stories_story', 'allow_anonymous_edit', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Story.content'
-        db.alter_column('stories_story', 'content', self.gf('tinymce.models.HTMLField')())
-
-        # Changing field 'Story.allow_anonymous_view'
-        db.alter_column('stories_story', 'allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Story.status'
-        db.alter_column('stories_story', 'status', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Story.syndicate'
-        db.alter_column('stories_story', 'syndicate', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Story.allow_user_edit'
-        db.alter_column('stories_story', 'allow_user_edit', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Story.allow_member_view'
-        db.alter_column('stories_story', 'allow_member_view', self.gf('django.db.models.fields.BooleanField')())
-
-        # Changing field 'Story.allow_member_edit'
-        db.alter_column('stories_story', 'allow_member_edit', self.gf('django.db.models.fields.BooleanField')())
 
 
     models = {

@@ -67,7 +67,9 @@ class GroupManager(Manager):
         else:
             if user:
                 if is_an_admin:
-                    sqs = sqs.all()
+                    # this is no-op. the .all().exclude(type='membership').models(Group) wouldn't work
+                    #sqs = sqs.all()
+                    sqs = sqs.filter(status=1)
                 else:
                     if not user.is_anonymous():
                         # (status+status_detail+anon OR who_can_view__exact)
@@ -101,6 +103,8 @@ class GroupManager(Manager):
                     'status_detail':'active',
                 })
                 sqs = sqs.filter(query)
-
+        
         sqs = sqs.order_by('-create_dt')
+        
         return sqs.models(self.model)
+    
