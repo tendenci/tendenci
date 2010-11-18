@@ -5,12 +5,9 @@ import time
 import cPickle
 from BeautifulSoup import BeautifulStoneSoup
 from django.template import RequestContext
-#from django.core.urlresolvers import reverse
-#from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.conf import settings
 
-#from site_settings.utils import get_setting
 from base.http import Http403
 from forms import EventSearchForm
 
@@ -146,9 +143,11 @@ def display(request, id, template_name="ebevents/display.html"):
         start_date = ''
     try:
         start_time = node.showtimes.subevent['starttime']
-        start_time = start_time.replace(":00 ", " ")   # 04:00:00 PM - fix later by converting to dt
+        start_time =  datetime.strptime(start_time.strip(), '%H:%M:%S %p')
+        #start_time = start_time.replace(":00 ", " ")   # 04:00:00 PM - fix later by converting to dt
     except:
         start_time = ''
+
         
     try:
         end_date = node.showtimes.subevent['enddate']
@@ -158,6 +157,8 @@ def display(request, id, template_name="ebevents/display.html"):
     try:
         end_time = node.showtimes.subevent.string
         end_time = end_time.replace('-', '')
+        
+        end_time =  datetime.strptime(end_time.strip(), '%H:%M %p')
     except:
         end_time = ''
      
@@ -165,17 +166,22 @@ def display(request, id, template_name="ebevents/display.html"):
         start_date = node.date_range.start_date.string
         start_date = datetime.strptime(start_date, '%Y-%b-%d')
         start_time = node.date_range.start_time.string
+        try:
+            start_time =  datetime.strptime(start_time.strip(), '%H:%M:%S %p')
+        except:
+            pass 
         end_date = node.date_range.end_date.string
         end_date = datetime.strptime(end_date, '%Y-%b-%d')
         end_time = node.date_range.end_time.string
+        try:
+            end_time =  datetime.strptime(end_time.strip(), '%H:%M:%S %p')
+        except:
+            pass 
            
     event['start_date'] = start_date
     event['start_time'] = start_time
     event['end_date'] = end_date
     event['end_time'] = end_time
-    
-    print event['start_time']
-    print event['end_time']
     
     # description
     event['description'] = node.description.string
@@ -228,7 +234,6 @@ def display(request, id, template_name="ebevents/display.html"):
     elements = [e.lower() for e in elements]
     
     for e in elements:
-        print e
         try:
             event[e] = eval("node.%s.string" % e) 
             event[e + '_caption'] = eval("node.%s['caption']" %e)
