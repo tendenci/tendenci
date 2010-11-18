@@ -102,14 +102,14 @@ h1{
             {{ event.start_date|date:'l M j, Y'}}<br />
            
            {% if event.end_time and event.start_time != event.end_time %}
-                 {{ event.start_time }} - {{ event.end_time }}
+                 {{ event.start_time|date:'g:i A' }} - {{ event.end_time|date:'g:i A' }}
            {% else %}
-                 {{ event.start_time }}
+                 {{ event.start_time|date:'g:i A' }}
            {% endif %}
           
         {% else %}
-            {{ event.start_date|date:'l M j, Y' }} {{ event.start_time }} 
-            {{ event.end_date|date:'l M j, Y' }} {{ event.end_time }}
+            {{ event.start_date|date:'l M j, Y' }} {{ event.start_time|date:'g:i A' }} 
+            {{ event.end_date|date:'l M j, Y' }} {{ event.end_time|date:'g:i A' }}
         {% endif %}
         </p>
 
