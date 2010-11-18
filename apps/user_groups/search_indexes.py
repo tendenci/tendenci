@@ -17,7 +17,7 @@ class GroupIndex(indexes.RealTimeSearchIndex):
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
-    use_for_membership = indexes.BooleanField(model_attr='use_for_membership')
+    #use_for_membership = indexes.BooleanField(model_attr='use_for_membership')
     creator = indexes.CharField(model_attr='creator')
     creator_username = indexes.CharField(model_attr='creator_username')
     owner = indexes.CharField(model_attr='owner')
