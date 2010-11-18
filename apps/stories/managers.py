@@ -75,9 +75,5 @@ class StoryManager(Manager):
                 # if anonymous
                 sqs = sqs.filter(status=1).filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True)
-
-        # within date range
-        sqs = sqs.filter(start_dt__lte = datetime.now())
-        sqs = sqs.filter(end_dt__gte = datetime.now())
     
         return sqs.models(self.model)

@@ -1,5 +1,6 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from stories.models import Story
+from datetime import datetime
 
 register = Library()
 
@@ -60,6 +61,10 @@ class ListStoriesNode(Node):
             query = '%s "%s"' % (query, q_item)
 
         stories = Story.objects.search(user=self.user, query=query)
+
+        # within date range
+        stories = stories.filter(start_dt__lte = datetime.now())
+        stories = stories.filter(end_dt__gte = datetime.now())
         stories = stories.order_by('start_dt')
 
         stories = [story.object for story in stories[:self.limit]]
@@ -70,7 +75,7 @@ class ListStoriesNode(Node):
 def list_stories(parser, token):
     """
     Example:
-        {% list_stories as stories [user=user limit=3] %}
+        {% list_stories as stories user=user limit=3 %}
         {% for story in stories %}
             {{ story.title }}
         {% endfor %}
