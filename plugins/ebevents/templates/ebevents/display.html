@@ -76,7 +76,7 @@ h1{
 
 {% block body %}
 <div class="t">
-	<h1>{{ event.event_name }}</h1>
+	<h1>{{ event.event_name|safe }}</h1>
 
 	<div id="event_display">
 	
