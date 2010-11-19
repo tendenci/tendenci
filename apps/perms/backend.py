@@ -106,6 +106,10 @@ class ObjectPermBackend(object):
         if not obj:
             return False
         
+        # they are non-admin, should not view any content with status=0 - GJQ
+        if hasattr(obj, "status") and obj.status==0:
+            return False
+            
         # object anonymous and use bits
         if perm_type == 'view':
             if hasattr(obj, "allow_anonymous_view") and hasattr(obj, "allow_user_view"):
