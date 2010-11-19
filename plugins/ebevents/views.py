@@ -2,7 +2,7 @@ import os
 import urllib2
 from datetime import datetime
 import time
-import cPickle
+#import cPickle
 from BeautifulSoup import BeautifulStoneSoup
 from django.template import RequestContext
 from django.shortcuts import render_to_response
@@ -43,8 +43,6 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         fd = open(cache_path, 'r')
         content = fd.read()
         fd.close()
-        
-        events = cPickle.loads(content)
     else:
         # process all events and store in the cache
         try:
@@ -53,27 +51,32 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
             xml_path = "http://xml.eventbooking.com/xml_public.asp?pwl=4E2.4AA4404E"
             
         xml = urllib2.urlopen(xml_path)
-        soup = BeautifulStoneSoup(xml)
+        content = xml.read()
         
-        events = []
-        nodes = soup.findAll('event')
-        for node in nodes:
-            event_type = node.event_type.string
-            event_type = event_type.replace('&amp;', '&')
-            #if event_type <> u'HPL Express Events':
-            start_date = node.date_range.start_date.string
-            if start_date:
-                #start_date = (datetime.strptime(start_date, '%Y-%b-%d')).strftime('%m/%d/%Y')
-                start_date = datetime.strptime(start_date, '%Y-%b-%d')
-            
-            events.append({'event_name': node.event_name.string, 
-                           'event_type': event_type,
-                           'start_date': start_date,
-                           'unique_event_id':node.unique_event_id.string})
-        flat_events = cPickle.dumps(events)
+        # store the xml content in the cache
         fd = open(cache_path, 'w')
-        fd.write(flat_events)
+        fd.write(content)
         fd.close()
+        
+    soup = BeautifulStoneSoup(content)
+    
+    events = []
+    nodes = soup.findAll('event')
+    for node in nodes:
+        event_type = node.event_type.string
+        event_type = event_type.replace('&amp;', '&')
+        #if event_type <> u'HPL Express Events':
+        start_date = node.date_range.start_date.string
+        if start_date:
+            #start_date = (datetime.strptime(start_date, '%Y-%b-%d')).strftime('%m/%d/%Y')
+            start_date = datetime.strptime(start_date, '%Y-%b-%d')
+        
+        
+        events.append({'event_name': node.event_name.string, 
+                       'event_type': event_type,
+                       'start_date': start_date,
+                       'unique_event_id':node.unique_event_id.string})
+   
         
     # make event type list
     event_types = set([evnt['event_type'] for evnt in events])
@@ -132,6 +135,7 @@ def display(request, id, template_name="ebevents/display.html"):
     event = {}
     
     event['event_name'] = node.event_name.string
+    event['event_name'] = event['event_name'].replace('&amp;', '&')
     event['event_type'] = node.event_type.string
     event['unique_event_id'] = node.unique_event_id.string
     
@@ -186,8 +190,8 @@ def display(request, id, template_name="ebevents/display.html"):
     # description
     event['description'] = node.description.string
     event['description'] = event['description'].replace('&amp;', '&')
-    #event['description'] = event['description'].replace('&lt;', '<')
-    #event['description'] = event['description'].replace('&gt;', '>')
+    event['description'] = event['description'].replace('&lt;', '<')
+    event['description'] = event['description'].replace('&gt;', '>')
     # caption
     try:
         event['caption'] = node.subevents.subevent['caption'] 

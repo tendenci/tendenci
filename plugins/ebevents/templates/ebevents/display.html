@@ -76,7 +76,7 @@ h1{
 
 {% block body %}
 <div class="t">
-	<h1>{{ event.event_name }}</h1>
+	<h1>{{ event.event_name|safe }}</h1>
 
 	<div id="event_display">
 	
@@ -223,7 +223,7 @@ h1{
        {% if event.spons %}
            {% if event.spons_caption %}
                <h3>{{ event.spons_caption }}</h3>
-           {% else
+           {% else %}
            <h3>Sponsored by</h3>
            {% endif %}
            
