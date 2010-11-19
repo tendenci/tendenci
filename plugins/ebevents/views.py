@@ -189,8 +189,8 @@ def display(request, id, template_name="ebevents/display.html"):
     # description
     event['description'] = node.description.string
     event['description'] = event['description'].replace('&amp;', '&')
-    #event['description'] = event['description'].replace('&lt;', '<')
-    #event['description'] = event['description'].replace('&gt;', '>')
+    event['description'] = event['description'].replace('&lt;', '<')
+    event['description'] = event['description'].replace('&gt;', '>')
     # caption
     try:
         event['caption'] = node.subevents.subevent['caption'] 
