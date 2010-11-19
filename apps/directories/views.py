@@ -30,6 +30,11 @@ def index(request, slug=None, template_name="directories/view.html"):
     if not slug: return HttpResponseRedirect(reverse('directory.search'))
     directory = get_object_or_404(Directory, slug=slug)
     
+    # non-admin can not view the non-active content
+    # status=0 has been taken care of in the has_perm function
+    if (directory.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+        raise Http403
+    
     if has_perm(request.user,'directories.view_directory',directory):
         log_defaults = {
             'event_id' : 445000,

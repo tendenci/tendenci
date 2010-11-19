@@ -15,6 +15,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
 from perms.utils import get_notice_recipients
+from perms.utils import is_admin
 try:
     from notification import models as notification
 except:
@@ -23,6 +24,11 @@ except:
 def index(request, slug=None, template_name="news/view.html"):
     if not slug: return HttpResponseRedirect(reverse('news.search'))
     news = get_object_or_404(News, slug=slug)
+    
+    # non-admin can not view the non-active content
+    # status=0 has been taken care of in the has_perm function
+    if (news.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+        raise Http403
 
     # check permission
     if not has_perm(request.user,'news.view_news',news):
