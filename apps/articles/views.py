@@ -17,6 +17,8 @@ from meta.forms import MetaForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
 
+from perms.utils import is_admin
+
 try:
     from notification import models as notification
 except:
@@ -25,6 +27,11 @@ except:
 def index(request, slug=None, template_name="articles/view.html"):
     if not slug: return HttpResponseRedirect(reverse('article.search'))
     article = get_object_or_404(Article, slug=slug)
+    
+    # non-admin can not view the non-active content
+    # status=0 has been taken care of in the has_perm function
+    if (article.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+        raise Http403
     
     if has_perm(request.user, 'articles.view_article', article):
         log_defaults = {
