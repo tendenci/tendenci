@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
+from django.forms.util import flatatt
 
 
 PERIOD_UNIT_CHOICE = (
@@ -265,3 +266,37 @@ class CustomRadioFieldRenderer(RadioFieldRenderer):
 
 class CustomRadioSelect(forms.RadioSelect):
     renderer = CustomRadioFieldRenderer
+
+class Output(forms.Widget):
+    """
+    Base class for all <output> widgets (e.g. titles and paragraphs).
+    These are fake-fields; they do not take input.
+    """
+
+    def _format_value(self, value):
+        if self.is_localized:
+            return formats.localize_input(value)
+        return value
+
+    def render(self, name, value, attrs=None):
+        if value is None:
+            value = ''
+        return force_unicode(self._format_value(value))
+
+class Header(Output):
+    """
+    Outputs text.  Using class name to identify the type
+    of text that is being output.
+    """
+
+class Description(Output):
+    """
+    Outputs text.  Using class name to identify the type
+    of text that is being output.
+    """
+
+class HorizontalRule(Output):
+    """
+    Outputs text.  Using class name to identify the type
+    of text that is being output.
+    """
