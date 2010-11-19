@@ -135,6 +135,7 @@ def display(request, id, template_name="ebevents/display.html"):
     event = {}
     
     event['event_name'] = node.event_name.string
+    event['event_name'] = event['event_name'].replace('&amp;', '&')
     event['event_type'] = node.event_type.string
     event['unique_event_id'] = node.unique_event_id.string
     
