@@ -5,6 +5,11 @@ from event_logs.models import EventLog
 from memberships.models import App, AppEntry
 from memberships.forms import AppForm, AppEntryForm
 from perms.models import ObjectPermission
+from datetime import datetime, timedelta
+import hashlib
+from django.contrib.auth.models import User
+from memberships.models import Membership
+import sys
 
 try:
     from notification import models as notification
@@ -38,8 +43,50 @@ def application_details(request, slug=None, template_name="memberships/applicati
     app_entry_form = AppEntryForm(app, request.POST or None, request.FILES or None)
     if request.method == "POST":
         if app_entry_form.is_valid():
-            app_entry = app_entry_form.save(commit=False)
-            return redirect(app_entry.hash_url())
+            app_entry = app_entry_form.save()
+
+            membership_type = app_entry.membership_type
+
+            if membership_type and not membership_type.require_approval:
+                # create user and create membership
+
+                user_dict = {
+                    'username': app_entry.email,
+                    'email': app_entry.email,
+                    'password': hashlib.sha1(app_entry.email).hexdigest()[:6],
+                }
+
+                try:
+                    user = User.objects.create_user(**user_dict)
+                except:
+                    print "err", sys.exc_info()[1]
+                    print "user_dict", user_dict
+                    user = None
+
+                if user:
+                    membership_dict = {
+                        'member_number': app_entry.app.entries.count(),
+                        'membership_type':membership_type,
+                        'user':user,
+                        'renewal':membership_type.renewal,
+                        'join_dt':datetime.now(),
+                        'renew_dt':datetime.now() + timedelta(30), # TODO: calculate renew_dt
+                        'expiration_dt': datetime.now() + timedelta(365), # TODO: calculate expiration_dt
+                        'approved': True,
+                        'approved_denied_dt': datetime.now(),
+                        'approved_denied_user': None,
+                        'corporate_membership': None,
+                        'payment_method':'',
+                        'ma':app_entry.app,
+                        'creator':user,
+                        'creator_username':user.username,
+                        'owner':user,
+                        'owner_username':user,
+                    }
+
+                    membership = Membership.objects.create(**membership_dict)
+
+            return redirect(app_entry.confirmation_url)
 
     return render_to_response(template_name, {
         'app': app, "app_entry_form": app_entry_form}, 

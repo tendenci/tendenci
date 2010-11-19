@@ -10,17 +10,26 @@ from directories.models import Directory
 from user_groups.models import Group
 from memberships.managers import MemberAppManager, MemberAppEntryManager
 from corporate_memberships.models import CorporateMembership
+import sys
 
 FIELD_CHOICES = (
-    ("CharField", _("Text")),
-    ("CharField/django.forms.Textarea", _("Paragraph Text")),
-    ("BooleanField", _("Checkbox")),
-    ("ChoiceField", _("Choose from a list")),
-    ("MultipleChoiceField", _("Multi select")),
-    ("EmailField", _("Email")),
-    ("FileField", _("File upload")),
-    ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
-    ("DateTimeField", _("Date/time")),
+    ("text", _("Text")),
+    ("paragraph-text", _("Paragraph Text")),
+    ("check-box", _("Checkbox")),
+    ("choose-from-list", _("Choose from a list")),
+    ("multi-select", _("Multi select")),
+    ("email-field", _("Email")),
+    ("file-uploader", _("File upload")),
+    ("date", _("Date")),
+    ("date-time", _("Date/time")),
+    ("membership-type", _("Membership Type")),
+    ("payment-method", _("Payment Method")),
+    ("first-name", _("First Name")),
+    ("last-name", _("Last Name")),
+    ("email", _("Email")),
+    ("header", _("Section Header")),
+    ("description", _(" Description")),
+    ("horizontal-rule", _("Horizontal Rule")),
 )
 
 OBJECT_TYPE_CHOICES = (
@@ -119,7 +128,6 @@ class Membership(TendenciBaseModel):
     member_number = models.CharField(_("Member Number"), max_length=50)
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type")) 
     user = models.ForeignKey(User, related_name="memberships")
-    
     directory = models.ForeignKey(Directory, blank=True, null=True) 
     
     renewal = models.BooleanField(default=0)
@@ -129,9 +137,9 @@ class Membership(TendenciBaseModel):
     expiration_dt = models.DateTimeField(_("Expiration Date Time"))
     approved = models.BooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"))
-    approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"))
+    approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
     # maybe change to foreign key to corporate_membership
-    corporate_membership = models.ForeignKey(CorporateMembership, related_name="memberships")
+    corporate_membership = models.ForeignKey(CorporateMembership, related_name="memberships", null=True)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
     # add membership application id - so we can support multiple applications
@@ -191,6 +199,7 @@ class MembershipArchive(models.Model):
 
 class App(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
+
     name = models.CharField(_("Name"), max_length=155)
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(blank=True,
@@ -200,6 +209,8 @@ class App(TendenciBaseModel):
     notes = models.TextField(blank=True,
         help_text="Extra notes about this application for editors.  Hidden actual application.")
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
+
+    membership_types = models.ManyToManyField(MembershipType, verbose_name="Membership Types")
 
     objects = MemberAppManager()
 
@@ -223,11 +234,15 @@ class AppFieldManager(models.Manager):
 
 class AppField(models.Model):
     app = models.ForeignKey("App", related_name="fields")
+    content_type = models.ForeignKey(ContentType,
+        related_name="membership_app_field_set", editable=False, null=True)
+    attribute_name = models.CharField(_("Attribute Name"), max_length=300)
     label = models.CharField(_("Label"), max_length=200)
-    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=50)
-    required = models.BooleanField(_("Required"), default=True)
-    visible = models.BooleanField(_("Visible"), default=True)
-    choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
+    description = models.TextField(_("Description"), max_length=200, blank=True)
+    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=100)
+    required = models.BooleanField(_("Required"), default=True, blank=True)
+    visible = models.BooleanField(_("Visible"), default=True, blank=True)
+    choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text="Comma separated options where applicable")
     position = models.IntegerField(blank=True)
 
@@ -267,7 +282,7 @@ class AppEntry(models.Model):
 
     class Meta:
         verbose_name = _("Application Entry")
-        verbose_name = _("Application Entries")
+        verbose_name_plural = _("Application Entries")
 
     @property
     def hash(self):
@@ -276,6 +291,43 @@ class AppEntry(models.Model):
     @models.permalink
     def hash_url(self):
         return ('membership.application_confirmation', (self.hash,))
+
+    @property
+    @models.permalink
+    def confirmation_url(self):
+        return ('membership.application_confirmation', (self.hash,))
+
+    @property
+    def membership_type(self):
+        """Get MembershipType object"""
+
+        # TODO: don't like this; would prefer object column in field_entry
+        # This is prone to error; We're depending on a string membership type name
+        try:
+            entry_field = self.fields.get(field__field_type="membership-type")
+            membership_type_class = entry_field.field.content_type.model_class()
+            return membership_type_class.objects.get(name__exact=entry_field.value.strip())
+        except:
+            return None
+
+    @property
+    def email(self):
+        """Get email string"""
+        try:
+            entry_field = self.fields.get(field__field_type="email-field")
+            return entry_field.value
+        except:
+            return ''
+
+    def payment_method(self):
+        """Get PaymentMethod object"""
+        # TODO: Figure out how to get the payment_method
+
+    def applicant(self):
+        """Get User object"""
+        # TODO: Figure out how to get the user
+
+
 
 class AppFieldEntry(models.Model):
     """
@@ -288,6 +340,6 @@ class AppFieldEntry(models.Model):
     
     class Meta:
         verbose_name = _("Application Field Entry")
-        verbose_name = _("Application Field Entries")
+        verbose_name_plural = _("Application Field Entries")
 
 
