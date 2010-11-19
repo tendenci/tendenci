@@ -11,6 +11,7 @@ from fields import TypeExpMethodField, PriceInput
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from django.core.files.storage import FileSystemStorage
 from widgets import CustomRadioSelect, TypeExpMethodWidget
+from sys import exc_info
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -55,6 +56,7 @@ class MembershipTypeForm(forms.ModelForm):
     class Meta:
         model = MembershipType
         fields = (
+                  'app',
                   'name',
                   'price',
                   'admin_fee',
@@ -183,6 +185,9 @@ class AppForm(TendenciBaseForm):
 
     class Meta:
         model = App
+        widgets = {
+#            'membership_types': forms.CheckboxSelectMultiple(),
+        }
 
 class AppFieldForm(forms.ModelForm):
     class Meta:
@@ -192,7 +197,7 @@ class AppEntryForm(forms.ModelForm):
 
     class Meta:
         model = AppEntry
-        exclude = ("form", "entry_time",)
+        exclude = ("entry_time",)
 
     def __init__(self, app, *args, **kwargs):
         """
@@ -201,17 +206,36 @@ class AppEntryForm(forms.ModelForm):
         """
         self.app = app
         self.form_fields = app.fields.visible()
+        self.types_field = app.membership_types
         super(AppEntryForm, self).__init__(*args, **kwargs)
+
+        CLASS_AND_WIDGET = {
+            'text': ('CharField', None),
+            'paragraph-text': ('CharField', 'django.forms.Textarea'),
+            'check-box': ('BooleanField', None),
+            'choose-from-list': ('ChoiceField', None),
+            'multi-select': ('BooleanField', None),
+            'email-field': ('EmailField', None),
+            'file-uploader': ('FileField', None),
+            'date': ('DateField', 'django.forms.extras.SelectDateWidget'),
+            'date-time': ('DateTimeField', None),
+            'membership-type': ('ChoiceField', None),
+            'payment-method': ('ChoiceField', None),
+            'first-name': ('CharField', None),
+            'last-name': ('CharField', None),
+            'email': ('EmailField', None),
+            'header': ('CharField', 'memberships.widgets.Header'),
+            'description': ('CharField', 'memberships.widgets.Description'),
+            'horizontal-rule': ('CharField', 'memberships.widgets.Description'),
+        }
 
         for field in self.form_fields:
             field_key = "field_%s" % field.id
-            if "/" in field.field_type:
-                field_class, field_widget = field.field_type.split("/")
-            else:
-                field_class, field_widget = field.field_type, None
+            field_class, field_widget = CLASS_AND_WIDGET[field.field_type]
             field_class = getattr(forms, field_class)
             field_args = {"label": field.label, "required": field.required}
             arg_names = field_class.__init__.im_func.func_code.co_varnames
+
             if "max_length" in arg_names:
                 field_args["max_length"] = FIELD_MAX_LENGTH
             if "choices" in arg_names:
