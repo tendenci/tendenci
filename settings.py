@@ -245,6 +245,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'theme_advanced_toolbar_align': "left",
     'theme_advanced_statusbar_location': "bottom",
     'theme_advanced_resizing' : True,
+    
 
     'theme_advanced_resize_horizontal': True,
     'dialog_type': "modal",
@@ -253,6 +254,10 @@ TINYMCE_DEFAULT_CONFIG = {
     'convert_urls' : False,
     'apply_source_formatting' : False,
     'handle_event_callback' : "event_handler",
+    
+    # Additions - JMO
+    'height': 400,
+	'extended_valid_elements': "iframe[align<bottom?left?middle?right?top|class|frameborder|height|id|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style|title|width]"
 }
 
 # -------------------------------------- #
