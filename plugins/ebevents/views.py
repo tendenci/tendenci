@@ -10,6 +10,8 @@ from django.conf import settings
 
 from base.http import Http403
 from forms import EventSearchForm
+from utils import get_event_by_id
+from site_settings.utils import get_setting
 
 def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"):
     q_event_month = request.GET.get('event_month', '')
@@ -121,132 +123,106 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
 def display(request, id, template_name="ebevents/display.html"):
     if not id: raise Http403
         
-    try:
-        xml_url = settings.EVENTBOOKING_XML_URL
-    except:
-        xml_url = "http://xml.eventbooking.com/xml_public.asp?pwl=4E2.4AA4404E"
-        
-    xml_url = '%s&mode=detail&event_id=%s' % (xml_url.strip(), id)
-        
-    xml = urllib2.urlopen(xml_url)
-    soup = BeautifulStoneSoup(xml)
-    node = soup.find('public_event_detail')
-    
-    event = {}
-    
-    event['event_name'] = node.event_name.string
-    event['event_name'] = event['event_name'].replace('&amp;', '&')
-    event['event_type'] = node.event_type.string
-    event['unique_event_id'] = node.unique_event_id.string
-    
-    # date time
-    try:
-        start_date = node.showtimes.subevent['startdate']
-        start_date = datetime.strptime(start_date, '%Y-%b-%d')
-    except:
-        start_date = ''
-    try:
-        start_time = node.showtimes.subevent['starttime']
-        start_time =  datetime.strptime(start_time.strip(), '%H:%M:%S %p')
-        #start_time = start_time.replace(":00 ", " ")   # 04:00:00 PM - fix later by converting to dt
-    except:
-        start_time = ''
-
-        
-    try:
-        end_date = node.showtimes.subevent['enddate']
-        end_date = datetime.strptime(end_date, '%Y-%b-%d')
-    except:
-        end_date = ''
-    try:
-        end_time = node.showtimes.subevent.string
-        end_time = end_time.replace('-', '')
-        
-        end_time =  datetime.strptime(end_time.strip(), '%H:%M %p')
-    except:
-        end_time = ''
-     
-    if not start_date:
-        start_date = node.date_range.start_date.string
-        start_date = datetime.strptime(start_date, '%Y-%b-%d')
-        start_time = node.date_range.start_time.string
-        try:
-            start_time =  datetime.strptime(start_time.strip(), '%H:%M:%S %p')
-        except:
-            pass 
-        end_date = node.date_range.end_date.string
-        end_date = datetime.strptime(end_date, '%Y-%b-%d')
-        end_time = node.date_range.end_time.string
-        try:
-            end_time =  datetime.strptime(end_time.strip(), '%H:%M:%S %p')
-        except:
-            pass 
-           
-    event['start_date'] = start_date
-    event['start_time'] = start_time
-    event['end_date'] = end_date
-    event['end_time'] = end_time
-    
-    # description
-    event['description'] = node.description.string
-    event['description'] = event['description'].replace('&amp;', '&')
-    event['description'] = event['description'].replace('&lt;', '<')
-    event['description'] = event['description'].replace('&gt;', '>')
-    # caption
-    try:
-        event['caption'] = node.subevents.subevent['caption'] 
-    except:
-        event['caption'] = ""
-    
-    # ticket
-    event['ticket_info'] = node.ticket_info.string
-    event['ticket_prices'] = node.ticket_prices.string
-    event['ticket_sale_date'] = node.ticket_sale_date.string
-    try:
-        event['ticket_sale_date'] = datetime.strptime(event['ticket_sale_date'], '%Y-%b-%d')
-    except:
-        pass
-    event['ticket_sale_time'] = node.ticket_sale_time.string
-    
-    # location
-    event['location'] = node.location.string
-    event['venue_name'] = node.venue_name.string
-    event['venue_website'] = node.venue_website.string
-    
-    # additional info
-    event['additional_info'] = node.additional_info.string
-    
-    # picture thumb
-    event['picture_thumb'] = node.picture_thumb.string
-    if event['picture_thumb']:
-        event['picture_thumb_height'] = int(node.picture_thumb['height'])
-        event['picture_thumb_width'] = int(node.picture_thumb['width'])
-    
-    # picture full
-    event['picture_full'] = node.picture_full.string
-    if event['picture_full']:
-        event['picture_full_height'] = int(node.picture_full['height'])
-        event['picture_full_width'] = int(node.picture_full['width'])
-    
-    # weird - those elements appear as upper case in the xml file
-    # but the parser only takes as lower case. Need to change all to lower case
-    elements = ['DIRURL', 'TI', 'MI', 'SEATCHART', 'RM', 'SPONS',
-                'PARKING', 'PROMOTER', 'PRESENTER', 'PRODUCER', 
-                'OPENING_ACT', 'CONTACT', 'SPECIAL_ENT', 'DOORSOPEN',
-                'RESTR', 'CONTACT_PHONE', 'CONTACT_EMAIL', 'VIDEO', 
-                'AUDIO', 'GROUPSALES']
-    elements = [e.lower() for e in elements]
-    
-    for e in elements:
-        try:
-            event[e] = eval("node.%s.string" % e) 
-            event[e + '_caption'] = eval("node.%s['caption']" %e)
-        except:
-            event[e]= ''
-            event[e + '_caption'] = ''
+    event = get_event_by_id(id)
     
     return render_to_response(template_name, {'event': event}, 
         context_instance=RequestContext(request))
+    
+def ical(request, id):
+    import re
+    from timezones.utils import adjust_datetime_to_timezone
+    from django.http import HttpResponse
+    from django.core.urlresolvers import reverse
+    from django.utils.html import strip_tags
+    from utils import build_ical_text, build_ical_html
+    
+    event = get_event_by_id(id)
+    
+    p = re.compile(r'http(s)?://(www.)?([^/]+)')
+    d = {}
+    
+    d['site_url'] = get_setting('site', 'global', 'siteurl')
+    match = p.search(d['site_url'])
+    if match:
+        d['domain_name'] = match.group(3)
+    else:
+        d['domain_name'] = ""
+        
+    ics_str = "BEGIN:VCALENDAR\n"
+    ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
+    ics_str += "VERSION:2.0\n"
+    ics_str += "METHOD:PUBLISH\n"
+    
+    
+    ics_str += "BEGIN:VEVENT\n"
+        
+    
+    # date time
+    event['start_dt'] = ''
+    if isinstance(event['start_date'], datetime) and isinstance(event['start_time'], datetime):
+        start_dt = datetime(event['start_date'].year, 
+                            event['start_date'].month, 
+                            event['start_date'].day,
+                            event['start_time'].hour, 
+                            event['start_time'].minute, 
+                            event['start_time'].second)
+        if start_dt:
+            event['start_dt'] = start_dt
+            start_dt = adjust_datetime_to_timezone(start_dt, settings.TIME_ZONE, 'GMT')
+            start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
+            ics_str += "DTSTART:%s\n" % (start_dt)
+            
+    if isinstance(event['end_date'], datetime) and isinstance(event['end_time'], datetime):
+        end_dt = datetime(event['end_date'].year, 
+                            event['end_date'].month, 
+                            event['end_date'].day,
+                            event['end_time'].hour, 
+                            event['end_time'].minute, 
+                            event['end_time'].second)
+            
+        if end_dt:
+            end_dt = adjust_datetime_to_timezone(end_dt, settings.TIME_ZONE, 'GMT')
+            end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
+            ics_str += "DTEND:%s\n" % (end_dt)
+    
+    # location
+    if event['location']:
+        ics_str += "LOCATION:%s\n" % (event['location'])
+        
+    ics_str += "TRANSP:OPAQUE\n"
+    ics_str += "SEQUENCE:0\n"
+    
+    # uid
+    ics_str += "UID:uid%s@%s\n" % (id, d['domain_name'])
+    
+    event_url = "%s%s" % (d['site_url'], reverse('ebevent_display', args=[id]))
+    d['event_url'] = event_url
+    
+    # text description
+    ics_str += "DESCRIPTION:%s\n" % (build_ical_text(event,d))
+    #  html description
+    ics_str += "X-ALT-DESC;FMTTYPE=text/html:%s\n" % (build_ical_html(event,d))
+    
+    ics_str += "SUMMARY:%s\n" % strip_tags(event['event_name'])
+    ics_str += "PRIORITY:5\n"
+    ics_str += "CLASS:PUBLIC\n"
+    ics_str += "BEGIN:VALARM\n"
+    ics_str += "TRIGGER:-PT30M\n"
+    ics_str += "ACTION:DISPLAY\n"
+    ics_str += "DESCRIPTION:Reminder\n"
+    ics_str += "END:VALARM\n"
+    ics_str += "END:VEVENT\n"
+    
+    ics_str += "END:VCALENDAR\n"
+    
+    response = HttpResponse(ics_str)
+    response['Content-Type'] = 'text/calendar'
+    if d['domain_name']:
+        file_name = '%s_event_%s.ics' % (d['domain_name'], id)
+    else:
+        file_name = "event_%s.ics" % id
+    response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
+    return response
     
     
     

@@ -70,6 +70,15 @@ h1{
 	border-top: 1px dashed silver; 
 	padding-top: 1em;
 }
+#ics-link{
+	margin-top: 2em;
+	padding: 2px 0; 
+	text-align:right;
+	font-size: small;
+	background-image: url('{{ STATIC_URL }}images/icons/ical_add.gif');
+	background-repeat: no-repeat;
+	
+}
 </style>
 
 {% endblock %}
@@ -83,6 +92,7 @@ h1{
 	<div id="back_to_event_list">
     	<a id="back_to_event_list_link" href="{% url ebevent_list %}">
     	<span class="back_to_event_list_span">Back to Event List</span></a>
+    	<div id="ics-link"><a href="{%url ebevent_ical event.unique_event_id %}">Add to iCal (Outlook)</a></div>
     </div>
     	       
     {% if event.start_date %}
