@@ -135,6 +135,7 @@ def display(request, id, template_name="ebevents/display.html"):
     if not id: raise Http403
         
     event = get_event_by_id(id)
+    if not event: raise Http403
     
     # html meta title
     html_title = '%s - ' % event['event_name']
@@ -159,6 +160,7 @@ def ical(request, id):
     from utils import build_ical_text, build_ical_html
     
     event = get_event_by_id(id)
+    if not event: raise Http403
     
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
