@@ -65,6 +65,8 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
     events = []
     nodes = soup.findAll('event')
     for node in nodes:
+        event_name =node.event_name.string
+        event_name = event_name.replace('&amp;', '&')
         event_type = node.event_type.string
         event_type = event_type.replace('&amp;', '&')
         #if event_type <> u'HPL Express Events':
@@ -74,7 +76,7 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
             start_date = datetime.strptime(start_date, '%Y-%b-%d')
         
         
-        events.append({'event_name': node.event_name.string, 
+        events.append({'event_name': event_name, 
                        'event_type': event_type,
                        'start_date': start_date,
                        'unique_event_id':node.unique_event_id.string})
@@ -125,7 +127,18 @@ def display(request, id, template_name="ebevents/display.html"):
         
     event = get_event_by_id(id)
     
-    return render_to_response(template_name, {'event': event}, 
+    # html meta title
+    html_title = '%s - ' % event['event_name']
+    if isinstance(event['start_date'], datetime) and isinstance(event['start_time'], datetime):
+        html_title += '%s %s' % (event['start_date'].strftime('%d-%b-%Y'), 
+                                 event['start_time'].strftime('%I:%M %p'))
+    if event['location']:
+        html_title += ' at %s' % event['location']
+    
+    html_title += '. A calendar event on %s' % get_setting('site', 'global', 'sitedisplayname')
+    
+    
+    return render_to_response(template_name, {'event': event, 'html_title': html_title}, 
         context_instance=RequestContext(request))
     
 def ical(request, id):
