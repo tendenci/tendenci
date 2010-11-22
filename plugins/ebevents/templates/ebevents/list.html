@@ -1,4 +1,6 @@
 {% extends "ebevents/base.html" %}
+{% load perm_tags %}
+{% load page_tags %}
 
 {% block title %}{{ block.super }} {{ SITE_GLOBAL_SITEDISPLAYNAME }} Events{% endblock %}
 
@@ -49,7 +51,7 @@
 #event_topcms{
     margin-bottom: 1em;
     margin-top: 0;
-    text-align: center;
+    /*text-align: center; */
 }
 
 .clear-left{
@@ -94,21 +96,36 @@
 {% endblock %}
 
 {% block body %}
+{% if top_page %}
+	{% has_perm request.user pages.change_page top_page as can_edit_page %}
+{% endif %}
+
 <div class="t">
 	<h1>Events</h1>
 	<div id="event_topcms">
 		<div id="event_topcms_content">
-		<p>Don't miss any of the FUN at Discovery Green!</p>
-		<p><b>Click on each activity/event below for more detailed information.</b></p>
-		<p>&nbsp;</p>
-		<p style="color:blue;">You are welcome to bring lawn chairs, blankets even your dogs when coming to an event. </p>
-		<p style="color:blue;">For licensed events (rentals), producers may have different rules.</p>
-		<p style="color:blue;">It is prohibited to bring alcohol, glass containers, tables or pop up tents into the park.</p>
-		<p>&nbsp;</p>
-		<p style="color:red;">Outdoor events may be affected by the weather. </p>
-		<p style="color:red;">Performers, times, dates and other schedule changes may occur. </p>
-		<p style="color:red;">For weather updates re-visit the main page of the website or</p>
-		<p style="color:red;">call 713-400-7336, press option #1.</p>
+		{% if top_page %}
+			{{ top_page.content|safe }}
+				{% if can_edit_page %}
+					<div class="quick-options" align="right">
+						{% page_options request.user top_page %}
+	                </div>
+                {% endif %}
+		{% else %}
+			<div align="center">
+			<p>Don't miss any of the FUN at Discovery Green!</p>
+			<p><b>Click on each activity/event below for more detailed information.</b></p>
+			<p>&nbsp;</p>
+			<p style="color:blue;">You are welcome to bring lawn chairs, blankets even your dogs when coming to an event. </p>
+			<p style="color:blue;">For licensed events (rentals), producers may have different rules.</p>
+			<p style="color:blue;">It is prohibited to bring alcohol, glass containers, tables or pop up tents into the park.</p>
+			<p>&nbsp;</p>
+			<p style="color:red;">Outdoor events may be affected by the weather. </p>
+			<p style="color:red;">Performers, times, dates and other schedule changes may occur. </p>
+			<p style="color:red;">For weather updates re-visit the main page of the website or</p>
+			<p style="color:red;">call 713-400-7336, press option #1.</p>
+			</div>
+		{% endif %}
 		</div>
 	</div>
 	
@@ -162,8 +179,6 @@
 
 </div>
 
-
-
 {% endblock %}
 
 {% block extra_body %}
@@ -195,4 +210,16 @@
 	    
     }); 
 </script>
+
+{% if top_page %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+<script type="text/javascript">
+var iconrow = new dropdown({
+	container:	'more-options-wrap',
+	trigger:	'more-options-trigger',
+	target:		'more-options-target'
+});
+</script>
+{% endif %}
+
 {% endblock %}
