@@ -32,7 +32,7 @@ def get_event_by_id(id, **kwargs):
         start_date = ''
     try:
         start_time = node.showtimes.subevent['starttime']
-        start_time =  datetime.strptime(start_time.strip(), '%H:%M:%S %p')
+        start_time =  datetime.strptime(start_time.strip(), '%I:%M:%S %p')
         #start_time = start_time.replace(":00 ", " ")   # 04:00:00 PM - fix later by converting to dt
     except:
         start_time = ''
@@ -47,23 +47,24 @@ def get_event_by_id(id, **kwargs):
         end_time = node.showtimes.subevent.string
         end_time = end_time.replace('-', '')
         
-        end_time =  datetime.strptime(end_time.strip(), '%H:%M %p')
+        end_time =  datetime.strptime(end_time.strip(), '%I:%M %p')
     except:
         end_time = ''
+    print end_time
      
     if not start_date:
         start_date = node.date_range.start_date.string
         start_date = datetime.strptime(start_date, '%Y-%b-%d')
         start_time = node.date_range.start_time.string
         try:
-            start_time =  datetime.strptime(start_time.strip(), '%H:%M:%S %p')
+            start_time =  datetime.strptime(start_time.strip(), '%I:%M:%S %p')
         except:
             pass 
         end_date = node.date_range.end_date.string
         end_date = datetime.strptime(end_date, '%Y-%b-%d')
         end_time = node.date_range.end_time.string
         try:
-            end_time =  datetime.strptime(end_time.strip(), '%H:%M:%S %p')
+            end_time =  datetime.strptime(end_time.strip(), '%I:%M:%S %p')
         except:
             pass 
            
@@ -141,7 +142,7 @@ def build_ical_text(event, d):
     
     # start_dt
     if event['start_dt']:
-        ical_text += 'Start Date / Time: %s CST\n' % (event['start_dt'].strftime('%b %d, %Y %H:%M %p'))
+        ical_text += 'Start Date / Time: %s CST\n' % (event['start_dt'].strftime('%b %d, %Y %I:%M %p'))
     
     # location
     if event['location']:
@@ -166,7 +167,7 @@ def build_ical_html(event, d):
     
     # start_dt
     if event['start_dt']:
-        ical_html += '<div>When: %s CST</div>' % (event['start_dt'].strftime('%b %d, %Y %H:%M %p')) 
+        ical_html += '<div>When: %s CST</div>' % (event['start_dt'].strftime('%b %d, %Y %I:%M %p')) 
         
     # location
     if event['location']:
