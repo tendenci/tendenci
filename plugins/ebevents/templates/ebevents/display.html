@@ -1,6 +1,6 @@
 {% extends "ebevents/base.html" %}
 
-{% block title %}{{ block.super }} Event{% endblock %}
+{% block title %}{{ html_title }}{% endblock %}
 
 {% block extra_head %}
 <style type="text/css">
@@ -81,6 +81,7 @@ h1{
 }
 #ics-link a{
 	padding-left: 1.6em;
+	font-weight: normal;
 }
 </style>
 
