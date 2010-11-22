@@ -7,6 +7,7 @@ from BeautifulSoup import BeautifulStoneSoup
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
+from django.http import Http404
 
 from base.http import Http403
 from forms import EventSearchForm
@@ -135,7 +136,7 @@ def display(request, id, template_name="ebevents/display.html"):
     if not id: raise Http403
         
     event = get_event_by_id(id)
-    if not event: raise Http403
+    if not event: raise Http404
     
     # html meta title
     html_title = '%s - ' % event['event_name']
@@ -160,7 +161,7 @@ def ical(request, id):
     from utils import build_ical_text, build_ical_html
     
     event = get_event_by_id(id)
-    if not event: raise Http403
+    if not event: raise Http404
     
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
