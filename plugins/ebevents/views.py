@@ -12,6 +12,7 @@ from base.http import Http403
 from forms import EventSearchForm
 from utils import get_event_by_id
 from site_settings.utils import get_setting
+from pages.models import Page
 
 def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"):
     q_event_month = request.GET.get('event_month', '')
@@ -115,11 +116,19 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
     form.fields['event_type'].initial = q_event_type
     form.fields['event_type'].choices = [("", "Select Category")] + [(e_type, e_type) for e_type in event_types]
     
+    # top cms - it's bad but we have to hard-code the slug here
+    slug = 'calendar-events'
+    try:
+        top_page = Page.objects.get(slug=slug)
+    except:
+        top_page = ''
+    
   
     return render_to_response(template_name, {'form': form,
                                               'events': events, 
                                               'event_types': event_types,
-                                              'selected_event_type':q_event_type}, 
+                                              'selected_event_type':q_event_type,
+                                              'top_page': top_page}, 
         context_instance=RequestContext(request))
     
 def display(request, id, template_name="ebevents/display.html"):
