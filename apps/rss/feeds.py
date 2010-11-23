@@ -14,6 +14,8 @@ from articles.models import Article
 from news.models import News
 from pages.models import Page
 from photos.models import PhotoSet
+from directories.models import Directory
+
 
 site_url = get_setting('site', 'global', 'siteurl')
 site_display_name = get_setting('site', 'global', 'sitedisplayname')
@@ -33,7 +35,7 @@ class MainRSSFeed(Feed):
     #description_template = "rss/description.html"
 
     def items(self):
-        return SearchQuerySet().filter(can_syndicate=True).models(Article, News, Page, 
+        return SearchQuerySet().filter(can_syndicate=True).models(Article, News, Page, Directory,
                                                             PhotoSet).order_by('-order')[:max_items]
        
 
