@@ -3,6 +3,8 @@ from django.contrib.auth.models import Group as Auth_Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 #from profiles.models import Profile
 
+from profiles.utils import user_add_remove_admin_auth_group
+
 class Command(BaseCommand):
     
     def handle(self, *args, **options):
@@ -26,6 +28,13 @@ class Command(BaseCommand):
             auth_group.permissions = permissions
             auth_group.save()
         
+        # these are the admins (under the new criteria). make sure they are on admin group
+        users = User.objects.filter(is_superuser=False, is_staff=True)
+        if users:
+            for user in users:
+                user_add_remove_admin_auth_group(user, auth_group=auth_group)
+        
+        # these are the admins (under the old criteria). convert them.
         users = User.objects.filter(is_superuser=True, is_staff=False)
         if users:
             # get admin auth group
