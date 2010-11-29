@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext_lazy as _, ugettext
+from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator
 from django.template import Context, loader
 from django.utils.http import int_to_base36
@@ -125,9 +126,13 @@ class PasswordResetForm(forms.Form):
         Validates that a user exists with the given e-mail address.
         """
         email = self.cleaned_data["email"]
+        self_reg = get_setting('module', 'users', 'selfregistration')
         self.users_cache = User.objects.filter(email__iexact=email)
         if len(self.users_cache) == 0:
-            raise forms.ValidationError(_("That e-mail address doesn't have an associated user account. Are you sure you've registered?"))
+            if self_reg:
+                raise forms.ValidationError(mark_safe(_('That e-mail address doesn\'t have an associated user account. Are you sure you\'ve <a href="/accounts/register" >registered</a>?')))
+            else:
+                raise forms.ValidationError(_("That e-mail address doesn't have an associated user account."))
         return email
 
     def save(self, domain_override=None, email_template_name='registration/password_reset_email.html',
