@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
+from memberships.models import MembershipType
 
 FIELD_CHOICES = (
                     ("CharField", _("Text")),
@@ -19,27 +20,29 @@ FIELD_CHOICES = (
                     ("DateTimeField", _("Date/time")),
                 )
 
-
 class CorporateMembershipType(TendenciBaseModel):
     guid = models.CharField(max_length=50)
-    name = models.CharField(_('Corporate Membership Type'), max_length=255)
+    name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
-    price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0)
+    price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0,
+                                help_text="Set 0 for free membership.")
+    renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15, decimal_places=2, 
+                                        blank=True, default=0, null=True,
+                                        help_text="Set 0 for free membership.")
+    membership_type = models.ForeignKey(MembershipType, 
+                                        help_text=_("Bind individual memberships to this membership type.")) 
+    
+    order = models.IntegerField(_('Order'), default=0, 
+                                help_text='Types will be displayed in ascending order based on this field.')
+    admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
     
     apply_threshold = models.BooleanField(_('Allow Threshold'), default=0)
-    individual_threshold = models.IntegerField(_('Threshold Limit'), default=0)
+    individual_threshold = models.IntegerField(_('Threshold Limit'), default=0, blank=True, null=True)
     individual_threshold_price = models.DecimalField(_('Threshold Price'), max_digits=15, 
-                                                     decimal_places=2, blank=True, default=0,
+                                                     decimal_places=2, blank=True, null=True, default=0,
                                                      help_text=_("All individual members applying under or " + \
                                                                  "equal to the threashold limit receive the " + \
                                                                  "threshold prices."))
-
-    order = models.IntegerField(_('Order'), default=0)
-    
-    expiration_method = models.CharField(_('Expiration Method'), max_length=50)
-    expiration_method_custom_dt = models.DateTimeField()
-    
-    cma = models.ForeignKey("CorporateMembershipApp")
 
     
     def __unicode__(self):

@@ -1,17 +1,18 @@
 from uuid import uuid4
+from sys import exc_info
 from os.path import join
 from datetime import datetime
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
+from django.core.files.storage import FileSystemStorage
+
 from perms.forms import TendenciBaseForm
 from models import MembershipType, App, AppEntry, AppField
 from fields import TypeExpMethodField, PriceInput
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from django.core.files.storage import FileSystemStorage
 from widgets import CustomRadioSelect, TypeExpMethodWidget
-from sys import exc_info
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -52,6 +53,8 @@ class MembershipTypeForm(forms.ModelForm):
     admin_fee = forms.DecimalField(decimal_places=2, required=False,
                                    widget=PriceInput(),
                                    help_text="Admin fee for the first time processing")
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('admin hold','Admin Hold'),))
     
     class Meta:
         model = MembershipType
