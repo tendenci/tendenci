@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import Group as Auth_Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 
 class Command(BaseCommand):
     # create an admin auth group, and assign all permissions 
@@ -8,7 +9,11 @@ class Command(BaseCommand):
     # command to run: python manage.py make_admin_group
     def handle(self, *args, **options):
         out = ''
-        name = 'Admin'
+        if hasattr(settings, 'ADMIN_AUTH_GROUP_NAME'):
+            name = settings.ADMIN_AUTH_GROUP_NAME
+        else:
+            name = 'Admin'
+            
         try:
             auth_group = Auth_Group.objects.get(name=name)
         except Auth_Group.DoesNotExist:
@@ -24,6 +29,6 @@ class Command(BaseCommand):
         auth_group.save()
         
         #self.stdout.write('Successfully added all permissions to group "Admin".')
-        out += 'Successfully added all permissions to group "Admin".'
+        out += 'Successfully added all permissions to group "%s".' % name
         print out
 

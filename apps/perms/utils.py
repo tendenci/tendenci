@@ -1,5 +1,9 @@
-from profiles.models import Profile
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group as Auth_Group, Permission
+from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
+
+from profiles.models import Profile
 
 def has_perm(user, perm, obj=None):
     """
@@ -92,3 +96,22 @@ def get_notice_recipients(scope, scope_category, setting_name):
             recipients.append(recipient)
         
     return recipients
+
+# create Admin auth group if not exists and assign all permisstions (but auth) to it
+def make_admin_group():
+    if hasattr(settings, 'ADMIN_AUTH_GROUP_NAME'):
+        name = settings.ADMIN_AUTH_GROUP_NAME
+    else:
+        name = 'Admin'
+        
+    try:
+        auth_group = Auth_Group.objects.get(name=name)
+    except Auth_Group.DoesNotExist:
+        auth_group = Auth_Group(name=name)
+        auth_group.save()
+    
+    # assign permission to group, but exclude the auth content
+    content_to_exclude = ContentType.objects.filter(app_label='auth')    
+    permissions = Permission.objects.all().exclude(content_type__in=content_to_exclude)
+    auth_group.permissions = permissions
+    auth_group.save()
