@@ -98,7 +98,7 @@ def get_notice_recipients(scope, scope_category, setting_name):
     return recipients
 
 # create Admin auth group if not exists and assign all permisstions (but auth) to it
-def make_admin_group():
+def update_admin_group_perms():
     if hasattr(settings, 'ADMIN_AUTH_GROUP_NAME'):
         name = settings.ADMIN_AUTH_GROUP_NAME
     else:
