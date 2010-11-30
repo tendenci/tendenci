@@ -309,6 +309,9 @@ MERCHANT_TXN_KEY = ""
 #-------------------------------------------------------------------#
 MAX_RSS_ITEMS = 100
 
+# admin auth group name
+ADMIN_AUTH_GROUP_NAME = 'Admin'
+
 # --------------------------------------#
 # CAPTCHA SETTINGS
 # --------------------------------------#
