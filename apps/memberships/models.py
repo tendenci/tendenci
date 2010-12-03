@@ -113,6 +113,7 @@ class MembershipType(TendenciBaseModel):
 
     class Meta:
         verbose_name = "Membership Type"
+        permissions = (("view_membershiptype","Can view membership type"),)
     
     def __unicode__(self):
         return self.name
@@ -148,6 +149,7 @@ class Membership(TendenciBaseModel):
     class Meta:
         verbose_name = _("Membership")
         verbose_name_plural = _("Memberships")
+        permissions = (("view_membership","Can view membership"),)
     
     def __unicode__(self):
         return "%s (%s)" % (self.user.get_full_name(), self.member_number)
@@ -216,6 +218,7 @@ class App(TendenciBaseModel):
 
     class Meta:
         verbose_name = "Membership Application"
+        permissions = (("view_membership_application","Can view membership application"),)
 
     def __unicode__(self):
         return self.name
@@ -276,6 +279,7 @@ class AppEntry(models.Model):
     """
     
     app = models.ForeignKey("App", related_name="entries", editable=False)
+    membership = models.ForeignKey("Membership", related_name="entries", null=True, editable=False)
     entry_time = models.DateTimeField(_("Date/Time"))
 
     objects = MemberAppEntryManager()
@@ -283,6 +287,33 @@ class AppEntry(models.Model):
     class Meta:
         verbose_name = _("Application Entry")
         verbose_name_plural = _("Application Entries")
+        permissions = (("view_appentry","Can view membership application entry"),)
+
+    @property
+    def name(self):
+        """Get full name"""
+        name = '%s %s' % (self.first_name, self.last_name)
+        return name.strip()
+
+    @property
+    def first_name(self):
+        return self.get_field_value('first-name')
+
+    @property
+    def last_name(self):
+        return self.get_field_value('last-name')
+
+    @property
+    def email(self):
+        """Get email string"""
+        return self.get_field_value('email-field')
+
+    def get_field_value(self, field_type):
+        try:
+            entry_field = self.fields.get(field__field_type=field_type)
+            return entry_field.value
+        except:
+            return ''
 
     @property
     def hash(self):
@@ -309,15 +340,6 @@ class AppEntry(models.Model):
             return membership_type_class.objects.get(name__exact=entry_field.value.strip())
         except:
             return None
-
-    @property
-    def email(self):
-        """Get email string"""
-        try:
-            entry_field = self.fields.get(field__field_type="email-field")
-            return entry_field.value
-        except:
-            return ''
 
     def payment_method(self):
         """Get PaymentMethod object"""
