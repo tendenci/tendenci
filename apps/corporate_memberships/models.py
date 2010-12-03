@@ -20,6 +20,17 @@ FIELD_CHOICES = (
                     ("DateTimeField", _("Date/time")),
                 )
 
+FIELD_LAYOUT_CHOICES = (
+                        ('1', _('One Column')),
+                        ('2', _('Two Columns')),
+                        ('3', _('Three Columns')),
+                        ('0', _('Side by Side')),
+                        )
+AUTH_METHOD_CHOICES = (
+                       ('email', _('E-mail')),
+                       ('admin', _('Admin')),
+                       )
+
 class CorporateMembershipType(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
@@ -79,7 +90,7 @@ class CorporateMembership(TendenciBaseModel):
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"))
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
-    cma = models.ForeignKey("CorporateMembershipApp")
+    cma = models.ForeignKey("CorpApp")
     
     class Meta:
         verbose_name = _("Corporate Membership")
@@ -148,20 +159,29 @@ class CorporateMembershipArchive(models.Model):
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
     
-class CorporateMembershipCustomFieldEntry(models.Model):
+class CorpFieldEntry(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership")
-    cma_field = models.ForeignKey("CorporateMembershipAppField", related_name="entries")
+    cma_field = models.ForeignKey("CorpAppField", related_name="entries")
     value = models.CharField(max_length=500)
     
     
-class CorporateMembershipApp(TendenciBaseModel):
+class CorpApp(TendenciBaseModel):
     guid = models.CharField(max_length=50)
-    name = models.CharField(_("Application Name"), max_length=155)
-    slug = models.SlugField(editable=False, max_length=155, unique=True)
+    name = models.CharField(_("Name"), max_length=155)
+    slug = models.SlugField(max_length=155, unique=True)
+    corp_memb_type = models.ManyToManyField("CorporateMembershipType", verbose_name=_("Corp. Memb. Type"))
+    authentication_method = models.CharField(_("Authentication Method"), choices=AUTH_METHOD_CHOICES, 
+                                    default='admin', max_length=50, 
+                                    help_text='for individuals applying under a Corporate Membership')
     notes = models.CharField(_("Notes"), max_length=255)
    
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
     require_login = models.BooleanField(_("Require User Login"), default=0)
+    
+    class Meta:
+        verbose_name = _("Corporate Membership Application")
+        verbose_name_plural = _("Corporate Membership Applications")
+        ordering = ('name',)
     
     def __unicode__(self):
         return self.name
@@ -171,42 +191,104 @@ class CorporateMembershipApp(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
         
-class CorporateMembershipAppPage(models.Model):
-    cma = models.ForeignKey("CorporateMembershipApp", related_name="pages")
-    order = models.IntegerField(_("Order"), default=0)
- 
-class CorporateMembershipAppSection(models.Model):
-    cma = models.ForeignKey("CorporateMembershipApp", related_name="sections")
-    cma_page = models.ForeignKey("CorporateMembershipAppPage", related_name="sections")
+class CorpAppPage(models.Model):
+    #cma = models.ForeignKey("CorpApp", related_name="pages")
+    title = models.CharField(_("Title"), max_length=120, blank=True, null=True)
+    top_instruction = models.CharField(_("Top Instruction"), max_length=500, blank=True, null=True)
+    bottom_instruction = models.CharField(_("Bottom Instruction"), max_length=500, blank=True, null=True)
+    order = models.IntegerField(_("Page #"), default=0)
+    css_class = models.CharField(_("CSS Class Name"), max_length=50, blank=True, null=True)
     
-    label = models.CharField(_("Label"), max_length=120)
-    description = models.CharField(_("Description"), max_length=500)
+    class Meta:
+        verbose_name = _("Page")
+        verbose_name_plural = _("Pages")
+        ordering = ('order',)
+        
+    def __unicode__(self):
+        return 'Page #%d: %s' % (self.order, self.title)
+ 
+class CorpAppSection(models.Model):
+    #cma = models.ForeignKey("CorpApp",  related_name="sections")
+    #cma_page = models.ForeignKey("CorpAppPage", verbose_name=_("Page"),  
+    #                             related_name="sections",
+    #                             blank=True, null=True)
+    
+    label = models.CharField(_("Section Label"), max_length=120)
+    description = models.CharField(_("Description"), max_length=500, blank=True, null=True)
     admin_only = models.BooleanField(_("Admin Only"), default=0)
     
-    order = models.IntegerField(_("Order"), default=0)
-    css_class = models.CharField(_("CSS Class Name"), max_length=50)
+    #order = models.IntegerField(_("Order"), default=0)
+    css_class = models.CharField(_("CSS Class Name"), max_length=50, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = _("Section")
+        verbose_name_plural = _("Sections")
+        #ordering = ('order',)
+        
+    def __unicode__(self):
+        return '%s' % (self.label)
     
        
-class CorporateMembershipAppField(models.Model):
-    cma = models.ForeignKey("CorporateMembershipApp", related_name="fields")
-    cma_section = models.ForeignKey("CorporateMembershipAppSection", related_name="fields")
+class CorpAppField(models.Model):
+    #cma = models.ForeignKey("CorpApp", related_name="fields")
+    #cma_section = models.ForeignKey("CorpAppSection", verbose_name=_("Section"), 
+    #                                related_name="fields",
+    #                                blank=True, null=True)
     
-    #object_type = models.CharField(_("Object Type"), max_length=50)
-    object_type = models.ForeignKey(ContentType, blank=True, null=True)
+    #object_type = models.ForeignKey(ContentType, blank=True, null=True)
     label = models.CharField(_("Label"), max_length=200)
-    field_name = models.CharField(_("Field Name"), max_length=50)
-    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=50, 
+    field_name = models.CharField(_("Field Name"), max_length=30)
+    field_type = models.CharField(_("Field Type"), choices=FIELD_CHOICES, max_length=50, 
                                   blank=True, null=True)
-    size = models.IntegerField(_("Field Size"), default=0)
+    
+    #order = models.IntegerField(_("Order"), default=0)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
                                 help_text="Comma separated options where applicable")
+    # checkbox/radiobutton
+    field_layout = models.CharField(_("Choice Field Layout"), choices=FIELD_LAYOUT_CHOICES, 
+                                    max_length=50, blank=True, null=True)
+    size = models.IntegerField(_("Field Size"), default=20)
+                                  
     required = models.BooleanField(_("Required"), default=True)
+    no_duplicates = models.BooleanField(_("No Duplicates"), default=False)
     visible = models.BooleanField(_("Visible"), default=True)
     admin_only = models.BooleanField(_("Admin Only"), default=0)
-    editor_only = models.BooleanField(_("Editor Only"), default=0) 
+    #editor_only = models.BooleanField(_("Editor Only"), default=0) 
     
+    
+    help_text = models.CharField(_("Instruction for User"), max_length=100, blank=True, null=True)
+    default_value = models.CharField(_("Predefined Value"), max_length=50, blank=True, null=True)
+    css_class = models.CharField(_("CSS Class Name"), max_length=50, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = _("Field")
+        verbose_name_plural = _("Fields")
+        #ordering = ('order',)
+        
+    def __unicode__(self):
+        return 'Field: %s' % self.label
+    
+    
+class CorpField(models.Model):
+    cma = models.ForeignKey("CorpApp", related_name="cma_fields")
+    page = models.ForeignKey("CorpAppPage", verbose_name=_("Page"),  
+                                 related_name="page_fields",
+                                 blank=True, null=True)
+    section = models.ForeignKey("CorpAppSection", verbose_name=_("Section"), 
+                                    related_name="section_fields",
+                                    blank=True, null=True)
+    field = models.ForeignKey("CorpAppField", verbose_name=_("Field"), 
+                                    related_name="field_fields",
+                                    blank=True, null=True)
     order = models.IntegerField(_("Order"), default=0)
-    css_class = models.CharField(_("CSS Class Name"), max_length=50)
+    
+    class Meta:
+        verbose_name = _("Form Field")
+        verbose_name_plural = _("Form Fields")
+        ordering = ('order',)
+        
+    def __unicode__(self):
+        return '%s' % self.field.label
 
 
     
