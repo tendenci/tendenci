@@ -1,0 +1,60 @@
+{% extends "memberships/base.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}Membership Application for {{ entry.name }}{% endblock %}
+{% block meta_description %}{{ entry.get_description }}{% endblock %}
+{% block meta_keywords %}{{ entry.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ entry.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    <div class="application-entry-wrap">
+
+        <h1>{{ entry.app.name }} Application Entry</h1>
+        <div class="entry_dt">Submitted {{ entry.entry_time|date_short }}</div>
+
+        {% if entry.membership %}
+            {% if entry.membership.approved %}
+                <div class="approved_dt">Approved on
+                    {{ entry.membership.approved_denied_dt|date_short }}
+                    by <a href="{% url profile entry.membership.approved_denied_user %}">
+                    {{ entry.membership.approved_denied_user }}</a></div>
+            {% else %}
+                <div class="denied_dt">Denied on
+                    {{ entry.membership.approved_denied_dt|date_short }}
+                    by {{ entry.membership.approved_denied_user }}</div>
+            {% endif %}
+        {% else %}
+            <div class="pending">Pending</div>
+        {% endif %}
+
+    	{% for field in entry.fields.all %}
+    		{% if field.field.field_type == 'FileField' %}
+            <div class="field">
+                <div class="label">{{ field.field.label }}</div>
+    			<div class="value">
+                    <a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
+    			</div>
+            </div>
+    		{% else %}
+            <div class="field">
+                <div class="label">{{ field.field.label }}</div>
+    			<div class="value">{{ field.value }}</div>
+            </div>
+    		{% endif %}
+    	{% endfor %}
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{% endblock %}

@@ -6,6 +6,7 @@ class FileForm(forms.ModelForm):
         model = File
         fields = (
         'file',
+        'is_public',
         )
 
     def __init__(self, *args, **kwargs): 
