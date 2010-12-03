@@ -44,6 +44,9 @@ class Video(TendenciBaseModel):
     
     def embed_code(self):
         return get_oembed_code(self.video_url, 600, 400)
+        
+    def thumbnail(self):
+        return get_oembed_thumbnail(self.video_url, 600, 400)
 
 
 class OembedlyCache(models.Model):
@@ -52,10 +55,28 @@ class OembedlyCache(models.Model):
     width = models.IntegerField(db_index=True)
     height = models.IntegerField(db_index=True)
     code = models.TextField()
+    thumbnail = models.CharField(max_length=800)
     
     def __unicode__(self):
         return self.url
     
+    @staticmethod
+    def get_thumbnail(url, width, height):
+        try:
+            return OembedlyCache.objects.filter(url=url, width=width, height=height)[0].thumbnail
+        except IndexError:
+            try:
+                result = get_oembed(url, format='json', maxwidth=width, maxheight=height)
+                thumbnail = result['thumbnail_url']
+                code = result['html']
+            except KeyError:
+                return False
+            except Exception, e:
+                return False
+            obj = OembedlyCache(url=url, width=width, height=height, thumbnail=thumbnail, code=code)
+            obj.save()
+            return thumbnail
+        
     @staticmethod    
     def get_code(url, width, height):
         try:
@@ -63,14 +84,18 @@ class OembedlyCache(models.Model):
         except IndexError:
             try:
                 result = get_oembed(url, format='json', maxwidth=width, maxheight=height)
+                thumbnail = result['thumbnail_url']
                 code = result['html']
             except KeyError:
                 return 'Unable to embed code for video <a href="%s">%s</a>' % (url, url)
             except Exception, e:
                 return 'Unable to embed code for video <a href="%s">%s</a><br>Error: %s' % (url, url, e) 
-            obj = OembedlyCache(url=url, width=width, height=height, code=code)
+            obj = OembedlyCache(url=url, width=width, height=height, code=code, thumbnail=thumbnail)
             obj.save()
             return code
 
 def get_oembed_code(url, width, height):
     return OembedlyCache.get_code(url, width, height)
+    
+def get_oembed_thumbnail(url, width, height):
+    return OembedlyCache.get_thumbnail(url, width, height)
