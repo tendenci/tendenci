@@ -1,3 +1,4 @@
+import sys
 import uuid
 from hashlib import md5
 from django.db import models
@@ -9,8 +10,7 @@ from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
 from memberships.managers import MemberAppManager, MemberAppEntryManager
-from corporate_memberships.models import CorporateMembership
-import sys
+
 
 FIELD_CHOICES = (
     ("text", _("Text")),
@@ -139,8 +139,8 @@ class Membership(TendenciBaseModel):
     approved = models.BooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"))
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
-    # maybe change to foreign key to corporate_membership
-    corporate_membership = models.ForeignKey(CorporateMembership, related_name="memberships", null=True)
+    #corporate_membership = models.ForeignKey(CorporateMembership, related_name="memberships", null=True)
+    corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
     # add membership application id - so we can support multiple applications
