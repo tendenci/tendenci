@@ -66,7 +66,7 @@ def is_pattern_match(url):
     return False
 
 # returns a dictionary of the oembed object
-def get_oembed(url, format='json', maxwidth=None, maxheight=None):
+def get_oembed(url, format='json', maxwidth=None, maxheight=None, thumbnail_url=None):
 
     # make sure embed.ly supports the url scheme
     if not is_pattern_match(url):
@@ -80,6 +80,9 @@ def get_oembed(url, format='json', maxwidth=None, maxheight=None):
         params['maxheight'] = maxwidth
     if format is not None:
         params['format'] = format
+    if thumbnail_url is not None:
+        params['thumbnail_url'] = thumbnail_url
+    
     
     # generate query string
     query = urllib.urlencode(params)

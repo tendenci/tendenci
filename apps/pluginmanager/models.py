@@ -1,4 +1,5 @@
 from django.db import models
+from perms.utils import update_admin_group_perms
 
 class PluginApp(models.Model):
     title = models.CharField(max_length=255)
@@ -29,6 +30,9 @@ def _update_apps():
 
 def post_save_pluginapp(sender, **kwargs):
     _update_apps()
+    # assign permission to the admin auth group
+    update_admin_group_perms()
+    
 post_save.connect(post_save_pluginapp, sender=PluginApp)
 
 def post_del_pluginapp(sender, **kwargs):

@@ -142,8 +142,6 @@
 	<div class="events-wrap">
     {% for event in events %}
 		{% with event.object as event %}
-    	{% has_perm user events.view_event event as can_view %}
-    	{% if can_view %}
 		<div class="event-wrap">
 			<div class="time-stamp">
 				{{ event.start_dt|date:"M j, Y" }}
@@ -206,7 +204,6 @@
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>
-		{% endif %}
 		{% endwith %}
 	{% empty %}
     {% endfor %}
