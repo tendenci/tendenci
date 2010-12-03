@@ -12,6 +12,7 @@ from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from django.core.files.storage import FileSystemStorage
 from widgets import CustomRadioSelect, TypeExpMethodWidget
 from sys import exc_info
+from django.http import Http404
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -199,7 +200,7 @@ class AppEntryForm(forms.ModelForm):
         model = AppEntry
         exclude = ("entry_time",)
 
-    def __init__(self, app, *args, **kwargs):
+    def __init__(self, app=None, *args, **kwargs):
         """
         Dynamically add each of the form fields for the given form model 
         instance and its related field model instances.

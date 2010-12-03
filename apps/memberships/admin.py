@@ -9,7 +9,7 @@ from user_groups.models import Group
 from event_logs.models import EventLog
 from perms.models import ObjectPermission 
 from memberships.models import  MembershipType, App, AppField
-from memberships.forms import AppForm
+from memberships.forms import AppForm, AppEntryForm
 
 
 class MembershipTypeAdmin(admin.ModelAdmin):
@@ -246,6 +246,9 @@ class AppAdmin(admin.ModelAdmin):
             ObjectPermission.objects.assign(app.creator, app)
 
         return app
+
+class AppEntryAdmin(admin.ModelAdmin):
+    form = AppEntryForm
 
 admin.site.register(MembershipType, MembershipTypeAdmin)
 admin.site.register(App, AppAdmin)

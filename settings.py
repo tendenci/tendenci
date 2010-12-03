@@ -8,7 +8,7 @@ LIBS_PATH = os.path.join(PROJECT_ROOT, 'libs')
 sys.path.insert(0, APPS_PATH)
 sys.path.insert(0, LIBS_PATH)
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 SITE_THEME = "default"
 
