@@ -8,7 +8,7 @@ from django.template.defaultfilters import slugify
 
 from timezones.fields import TimeZoneField
 from entities.models import Entity
-from events.managers import EventManager, RegistrantManager
+from events.managers import EventManager, RegistrantManager, EventTypeManager
 from perms.models import TendenciBaseModel
 from meta.models import Meta as MetaTags
 from events.module_meta import EventMeta
@@ -37,6 +37,8 @@ class Type(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, editable=False)
     color_set = models.ForeignKey('TypeColorSet')
+
+    objects = EventTypeManager()
 
     @property
     def fg_color(self):
