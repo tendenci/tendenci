@@ -593,7 +593,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                     response = render_to_response(template_name, {'event':event, 'form':form}, 
                         context_instance=RequestContext(request))
             else: # not authenticated
-
+                
                 form = form_class(event_id, user=request.user)
                 response = render_to_response(template_name, {'event':event, 'form':form}, 
                     context_instance=RequestContext(request))
