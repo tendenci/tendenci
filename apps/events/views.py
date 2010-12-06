@@ -439,7 +439,7 @@ def delete(request, id, template_name="events/delete.html"):
 
 def register(request, event_id=0, form_class=Reg8nForm, template_name="events/reg8n/register.html"):
         event = get_object_or_404(Event, pk=event_id)
-
+        
         user_account = None
         if isinstance(request.user, User):
             user_account = request.user
@@ -511,6 +511,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                             {   'site_label': site_label,
                                 'site_url': site_url,
                                 'self_reg8n': self_reg8n,
+                                'reg8n': reg8n,
                                 'event': event,
                                 'price': price,
                              },
