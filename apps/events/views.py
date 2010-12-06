@@ -440,7 +440,7 @@ def delete(request, id, template_name="events/delete.html"):
 
 def register(request, event_id=0, form_class=Reg8nForm, template_name="events/reg8n/register.html"):
         event = get_object_or_404(Event, pk=event_id)
-
+        
         user_account = None
         if isinstance(request.user, User):
             user_account = request.user
@@ -512,6 +512,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                             {   'site_label': site_label,
                                 'site_url': site_url,
                                 'self_reg8n': self_reg8n,
+                                'reg8n': reg8n,
                                 'event': event,
                                 'price': price,
                              },
@@ -594,20 +595,39 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                     response = render_to_response(template_name, {'event':event, 'form':form}, 
                         context_instance=RequestContext(request))
             else: # not authenticated
-
+                
                 form = form_class(event_id, user=request.user)
                 response = render_to_response(template_name, {'event':event, 'form':form}, 
                     context_instance=RequestContext(request))
 
         return response
 
-def cancel_registration(request, event_id=0, reg8n_id=0, template_name="events/reg8n/cancel.html"):
+def cancel_registration(request, event_id=0, reg8n_id=0, hash='', template_name="events/reg8n/cancel.html"):
     event = get_object_or_404(Event, pk=event_id)
-    registrant = get_object_or_404(Registrant, pk=reg8n_id)
+    if reg8n_id:
+        try:
+            registrant = Registrant.objects.get(
+                registration__event = event,
+                pk = reg8n_id,
+            )
 
-    # check permissions
-    if not has_perm(request.user,'events.view_registrant', registrant):
-        raise Http404
+            # check permission
+            if not has_perm(request.user, 'events.view_registrant', registrant):
+                raise Http403
+        except:
+            raise Http404
+
+    elif hash:
+        sqs = SearchQuerySet()
+        sqs = sqs.models(Registrant)
+        sqs = sqs.filter(event_pk=event.pk)
+        sqs = sqs.auto_query(sqs.query.clean(hash))
+        sqs = sqs.order_by("-update_dt")
+
+        try:
+            registrant = sqs[0].object
+        except:
+            raise Http404
 
     if request.method == "POST":
         # TODO: invoice updates
@@ -621,6 +641,7 @@ def cancel_registration(request, event_id=0, reg8n_id=0, template_name="events/r
     return render_to_response(template_name, {
         'event': event,
         'registrant':registrant,
+        'hash': hash
         }, 
         context_instance=RequestContext(request))
 
