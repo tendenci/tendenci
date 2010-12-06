@@ -12,7 +12,12 @@
 	
 	<h3 style="margin-bottom:3px;">Helpful Links</h3>
 	<ol style="margin-top:0;">
-		<li><a href="{{ site_url }}{{ event.get_absolute_url }}">{{ event.title}} Details</a></li>
+        <li>
+            <a href="{{ site_url }}{% url event.registration_confirmation event.pk reg8n.registrant.hash %}">
+                Registration Details
+            </a>
+        </li>
+		<li><a href="{{ site_url }}{{ event.get_absolute_url }}">Event Details</a></li>
 		<li><a href="{{ site_url }}">{{ site_label }} - {{ site_url }}</a></li>
 	</ol>
 
@@ -37,13 +42,18 @@
 	
 	<h3 style="margin-bottom:3px;">Helpful Links</h3>
 	<ol style="margin-top:0;">
-		<li><a href="{{ site_url }}{{ event.get_absolute_url }}">{{ event.title}} Details</a></li>
+        <li>
+            <a href="{{ site_url }}{% url event.registration_confirmation event.pk reg8n.registrant.hash %}">
+                Registration Details
+            </a>
+        </li>
+		<li><a href="{{ site_url }}{{ event.get_absolute_url }}">Event Details</a></li>
 		<li><a href="{{ site_url }}">{{ site_label }} - {{ site_url }}</a></li>
 	</ol>
 
 	{% if self_reg8n %}
 	<div><a href="{{ site_url }}{% url registration_register %}">You should register for an account!</a></div>
 	{% endif %}
-
 {% endif %}
+<div>This email contains your registration details. Keep it in a safe place. Do not forward this email to an untrusted person.</div>
 </body></html>
