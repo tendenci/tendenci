@@ -27,6 +27,7 @@ from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
+import pdb
 
 
 try: from notification import models as notification
@@ -455,7 +456,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
         if not RegistrationConfiguration.objects.filter(event=event).exists():
             raise Http404
 
-        try: # if they're registered (already); show them their confirmation
+        try: # if they're registered; show them their confirmation
 
             registrant = Registrant.objects.filter(
                 registration__event=event,
@@ -696,15 +697,15 @@ def types(request, template_name='events/types/index.html'):
         if formset.is_valid():
             formset.save()
 
-    formset = TypeFormSet()
+            # TODO: Find more optimal way of keeping
+            # the events object properly indexed
+            # Maybe index by something that doesn't change
+            # such as the primary-key
+#            events = Event.objects.all()
+#            for event in events:
+#                EventIndex(Event).update_object(event)
 
-    # TODO: Find more optimal way of keeping
-    # the events object properly indexed
-    # Maybe index by something that doesn't change
-    # such as the primary-key
-    events = Event.objects.all()
-    for event in events:
-        EventIndex(Event).update_object(event)
+    formset = TypeFormSet()
 
     return render_to_response(template_name, {'formset': formset}, 
         context_instance=RequestContext(request))
