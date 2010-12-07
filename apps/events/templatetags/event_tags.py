@@ -4,7 +4,7 @@ from datetime import datetime
 
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser
-from events.models import Event, Registrant
+from events.models import Event, Registrant, Type
 
 
 register = Library()
@@ -50,23 +50,31 @@ def registrant_search(context, event=None):
 
 class EventListNode(Node):    
     
-    def __init__(self, day, type, context_var):
+    def __init__(self, day, type_slug, context_var):
 
         self.day = Variable(day)
-        self.type = Variable(type)
+        self.type_slug = Variable(type_slug)
         self.context_var = context_var
     
     def render(self, context):
 
         day = self.day.resolve(context)
-        type = self.type.resolve(context)
+        type_slug = self.type_slug.resolve(context)
 
         filters = [
             'start_day:%s' % day.day,
             'start_month:%s' % day.month,
             'start_year:%s' % day.year,
         ]
-        if type: filters.append('type:%s' % type)
+
+        type_sqs = Type.objects.search()
+        type_sqs = type_sqs.filter(slug=type_slug)
+
+        type = None
+        if type_sqs and type_sqs[0]:
+            type = type_sqs[0].object
+          
+        if type: filters.append('type_id:%s' % type.pk)
 
         sqs = Event.objects.search_filter(filters=filters, user=context['user']).order_by('start_dt')
         events = [sq.object for sq in sqs] 
@@ -81,7 +89,7 @@ def event_list(parser, token):
              {% event_list day type as events %}
     """
     bits = token.split_contents()
-    type = None
+    type_slug = None
 
     if len(bits) != 4 and len(bits) != 5:
         message = '%s tag requires 4 or 5 arguments' % bits[0]
@@ -93,10 +101,10 @@ def event_list(parser, token):
 
     if len(bits) == 5:
         day = bits[1]
-        type = bits[2]
+        type_slug = bits[2]
         context_var = bits[4]
     
-    return EventListNode(day, type, context_var)
+    return EventListNode(day, type_slug, context_var)
 
 class IsRegisteredUserNode(Node):    
     
