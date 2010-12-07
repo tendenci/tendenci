@@ -8,7 +8,7 @@ LIBS_PATH = os.path.join(PROJECT_ROOT, 'libs')
 sys.path.insert(0, APPS_PATH)
 sys.path.insert(0, LIBS_PATH)
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 SITE_THEME = "default"
 
@@ -39,7 +39,7 @@ EMAIL_PORT = 25
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'DO-NOT-REPLY@tendenci.com'
+DEFAULT_FROM_EMAIL = 'DO-NOT-REPLY-TENDENCI@schipul.net'
 
 # user agent for external retrieval of files/images
 TENDENCI_USER_AGENT = 'Tendenci/5.0 +http://www.tendenci.com'
@@ -308,6 +308,9 @@ MERCHANT_TXN_KEY = ""
 # Maximum number of rss items to display on the main rss
 #-------------------------------------------------------------------#
 MAX_RSS_ITEMS = 100
+
+# admin auth group name
+ADMIN_AUTH_GROUP_NAME = 'Admin'
 
 # --------------------------------------#
 # CAPTCHA SETTINGS

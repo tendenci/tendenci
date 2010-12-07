@@ -4,6 +4,7 @@ from haystack import indexes
 from haystack import site
 from events.models import Event, Registrant
 from perms.models import ObjectPermission
+from events.models import Type as EventType
 
 class EventIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
@@ -43,6 +44,11 @@ class EventIndex(indexes.RealTimeSearchIndex):
         description = strip_entities(description)
         return description
 
+class EventTypeIndex(indexes.RealTimeSearchIndex):
+    text = indexes.CharField(document=True, use_template=True)
+    name = indexes.CharField(model_attr='name')
+    slug = indexes.CharField(model_attr='slug')
+
 
 class RegistrantIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
@@ -65,6 +71,7 @@ class RegistrantIndex(indexes.RealTimeSearchIndex):
         return ','.join([user.username for user in users])
     
 site.register(Event, EventIndex)
+site.register(EventType, EventTypeIndex)
 site.register(Registrant, RegistrantIndex)
 
 

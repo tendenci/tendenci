@@ -6,20 +6,31 @@
 <h1>{% if category %}{{category|title}} {% endif %}Videos</h1>
 {% for video in videos %}
     {% with video.object as video %}
-	<div style="width: 200px; height: 300px; float: left;">
-		<a href="{{ video.get_absolute_url }}">
-		<h3>{{ video.title }}</h3>
-		<img src="
-		{% if video.image %}
-		      {{ video.image.url }} 
+    <div style="width: 200px; height: 300px; float: left;">
+        <a href="{{ video.get_absolute_url }}">
+        <h3>{{ video.title }}</h3>
+        {% if video.image %}
+            <img src="{{ video.image.url }}" style="width: 180px; height: 120px;">
         {% else %}
-		      {{ STATIC_URL }}/images/default-photo.jpg
+            {% if video.thumbnail %}
+            <img src="{{ video.thumbnail }}" style="width: 180px; height: 120px;">
+            {% else %}
+            <img src="{{ STATIC_URL }}/images/default-photo.jpg" style="width: 180px; height: 120px;">
+            {%endif%}
         {%endif%}
-		   " style="width: 180px;">
-		</a>
-		<br>
-		{{ video.description|safe|truncatewords:"30" }}
-	</div>
-	{% endwith %}
+        </a>
+        <br>
+        {{ video.description|safe|truncatewords:"30" }}
+    </div>
+    {% endwith %}
 {% endfor %}
 {% endblock body %}
+<h4>
+if
+
+else
+
+
+
+
+</h4>
