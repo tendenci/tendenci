@@ -52,7 +52,11 @@
 	<div class="action-wrap">
 	    <div class='event-title'>{{ event.title }} for {{ registrant.name }}</div>
 		<div class="form-wrap">
-	    	<form action="{% url event.cancel_registration event.pk registrant.pk %}" method="post">
+            {% if hash %}
+            <form action="{% url event.cancel_registration event.pk registrant.hash %}" method="post">
+            {% else %}
+            <form action="{% url event.cancel_registration event.pk registrant.pk %}" method="post">
+            {%  endif %}
 	    	<div class="forms">
 	    		<span>
 	    		<a href="{% url event.registration_confirmation event.pk registrant.pk %}">

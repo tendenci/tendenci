@@ -11,6 +11,8 @@ from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from emails.models import Email
+from django.utils.html import strip_tags
+import re
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -238,6 +240,24 @@ class Reg8nForm(forms.Form):
             user_fields = ['name', 'username', 'email']
             for user_field in user_fields:
                 self.fields.pop(user_field)
+
+    def clean_name(self):
+        data = self.cleaned_data['name']
+
+        # detect markup
+        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup = markup_pattern.search(data)
+        if markup:
+            raise forms.ValidationError("Markup is not allowed in the name field")
+
+        # detect URL and Email
+        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
+        pattern = re.compile(pattern_string, re.I and re.M)
+        domain_extension = pattern.search(data)
+        if domain_extension or "://" in data:
+            raise forms.ValidationError("URL's and Emails are not allowed in the name field")
+
+        return data
                 
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()

@@ -17,7 +17,7 @@ urlpatterns = patterns('events',
     # registration confirmation
     url(r'^(?P<id>\d+)/registrations/(?P<reg8n_id>\d+)/$', 
         'views.registration_confirmation', name='event.registration_confirmation'),
-    url(r'^(?P<id>\d+)/registrations/(?P<hash>[\w\-\/]+)/$', 
+    url(r'^(?P<id>\d+)/registrations/(?P<hash>\w+)/$', 
         'views.registration_confirmation', name='event.registration_confirmation'),
 
     # month-view(s) / day-view
@@ -29,7 +29,9 @@ urlpatterns = patterns('events',
     url(r'^(?P<event_id>\d+)/register/$', 'views.register', name='event.register'),
 
     # cancel event
-    url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<reg8n_id>\d+)$', 
+    url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<reg8n_id>\d+)/$', 
+        'views.cancel_registration', name='event.cancel_registration'),
+    url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<hash>\w+)/$',
         'views.cancel_registration', name='event.cancel_registration'),
 
     url(r'^types/$', 'views.types', name='event.types'),
