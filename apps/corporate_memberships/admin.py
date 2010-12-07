@@ -41,6 +41,11 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
 class CorpAppPageAdmin(admin.ModelAdmin):
     list_display = ['order', 'title']
     form = CorpAppPageForm
+    
+#    class Media:
+#        js = (
+#            '%sjs/admin/RelatedObjectLookups_cma.js' % settings.STATIC_URL,
+#        )
 
 admin.site.register(CorpAppPage, CorpAppPageAdmin)
   
@@ -83,6 +88,7 @@ class CorpAppAdmin(admin.ModelAdmin):
             '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
             '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
             '%sjs/admin/inline_ordering.js' % settings.STATIC_URL,
+            #'%sjs/admin/RelatedObjectLookups_cma.js' % settings.STATIC_URL,
         )
         
     inlines = [FieldInline]
@@ -103,7 +109,7 @@ class CorpAppAdmin(admin.ModelAdmin):
         # save the object
         instance.save()
         
-        #form.save_m2m()
+        form.save_m2m()
         
         return instance
 
