@@ -25,6 +25,11 @@ except:
 def index(request, slug=None, template_name="pages/view.html"):
     if not slug: return HttpResponseRedirect(reverse('page.search'))
     page = get_object_or_404(Page, slug=slug)
+    
+    # non-admin can not view the non-active content
+    # status=0 has been taken care of in the has_perm function
+    if (page.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+        raise Http403
 
     if has_perm(request.user,'pages.view_page',page):
         log_defaults = {
@@ -60,7 +65,7 @@ def search(request, template_name="pages/search.html"):
         context_instance=RequestContext(request))
 
 def print_view(request, slug, template_name="pages/print-view.html"):
-    print 'blah!'
+    
     page = get_object_or_404(Page, slug=slug)
 
     if has_perm(request.user,'pages.view_page',page):

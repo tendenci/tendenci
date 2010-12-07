@@ -5,6 +5,18 @@ from django import template
 register = template.Library()
 
 @register.filter
+def is_header(field):
+    return field.field.widget.__class__.__name__.lower() == "header"
+
+@register.filter
+def is_description(field):
+    return field.field.widget.__class__.__name__.lower() == "description"
+
+@register.filter
+def is_horizontal_rule(field):
+    return field.field.widget.__class__.__name__.lower() == "horizontal_rule"
+
+@register.filter
 def is_checkbox(field):
     return field.field.widget.__class__.__name__.lower() == "checkboxinput"
 

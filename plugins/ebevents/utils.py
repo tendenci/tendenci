@@ -12,7 +12,7 @@ def get_event_by_id(id, **kwargs):
         xml_url = "http://xml.eventbooking.com/xml_public.asp?pwl=4E2.4AA4404E"
         
     xml_url = '%s&mode=detail&event_id=%s' % (xml_url.strip(), id)
-        
+
     xml = urllib2.urlopen(xml_url)
     soup = BeautifulStoneSoup(xml)
     node = soup.find('public_event_detail')

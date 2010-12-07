@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from captcha.fields import CaptchaField
 
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, TypeColorSet
@@ -10,6 +11,8 @@ from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from emails.models import Email
+from django.utils.html import strip_tags
+import re
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -217,6 +220,7 @@ class Reg8nForm(forms.Form):
     name = forms.CharField(max_length=50)
     username = forms.CharField(max_length=50, required=False)
     email = forms.EmailField()
+    captcha = CaptchaField(label=_('Type the code below'))
 
     def __init__(self, event_id=None, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -232,9 +236,28 @@ class Reg8nForm(forms.Form):
             widget=forms.HiddenInput(), initial=event.registration_configuration.price)
 
         if user and user.is_authenticated():
+            self.fields.pop('captcha')
             user_fields = ['name', 'username', 'email']
             for user_field in user_fields:
                 self.fields.pop(user_field)
+
+    def clean_name(self):
+        data = self.cleaned_data['name']
+
+        # detect markup
+        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup = markup_pattern.search(data)
+        if markup:
+            raise forms.ValidationError("Markup is not allowed in the name field")
+
+        # detect URL and Email
+        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
+        pattern = re.compile(pattern_string, re.I and re.M)
+        domain_extension = pattern.search(data)
+        if domain_extension or "://" in data:
+            raise forms.ValidationError("URL's and Emails are not allowed in the name field")
+
+        return data
                 
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()

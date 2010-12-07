@@ -1,15 +1,15 @@
 from django.contrib import admin
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.template.defaultfilters import slugify
 
-from django.template.defaultfilters import slugify 
-#from memberships.models import MembershipApplication, MembershipApplicationPage, MembershipApplicationSection, MembershipApplicationField
 from memberships.forms import MembershipTypeForm
-
 from user_groups.models import Group
 from event_logs.models import EventLog
 from perms.models import ObjectPermission 
 from memberships.models import  MembershipType, App, AppField
-from memberships.forms import AppForm
+from memberships.forms import AppForm, AppEntryForm
 
 
 class MembershipTypeAdmin(admin.ModelAdmin):
@@ -123,12 +123,11 @@ class MembershipTypeAdmin(admin.ModelAdmin):
             group.description = "Auto-generated with the membership type. Used for membership only"
             group.notes = "Auto-generated with the membership type. Used for membership only"
             #group.use_for_membership = 1
-            
             group.creator = request.user
             group.creator_username = request.user.username
             group.owner = request.user
             group.owner_username = request.user.username
-            
+
             group.save()
             
             instance.group = group
@@ -140,22 +139,27 @@ class MembershipTypeAdmin(admin.ModelAdmin):
         
         return instance
 
-class AppFieldAdmin(admin.TabularInline):
+class AppFieldAdmin(admin.StackedInline):
+    fieldsets = (
+        (None, {'fields': ('label', 'field_type', ('required', 'visible'), 'description', 'choices', 'position')},),
+    )
     model = AppField
+    extra = 0
 
 class AppAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'use_captcha')},),
+        (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'membership_types', 'use_captcha')},),
         ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail')}),
     )
 
-    class Meta:
-        js = [
+    class Media:
+        js = (
             '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
-            '%sjs/admin/jquery-ui-1.8.2.custom.min.js' % settings.STATIC_URL,
-            '%sjs/admin/dynamic-inlines-with-sorth.js' % settings.STATIC_URL,
-        ]
+            '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/dynamic-inlines-with-sort.js' % settings.STATIC_URL,
+        )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
+
     inlines = (AppFieldAdmin,)
     prepopulated_fields = {'slug': ('name',)}
     form = AppForm
@@ -202,30 +206,49 @@ class AppAdmin(admin.ModelAdmin):
         # set up user permission
         app.allow_user_view, app.allow_user_edit = form.cleaned_data['user_perms']
         
-        # adding the helpfile
+        # set creator and owner
         if not change:
             app.creator = request.user
             app.creator_username = request.user.username
             app.owner = request.user
             app.owner_username = request.user.username
- 
-        # save the object
+
+        # save the object(s)
         app.save()
         form.save_m2m()
+
+        # TODO: Fix relational queryset (e.g. app.fields.visible()); Pull latest records
+
+        for field in app.fields.visible():
+            if 'membership-type' in field.field_type:
+                field.content_type = ContentType.objects.get_for_model(MembershipType)
+                choices = [item.name for item in app.membership_types.all()]
+                field.choices = ", ".join(choices)
+            elif 'first-name' in field.field_type:
+                field.content_type = ContentType.objects.get_for_model(User)
+            elif 'last-name' in field.field_type:
+                field.content_type = ContentType.objects.get_for_model(User)
+            elif 'email-field' in field.field_type:
+                field.content_type = ContentType.objects.get_for_model(User)
+
+            field.save()
 
         # permissions
         if not change:
             # assign permissions for selected groups
             ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], app)
             # assign creator permissions
-            ObjectPermission.objects.assign(app.creator, app) 
+            ObjectPermission.objects.assign(app.creator, app)
         else:
             # assign permissions
             ObjectPermission.objects.remove_all(app)
             ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], app)
-            ObjectPermission.objects.assign(app.creator, app) 
-        
+            ObjectPermission.objects.assign(app.creator, app)
+
         return app
+
+class AppEntryAdmin(admin.ModelAdmin):
+    form = AppEntryForm
 
 admin.site.register(MembershipType, MembershipTypeAdmin)
 admin.site.register(App, AppAdmin)

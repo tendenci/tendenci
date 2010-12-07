@@ -1,2 +1,3 @@
 {{ object.app.name }}
+id:{{ object.pk }}
 hash:{{ object.hash }}

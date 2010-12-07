@@ -29,6 +29,11 @@ def index(request, slug=None, template_name="jobs/view.html"):
     if not slug: return HttpResponseRedirect(reverse('job.search'))
     job = get_object_or_404(Job, slug=slug)
     
+    # non-admin can not view the non-active content
+    # status=0 has been taken care of in the has_perm function
+    if (job.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+        raise Http403
+    
     if has_perm(request.user,'jobs.view_job',job):
         log_defaults = {
             'event_id' : 255000,

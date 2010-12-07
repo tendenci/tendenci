@@ -61,7 +61,15 @@
 				<div class="label required">Email</div>
 				<div class="field">{{ form.email }}</div>
 			</div>
-			{% endif %}		
+			{% endif %}	
+			
+			{% if not request.user.is_authenticated %}
+				<div class="form-field">
+					<div class="error">{{ form.captcha.errors }}</div>
+					<div class="label required">{{ form.captcha.label}}</div>
+					<div class="field">{{ form.captcha }}</div>
+				</div>	
+			{% endif %}
 
        		<input type="submit" value="Register for this Free Event" />
 		</div>

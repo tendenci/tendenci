@@ -71,15 +71,15 @@ There were some problems in the form. Please review. Thanks!
 		                    <p>{{ error }}</p>
 		                    {% endfor %}
 		                </div>
-		                {% endif %}   
+		                {% endif %}
 		                <div class="field">
 		                    {{ field }}
-		                </div>  
+		                </div>
 		                {% if field.help_text %}
-		                <div class="help-text">{{ field.help_text }}</div>   
+		                <div class="help-text">{{ field.help_text }}</div>
 		                {% endif %}
 		            {% endif %}
-		         </div>       
+		         </div>
 		    </div>
 		{% endif %}
 		{% endfor %}   	
@@ -114,22 +114,30 @@ There were some problems in the form. Please review. Thanks!
 	                </div>
 	                <div style="clear: both"><!-- IE7 --></div>
 	            {% else %}
-	                <div class="label{% if field.field.required %} required{% endif %}">
-	                    {{ field.label_tag }}
-	                </div>
-	                {% if field.errors %}
-	                <div class="error">
-	                    {% for error in field.errors %}
-	                    <p>{{ error }}</p>
-	                    {% endfor %}
-	                </div>
-	                {% endif %}   
-	                <div class="field">
-	                    {{ field }}
-	                </div>  
-	                {% if field.help_text %}
-	                <div class="help-text">{{ field.help_text }}</div>   
-	                {% endif %}
+                    {% if field|is_header or field|is_description %}
+                        {% if field|is_header %}
+                            <div class="section-header">{{ field.label }}</div>
+                        {% else %}
+                            <div class="section-description">{{ field.label }}</div>
+                        {% endif %}
+                    {% else %}
+                        <div class="label{% if field.field.required %} required{% endif %}">
+                            {{ field.label_tag }}
+                        </div>
+                        {% if field.errors %}
+                        <div class="error">
+                            {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="field">
+                            {{ field }}
+                        </div>
+                        {% if field.help_text %}
+                        <div class="help-text">{{ field.help_text }}</div>
+                        {% endif %}
+                    {% endif %}
 	            {% endif %}
 	         </div>       
 	    </div>
