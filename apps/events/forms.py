@@ -147,7 +147,6 @@ class TypeForm(forms.ModelForm):
         widget=forms.RadioSelect(renderer=RadioImageFieldRenderer),
     )
 
-
     class Meta:
         model = Type
 
