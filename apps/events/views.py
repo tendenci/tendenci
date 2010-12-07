@@ -1,5 +1,4 @@
 import calendar
-from hashlib import md5
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -27,7 +26,6 @@ from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
-import pdb
 
 
 try: from notification import models as notification
@@ -710,21 +708,55 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
 @login_required
 def types(request, template_name='events/types/index.html'):
     from django.forms.models import modelformset_factory
-
     TypeFormSet = modelformset_factory(Type, form=TypeForm, extra=2, can_delete=True)
+
+    if request.method == 'GET':
+        # log "view" event
+        EventLog.objects.log(**{
+            'event_id' : 275000,
+            'event_data': 'Types viewed',
+            'description': 'Types viewed',
+            'user': request.user,
+            'request': request,
+        })
 
     if request.method == 'POST':
         formset = TypeFormSet(request.POST)
         if formset.is_valid():
             formset.save()
 
-            # TODO: Find more optimal way of keeping
-            # the events object properly indexed
-            # Maybe index by something that doesn't change
-            # such as the primary-key
-#            events = Event.objects.all()
-#            for event in events:
-#                EventIndex(Event).update_object(event)
+            # log "added" event_types
+            for event_type in formset.new_objects:
+                EventLog.objects.log(**{
+                    'event_id' : 271000,
+                    'event_data': '%s (%d) added by %s' % (event_type._meta.object_name, event_type.pk, request.user),
+                    'description': '%s added' % event_type._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': event_type,
+                })
+
+            # log "changed" event_types
+            for event_type, changed_data in formset.changed_objects:
+                EventLog.objects.log(**{
+                    'event_id' : 272000,
+                    'event_data': '%s (%d) edited by %s' % (event_type._meta.object_name, event_type.pk, request.user),
+                    'description': '%s edited' % event_type._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': event_type,
+                })
+
+            # log "deleted" event_types
+            for event_type in formset.deleted_objects:
+                EventLog.objects.log(**{
+                    'event_id' : 273000,
+                    'event_data': '%s deleted by %s' % (event_type._meta.object_name, request.user),
+                    'description': '%s deleted' % event_type._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': event_type,
+                })
 
     formset = TypeFormSet()
 

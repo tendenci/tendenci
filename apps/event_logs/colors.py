@@ -239,8 +239,23 @@ colors = {
     '1001500':'D13800', # view       
         
     # impersonation
-    '1080000':'FF0000', 
-    
+    '1080000':'FF0000',
+
+    # events
+    '170000':'FF6600', # base
+    '171000':'FF6600', # add
+    '172000':'FFCC66', # edit
+    '173000':'FF9900', # delete
+    '174000':'FF9933', # search
+    '175000':'FF9966', # view
+
+    # event types
+    '270000':'FFCC99', # base
+    '271000':'FFCC99', # add
+    '272000':'FFCC99', # edit
+    '273000':'FFCC99', # delete
+    '274000':'FFCC99', # search
+    '275000':'FFCC99', # view
 }
 
 def get_color(event_id):
