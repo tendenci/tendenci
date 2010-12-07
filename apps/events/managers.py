@@ -104,6 +104,22 @@ class EventManager(Manager):
 
         return sqs.models(self.model)
 
+class EventTypeManager(Manager):
+    def search(self, query=None, *args, **kwargs):
+        """
+            Uses haystack to query events.
+            Returns a SearchQuerySet
+        """
+        sqs = SearchQuerySet()
+        user = kwargs.get('user', None)
+
+        # check to see if there is impersonation
+        if hasattr(user,'impersonated_user'):
+            if isinstance(user.impersonated_user, User):
+                user = user.impersonated_user
+
+        return sqs.models(self.model)
+
 class RegistrantManager(Manager):
     def search(self, query=None, *args, **kwargs):
         """

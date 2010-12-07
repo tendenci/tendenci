@@ -77,13 +77,21 @@
 
 	<div class="regconf-section registration">
 		<h2>Your Details</h2>
-		<h3>Registration Number: {{ registration.pk }}</h3>
-
+		<h3>
+            Registration Number: {{ registration.pk }}
+        </h3>
 		<div class='avatar'>{% avatar registrant.user 56 %}</div>
 		<div class="info">
 			<div class="name">{% firstof registrant.name "Name Not Recorded" %}</div>
 			<div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
 		</div>
+        {% if not registrant.cancel_dt %}
+        {% if user.is_authenticated %}
+            <div><a href="{% url event.cancel_registration event.pk registration.pk %}">Cancel Registation</a></div>
+        {% else %}
+            <div><a href="{% url event.cancel_registration event.pk registrant.hash %}">Cancel Registation</a></div>
+        {% endif %}
+        {% endif %}
 		<div style="clear:both;"></div>
 	</div>
 

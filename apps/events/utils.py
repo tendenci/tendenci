@@ -324,8 +324,8 @@ def save_registration(*args, **kwargs):
         user_profile.display_name = user_name
 
     # if no name; use email address
-    if not user_profile.display_name:
-        user_profile.display_name = user_profile.email
+#    if not user_profile.display_name:
+#        user_profile.display_name = user_profile.email
 
     try:
     # find registrant using event + email
