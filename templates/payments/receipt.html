@@ -1,23 +1,9 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<title>Payment receipt page</title>
-<link rel="stylesheet" href="{{ THEME_URL }}media/css/style.css" type="text/css" media="screen" /> 
-<style>
-	#payment-receipt{
-		width: 700px;
-		margin: 4em auto;
-		border: 1px solid silver;
-		padding: 1em;
-		background-color: #fff;
-	}
+{% extends "site_base.html" %}
 
-</style>
-</head>
-<body>
+{% block title %}Payment Receipt {{ block.super }}{% endblock %}
 
-<div id="payment-receipt">
+{% block body %}
+<div class="t">
 <h1>
 {% if job %}
 Job Posting - 
@@ -93,13 +79,6 @@ Payment Status</h1>
 	
 	 <p>&nbsp;</p>
 	 <p>&nbsp;</p>
-	 <p><a href="{{ SITE_GLOBAL_SITEURL }}" class="links">Home Page</a></p>
-	 
+</div>
+{% endblock %}
 
-<script language="javascript">
-    window.location = "{{ SITE_GLOBAL_SITEURL }}{% url payment.receipt payment.id payment.guid %}";
-</script>
-
-</div> 
-</body>
-</html>
