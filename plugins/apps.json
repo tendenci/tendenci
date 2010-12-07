@@ -1,7 +1,7 @@
 [
  {
-  "is_enabled": false, 
-  "is_installed": false, 
+  "is_enabled": true, 
+  "is_installed": true, 
   "package": "plugins.donations", 
   "id": 1, 
   "title": "donation"

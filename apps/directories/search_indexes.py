@@ -12,6 +12,7 @@ class DirectoryIndex(indexes.RealTimeSearchIndex):
     headline = indexes.CharField(model_attr='headline')
     body = indexes.CharField(model_attr='body')
     activation_dt = indexes.DateTimeField(model_attr='activation_dt', null=True)
+    expiration_dt = indexes.DateTimeField(model_attr='expiration_dt', null=True)
     syndicate = indexes.BooleanField(model_attr='syndicate')
     
     # authority fields
@@ -47,6 +48,9 @@ class DirectoryIndex(indexes.RealTimeSearchIndex):
 
         if obj.activation_dt:
             args.append(obj.activation_dt <= datetime.now())
+            
+        if obj.expiration_dt:
+            args.append(obj.expiration_dt > datetime.now())
 
         return all(args)
         
