@@ -86,7 +86,7 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
     s = '%s%s%s%s' % (md5_hash_value, api_login_id, t_id, amount)
     my_md5_hash = hashlib.md5(s).hexdigest()
     
-    if my_md5_hash <> md5_hash:
+    if my_md5_hash.lower() <> md5_hash.lower():
         raise Http404
     
     if payment.invoice.balance > 0:     # if balance==0, it means already processed
