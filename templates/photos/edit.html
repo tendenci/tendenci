@@ -22,17 +22,16 @@
 <div style="margin-bottom: 10px;">{% photo_nav request.user %}</div>
 
 <form name="photo-edit" method="post" action="">
-
-	<div class="field-wrap">
+    <div class="forms">
 
 		{{ photo_form|styled_form }}
 
         <div class="submit">
             <input type="hidden" name="action" value="update" />
             <input type="submit" value="Save changes" />
-        </div><br />
+        </div>
 
-	</div>
+    </div>
 </form>
 
 {% endblock %}

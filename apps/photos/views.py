@@ -20,6 +20,7 @@ from perms.models import ObjectPermission
 from perms.utils import has_perm
 from event_logs.models import EventLog
 from photos.utils import dynamic_image
+from django.forms.formsets import formset_factory
 
 def details(request, id, set_id=0, template_name="photos/details.html"):
     """ show the photo details """
@@ -203,12 +204,12 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
 
                 photo = form.save(commit=False)
 
+                # set up user permission
+                photo.allow_user_view, photo.allow_user_edit = form.cleaned_data['user_perms']
+
                 # remove all permissions on the object
                 ObjectPermission.objects.remove_all(photo)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, photo)
-                # assign creator permissions
+                ObjectPermission.objects.assign(form.cleaned_data['group_perms'], photo)
                 ObjectPermission.objects.assign(photo.creator, photo)
                 
                 photo.save() 
@@ -511,7 +512,6 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
     from django.forms.models import modelformset_factory
     from photos.search_indexes import PhotoSetIndex
 
-    # photo form set
     PhotoFormSet = modelformset_factory(Image, exclude=('title_slug', 'creator_username', 'owner_username'), extra=0)
 
     if request.method == "POST":
