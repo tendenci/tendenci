@@ -1,0 +1,48 @@
+{% extends "profiles/base.html" %}
+{% load pagination_tags %}
+{% load avatar_tags %}
+{% load profile_tags %}
+{% load base_filters %}
+
+{% block title %}Administrators{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+<link rel="stylesheet" href="/site_media/static/css/profiles.css">
+{% endblock %}
+
+{% block body %}
+{{ block.super }}
+<div class="t">
+    {% users_nav request.user request.user %}
+    <h1>Administrators</h1>
+    {% autopaginate admins 50 %}
+
+	<div class="profiles-wrap">
+    <div class="admin-list">
+    {% for admin in admins %}
+        <div class="admin-item">
+            <div class="admin-profile-image">
+                <a href="{{ admin.get_absolute_url }}">{% avatar user_this 48 %}</a>
+            </div>
+            <div class="admin-meta">
+                <p>
+                    <strong>{{ admin }} &ndash; <a href="{% url profile.edit admin.pk %}">edit</a></strong>
+                </p>
+                {% if admin.user.first_name and  admin.user.last_name  %}
+                <p>
+                    {{ admin.user.first_name }}&nbsp;{{ admin.user.last_name }}
+                </p>
+                {% endif %}
+                <p>{{ admin.user.email|obfuscate_email }}</p>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+	{% empty %}
+		<div>No administrators found.</div>
+    {% endfor %}
+	</div>
+    </div>
+    {% paginate %}
+</div>
+{% endblock %}
