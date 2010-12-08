@@ -2,7 +2,7 @@ from django import forms
 from django.conf import settings
 
 class SIMPaymentForm(forms.Form):
-    x_login = forms.CharField(max_length=20, required=True, widget=forms.HiddenInput, initial=settings.AUTHNET_LOGIN)
+    x_login = forms.CharField(max_length=20, required=True, widget=forms.HiddenInput, initial=settings.MERCHANT_LOGIN)
     x_relay_response = forms.CharField(max_length=8, widget=forms.HiddenInput, initial="TRUE")
     x_relay_url = forms.CharField(max_length=55, widget=forms.HiddenInput)
     x_amount = forms.DecimalField(max_digits=15, decimal_places=2, widget=forms.HiddenInput)
