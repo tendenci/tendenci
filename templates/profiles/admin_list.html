@@ -43,7 +43,7 @@
                         {% endif %}
                         {% endif %}
                         {% if user_is_admin and admin_is_admin or user_is_developer %}
-                        &ndash;&nbsp;<a href="{% url profile.edit admin.pk %}">edit</a>
+                        &ndash;&nbsp;<a href="{% url profile.edit admin.user.pk %}">edit</a>
                         {% endif %}
                     </strong>
                 </p>
