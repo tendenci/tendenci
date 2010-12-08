@@ -161,6 +161,8 @@ class ListPhotosNode(Node):
 
         if self.user:
             self.user = self.user.resolve(context)
+        else:
+            self.user = context.get('user', None)
 
         if hasattr(self.limit, "resolve"):
             self.limit = self.limit.resolve(context)
@@ -183,7 +185,7 @@ class ListPhotosNode(Node):
 def list_photos(parser, token):
     """
     Example:
-        {% list_photos as photos [user=user limit=3] %}
+        {% list_photos as photos user=user limit=3 %}
         {% for photo in photos %}
             {{ photo.title }}
         {% endfor %}
@@ -245,7 +247,7 @@ def photo_image_url(parser, token):
     Example:
         {% list_photos as photos user=user limit=3 %}
         {% for photo in photos %}
-            {% photo_size photo size=100x100 crop=True %}
+            <img src="{% photo_image_url photo size=100x100 crop=True %}" />
         {% endfor %}
     """
     args, kwargs = [], {}
