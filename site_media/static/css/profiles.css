@@ -498,7 +498,7 @@ div.forms div.form-field div.id_ssn .field input {
     width: 550px;
 }
 .errorlist{
-	color: red;
+	color: #ff0000;
 }
 .errorlist li{
 	list-style: none;
@@ -511,3 +511,27 @@ div.forms div.form-field div.id_ssn .field input {
   .t .t-profile .t-perm .field-wrapper{
   	margin: 1em 0;
   }
+
+/* admin list */
+div.admin-list {
+    width: 70%;
+    float: left;
+}
+
+div.admin-profile-image {
+    float: left;
+    padding: 10px;
+}
+
+div.admin-meta {
+    float: left;
+    padding: 10px;
+}
+
+div.admin-meta p {
+    margin-bottom: 3px;
+}
+
+div.admin-item {
+    border-bottom: 1px solid #CCC;
+}
