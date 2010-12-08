@@ -1,16 +1,11 @@
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseRedirect, get_host, HttpResponse, Http404, QueryDict
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.template import RequestContext
 from django.db.models import Q
-from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required, permission_required
-from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.core import serializers
-from haystack.indexes import SearchIndex
 
 from photologue.models import *
 from photos.models import Image, Pool, PhotoSet
@@ -20,7 +15,6 @@ from perms.models import ObjectPermission
 from perms.utils import has_perm
 from event_logs.models import EventLog
 from photos.utils import dynamic_image
-from django.forms.formsets import formset_factory
 
 def details(request, id, set_id=0, template_name="photos/details.html"):
     """ show the photo details """
