@@ -32,12 +32,12 @@
             <div class="admin-meta">
                 <p>
                     {% is_developer admin.user as admin_is_developer %}
+                    {% is_admin admin.user as admin_is_admin %}
                     <strong>
                         {{ admin }}
                         {% if admin_is_developer %}
                         (developer)
-                        {% else %}
-                        {% is_admin admin.user as admin_is_admin %}
+                        {% else %}                        
                         {% if admin_is_admin %}
                         (admin)
                         {% endif %}
