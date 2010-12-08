@@ -36,7 +36,7 @@ Payment Status</h1>
         <b>
         DO NOT press the back button in your browser.
         </b>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id %}">Try Making Payment Again</a> 
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id payment.invoice.guid %}">Try Making Payment Again</a> 
     {% else %}
         <b>
         DO NOT press the back button in your browser, or your credit card will be charged twice.
@@ -55,13 +55,13 @@ Payment Status</h1>
 	<p>&nbsp;</p>
 	{% if not payment.is_approved %}
         <p>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id %}">Try Making Payment Again</a>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id payment.invoice.guid %}">Try Making Payment Again</a>
         </p>
     {% else %}
         <p>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.print_view payment.invoice.id %}">Print Friendly Invoice.</a>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.print_view payment.invoice.id payment.invoice.guid %}">Print Friendly Invoice.</a>
         </p>
-        <p><a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id %}">View my Invoice</a></p>
+        <p><a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id payment.invoice.guid %}">View my Invoice</a></p>
        {% if donation %}
        		<p>Thank you for your donation!</p>
        {% else %}
