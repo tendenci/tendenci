@@ -3,6 +3,7 @@
 {% load avatar_tags %}
 {% load profile_tags %}
 {% load base_filters %}
+{% load perm_tags %}
 
 {% block title %}Administrators{% endblock %}
 
@@ -15,6 +16,9 @@
 {{ block.super }}
 <div class="t">
     {% users_nav request.user request.user %}
+    {% is_developer request.user as user_is_developer %}
+    {% is_admin request.user as user_is_admin %}
+
     <h1>Administrators</h1>
     {% autopaginate admins 50 %}
 
@@ -27,7 +31,21 @@
             </div>
             <div class="admin-meta">
                 <p>
-                    <strong>{{ admin }} &ndash; <a href="{% url profile.edit admin.pk %}">edit</a></strong>
+                    {% is_developer admin.user as admin_is_developer %}
+                    <strong>
+                        {{ admin }}
+                        {% if admin_is_developer %}
+                        (developer)
+                        {% else %}
+                        {% is_admin admin.user as admin_is_admin %}
+                        {% if admin_is_admin %}
+                        (admin)
+                        {% endif %}
+                        {% endif %}
+                        {% if user_is_admin and admin_is_admin or user_is_developer %}
+                        &ndash;&nbsp;<a href="{% url profile.edit admin.pk %}">edit</a>
+                        {% endif %}
+                    </strong>
                 </p>
                 {% if admin.user.first_name and  admin.user.last_name  %}
                 <p>
