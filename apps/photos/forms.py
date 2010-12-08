@@ -21,10 +21,52 @@ class PhotoUploadForm(TendenciBaseForm):
         super(PhotoUploadForm, self).__init__(*args, **kwargs)
 
 class PhotoEditForm(TendenciBaseForm):
+
+    status_detail = forms.ChoiceField(
+    choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
     
     class Meta:
         model = Image
-        exclude = ('member', 'title_slug', 'effect', 'crop_from', 'image',)
+
+        fields = (
+            'title',
+            'caption',
+            'is_public',
+            'tags',
+            'allow_anonymous_view',
+            'user_perms',
+            'group_perms',
+            'status',
+            'status_detail'
+        )
+
+        fieldsets = [
+                ('Photo Information', {
+                      'fields': [
+                          'title',
+                          'caption',
+                          'is_public',
+                          'tags',
+                      ], 'legend': '',
+                  }),
+
+                ('Permissions', {
+                      'fields': [
+                          'allow_anonymous_view',
+                          'user_perms',
+                          'group_perms',
+                      ], 'classes': ['permissions'],
+                  }),
+
+                ('Administrator Only', {
+                      'fields': [
+                          'syndicate',
+                          'status',
+                          'status_detail',
+                      ], 'classes': ['admin-only'],
+                  }),
+        ]
+
 
     safetylevel = forms.HiddenInput()
         
@@ -81,6 +123,9 @@ class PhotoSetAddForm(TendenciBaseForm):
 
 class PhotoSetEditForm(TendenciBaseForm):
     """ Photo-Set Edit-Form """
+
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
     class Meta:
         model = PhotoSet
