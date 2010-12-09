@@ -1,16 +1,11 @@
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseRedirect, get_host, HttpResponse, Http404, QueryDict
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.template import RequestContext
 from django.db.models import Q
-from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required, permission_required
-from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.core import serializers
-from haystack.indexes import SearchIndex
 
 from photologue.models import *
 from photos.models import Image, Pool, PhotoSet
@@ -20,7 +15,6 @@ from perms.models import ObjectPermission
 from perms.utils import has_perm
 from event_logs.models import EventLog
 from photos.utils import dynamic_image
-from django.forms.formsets import formset_factory
 
 def details(request, id, set_id=0, template_name="photos/details.html"):
     """ show the photo details """
@@ -52,31 +46,38 @@ def details(request, id, set_id=0, template_name="photos/details.html"):
 
 def photo(request, id, set_id=0, template_name="photos/details.html"):
     """ photo details """
-    photo = get_object_or_404(Image, id=id)
-    photo_sets = []
-    set_id = int(set_id)
+
+    try:
+        sqs = Image.objects.search('id:%s' % id, user=request.user)
+        photo = sqs.best_match().object
+    except:
+        # can't tell if they're denied
+        # or the image does not exist
+        # i assume does not exist
+        raise Http404
+
+#    photo = get_object_or_404(Image, id=id)
 
     # permissions
-    if not has_perm(request.user,'photos.view_image',photo):
-        raise Http403
+#    if not has_perm(request.user,'photos.view_image',photo):
+#        raise Http403
 
-    # if private
-    if not photo.is_public:
-        # if no permission; raise 404 exception
-        if not photo.check_perm(request.user,'photos.view_image'):
-            raise Http403
+#    # if private
+#    if not photo.is_public:
+#        # if no permission; raise 404 exception
+#        if not photo.check_perm(request.user,'photos.view_image'):
+#            raise Http403
 
-    log_defaults = {
+    EventLog.objects.log(**{
         'event_id' : 990500,
         'event_data': '%s (%d) viewed by %s' % (photo._meta.object_name, photo.pk, request.user),
         'description': '%s viewed' % photo._meta.object_name,
         'user': request.user,
         'request': request,
         'instance': photo,
-    }
-    EventLog.objects.log(**log_defaults)
+    })
 
-    # default set to blank
+    # default prev/next URL
     photo_prev_url = photo_next_url = ''
 
     if set_id:

@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_protect
 # for avatar
 from avatar.models import Avatar, avatar_file_path
 from avatar.forms import PrimaryAvatarForm
-from perms.utils import has_perm
+from perms.utils import has_perm, is_admin
 
 
 try:
@@ -634,4 +634,19 @@ def user_access_report(request):
                   'day_logins': day_logins,},  
                 context_instance=RequestContext(request))
     
+@login_required
+def admin_list(request, template_name='profiles/admin_list.html'):
+    # only admins can edit this list
+    if not is_admin(request.user):
+        raise Http403
+
+    filters = {
+        'status':1,
+        'status_detail':'active',
+        'user__is_staff': 1,
+        'user__is_active': 1,
+    }
+    admins = Profile.objects.filter(**filters)
     
+    return render_to_response(template_name, {'admins': admins},
+                              context_instance=RequestContext(request))

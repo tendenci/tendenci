@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% is_admin user_current as user_current_is_admin %}
 <div id="showh">
 		<ul id="primary">
 		
@@ -50,6 +51,11 @@
 						<a href="{% url profile.add %}">Add</a>
 						</li>
 						{% endif %}
+                        {% if user_current_is_admin %}
+     					<li>
+						<a href="{% url profile.admins %}">Admins</a>
+						</li>
+                        {% endif %}
 					{% if user_current.is_authenticated %}
 					<li>
 					<a href="{% url auth_logout %}">Log Off</a>
