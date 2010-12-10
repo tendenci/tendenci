@@ -228,7 +228,7 @@ class Reg8nForm(forms.Form):
         event = Event.objects.get(pk=event_id)
         payment_method = event.registration_configuration.payment_method.all()
 
-        self.fields['payment_method'] = forms.ModelChoiceField(
+        self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
             queryset=payment_method, widget=forms.RadioSelect(), initial=1, required=False)
 
         self.fields['price'] = forms.DecimalField(

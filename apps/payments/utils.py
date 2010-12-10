@@ -52,3 +52,42 @@ def payment_processing_object_updates(request, payment, **kwargs):
             except Donation.DoesNotExist:
                 pass
             
+def get_payment_object(payment, obj_d):
+    if payment:
+        if payment.invoice.invoice_object_type == 'job':
+            from jobs.models import Job
+            try:
+                job = Job.objects.get(id=payment.invoice.invoice_object_type_id)
+            except Job.DoesNotExist:
+                job = None
+            
+            obj_d['job'] = job
+            
+            
+        if payment.invoice.invoice_object_type == 'directory':
+            from directories.models import Directory
+            try:
+                directory = Directory.objects.get(id=payment.invoice.invoice_object_type_id)
+            except Directory.DoesNotExist:
+                directory = None
+            
+            obj_d['directory'] = directory
+            
+        if payment.invoice.invoice_object_type == 'donation':
+            from donations.models import Donation
+            try:
+                donation = Donation.objects.get(id=payment.invoice.invoice_object_type_id)
+            except Donation.DoesNotExist:
+                donation = None
+                
+            obj_d['donation'] = donation
+            
+        if payment.invoice.invoice_object_type == 'event_registration':
+            from events.models import Registration
+            try:
+                registration = Registration.objects.get(id=payment.invoice.invoice_object_type_id)
+            except Registration.DoesNotExist:
+                registration = None
+                
+            obj_d['registration'] = registration
+            
