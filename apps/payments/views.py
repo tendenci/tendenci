@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from payments.models import Payment
 from payments.authorizenet.utils import prepare_authorizenet_sim_form
+from payments.utils import get_payment_object
 from invoices.models import Invoice
 from base.http import Http403
 from base.utils import tcurrency
@@ -75,37 +76,10 @@ def receipt(request, id, guid, template_name='payments/receipt.html'):
     if payment.guid <> guid:
         raise Http403
     
-    # log an event for payment edit
-    if payment:
-        if payment.invoice.invoice_object_type == 'job':
-            from jobs.models import Job
-            try:
-                job = Job.objects.get(id=payment.invoice.invoice_object_type_id)
-            except Job.DoesNotExist:
-                job = None
-            return render_to_response(template_name,{'payment':payment, 'job':job}, 
-                              context_instance=RequestContext(request))
-            
-        if payment.invoice.invoice_object_type == 'directory':
-            from directories.models import Directory
-            try:
-                directory = Directory.objects.get(id=payment.invoice.invoice_object_type_id)
-            except Directory.DoesNotExist:
-                directory = None
-            return render_to_response(template_name,{'payment':payment, 'directory':directory}, 
-                              context_instance=RequestContext(request))
-            
-        if payment.invoice.invoice_object_type == 'donation':
-            from donations.models import Donation
-            try:
-                donation = Donation.objects.get(id=payment.invoice.invoice_object_type_id)
-            except Donation.DoesNotExist:
-                donation = None
-            return render_to_response(template_name,{'payment':payment, 'donation':donation}, 
-                              context_instance=RequestContext(request))
+    obj_d = {}
+    get_payment_object(payment, obj_d)
         
-    
-    return render_to_response(template_name,{'payment':payment}, 
+    return render_to_response(template_name,{'payment':payment, 'obj_d': obj_d}, 
                               context_instance=RequestContext(request))
 
         
