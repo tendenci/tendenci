@@ -1,19 +1,21 @@
 import time
 import hmac
+import hashlib
 from django.conf import settings
+from django.http import Http404
 from forms import SIMPaymentForm
 from payments.models import Payment
 from payments.utils import payment_processing_object_updates
 from site_settings.utils import get_setting
 
 def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
-    msg = '^'.join([settings.AUTHNET_LOGIN,
+    msg = '^'.join([settings.MERCHANT_LOGIN,
            x_fp_sequence,
            x_fp_timestamp,
            x_amount
            ])+'^'
 
-    return hmac.new(settings.AUTHNET_KEY, msg).hexdigest()
+    return hmac.new(settings.MERCHANT_TXN_KEY, msg).hexdigest()
 
 
 def prepare_authorizenet_sim_form(request, payment):
@@ -28,7 +30,7 @@ def prepare_authorizenet_sim_form(request, payment):
               'x_fp_hash':x_fp_hash,
               'x_amount':x_amount,
               'x_version':'3.1',
-              'x_login':settings.AUTHNET_LOGIN,
+              'x_login':settings.MERCHANT_LOGIN,
               'x_relay_response':'TRUE',
               'x_relay_url':payment.response_page,
               'x_invoice_num':payment.invoice_num,
@@ -71,7 +73,23 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
         x_invoice_num = 0
     payment = get_object_or_404(Payment, pk=x_invoice_num)
     
-    if payment.invoice.balance > 0:     # if balance=0, it means already processed
+    # authenticate with md5 hash to make sure the response is securely received from authorize.net.
+    # client needs to set up the MD5 Hash Value in their account
+    # and add this value to the local_settings.py AUTHNET_MD5_HASH_VALUE
+    md5_hash = response_d.get('x_MD5_Hash', '')
+    # calculate our md5_hash
+    md5_hash_value = settings.AUTHNET_MD5_HASH_VALUE
+    api_login_id = settings.MERCHANT_LOGIN
+    t_id = response_d.get('x_trans_id', '')
+    amount = response_d.get('x_amount', 0)
+    
+    s = '%s%s%s%s' % (md5_hash_value, api_login_id, t_id, amount)
+    my_md5_hash = hashlib.md5(s).hexdigest()
+    
+    if my_md5_hash.lower() <> md5_hash.lower():
+        raise Http404
+    
+    if payment.invoice.balance > 0:     # if balance==0, it means already processed
         payment_update_authorizenet(request, response_d, payment)
         payment_processing_object_updates(request, payment)
     return payment
@@ -87,6 +105,7 @@ def payment_update_authorizenet(request, response_d, payment, **kwargs):
     payment.avs_code = response_d.get('x_avs_code', '')
     # replace the data captured from authnet in case they changed from there.
     payment.amount = Decimal(response_d.get('x_amount', 0))
+    payment.md5_hash = response_d.get('x_MD5_Hash', '')
     payment.first_name = response_d.get('x_first_name', '')
     payment.last_name = response_d.get('x_last_name', '')
     payment.company = response_d.get('x_company', '')
@@ -114,7 +133,7 @@ def payment_update_authorizenet(request, response_d, payment, **kwargs):
     else:
         if payment.status_detail == '':
             payment.status_detail = 'not approved'
-            payment.save()
+        payment.save()
             
     
     
