@@ -949,6 +949,7 @@ def registrant_export(request, event_id):
         'email',
         'registration__amount_paid',
         'registration__payment_method__label',
+        'registration__invoice__balance',
         'mail_name',
         'address',
         'city',
