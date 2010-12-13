@@ -15,6 +15,7 @@ class FirstDataPaymentForm(forms.Form):
     #objectguid = forms.CharField(max_length=100, widget=forms.HiddenInput)
     paymentid = forms.IntegerField(widget=forms.HiddenInput)
     invoiceid = forms.IntegerField(widget=forms.HiddenInput)
+    referurl = forms.CharField(max_length=100, widget=forms.HiddenInput)
     chargetotal = forms.DecimalField(max_digits=15, decimal_places=2, widget=forms.HiddenInput)
     bname = forms.CharField(max_length=100, widget=forms.HiddenInput)
     email = forms.CharField(max_length=255, widget=forms.HiddenInput)
