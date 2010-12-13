@@ -1,5 +1,6 @@
 import calendar
 from datetime import datetime
+from datetime import date
 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -802,7 +803,7 @@ def registrant_roster(request, event_id=0, template_name='events/registrants/ros
 def registrant_details(request, id=0, hash='', template_name='events/registrants/details.html'):
     registrant = get_object_or_404(Registrant, pk=id)
 
-    if has_perm(request.user,'registrans.view_registrant',registrant):
+    if has_perm(request.user,'registrants.view_registrant',registrant):
         return render_to_response(template_name, {'registrant': registrant}, 
             context_instance=RequestContext(request))
     else:
@@ -923,6 +924,75 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
                               {'event':event,
                                'form': form}, 
                                context_instance=RequestContext(request))
+
+
+def registrant_export(request, event_id):
+    """
+    Export all registration for a specific event
+    """
+    event = get_object_or_404(Event, pk=event_id)
+
+    # if they can edit it, they can export it
+    if not has_perm(request.user,'events.change_event',event):
+        raise Http403
+
+    # create the excel book and sheet
+    import xlwt
+    book = xlwt.Workbook(encoding='utf8')
+    sheet = book.add_sheet('Registrants')
+
+    # Get all the registrations
+    registrations = event.registration_set.all()
+    registrant_headings = (
+        'name',
+        'phone',
+        'email',
+        'registration__amount_paid',
+        'registration__payment_method__label',
+        'registration__invoice__balance',
+        'mail_name',
+        'address',
+        'city',
+        'state',
+        'zip',
+        'country',
+        'create_dt',
+    )
+
+    # Append the heading to the list of values that will
+    # go into the excel sheet
+    values_list = []
+    values_list.insert(0, registrant_headings)
+
+    # excel date styles
+    default_style = xlwt.Style.default_style
+    datetime_style = xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm')
+    date_style = xlwt.easyxf(num_format_str='mm/dd/yyyy')
+
+    if registrations:
+        # bulk of the work happens here
+        # loop through all the registrations and append the output
+        # of values_list django method to the values_list list
+        for registration in registrations:
+            registrants = registration.registrant_set.all().values_list(*registrant_headings)
+            for registrant in registrants:
+                values_list.append(registrant)
+
+    # Write the data enumerated to the excel sheet
+    for row, row_data in enumerate(values_list):
+        for col, val in enumerate(row_data):
+            if isinstance(val, datetime):
+                style = datetime_style
+            elif isinstance(val, date):
+                style = date_style
+            else:
+                style = default_style
+            sheet.write(row, col, val, style=style)
+
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=event_%s_registrant_export.xls' % event_id
+    book.save(response)
+    return response
 
 
 
