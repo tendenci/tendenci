@@ -2,9 +2,11 @@
 #import hashlib
 from django.conf import settings
 #from django.http import Http404
+from django.core.urlresolvers import reverse
 from forms import FirstDataPaymentForm
 from payments.models import Payment
 from payments.utils import payment_processing_object_updates
+
 from site_settings.utils import get_setting
 
 currency_number_d = {'USD': '840',
@@ -49,6 +51,8 @@ def prepare_firstdata_form(request, payment):
               #'objectguid':payment.guid,
               'paymentid':payment.id,
               'invoiceid':payment.invoice.id,
+              'referurl': '%s%s' % (get_setting('site', 'global', 'siteurl'), 
+                                    reverse('payment.pay_online', args=[payment.invoice.id])),
               'chargetotal':chargetotal,
               'bname':'%s %s' % (payment.first_name, payment.last_name),
               'email':payment.email,
