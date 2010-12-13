@@ -175,6 +175,8 @@ class Payment(models.Model):
             merchant_account = get_setting('site', "global", "merchantaccount")
             if merchant_account.lower() == "authorizenet":
                 self.response_page = site_url + reverse('authorizenet.sim_thank_you', args=[self.id])
+            elif merchant_account.lower() == "firstdata":
+                self.response_page = site_url + reverse('firstdata.thank_you', args=[self.id])
             else:
                 self.response_page = site_url + "/payments/thankyou/%d" % (self.id)
                 
