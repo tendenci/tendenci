@@ -1,11 +1,14 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from payments.authorizenet.utils import authorizenet_thankyou_processing
+from payments.firstdata.utils import firstdata_thankyou_processing
 from payments.utils import get_payment_object
 from event_logs.models import EventLog
+# http://www.firstdata.com/en_us/customer-center/merchants/support/first-data-global-gateway-api-software-landing#/content-product-1
+# http://www.firstdata.com/downloads/marketing-merchant/fd_globalgatewayconnect_usermanualnorthamerica.pdf
+# http://www.firstdata.com/downloads/marketing-merchant/fd_globalgatewayinternetpaymentgatewayconnect_integrationguideemea.pdf
 
-def sim_thank_you(request, payment_id, template_name='payments/authorizenet/thankyou.html'):
-    payment = authorizenet_thankyou_processing(request, dict(request.POST.items()))
+def thank_you(request, payment_id, template_name='payments/receipt.html'):
+    payment = firstdata_thankyou_processing(request, dict(request.POST.items()))
     
     # log an event for payment edit
     if payment:

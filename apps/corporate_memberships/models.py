@@ -30,6 +30,12 @@ AUTH_METHOD_CHOICES = (
                        ('email', _('E-mail')),
                        ('admin', _('Admin')),
                        )
+SIZE_CHOICES = (
+                ('s', _('Small')),
+                ('m', _('Medium')),
+                ('l', _('Large')),
+                )
+
 
 class CorporateMembershipType(TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -247,7 +253,8 @@ class CorpAppField(models.Model):
     # checkbox/radiobutton
     field_layout = models.CharField(_("Choice Field Layout"), choices=FIELD_LAYOUT_CHOICES, 
                                     max_length=50, blank=True, null=True)
-    size = models.IntegerField(_("Field Size"), default=20)
+    size = models.CharField(_("Field Size"), choices=SIZE_CHOICES,  max_length=1,
+                            blank=True, null=True)
                                   
     required = models.BooleanField(_("Required"), default=True)
     no_duplicates = models.BooleanField(_("No Duplicates"), default=False)
@@ -266,7 +273,7 @@ class CorpAppField(models.Model):
         #ordering = ('order',)
         
     def __unicode__(self):
-        return 'Field: %s' % self.label
+        return '%s' % self.label
     
     
 class CorpField(models.Model):

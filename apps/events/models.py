@@ -225,7 +225,7 @@ class Registration(models.Model):
         invoice.status_detail = status_detail
         invoice.subtotal = self.amount_paid
         invoice.total = self.amount_paid
-        invoice.balance = 0
+        invoice.balance = invoice.total
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
         invoice.save()
