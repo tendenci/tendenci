@@ -169,7 +169,7 @@ def delete(request, id, template_name="files/delete.html"):
 
         file.delete()
 
-        if request.POST['ajax']:
+        if 'ajax' in request.POST:
             return HttpResponse('Ok')
         else:
             return HttpResponseRedirect(reverse('file.search'))
