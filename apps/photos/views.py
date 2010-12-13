@@ -1,16 +1,11 @@
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseRedirect, get_host, HttpResponse, Http404, QueryDict
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.template import RequestContext
 from django.db.models import Q
-from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required, permission_required
-from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.core import serializers
-from haystack.indexes import SearchIndex
 
 from photologue.models import *
 from photos.models import Image, Pool, PhotoSet
@@ -51,31 +46,38 @@ def details(request, id, set_id=0, template_name="photos/details.html"):
 
 def photo(request, id, set_id=0, template_name="photos/details.html"):
     """ photo details """
-    photo = get_object_or_404(Image, id=id)
-    photo_sets = []
-    set_id = int(set_id)
+
+    try:
+        sqs = Image.objects.search('id:%s' % id, user=request.user)
+        photo = sqs.best_match().object
+    except:
+        # can't tell if they're denied
+        # or the image does not exist
+        # i assume does not exist
+        raise Http404
+
+#    photo = get_object_or_404(Image, id=id)
 
     # permissions
-    if not has_perm(request.user,'photos.view_image',photo):
-        raise Http403
+#    if not has_perm(request.user,'photos.view_image',photo):
+#        raise Http403
 
-    # if private
-    if not photo.is_public:
-        # if no permission; raise 404 exception
-        if not photo.check_perm(request.user,'photos.view_image'):
-            raise Http403
+#    # if private
+#    if not photo.is_public:
+#        # if no permission; raise 404 exception
+#        if not photo.check_perm(request.user,'photos.view_image'):
+#            raise Http403
 
-    log_defaults = {
+    EventLog.objects.log(**{
         'event_id' : 990500,
         'event_data': '%s (%d) viewed by %s' % (photo._meta.object_name, photo.pk, request.user),
         'description': '%s viewed' % photo._meta.object_name,
         'user': request.user,
         'request': request,
         'instance': photo,
-    }
-    EventLog.objects.log(**log_defaults)
+    })
 
-    # default set to blank
+    # default prev/next URL
     photo_prev_url = photo_next_url = ''
 
     if set_id:
@@ -203,12 +205,12 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
 
                 photo = form.save(commit=False)
 
+                # set up user permission
+                photo.allow_user_view, photo.allow_user_edit = form.cleaned_data['user_perms']
+
                 # remove all permissions on the object
                 ObjectPermission.objects.remove_all(photo)
-                # assign new permissions
-                user_perms = form.cleaned_data['user_perms']
-                if user_perms: ObjectPermission.objects.assign(user_perms, photo)
-                # assign creator permissions
+                ObjectPermission.objects.assign(form.cleaned_data['group_perms'], photo)
                 ObjectPermission.objects.assign(photo.creator, photo)
                 
                 photo.save() 
@@ -511,7 +513,6 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
     from django.forms.models import modelformset_factory
     from photos.search_indexes import PhotoSetIndex
 
-    # photo form set
     PhotoFormSet = modelformset_factory(Image, exclude=('title_slug', 'creator_username', 'owner_username'), extra=0)
 
     if request.method == "POST":
