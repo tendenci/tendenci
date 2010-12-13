@@ -40,6 +40,7 @@
 
 				<li><a href="{% url event.registrant.search nav_object.pk %}">Registrants</a></li>
 				<li><a href="{% url event.registrant.roster nav_object.pk %}">Registrant Roster</a></li>
+                <li><a href="{% url event.registrant.export nav_object.pk %}">Registrant Export</a></li>
 				<li><a href="{% url event.message nav_object.pk %}">E-mail Registrants</a></li>
 				{% endif %}
 
