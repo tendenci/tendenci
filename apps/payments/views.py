@@ -52,6 +52,10 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
         if merchant_account == "authorizenet":
             form = prepare_authorizenet_sim_form(request, payment)
             post_url = settings.AUTHNET_POST_URL
+        elif merchant_account == 'firstdata':
+            from payments.firstdata.utils import prepare_firstdata_form
+            form = prepare_firstdata_form(request, payment)
+            post_url = settings.FIRSTDATA_POST_URL
         else:   # more vendors 
             form = None
             post_url = ""
