@@ -236,6 +236,7 @@ def swfupload(request):
             file.object_id = object_id
             file.owner = request.user
             file.creator = request.user
+            file.is_public = True
             file.save()
         except Exception, e:
             print e
