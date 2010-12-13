@@ -1,14 +1,35 @@
 #import time
+#import hashlib
 from django.conf import settings
 #from django.http import Http404
 from forms import FirstDataPaymentForm
 from payments.models import Payment
 from payments.utils import payment_processing_object_updates
-#from site_settings.utils import get_setting
+from site_settings.utils import get_setting
 
+currency_number_d = {'USD': '840',
+                   'EUR': '978',
+                   'GBP': '826',
+                   'CHF': '756',
+                   'CZK': '203',
+                   'DKK': '208',
+                   'JPY': '392',
+                   'ZAR': '710',
+                   'SEK': '752',
+                   'CAD': '124'}
 
 def prepare_firstdata_form(request, payment):
     chargetotal = "%.2f" % payment.amount
+    #time_zone = get_setting("site", "global", 'defaulttimezone')
+    #txndatetime = payment.create_dt.strftime('%Y:%m:%d-%H:%M:%S')
+    #currency_code = get_setting("site", "global", 'currency')
+    #if not currency_code: currency_code = 'USD'
+    #currency = currency_number_d.get(currency_code, '840')
+    
+    # SHA1 hash
+    #s = '%s%s%s%s%s' % (settings.MERCHANT_LOGIN, txndatetime, chargetotal, currency, settings.MERCHANT_TXN_KEY)
+    #hash = hashlib.sha1(s).hexdigest()
+    
     if request.user.is_authenticated():
         userid = request.user.id
     else:
@@ -18,10 +39,14 @@ def prepare_firstdata_form(request, payment):
               'storename':settings.MERCHANT_LOGIN,
               'mode':'payonly',
               'txntype':'sale',
+              #'timezone': time_zone,
+              #'txndatetime': txndatetime,
+              #'hash': hash,
+              #'currency': currency,
               'oid':payment.id,
               'userid':userid,
               'bcountry':payment.country,
-              'objectguid':payment.guid,
+              #'objectguid':payment.guid,
               'paymentid':payment.id,
               'invoiceid':payment.invoice.id,
               'chargetotal':chargetotal,
@@ -36,6 +61,8 @@ def prepare_firstdata_form(request, payment):
               'phone':payment.phone,
               'shippingbypass':'true',
               'comments':payment.description,
+              'responseSuccessURL': payment.response_page,
+              'responseFailURL': payment.response_page,
         }
     form = FirstDataPaymentForm(initial=params)
     
@@ -57,7 +84,9 @@ def firstdata_thankyou_processing(request, response_d, **kwargs):
     return payment
         
 def payment_update_firstdata(request, response_d, payment, **kwargs):
-    if payment.status_detail.lower() == 'approved':
+    payment.status_detail = (response_d.get('status', '')).lower()
+    
+    if payment.status_detail == 'approved':
         payment.response_code = 1
         payment.response_subcode = 1
         payment.response_reason_code = 1
@@ -65,10 +94,8 @@ def payment_update_firstdata(request, response_d, payment, **kwargs):
     else:
         payment.response_code = 0
         payment.response_reason_code = 0
-        # need to verify the variable name "fail_reason" 
-        #because in T4, it's "failReason", but in firstdata doc, it's "fail_reason"
-        # http://www.firstdata.com/downloads/marketing-merchant/fd_globalgatewayinternetpaymentgatewayconnect_integrationguideemea.pdf
-        payment.response_reason_text = response_d.get('fail_reason', '')
+        
+        payment.response_reason_text = response_d.get('failReason', '')
     
     
     if payment.is_approved:
