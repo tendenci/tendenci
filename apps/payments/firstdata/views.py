@@ -5,8 +5,6 @@ from payments.utils import get_payment_object
 from event_logs.models import EventLog
 # http://www.firstdata.com/en_us/customer-center/merchants/support/first-data-global-gateway-api-software-landing#/content-product-1
 # http://www.firstdata.com/downloads/marketing-merchant/fd_globalgatewayconnect_usermanualnorthamerica.pdf
-# http://www.firstdata.com/downloads/marketing-merchant/fd_globalgatewayinternetpaymentgatewayconnect_integrationguideemea.pdf
-# https://www.firstdata.com/downloads/marketing-merchant/fd_globalgatewayconnect_usermanualnorthamerica.pdf
 
 
 def thank_you(request, payment_id, template_name='payments/receipt.html'):
