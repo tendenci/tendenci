@@ -936,35 +936,45 @@ def registrant_export(request, event_id):
     if not has_perm(request.user,'events.change_event',event):
         raise Http403
 
-    # create the excel book and sheet
     import xlwt
+    from ordereddict import OrderedDict
+    from decimal import Decimal
+
+    # create the excel book and sheet
     book = xlwt.Workbook(encoding='utf8')
     sheet = book.add_sheet('Registrants')
 
     # Get all the registrations
     registrations = event.registration_set.all()
-    registrant_headings = (
-        'name',
-        'phone',
-        'email',
-        'registration__amount_paid',
-        'registration__payment_method__label',
-        'registration__invoice__balance',
-        'mail_name',
-        'address',
-        'city',
-        'state',
-        'zip',
-        'country',
-        'create_dt',
-    )
+
+    # the key is what the column will be in the
+    # excel sheet. the value is the database lookup
+    # Used OrderedDict to maintain the column order
+    registrant_mappings = OrderedDict([
+        ('name', 'name'),
+        ('phone', 'phone'),
+        ('email', 'email'),
+        ('registration_id', 'registration__pk'),
+        ('invoice_id', 'registration__invoice__pk'),
+        ('registration price', 'registration__amount_paid'),
+        ('payment method', 'registration__payment_method__label'),
+        ('balance', 'registration__invoice__balance'),
+        ('address', 'address'),
+        ('city', 'city'),
+        ('state', 'state'),
+        ('zip', 'zip'),
+        ('country', 'country'),
+        ('date', 'create_dt'),
+    ])
+    registrant_lookups = [v for k, v in registrant_mappings.items()]
 
     # Append the heading to the list of values that will
     # go into the excel sheet
     values_list = []
-    values_list.insert(0, registrant_headings)
+    values_list.insert(0, registrant_mappings.keys())
 
     # excel date styles
+    balance_owed_style = xlwt.easyxf('font: color-index red, bold on')
     default_style = xlwt.Style.default_style
     datetime_style = xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm')
     date_style = xlwt.easyxf(num_format_str='mm/dd/yyyy')
@@ -974,19 +984,31 @@ def registrant_export(request, event_id):
         # loop through all the registrations and append the output
         # of values_list django method to the values_list list
         for registration in registrations:
-            registrants = registration.registrant_set.all().values_list(*registrant_headings)
+            registrants = registration.registrant_set.all().values_list(*registrant_lookups)
             for registrant in registrants:
                 values_list.append(registrant)
 
     # Write the data enumerated to the excel sheet
     for row, row_data in enumerate(values_list):
         for col, val in enumerate(row_data):
+            # styles the date/time fields
             if isinstance(val, datetime):
                 style = datetime_style
             elif isinstance(val, date):
                 style = date_style
             else:
                 style = default_style
+                
+            # style the invoice balance column
+            if col == 7:
+                balance = val
+                if not val:
+                    balance = 0
+                if val is None:
+                    balance = 0
+                if isinstance(balance,Decimal) and balance > 0:
+                    style = balance_owed_style
+
             sheet.write(row, col, val, style=style)
 
     response = HttpResponse(mimetype='application/vnd.ms-excel')
