@@ -112,12 +112,13 @@ def payment_update_firstdata(request, response_d, payment, **kwargs):
         payment.response_code = '1'
         payment.response_subcode = '1'
         payment.response_reason_code = '1'
+        # example of approval_code: 0097820000019564:YNAM:12345678901234567890123
+        # http://www.firstdata.com/downloads/marketing-merchant/fd_globalgatewayconnect_usermanualnorthamerica.pdf
         payment.response_reason_text = response_d.get('approval_code', '')
         payment.trans_id = response_d.get('approval_code', '')
     else:
         payment.response_code = 0
         payment.response_reason_code = 0
-        
         payment.response_reason_text = response_d.get('failReason', '')
     
     
