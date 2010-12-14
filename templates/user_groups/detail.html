@@ -3,7 +3,7 @@
 {% load base_filters %}
 {% load user_group_tags %}
 {% load perm_tags %}
-
+{% load pagination_tags %}
 
 {% block title %}{{ group.name }} - Group{% endblock %}
 
@@ -22,8 +22,11 @@
 {% endblock %}
 
 {% block body %}
-<div class="t">
+{% has_perm user user_groups.change_group group as can_edit %}
+{% has_perm user user_groups.delete_group group as can_delete %}
 
+<div class="t">
+    <div class="group-view">
 	{% user_group_nav request.user %}
 
 	<div class="quick-options">
@@ -31,104 +34,66 @@
 	</div>
 	
 	<h1>{{ group.name }}</h1>
+    <div class="group-section">
+        <p>This group currently has {{ count_members }} members.</p>
 
-	<div class="column-left">
-		
-		<div class="box">
-			<h2>Group Members</h2>
-			<div class="info">
-				<p>This group currently has {{ count_members }} members.</p>
-				<p><a href="">View all members</a>. <a href="">View editors only</a></p>
-				<p><a href="">Add/Remove Members of this Group</a></p>
-				<p><a href="">Export members</a> to a CSV(excel) or XML.</p>
-				<p class="small">Note: this requires Admin rights and the Authentication String</p>
-			</div>
-		</div>
-		<div class="box">
-			<h2>Group Permissions</h2>
-			<div class="info">
-				<p>Group Type: {{ group.type|capfirst }}</p>
-				<p>This group is displayed as an option in the Users Module</p>
-				<p>Allow self Add? {{ group.allow_self_add }}</p>
-				<p>Allow self Remove? {{ group.allow_self_remove }}</p>
-				<p><a href="{% url group.edit_perms group.pk %}">Edit Security Permissions for Group Members</a></p>
-			</div>
-		</div>
-		<!-- <div class="box">
-			<h2>Module Displays</h2>
-			<div class="info"></div>
-		</div> -->
-		
-	</div>
-	<div class="column-right">
+        {% if can_edit %}
+            <p><a href="{% url group.member_export group.slug %}">Export all members</a></p>
+        {% endif %}
+        <!-- <p><a href="">View all members</a>. <a href="">View editors only</a></p>
+        <p><a href="">Add/Remove Members of this Group</a></p>
+        <p><a href="">Export members</a> to a CSV(excel) or XML.</p> -->
+    </div>
 
-		<div class="box">
-			<h2>Technical Information</h2>
-			<div class="info">
-				<p>Usergroup ID: {{ group.pk }}</p>
-				<p>Created: {{ group.create_dt|date:"long" }}</p>
-				<p>Owner: <a href="{{ group.owner.get_absolute_url }}">{{ group.owner }}</a> (ID: {{ group.owner.pk }}) </p>
-				<p>Entity: {{ group.entity }}</p>
-				<p>Status: {{ group.status }}<p>
-			</div>
-		</div>
-		<div class="box">
-			<h2>Group Contact</h2>
-			<div class="info">
-				{% if group.email_recipient %}
-					<p>Emails regarding activity in this group will be sent to: {{ group.email_recipient }}</p>
-				{% else %}
-					<p>THere is no email recipient set for this group.  <a href="{% url group.edit group.slug %}">Edit group.</a></p>
-				{% endif %}
-			</div>
-		</div>
-	</div>
+    <h2>Group Information</h2>
+    <div class="group-section">
+        <p>Type: {{ group.type|capfirst }}</p>
+        <!-- <p>This group is displayed as an option in the Users Module</p> -->
+        {% if group.allow_self_add %}
+        <p>Users can add themselves to this group</p>
+        {%  endif %}
+        {% if group.allow_self_remove %}
+        <p>Users can remove themselves from this group</p>
+        {% endif %}
+        <p><a href="{% url group.edit_perms group.pk %}">Edit Security Permissions for Group Members</a></p>
+    </div>
 
-	<div class="clear"></div>
- 
-{% if not groupmemberships %}
-<p>This group has no members</p>
-{% else %}
-This group currently has {{ count_members  }} member{{ count_members|pluralize }}.
+    <h2>Group Contact</h2>
+    <div class="group-section">
+        {% if group.email_recipient %}
+            <p>Emails regarding activity in this group will be sent to: </p>
+            <p>{{ group.email_recipient }}</p>
+        {% else %}
+            <p>There is no email recipient set for this group.  <a href="{% url group.edit group.slug %}">Edit group.</a></p>
+        {% endif %}
+    </div>
 
-<table width="100%" class="gm-table">
-<tr>
-<th width="30%" align="left" class="thead">Member</th>
-<th width="30%" align="left" class="thead">Role</th>
-<th width="40%" class="thead">&nbsp;</th>
-</tr>
-{% has_perm user user_groups.change_group group as can_edit %}
-{% has_perm user user_groups.delete_group group as can_delete %}
-   
-{% for gm in groupmemberships %}
-	<tr class="group-member-wrap{% cycle ' row1' ' row2' %}">
-	<td>
-      	<a href="{{ gm.member.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }})</a>
-   </td>
-   <td>{{ gm.role }}</td>   	
-      	
-    <td> 
-    {% if can_edit %} 
-      	<span class="edit"><a href="{% url group.edituser group.slug gm.member.id %}">Edit</a></span>
-     {% endif %}
-     
-     {% if can_delete %} 
-      	<span class="delete"><a href="{% url group.deleteuser group.slug gm.member.id %}">Delete</a></span>
- 
-     <!-- delete-member form -->
-		<form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">
-			<input type="hidden" name="action" value="delete">
-		</form>
-	{% endif %}
-	</td> 
-	</tr>
-{% endfor %}
-
-</table>
-
-
-{% endif %}
-
+    <h2>Group Members</h2>
+    {% if not groupmemberships %}
+    <p>This group has no members</p>
+    {% else %}
+    {% autopaginate groupmemberships 150 %}
+    {% paginate %}
+    <div class="group-member-list">
+    {% for gm in groupmemberships %}
+        <div class="group-member {% cycle 'gray' '' %}">
+         <a href="{{ gm.member.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }})</a>
+         {% if can_edit %}
+            &nbsp;<span class="edit"><a href="{% url group.edituser group.slug gm.member.id %}">Edit</a></span>
+         {% endif %}
+         {% if can_delete %}
+            &nbsp;<span class="delete"><a href="{% url group.deleteuser group.slug gm.member.id %}">Delete</a></span>
+         <!-- delete-member form -->
+            <form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">
+                <input type="hidden" name="action" value="delete">
+            </form>
+        {% endif %}
+        </div>
+    {% endfor %}
+    </div>
+    {% paginate %}
+    {% endif %}
+    </div>
 </div>
 
 <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
