@@ -6,6 +6,7 @@ from django.template.defaultfilters import stringfilter
 from django.utils import formats
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
+from django.contrib.auth.models import AnonymousUser
 
 register = Library()
 
@@ -98,6 +99,8 @@ def order_by(queryset, args):
 @register.filter_function
 def in_group(user, group):
     if group:
+        if isinstance(user, AnonymousUser):
+            return False
         return group in [dict['pk'] for dict in user.group_set.values('pk')]
     else:
         return False
@@ -213,5 +216,15 @@ def obfuscate_email(email, linktext=None, autoescape=None):
     return mark_safe(rotten_link)
 obfuscate_email.needs_autoescape = True
 
-
+@register.filter_function
+def split_str(s, args):
+    """
+    Split a string using the python string split method
+    """
+    if args:
+        if isinstance(s, str):
+            splitter = args[1]
+            return s.split(splitter)
+        return s
+    return s
     
