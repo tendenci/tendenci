@@ -304,10 +304,9 @@ AUTHNET_POST_URL = "https://test.authorize.net/gateway/transact.dll"
 AUTHNET_MD5_HASH_VALUE = ''
 
 # First Data
-FIRSTDATA_POST_URL = 'https://www.linkpointcentral.com/lpc/servlet/lppay'
-#FIRSTDATA_POST_URL = 'https://www.staging.linkpointcentral.com'
-#FIRSTDATA_POST_URL = 'https://www.staging.yourpay.com/lpcentral/servlet/lppay'
-#FIRSTDATA_POST_URL = 'https://test.ipg-online.com/connect/gateway/processing'
+FIRSTDATA_POST_URL = 'https://secure.linkpt.net/lpcentral/servlet/lppay' # latest version
+#FIRSTDATA_POST_URL = 'https://www.linkpointcentral.com/lpc/servlet/lppay'
+#FIRSTDATA_POST_URL = 'https://www.staging.linkpointcentral.com/lpc/servlet/lppay' # test
 
 MERCHANT_LOGIN = ""
 MERCHANT_TXN_KEY = ""
