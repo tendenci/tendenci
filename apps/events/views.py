@@ -966,7 +966,7 @@ def registrant_export(request, event_id):
         ('country', 'country'),
         ('date', 'create_dt'),
     ])
-    registrant_lookups = [v for k, v in registrant_mappings.items()]
+    registrant_lookups = registrant_mappings.values()
 
     # Append the heading to the list of values that will
     # go into the excel sheet
