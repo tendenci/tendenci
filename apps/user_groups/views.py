@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import date
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render_to_response
@@ -8,9 +9,9 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.contrib import messages
+from django.http import HttpResponse
 
 from user_groups.models import Group, GroupMembership
 from user_groups.forms import GroupForm, GroupMembershipForm, GroupPermissionForm
@@ -49,7 +50,7 @@ def group_search(request, template_name="user_groups/search.html"):
     
 def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
-    
+
     if not has_perm(request.user,'user_groups.view_group',group): raise Http403
     
     log_defaults = {
@@ -62,7 +63,7 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     }
     EventLog.objects.log(**log_defaults)
     
-    groupmemberships = GroupMembership.objects.filter(group=group).order_by('sort_order')
+    groupmemberships = GroupMembership.objects.filter(group=group).order_by('member__last_name')
     #members = group.members.all()
     count_members = len(groupmemberships)
     
@@ -388,3 +389,66 @@ def users_added_report(request, kind):
                                'site': Site.objects.get_current(),
                                'date_range': (from_date, to_date)}, 
                               context_instance=RequestContext(request))
+
+def group_member_export(request, group_slug):
+    """
+    Export all group members for a specific group
+    """
+    group = get_object_or_404(Group, slug=group_slug)
+
+    # if they can edit it, they can export it
+    if not has_perm(request.user,'user_groups.change_group', group):
+        raise Http403
+
+    import xlwt
+    from ordereddict import OrderedDict
+    from decimal import Decimal
+
+    # create the excel book and sheet
+    book = xlwt.Workbook(encoding='utf8')
+    sheet = book.add_sheet('Group Members')
+
+    # the key is what the column will be in the
+    # excel sheet. the value is the database lookup
+    # Used OrderedDict to maintain the column order
+    group_mappings = OrderedDict([
+        ('group_id','group__pk'),
+        ('first_name', 'member__first_name'),
+        ('last_name', 'member__last_name'),
+        ('email', 'member__email'),
+        ('is_active', 'member__is_active'),
+        ('date','create_dt'),
+    ])
+    group_lookups = group_mappings.values()
+
+    # Get all the members
+    group_memberships = group.groupmembership_set.all().order_by('member__last_name')
+    values_list = []
+    values_list = list(group_memberships.values_list(*group_lookups))
+
+    # Append the heading to the list of values that will
+    # go into the excel sheet
+    values_list.insert(0, group_mappings.keys())
+
+    # excel date styles
+    default_style = xlwt.Style.default_style
+    datetime_style = xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm')
+    date_style = xlwt.easyxf(num_format_str='mm/dd/yyyy')
+
+    if values_list:
+        # Write the data enumerated to the excel sheet
+        for row, row_data in enumerate(values_list):
+            for col, val in enumerate(row_data):
+                # styles the date/time fields
+                if isinstance(val, datetime):
+                    style = datetime_style
+                elif isinstance(val, date):
+                    style = date_style
+                else:
+                    style = default_style
+                sheet.write(row, col, val, style=style)
+
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=group_%s_member_export.xls' % group.pk
+    book.save(response)
+    return response
