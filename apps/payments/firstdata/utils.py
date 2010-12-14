@@ -88,13 +88,32 @@ def firstdata_thankyou_processing(request, response_d, **kwargs):
     return payment
         
 def payment_update_firstdata(request, response_d, payment, **kwargs):
+    payment.company = response_d.get('bcompany', '')
+    payment.address = response_d.get('baddr1', '')
+    payment.zip = response_d.get('bzip', '')
+    payment.city = response_d.get('bcity', '')
+    payment.state = response_d.get('bstate', '')
+    payment.country = response_d.get('bcountry', '')
+    payment.phone = response_d.get('phone', '')
+    sname = response_d.get('sname', '')
+    if sname:
+        name_list = sname.split(' ')
+        if len(name_list) >= 2:
+            payment.ship_to_first_name = name_list[0]
+            payment.ship_to_last_name = ' '.join(name_list[1:])
+    payment.ship_to_address = response_d.get('saddr1', '')
+    payment.ship_to_city = response_d.get('scity', '')
+    payment.ship_to_state = response_d.get('sstate', '')
+    payment.ship_to_country = response_d.get('scountry', '')
+    
     payment.status_detail = (response_d.get('status', '')).lower()
     
     if payment.status_detail == 'approved':
-        payment.response_code = 1
-        payment.response_subcode = 1
-        payment.response_reason_code = 1
+        payment.response_code = '1'
+        payment.response_subcode = '1'
+        payment.response_reason_code = '1'
         payment.response_reason_text = response_d.get('approval_code', '')
+        payment.trans_id = response_d.get('approval_code', '')
     else:
         payment.response_code = 0
         payment.response_reason_code = 0
