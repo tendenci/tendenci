@@ -100,7 +100,32 @@
   	margin: 1em 0;
   }
 
-  
+/* Group View Page */
+.t .group-view h2 {
+    margin: 10px 0 10px 0;
+}
+
+.t .group-view .group-section {
+    padding: 10px 0 10px 0;
+    border-bottom: 1px solid #CCC;
+}
+
+.t .group-view .group-section p {
+    margin: 5px;
+}
+
+.t .group-view .group-member-list {
+    padding: 5px;
+}
+
+.t .group-view .group-member-list .group-member {
+    padding: 6px 0 6px 3px;
+}
+
+.t .group-view .group-member-list .gray {
+    background-color: #EEE;
+}
+
  /* Groups Add/Edit
  ------------------------- */
 
