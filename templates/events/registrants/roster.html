@@ -171,7 +171,7 @@
 
 <div class='event-info'>
 	<h1>{{ event.title }} - Registrant Roster</h1>
-    <div><a href="{% url event.registrant.export event.pk %}">Export All Registrants</a></div>
+    <div><a href="{% url event.registrant.export event.pk %}">Export Confirmed Registrants</a></div>
 	<h3>{{ event.place.address }} {{ event.place.city_state|join:", "}} {{ event.place.zip }}</h3>
 	<div id="event-time">{{ event.start_dt|date }} {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}</div>
 </div>
