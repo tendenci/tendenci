@@ -984,7 +984,9 @@ def registrant_export(request, event_id):
         # loop through all the registrations and append the output
         # of values_list django method to the values_list list
         for registration in registrations:
-            registrants = registration.registrant_set.all().values_list(*registrant_lookups)
+            registrants = registration.registrant_set.all()
+            registrants = registrants.exclude(cancel_dt__isnull=False)
+            registrants = registrants.values_list(*registrant_lookups)
             for registrant in registrants:
                 values_list.append(registrant)
 
