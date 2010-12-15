@@ -580,10 +580,13 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
 def photoset_details(request, id, template_name="photos/photo-set/details.html"):
     """ View photos in photo set """
 
-    photo_set = get_object_or_404(PhotoSet, id=id)
-    photos = photo_set.image_set.all().order_by('date_added', 'id')
+    # check photo-set permissions
+    photo_sets = PhotoSet.objects.search('id:%s' % id, user=request.user)
+    if not photo_sets:
+        raise Http404
 
-#    photos = Image.objects.search('photo_set_id:%s' % photo_set.pk)
+    photo_set = photo_sets.best_match().object
+    photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user)
 
     EventLog.objects.log(**{
         'event_id' : 991500,
