@@ -78,11 +78,8 @@
     {% for gm in groupmemberships %}
         <div class="group-member {% cycle 'gray' '' %}">
          <a href="{{ gm.member.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }})</a>
-         {% if can_edit %}
-            &nbsp;<span class="edit"><a href="{% url group.edituser group.slug gm.member.id %}">Edit</a></span>
-         {% endif %}
          {% if can_delete %}
-            &nbsp;<span class="delete"><a href="{% url group.deleteuser group.slug gm.member.id %}">Delete</a></span>
+            &nbsp;<span class="delete"><a href="{% url group.deleteuser group.slug gm.member.id %}">Remove</a></span>
          <!-- delete-member form -->
             <form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">
                 <input type="hidden" name="action" value="delete">
