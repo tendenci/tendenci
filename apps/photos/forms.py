@@ -31,7 +31,6 @@ class PhotoEditForm(TendenciBaseForm):
         fields = (
             'title',
             'caption',
-            'is_public',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -45,7 +44,6 @@ class PhotoEditForm(TendenciBaseForm):
                       'fields': [
                           'title',
                           'caption',
-                          'is_public',
                           'tags',
                       ], 'legend': '',
                   }),
