@@ -24,7 +24,7 @@ def get_event_by_id(id, **kwargs):
     except AttributeError:
         return None
         
-    event['event_name'] = event['event_name'].replace('&amp;', '&')
+    event['event_name'] = event['event_name'].replace('&amp;', '&').replace('&apos;', "'")
     event['event_type'] = node.event_type.string
     event['unique_event_id'] = node.unique_event_id.string
     
@@ -80,7 +80,7 @@ def get_event_by_id(id, **kwargs):
     # description
     event['description'] = node.description.string
     if event['description']:
-        event['description'] = event['description'].replace('&amp;', '&')
+        event['description'] = event['description'].replace('&amp;', '&').replace('&apos;', "'")
         event['description'] = event['description'].replace('&lt;', '<')
         event['description'] = event['description'].replace('&gt;', '>')
     else:
