@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
@@ -47,6 +48,11 @@ def details(request, id, set_id=0, template_name="photos/details.html"):
 def photo(request, id, set_id=0, template_name="photos/details.html"):
     """ photo details """
 
+    # check photo set permissions first
+    photo_set_sqs = PhotoSet.objects.search('id:%s' % set_id, user=request.user)
+    if not photo_set_sqs:
+        raise Http403
+
     try:
         sqs = Image.objects.search('id:%s' % id, user=request.user)
         photo = sqs.best_match().object
@@ -55,18 +61,6 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
         # or the image does not exist
         # i assume does not exist
         raise Http404
-
-#    photo = get_object_or_404(Image, id=id)
-
-    # permissions
-#    if not has_perm(request.user,'photos.view_image',photo):
-#        raise Http403
-
-#    # if private
-#    if not photo.is_public:
-#        # if no permission; raise 404 exception
-#        if not photo.check_perm(request.user,'photos.view_image'):
-#            raise Http403
 
     EventLog.objects.log(**{
         'event_id' : 990500,
@@ -396,7 +390,8 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     """ View latest photo set """
 
     query = request.GET.get('q', None)
-    photo_sets = PhotoSet.objects.search(query)
+    photo_sets = PhotoSet.objects.search(query, user=request.user)
+    photo_sets = photo_sets.order_by('-update_dt')
 
     log_defaults = {
         'event_id' : 991400,
@@ -588,28 +583,16 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     photo_set = get_object_or_404(PhotoSet, id=id)
     photos = photo_set.image_set.all().order_by('date_added', 'id')
 
-    if not has_perm(request.user,'photos.view_photoset',photo_set):
-        raise Http403
+#    photos = Image.objects.search('photo_set_id:%s' % photo_set.pk)
 
-    log_defaults = {
+    EventLog.objects.log(**{
         'event_id' : 991500,
         'event_data': '%s (%d) viewed by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
         'description': '%s viewed' % photo_set._meta.object_name,
         'user': request.user,
         'request': request,
         'instance': photo_set,
-    }
-    EventLog.objects.log(**log_defaults)
-
-
-    # TODO: re-evaluate private permission setting
-    # use tendenci permission system (not photologues)
-#    # if private; set private message
-#    if photo_set.publish_type == 2:
-#        # if no permission; raise 404 exception
-#        if not photo_set.check_perm(request.user,'photos.view_photoset'):
-#            raise Http404 # raise 404 exception
-#        request.user.message_set.create(message=unicode(_("This photo set is currently in private mode.")))
+    })
 
     return render_to_response(template_name, {
         "photos": photos,

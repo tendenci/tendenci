@@ -30,21 +30,36 @@ def user_sqs(sqs, **kwargs):
 
     return sqs.filter(q)
 
+def impersonation(user):
+    # check to see if there is impersonation
+    if hasattr(user,'impersonated_user'):
+        if isinstance(user.impersonated_user, User):
+            user = user.impersonated_user
+
+    return user
+
 class PhotoSetManager(Manager):
     def search(self, query=None, *args, **kwargs):
         """
-            Uses Haystack to query. 
-            Returns a SearchQuerySet
+        Use Django Haystack search index
+        Returns a SearchQuerySet object
         """
-        from photos.models import PhotoSet
         sqs = SearchQuerySet()
-        
-        if query: 
-            sqs = sqs.filter(content=sqs.query.clean(query))
+        user = kwargs.get('user', AnonymousUser())
+        user = impersonation(user)
+
+        if query:
+            sqs = sqs.auto_query(sqs.query.clean(query))
+
+        if is_admin(user):
+            sqs = sqs.all() # admin
         else:
-            sqs = sqs.all()
+            if user.is_anonymous():
+                sqs = anon_sqs(sqs) # anonymous
+            else:
+                sqs = user_sqs(sqs, user=user) # user
         
-        return sqs.models(PhotoSet).order_by('-update_dt')
+        return sqs.models(self.model)
 
 class PhotoManager(Manager):
     def search(self, query=None, *args, **kwargs):
@@ -53,12 +68,8 @@ class PhotoManager(Manager):
         Returns a SearchQuerySet object
         """
         sqs = SearchQuerySet()
-        user = kwargs.get('user', AnonymousUser)
-        
-        # check to see if there is impersonation
-        if hasattr(user,'impersonated_user'):
-            if isinstance(user.impersonated_user, User):
-                user = user.impersonated_user
+        user = kwargs.get('user', AnonymousUser())
+        user = impersonation(user)
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
