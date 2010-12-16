@@ -37,6 +37,7 @@ urlpatterns = patterns('',
     url(r'^set/delete/(?P<id>\d+)$', 'photos.views.photoset_delete', name='photoset_delete'),
     # /photos/set/latest/
     url(r'^$', 'photos.views.photoset_view_latest', name='photoset_latest'),
+    url(r'^sets/$', 'photos.views.photoset_view_latest', name='photoset_latest'),
     url(r'^set/latest/$', 'photos.views.photoset_view_latest', name='photoset_latest'),
     # /photos/set/23/
     url(r'^set/(?P<id>\d+)/$', 'photos.views.photoset_details', name="photoset_details"),
