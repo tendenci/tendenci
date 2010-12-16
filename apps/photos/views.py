@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
+from django.contrib import messages
 
 from photologue.models import *
 from photos.models import Image, Pool, PhotoSet
@@ -199,12 +200,13 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
 
                 photo = form.save(commit=False)
 
-                # set up user permission
+                # user permission
                 photo.allow_user_view, photo.allow_user_edit = form.cleaned_data['user_perms']
-
-                # remove all permissions on the object
+                # remove permissions
                 ObjectPermission.objects.remove_all(photo)
+                # group permissions
                 ObjectPermission.objects.assign(form.cleaned_data['group_perms'], photo)
+                # group permissions
                 ObjectPermission.objects.assign(photo.creator, photo)
                 
                 photo.save() 
@@ -437,8 +439,8 @@ def photos_batch_add(request, photoset_id=0):
             uploaded_file = request.FILES[field_name]
 
             # use file to create title; remove extension
-            clean_filename = uploaded_file.name[::-1].split(".", 1)[1][::-1]
-            request.POST.update({'title': clean_filename, })
+            filename, extension = os.path.splitext(uploaded_file.name)
+            request.POST.update({'title': filename, })
 
             # get photo-set-id through post parameters
             # get unicode and convert to type integer
@@ -459,29 +461,30 @@ def photos_batch_add(request, photoset_id=0):
                 photo.creator = request.user
                 photo.member = request.user
                 photo.safetylevel = 3
+                photo.allow_anonymous_view = True
 
-                photo.save()
+                photo.save() # get pk
 
                 # assign creator permissions
                 ObjectPermission.objects.assign(photo.creator, photo)
 
                 photo.save()
-    
-                log_defaults = {
+
+                EventLog.objects.log(**{
                     'event_id' : 990100,
                     'event_data': '%s (%d) added by %s' % (photo._meta.object_name, photo.pk, request.user),
                     'description': '%s added' % photo._meta.object_name,
                     'user': request.user,
                     'request': request,
                     'instance': photo,
-                }
-                EventLog.objects.log(**log_defaults) 
+                }) 
 
                 # add to photo set if photo set is specified
                 if photoset_id:
                     photo_set = get_object_or_404(PhotoSet, id=photoset_id)
                     photo_set.image_set.add(photo)
-    
+
+                # serialize queryset
                 data = serializers.serialize("json", Image.objects.filter(id=photo.id))
     
                 # returning a response of "ok" (flash likes this)
@@ -520,6 +523,8 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
             'is_public',
             'owner',
             'safetylevel',
+            'allow_anonymous_view',
+            'status',
             'status_detail',
         ),
         extra=0
@@ -550,6 +555,8 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
 
             photo_set = PhotoSet.objects.get(pk=photoset_id)
             PhotoSetIndex(PhotoSet).update_object(photo_set)
+
+            messages.add_message(request, messages.INFO, 'Photo changes saved')
 
         else:
             print photo_formset.errors
