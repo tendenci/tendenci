@@ -448,6 +448,7 @@ def photos_batch_add(request, photoset_id=0):
                 'owner': request.user.id,
                 'owner_username': str(request.user),
                 'creator_username': str(request.user),
+                'status': True,
                 'status_detail': 'active',
             })
             photo_form = PhotoUploadForm(request.POST, request.FILES, user=request.user)
@@ -508,7 +509,21 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
     from django.forms.models import modelformset_factory
     from photos.search_indexes import PhotoSetIndex
 
-    PhotoFormSet = modelformset_factory(Image, exclude=('title_slug', 'creator_username', 'owner_username'), extra=0)
+    PhotoFormSet = modelformset_factory(
+        Image,
+        can_delete=True,
+        exclude=(
+            'title_slug',
+            'creator_username',
+            'owner_username',
+            'photoset',
+            'is_public',
+            'owner',
+            'safetylevel',
+            'status_detail',
+        ),
+        extra=0
+    )
 
     if request.method == "POST":
         photo_formset = PhotoFormSet(request.POST)
