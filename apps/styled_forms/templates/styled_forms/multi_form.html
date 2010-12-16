@@ -5,7 +5,7 @@
 {% if form.errors.values %}
 <div class="errors">
 There were some problems in the form. Please review. Thanks!
-{% if form.fieldsets %}
+{% if form.fieldsets.fielsets %}
 	{% for fieldset in form.fieldsets %}
 		{% for field in fieldset %}
 			{% if field.errors %}
@@ -32,7 +32,7 @@ There were some problems in the form. Please review. Thanks!
 {% if form.label %}
 	<div class="form-label">{{ form.label }}</div>
 {% endif %}
-{% if form.fieldsets %}
+{% if form.fieldsets.fieldsets %}
 	{% for fieldset in form.fieldsets %}
 	  {% if fieldset.boundfields %}
 	  <fieldset class="{{ fieldset.classes }}">
@@ -50,21 +50,21 @@ There were some problems in the form. Please review. Thanks!
 		        <div class="{{ field.auto_id }}">
 		        	{% if field|is_checkbox %}
 		            	<div class="checkbox">
-		               		{% if field.errors %}         
+		               		{% if field.errors %}
 		                    <div class="error">
 		                        {% for error in field.errors %}
 		                        <p>{{ error }}</p>
 		                        {% endfor %}
 		                    </div>
-		                    {% endif %}  
+		                    {% endif %}
 		                    <div class="field">
 		                        {{ field }}
-		                    </div> 
+		                    </div>
 		                    <div class="label{% if field.field.required %} required{% endif %}">
 		                        {{ field.label_tag }}
-		                    </div> 
+		                    </div>
 		                    {% if field.help_text %}
-		                    <div class="help-text">{{ field.help_text }}</div>   
+		                    <div class="help-text">{{ field.help_text }}</div>
 		                    {% endif %}
 		                </div>
 		                <div style="clear: both"><!-- IE7 --></div>
@@ -78,18 +78,18 @@ There were some problems in the form. Please review. Thanks!
 		                    <p>{{ error }}</p>
 		                    {% endfor %}
 		                </div>
-		                {% endif %}   
+		                {% endif %}
 		                <div class="field">
 		                    {{ field }}
-		                </div>  
+		                </div>
 		                {% if field.help_text %}
-		                <div class="help-text">{{ field.help_text }}</div>   
+		                <div class="help-text">{{ field.help_text }}</div>
 		                {% endif %}
 		            {% endif %}
-		         </div>       
+		         </div>
 		    </div>
 		{% endif %}
-		{% endfor %}   	
+		{% endfor %}
 	  </fieldset>
 	  {% endif %}
 	{% endfor %}
@@ -102,21 +102,21 @@ There were some problems in the form. Please review. Thanks!
 	        <div class="{{ field.auto_id }}">
 	        	{% if field|is_checkbox %}
 	            	<div class="checkbox">
-	               		{% if field.errors %}         
+	               		{% if field.errors %}
 	                    <div class="error">
 	                        {% for error in field.errors %}
 	                        <p>{{ error }}</p>
 	                        {% endfor %}
 	                    </div>
-	                    {% endif %}  
+	                    {% endif %}
 	                    <div class="field">
 	                        {{ field }}
-	                    </div> 
+	                    </div>
 	                    <div class="label{% if field.field.required %} required{% endif %}">
 	                        {{ field.label_tag }}
-	                    </div> 
+	                    </div>
 	                    {% if field.help_text %}
-	                    <div class="help-text">{{ field.help_text }}</div>   
+	                    <div class="help-text">{{ field.help_text }}</div>
 	                    {% endif %}
 	                </div>
 	                <div style="clear: both"><!-- IE7 --></div>
@@ -130,17 +130,17 @@ There were some problems in the form. Please review. Thanks!
 	                    <p>{{ error }}</p>
 	                    {% endfor %}
 	                </div>
-	                {% endif %}   
+	                {% endif %}
 	                <div class="field">
 	                    {{ field }}
-	                </div>  
+	                </div>
 	                {% if field.help_text %}
-	                <div class="help-text">{{ field.help_text }}</div>   
+	                <div class="help-text">{{ field.help_text }}</div>
 	                {% endif %}
 	            {% endif %}
-	         </div>       
+	         </div>
 	    </div>
 	{% endif %}
-	{% endfor %}   
+	{% endfor %}
 {% endif %}
 {% endfor %}
