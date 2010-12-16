@@ -3,7 +3,7 @@
 {% if form.errors.values %}
 <div class="errors">
 There were some problems in the form. Please review. Thanks!
-{% if form.fieldsets %}
+{% if form.fieldsets.fieldsets %}
 	{% for fieldset in form.fieldsets %}
 		{% for field in fieldset %}
 			{% if field.errors %}
@@ -25,7 +25,7 @@ There were some problems in the form. Please review. Thanks!
 </div>
 {% endif %}
 
-{% if form.fieldsets %}
+{% if form.fieldsets.fieldsets %}
 	{% for fieldset in form.fieldsets %}
 	  {% if fieldset.boundfields %}
 	  <fieldset class="{{ fieldset.classes }}">
