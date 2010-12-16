@@ -287,7 +287,6 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 
 @login_required
 def add(request, form_class=EventForm, template_name="events/add.html"):
-
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
 
