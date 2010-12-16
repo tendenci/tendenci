@@ -51,10 +51,10 @@ def index(request, id=None, template_name="events/view.html"):
         )
 
         
-        try: speaker = event.speaker_set.all()[0]
+        try: speaker = event.speaker_set.all().order_by('pk')[0]
         except: speaker = None
 
-        try: organizer = event.organizer_set.all()[0]
+        try: organizer = event.organizer_set.all().order_by('pk')[0]
         except: organizer = None
 
         return render_to_response(template_name, {
@@ -148,9 +148,9 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         speaker.save()
 
     # tried get_or_create(); but get a keyword argument :(
-    try: # look for a speaker
+    try: # look for an organizer
         organizer = event.organizer_set.all()[0]
-    except: # else: create a speaker
+    except: # else: create an organizer
         organizer = Organizer()
         organizer.save()
         organizer.event = [event]
@@ -205,6 +205,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     organizer = form_organizer.save(commit=False)                   
                     organizer.event = [event]
                     organizer.save()
+
+                    print "organizer.pk", organizer.pk
 
                 # registration configuration validation
                 form_regconf = Reg8nEditForm(request.POST, instance=event.registration_configuration, prefix='regconf')
