@@ -511,6 +511,7 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
     template_name="photos/batch-edit.html"):
     from django.forms.models import modelformset_factory
     from photos.search_indexes import PhotoSetIndex
+    photo_set = None
 
     PhotoFormSet = modelformset_factory(
         Image,
