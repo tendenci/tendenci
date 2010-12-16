@@ -259,6 +259,11 @@ div.gallery-photo-thumb img {
 
 /*= photo batch-edit
 -------------------------------- */
+.batch-edit-form {
+    width: 95%;
+}
+
+
 table.photo-form {
 	margin: 10px 0;
 	width: 800px;
@@ -302,7 +307,7 @@ table.photo-form select {
 }
 
 .edit-wrap {
-	width: 60%;
+	width: 45%;
 	background-color: white;
 	border: 1px solid silver;
 	padding: 20px;
@@ -344,6 +349,17 @@ table.photo-form select {
 
 .tags-wrap input {
 	width: 80%;
+}
+
+.delete-wrap {
+    margin-top: 10px;
+}
+.delete-wrap input {
+    float: left;
+    margin: 0;
+}
+.delete-wrap label {
+    margin-left: 5px;
 }
 
 .public-wrap {

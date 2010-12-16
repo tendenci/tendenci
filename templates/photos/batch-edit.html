@@ -18,7 +18,7 @@
 
 		<h1>Bulk edit photos</h1>
 
-        <form method="POST" action="">
+        <form method="POST" action="" class="batch-edit-form">
     
             <div class="side-panel">
         
@@ -74,16 +74,9 @@
                             <div class="label">{{ photo_form.tags.label_tag }}</div>
                             <div class="field">{{ photo_form.tags }}</div>
                         </div>
-                        <div class="public-wrap">
-                            <div class="label">{{ photo_form.is_public.label_tag }}</div>
-                            <div class="field">{{ photo_form.is_public }}</div>
-                        </div>
-                        <div class="safetylevel-wrap">
-                            {{ photo_form.safetylevel }}
-                        	{{ photo_form.owner.label_tag }}
-                            {{ photo_form.owner }}
-							{{ photo_form.status_detail.label_tag }}
-                            {{ photo_form.status_detail }}
+                        <div class="delete-wrap">
+                            <div class="field">{{ photo_form.DELETE }}</div>
+                            <div class="label">{{ photo_form.DELETE.label_tag }}</div>
                         </div>
                     </div>
                 </div>
