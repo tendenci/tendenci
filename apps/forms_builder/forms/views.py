@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
+from django.utils.encoding import smart_str
 
 from base.http import Http403
 from forms_builder.forms.forms import FormForForm, FormForm
@@ -63,7 +64,9 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
     form_instance = get_object_or_404(Form, pk=id)
     
     if not has_perm(request.user,'forms.change_form',form_instance):
-        raise Http403    if request.method == "POST":
+        raise Http403
+
+    if request.method == "POST":
         form = form_class(request.POST, instance=form_instance, user=request.user)
         if form.is_valid():           
             form_instance = form.save(commit=False)
@@ -101,7 +104,8 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
     form_instance = get_object_or_404(Form, id=id)
     
     if not has_perm(request.user,'forms.add_form',form_instance):
-        raise Http403
+        raise Http403
+
     form_class=inlineformset_factory(Form, Field, extra=3)
     
     if request.method == "POST":
@@ -146,7 +150,8 @@ def delete(request, id, template_name="forms/delete.html"):
     
 @login_required
 def entries(request, id, template_name="forms/entries.html"):
-    form = get_object_or_404(Form, pk=id)
+    form = get_object_or_404(Form, pk=id)
+
     if not has_perm(request.user,'forms.change_form',form):
         raise Http403
 
@@ -176,7 +181,8 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
     
     # check permission
     if not has_perm(request.user,'forms.view_form',entry.form):
-        raise Http403
+        raise Http403
+
     return render_to_response(template_name, {'entry':entry}, 
         context_instance=RequestContext(request))
 
@@ -231,7 +237,7 @@ def entries_export(request, id):
         # get the header for headers for the csv
         headers.append('submitted on')
         for field in entries[0].fields.all():
-            headers.append(field.field.label)
+            headers.append(smart_str(field.field.label))
         writer.writerow(headers)
         
         # write out the values
@@ -243,9 +249,7 @@ def entries_export(request, id):
                     file_path = join(settings.MEDIA_ROOT,field.value)
                     archive_name = join('files',field.value)
                     zip.write(file_path, archive_name, zipfile.ZIP_DEFLATED)
-                    
-                values.append(field.value)
-        
+                values.append(smart_str(field.value))        
             writer.writerow(values)        
         
         # add the csv file to the zip, close it, and set the response

@@ -2,9 +2,9 @@ from django.contrib import admin
 from django.conf import settings
 
 from corporate_memberships.models import CorporateMembershipType
-from corporate_memberships.models import CorpApp, CorpAppPage, CorpAppSection, CorpField, CorpAppField
-from corporate_memberships.forms import CorporateMembershipTypeForm, CorpAppPageForm, CorpAppSectionForm, \
-                                        CorpAppFieldForm, CorpAppForm
+from corporate_memberships.models import CorpApp, CorpPage, CorpSection, CorpField, CorpAppField
+from corporate_memberships.forms import CorporateMembershipTypeForm, CorpPageForm, CorpSectionForm, \
+                                        CorpFieldForm, CorpAppForm
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'renewal_price', 'membership_type',  
@@ -38,44 +38,48 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
         
         return instance
 
-class CorpAppPageAdmin(admin.ModelAdmin):
+class CorpPageAdmin(admin.ModelAdmin):
     list_display = ['order', 'title']
-    form = CorpAppPageForm
+    form = CorpPageForm
 
     class Media:
         js = (
             '%sjs/admin/RelatedObjectLookups_cma.js' % settings.STATIC_URL,
         )
 
-admin.site.register(CorpAppPage, CorpAppPageAdmin)
+admin.site.register(CorpPage, CorpPageAdmin)
   
-class CorpAppSectionAdmin(admin.ModelAdmin):
+class CorpSectionAdmin(admin.ModelAdmin):
     list_display = ['label', 'admin_only']
-    form = CorpAppSectionForm
+    form = CorpSectionForm
     
     class Media:
         js = (
             '%sjs/admin/RelatedObjectLookups_cma.js' % settings.STATIC_URL,
         )
 
-admin.site.register(CorpAppSection, CorpAppSectionAdmin)
+admin.site.register(CorpSection, CorpSectionAdmin)
 
-class CorpAppFieldAdmin(admin.ModelAdmin):
+class CorpFieldAdmin(admin.ModelAdmin):
     list_display = ['label', 'field_name', 'field_type', 'choices', 'required', 'visible', 'admin_only']
     fieldsets = (
         (None, {'fields': ('label', 'field_name', 'field_type', 'choices', 'field_layout',
                 ('required', 'no_duplicates', 'visible', 'admin_only'), 'size', 'default_value',
                 'help_text', 'css_class')}),
     )
-    form = CorpAppFieldForm
+    form = CorpFieldForm
     #ordering = ['id']
+    
+    class Media:
+        js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL, 
+              "%sjs/corpfield.js" % settings.STATIC_URL,)
 
-admin.site.register(CorpAppField, CorpAppFieldAdmin)
+admin.site.register(CorpField, CorpFieldAdmin)
 
 
 class FieldInline(admin.TabularInline):
 #class FieldInline(admin.StackedInline):
-    model = CorpField
+    model = CorpAppField
     extra = 0
     #raw_id_fields = ("page", 'section', 'field') 
   
@@ -83,11 +87,11 @@ class CorpAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'use_captcha', 'require_login', 'status_detail']
     list_filter = ['name', 'status_detail']
     
-    fieldsets = (
-        (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 'notes')}),
-        ('Other Options', {'fields': (
-            ('use_captcha', 'require_login'), 'status', 'status_detail')}),
-    )
+    #fieldsets = (
+    #    (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 'notes')}),
+    #    ('Other Options', {'fields': (
+    #        ('use_captcha', 'require_login'), 'status', 'status_detail')}),
+    #)
     
     class Media:
         js = (
@@ -103,18 +107,80 @@ class CorpAppAdmin(admin.ModelAdmin):
     
     #radio_fields = {"corp_memb_type": admin.VERTICAL}
     
+    def add_view(self, request, form_url='', extra_context=None):
+        self.inline_instances = []
+        return super(CorpAppAdmin, self).add_view(request, form_url,
+                                              extra_context) 
+    
+    def change_view(self, request, object_id, extra_context=None):
+        self.inlines = [FieldInline]
+        self.inline_instances = []
+        for inline_class in self.inlines:
+            inline_instance = inline_class(self.model, self.admin_site)
+            self.inline_instances.append(inline_instance)
+        return super(CorpAppAdmin, self).change_view(request, object_id,
+                                              extra_context)
+         
+    def get_fieldsets(self, request, obj=None):
+        if obj and obj.id:
+            return  (
+                        (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 'notes')}),
+                        ('Other Options', {'fields': (
+                            ('use_captcha', 'require_login'), 'status', 'status_detail')}),
+                    ) 
+        else:
+            return (
+                        (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 'notes')}),
+                        ('Other Options', {'fields': (
+                            ('use_captcha', 'require_login'), 'status', 'status_detail')}),
+                        ('Form Fields', {'fields':(), 
+                                         'description': 'You will have the chance to add or manage the form fields later on editing.'}),
+                    )
+
+    
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
+        set_default_fields = False
          
         if not change:
             instance.creator = request.user
             instance.creator_username = request.user.username
             instance.owner = request.user
             instance.owner_username = request.user.username
+            set_default_fields = True
  
         # save the object
         instance.save()
         
+        if set_default_fields:
+            # set default fields to the app
+            default_fields_d = {'Company Details': ['name', 'address', 'address2', 
+                                                    'city', 'state', 'zipcode',
+                                                    'phone', 'website'],
+                                'Membership Details': ['corporate_membership_type'], 
+                                'Admin Only': [],
+                                'Payment Details': ['payment_method'],
+                                'Representatives': ['dues_rep']}
+            
+            i = 0
+            try:
+                page = CorpPage.objects.get(id=1)
+            except CorpPage.DoesNotExist:
+                page = None
+            for key in default_fields_d.keys():
+                if default_fields_d[key]:
+                    try:
+                        section = CorpSection.objects.get(label=key)
+                    except CorpSection.DoesNotExist:
+                        section = None
+            
+                    fields = CorpField.objects.filter(field_name__in=default_fields_d[key])
+            
+                    for field in fields:
+                        i = i + 1
+                        f = CorpAppField(cma=instance, page=page, section=section, field=field, order=i)
+                        f.save()
+                        
         form.save_m2m()
         
         return instance
