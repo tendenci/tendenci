@@ -1,6 +1,6 @@
 from time import strptime, strftime
 
-from django.forms import fields
+from django.forms import fields, ValidationError
 from django.db.models import CharField
 from django.utils.translation import ugettext_lazy as _
 
@@ -60,8 +60,11 @@ class SplitDateTimeField(fields.MultiValueField):
         """
         if data_list:
             if not (data_list[0] and data_list[1]):
-                raise forms.ValidationError("Field is missing data.")
-            input_time = strptime("%s" % (data_list[1]), "%I:%M %p")
-            datetime_string = "%s %s" % (data_list[0], strftime('%H:%M', input_time))
+                raise ValidationError("Field is missing data.")
+            try:
+                input_time = strptime("%s" % (data_list[1]), "%I:%M %p")
+                datetime_string = "%s %s" % (data_list[0], strftime('%H:%M', input_time))
+            except:
+                raise ValidationError("Time Format is incorrect. Must be Hour:Minute AM|PM")
             return datetime_string
         return None
