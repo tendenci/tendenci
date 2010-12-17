@@ -1,5 +1,6 @@
 {% load tagging_tags %}
 
+id:{{ object.pk }}
 {% firstof object.name "Untitled" %}
 by {{ object.creator }}
 by {{ object.object.creator.get_profile.name }}
