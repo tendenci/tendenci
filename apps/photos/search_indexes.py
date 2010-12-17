@@ -61,11 +61,11 @@ class PhotoIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
-    
+
     # for rss
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
-    
+
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view and obj.status==1 and obj.status_detail=='active'
         

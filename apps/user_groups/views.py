@@ -402,29 +402,49 @@ def group_member_export(request, group_slug):
 
     import xlwt
     from ordereddict import OrderedDict
-    from decimal import Decimal
+    from django.db import connection
 
     # create the excel book and sheet
     book = xlwt.Workbook(encoding='utf8')
     sheet = book.add_sheet('Group Members')
-
+    
     # the key is what the column will be in the
     # excel sheet. the value is the database lookup
     # Used OrderedDict to maintain the column order
     group_mappings = OrderedDict([
-        ('group_id','group__pk'),
-        ('first_name', 'member__first_name'),
-        ('last_name', 'member__last_name'),
-        ('email', 'member__email'),
-        ('is_active', 'member__is_active'),
-        ('date','create_dt'),
+        ('user_id', 'au.id'),
+        ('first_name', 'au.first_name'),
+        ('last_name', 'au.last_name'),
+        ('email', 'au.email'),
+        ('receives email', 'pp.direct_mail'),
+        ('company', 'pp.company'),
+        ('address', 'pp.address'),
+        ('address2', 'pp.address2'),
+        ('city', 'pp.city'),
+        ('state', 'pp.state'),
+        ('zipcode', 'pp.zipcode'),
+        ('country', 'pp.country'),
+        ('phone', 'pp.phone'),
+        ('is_active', 'au.is_active'),
+        ('date', 'gm.create_dt'),
     ])
-    group_lookups = group_mappings.values()
+    group_lookups = ','.join(group_mappings.values())
 
-    # Get all the members
-    group_memberships = group.groupmembership_set.all().order_by('member__last_name')
-    values_list = []
-    values_list = list(group_memberships.values_list(*group_lookups))
+    # Use custom sql to fetch the rows because we need to
+    # populate the user profiles information and you
+    # cannot do that with django's ORM without using
+    # get_profile() for each user query
+    # pulling 13,000 group members can be done in one
+    # query using Django's ORM but then you need
+    # 13,000 individual queries :(
+    cursor = connection.cursor()
+    sql = "SELECT %s FROM user_groups_groupmembership gm \
+           INNER JOIN auth_user au ON (au.id = gm.member_id) \
+           LEFT OUTER JOIN profiles_profile pp \
+           on (pp.user_id = gm.member_id) WHERE group_id = %%s;"
+    sql =  sql % group_lookups
+    cursor.execute(sql, [group.pk])
+    values_list = list(cursor.fetchall())
 
     # Append the heading to the list of values that will
     # go into the excel sheet

@@ -1,9 +1,10 @@
+import re
 from datetime import datetime
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from captcha.fields import CaptchaField
 
+from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, TypeColorSet
 from perms.utils import is_admin
@@ -11,8 +12,7 @@ from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from emails.models import Email
-from django.utils.html import strip_tags
-import re
+from form_utils.forms import BetterModelForm
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -80,7 +80,7 @@ class EventForm(TendenciBaseForm):
                                  'start_dt',
                                  'end_dt',
                                  'timezone',
-                                 'type', 
+                                 'type',
                                  ],
                       'legend': ''
                       }),
@@ -93,9 +93,10 @@ class EventForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['status',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
-                    })]
+                    })
+                    ]
         
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -184,12 +185,21 @@ class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
 
-class Reg8nEditForm(forms.ModelForm):
+class Reg8nEditForm(BetterModelForm):
     label = 'Registration'
+    limit = forms.IntegerField(
+            _('Registration Limit'),
+            initial=0,
+            help_text=_("Enter the maximum number of registrants. Use 0 for unlimited registrants")
+    )
     payment_method = forms.ModelMultipleChoiceField(
         queryset=PaymentMethod.objects.all(),
         widget=forms.CheckboxSelectMultiple(),
         initial=[1,2,3]) # first three items (inserted via fixture)
+
+    early_dt = SplitDateTimeField(label=_('Early Date/Time'))
+    regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
+    late_dt = SplitDateTimeField(label=_('Late Date/Time'))
 
     def clean(self):
 
@@ -205,12 +215,23 @@ class Reg8nEditForm(forms.ModelForm):
 
         return self.cleaned_data
 
-    early_dt = SplitDateTimeField(label=_('Early Date/Time'))
-    regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
-    late_dt = SplitDateTimeField(label=_('Late Date/Time'))
-
     class Meta:
         model = RegistrationConfiguration
+
+        fieldsets = [('Registration Configuration', {
+          'fields': ['enabled',
+                     'limit',
+                     'payment_method',
+                     'early_price',
+                     'regular_price',
+                     'late_price',
+                     'early_dt',
+                     'regular_dt',
+                     'late_dt',
+                     ],
+          'legend': ''
+          })
+        ]
 
 class Reg8nForm(forms.Form):
     """

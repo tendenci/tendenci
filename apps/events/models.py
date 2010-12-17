@@ -254,8 +254,8 @@ class RegistrationConfiguration(models.Model):
     regular_dt = models.DateTimeField(_('Regular Date'))
     late_dt = models.DateTimeField(_('Late Date'))
 
-    limit = models.IntegerField(default=0)
-    enabled = models.BooleanField(default=False)
+    limit = models.IntegerField(_('Registration Limit'), default=0)
+    enabled = models.BooleanField(_('Enable Registration'),default=False)
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)

@@ -37,7 +37,6 @@ def is_admin(user):
     if hasattr(user,'impersonated_user'):
         if isinstance(user.impersonated_user, User):
             user = user.impersonated_user
-       
     if hasattr(user, 'is_admin'):
         return getattr(user, 'is_admin')
     else:

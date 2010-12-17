@@ -5,6 +5,23 @@ from photos.models import Image, PhotoSet
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 
+class PhotoAdminForm(TendenciBaseForm):
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+
+    class Meta:
+        model = Image
+        fields = (
+            'image',
+            'title',
+            'caption',
+            'tags',
+            'allow_anonymous_view',
+            'syndicate',
+            'status',
+            'status_detail',
+        )
+
 class PhotoUploadForm(TendenciBaseForm):
     
     class Meta:
@@ -31,7 +48,6 @@ class PhotoEditForm(TendenciBaseForm):
         fields = (
             'title',
             'caption',
-            'is_public',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -45,7 +61,6 @@ class PhotoEditForm(TendenciBaseForm):
                       'fields': [
                           'title',
                           'caption',
-                          'is_public',
                           'tags',
                       ], 'legend': '',
                   }),
