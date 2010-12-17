@@ -68,9 +68,9 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
     nodes = soup.findAll('event')
     for node in nodes:
         event_name =node.event_name.string
-        event_name = event_name.replace('&amp;', '&')
+        event_name = event_name.replace('&amp;', '&').replace('&apos;', "'")
         event_type = node.event_type.string
-        event_type = event_type.replace('&amp;', '&')
+        event_type = event_type.replace('&amp;', '&').replace('&apos;', "'")
         #if event_type <> u'HPL Express Events':
         start_date = node.date_range.start_date.string
         if start_date:
