@@ -118,6 +118,9 @@ class EventTypeManager(Manager):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
 
+        if query:
+            sqs = sqs.auto_query(sqs.query.clean(query))
+
         return sqs.models(self.model)
 
 class RegistrantManager(Manager):

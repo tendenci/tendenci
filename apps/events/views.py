@@ -649,6 +649,10 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     from datetime import date
     from events.utils import next_month, prev_month
 
+    if type: # redirect to /events/month/ if type does not exist
+        if not Type.objects.search('slug:%s' % type):
+            return HttpResponseRedirect(reverse('event.month'))
+
     # default/convert month and year
     if month and year:
         month, year = int(month), int(year)

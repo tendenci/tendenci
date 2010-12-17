@@ -60,6 +60,7 @@ class EventListNode(Node):
 
         day = self.day.resolve(context)
         type_slug = self.type_slug.resolve(context)
+        type = None
 
         filters = [
             'start_day:%s' % day.day,
@@ -70,7 +71,6 @@ class EventListNode(Node):
         type_sqs = Type.objects.search()
         type_sqs = type_sqs.filter(slug=type_slug)
 
-        type = None
         if type_sqs and type_sqs[0]:
             type = type_sqs[0].object
           
