@@ -12,8 +12,10 @@ FIELD_CHOICES = (
                     ("CharField", _("Text")),
                     ("CharField/django.forms.Textarea", _("Paragraph Text")),
                     ("BooleanField", _("Checkbox")),
-                    ("ChoiceField", _("Choose from a list")),
-                    ("MultipleChoiceField", _("Multi select")),
+                    ("ChoiceField", _("Choose from a list (Drop Down)")),
+                    ("ChoiceField/django.forms.RadioSelect", _("Choose from a list (Radio Buttons)")),
+                    ("MultipleChoiceField", _("Multi select (Drop Down)")),
+                    ("MultipleChoiceField/django.forms.CheckboxInput", _("Multi select (Bullets)")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
                     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
@@ -197,7 +199,7 @@ class CorpApp(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
         
-class CorpAppPage(models.Model):
+class CorpPage(models.Model):
     #cma = models.ForeignKey("CorpApp", related_name="pages")
     title = models.CharField(_("Title"), max_length=120, blank=True, null=True)
     top_instruction = models.CharField(_("Top Instruction"), max_length=500, blank=True, null=True)
@@ -213,7 +215,7 @@ class CorpAppPage(models.Model):
     def __unicode__(self):
         return 'Page #%d: %s' % (self.order, self.title)
  
-class CorpAppSection(models.Model):
+class CorpSection(models.Model):
     #cma = models.ForeignKey("CorpApp",  related_name="sections")
     #cma_page = models.ForeignKey("CorpAppPage", verbose_name=_("Page"),  
     #                             related_name="sections",
@@ -235,7 +237,7 @@ class CorpAppSection(models.Model):
         return '%s' % (self.label)
     
        
-class CorpAppField(models.Model):
+class CorpField(models.Model):
     #cma = models.ForeignKey("CorpApp", related_name="fields")
     #cma_section = models.ForeignKey("CorpAppSection", verbose_name=_("Section"), 
     #                                related_name="fields",
@@ -244,7 +246,7 @@ class CorpAppField(models.Model):
     #object_type = models.ForeignKey(ContentType, blank=True, null=True)
     label = models.CharField(_("Label"), max_length=200)
     field_name = models.CharField(_("Field Name"), max_length=30)
-    field_type = models.CharField(_("Field Type"), choices=FIELD_CHOICES, max_length=50, 
+    field_type = models.CharField(_("Field Type"), choices=FIELD_CHOICES, max_length=80, 
                                   blank=True, null=True)
     
     #order = models.IntegerField(_("Order"), default=0)
@@ -276,15 +278,15 @@ class CorpAppField(models.Model):
         return '%s' % self.label
     
     
-class CorpField(models.Model):
+class CorpAppField(models.Model):
     cma = models.ForeignKey("CorpApp", related_name="cma_fields")
-    page = models.ForeignKey("CorpAppPage", verbose_name=_("Page"),  
+    page = models.ForeignKey("CorpPage", verbose_name=_("Page"),  
                                  related_name="page_fields",
                                  blank=True, null=True)
-    section = models.ForeignKey("CorpAppSection", verbose_name=_("Section"), 
+    section = models.ForeignKey("CorpSection", verbose_name=_("Section"), 
                                     related_name="section_fields",
                                     blank=True, null=True)
-    field = models.ForeignKey("CorpAppField", verbose_name=_("Field"), 
+    field = models.ForeignKey("CorpField", verbose_name=_("Field"), 
                                     related_name="field_fields",
                                     blank=True, null=True)
     order = models.IntegerField(_("Order"), default=0)
@@ -295,7 +297,16 @@ class CorpField(models.Model):
         ordering = ('order',)
         
     def __unicode__(self):
-        return '%s' % self.field.label
+        if not self.page:
+            page_str = ''
+        else:
+            page_str = self.page.order
+        if not self.section:
+            section_str = ''
+        else:
+            section_str = self.section.label
+            
+        return 'Page: %s, Section: %s, Field: %s' % (page_str, section_str, self.field.label)
 
 
     

@@ -54,7 +54,6 @@ def get_event_by_id(id, **kwargs):
         end_time =  datetime.strptime(end_time.strip(), '%I:%M %p')
     except:
         end_time = ''
-    print end_time
      
     if not start_date:
         start_date = node.date_range.start_date.string
