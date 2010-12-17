@@ -51,10 +51,10 @@ def index(request, id=None, template_name="events/view.html"):
         )
 
         
-        try: speaker = event.speaker_set.all()[0]
+        try: speaker = event.speaker_set.all().order_by('pk')[0]
         except: speaker = None
 
-        try: organizer = event.organizer_set.all()[0]
+        try: organizer = event.organizer_set.all().order_by('pk')[0]
         except: organizer = None
 
         return render_to_response(template_name, {
@@ -148,9 +148,9 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         speaker.save()
 
     # tried get_or_create(); but get a keyword argument :(
-    try: # look for a speaker
+    try: # look for an organizer
         organizer = event.organizer_set.all()[0]
-    except: # else: create a speaker
+    except: # else: create an organizer
         organizer = Organizer()
         organizer.save()
         organizer.event = [event]
@@ -205,6 +205,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     organizer = form_organizer.save(commit=False)                   
                     organizer.event = [event]
                     organizer.save()
+
+                    print "organizer.pk", organizer.pk
 
                 # registration configuration validation
                 form_regconf = Reg8nEditForm(request.POST, instance=event.registration_configuration, prefix='regconf')
@@ -287,7 +289,6 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 
 @login_required
 def add(request, form_class=EventForm, template_name="events/add.html"):
-
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
 
@@ -472,7 +473,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
         # if the event has passed or registration deadline has passed;
         # redirect to detail page; this page explains the closed event
         if event.end_dt < datetime.now() or event.registration_configuration.late_dt < datetime.now():
-            return HttpResponseRedirect(reverse('event', args=(event_id)))
+            return HttpResponseRedirect(reverse('event', args=(event_id,)))
 
         if request.method == "POST":
             form = form_class(event_id, request.POST, user=user_account)
@@ -647,6 +648,10 @@ def cancel_registration(request, event_id=0, reg8n_id=0, hash='', template_name=
 def month_view(request, year=None, month=None, type=None, template_name='events/month-view.html'):
     from datetime import date
     from events.utils import next_month, prev_month
+
+    if type: # redirect to /events/month/ if type does not exist
+        if not Type.objects.search('slug:%s' % type):
+            return HttpResponseRedirect(reverse('event.month'))
 
     # default/convert month and year
     if month and year:
@@ -984,7 +989,9 @@ def registrant_export(request, event_id):
         # loop through all the registrations and append the output
         # of values_list django method to the values_list list
         for registration in registrations:
-            registrants = registration.registrant_set.all().values_list(*registrant_lookups)
+            registrants = registration.registrant_set.all()
+            registrants = registrants.exclude(cancel_dt__isnull=False)
+            registrants = registrants.values_list(*registrant_lookups)
             for registrant in registrants:
                 values_list.append(registrant)
 

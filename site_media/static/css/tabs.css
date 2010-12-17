@@ -52,32 +52,27 @@
 }
 
 #showh #primary a {
-	background: #ffffff;
+	background: #FFF;
 	border: none;
 	border-bottom: none;
 	background-image: url(/site_media/static/images/backgrounds/tabs.jpg);
 	background-repeat: no-repeat;
-	
-height: 21px;
+    height: 21px;
 	
 }
 
 #showh #primary a:hover {
-	margin-top: 0;
 	border-color: #666;
-	padding-bottom: 8px;
-background-image: url(/site_media/static/images/backgrounds/tabs_hover.jpg);
+    background-image: url(/site_media/static/images/backgrounds/tabs_hover.jpg);
 	background-repeat: no-repeat;
-	height: 21px;
 }
 
 #showh #secondary {
 	position: absolute;
-	margin: 0;
-	padding: 0;
-	bottom: -1.6em;
-	left: 1px;
-	width: 50em;
+	margin: 0; padding: 0;
+	top: 35px;
+    left: 0;
+	width: 60em;
 }
 
 #showh #secondary li a,#secondary li span {
@@ -121,29 +116,6 @@ height: 12px;
 }
 
 #showh #secondary li:last-child a { border: none; }
-
-
-#showh #secondarysub {
-/*	this statement was replaced with the one right
-	below it.  The bottom statement uses pixels
-	for positioning and not em.  em changes depending
-	on the size of the font being used.  -EZ 3/30/07
-
-	position: absolute;
-	margin: 0;
-	padding: 0;
-	bottom: -1.6em;
-	left: 0%;
-	width: 50em;
-	right: 0%; */
-}
-
-#showh #secondary {
-	position: absolute;
-	margin: 0; padding: 0;
-	top: 35px;
-	width: 50em;
-}
 
 #showh #secondarysub li a,#secondarysub li span {
 	width: auto;
