@@ -12,11 +12,13 @@
 <div id="showh">
 	<ul id="primary">
 	
-	<li>		
-	<a href="{% url dashboard %}" title="Tendenci Home Page">
-		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif" 
+    {% if user.is_authenticated %}
+	<li>
+	    <a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif"
 		alt="Tendenci User Home" align="top" width="34" height="15"></a>
 	</li>
+    {% endif %}
 
 	<li>
 		<span>Emails</span>
