@@ -1,0 +1,1 @@
+INSERT INTO `corporate_memberships_corppage` (`title`, `top_instruction`, `bottom_instruction`, `order`, `css_class`) VALUES ('','','',1,'');

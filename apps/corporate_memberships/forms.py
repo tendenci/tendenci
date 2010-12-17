@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from memberships.fields import PriceInput
-from models import CorporateMembershipType, CorpApp, CorpAppPage, CorpAppSection, CorpAppField
+from models import CorporateMembershipType, CorpApp, CorpPage, CorpSection, CorpField
 
 class CorporateMembershipTypeForm(forms.ModelForm):
     description = forms.CharField(label=_('Description'), max_length=500, required=False,
@@ -51,14 +51,14 @@ class CorpAppForm(forms.ModelForm):
                   'status_detail',
                   )
         
-class CorpAppPageForm(forms.ModelForm):
+class CorpPageForm(forms.ModelForm):
     top_instruction = forms.CharField(label=_('Top Instruction'), max_length=500, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     bottom_instruction = forms.CharField(label=_('Bottom Instruction'), max_length=500, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     
     class Meta:
-        model = CorpAppPage
+        model = CorpPage
         fields = (
                   'order',
                   'title',
@@ -67,12 +67,12 @@ class CorpAppPageForm(forms.ModelForm):
                   'css_class',
                   )
         
-class CorpAppSectionForm(forms.ModelForm):
+class CorpSectionForm(forms.ModelForm):
     description = forms.CharField(label=_('Description'), max_length=500, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
     
     class Meta:
-        model = CorpAppSection
+        model = CorpSection
         fields = (
                   'label',
                   'description',
@@ -80,7 +80,7 @@ class CorpAppSectionForm(forms.ModelForm):
                   'css_class',
                   )
         
-class CorpAppFieldForm(forms.ModelForm):
+class CorpFieldForm(forms.ModelForm):
     field_name = forms.RegexField(regex=r'^[\w.@+-]+$',
                                 max_length=30,
                                 widget=forms.TextInput(),
@@ -88,7 +88,7 @@ class CorpAppFieldForm(forms.ModelForm):
                                 help_text = _("No space. Less than 30 characters. Letters, digits and underscores only."))
     
     class Meta:
-        model = CorpAppField
+        model = CorpField
         fields = (
                   'label',
                   'field_name',
