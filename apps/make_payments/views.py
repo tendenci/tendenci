@@ -90,6 +90,14 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
                 return HttpResponseRedirect(reverse('make_payment.add_confirm', args=[mp.id]))
     else:
         form = form_class(request.user)
+        # check if we have the initialized amount
+        payment_amount = request.GET.get('payment_amount', 0)
+        try:
+            payment_amount = float(payment_amount)
+        except:
+            payment_amount = 0
+        if payment_amount > 0:
+            form.fields['payment_amount'].initial = payment_amount
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
     if not currency_symbol: currency_symbol = "$"

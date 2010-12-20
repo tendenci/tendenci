@@ -59,7 +59,13 @@ class FieldInline(admin.StackedInline):
     model = CorpField
     extra = 0
     form = CorpFieldForm
+    fieldsets = (
+        (None, {'fields': (('label', 'field_type'),
+        ('choices', 'field_layout'), 'size', ('required', 'visible', 'no_duplicates', 'admin_only'), 
+            'instruction', 'default_value', 'css_class', 'order')}),
+    )
     #raw_id_fields = ("page", 'section', 'field') 
+    template = "corporate_memberships/admin/stacked.html"
   
 class CorpAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'use_captcha', 'require_login', 'status_detail']
@@ -78,6 +84,7 @@ class CorpAppAdmin(admin.ModelAdmin):
             '%sjs/admin/inline_ordering2.js' % settings.STATIC_URL,
             #'%sjs/admin/RelatedObjectLookups_cma.js' % settings.STATIC_URL,
         )
+        css = {'all': ['%scss/admin/corpapp-inline.css' % settings.STATIC_URL], }
         
     inlines = [FieldInline]
     prepopulated_fields = {'slug': ('name',)}
