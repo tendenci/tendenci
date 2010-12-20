@@ -210,16 +210,16 @@ class CorpField(models.Model):
     #object_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_type = models.CharField(_("Map to"), max_length=50, blank=True, null=True)
     field_type = models.CharField(_("Field Type"), choices=FIELD_CHOICES, max_length=80, 
-                                  blank=True, null=True)
+                                  blank=True, null=True, default='CharField')
     
     order = models.IntegerField(_("Order"), default=0)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
                                 help_text="Comma separated options where applicable")
     # checkbox/radiobutton
     field_layout = models.CharField(_("Choice Field Layout"), choices=FIELD_LAYOUT_CHOICES, 
-                                    max_length=50, blank=True, null=True)
+                                    max_length=50, blank=True, null=True, default='1')
     size = models.CharField(_("Field Size"), choices=SIZE_CHOICES,  max_length=1,
-                            blank=True, null=True)
+                            blank=True, null=True, default='m')
                                   
     required = models.BooleanField(_("Required"), default=True)
     no_duplicates = models.BooleanField(_("No Duplicates"), default=False)
