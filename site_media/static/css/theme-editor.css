@@ -1,14 +1,46 @@
+table#file-editor {
+    height: 1000px;
+}
+
+table#file-editor p.prev_dir {
+    padding: 5px; 
+}
+
+table#file-editor div.pwd {
+    background-color: #EEE;
+    padding: 5px;
+}
+
 .file_attrs {
 	margin-bottom: 10px;
 }
 
-#right_files_list{
+#right_files_list {
 	margin-left: 10px;
+}
+
+#right_files_list h2 {
+    margin-bottom: 10px;
 }
 
 #right_files_list ul {
 	list-style-type: none;
-	padding-left: 0;
+	margin: 0;
+    padding: 0;
+}
+
+#right_files_list ul li {
+	margin: 0;
+    padding: 2px;
+}
+
+#right_files_list ul li.current_file {
+    background-color: #FFB;
+}
+
+#right_files_list ul li.dir_item {
+    background: url('/site_media/static/images/icons/closedFolder_16x16.gif') left center no-repeat;
+    padding: 2px 2px 2px 20px;
 }
 
 textarea{
@@ -42,9 +74,15 @@ textarea{
 	margin-top: 10px;	
 }
 
+#file_version_box h2 {
+    border-bottom: 1px solid #CCC;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+}
+
 #file_versions {
-	width:90%;
-	height:150px;
+	width: 100%;
+	height: 300px;
 	overflow: auto;
 }
 
@@ -57,4 +95,10 @@ textarea{
 }
 .archived_file{
 	margin: 3px 0;
+}
+
+input.button {
+    padding: 5px;
+    margin: 10px 0 10px 0;
+    cursor: pointer;
 }

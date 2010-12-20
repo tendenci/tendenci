@@ -8,58 +8,81 @@ from theme_editor.models import ThemeFileVersion
 template_directory = "/templates"
 style_directory = "/media/css"
 
-def get_file_content(file_path):
-    file_content = ""
-    if os.path.isfile(file_path):
-        fd = open(file_path, 'r')
-        file_content = fd.read()
+THEME_ROOT = settings.THEME_ROOT
+ALLOWED_EXTENSIONS = (
+    '.html',
+    '.css',
+    '.txt',
+    '.js'
+)
+
+def qstr_is_dir(query_string):
+    """
+    Check to see if the query string is a directory or not
+    """
+    current_dir = os.path.join(THEME_ROOT, query_string)
+    return os.path.isdir(current_dir)
+
+def qstr_is_file(query_string):
+    """
+    Check to see if the query string is a directory or not
+    """
+    current_file = os.path.join(THEME_ROOT, query_string)
+    return os.path.isfile(current_file)
+
+def get_dir_list(pwd):
+    """
+    Get a list of directories from within
+    the theme folder based on the present
+    working directory
+    """
+    dir_list = []
+    current_dir = os.path.join(THEME_ROOT, pwd)
+    if os.path.isdir(current_dir):
+        item_list = os.listdir(current_dir)
+        for item in item_list:
+            current_item = os.path.join(current_dir, item)
+            if os.path.isdir(current_item):
+                dir_list.append(os.path.join(pwd,item))
+        return sorted(dir_list)
+    return dir_list
+
+def get_file_list(pwd):
+    """
+    Get a list of files from within
+    the theme folder based on the present
+    working directory
+    """
+    file_list = []
+    current_dir = os.path.join(THEME_ROOT, pwd)
+    if os.path.isdir(current_dir):
+        item_list = os.listdir(current_dir)
+        for item in item_list:
+            current_item = os.path.join(current_dir, item)
+            if os.path.isfile(current_item):
+                if os.path.splitext(current_item)[1] in ALLOWED_EXTENSIONS:
+                    file_list.append(item)
+        return sorted(file_list)
+    return file_list
+
+def get_file_content(file):
+    """
+    Get the content from the file that selected from
+    the navigation
+    """
+    content = ''
+    current_file = os.path.join(THEME_ROOT, file)
+    if os.path.isfile(current_file):
+        fd = open(current_file, 'r')
+        content = fd.read()
         fd.close()
-    return file_content
-
-def get_file_attr(file_path):
-    file_dict = {"name":"", "type": ""}
-    if os.path.isfile(file_path):
-        (file_dir, file_name) = os.path.split(file_path)
-        file_dict["name"] = file_name
-        (file_basename, file_ext) = os.path.splitext(file_name)
-        if file_ext == ".css":
-           file_dict["type"] = "Stylesheet"
-        if file_ext == ".html":
-           file_dict["type"] = "Template"
-                
-    return file_dict
-
-def get_files_list(theme_root):
-    files_list = {"templates":[], "styles":[]}
-
-    # template list
-    template_folder_path = theme_root + template_directory
-    tmp_files_list = os.listdir(template_folder_path)
-    for item in tmp_files_list:
-        if os.path.isfile(os.path.join(template_folder_path, item)):
-            link = '<a href=\"%s?file=%s/%s">%s</a>' % (reverse('theme_editor'),
-                                                        template_directory,
-                                                        item,
-                                                        item)
-            files_list["templates"].append(link)
-   
-    # style list
-    style_folder_path = theme_root + style_directory
-    tmp_files_list = os.listdir(style_folder_path)
-    for item in tmp_files_list:
-        if os.path.isfile(os.path.join(style_folder_path, item)):
-            (base, ext) = os.path.splitext(item)
-            if ext == ".css":
-                link = '<a href=\"%s?file=%s/%s">%s</a>' % (reverse('theme_editor'),
-                                                            style_directory,
-                                                            item,
-                                                            item)
-                files_list["styles"].append(link)
-                
-    return files_list
+    return content
 
 def archive_file(request, relative_file_path):
-    file_path = (os.path.join(settings.THEME_ROOT, relative_file_path)).replace("\\", "/")
+    """
+    Archive the file into the database if it is edited
+    """
+    file_path = os.path.join(settings.THEME_ROOT, relative_file_path)
     if os.path.isfile(file_path):
         (file_dir, file_name) = os.path.split(file_path)
         fd = open(file_path, 'r')
