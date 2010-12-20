@@ -1,3 +1,4 @@
+// sort tabular inline fields
 jQuery(function($) {
 	
         $('div.inline-group').sortable({

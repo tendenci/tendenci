@@ -2,9 +2,8 @@ from django.contrib import admin
 from django.conf import settings
 
 from corporate_memberships.models import CorporateMembershipType
-from corporate_memberships.models import CorpApp, CorpPage, CorpSection, CorpField, CorpAppField
-from corporate_memberships.forms import CorporateMembershipTypeForm, CorpPageForm, CorpSectionForm, \
-                                        CorpFieldForm, CorpAppForm
+from corporate_memberships.models import CorpApp, CorpField
+from corporate_memberships.forms import CorporateMembershipTypeForm, CorpFieldForm, CorpAppForm
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'renewal_price', 'membership_type',  
@@ -38,49 +37,28 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
         
         return instance
 
-class CorpPageAdmin(admin.ModelAdmin):
-    list_display = ['order', 'title']
-    form = CorpPageForm
-
-    class Media:
-        js = (
-            '%sjs/admin/RelatedObjectLookups_cma.js' % settings.STATIC_URL,
-        )
-
-admin.site.register(CorpPage, CorpPageAdmin)
-  
-class CorpSectionAdmin(admin.ModelAdmin):
-    list_display = ['label', 'admin_only']
-    form = CorpSectionForm
+#class CorpFieldAdmin(admin.ModelAdmin):
+#    list_display = ['label', 'field_name', 'field_type', 'choices', 'required', 'visible', 'admin_only']
+#    fieldsets = (
+#        (None, {'fields': ('label', 'field_name', 'field_type', 'choices', 'field_layout',
+#                ('required', 'no_duplicates', 'visible', 'admin_only'), 'size', 'default_value',
+#                'instruction', 'css_class')}),
+#    )
+#    form = CorpFieldForm
+#    #ordering = ['id']
     
-    class Media:
-        js = (
-            '%sjs/admin/RelatedObjectLookups_cma.js' % settings.STATIC_URL,
-        )
+#    class Media:
+#        js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL, 
+#              "%sjs/corpfield.js" % settings.STATIC_URL,)
 
-admin.site.register(CorpSection, CorpSectionAdmin)
-
-class CorpFieldAdmin(admin.ModelAdmin):
-    list_display = ['label', 'field_name', 'field_type', 'choices', 'required', 'visible', 'admin_only']
-    fieldsets = (
-        (None, {'fields': ('label', 'field_name', 'field_type', 'choices', 'field_layout',
-                ('required', 'no_duplicates', 'visible', 'admin_only'), 'size', 'default_value',
-                'help_text', 'css_class')}),
-    )
-    form = CorpFieldForm
-    #ordering = ['id']
-    
-    class Media:
-        js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL, 
-              "%sjs/corpfield.js" % settings.STATIC_URL,)
-
-admin.site.register(CorpField, CorpFieldAdmin)
+#admin.site.register(CorpField, CorpFieldAdmin)
 
 
-class FieldInline(admin.TabularInline):
-#class FieldInline(admin.StackedInline):
-    model = CorpAppField
+#class FieldInline(admin.TabularInline):
+class FieldInline(admin.StackedInline):
+    model = CorpField
     extra = 0
+    form = CorpFieldForm
     #raw_id_fields = ("page", 'section', 'field') 
   
 class CorpAppAdmin(admin.ModelAdmin):
@@ -97,8 +75,8 @@ class CorpAppAdmin(admin.ModelAdmin):
         js = (
             '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
             '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
-            '%sjs/admin/inline_ordering.js' % settings.STATIC_URL,
-            '%sjs/admin/RelatedObjectLookups_cma.js' % settings.STATIC_URL,
+            '%sjs/admin/inline_ordering2.js' % settings.STATIC_URL,
+            #'%sjs/admin/RelatedObjectLookups_cma.js' % settings.STATIC_URL,
         )
         
     inlines = [FieldInline]
@@ -162,24 +140,24 @@ class CorpAppAdmin(admin.ModelAdmin):
                                 'Payment Details': ['payment_method'],
                                 'Representatives': ['dues_rep']}
             
-            i = 0
-            try:
-                page = CorpPage.objects.get(id=1)
-            except CorpPage.DoesNotExist:
-                page = None
-            for key in default_fields_d.keys():
-                if default_fields_d[key]:
-                    try:
-                        section = CorpSection.objects.get(label=key)
-                    except CorpSection.DoesNotExist:
-                        section = None
-            
-                    fields = CorpField.objects.filter(field_name__in=default_fields_d[key])
-            
-                    for field in fields:
-                        i = i + 1
-                        f = CorpAppField(cma=instance, page=page, section=section, field=field, order=i)
-                        f.save()
+#            i = 0
+#            try:
+#                page = CorpPage.objects.get(id=1)
+#            except CorpPage.DoesNotExist:
+#                page = None
+#            for key in default_fields_d.keys():
+#                if default_fields_d[key]:
+#                    try:
+#                        section = CorpSection.objects.get(label=key)
+#                    except CorpSection.DoesNotExist:
+#                        section = None
+#            
+#                    fields = CorpField.objects.filter(field_name__in=default_fields_d[key])
+#            
+#                    for field in fields:
+#                        i = i + 1
+#                        f = CorpAppField(cma=instance, page=page, section=section, field=field, order=i)
+#                        f.save()
                         
         form.save_m2m()
         
