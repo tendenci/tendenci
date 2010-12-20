@@ -20,6 +20,8 @@ FIELD_CHOICES = (
                     ("FileField", _("File upload")),
                     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
                     ("DateTimeField", _("Date/time")),
+                    ("section_break", _("Section Break")),
+                    ("page_break", _("Page Break")),
                 )
 
 FIELD_LAYOUT_CHOICES = (
@@ -169,7 +171,7 @@ class CorporateMembershipArchive(models.Model):
     
 class CorpFieldEntry(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership")
-    cma_field = models.ForeignKey("CorpAppField", related_name="entries")
+    field = models.ForeignKey("CorpField", related_name="entries")
     value = models.CharField(max_length=500)
     
     
@@ -198,58 +200,19 @@ class CorpApp(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
-        
-class CorpPage(models.Model):
-    #cma = models.ForeignKey("CorpApp", related_name="pages")
-    title = models.CharField(_("Title"), max_length=120, blank=True, null=True)
-    top_instruction = models.CharField(_("Top Instruction"), max_length=500, blank=True, null=True)
-    bottom_instruction = models.CharField(_("Bottom Instruction"), max_length=500, blank=True, null=True)
-    order = models.IntegerField(_("Page #"), default=0)
-    css_class = models.CharField(_("CSS Class Name"), max_length=50, blank=True, null=True)
-    
-    class Meta:
-        verbose_name = _("Page")
-        verbose_name_plural = _("Pages")
-        ordering = ('order',)
-        
-    def __unicode__(self):
-        return 'Page #%d: %s' % (self.order, self.title)
  
-class CorpSection(models.Model):
-    #cma = models.ForeignKey("CorpApp",  related_name="sections")
-    #cma_page = models.ForeignKey("CorpAppPage", verbose_name=_("Page"),  
-    #                             related_name="sections",
-    #                             blank=True, null=True)
-    
-    label = models.CharField(_("Section Label"), max_length=120)
-    description = models.CharField(_("Description"), max_length=500, blank=True, null=True)
-    admin_only = models.BooleanField(_("Admin Only"), default=0)
-    
-    #order = models.IntegerField(_("Order"), default=0)
-    css_class = models.CharField(_("CSS Class Name"), max_length=50, blank=True, null=True)
-    
-    class Meta:
-        verbose_name = _("Section")
-        verbose_name_plural = _("Sections")
-        #ordering = ('order',)
-        
-    def __unicode__(self):
-        return '%s' % (self.label)
-    
        
 class CorpField(models.Model):
-    #cma = models.ForeignKey("CorpApp", related_name="fields")
-    #cma_section = models.ForeignKey("CorpAppSection", verbose_name=_("Section"), 
-    #                                related_name="fields",
-    #                                blank=True, null=True)
-    
-    #object_type = models.ForeignKey(ContentType, blank=True, null=True)
+    cma = models.ForeignKey("CorpApp", related_name="cma_fields")
     label = models.CharField(_("Label"), max_length=200)
-    field_name = models.CharField(_("Field Name"), max_length=30)
+    # hidden fields - field_name and object_type
+    field_name = models.CharField(_("Field Name"), max_length=30, blank=True, null=True, editable=False)
+    #object_type = models.ForeignKey(ContentType, blank=True, null=True)
+    object_type = models.CharField(_("Map to"), max_length=50, blank=True, null=True)
     field_type = models.CharField(_("Field Type"), choices=FIELD_CHOICES, max_length=80, 
                                   blank=True, null=True)
     
-    #order = models.IntegerField(_("Order"), default=0)
+    order = models.IntegerField(_("Order"), default=0)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
                                 help_text="Comma separated options where applicable")
     # checkbox/radiobutton
@@ -261,52 +224,18 @@ class CorpField(models.Model):
     required = models.BooleanField(_("Required"), default=True)
     no_duplicates = models.BooleanField(_("No Duplicates"), default=False)
     visible = models.BooleanField(_("Visible"), default=True)
-    admin_only = models.BooleanField(_("Admin Only"), default=0)
-    #editor_only = models.BooleanField(_("Editor Only"), default=0) 
+    admin_only = models.BooleanField(_("Admin Only"), default=0)   
     
-    
-    help_text = models.CharField(_("Instruction for User"), max_length=100, blank=True, null=True)
-    default_value = models.CharField(_("Predefined Value"), max_length=50, blank=True, null=True)
+    instruction = models.CharField(_("Instruction for User"), max_length=2000, blank=True, null=True)
+    default_value = models.CharField(_("Predefined Value"), max_length=100, blank=True, null=True)
     css_class = models.CharField(_("CSS Class Name"), max_length=50, blank=True, null=True)
     
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        #ordering = ('order',)
-        
-    def __unicode__(self):
-        return '%s' % self.label
-    
-    
-class CorpAppField(models.Model):
-    cma = models.ForeignKey("CorpApp", related_name="cma_fields")
-    page = models.ForeignKey("CorpPage", verbose_name=_("Page"),  
-                                 related_name="page_fields",
-                                 blank=True, null=True)
-    section = models.ForeignKey("CorpSection", verbose_name=_("Section"), 
-                                    related_name="section_fields",
-                                    blank=True, null=True)
-    field = models.ForeignKey("CorpField", verbose_name=_("Field"), 
-                                    related_name="field_fields",
-                                    blank=True, null=True)
-    order = models.IntegerField(_("Order"), default=0)
-    
-    class Meta:
-        verbose_name = _("Form Field")
-        verbose_name_plural = _("Form Fields")
         ordering = ('order',)
         
     def __unicode__(self):
-        if not self.page:
-            page_str = ''
-        else:
-            page_str = self.page.order
-        if not self.section:
-            section_str = ''
-        else:
-            section_str = self.section.label
-            
-        return 'Page: %s, Section: %s, Field: %s' % (page_str, section_str, self.field.label)
-
+        return '%s' % self.label
 
     
