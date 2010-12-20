@@ -8,17 +8,19 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
-
+<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 {% endblock %}
         
 {% block body %}
-<h1 class="file-editor-header">{% trans "Theme Editor" %}</h1>
-<div class="file_attrs"><big><b><span id="file_type">{{ file_dict.type }}</span></b> (<span id="file_name">{{ file_dict.name }}</span>)</big></div>
-        <table width="100%">
+<h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %}</h1>
+{% if current_file %}
+<div class="file_attrs"><big><b>Currently Editing</b> (<span id="file_name">{{ pwd }}/{{ current_file }}</span>)</big></div>
+{% endif %}
+        <table id="file-editor" width="100%">
         <tr>
         	<td width="80%">
             <form class="uniForm" method="POST" name="edit" action="">
-                {% if file_form.content.errors %}<div>{{ file_form.content.errors }}</div>{% endif %}
+                {% if file_form.content.errors and current_file %}<div>{{ file_form.content.errors }}</div>{% endif %}
 					 <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
    					{{ file_form.rf_path }}
 				
@@ -46,18 +48,40 @@
         </td>
         <td width="20%" valign="top">
        		<div id="right_files_list">
-       			<h3>Styles</h3>
-                <ul class="files_list">
-                    {% for afile in files_list.styles %}
-                        <li>{{ afile|safe }}</li>
-                    {% endfor %}
-                </ul>  
-                <h3>Templates</h3>
-                <ul class="files_list">   
-                    {% for afile in files_list.templates %}
-                        <li>{{ afile|safe }}</li>
+               <h2>Choose a folder or file:</h2>
+               {%  if pwd %}
+               <div class="pwd" title="{{ pwd }}">
+               {% if pwd|length > 20  %}
+                   <p>in ...{{ pwd|slice:"-20:" }}</p>
+               {% else %}
+                   <p>in {{ pwd }}</p>
+               {% endif %}
+               </div>
+               {% endif %}
+               {% if prev_dir %}
+                   <p class="prev_dir">
+                       <a href="{% url theme_editor %}?file={{ prev_dir }}#to-editor">&laquo;&nbsp;back to {{ prev_dir_name }}</a>
+                   </p>
+               {% endif %}
+               {% if dirs %}
+               <ul class="dir_list">   
+                    {% for dir in dirs %}
+                        <li class="dir_item"><a href="{% url theme_editor %}?file={{ dir }}/#to-editor">{{ dir|basename|safe }}</a></li>
                     {% endfor %}
                </ul>
+               {%  endif %}
+               {%  if files %}
+               <ul class="files_list">
+                    {% for file in files %}
+                        <li {% if current_file == file %}class="current_file"{% endif %}>
+                            <a href="{% url theme_editor %}?file={{ pwd }}/{{ file }}#to-editor">{{ file|safe }}</a>
+                        </li>
+                    {% endfor %}
+               </ul>
+               {% endif %}
+               {% if not files and not dirs %}
+               <p>No editable files</p>
+               {% endif %}
            </div>
       </td>
       </tr>
@@ -103,5 +127,12 @@ function open_archive(id)
 	}
 	
 }
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
+<script type="text/javascript">
+    $('table#file-editor div.pwd').tipsy({
+		gravity: 's',
+		live: true,
+	});
 </script>
 {% endblock %}
