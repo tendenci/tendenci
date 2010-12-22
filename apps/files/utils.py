@@ -25,6 +25,11 @@ def build_image(file, size):
     image = Image.open(file.file.path) # get image
     image = image.resize(size, Image.ANTIALIAS) # resize image
 
+    # handle infamous error
+    # IOError: cannot write mode P as JPEG
+    if image.mode != "RGB":
+        image = image.convert("RGB")
+
     # mission: get binary
     output = StringIO()
     image.save(output, "JPEG", quality=100)
