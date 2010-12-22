@@ -1,6 +1,5 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, Http404
-from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,15 +7,21 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.contrib import messages
+from django.forms.models import modelformset_factory
+from django.core.urlresolvers import reverse
+from django.db.models.query import QuerySet
 
-from photologue.models import *
-from photos.models import Image, Pool, PhotoSet
-from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 from base.http import Http403
 from perms.models import ObjectPermission
 from perms.utils import has_perm
 from event_logs.models import EventLog
+
+#from photologue.models import *
 from photos.utils import dynamic_image
+from photos.search_indexes import PhotoSetIndex
+from photos.models import Image, Pool, PhotoSet
+from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
+
 
 def details(request, id, set_id=0, template_name="photos/details.html"):
     """ show the photo details """
@@ -507,11 +512,11 @@ def photos_batch_add(request, photoset_id=0):
              },
             context_instance=RequestContext(request))
 
-def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
-    template_name="photos/batch-edit.html"):
-    from django.forms.models import modelformset_factory
-    from photos.search_indexes import PhotoSetIndex
-    photo_set = None
+def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.html"):
+    """ change multiple photos with one "save button" click """
+    photo_set = get_object_or_404(PhotoSet, id=photoset_id)
+    if not photo_set.check_perm(request.user, 'photos.change_photoset'):
+        raise Http404
 
     PhotoFormSet = modelformset_factory(
         Image,
@@ -534,65 +539,29 @@ def photos_batch_edit(request, photoset_id=None, form_class=PhotoEditForm,
     if request.method == "POST":
         photo_formset = PhotoFormSet(request.POST)
         if photo_formset.is_valid():
+            photo_formset.save()
 
-            photos = photo_formset.save(commit=False)
-            for photo in photos:
-
-                photo.member = request.user
-                photo.safetylevel = 1
-                photo.save()
-
-                log_defaults = {
+            # event logging
+            for photo in photo_formset.changed_objects:
+                EventLog.objects.log(**{
                     'event_id' : 990200,
-                    'event_data': '%s (%d) edited by %s' % (photo._meta.object_name, photo.pk, request.user),
+                    'event_data': 'photo (%s) edited by %s' % (photo.pk, request.user),
                     'description': '%s edited' % photo._meta.object_name,
                     'user': request.user,
                     'request': request,
                     'instance': photo,
-                }
-                EventLog.objects.log(**log_defaults)
-     
-            photo_formset.save_m2m()
-
-            photo_set = PhotoSet.objects.get(pk=photoset_id)
-            PhotoSetIndex(PhotoSet).update_object(photo_set)
+                })
 
             messages.add_message(request, messages.INFO, 'Photo changes saved')
-
-        else:
-            print photo_formset.errors
-
-        if photoset_id:
-            return HttpResponseRedirect(reverse('photoset_details', args=[photoset_id]))  
-        else: return HttpResponseRedirect(reverse('photos'))
+            return HttpResponseRedirect(reverse('photoset_details', args=(photoset_id,)))  
 
     else:
+        # if not request.method == POST
 
-        if photoset_id:
-            photo_set = get_object_or_404(PhotoSet, id=photoset_id)
-
-            # if permission; get photos for editing
-            photo_set = get_object_or_404(PhotoSet, id=photoset_id)
-            if photo_set.check_perm(request.user, 'photos.change_photoset'):
-                # my photos in this photo set
-                photo_queryset = Image.objects.filter(Q(photoset=photoset_id, safetylevel=3, member=request.user))
-                photo_queryset = photo_queryset.order_by("-date_added")
-
-                if photo_queryset.count() <= 0:
-                    # my photos in this photo set
-                    photo_queryset = Image.objects.filter(Q(photoset=photoset_id, member=request.user))
-                    photo_queryset = photo_queryset.order_by("-date_added")                    
-
-            else: raise Http404
-        else:
-            # if permission; get photos for editing
-            if has_perm(request.user,'photos.change_photoset'):
-                # my latest uploaded photos
-                photo_queryset = Image.objects.filter(Q(safetylevel=3, member=request.user))
-                photo_queryset = photo_queryset.order_by("-date_added")[:60] # limit when pulling all
-            else: raise Http404
-
-        photo_formset = PhotoFormSet(queryset=photo_queryset)
+        # i would like to use the search index here; but it appears that
+        # the formset class only accepts a queryset; not a searchqueryset or list
+        photo_qs = Image.objects.filter(photoset=photo_set).order_by("-update_dt")
+        photo_formset = PhotoFormSet(queryset=photo_qs)
 
     return render_to_response(template_name, {
         "photo_formset": photo_formset,
@@ -609,7 +578,7 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
         raise Http404
 
     photo_set = photo_sets.best_match().object
-    photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user)
+    photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by("-update_dt")
 
     EventLog.objects.log(**{
         'event_id' : 991500,

@@ -40,10 +40,9 @@
                 </div>
             </div>
     
-            {{ photo_formset.management_form }}
-                {% autopaginate photo_formset.forms 10 %}
+                {{ photo_formset.management_form }}
                 {% for photo_form in photo_formset.forms %}
-        
+
                 <div class="edit-wrap">
     
                     {{ photo_form.id }}
@@ -84,7 +83,6 @@
                 <p>All photos have been approved, nothing to see here.</p>
             {% endfor %}
         </form>
-        {% paginate %}
 
 	</div>
 
