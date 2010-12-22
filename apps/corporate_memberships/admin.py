@@ -1,5 +1,7 @@
+import os
 from django.contrib import admin
 from django.conf import settings
+from django.utils import simplejson
 
 from corporate_memberships.models import CorporateMembershipType
 from corporate_memberships.models import CorpApp, CorpField
@@ -59,7 +61,13 @@ class FieldInline(admin.StackedInline):
     model = CorpField
     extra = 0
     form = CorpFieldForm
+    fieldsets = (
+        (None, {'fields': (('label', 'field_type'),
+        ('choices', 'field_layout'), 'size', ('required', 'visible', 'no_duplicates', 'admin_only'), 
+            'instruction', 'default_value', 'css_class', 'order')}),
+    )
     #raw_id_fields = ("page", 'section', 'field') 
+    template = "corporate_memberships/admin/stacked.html"
   
 class CorpAppAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'use_captcha', 'require_login', 'status_detail']
@@ -76,8 +84,9 @@ class CorpAppAdmin(admin.ModelAdmin):
             '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
             '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
             '%sjs/admin/inline_ordering2.js' % settings.STATIC_URL,
-            #'%sjs/admin/RelatedObjectLookups_cma.js' % settings.STATIC_URL,
+            #'%sjs/admin/corpapp.js' % settings.STATIC_URL,
         )
+        css = {'all': ['%scss/admin/corpapp-inline.css' % settings.STATIC_URL], }
         
     inlines = [FieldInline]
     prepopulated_fields = {'slug': ('name',)}
@@ -131,14 +140,19 @@ class CorpAppAdmin(admin.ModelAdmin):
         instance.save()
         
         if set_default_fields:
-            # set default fields to the app
-            default_fields_d = {'Company Details': ['name', 'address', 'address2', 
-                                                    'city', 'state', 'zipcode',
-                                                    'phone', 'website'],
-                                'Membership Details': ['corporate_membership_type'], 
-                                'Admin Only': [],
-                                'Payment Details': ['payment_method'],
-                                'Representatives': ['dues_rep']}
+            # set some default fields to the app
+            json_fields_path = os.path.join(settings.PROJECT_ROOT, "templates/corporate_memberships/regular_fields.json")
+            fd = open(json_fields_path, 'r')
+            data = ''.join(fd.read())
+            fd.close()
+            if data:
+                fields_list = simplejson.loads(data)
+                for field_d in fields_list:
+                    field_d.update({'cma':instance})
+                    f = CorpField(**field_d)
+                    f.save()
+                
+            
             
 #            i = 0
 #            try:
