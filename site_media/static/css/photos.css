@@ -513,7 +513,7 @@ h2 {
 /*= photo-set details
 -------------------------------- */
 div.gallery-photo-thumb {
-	margin: 0 5px 5px;
+	margin: 0 3px 5px;
 	float: left;
 	text-align: center;
 }
@@ -521,7 +521,7 @@ div.gallery-photo-thumb img {
 	display: block;
 }
 div.gallery-photo-thumb img {
-	padding: 3px;
+	padding: 0px;
 	border: 1px solid black;
 	background-color: white;
 }
