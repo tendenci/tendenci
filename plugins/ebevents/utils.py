@@ -92,6 +92,12 @@ def get_event_by_id(id, **kwargs):
     
     # ticket
     event['ticket_info'] = node.ticket_info.string
+    if event['ticket_info']:
+        event['ticket_info'] = event['ticket_info'].replace('&amp;', '&').replace('&apos;', "'")
+        event['ticket_info'] = event['ticket_info'].replace('&lt;', '<')
+        event['ticket_info'] = event['ticket_info'].replace('&gt;', '>')
+        event['ticket_info'] = event['ticket_info'].replace('&quot;', "'")
+   
     event['ticket_prices'] = node.ticket_prices.string
     event['ticket_sale_date'] = node.ticket_sale_date.string
     try:
@@ -107,6 +113,11 @@ def get_event_by_id(id, **kwargs):
     
     # additional info
     event['additional_info'] = node.additional_info.string
+    if event['additional_info']:
+        event['additional_info'] = event['additional_info'].replace('&amp;', '&').replace('&apos;', "'")
+        event['additional_info'] = event['additional_info'].replace('&lt;', '<')
+        event['additional_info'] = event['additional_info'].replace('&gt;', '>')
+        event['additional_info'] = event['additional_info'].replace('&quot;', "'")
     
     # picture thumb
     event['picture_thumb'] = node.picture_thumb.string
