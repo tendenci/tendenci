@@ -53,6 +53,9 @@ class CorpAppForm(forms.ModelForm):
         
 
 class CorpFieldForm(forms.ModelForm):
+    instruction = forms.CharField(label=_('Instruction for User'), max_length=500, required=False,
+                               widget=forms.Textarea(attrs={'rows':'3'}))
+    
     class Meta:
         model = CorpField
         fields = (
