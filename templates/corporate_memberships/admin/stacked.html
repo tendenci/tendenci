@@ -26,26 +26,32 @@
 	    {% endif %}
 	    {% for line in fieldset %}
 	    	
-	        <div class="form-row{% if line.errors %} errors{% endif %}{% for field in line %} {{ field.field.name }}{% endfor %}">
-	            {{ line.errors }}
-	            {% for field in line %}
-	                <div{% if not line.fields|length_is:"1" %} class="field-box"{% endif %}>
-	                    {% if field.is_checkbox %}
-	                        {{ field.field }}{{ field.label_tag }}
-	                    {% else %}
-	                        {{ field.label_tag }}
-	                        {% if field.is_readonly %}
-	                            <p>{{ field.contents }}</p>
-	                        {% else %}
-	                            {{ field.field }}
-	                        {% endif %}
-	                    {% endif %}
-	                    {% if field.field.field.help_text %}
-	                        <p class="help">{{ field.field.field.help_text|safe }}</p>
-	                    {% endif %}
-	                </div>
-	            {% endfor %}
-	        </div>
+	    	{% if inline_admin_form.original.field_name in fields_to_check and forloop.counter in excluded_lines %}
+	    	{% else %}
+		        <div class="form-row{% if line.errors %} errors{% endif %}{% for field in line %} {{ field.field.name }}{% endfor %}">
+		            {{ line.errors }}
+		            {% for field in line %}
+		            	{% if inline_admin_form.original.field_name in fields_to_check  and field.field.name in excluded_fields%}
+		            	{% else %}
+			                <div{% if not line.fields|length_is:"1" %} class="field-box"{% endif %}>
+			                    {% if field.is_checkbox %}
+			                        {{ field.field }}{{ field.label_tag }}
+			                    {% else %}
+			                        {{ field.label_tag }}
+			                        {% if field.is_readonly %}
+			                            <p>{{ field.contents }}</p>
+			                        {% else %}
+			                            {{ field.field }}
+			                        {% endif %}
+			                    {% endif %}
+			                    {% if field.field.field.help_text %}
+			                        <p class="help">{{ field.field.field.help_text|safe }}</p>
+			                    {% endif %}
+			                </div>
+		                {% endif %}
+		            {% endfor %}
+		        </div>
+	        {% endif %}
 	        
 	    	{% if forloop.first %}
 	    		<div class="inline-fields-to-toggle">
@@ -126,6 +132,17 @@
             })
         });
 
+        // collapse all fields as default
+        $('div.inline-fields-to-toggle').each(function(){
+           	if ($(this).is(':visible')){
+           		$(this).hide('slideUp');
+           		$(this).closest('div.inline-related').find('.expand-button').show();
+           		$(this).closest('div.inline-related').find('.collapse-button').hide();
+           	}
+       	});
+       	$('div.expand-all-button').show();
+       	$('div.collapse-all-button').hide();
+
         // collapse and expand buttons to toggle the fields
         $('.collapse-button').click(function(){
         	$(this).closest('div.inline-related').find('div.inline-fields-to-toggle').hide('slideUp');
@@ -191,8 +208,10 @@
 					|| ($(node).val()== "ChoiceField/django.forms.RadioSelect")
 					|| ($(node).val()== "MultipleChoiceField/django.forms.CheckboxInput")){
 				$(node).closest('fieldset').find('div.inline-fields-to-toggle .choices').show();
+				$(node).closest('fieldset').find('div.inline-fields-to-toggle .size').hide();
 			}else{
 				$(node).closest('fieldset').find('div.inline-fields-to-toggle .choices').hide();
+				$(node).closest('fieldset').find('div.inline-fields-to-toggle .size').show();
 			}
 			if (($(node).val()== "ChoiceField/django.forms.RadioSelect")
 					|| ($(node).val()== "MultipleChoiceField/django.forms.CheckboxInput")){
