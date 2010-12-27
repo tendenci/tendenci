@@ -25,6 +25,8 @@ def get_event_by_id(id, **kwargs):
         return None
         
     event['event_name'] = event['event_name'].replace('&amp;', '&').replace('&apos;', "'")
+    event['event_name'] = sfr(event['event_name'])
+   
     event['event_type'] = node.event_type.string
     event['unique_event_id'] = node.unique_event_id.string
     
@@ -113,11 +115,7 @@ def get_event_by_id(id, **kwargs):
     
     # additional info
     event['additional_info'] = node.additional_info.string
-    if event['additional_info']:
-        event['additional_info'] = event['additional_info'].replace('&amp;', '&').replace('&apos;', "'")
-        event['additional_info'] = event['additional_info'].replace('&lt;', '<')
-        event['additional_info'] = event['additional_info'].replace('&gt;', '>')
-        event['additional_info'] = event['additional_info'].replace('&quot;', "'")
+    event['additional_info'] = sfr(event['additional_info'])
     
     # picture thumb
     event['picture_thumb'] = node.picture_thumb.string
@@ -148,7 +146,22 @@ def get_event_by_id(id, **kwargs):
             event[e]= ''
             event[e + '_caption'] = ''
             
+    if event['rm']:
+        node_rm = node.rm
+        while node_rm.nextSibling.name == 'rm':
+            event['rm'] = '%s <br> %s' % (event['rm'], node_rm.nextSibling.string)
+            node_rm = node.rm.nextSibling
+            
     return event
+
+def sfr(s):
+    if s:
+        s = s.replace('&amp;', '&').replace('&apos;', "'")
+        s = s.replace('&rsquo;', "'")
+        s = s.replace('&lt;', '<')
+        s = s.replace('&gt;', '>')
+        s = s.replace('&quot;', "'")
+    return s
 
 
 def build_ical_text(event, d):
