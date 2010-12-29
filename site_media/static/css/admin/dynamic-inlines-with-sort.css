@@ -1,3 +1,29 @@
 /* To make row height of saved items same as others */
 .inline-group .tabular tr.has_original td { padding-top:0.5em; }
 .inline-group .tabular tr.has_original td.original p { display:none; }
+
+.collapse-label{
+    background-color: white;
+    padding: 10px;
+    border-bottom: 1px solid #EEE;
+}
+
+.done-btn{
+    width: 150px;
+    text-align: center;
+    padding: 3px 5px;
+    border: 1px solid #DDD;
+    border-color: #DDD #AAA #AAA #DDD;
+    background: white url("/site_media/static/admin/img/admin/nav-bg.gif") repeat-x 50% 100%;
+}
+
+.done-btn:active, .done-btn:hover{
+    background: url("/site_media/static/admin/img/admin/nav-bg-reverse.gif");
+    cursor: pointer;
+
+}
+
+.collapse-label:active, .collapse-label:hover{
+    background-color: #EEE;
+    cursor: pointer;
+}
