@@ -470,9 +470,14 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
 
         except: pass
 
-        # if the event has passed or registration deadline has passed;
-        # redirect to detail page; this page explains the closed event
-        if event.end_dt < datetime.now() or event.registration_configuration.late_dt < datetime.now():
+        bad_scenarios = [
+            event.end_dt < datetime.now(), # event has passed
+            event.registration_configuration.late_dt < datetime.now(), # registration period has passed
+            event.registration_configuration.early_dt > datetime.now(), # registration period has not started
+            event.registration_configuration.enabled == False, # registration is not enabled
+        ]
+
+        if any(bad_scenarios):
             return HttpResponseRedirect(reverse('event', args=(event_id,)))
 
         if request.method == "POST":
