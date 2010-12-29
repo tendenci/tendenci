@@ -1,0 +1,226 @@
+{% load i18n adminmedia %}
+<div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
+  <h2>{{ inline_admin_formset.opts.verbose_name_plural|title }}</h2>
+{{ inline_admin_formset.formset.management_form }}
+{{ inline_admin_formset.formset.non_form_errors }}
+
+<div class="toggle-all-button">
+		<div class="collapse-all-button">
+			<a href="javascript:;">Collapse ALL</a></div>
+		<div class="expand-all-button" style="display:none;"><a href="javascript:;">Expand ALL</a></div>
+</div>
+	
+{% for inline_admin_form in inline_admin_formset %}<div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+  <h3><b>{% if inline_admin_form.original.field_type == 'section_break' %}Section{% else %}{% if inline_admin_form.original.field_type == 'Page_break' %}Page{% else %}{{ inline_admin_formset.opts.verbose_name|title }}{% endif %}{% endif %}:</b>&nbsp;<span class="inline_label">{% if inline_admin_form.original %}{{ inline_admin_form.original }}{% else %}#{{ forloop.counter }}{% endif %}</span>
+    {% if inline_admin_form.show_url %}<a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/">{% trans "View on site" %}</a>{% endif %}
+    {% if inline_admin_formset.formset.can_delete and inline_admin_form.original and not inline_admin_form.original.object_type %}<span class="delete">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</span>{% endif %}
+  </h3>
+  {% if inline_admin_form.form.non_field_errors %}{{ inline_admin_form.form.non_field_errors }}{% endif %}
+  {% for fieldset in inline_admin_form %}
+    {#{% include "admin/includes/fieldset.html" %}#}
+    
+    <fieldset class="module aligned {{ fieldset.classes }}">
+	    {% if fieldset.name %}<h2>{{ fieldset.name }}</h2>{% endif %}
+	    {% if fieldset.description %}
+	        <div class="description">{{ fieldset.description|safe }}</div>
+	    {% endif %}
+	    {% for line in fieldset %}
+	    	
+	    	{% if inline_admin_form.original.field_name in fields_to_check and forloop.counter in excluded_lines %}
+	    	{% else %}
+		        <div class="form-row{% if line.errors %} errors{% endif %}{% for field in line %} {{ field.field.name }}{% endfor %}">
+		            {{ line.errors }}
+		            {% for field in line %}
+		            	{% if inline_admin_form.original.field_name in fields_to_check  and field.field.name in excluded_fields%}
+		            	{% else %}
+			                <div{% if not line.fields|length_is:"1" %} class="field-box"{% endif %}>
+			                    {% if field.is_checkbox %}
+			                        {{ field.field }}{{ field.label_tag }}
+			                    {% else %}
+			                        {{ field.label_tag }}
+			                        {% if field.is_readonly %}
+			                            <p>{{ field.contents }}</p>
+			                        {% else %}
+			                            {{ field.field }}
+			                        {% endif %}
+			                    {% endif %}
+			                    {% if field.field.field.help_text %}
+			                        <p class="help">{{ field.field.field.help_text|safe }}</p>
+			                    {% endif %}
+			                </div>
+		                {% endif %}
+		            {% endfor %}
+		        </div>
+	        {% endif %}
+	        
+	    	{% if forloop.first %}
+	    		<div class="inline-fields-to-toggle">
+	    	{% endif %}
+	    	{% if forloop.last %}
+	    		</div>
+	    	{% endif %}
+	        
+	    {% endfor %}
+	</fieldset>
+    
+    
+	<div class="collapse-expand-button">
+		<div class="collapse-button">
+			<a href="javascript:;">Collapse</a></div>
+		<div class="expand-button" style="display:none;"><a href="javascript:;">Expand</a></div>
+	</div>
+  {% endfor %}
+  {% if inline_admin_form.has_auto_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
+  {{ inline_admin_form.fk_field.field }}
+</div>{% endfor %}
+</div>
+
+<script type="text/javascript">
+(function($) {
+    $(document).ready(function() {
+        var rows = "#{{ inline_admin_formset.formset.prefix }}-group .inline-related";
+        var updateInlineLabel = function(row) {
+            $(rows).find(".inline_label").each(function(i) {
+                var count = i + 1;
+                $(this).html($(this).html().replace(/(#\d+)/g, "#" + count));
+            });
+        }
+        var reinitDateTimeShortCuts = function() {
+            // Reinitialize the calendar and clock widgets by force, yuck.
+            if (typeof DateTimeShortcuts != "undefined") {
+                $(".datetimeshortcuts").remove();
+                DateTimeShortcuts.init();
+            }
+        }
+        var updateSelectFilter = function() {
+            // If any SelectFilter widgets were added, instantiate a new instance.
+            if (typeof SelectFilter != "undefined"){
+                $(".selectfilter").each(function(index, value){
+                  var namearr = value.name.split('-');
+                  SelectFilter.init(value.id, namearr[namearr.length-1], false, "{% admin_media_prefix %}");
+                })
+                $(".selectfilterstacked").each(function(index, value){
+                  var namearr = value.name.split('-');
+                  SelectFilter.init(value.id, namearr[namearr.length-1], true, "{% admin_media_prefix %}");
+                })
+            }
+        }
+        var initPrepopulatedFields = function(row) {
+            row.find('.prepopulated_field').each(function() {
+                var field = $(this);
+                var input = field.find('input, select, textarea');
+                var dependency_list = input.data('dependency_list') || [];
+                var dependencies = row.find(dependency_list.join(',')).find('input, select, textarea');
+                if (dependencies.length) {
+                    input.prepopulate(dependencies, input.attr('maxlength'));
+                }
+            });
+        }
+        $(rows).formset({
+            prefix: "{{ inline_admin_formset.formset.prefix }}",
+            addText: "{% blocktrans with inline_admin_formset.opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}",
+            formCssClass: "dynamic-{{ inline_admin_formset.formset.prefix }}",
+            deleteCssClass: "inline-deletelink",
+            deleteText: "{% trans "Remove" %}",
+            emptyCssClass: "empty-form",
+            removed: updateInlineLabel,
+            added: (function(row) {
+                initPrepopulatedFields(row);
+                reinitDateTimeShortCuts();
+                updateSelectFilter();
+                updateInlineLabel(row);
+            })
+        });
+
+        // collapse all fields as default
+        $('div.inline-fields-to-toggle').each(function(){
+           	if ($(this).is(':visible')){
+           		$(this).hide('slideUp');
+           		$(this).closest('div.inline-related').find('.expand-button').show();
+           		$(this).closest('div.inline-related').find('.collapse-button').hide();
+           	}
+       	});
+       	$('div.expand-all-button').show();
+       	$('div.collapse-all-button').hide();
+
+        // collapse and expand buttons to toggle the fields
+        $('.collapse-button').click(function(){
+        	$(this).closest('div.inline-related').find('div.inline-fields-to-toggle').hide('slideUp');
+        	$(this).closest('.collapse-expand-button').find('.expand-button').show();
+        	$(this).hide();
+        });
+        $('.expand-button').click(function(){
+        	$(this).closest('div.inline-related').find('div.inline-fields-to-toggle').show('slideDown');
+        	$(this).closest('.collapse-expand-button').find('.collapse-button').show();
+        	$(this).hide();
+        });
+        $('.toggle-all-button > .collapse-all-button').click(function(){
+        	$('div.inline-fields-to-toggle').each(function(){
+            	if ($(this).is(':visible')){
+            		$(this).hide('slideUp');
+            		$(this).closest('div.inline-related').find('.expand-button').show();
+            		$(this).closest('div.inline-related').find('.collapse-button').hide();
+            	}
+        	});
+        	$('div.expand-all-button').show();
+        	$(this).hide();
+        });
+        $('.toggle-all-button > .expand-all-button').click(function(){
+        	$('div.inline-fields-to-toggle').each(function(){
+            	if ($(this).is(':hidden')){
+            		$(this).show('slideDown');
+            		$(this).closest('div.inline-related').find('.expand-button').hide();
+            		$(this).closest('div.inline-related').find('.collapse-button').show();
+            	}
+        	});
+        	$('div.collapse-all-button').show();
+        	$(this).hide();
+        });
+
+		// show / hide the inline fields accordingly based on the the field type
+        // process for all existing fields
+		$('div.inline-group > div.inline-related').not('div.inline-related:last').each(function(i) {
+			field_type_toggle($(this).find('select[id$=field_type]'));
+	    });
+		
+		$('select[id$=field_type]').change(function(){
+			field_type_toggle(this);
+		});
+        
+    });
+
+    function field_type_toggle(node)
+	{
+		if (($(node).val()== "section_break") || ($(node).val()== "page_break")){
+			// for section and page, hide all fields except admin_only, instruction and css_class
+			$(node).closest('fieldset').find('div.inline-fields-to-toggle .form-row')
+					.not('div.inline-fields-to-toggle .instruction, div.inline-fields-to-toggle .css_class, div.inline-fields-to-toggle .admin_only').each(function(){
+				$(this).hide();
+				$(node).closest('fieldset').find('div.inline-fields-to-toggle .admin_only .field-box').not('.field-box:last').hide();
+				
+			});
+			
+		}else{
+			$(node).closest('fieldset').find('div.inline-fields-to-toggle .form-row').show();
+			$(node).closest('fieldset').find('div.inline-fields-to-toggle .admin_only .field-box').not('.field-box:last').show();
+			
+			if (($(node).val()== "ChoiceField") || ($(node).val()== "MultipleChoiceField")
+					|| ($(node).val()== "ChoiceField/django.forms.RadioSelect")
+					|| ($(node).val()== "MultipleChoiceField/django.forms.CheckboxInput")){
+				$(node).closest('fieldset').find('div.inline-fields-to-toggle .choices').show();
+				$(node).closest('fieldset').find('div.inline-fields-to-toggle .size').hide();
+			}else{
+				$(node).closest('fieldset').find('div.inline-fields-to-toggle .choices').hide();
+				$(node).closest('fieldset').find('div.inline-fields-to-toggle .size').show();
+			}
+			if (($(node).val()== "ChoiceField/django.forms.RadioSelect")
+					|| ($(node).val()== "MultipleChoiceField/django.forms.CheckboxInput")){
+				$(node).closest('fieldset').find('div.inline-fields-to-toggle .field_layout .field-box:last').show();
+			}else{
+				$(node).closest('fieldset').find('div.inline-fields-to-toggle .field_layout .field-box:last').hide();
+			}
+		}
+	}	
+    
+})(django.jQuery);
+</script>

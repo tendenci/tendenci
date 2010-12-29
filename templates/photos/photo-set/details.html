@@ -23,13 +23,12 @@
 
 	<div id="photos-wrap">
         {% if photos %}
-        {% autopaginate photos 28 %}
+        {% autopaginate photos 30 %}
             <div class="thumb-row clearfix">
             	{% for photo in photos %}
                 {% with photo.object as photo %}
                 <div class="gallery-photo-thumb">
                     <a href="{% url photo photo.pk photo_set.pk %}"><img src="{{ photo.get_small_crop_url }}" alt="{{ photo.title }}"/></a>
-                    <div>From <a href="{# url profile_detail photo.member.username #}">{{ photo.member.username }}</a></div>
                 </div>
                 {% endwith %}
             	{% endfor %}

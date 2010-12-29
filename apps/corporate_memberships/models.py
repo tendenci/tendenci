@@ -1,12 +1,15 @@
 import uuid
+from django import forms
+from django.utils.importlib import import_module
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
+#from django.contrib.contenttypes.models import ContentType
 
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
 from memberships.models import MembershipType
+from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 
 FIELD_CHOICES = (
                     ("CharField", _("Text")),
@@ -114,9 +117,12 @@ class CorporateMembership(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
         
-class CorporateMembershipDuesrep(models.Model):
-    corporate_membership = models.ForeignKey("CorporateMembership", related_name="dues_rep")
+class CorporateMembershipRep(models.Model):
+    corporate_membership = models.ForeignKey("CorporateMembership", related_name="reps")
     user = models.ForeignKey(User)
+    is_dues_rep = models.BooleanField(default=0, blank=True)
+    is_member_rep = models.BooleanField(default=0, blank=True)
+    is_alternate_rep = models.BooleanField(default=0, blank=True)
     
     
 class CorporateMembershipArchive(models.Model):
@@ -170,9 +176,9 @@ class CorporateMembershipArchive(models.Model):
         super(self.__class__, self).save(*args, **kwargs)
     
 class CorpFieldEntry(models.Model):
-    corporate_membership = models.ForeignKey("CorporateMembership")
-    field = models.ForeignKey("CorpField", related_name="entries")
-    value = models.CharField(max_length=500)
+    corporate_membership = models.ForeignKey("CorporateMembership", related_name="fields")
+    field = models.ForeignKey("CorpField", related_name="field")
+    value = models.CharField(max_length=FIELD_MAX_LENGTH)
     
     
 class CorpApp(TendenciBaseModel):
@@ -189,6 +195,7 @@ class CorpApp(TendenciBaseModel):
     require_login = models.BooleanField(_("Require User Login"), default=0)
     
     class Meta:
+        permissions = (("view_corpapp","Can view corporate membership application"),)
         verbose_name = _("Corporate Membership Application")
         verbose_name_plural = _("Corporate Membership Applications")
         ordering = ('name',)
@@ -203,25 +210,25 @@ class CorpApp(TendenciBaseModel):
  
        
 class CorpField(models.Model):
-    cma = models.ForeignKey("CorpApp", related_name="cma_fields")
-    label = models.CharField(_("Label"), max_length=200)
+    cma = models.ForeignKey("CorpApp", related_name="fields")
+    label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     # hidden fields - field_name and object_type
     field_name = models.CharField(_("Field Name"), max_length=30, blank=True, null=True, editable=False)
     #object_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_type = models.CharField(_("Map to"), max_length=50, blank=True, null=True)
     field_type = models.CharField(_("Field Type"), choices=FIELD_CHOICES, max_length=80, 
-                                  blank=True, null=True)
+                                  blank=True, null=True, default='CharField')
     
     order = models.IntegerField(_("Order"), default=0)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
                                 help_text="Comma separated options where applicable")
     # checkbox/radiobutton
     field_layout = models.CharField(_("Choice Field Layout"), choices=FIELD_LAYOUT_CHOICES, 
-                                    max_length=50, blank=True, null=True)
+                                    max_length=50, blank=True, null=True, default='1')
     size = models.CharField(_("Field Size"), choices=SIZE_CHOICES,  max_length=1,
-                            blank=True, null=True)
+                            blank=True, null=True, default='m')
                                   
-    required = models.BooleanField(_("Required"), default=True)
+    required = models.BooleanField(_("Required"), default=False)
     no_duplicates = models.BooleanField(_("No Duplicates"), default=False)
     visible = models.BooleanField(_("Visible"), default=True)
     admin_only = models.BooleanField(_("Admin Only"), default=0)   
@@ -236,6 +243,45 @@ class CorpField(models.Model):
         ordering = ('order',)
         
     def __unicode__(self):
+        if self.field_name:
+            return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label
+    
+    def get_field_class(self, initial=None):
+        """
+            Generate the form field class for this field.
+        """
+        if self.label and self.id:
+            if self.field_type not in ['section_break', 'page_break']:
+                if "/" in self.field_type:
+                    field_class, field_widget = self.field_type.split("/")
+                else:
+                    field_class, field_widget = self.field_type, None
+                field_class = getattr(forms, field_class)
+                field_args = {"label": self.label, 
+                              "required": self.required,
+                              'help_text':self.instruction}
+                arg_names = field_class.__init__.im_func.func_code.co_varnames
+                if initial:
+                    field_args['initial'] = initial
+                else:
+                    if self.default_value:
+                        field_args['initial'] = self.default_value
+                if "max_length" in arg_names:
+                    field_args["max_length"] = FIELD_MAX_LENGTH
+                if "choices" in arg_names:
+                    if self.field_name not in ['corporate_membership_type', 'payment_method']:
+                        choices = self.choices.split(",")
+                        field_args["choices"] = zip(choices, choices)
+                if field_widget is not None:
+                    module, widget = field_widget.rsplit(".", 1)
+                    field_args["widget"] = getattr(import_module(module), widget)
+                    
+                return field_class(**field_args)
+        return None
+            
+            
+                    
+            
 
     

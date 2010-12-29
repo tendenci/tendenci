@@ -125,7 +125,7 @@
 	cursor: pointer;
 }
 
-/* Article View
+/* Membership details
  ------------------------- */
 .t .membership-wrap .meta, .t .membership-wrap-search .meta {
 	border: 1px solid silver;
@@ -168,7 +168,7 @@ div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
 	width: 80px;
 }
 
-/* Article Print View
+/* Membership Details (print)
  ------------------------- */
 .t-print .membership-wrap {
 	width: 8in;
@@ -200,7 +200,7 @@ div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
 	}
 }
 
-/* Article Add/Edit
+/* Membership Add/Edit
  ------------------------- */
 
 .errors {
