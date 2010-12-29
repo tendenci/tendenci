@@ -1,11 +1,10 @@
-import os
 from django.contrib import admin
 from django.conf import settings
-from django.utils import simplejson
 
 from corporate_memberships.models import CorporateMembershipType
 from corporate_memberships.models import CorpApp, CorpField
 from corporate_memberships.forms import CorporateMembershipTypeForm, CorpFieldForm, CorpAppForm
+from corporate_memberships.utils import get_corpapp_default_fields_list
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'renewal_price', 'membership_type',  
@@ -38,22 +37,6 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
         #form.save_m2m()
         
         return instance
-
-#class CorpFieldAdmin(admin.ModelAdmin):
-#    list_display = ['label', 'field_name', 'field_type', 'choices', 'required', 'visible', 'admin_only']
-#    fieldsets = (
-#        (None, {'fields': ('label', 'field_name', 'field_type', 'choices', 'field_layout',
-#                ('required', 'no_duplicates', 'visible', 'admin_only'), 'size', 'default_value',
-#                'instruction', 'css_class')}),
-#    )
-#    form = CorpFieldForm
-#    #ordering = ['id']
-    
-#    class Media:
-#        js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL, 
-#              "%sjs/corpfield.js" % settings.STATIC_URL,)
-
-#admin.site.register(CorpField, CorpFieldAdmin)
 
 
 #class FieldInline(admin.TabularInline):
@@ -91,6 +74,7 @@ class CorpAppAdmin(admin.ModelAdmin):
     inlines = [FieldInline]
     prepopulated_fields = {'slug': ('name',)}
     form = CorpAppForm
+    add_form_template = "corporate_memberships/admin/add_form.html"
     
     #radio_fields = {"corp_memb_type": admin.VERTICAL}
     
@@ -105,6 +89,20 @@ class CorpAppAdmin(admin.ModelAdmin):
         for inline_class in self.inlines:
             inline_instance = inline_class(self.model, self.admin_site)
             self.inline_instances.append(inline_instance)
+        # exclude fields for corporate_membership_type and payment_method
+        excluded_lines = [2, 3]  # exclude lines in inline field_set - 'choices', 'field_layout', 'size' 
+        excluded_fields = ['field_type', 'no_duplicates', 'admin_only']
+        fields_to_check = ['corporate_membership_type', 'payment_method']
+        if extra_context:
+            extra_context.update({
+                                  'excluded_lines': excluded_lines,
+                                  "excluded_fields":excluded_fields,
+                                  'fields_to_check': fields_to_check
+                                  })
+        else:
+            extra_context = {'excluded_lines': excluded_lines,
+                             "excluded_fields":excluded_fields,
+                             'fields_to_check': fields_to_check}
         return super(CorpAppAdmin, self).change_view(request, object_id,
                                               extra_context)
          
@@ -141,38 +139,13 @@ class CorpAppAdmin(admin.ModelAdmin):
         
         if set_default_fields:
             # set some default fields to the app
-            json_fields_path = os.path.join(settings.PROJECT_ROOT, "templates/corporate_memberships/regular_fields.json")
-            fd = open(json_fields_path, 'r')
-            data = ''.join(fd.read())
-            fd.close()
-            if data:
-                fields_list = simplejson.loads(data)
+            fields_list = get_corpapp_default_fields_list()
+            if fields_list:
                 for field_d in fields_list:
                     field_d.update({'cma':instance})
                     f = CorpField(**field_d)
                     f.save()
-                
-            
-            
-#            i = 0
-#            try:
-#                page = CorpPage.objects.get(id=1)
-#            except CorpPage.DoesNotExist:
-#                page = None
-#            for key in default_fields_d.keys():
-#                if default_fields_d[key]:
-#                    try:
-#                        section = CorpSection.objects.get(label=key)
-#                    except CorpSection.DoesNotExist:
-#                        section = None
-#            
-#                    fields = CorpField.objects.filter(field_name__in=default_fields_d[key])
-#            
-#                    for field in fields:
-#                        i = i + 1
-#                        f = CorpAppField(cma=instance, page=page, section=section, field=field, order=i)
-#                        f.save()
-                        
+                                    
         form.save_m2m()
         
         return instance

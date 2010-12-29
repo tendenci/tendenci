@@ -189,7 +189,7 @@ h1{
            {% else %}
            <h3>Tickets Website</h3>
            {% endif %}
-           <p>{{ event.ti|urlize }}</p>
+           <p>{{ event.ti|safe|urlize }}</p>
        {% endif %}
        
        {% if event.dirurl %}
@@ -199,7 +199,7 @@ h1{
            		<h3>Directions Website</h3>
            {% endif %}
            
-           <p>{{ event.dirurl|urlize }}</p>
+           <p>{{ event.dirurl|safe|urlize }}</p>
        {% endif %}
        
        {% if event.mi %}
@@ -209,7 +209,7 @@ h1{
            <h3>More Info Website</h3>
            {% endif %}
            
-           <p>{{ event.mi|urlize }}</p>
+           <p>{{ event.mi|safe|urlize }}</p>
         {% endif %}
        
        {%  if event.seatchart %}
@@ -219,7 +219,7 @@ h1{
            <h3>Seating Chart</h3>
             {% endif %}
            
-           <p>{{ event.seatchart|urlize }}</p>
+           <p>{{ event.seatchart|safe|urlize }}</p>
        {% endif %}
        
        {%  if event.rm %}
@@ -229,7 +229,7 @@ h1{
            <h3>Room</h3>
            {% endif %}
            
-           <p>{{ event.rm|urlize }}</p>
+           <p>{{ event.rm|safe|urlize }}</p>
        {% endif %}
        
        {% if event.spons %}
@@ -239,7 +239,7 @@ h1{
            <h3>Sponsored by</h3>
            {% endif %}
            
-           <p>{{ event.spons|urlize }}</p>
+           <p>{{ event.spons|safe|urlize }}</p>
        {% endif %}
        
        {% if event.parking %}
@@ -249,7 +249,7 @@ h1{
            <h3>Parking Info</h3>
            {% endif %}
            
-           <p>{{ event.parking|urlize }}</p>
+           <p>{{ event.parking|safe|urlize }}</p>
        {% endif %}
        
        {% if event.promoter %}
@@ -259,7 +259,7 @@ h1{
            <h3>Promoter</h3>
            {% endif %}
            
-           <p>{{ event.promoter|urlize }}</p>
+           <p>{{ event.promoter|safe|urlize }}</p>
        {% endif %}
        
        {% if event.presenter %}
@@ -269,7 +269,7 @@ h1{
            <h3>Presented by</h3>
            {% endif %}
            
-               <p>{{ event.presenter|urlize }}</p>
+               <p>{{ event.presenter|safe|urlize }}</p>
        {% endif %}
        
        {% if event.producer  %}
@@ -278,7 +278,7 @@ h1{
            {% else %}
            <h3>Produced by</h3>
            {% endif %}
-           <p>{{ event.producer|urlize }}</p>
+           <p>{{ event.producer|safe|urlize }}</p>
        {% endif %}
        
        {% if event.opening_act %}
@@ -288,7 +288,7 @@ h1{
            <h3>Opening Act</h3>
            {% endif %}
            
-            <p>{{ event.opening_act|urlize }}</p>
+            <p>{{ event.opening_act|safe|urlize }}</p>
          
        {% endif %}
        
@@ -311,7 +311,7 @@ h1{
            {% else %}
            <h3>Special Entertainment</h3>
            {% endif %}
-           <p>{{ event.special_ent|urlize }}</p>
+           <p>{{ event.special_ent|safe|urlize }}</p>
        {% endif %}
        
        {% if event.doorsopen %}
@@ -321,7 +321,7 @@ h1{
            <h3>Time Doors Open</h3>
            {% endif %}
            
-           <p>{{ event.doorsopen|urlize }}</p>
+           <p>{{ event.doorsopen|safe|urlize }}</p>
        {% endif %}
        
        {% if event.restr  %}
@@ -331,7 +331,7 @@ h1{
            <h3>Restrictions</h3>
            {% endif %}
            
-               <p>{{ event.restr|urlize }}</p>
+               <p>{{ event.restr|safe|urlize }}</p>
        {% endif %}
        
        {% if event.video  %}
@@ -341,7 +341,7 @@ h1{
            <h3>VIDEO</h3>
            {% endif %}
            
-               <p>{{ event.video|urlize }}</p>
+               <p>{{ event.video|safe|urlize }}</p>
        {% endif %}
        
        {%if event.audio  %}
@@ -351,7 +351,7 @@ h1{
            <h3>AUDIO</h3>
            {% endif %}
            
-               <p>{{ event.audio|urlize }}</p>
+               <p>{{ event.audio|safe|urlize }}</p>
        {% endif %}
        
        {% if event.groupsales %}
@@ -361,13 +361,13 @@ h1{
            <h3>Group Sales</h3>
            {% endif %}
            
-           <p>{{ event.groupsales|urlize }}</p>
+           <p>{{ event.groupsales|safe|urlize }}</p>
        {% endif %}
        
        
        {% if event.additional_info %}
            <h3>Additional Information</h3>
-           <p>{{ event.additional_info|urlize }}</p>
+           <p>{{ event.additional_info|safe|urlize }}</p>
        {% endif %}
                 
 
