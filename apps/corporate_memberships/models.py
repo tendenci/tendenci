@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 #from django.contrib.contenttypes.models import ContentType
+from tinymce import models as tinymce_models
 
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
@@ -15,10 +16,10 @@ FIELD_CHOICES = (
                     ("CharField", _("Text")),
                     ("CharField/django.forms.Textarea", _("Paragraph Text")),
                     ("BooleanField", _("Checkbox")),
-                    ("ChoiceField", _("Choose from a list (Drop Down)")),
-                    ("ChoiceField/django.forms.RadioSelect", _("Choose from a list (Radio Buttons)")),
+                    ("ChoiceField", _("Select One from a list (Drop Down)")),
+                    ("ChoiceField/django.forms.RadioSelect", _("Select One from a list (Radio Buttons)")),
                     ("MultipleChoiceField", _("Multi select (Drop Down)")),
-                    ("MultipleChoiceField/django.forms.CheckboxInput", _("Multi select (Bullets)")),
+                    ("MultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi select (Checkboxes)")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
                     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
@@ -103,7 +104,7 @@ class CorporateMembership(TendenciBaseModel):
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"))
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
-    cma = models.ForeignKey("CorpApp")
+    corp_app = models.ForeignKey("CorpApp")
     
     class Meta:
         verbose_name = _("Corporate Membership")
@@ -189,7 +190,13 @@ class CorpApp(TendenciBaseModel):
     authentication_method = models.CharField(_("Authentication Method"), choices=AUTH_METHOD_CHOICES, 
                                     default='admin', max_length=50, 
                                     help_text='for individuals applying under a Corporate Membership')
-    notes = models.CharField(_("Notes"), max_length=255)
+    #description = models.TextField(_("Description"),blank=True, null=True, 
+    #                               help_text='Will display at the top of the application form.')
+    description = tinymce_models.HTMLField(_("Description"),blank=True, null=True, 
+                                   help_text='Will display at the top of the application form.')
+    notes = models.TextField(_("Notes"),blank=True, null=True, 
+                                   help_text='Notes for editor. Will not display on the application form.')
+    confirmation_text = models.TextField(_("Confirmation Text"), blank=True, null=True)
    
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
     require_login = models.BooleanField(_("Require User Login"), default=0)
@@ -203,6 +210,10 @@ class CorpApp(TendenciBaseModel):
     def __unicode__(self):
         return self.name
     
+    @models.permalink
+    def get_absolute_url(self):
+        return ("corp_memb.add", [self.slug])
+    
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -210,7 +221,7 @@ class CorpApp(TendenciBaseModel):
  
        
 class CorpField(models.Model):
-    cma = models.ForeignKey("CorpApp", related_name="fields")
+    corp_app = models.ForeignKey("CorpApp", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     # hidden fields - field_name and object_type
     field_name = models.CharField(_("Field Name"), max_length=30, blank=True, null=True, editable=False)
@@ -253,6 +264,9 @@ class CorpField(models.Model):
         """
         if self.label and self.id:
             if self.field_type not in ['section_break', 'page_break']:
+                if self.field_name in ['corporate_membership_type', 'payment_method']:
+                    if not self.field_type:
+                        self.field_type = "ChoiceField/django.forms.RadioSelect"
                 if "/" in self.field_type:
                     field_class, field_widget = self.field_type.split("/")
                 else:
