@@ -46,6 +46,7 @@ class PhotoIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr='title')
     caption = indexes.CharField(model_attr='caption')
+    create_dt = indexes.DateTimeField(model_attr='create_dt')
     update_dt = indexes.DateTimeField(model_attr='update_dt')
     
     # authority fields
