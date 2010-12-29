@@ -1,9 +1,13 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from captcha.fields import CaptchaField
+from tinymce.widgets import TinyMCE
+
 from memberships.fields import PriceInput
 from models import CorporateMembershipType, CorpApp, CorpField, CorporateMembership
 from corporate_memberships.utils import get_corpapp_default_fields_list
+
 
 class CorporateMembershipTypeForm(forms.ModelForm):
     description = forms.CharField(label=_('Description'), max_length=500, required=False,
@@ -33,8 +37,19 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                   )
         
 class CorpAppForm(forms.ModelForm):
-    notes = forms.CharField(label=_('Notes'), max_length=500, required=False,
-                               widget=forms.Textarea(attrs={'rows':'3'}))
+    description = forms.CharField(required=False,
+                             widget=TinyMCE(attrs={'style':'width:70%'}, 
+                                            mce_attrs={'storme_app_label':CorpApp._meta.app_label, 
+                                                       'storme_model':CorpApp._meta.module_name.lower()}),
+                                                       help_text='Will show at the top of the application form.')
+    confirmation_text = forms.CharField(required=False,
+                             widget=TinyMCE(attrs={'style':'width:70%'}, 
+                                            mce_attrs={'storme_app_label':"confirmation_text", 
+                                                       'storme_model':"confirmation_text"}),
+                                                       help_text='Will show on the confirmation page.')
+    notes = forms.CharField(label=_('Notes'), required=False,
+                               widget=forms.Textarea(attrs={'rows':'3'}),
+                               help_text='Notes for editor. Will not display on the application form.')
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('admin hold','Admin Hold'),))
     
@@ -45,6 +60,8 @@ class CorpAppForm(forms.ModelForm):
                   'slug',
                   'corp_memb_type',
                   'authentication_method',
+                  'description',
+                  'confirmation_text',
                   'notes',
                   'use_captcha',
                   'require_login',
@@ -112,28 +129,29 @@ class CorpFieldForm(forms.ModelForm):
         return self.cleaned_data['no_duplicates']
     
     
-class CorpAppPreviewForm(forms.ModelForm):
+class CorpMembForm(forms.ModelForm):
     class Meta:
         model = CorporateMembership
-        exclude = ('cma', 'guid', 'renewal', 'invoice', 'renew_dt', 
+        exclude = ('guid', 'renewal', 'invoice', 'renew_dt', 
                    'expiration_dt', 'approved', 'approved_denied_dt',
                    'approved_denied_user', )
         
-    def __init__(self, corpapp, *args, **kwargs):
+    def __init__(self, corp_app, fields, *args, **kwargs):
         """
             Dynamically build the form fields.
         """
-        self.cma = corpapp
-        self.form_fields = corpapp.fields.filter(visible=1).order_by('order')
-        super(CorpAppPreviewForm, self).__init__(*args, **kwargs)
+        self.corp_app = corp_app
+        super(CorpMembForm, self).__init__(*args, **kwargs)
         
-        for field in self.form_fields:
+        for field in fields:
             if field.field_name:
                 field_key = field.field_name
             else:
                 field_key = "field_%s" % field.id
             
             self.fields[field_key] = field.get_field_class()
+            
+        self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
         
         
             
