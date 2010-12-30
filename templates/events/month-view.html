@@ -53,8 +53,10 @@
 						{% for event in events|slice:"2" %}
 							<div class="event-item" title="{{ event.type }}: {{ event }}" 
 								style="color:{{ event.type.fg_color }}; background-color:{{ event.type.bg_color }}">
-								<span class="time-stamp">{{ event.start_dt|date:"P" }}</span>
-								<span class="event-title">{{ event.title|slice:":15 " }}&nbsp;...</span>
+								<a href="{% url event.day day.year day.month day.day %}" 
+									class="time-stamp">{{ event.start_dt|date:"P" }}</a>
+								<a href="{% url event.day day.year day.month day.day %}" 
+									class="event-title">{{ event.title|slice:":15" }}&nbsp;...</a>
 								<a class='click-mask' href="{{ event.get_absolute_url }}"></a>
 							</div>
 						{% endfor %}
