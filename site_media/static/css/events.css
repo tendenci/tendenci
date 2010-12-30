@@ -542,6 +542,10 @@ input#id_regconf-limit {
 	position: relative;
 }
 
+.event-item a {
+    color: white;
+}
+
 .event-item .click-mask {
 	position: absolute;
 	top:0; right:0; bottom:0; left:0;
