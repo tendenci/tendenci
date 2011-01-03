@@ -1,0 +1,26 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+
+{% block title %}Corporate Membership Add Confirmation{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+     <h1>Corporate Membership Add Confirmation</h1>
+    <p>{% if corporate_membership.corp_app.confirmation_text %}
+    	{{ corporate_membership.corp_app.confirmation_text|safe }}
+    {% else %}
+    	Thank you for your submitting!
+    {% endif %}
+    </p>
+   
+    <p><a href="">View this Corporate Membership</a></p>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+
+{% endblock %}
