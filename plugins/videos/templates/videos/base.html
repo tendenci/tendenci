@@ -1,0 +1,34 @@
+{% extends "site_base.html" %}
+{% load video_tags %}
+
+{% block title %}Videos{% endblock %}
+
+{% block sidebar %}
+<form class="search" action="{% url video-search %}" method="get">
+<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+<input type="submit" value="Search" />
+</form>
+<ul>
+<li>
+	<h2>Categories</h2> 
+	<ul>
+		<li><a href="{% url video %}">All</a></li>
+		{% for cat in categories %}
+			<li><a class="{% ifequal cat video.category %}active{% endifequal %}{% ifequal cat category %}active{% endifequal %}" href="{{ cat.get_absolute_url }}">{{ cat|title }}</a></li>
+		{% endfor %}
+	</ul>
+	{% list_videos as videos_latest limit=2 %}
+	{% if videos_latest %}
+	<h2>Latest</h2>
+	<ul>
+        {% for video in videos_latest %}
+            <li>{{ video.title }}</li>
+        {% endfor %}  
+	</ul>
+	{% endif %}
+</li>
+</ul>
+{% endblock sidebar %}
+
+{% block extra_body %}
+{% endblock %}
