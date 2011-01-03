@@ -16,7 +16,7 @@ def sim_thank_you(request, payment_id, template_name='payments/authorizenet/than
                               context_instance=RequestContext(request))
     
     
-def silent_post(request, payment_id):
+def silent_post(request):
     payment = authorizenet_thankyou_processing(request, dict(request.POST.items()))
     
     now_str = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
@@ -51,7 +51,6 @@ def silent_post(request, payment_id):
     fd = open(log_path, 'w')
     fd.write(output)
     fd.close()
-    
     
     return HttpResponse('ok')
     
