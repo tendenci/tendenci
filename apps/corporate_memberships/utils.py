@@ -22,7 +22,6 @@ def get_corporate_membership_type_choices(user, corpapp):
     currency_symbol = get_setting("site", "global", "currencysymbol")
     
     for cmt in corporate_membership_types:
-        print cmt.price
         cmt_list.append((cmt.id, '%s - %s%0.2f' % (cmt.name, currency_symbol, cmt.price)))
         
     return cmt_list        
