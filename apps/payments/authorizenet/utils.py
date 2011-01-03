@@ -7,6 +7,7 @@ from forms import SIMPaymentForm
 from payments.models import Payment
 from payments.utils import payment_processing_object_updates
 from site_settings.utils import get_setting
+from event_logs.models import EventLog
 
 def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
     msg = '^'.join([settings.MERCHANT_LOGIN,
@@ -92,6 +93,24 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
     if payment.invoice.balance > 0:     # if balance==0, it means already processed
         payment_update_authorizenet(request, response_d, payment)
         payment_processing_object_updates(request, payment)
+        
+        # log an event
+        if payment.response_code == '1':
+            event_id = 282101
+            description = '%s edited - credit card approved ' % payment._meta.object_name
+        else:
+            event_id = 282102
+            description = '%s edited - credit card declined ' % payment._meta.object_name
+            
+        log_defaults = {
+            'event_id' : event_id,
+            'event_data': '%s (%d) edited by %s' % (payment._meta.object_name, payment.pk, request.user),
+            'description': description,
+            'user': request.user,
+            'request': request,
+            'instance': payment,
+        }
+        EventLog.objects.log(**log_defaults)
     return payment
         
 def payment_update_authorizenet(request, response_d, payment, **kwargs):
