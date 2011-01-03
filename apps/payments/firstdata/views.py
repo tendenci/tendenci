@@ -29,8 +29,7 @@ def thank_you(request, payment_id, template_name='payments/receipt.html'):
         }
         EventLog.objects.log(**log_defaults)
         
-    obj_d = {}
-    get_payment_object(payment, obj_d)
+    obj_d = get_payment_object(payment)
     
     if payment:
         if payment.is_approved:

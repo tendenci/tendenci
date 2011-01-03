@@ -52,7 +52,8 @@ def payment_processing_object_updates(request, payment, **kwargs):
             except Donation.DoesNotExist:
                 pass
             
-def get_payment_object(payment, obj_d):
+def get_payment_object(payment):
+    obj_d = {}
     if payment:
         if payment.invoice.invoice_object_type == 'job':
             from jobs.models import Job
@@ -90,4 +91,6 @@ def get_payment_object(payment, obj_d):
                 registration = None
                 
             obj_d['registration'] = registration
+            
+    return obj_d
             
