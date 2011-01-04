@@ -18,7 +18,7 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
     
     def get_absolute_url(self):
-        return reverse('video-category', args=[self.slug])
+        return reverse('video.category', args=[self.slug])
     
 class Video(TendenciBaseModel):
     """
@@ -42,7 +42,7 @@ class Video(TendenciBaseModel):
     
     @models.permalink
     def get_absolute_url(self):
-        return ("video-details", [self.slug])
+        return ("video.details", [self.slug])
     
     def embed_code(self):
         return get_oembed_code(self.video_url, 600, 400)

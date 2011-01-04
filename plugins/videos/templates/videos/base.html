@@ -4,7 +4,7 @@
 {% block title %}Videos{% endblock %}
 
 {% block sidebar %}
-<form class="search" action="{% url video-search %}" method="get">
+<form class="search" action="{% url video.search %}" method="get">
 <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
 <input type="submit" value="Search" />
 </form>
