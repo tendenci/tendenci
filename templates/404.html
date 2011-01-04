@@ -14,6 +14,12 @@
     <p>You may be able to find what your looking for by</p>
     <ul>
     	<li><a href="{% url home %}">Visiting the Home Page</a></li>
-        <li><a href="{% url haystack_search %}">Searching the site</a></li>
+        <li>
+            Searching the site:&nbsp;&nbsp;
+            <form method="get" action="{% haystack search %}">
+            <input type="text" value="" size="18" maxlength="50" name="q" />
+            <input type="submit" value="Search" name="submit" />
+            </form>
+        </li>
     </ul>   
 {% endblock %}
