@@ -80,8 +80,7 @@ def receipt(request, id, guid, template_name='payments/receipt.html'):
     if payment.guid <> guid:
         raise Http403
 
-    obj_d = {}
-    get_payment_object(payment, obj_d)
+    obj_d = get_payment_object(payment)
         
     return render_to_response(template_name,{'payment':payment, 'obj_d': obj_d},
                               context_instance=RequestContext(request))
