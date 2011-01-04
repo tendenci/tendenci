@@ -1,33 +1,56 @@
+import os
+from datetime import datetime
 from django.shortcuts import render_to_response
+from django.http import HttpResponse
+from django.conf import settings
 from django.template import RequestContext
 from payments.authorizenet.utils import authorizenet_thankyou_processing
 from payments.utils import get_payment_object
-from event_logs.models import EventLog
 
 def sim_thank_you(request, payment_id, template_name='payments/authorizenet/thankyou.html'):
     payment = authorizenet_thankyou_processing(request, dict(request.POST.items()))
-    
-    # log an event for payment edit
-    if payment:
-        if payment.response_code == '1':
-            event_id = 282101
-            description = '%s edited - credit card approved ' % payment._meta.object_name
-        else:
-            event_id = 282102
-            description = '%s edited - credit card declined ' % payment._meta.object_name
-            
-        log_defaults = {
-            'event_id' : event_id,
-            'event_data': '%s (%d) edited by %s' % (payment._meta.object_name, payment.pk, request.user),
-            'description': description,
-            'user': request.user,
-            'request': request,
-            'instance': payment,
-        }
-        EventLog.objects.log(**log_defaults)
         
-    obj_d = {}
-    get_payment_object(payment, obj_d)
+    obj_d = get_payment_object(payment)
     
     return render_to_response(template_name,{'payment':payment, 'obj_d': obj_d}, 
                               context_instance=RequestContext(request))
+    
+    
+def silent_post(request):
+    payment = authorizenet_thankyou_processing(request, dict(request.POST.items()))
+    
+    now_str = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
+    # log the post
+    output = """
+                %s \n
+                Referrer: %s \n
+                Remote Address: %s \n
+                Content-Type: %s \n
+                User-Agent: %s \n\n
+                Query-String: \n %s \n
+                Remote-Addr: %s \n\n
+                Remote-Host: %s \n
+                Remote-User: %s \n
+                Request-Method: %s \n
+            """ % (now_str, request.META.get('HTTP_REFERER', ''),
+                   request.META.get('REMOTE_ADDR', ''),
+                   request.META.get('CONTENT_TYPE', ''),
+                   request.META.get('HTTP_USER_AGENT', ''),
+                   request.META.get('QUERY_STRING', ''),
+                   request.META.get('REMOTE_ADDR', ''),
+                   request.META.get('REMOTE_HOST', ''),
+                   request.META.get('REMOTE_USER', ''),
+                   request.META.get('REQUEST_METHOD', ''))
+            
+    log_file_name = "silentpost_%d.log" % payment.id
+    log_path = os.path.join(settings.MEDIA_ROOT, 'silentposts/')
+    if not os.path.isdir(log_path):
+        os.mkdir(log_path)
+    log_path = os.path.join(log_path, log_file_name)
+    
+    fd = open(log_path, 'w')
+    fd.write(output)
+    fd.close()
+    
+    return HttpResponse('ok')
+    
