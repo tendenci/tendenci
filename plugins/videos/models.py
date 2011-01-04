@@ -30,7 +30,7 @@ class Video(TendenciBaseModel):
     image = models.ImageField(upload_to='uploads/videos/%y/%m', blank=True)
     video_url = models.CharField(max_length=500, help_text='Youtube, Vimeo, etc..')
     description = tinymce_models.HTMLField()
-    tags = TagField(blank=True)
+    tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
     
     objects = VideoManager()
     

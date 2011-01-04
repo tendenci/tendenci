@@ -16,7 +16,7 @@ class VideoAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['question','answer']
     fieldsets = (
-        (None, {'fields': ('title','slug','category','image','video_url','description')}),
+        (None, {'fields': ('title','slug','category','image','video_url','tags','description')}),
         ('Administrative', {'fields': (
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )

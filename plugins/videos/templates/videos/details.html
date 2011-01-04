@@ -14,6 +14,14 @@
 <br>
 {{ video.description|safe }}
 <div class="meta">
+<div class="tags">
+				{% if tags %}
+					Tags: 
+					{% for tag in tags %}
+						<a href="{% url videos.search %}?q={{ tag }}">{{ tag }}</a>
+					{% endfor %}
+				{% endif %}
+			</div>
 <ul>	
     {% has_perm request.user video.change_video video as can_edit %}
     {% if video.status_detail == 'pending' %}
