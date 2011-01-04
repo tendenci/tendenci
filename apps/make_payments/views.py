@@ -3,6 +3,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.models import User
+from django.utils.html import strip_entities, strip_tags
+
 from make_payments.forms import MakePaymentForm
 from make_payments.utils import make_payment_inv_add, make_payment_email_user
 from make_payments.models import MakePayment
@@ -90,7 +92,8 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
                 return HttpResponseRedirect(reverse('make_payment.add_confirm', args=[mp.id]))
     else:
         form = form_class(request.user)
-        # check if we have the initialized amount
+
+        # check for initial payment_amount and clean up
         payment_amount = request.GET.get('payment_amount', 0)
         try:
             payment_amount = float(payment_amount)
@@ -98,6 +101,13 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
             payment_amount = 0
         if payment_amount > 0:
             form.fields['payment_amount'].initial = payment_amount
+
+        # check for initial comment and clean up
+        comments = request.GET.get('comments','')
+        if comments:
+            comments = strip_tags(comments)
+            comments = strip_entities(comments)
+            form.fields['comments'].initial = comments
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
     if not currency_symbol: currency_symbol = "$"
