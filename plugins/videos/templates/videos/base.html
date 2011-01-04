@@ -17,15 +17,6 @@
 			<li><a class="{% ifequal cat video.category %}active{% endifequal %}{% ifequal cat category %}active{% endifequal %}" href="{{ cat.get_absolute_url }}">{{ cat|title }}</a></li>
 		{% endfor %}
 	</ul>
-	{% list_videos as videos_latest limit=2 %}
-	{% if videos_latest %}
-	<h2>Latest</h2>
-	<ul>
-        {% for video in videos_latest %}
-            <li>{{ video.title }}</li>
-        {% endfor %}  
-	</ul>
-	{% endif %}
 </li>
 </ul>
 {% endblock sidebar %}
