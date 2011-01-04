@@ -2,11 +2,13 @@
 {% load base_filters %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load tagging_tags %}
 
 {% block title %}{{ video.title }} - {{ video.category|title }} Videos{% endblock %}
 {% block meta_description %}{{ video.category }} Videos from {{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ video.title }} - {{ video.description|striptags|truncatewords:40 }}{% endblock %}
 
 {% block body %}
+{% tags_for_object video as tags %}
 <h1>{{ video.title }}</h1>
 
 {{ video.embed_code|safe }}
@@ -14,14 +16,13 @@
 <br>
 {{ video.description|safe }}
 <div class="meta">
-<div class="tags">
-				{% if tags %}
-					Tags: 
-					{% for tag in tags %}
-						<a href="{% url videos.search %}?q={{ tag }}">{{ tag }}</a>
-					{% endfor %}
-				{% endif %}
-			</div>
+	{% if tags %}
+    <div class="tags">
+Tags: {% for tag in tags %}
+<a href="{% url video.search %}?q={{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+{% endfor %}
+		</div>
+	{% endif %}		
 <ul>	
     {% has_perm request.user video.change_video video as can_edit %}
     {% if video.status_detail == 'pending' %}
