@@ -21,6 +21,7 @@ class InvoiceIndex(indexes.RealTimeSearchIndex):
     balance = indexes.FloatField(model_attr='balance')
     
     # authority fields
+    create_dt = indexes.DateTimeField(model_attr='create_dt')
     creator = indexes.CharField(model_attr='creator', null=True)
     creator_username = indexes.CharField(model_attr='creator_username', default='')
     owner = indexes.CharField(model_attr='owner', null=True)

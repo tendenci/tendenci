@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 #from django.contrib.contenttypes.models import ContentType
+from tinymce import models as tinymce_models
 
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
@@ -15,10 +16,10 @@ FIELD_CHOICES = (
                     ("CharField", _("Text")),
                     ("CharField/django.forms.Textarea", _("Paragraph Text")),
                     ("BooleanField", _("Checkbox")),
-                    ("ChoiceField", _("Choose from a list (Drop Down)")),
-                    ("ChoiceField/django.forms.RadioSelect", _("Choose from a list (Radio Buttons)")),
+                    ("ChoiceField", _("Select One from a list (Drop Down)")),
+                    ("ChoiceField/django.forms.RadioSelect", _("Select One from a list (Radio Buttons)")),
                     ("MultipleChoiceField", _("Multi select (Drop Down)")),
-                    ("MultipleChoiceField/django.forms.CheckboxInput", _("Multi select (Bullets)")),
+                    ("MultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi select (Checkboxes)")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
                     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
@@ -81,29 +82,29 @@ class CorporateMembershipType(TendenciBaseModel):
 class CorporateMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     corporate_membership_type = models.ForeignKey("CorporateMembershipType", verbose_name=_("MembershipType")) 
-    name = models.CharField(max_length=250)
+    name = models.CharField(max_length=250, unique=True)
     address = models.CharField(_('address'), max_length=150, blank=True)
-    address2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
+    address2 = models.CharField(_('address2'), max_length=100, default='', blank=True, null=True)
     city = models.CharField(_('city'), max_length=50, blank=True)
     state = models.CharField(_('state'), max_length=50, blank=True)
-    zip = models.CharField(_('zipcode'), max_length=50, blank=True)
-    country = models.CharField(_('country'), max_length=50, blank=True)
-    phone = models.CharField(_('phone'), max_length=50, blank=True)
-    email = models.CharField(_('email'), max_length=200,  blank=True)
-    url = models.CharField(_('url'), max_length=100, blank=True)
-    authorized_domains = models.CharField(max_length=500)
+    zip = models.CharField(_('zipcode'), max_length=50, blank=True, null=True)
+    country = models.CharField(_('country'), max_length=50, blank=True, null=True)
+    phone = models.CharField(_('phone'), max_length=50, blank=True, null=True)
+    email = models.CharField(_('email'), max_length=200,  blank=True, null=True)
+    url = models.CharField(_('url'), max_length=100, blank=True, null=True)
+    authorized_domains = models.CharField(max_length=500, null=True)
     
     renewal = models.BooleanField(default=0)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time")) 
-    renew_dt = models.DateTimeField(_("Renew Date Time")) 
-    expiration_dt = models.DateTimeField(_("Expiration Date Time"))
+    renew_dt = models.DateTimeField(_("Renew Date Time"), null=True) 
+    expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
     approved = models.BooleanField(_("Approved"), default=0)
-    approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"))
-    approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"))
+    approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
+    approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
-    cma = models.ForeignKey("CorpApp")
+    corp_app = models.ForeignKey("CorpApp")
     
     class Meta:
         verbose_name = _("Corporate Membership")
@@ -130,24 +131,24 @@ class CorporateMembershipArchive(models.Model):
     corporate_membership_type = models.ForeignKey("CorporateMembershipType") 
     name = models.CharField(max_length=250)
     address = models.CharField(_('address'), max_length=150, blank=True)
-    address2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
+    address2 = models.CharField(_('address2'), max_length=100, default='', blank=True, null=True)
     city = models.CharField(_('city'), max_length=50, blank=True)
     state = models.CharField(_('state'), max_length=50, blank=True)
-    zip = models.CharField(_('zipcode'), max_length=50, blank=True)
-    country = models.CharField(_('country'), max_length=50, blank=True)
+    zip = models.CharField(_('zipcode'), max_length=50, blank=True, null=True)
+    country = models.CharField(_('country'), max_length=50, blank=True, null=True)
     phone = models.CharField(_('phone'), max_length=50, blank=True)
     email = models.CharField(_('email'), max_length=200,  blank=True)
-    url = models.CharField(_('url'), max_length=100, blank=True)
-    authorized_domains = models.CharField(max_length=500)
+    url = models.CharField(_('url'), max_length=100, blank=True, null=True)
+    authorized_domains = models.CharField(max_length=500, null=True)
     
     renewal = models.BooleanField(default=0)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time")) 
-    renew_dt = models.DateTimeField(_("Renew Date Time")) 
-    expiration_dt = models.DateTimeField(_("Expiration Date Time"))
+    renew_dt = models.DateTimeField(_("Renew Date Time"), null=True) 
+    expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
     approved = models.BooleanField(_("Approved"), default=0)
-    approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"))
-    approved_denied_user = models.ForeignKey(User)
+    approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
+    approved_denied_user = models.ForeignKey(User, null=True)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
     create_dt = models.DateTimeField()
@@ -189,7 +190,13 @@ class CorpApp(TendenciBaseModel):
     authentication_method = models.CharField(_("Authentication Method"), choices=AUTH_METHOD_CHOICES, 
                                     default='admin', max_length=50, 
                                     help_text='for individuals applying under a Corporate Membership')
-    notes = models.CharField(_("Notes"), max_length=255)
+    #description = models.TextField(_("Description"),blank=True, null=True, 
+    #                               help_text='Will display at the top of the application form.')
+    description = tinymce_models.HTMLField(_("Description"),blank=True, null=True, 
+                                   help_text='Will display at the top of the application form.')
+    notes = models.TextField(_("Notes"),blank=True, null=True, 
+                                   help_text='Notes for editor. Will not display on the application form.')
+    confirmation_text = models.TextField(_("Confirmation Text"), blank=True, null=True)
    
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
     require_login = models.BooleanField(_("Require User Login"), default=0)
@@ -203,6 +210,10 @@ class CorpApp(TendenciBaseModel):
     def __unicode__(self):
         return self.name
     
+    @models.permalink
+    def get_absolute_url(self):
+        return ("corp_memb.add", [self.slug])
+    
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -210,7 +221,7 @@ class CorpApp(TendenciBaseModel):
  
        
 class CorpField(models.Model):
-    cma = models.ForeignKey("CorpApp", related_name="fields")
+    corp_app = models.ForeignKey("CorpApp", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     # hidden fields - field_name and object_type
     field_name = models.CharField(_("Field Name"), max_length=30, blank=True, null=True, editable=False)
@@ -253,6 +264,9 @@ class CorpField(models.Model):
         """
         if self.label and self.id:
             if self.field_type not in ['section_break', 'page_break']:
+                if self.field_name in ['corporate_membership_type', 'payment_method']:
+                    if not self.field_type:
+                        self.field_type = "ChoiceField/django.forms.RadioSelect"
                 if "/" in self.field_type:
                     field_class, field_widget = self.field_type.split("/")
                 else:

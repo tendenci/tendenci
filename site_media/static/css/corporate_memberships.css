@@ -1,0 +1,50 @@
+div.forms .form-field ul{list-style:none;}
+div.column2 ul, div.column3 ul{
+	float: left;
+	width: 90%;
+}
+div.column2 ul li {
+	float: left;
+	width: 45%;
+	margin: 0;
+	padding: 0;
+}
+div.column3 ul li {
+	float: left;
+	width: 30%;
+	margin: 0;
+	padding: 0;
+}
+div.column0 ul li {
+	float: left;
+	margin-right: 1em;
+	padding: 0;
+}
+.size-s input[type="text"]{width: 20% !important;}
+.size-m input[type="text"]{width: 50% !important;}
+
+div.section-break h2{
+	font-size: 1.2em;
+	margin: 1.5em 0 1em;
+	padding: 3px 0;
+	background-color: #e5ecf9;
+	border-top: 1px dotted silver;
+	color: #417690;
+}
+
+div.admin-only h2{
+	color: #9f2221;
+}
+div.forms div.form-field input.datepicker{
+	width: 9em !important;
+}
+div.forms div.form-field input.timepicker{
+	width: 8em !important;
+}
+.errors{
+	background-color: #ffebeb;
+	border: 2px solid #ff8b78;
+	margin-bottom: 20px;
+	padding: 10px;
+	width: 75%;
+}
