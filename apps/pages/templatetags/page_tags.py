@@ -48,7 +48,11 @@ class ListPageNode(Node):
     def render(self, context):
         query = ''
 
-        self.tags = self.tags.resolve(context)
+        try:
+            self.tags = self.tags.resolve(context)
+        except:
+            self.tags = self.tags_string
+            
         if self.tags:
             self.tags = self.tags.split(',')
         if not self.tags:
