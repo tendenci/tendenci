@@ -109,13 +109,15 @@ class CorpAppAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
         if obj and obj.id:
             return  (
-                        (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 'notes')}),
+                        (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 
+                                           'description', 'confirmation_text', 'notes')}),
                         ('Other Options', {'fields': (
                             ('use_captcha', 'require_login'), 'status', 'status_detail')}),
                     ) 
         else:
             return (
-                        (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 'notes')}),
+                        (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 
+                                           'description', 'confirmation_text', 'notes')}),
                         ('Other Options', {'fields': (
                             ('use_captcha', 'require_login'), 'status', 'status_detail')}),
                         ('Form Fields', {'fields':(), 
@@ -142,7 +144,7 @@ class CorpAppAdmin(admin.ModelAdmin):
             fields_list = get_corpapp_default_fields_list()
             if fields_list:
                 for field_d in fields_list:
-                    field_d.update({'cma':instance})
+                    field_d.update({'corp_app':instance})
                     f = CorpField(**field_d)
                     f.save()
                                     
