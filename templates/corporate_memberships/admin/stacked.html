@@ -206,15 +206,20 @@
 			
 			if (($(node).val()== "ChoiceField") || ($(node).val()== "MultipleChoiceField")
 					|| ($(node).val()== "ChoiceField/django.forms.RadioSelect")
-					|| ($(node).val()== "MultipleChoiceField/django.forms.CheckboxInput")){
+					|| ($(node).val()== "MultipleChoiceField/django.forms.CheckboxSelectMultiple")){
 				$(node).closest('fieldset').find('div.inline-fields-to-toggle .choices').show();
 				$(node).closest('fieldset').find('div.inline-fields-to-toggle .size').hide();
 			}else{
 				$(node).closest('fieldset').find('div.inline-fields-to-toggle .choices').hide();
-				$(node).closest('fieldset').find('div.inline-fields-to-toggle .size').show();
+
+				if ($(node).val()== "CharField"){
+					$(node).closest('fieldset').find('div.inline-fields-to-toggle .size').show();
+				}else{
+					$(node).closest('fieldset').find('div.inline-fields-to-toggle .size').hide();
+				}
 			}
 			if (($(node).val()== "ChoiceField/django.forms.RadioSelect")
-					|| ($(node).val()== "MultipleChoiceField/django.forms.CheckboxInput")){
+					|| ($(node).val()== "MultipleChoiceField/django.forms.CheckboxSelectMultiple")){
 				$(node).closest('fieldset').find('div.inline-fields-to-toggle .field_layout .field-box:last').show();
 			}else{
 				$(node).closest('fieldset').find('div.inline-fields-to-toggle .field_layout .field-box:last').hide();
