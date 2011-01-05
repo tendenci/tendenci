@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
@@ -546,7 +547,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
             for photo in photo_formset.changed_objects:
                 EventLog.objects.log(**{
                     'event_id' : 990200,
-                    'event_data': 'photo (%s) edited by %s' % (photo.pk, request.user),
+                    'event_data': 'photo edited by %s' % request.user,
                     'description': '%s edited' % photo._meta.object_name,
                     'user': request.user,
                     'request': request,
