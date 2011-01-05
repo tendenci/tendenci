@@ -21,6 +21,18 @@ def is_checkbox(field):
     return field.field.widget.__class__.__name__.lower() == "checkboxinput"
 
 @register.filter
+def is_radioselect(field):
+    return field.field.widget.__class__.__name__.lower() == "radioselect"
+
+@register.filter
+def is_checkboxselectmultiple(field):
+    return field.field.widget.__class__.__name__.lower() == "checkboxselectmultiple"
+
+@register.filter
+def is_textinput(field):
+    return field.field.widget.__class__.__name__.lower() == "textinput"
+
+@register.filter
 def styled_form(form):
     template = get_template('styled_forms/form.html')
     c = Context({'form':form})

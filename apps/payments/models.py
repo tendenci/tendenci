@@ -137,33 +137,67 @@ class Payment(models.Model):
             self.method = 'cc'
             self.status = 1
             
-            # description
+
+            # default description
+            self.description = 'Tendenci Invoice %d (Payment %d).' % (inv.id, inv.invoice_object_type_id)
+
+            # description overrides
             if inv.invoice_object_type == 'make_payment':
-                self.description = 'Tendenci Invoice %d Payment (ID# %d).' % (inv.id, inv.invoice_object_type_id)
+                from make_payments.models import MakePayment
+
+                try:
+                    make_payment_object = MakePayment.objects.get(id=inv.invoice_object_type_id)
+                    if make_payment_object.comments:
+                        self.description = 'Tendenci Invoice %d (Payment %d) %s' % (
+                            inv.id,
+                            inv.invoice_object_type_id,
+                            make_payment_object.comments,
+                        )
+                except:
+                    pass
             elif  inv.invoice_object_type == 'job':
                 from jobs.models import Job
                 try:
                     job = Job.objects.get(id=inv.invoice_object_type_id)
+                    self.description = 'Tendenci Invoice %d for Job: %s (%d).' % (
+                        inv.id,
+                        job.title,
+                        inv.invoice_object_type_id
+                    )
                 except:
-                    job = None
-                if job:
-                    self.description = 'Tendenci Invoice %d Payment for job posting: %s(ID# %d).' \
-                             % (inv.id, job.title, inv.invoice_object_type_id)
-                else:
-                    self.description = 'Tendenci Invoice %d Payment for job posting: (ID# %d).' % (inv.id, inv.invoice_object_type_id)  
+                    self.description = 'Tendenci Invoice %d for Job (%d)' % (
+                        inv.id,
+                        inv.invoice_object_type_id
+                    )
             elif  inv.invoice_object_type == 'directory':
                 from directories.models import Directory
                 try:
                     directory = Directory.objects.get(id=inv.invoice_object_type_id)
+                    self.description = 'Tendenci Invoice %d for Directory: %s (%d).' % (
+                        inv.id,
+                        directory.headline,
+                        inv.invoice_object_type_id
+                    )
                 except:
-                    directory = None
-                if directory:
-                    self.description = 'Tendenci Invoice %d Payment for directory posting: %s(ID# %d).' \
-                             % (inv.id, directory.headline, inv.invoice_object_type_id)
-                else:
-                    self.description = 'Tendenci Invoice %d Payment for job posting: (ID# %d).' % (inv.id, inv.invoice_object_type_id)                
-            else:
-                self.description = 'Tendenci Invoice %d Payment.' % (inv.id)
+                    self.description = 'Tendenci Invoice %d for Directory (%d)' % (
+                        inv.id,
+                        inv.invoice_object_type_id
+                    )
+            elif inv.invoice_object_type == 'event_registration':
+                from events.models import Registration
+                try:
+                    event_registration = Registration.objects.get(id=inv.invoice_object_type_id)
+                    self.description = 'Tendenci Invoice %d for Event (%d): %s (Reg# %d)' % (
+                        inv.id,
+                        event_registration.event.pk,
+                        event_registration.event.title,
+                        inv.invoice_object_type_id,
+                    )
+                except:
+                    self.description = 'Tendenci Invoice %d for Event Registration (%d)' % (
+                        inv.id,
+                        inv.invoice_object_type_id
+                    )
                 
             # save the payment because we need the payment id below
             self.save(user)
