@@ -16,7 +16,7 @@
     	<li><a href="{% url home %}">Visiting the Home Page</a></li>
         <li>
             Searching the site:&nbsp;&nbsp;
-            <form method="get" action="{% haystack search %}">
+            <form method="get" action="{% url haystack_search %}">
             <input type="text" value="" size="18" maxlength="50" name="q" />
             <input type="submit" value="Search" name="submit" />
             </form>
