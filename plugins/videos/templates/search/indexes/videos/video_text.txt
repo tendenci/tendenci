@@ -1,0 +1,10 @@
+{% load tagging_tags %}
+
+{{ object.title }}
+{{ object.description }}
+{{ object.category }}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+tag:{{ tag }} 
+{% endfor %}
