@@ -544,10 +544,11 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
             photo_formset.save()
 
             # event logging
-            for photo in photo_formset.changed_objects:
+            for photo, changed in photo_formset.changed_objects:
+
                 EventLog.objects.log(**{
                     'event_id' : 990200,
-                    'event_data': 'photo edited by %s' % request.user,
+                    'event_data': 'photo (%s) edited by %s' % (photo.pk, request.user),
                     'description': '%s edited' % photo._meta.object_name,
                     'user': request.user,
                     'request': request,
