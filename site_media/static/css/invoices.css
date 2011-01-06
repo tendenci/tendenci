@@ -1,5 +1,6 @@
 .invoice-view-display{
-	width: 650px;
+	width: 95%;
+	max-width: 650px;
 }
 .invoice-view-wrap{
 	/*font-family: arial, Helvetica, sans-serif;*/
@@ -77,7 +78,8 @@
 	
 /* invoice search*/
 .t .t-invoice .t-search .invoice-row{
-	width: 620px;
+	width: 95%;
+	max-width: 620px;
 	border: 1.5px solid #333;
 	padding: .5px 1px 1px .5px;
 	margin-bottom: 1em;
