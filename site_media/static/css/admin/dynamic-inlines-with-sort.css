@@ -1,29 +1,23 @@
-/* To make row height of saved items same as others */
-.inline-group .tabular tr.has_original td { padding-top:0.5em; }
-.inline-group .tabular tr.has_original td.original p { display:none; }
-
-.collapse-label{
+.collapse-expand-button, .toggle-all-button{
+	padding: 1em;
     background-color: white;
-    padding: 10px;
-    border-bottom: 1px solid #EEE;
+}
+.collapse-expand-button .collapse-button{
+	display:inline;
+	background-image: url('/site_media/static/images/icons/collapse.jpg');
+	background-repeat:no-repeat;
+}
+.collapse-expand-button .expand-button{
+	display:inline;
+	background-image: url('/site_media/static/images/icons/expand.jpg');
+	background-repeat:no-repeat;
+}
+.collapse-button a, .expand-button a{
+	margin:0 1em;
+	padding:0 1em;
 }
 
-.done-btn{
-    width: 150px;
-    text-align: center;
-    padding: 3px 5px;
-    border: 1px solid #DDD;
-    border-color: #DDD #AAA #AAA #DDD;
-    background: white url("/site_media/static/admin/img/admin/nav-bg.gif") repeat-x 50% 100%;
-}
-
-.done-btn:active, .done-btn:hover{
-    background: url("/site_media/static/admin/img/admin/nav-bg-reverse.gif");
-    cursor: pointer;
-
-}
-
-.collapse-label:active, .collapse-label:hover{
-    background-color: #EEE;
-    cursor: pointer;
+.inline-related h3{
+	line-height: 1.5em;
+	border-top: 1px solid #ccc;
 }
