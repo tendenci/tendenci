@@ -18,12 +18,9 @@ FIELD_CHOICES = (
     ("check-box", _("Checkbox")),
     ("choose-from-list", _("Choose from a list")),
     ("multi-select", _("Multi select")),
-    ("email-field", _("Email")),
     ("file-uploader", _("File upload")),
     ("date", _("Date")),
     ("date-time", _("Date/time")),
-    ("membership-type", _("Membership Type")),
-    ("payment-method", _("Payment Method")),
     ("first-name", _("First Name")),
     ("last-name", _("Last Name")),
     ("email", _("Email")),
@@ -241,12 +238,22 @@ class AppField(models.Model):
         related_name="membership_app_field_set", editable=False, null=True)
     attribute_name = models.CharField(_("Attribute Name"), max_length=300)
     label = models.CharField(_("Label"), max_length=200)
+
     description = models.TextField(_("Description"), max_length=200, blank=True)
+
+    help_text = models.CharField(_("Help Text"), max_length=200, blank=True)
+    default_value = models.CharField(_("Default Value"), max_length=200, blank=True)
+    css_class = models.CharField(_("CSS Class"), max_length=200, blank=True)
+
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=100)
+    vital = models.BooleanField(_("Vital"), default=False, blank=True)
     required = models.BooleanField(_("Required"), default=True, blank=True)
     visible = models.BooleanField(_("Visible"), default=True, blank=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text="Comma separated options where applicable")
+
+    unique = models.BooleanField(_("Unique"), default=True, blank=True)
+    admin_only = models.BooleanField(_("Admin Only"), default=False, blank=True)
     position = models.IntegerField(blank=True)
 
     objects = AppFieldManager()
