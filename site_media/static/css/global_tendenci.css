@@ -2,3 +2,7 @@
 @import url('iconrow.css');
 @import url('forms.css');
 @import url('messages.css');
+
+span.status-pending {
+    color: #ff4500;
+}
