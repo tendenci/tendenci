@@ -1,0 +1,1 @@
+# no views other than the template tags and admin
