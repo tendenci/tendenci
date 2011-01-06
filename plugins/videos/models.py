@@ -5,7 +5,7 @@ from embedly import get_oembed
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from tinymce import models as tinymce_models
-from managers import VideoManager
+from videos.managers import VideoManager
 
 class Category(models.Model):
     name = models.CharField(max_length=200, unique=True)
@@ -52,7 +52,7 @@ class Video(TendenciBaseModel):
 
 
 class OembedlyCache(models.Model):
-    "For better performance all oemed queryes are cached in this model"
+    "For better performance all oembed queries are cached in this model"
     url = models.CharField(max_length=800)
     width = models.IntegerField(db_index=True)
     height = models.IntegerField(db_index=True)
