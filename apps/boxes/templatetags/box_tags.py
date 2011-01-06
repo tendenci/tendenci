@@ -15,7 +15,7 @@ class GetBoxNode(Node):
     def render(self, context):
         query = '"pk:%s"' % (self.pk)
         try:
-            box = Box.objects.search(query="extra").best_match()
+            box = Box.objects.search(query=query).best_match()
             context['box'] = box.object
             template = get_template('boxes/edit-link.html')
             output = '%s %s' % (box.object.content, template.render(context),)
