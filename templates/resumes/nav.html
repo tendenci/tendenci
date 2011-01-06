@@ -1,6 +1,7 @@
 {% load base_tags %}
 {% load perm_tags %}
 
+{% is_admin user as user_is_admin %}
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user resumes.add_resume as can_add_resume %}
 
@@ -30,6 +31,9 @@
 			{% if can_edit_setting %}
 				<li><a href="{% url settings.index "module" "resumes" %}">Settings</a></li>
 			{% endif %}
+            {% if user_is_admin %}
+            <li><a href="{% url resume.pending %}">Pending</a></li>
+            {% endif %}
 			{% if nav_object %}
 				{% if can_view_resume %}
 				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
