@@ -1,32 +1,10 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
-from pages.models import Page
-from datetime import datetime
+from quotes.models import Quote
 
 register = Library()
 
-@register.inclusion_tag("pages/options.html", takes_context=True)
-def page_options(context, user, page):
-    context.update({
-        "opt_object": page,
-        "user": user
-    })
-    return context
-
-@register.inclusion_tag("pages/nav.html", takes_context=True)
-def page_nav(context, user, page=None):
-    context.update({
-        'nav_object': page,
-        "user": user
-    })
-    return context
-
-@register.inclusion_tag("pages/search-form.html", takes_context=True)
-def page_search(context):
-    return context
-
-
-class ListPageNode(Node):
-
+class ListQuotesNode(Node):
+    
     def __init__(self, context_var, *args, **kwargs):
 
         self.limit = 3
@@ -52,7 +30,7 @@ class ListPageNode(Node):
             self.tags = self.tags.resolve(context)
         except:
             self.tags = self.tags_string
-
+        
         if self.tags:
             self.tags = self.tags.split(',')
         if not self.tags:
@@ -72,21 +50,20 @@ class ListPageNode(Node):
             q_item = q_item.strip()
             query = '%s "%s"' % (query, q_item)
 
-        print query
-        pages = Page.objects.search(user=self.user, query=query)
-        pages = pages.order_by('create_dt')
 
-        pages = [page.object for page in pages[:self.limit]]
-        context[self.context_var] = pages
+        quotes = Quote.objects.search(user=self.user, query=query)
+        quotes = quotes.order_by('create_dt')
+        quotes = [quote.object for quote in quotes[:self.limit]]
+        context[self.context_var] = quotes
         return ""
 
 @register.tag
-def list_pages(parser, token):
+def list_quotes(parser, token):
     """
     Example:
-        {% list_pages as pages user=user limit=3 %}
-        {% for page in pages %}
-            {{ page.title }}
+        {% list_quotes as quotes_list [user=user limit=3 tags=bloop bleep q=searchterm] %}
+        {% for quote in quotes %}
+            {{ quote.quote }}
         {% endfor %}
 
     """
@@ -105,11 +82,12 @@ def list_pages(parser, token):
             kwargs["q"] = bit.split("=")[1].replace('"','').split(',')
 
     if len(bits) < 3:
-        message = "'%s' tag requires at least 2 parameters" % bits[0]
+        message = "'%s' tag requires more than 2" % bits[0]
         raise TemplateSyntaxError(message)
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as'" % bits[0]
         raise TemplateSyntaxError(message)
 
-    return ListPageNode(context_var, *args, **kwargs)
+    return ListQuotesNode(context_var, *args, **kwargs)
+
