@@ -1,0 +1,22 @@
+{% extends "quotes/base.html" %}
+
+{% block title %}Quotes{% endblock %}
+
+{% block body %}
+<h1>Quotes</h1>
+{% for quote in quotes %}
+    {% with quote.object as quote %}
+    <div class="quote">
+        <a href="{{ quote.get_absolute_url }}">
+        {{ quote.quote|truncatewords:20 }}
+        </a>
+        <br />
+        - {% if quote.source %}
+            <a href="{{ quote.source }}">{{ quote.author }}</a>
+        {% else %}
+            {{ quote.author }}
+        {% endif %}    
+    </div>
+    {% endwith %}
+{% endfor %}
+{% endblock body %}
