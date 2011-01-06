@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import timedelta
 
 from django.conf import settings
-from site_settings.utils import get_setting
 
 STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'among','an','and','any','are','as','at','be','because',
@@ -20,6 +19,23 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'whom','why','will','with','would','yet','you','your',
               'find','very','still','non','here', 'many', 'a','s','t','ve', 
               'use', 'don\'t', 'can\'t', 'wont', 'come','you\'ll', 'want']
+
+def now_localized():
+    from datetime import datetime
+    from timezones.utils import adjust_datetime_to_timezone
+    from time import strftime, gmtime
+    
+    os_timezone = strftime('%Z',gmtime())
+    if os_timezone == 'CST': os_timezone = 'US/Central'
+    django_timezone =  settings.TIME_ZONE
+
+    now = adjust_datetime_to_timezone(
+               datetime.now(),
+               from_tz=os_timezone,
+               to_tz=django_timezone)
+    now = now.replace(tzinfo=None)
+    return now
+
 
 def localize_date(date, from_tz=None, to_tz=None):
     """

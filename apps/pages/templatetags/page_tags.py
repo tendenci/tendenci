@@ -52,7 +52,6 @@ class ListPageNode(Node):
             self.tags = self.tags.resolve(context)
         except:
             self.tags = self.tags_string
-            
         if self.tags:
             self.tags = self.tags.split(',')
         if not self.tags:

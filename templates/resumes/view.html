@@ -29,72 +29,68 @@
 			
         <h1>{{ resume.title }}</h1>
 
-		<h2>Resume Information</h2>
+        {% if resume.description %}
+                <div class="section-block">
+                    <div class="label">Description</div>
+                    <div class="value">{{ resume.description|safe }}</div>
+                </div>
+        {% endif %}
 
-{% if resume.description %}
-		<div class="section-block">
-			<div class="label">Description</div>
-			<div class="value">{{ resume.description|safe }}</div>
-		</div>
-{% endif %}
-
-{% if resume.location %}
-		<div class="section-block">
-			<div class="label">Location</div>
-			<div class="value">{{ resume.location }}</div>
-			<div class="clear"></div>
-		</div>
-{% endif %}
+        {% if resume.location %}
+                <div class="section-block">
+                    <div class="label">Location</div>
+                    <div class="value">{{ resume.location }}</div>
+                    <div class="clear"></div>
+                </div>
+        {% endif %}
 
 
-{% if resume.experience %}
-		<div class="section-block">
-			<div class="label">Experience</div>
-			<div class="value">{{ resume.experience }}</div>
-		</div>
-{% endif %}
+        {% if resume.experience %}
+                <div class="section-block">
+                    <div class="label">Experience</div>
+                    <div class="value">{{ resume.experience }}</div>
+                </div>
+        {% endif %}
 
-{% if resume.skills %}
-		<div class="section-block">
-			<div class="label">Skills</div>
-			<div class="value">{{ resume.skills }}</div>
-		</div>
-{% endif %}
+        {% if resume.skills %}
+                <div class="section-block">
+                    <div class="label">Skills</div>
+                    <div class="value">{{ resume.skills }}</div>
+                </div>
+        {% endif %}
 
-{% if resume.education %}
-		<div class="section-block">
-			<div class="label">Education</div>
-			<div class="value">{{ resume.education }}</div>
-			<div class="clear"></div>
-		</div>
-{% endif %}
+        {% if resume.education %}
+                <div class="section-block">
+                    <div class="label">Education</div>
+                    <div class="value">{{ resume.education }}</div>
+                    <div class="clear"></div>
+                </div>
+        {% endif %}
 
 		<h2>Contact Information</h2>
-{% if resume.contact_name %}
-		<div class="contact-wrap">
-			<div>{{ resume.contact_name }}</div>
-			<div>{{ resume.contact_phone }}</div>
-			<div>{{ resume.contact_phone2 }}</div>
-			<div>{{ resume.contact_fax }}</div>
-			<div><a href="">{{ resume.contact_email|obfuscate_email }}</a></div>
-		</div>
-{% endif %}
+        {% if resume.contact_name %}
+                <div class="contact-wrap">
+                    <div>{{ resume.contact_name }}</div>
+                    <div>{{ resume.contact_phone }}</div>
+                    <div>{{ resume.contact_phone2 }}</div>
+                    <div>{{ resume.contact_fax }}</div>
+                    <div><a href="">{{ resume.contact_email|obfuscate_email }}</a></div>
+                </div>
+        {% endif %}
 
+        {% if tags %}
         <div class="meta">
 			<div class="tags">
-				{% if tags %}
+
 					Tags: 
 					{% for tag in tags %}
 						<a href="{% url resume.search %}?q={{ tag }}">{{ tag }}</a>
 					{% endfor %}
-				{% endif %}
-			</div>
 
-            <div class="submitted">Submitted on {{ resume.create_dt|date:"long" }} 
-			by {% firstof resume.creator.get_profile.display_name resume.creator %}</div>
+			</div>
         </div>
+    	{% endif %}
         
-		<br />
         {% url resume resume.pk as the_url %}
         <p>{% fb_like_button_iframe the_url %}</p>
     </div>
@@ -108,16 +104,6 @@
 {% endblock %}
 
 {% block extra_body %}
-    <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_resume = confirm('Permenantly delete {% firstof MODULE_RESUMES_LABEL 'Resume' %}?');	// confirm
-				if(delete_resume) $('.t').find('form[name="resume-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
 	var iconrow = new dropdown({
