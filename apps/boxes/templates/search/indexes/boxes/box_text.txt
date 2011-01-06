@@ -1,0 +1,11 @@
+{% load tagging_tags %}
+
+{{ object.title }}
+{{ object.content }}
+
+pk:{{ object.pk }}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+tag:{{ tag }} 
+{% endfor %}
