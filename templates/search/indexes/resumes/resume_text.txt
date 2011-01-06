@@ -1,8 +1,10 @@
 {% load tagging_tags %}
 {% firstof object.title "Untitled" %}
-by {{ object.creator }}
-by {{ object.object.creator.get_profile.display_name }}
 {{ object.description }}
+{{ object.location }}
+{{ object.skills }}
+{{ object.experience }}
+{{ object.education }}
 
 is:{{ object.status_detail }}
 

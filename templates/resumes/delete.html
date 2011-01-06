@@ -1,4 +1,19 @@
+{% extends "resumes/base.html" %}
+{% load resume_tags %}
+
 {% block body %}
-<h1>{% firstof MODULE_RESUMES_LABEL 'Resume' %} Delete Page</h1>
-<div class="back-to-search"><a href="{% url resume.search %}">&laquo; Back to resumes search</a></div>
+<div class="t">
+    {% resume_nav request.user resume %}
+
+    <div class="resume-wrap">
+        <h1>{% firstof MODULE_RESUMES_LABEL 'Resume' %} Delete</h1>
+        <p><a href="{{ resume.get_absolute_url }}" title="{{ resume.title }}">{{ resume.title }}</a></p>
+        <p>Are you sure you want to delete this resume?</p>
+        <form action="{% url resume.delete resume.pk %}" method="post">
+        <div class="forms">
+            <input type="submit" value="Yes, delete it." /> or <a href="javascript:history.go(-1);">Cancel</a>
+        </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
