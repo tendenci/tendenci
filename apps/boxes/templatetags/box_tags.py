@@ -1,38 +1,53 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
-from pages.models import Page
-from datetime import datetime
+from django.template.loader import get_template
+from django.utils.safestring import mark_safe
+
+from boxes.models import Box
 
 register = Library()
 
-@register.inclusion_tag("pages/options.html", takes_context=True)
-def page_options(context, user, page):
-    context.update({
-        "opt_object": page,
-        "user": user
-    })
-    return context
 
-@register.inclusion_tag("pages/nav.html", takes_context=True)
-def page_nav(context, user, page=None):
-    context.update({
-        'nav_object': page,
-        "user": user
-    })
-    return context
+class GetBoxNode(Node):
+    
+    def __init__(self, pk):
+        self.pk = pk
 
-@register.inclusion_tag("pages/search-form.html", takes_context=True)
-def page_search(context):
-    return context
+    def render(self, context):
+        query = '"pk:%s"' % (self.pk)
+        try:
+            box = Box.objects.search(query="extra").best_match()
+            context['box'] = box.object
+            template = get_template('boxes/edit-link.html')
+            output = '%s %s' % (box.object.content, template.render(context),)
+            return output
+        except:
+            return ""
+        
+@register.tag
+def box(parser, token):
+    """
+    Example:
+        {% box 123 %}
+    """
+    bits = token.split_contents()
+    pk = bits[1]  
+    
+    return GetBoxNode(pk)  
 
+# Output the box as safe HTML
+box.safe = True 
+    
+       
 
-class ListPageNode(Node):
-
+class ListBoxesNode(Node):
+    
     def __init__(self, context_var, *args, **kwargs):
 
         self.limit = 3
         self.user = None
         self.tags = ''
         self.q = []
+        self.pk = ''
         self.context_var = context_var
 
         if "limit" in kwargs:
@@ -44,6 +59,8 @@ class ListPageNode(Node):
             self.tags = Variable(kwargs["tags"])
         if "q" in kwargs:
             self.q = kwargs["q"]
+        if "pk" in kwargs:
+            self.pk = kwargs["pk"]
 
     def render(self, context):
         query = ''
@@ -57,7 +74,7 @@ class ListPageNode(Node):
             self.tags = self.tags.split(',')
         if not self.tags:
             self.tags = self.tags_string.split(',')
-            
+        
         if self.user:
             self.user = self.user.resolve(context)
 
@@ -67,26 +84,28 @@ class ListPageNode(Node):
         for tag in self.tags:
             tag = tag.strip()
             query = '%s "tag:%s"' % (query, tag)
-
+                    
         for q_item in self.q:
             q_item = q_item.strip()
             query = '%s "%s"' % (query, q_item)
-
-        print query
-        pages = Page.objects.search(user=self.user, query=query)
-        pages = pages.order_by('create_dt')
-
-        pages = [page.object for page in pages[:self.limit]]
-        context[self.context_var] = pages
+            
+        if self.pk:
+            query = '%s "pk:%s"' % (query, self.pk)
+        
+        boxes = Box.objects.search(user=self.user, query=query)
+        boxes = boxes.order_by('create_dt')
+        boxes = [box.object for box in boxes[:self.limit]]
+        
+        context[self.context_var] = boxes
         return ""
 
 @register.tag
-def list_pages(parser, token):
+def list_boxes(parser, token):
     """
     Example:
-        {% list_pages as pages user=user limit=3 %}
-        {% for page in pages %}
-            {{ page.title }}
+        {% list_boxes as boxes [user=user limit=3 tags=bloop bleep q=searchterm pk=123] %}
+        {% for box in boxes %}
+            <div class="boxes">{{ box.get_content }}</div>
         {% endfor %}
 
     """
@@ -103,13 +122,16 @@ def list_pages(parser, token):
             kwargs["tags"] = bit.split("=")[1].replace('"','')
         if "q=" in bit:
             kwargs["q"] = bit.split("=")[1].replace('"','').split(',')
+        if "pk=" in bit:
+            kwargs["pk"] = bit.split("=")[1]
 
     if len(bits) < 3:
-        message = "'%s' tag requires at least 2 parameters" % bits[0]
+        message = "'%s' tag requires more than 2" % bits[0]
         raise TemplateSyntaxError(message)
 
     if bits[1] != "as":
         message = "'%s' second argument must be 'as'" % bits[0]
         raise TemplateSyntaxError(message)
 
-    return ListPageNode(context_var, *args, **kwargs)
+    return ListBoxesNode(context_var, *args, **kwargs)
+
