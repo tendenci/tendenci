@@ -24,7 +24,7 @@
         "choices": ""
     },
     {
-        "field_type": "email-field",
+        "field_type": "email",
         "attribute_name": "",
         "description": "",
         "vital": false,
@@ -45,6 +45,18 @@
         "visible": true,
         "content_type_id": 91,
         "position": 3,
+        "choices": ""
+    },
+    {
+        "field_type": "payment-method",
+        "attribute_name": "",
+        "description": "",
+        "vital": true,
+        "required": true,
+        "label": "Payment Method",
+        "visible": true,
+        "content_type_id": 113,
+        "position": 4,
         "choices": ""
     }
 ]
