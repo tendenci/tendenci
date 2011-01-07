@@ -300,3 +300,26 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 	height: 10px;
 	width: 100%;
 }
+
+div.forms fieldset.contact {
+	background-color: #EFEFEF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+div.forms fieldset.contact legend {
+	padding: 5px;
+}
+
+.t div.resume-wrap ul.pending-resumes {
+    list-style-type: none;
+    padding: 2px;
+    margin: 2px;
+}
+
+.t div.resume-wrap ul.pending-resumes li {
+    padding: 5px;
+}
