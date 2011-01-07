@@ -1,5 +1,7 @@
 from uuid import uuid4
 from sys import exc_info
+from django.forms.fields import CharField
+from django.forms.widgets import HiddenInput
 from os.path import join
 from datetime import datetime
 
@@ -197,6 +199,18 @@ class AppForm(TendenciBaseForm):
 class AppFieldForm(forms.ModelForm):
     class Meta:
         model = AppField
+
+    def __init__(self, *args, **kwargs):
+        super(AppFieldForm, self).__init__(*args, **kwargs)
+
+        # remove membership-type from field_type choices
+        choices_dict = dict(self.fields['field_type'].choices)
+        del choices_dict['membership-type']
+        self.fields['field_type'].choices = choices_dict.items()
+
+        # user hidden widget for membership-type
+        if self.instance.field_type == 'membership-type':
+            self.fields['field_type'] = CharField(label="Type", widget=HiddenInput)
 
 class AppEntryForm(forms.ModelForm):
 

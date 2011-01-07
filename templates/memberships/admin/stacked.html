@@ -59,7 +59,7 @@
 		            {% for field in line %}
 
 		            	{% if inline_admin_form.original.field_type in fields_to_check and field.field.name in excluded_fields%}
-                            <input type="hidden" name="{{ inline_admin_form.original.field_type }}"
+                            {{ field.field }}
 		            	{% else %}
 			                <div{% if not line.fields|length_is:"1" %} class="field-box"{% endif %}>
 			                    {% if field.is_checkbox %}
