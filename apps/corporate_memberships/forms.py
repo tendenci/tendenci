@@ -10,7 +10,7 @@ from tinymce.widgets import TinyMCE
 
 from memberships.fields import PriceInput
 from models import CorporateMembershipType, CorpApp, CorpField, CorporateMembership
-from corporate_memberships.utils import get_corpapp_default_fields_list
+from corporate_memberships.utils import get_corpapp_default_fields_list, update_auth_domains
 from corporate_memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from base.fields import SplitDateTimeField
 from perms.utils import is_admin
@@ -149,11 +149,12 @@ class CorpMembForm(forms.ModelForm):
                  ('archive','Archive'),))
     join_dt = SplitDateTimeField(label=_('Join Date/Time'),
         initial=datetime.now())
+    expiration_dt = SplitDateTimeField(label=_('Expiration Date/Time'))
     
     class Meta:
         model = CorporateMembership
         exclude = ('corp_app', 'guid', 'renewal', 'invoice', 'renew_dt', 
-                   'expiration_dt', 'approved', 'approved_denied_dt',
+                   'approved', 'approved_denied_dt',
                    'approved_denied_user',
                    'creator_username', 'owner', 'owner_username')
         
@@ -164,7 +165,7 @@ class CorpMembForm(forms.ModelForm):
         self.corp_app = corp_app
         self.field_objs = field_objs
         super(CorpMembForm, self).__init__(*args, **kwargs)
-        
+
         for field in field_objs:
             if field.field_type not in ['section_break', 'page_break']:
                 if field.field_name:
@@ -173,6 +174,8 @@ class CorpMembForm(forms.ModelForm):
                     field_key = "field_%s" % field.id
                 
                 self.fields[field_key] = field.get_field_class()
+                if not field.field_name and self.instance:
+                    self.fields[field_key].initial = field.get_value(self.instance)
             
         self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
         
@@ -188,16 +191,25 @@ class CorpMembForm(forms.ModelForm):
         """
         corporate_membership = super(CorpMembForm, self).save(commit=False)
         corporate_membership.corp_app = self.corp_app
-        corporate_membership.creator = user
-        corporate_membership.creator_username = user.username
+        
         corporate_membership.owner = user
         corporate_membership.owner_username = user.username
-        if not is_admin(user):
-            corporate_membership.status = 1
-            corporate_membership.status_detail = 'pending'
-            corporate_membership.join_dt = datetime.now()
+        
+        if not self.instance.pk:
+            mode = 'add'
+        else:
+            mode = 'edit'
             
-        # calculate the expiration dt
+        if mode == 'add':
+            corporate_membership.creator = user
+            corporate_membership.creator_username = user.username
+            
+            if not is_admin(user):
+                corporate_membership.status = 1
+                corporate_membership.status_detail = 'pending'
+                corporate_membership.join_dt = datetime.now()
+            
+            # calculate the expiration dt
         
         corporate_membership.save()
 
@@ -211,8 +223,17 @@ class CorpMembForm(forms.ModelForm):
                 if isinstance(value,list):
                     value = ','.join(value)
                 if not value: value=''
-
-                corporate_membership.fields.create(field_id=field_obj.id, value=value)
+                
+                if hasattr(field_obj, 'entry'):
+                    field_obj.entry.value = value
+                    field_obj.entry.save()
+                else:
+                    corporate_membership.fields.create(field_id=field_obj.id, value=value)
+                    
+        # update authorized domain if needed
+        if self.corp_app.authentication_method == 'email':
+            update_auth_domains(corporate_membership, corporate_membership.authorized_domains)
+        
         return corporate_membership
         
         
