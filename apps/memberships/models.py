@@ -27,6 +27,7 @@ FIELD_CHOICES = (
     ("header", _("Section Header")),
     ("description", _(" Description")),
     ("horizontal-rule", _("Horizontal Rule")),
+    ("membership-type", _("Membership Type")),
 )
 
 OBJECT_TYPE_CHOICES = (
