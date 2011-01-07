@@ -35,14 +35,6 @@
 
             <h2><a href="{{ resume.get_absolute_url }}">{% firstof resume.title "Untitled" %}</a></h2>
             <div class="content">{{ resume.description|striptags|truncatewords:20|safe }}</div>
-			<div class="meta">
-            	<div class="submitted">Released on {{ resume.release_dt|date:"long" }} by {{ resume.creator }}</div>
-            </div>
-
-            <!-- delete-resume form -->
-            <form name="resume-delete" method="POST" action="{% url resume.delete resume.pk %}">
-                <input type="hidden" name="action" value="delete">
-            </form>
 		</div>
 		{% endwith %}
 	{% empty %}
@@ -55,17 +47,6 @@
 {% endblock %}
 
 {% block extra_body %}
-    <script type="text/javascript">
-		$(document).ready(function(){
-
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_resume = confirm('Permenantly delete {% firstof MODULE_RESUMES_LABEL 'Resume' %}?');	// confirm
-				if(delete_resume) $(this).parents('.resume-wrap-search').find('form[name="resume-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
 	var iconrow = new dropdown({
