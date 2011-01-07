@@ -159,7 +159,7 @@ class AppFieldAdmin(admin.StackedInline):
 
 class AppAdmin(admin.ModelAdmin):
     fieldsets = (
-        (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'membership_types', 'use_captcha')},),
+        (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'membership_types', 'payment_methods', 'use_captcha')},),
         ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail')}),
     )
 
@@ -265,7 +265,7 @@ class AppAdmin(admin.ModelAdmin):
         field_list = [
             
                     (None, {
-                        'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'membership_types', 'use_captcha'),
+                        'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'membership_types', 'payment_methods', 'use_captcha'),
                     }),
 
                     ('Administrative', {

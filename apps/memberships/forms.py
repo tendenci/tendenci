@@ -203,13 +203,18 @@ class AppFieldForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AppFieldForm, self).__init__(*args, **kwargs)
 
-        # remove membership-type from field_type choices
+        # remove field_type options
         choices_dict = dict(self.fields['field_type'].choices)
         del choices_dict['membership-type']
+        del choices_dict['payment-method']
         self.fields['field_type'].choices = choices_dict.items()
 
         # user hidden widget for membership-type
         if self.instance.field_type == 'membership-type':
+            self.fields['field_type'] = CharField(label="Type", widget=HiddenInput)
+
+        # user hidden widget for payment-method
+        if self.instance.field_type == 'payment-method':
             self.fields['field_type'] = CharField(label="Type", widget=HiddenInput)
 
 class AppEntryForm(forms.ModelForm):
