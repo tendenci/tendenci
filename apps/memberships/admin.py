@@ -9,7 +9,7 @@ from user_groups.models import Group
 from event_logs.models import EventLog
 from perms.models import ObjectPermission 
 from memberships.models import  MembershipType, App, AppField
-from memberships.forms import AppForm, AppEntryForm
+from memberships.forms import AppForm, AppFieldForm, AppEntryForm
 from memberships.utils import get_default_membership_fields
 
 
@@ -153,6 +153,7 @@ class AppFieldAdmin(admin.StackedInline):
         )},),
     )
     model = AppField
+    form = AppFieldForm
     extra = 0
     template = "memberships/admin/stacked.html"
 
