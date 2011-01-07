@@ -35,8 +35,9 @@ FIELD_LAYOUT_CHOICES = (
                         ('0', _('Side by Side')),
                         )
 AUTH_METHOD_CHOICES = (
-                       ('email', _('E-mail')),
                        ('admin', _('Admin')),
+                       ('email', _('E-mail')),
+                       ('secret_code', _('Secret Code')),
                        )
 SIZE_CHOICES = (
                 ('s', _('Small')),
@@ -77,7 +78,7 @@ class CorporateMembershipType(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
- 
+        
     
 class CorporateMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -92,13 +93,14 @@ class CorporateMembership(TendenciBaseModel):
     phone = models.CharField(_('phone'), max_length=50, blank=True, null=True)
     email = models.CharField(_('email'), max_length=200,  blank=True, null=True)
     url = models.CharField(_('url'), max_length=100, blank=True, null=True)
-    authorized_domains = models.CharField(max_length=500, null=True)
+    authorized_domains = models.CharField(max_length=500, blank=True, null=True)
+    secret_code = models.CharField(max_length=50, blank=True, null=True)
     
     renewal = models.BooleanField(default=0)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time")) 
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True) 
-    expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
+    expiration_dt = models.DateTimeField(_("Expiration Date Time"), blank=True, null=True)
     approved = models.BooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
@@ -107,6 +109,7 @@ class CorporateMembership(TendenciBaseModel):
     corp_app = models.ForeignKey("CorpApp")
     
     class Meta:
+        permissions = (("view_corporatemembership", "Can view corporate membership"),)
         verbose_name = _("Corporate Membership")
         verbose_name_plural = _("Corporate Memberships")
     
@@ -117,6 +120,11 @@ class CorporateMembership(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
+        
+        
+class AuthorizedDomain(models.Model):
+    corporate_membership = models.ForeignKey("CorporateMembership", related_name="auth_domains")
+    name = models.CharField(max_length=100)
         
 class CorporateMembershipRep(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership", related_name="reps")
@@ -139,7 +147,8 @@ class CorporateMembershipArchive(models.Model):
     phone = models.CharField(_('phone'), max_length=50, blank=True)
     email = models.CharField(_('email'), max_length=200,  blank=True)
     url = models.CharField(_('url'), max_length=100, blank=True, null=True)
-    authorized_domains = models.CharField(max_length=500, null=True)
+    authorized_domains = models.CharField(max_length=500, blank=True, null=True)
+    secret_code = models.CharField(max_length=50, unique=True, blank=True, null=True)
     
     renewal = models.BooleanField(default=0)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
@@ -185,7 +194,7 @@ class CorpFieldEntry(models.Model):
 class CorpApp(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     name = models.CharField(_("Name"), max_length=155)
-    slug = models.SlugField(max_length=155, unique=True)
+    slug = models.SlugField(_("URL Path"), max_length=155, unique=True)
     corp_memb_type = models.ManyToManyField("CorporateMembershipType", verbose_name=_("Corp. Memb. Type"))
     authentication_method = models.CharField(_("Authentication Method"), choices=AUTH_METHOD_CHOICES, 
                                     default='admin', max_length=50, 
@@ -293,9 +302,23 @@ class CorpField(models.Model):
                     
                 return field_class(**field_args)
         return None
-            
-            
-                    
-            
-
     
+    def get_value(self, corporate_membership, **kwargs):
+        if self.field_type not in ['section_break', 'page_break']:
+            if self.field_name and self.object_type:
+                return eval("%s.%s" % (self.object_type, self.field_name))
+            else:
+                entry = self.field.filter(corporate_membership=corporate_membership)
+                
+                if entry:
+                    return entry[0].value
+        return ''
+    
+    def get_entry(self, corporate_membership, **kwargs):
+        if self.field_type not in ['section_break', 'page_break']:
+            if not (self.field_name and self.object_type):
+                entry = self.field.filter(corporate_membership=corporate_membership)
+                
+                if entry:
+                    return entry[0]
+        return None

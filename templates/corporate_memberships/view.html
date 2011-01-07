@@ -1,0 +1,62 @@
+{% extends "corporate_memberships/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% block title %}{{ corporate_membership.name|safe }}{% endblock %}
+{% block meta_description %}{{ corporate_membership.name|safe }}{% endblock %}
+{% block meta_keywords %}{{ corporate_membership.name|safe}}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    {#{% corpmemb_nav request.user corporate_membership %} #}
+
+    <div class="corpmemb-view">
+
+        <h1>View Corporate Membership Information</h1>
+
+		<div class="options">
+             <div class="quick-options">
+				{#{% corpmemb_options request.user corporate_membership %} #}	       
+             </div>
+		</div>
+
+		<div class="content">
+			{% has_perm request.user corporate_memberships.change_corpapp corporate_membership.corp_app as can_change %}
+			 {% if can_change %}
+			 <div class="corp-app-name">
+			 	App: <a href="{% url admin:corporate_memberships_corpapp_change corporate_membership.corp_app.id %}">{{ corporate_membership.corp_app.name }}</a>
+			 </div>
+			 {% endif %}
+			 
+			 {% for field_obj in field_objs %}
+			 	{% if field_obj.field_type == 'section_break' or field_obj.field_type == 'page_break' %}
+			 		<div class="section-break{% if field_obj.admin_only %} admin-only{% endif %}">
+			 			<h2>{{ field_obj.label }}</h2>
+			 		</div>
+			 		
+			 	{% else %}
+			 		<div><span class="label">{{ field_obj.label }}</span>: 
+			 			{% if  field_obj.is_date %}
+			 				{{ field_obj.value|date:'long' }}
+			 			{% else %}
+			 				{{ field_obj.value|safe|urlize }}
+			 			{% endif %}
+			 		</div>
+			 	{% endif %}
+			 {% endfor %}
+		</div>
+    </div>
+
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+   
+{% endblock %}
