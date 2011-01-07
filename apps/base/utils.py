@@ -97,6 +97,24 @@ def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_
                                       end_dt.strftime(format_date),
                                       end_dt.strftime(format_time))
             
+def validate_day_in_month(dt, day):
+    """
+        validate if this day is valid in the month of dt, and correct it if not.
+    """
+    if isinstance(dt, datetime):
+        try:
+            day = int(day)
+        except:
+            day = 1
+            
+        if day == 0: day = 1
+            
+        if day > dt.day:
+            # TODO: assign the last day of the month
+            day = dt.day
+    return day
+        
+            
 def get_unique_username(user):
     import uuid
     from django.contrib.auth.models import User

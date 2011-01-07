@@ -1,6 +1,8 @@
 import sys
 import uuid
 from hashlib import md5
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -10,6 +12,7 @@ from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
 from memberships.managers import MemberAppManager, MemberAppEntryManager
+from base.utils import validate_day_in_month
 
 
 FIELD_CHOICES = (
@@ -119,7 +122,108 @@ class MembershipType(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
- 
+    
+     
+    def get_expiration_dt(self, mode="join", join_dt=None, renew_dt=None):
+        """
+        Calculate the expiration date - for join (mode=join) or renew (mode=renew)
+        
+        Examples: 
+            
+            For join:
+            expiration_dt = membership_type.get_expiration_dt(join_dt=membership.join_dt)
+            
+            For renew:
+            expiration_dt = membership_type.get_expiration_dt(mode="renew", 
+                                                              join_dt=membership.join_dt,
+                                                              renew_dt=membership.renew_dt)
+        
+        """
+        now = datetime.now()  
+        
+        if not join_dt or not isinstance(join_dt, datetime):
+            join_dt = now
+        if mode == 'renew' and (not renew_dt or not isinstance(renew_dt, datetime)):
+            renew_dt = now
+        
+        if self.never_expires:
+            return None
+        
+        if self.period_type == 'rolling':
+            if self.period_unit == 'days':
+                return now + timedelta(days=self.period)
+            
+            elif self.period_unit == 'months':
+                return now + relativedelta(months=self.period)
+            
+            else: # if self.period_unit == 'years': 
+                if mode == 'join':
+                    if self.expiration_method == '0':
+                        # expires on end of full period
+                        return join_dt + relativedelta(years=self.period)
+                    else: # self.expiration_method == '1':
+                        # expires on ? days at signup (join) month
+                        if not self.expiration_method_day:
+                            self.expiration_method_day = 1
+                        expiration_dt = join_dt + relativedelta(years=self.period)
+                        self.expiration_method_day = validate_day_in_month(join_dt, self.expiration_method_day)
+                        
+                        return datetime(expiration_dt.year, join_dt.month, 
+                                                 self.expiration_method_day, expiration_dt.hour,
+                                                 expiration_dt.minute, expiration_dt.second)
+                else: # mode == 'renew'
+                    if self.renew_expiration_method == '0':
+                        # expires on the end of full period
+                        return renew_dt + relativedelta(years=self.period)
+                    elif self.renew_expiration_method == '1':
+                        # expires on the ? days at signup (join) month
+                        if not self.renew_expiration_day:
+                            self.renew_expiration_day = 1
+                        expiration_dt = renew_dt + relativedelta(years=self.period)
+                        self.expiration_method_day = validate_day_in_month(join_dt, self.expiration_method_day)
+                        return datetime(expiration_dt.year, join_dt.month, 
+                                                 self.expiration_method_day, expiration_dt.hour,
+                                                 expiration_dt.minute, expiration_dt.second)
+                    else:
+                        # expires on the ? days at renewal month
+                        if not self.renew_expiration_day2:
+                            self.renew_expiration_day2 = 1
+                        expiration_dt = renew_dt + relativedelta(years=self.period)
+                        return datetime(expiration_dt.year, renew_dt.month, 
+                                                 self.expiration_method_day, expiration_dt.hour,
+                                                 expiration_dt.minute, expiration_dt.second)
+                    
+                    
+        else: #self.period_type == 'fixed':
+            if self.fixed_expiration_method == '0':
+                # expired on the fixed day, fixed month, fixed year
+                if not self.fixed_expiration_day:
+                    self.fixed_expiration_day = 1
+                if not self.fixed_expiration_month:
+                    self.fixed_expiration_month = 1
+                if not self.fixed_expiration_year:
+                    self.fixed_expiration_year = now.year
+                    
+                return datetime(self.fixed_expiration_year, self.fixed_expiration_month, 
+                                self.fixed_expiration_day)
+            else: # self.fixed_expiration_method == '1'
+                # expired on the fixed day, fixed month of current year
+                if not self.fixed_expiration_day2:
+                    self.fixed_expiration_day2 = 1
+                if not self.fixed_expiration_month2:
+                    self.fixed_expiration_month2 = 1
+                
+                
+                expiration_dt = datetime(now.year, self.fixed_expiration_month2,
+                                        self.fixed_expiration_day2)
+                if self.fixed_expiration_rollover:
+                    if not self.fixed_expiration_rollover_days:
+                        self.fixed_expiration_rollover_days = 0
+                    if (now - expiration_dt).days <= self.fixed_expiration_rollover_days:
+                        expiration_dt = relativedelta(years=1)
+                        
+                return expiration_dt
+               
     
 class Membership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
