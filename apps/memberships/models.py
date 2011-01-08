@@ -12,7 +12,11 @@ from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
 from memberships.managers import MemberAppManager, MemberAppEntryManager
+
 from base.utils import validate_day_in_month
+
+from payments.models import PaymentMethod
+
 
 
 FIELD_CHOICES = (
@@ -30,6 +34,8 @@ FIELD_CHOICES = (
     ("header", _("Section Header")),
     ("description", _(" Description")),
     ("horizontal-rule", _("Horizontal Rule")),
+    ("membership-type", _("Membership Type")),
+    ("payment-method", _("Payment Method")),
 )
 
 OBJECT_TYPE_CHOICES = (
@@ -314,6 +320,7 @@ class App(TendenciBaseModel):
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
 
     membership_types = models.ManyToManyField(MembershipType, verbose_name="Membership Types")
+    payment_methods = models.ManyToManyField(PaymentMethod, verbose_name="Payment Methods")
 
     objects = MemberAppManager()
 
