@@ -25,7 +25,7 @@ def add(request, slug, template="corporate_memberships/add.html"):
     
     # if app requires login and they are not logged in, 
     # prompt them to log in and redirect them back to this add page
-    if corp_app.require_login and (not request.user.is_authenticated()):
+    if not request.user.is_authenticated():
         return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'), reverse('corp_memb.add', args=[corp_app.slug])))
     
     if not user_is_admin and corp_app.status <> 1 and corp_app.status_detail <> 'active':
@@ -60,10 +60,10 @@ def add(request, slug, template="corporate_memberships/add.html"):
     del form.fields['expiration_dt']
     
     # captcha
-    if corp_app.use_captcha and (not request.user.is_authenticated()):
-        field_objs.append(CorpField(label='Type the code below', field_name='captcha'))
-    else:
-        del form.fields['captcha']
+    #if corp_app.use_captcha and (not request.user.is_authenticated()):
+    #    field_objs.append(CorpField(label='Type the code below', field_name='captcha'))
+    #else:
+    #    del form.fields['captcha']
     
     if request.method == "POST":
         if form.is_valid():
@@ -148,7 +148,7 @@ def edit(request, id, template="corporate_memberships/edit.html"):
     form.fields['payment_method'].choices = get_payment_method_choices(request.user)
     
     # we don't need the captcha on edit because it requires login
-    del form.fields['captcha']
+    #del form.fields['captcha']
         
         
     if request.method == "POST":
