@@ -157,8 +157,15 @@ class AppFieldAdmin(admin.StackedInline):
     form = AppFieldForm
     extra = 0
     template = "memberships/admin/stacked.html"
+    
 
 class AppAdmin(admin.ModelAdmin):
+
+    def application_form_link(self):
+        return '<a href="%s">%s</a>' % (self.get_absolute_url(), self.slug)
+    application_form_link.allow_tags = True
+
+    list_display = ('name', application_form_link)
     fieldsets = (
         (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'membership_types', 'payment_methods', 'use_captcha')},),
         ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail')}),
@@ -176,6 +183,7 @@ class AppAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     form = AppForm
     add_form_template = "memberships/admin/add_form.html"
+
 
     def log_deletion(self, request, object, object_repr):
         super(AppAdmin, self).log_deletion(request, object, object_repr)

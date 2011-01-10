@@ -3,6 +3,7 @@ import uuid
 from hashlib import md5
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -345,6 +346,10 @@ class App(TendenciBaseModel):
 
     def __unicode__(self):
         return self.name
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('membership.application_details', [self.slug])
     
     def save(self, *args, **kwargs):
         if not self.id:
