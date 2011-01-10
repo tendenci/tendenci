@@ -1,6 +1,7 @@
 # python
 from datetime import datetime
 from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 
 from django.conf import settings
 
@@ -97,7 +98,7 @@ def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_
                                       end_dt.strftime(format_date),
                                       end_dt.strftime(format_time))
             
-def validate_day_in_month(dt, day):
+def day_validate(dt, day):
     """
         validate if this day is valid in the month of dt, and correct it if not.
     """
@@ -108,10 +109,13 @@ def validate_day_in_month(dt, day):
             day = 1
             
         if day == 0: day = 1
-            
-        if day > dt.day:
-            # TODO: assign the last day of the month
-            day = dt.day
+        
+        # the last day of this month
+        last_day_of_month = (datetime(dt.year, dt.month, 1) + relativedelta(months=1) - timedelta(days=1)).day
+         
+        # if last_day_of_month = 31 and day = 32, set day = 31   
+        if day > last_day_of_month:
+            day = last_day_of_month
     return day
         
             
