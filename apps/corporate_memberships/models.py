@@ -207,8 +207,8 @@ class CorpApp(TendenciBaseModel):
                                    help_text='Notes for editor. Will not display on the application form.')
     confirmation_text = models.TextField(_("Confirmation Text"), blank=True, null=True)
    
-    use_captcha = models.BooleanField(_("Use Captcha"), default=1)
-    require_login = models.BooleanField(_("Require User Login"), default=0)
+    #use_captcha = models.BooleanField(_("Use Captcha"), default=1)
+    #require_login = models.BooleanField(_("Require User Login"), default=0)
     
     class Meta:
         permissions = (("view_corpapp","Can view corporate membership application"),)
