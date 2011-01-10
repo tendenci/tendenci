@@ -5,7 +5,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import FileSystemStorage
 
-from captcha.fields import CaptchaField
+#from captcha.fields import CaptchaField
 from tinymce.widgets import TinyMCE
 
 from memberships.fields import PriceInput
@@ -72,8 +72,8 @@ class CorpAppForm(forms.ModelForm):
                   'description',
                   'confirmation_text',
                   'notes',
-                  'use_captcha',
-                  'require_login',
+                  #'use_captcha',
+                  #'require_login',
                   'status',
                   'status_detail',
                   )
@@ -177,7 +177,7 @@ class CorpMembForm(forms.ModelForm):
                 if not field.field_name and self.instance:
                     self.fields[field_key].initial = field.get_value(self.instance)
             
-        self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
+        #self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
         
     def clean_corporate_membership_type(self):
         if self.cleaned_data['corporate_membership_type']:
