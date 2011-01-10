@@ -174,7 +174,6 @@ class MembershipType(TendenciBaseModel):
                         expiration_dt = join_dt + relativedelta(years=self.period)
                         self.expiration_method_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
                                                                     self.expiration_method_day)
-                        print self.expiration_method_day
                         
                         return datetime(expiration_dt.year, join_dt.month, 
                                                  self.expiration_method_day, expiration_dt.hour,
@@ -357,7 +356,7 @@ class AppFieldManager(models.Manager):
     Only show visible fields when displaying actual form..
     """
     def visible(self):
-        return self.filter(visible=True)
+        return self.filter(visible=True).order_by('pk')
 
 class AppField(models.Model):
     app = models.ForeignKey("App", related_name="fields")
@@ -385,19 +384,17 @@ class AppField(models.Model):
 
     objects = AppFieldManager()
 
-    def save(self, *args, **kwargs):
-        model = self.__class__
-        
-        if self.position is None:
-            # Append
-            try:
-                last = model.objects.order_by('-position')[0]
-                self.position = last.position + 1
-            except IndexError:
-                # First row
-                self.position = 0
-        
-        return super(AppField, self).save(*args, **kwargs)
+#    def save(self, *args, **kwargs):
+#        if self.position is None:
+#            # Append
+#            try:
+#                last = model.objects.order_by('-position')[0]
+#                self.position = last.position + 1
+#            except IndexError:
+#                # First row
+#                self.position = 0
+#
+#        return super(AppField, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _("Field")

@@ -192,9 +192,6 @@ class AppForm(TendenciBaseForm):
 
     class Meta:
         model = App
-        widgets = {
-#            'membership_types': forms.CheckboxSelectMultiple(),
-        }
 
 class AppFieldForm(forms.ModelForm):
     class Meta:
