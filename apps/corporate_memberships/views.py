@@ -70,6 +70,9 @@ def add(request, slug, template="corporate_memberships/add.html"):
             corporate_membership = form.save(request.user)
             
             # calculate the expiration
+            memb_type = corporate_membership.corporate_membership_type.membership_type
+            corporate_membership.expiration_dt = memb_type.get_expiration_dt(join_dt=corporate_membership.join_dt)
+            corporate_membership.save()
             
             # generate invoice
             
