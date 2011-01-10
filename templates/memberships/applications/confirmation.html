@@ -14,17 +14,17 @@
 <div class="t">
 	{# forms_nav request.user #}
 	<div class="form-builder-wrap">
-		<h2>{{ app_entry.app.name }}: {{ app_entry.app.confirmation_text }}</h2>
+		<h2>{{ entry.app.name }}: {{ entry.app.confirmation_text }}</h2>
 
          <div class="quick-options">
-			{# forms_entry_options request.user entry #}       
+			{# forms_entry_options request.user entry #}
          </div>
-    	{% for field in app_entry.fields.all %}
+    	{% for field in entry.fields.all %}
     		{% if field.field.field_type == 'FileField' %}
     		<p>
     			<strong>{{ field.field.label }}</strong><br />
     			<a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
-    		</p>   		
+    		</p>
     		{% else %}
     		<p>
     			<strong>{{ field.field.label }}</strong><br />
@@ -35,8 +35,6 @@
     </div>
 </div>
 {% endblock %}
-
-
 
 {% block extra_body %}
 {% endblock %}

@@ -77,7 +77,7 @@ def application_details(request, slug=None, template_name="memberships/applicati
                         'renewal':membership_type.renewal,
                         'join_dt':datetime.now(),
                         'renew_dt':datetime.now() + timedelta(30), # TODO: calculate renew_dt
-                        'expiration_dt': datetime.now() + timedelta(365), # TODO: calculate expiration_dt
+                        'expiration_dt': membership_type.get_expiration_dt(join_dt = datetime.now()),
                         'approved': True,
                         'approved_denied_dt': datetime.now(),
                         'approved_denied_user': None,
@@ -109,13 +109,13 @@ def application_confirmation(request, hash=None, template_name="memberships/appl
     sqs = AppEntry.objects.search(query, user=request.user)
 
     if sqs:
-        app_entry = sqs[0].object
+        entry = sqs[0].object
     else:
         raise Http404
 
     # TODO: log this event; we do not have an id for this action
 
-    return render_to_response(template_name, {'app_entry': app_entry}, 
+    return render_to_response(template_name, {'entry': entry},
         context_instance=RequestContext(request))
 
 @login_required
