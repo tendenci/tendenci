@@ -13,7 +13,7 @@ from directories.models import Directory
 from user_groups.models import Group
 from memberships.managers import MemberAppManager, MemberAppEntryManager
 
-from base.utils import validate_day_in_month
+from base.utils import day_validate
 
 from payments.models import PaymentMethod
 
@@ -130,9 +130,9 @@ class MembershipType(TendenciBaseModel):
         super(self.__class__, self).save(*args, **kwargs)
     
      
-    def get_expiration_dt(self, mode="join", join_dt=None, renew_dt=None):
+    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
         """
-        Calculate the expiration date - for join (mode=join) or renew (mode=renew)
+        Calculate the expiration date - for join or renew (renewal=True)
         
         Examples: 
             
@@ -140,16 +140,16 @@ class MembershipType(TendenciBaseModel):
             expiration_dt = membership_type.get_expiration_dt(join_dt=membership.join_dt)
             
             For renew:
-            expiration_dt = membership_type.get_expiration_dt(mode="renew", 
+            expiration_dt = membership_type.get_expiration_dt(renewal=1, 
                                                               join_dt=membership.join_dt,
                                                               renew_dt=membership.renew_dt)
         
         """
-        now = datetime.now()  
+        now = datetime.now()
         
         if not join_dt or not isinstance(join_dt, datetime):
             join_dt = now
-        if mode == 'renew' and (not renew_dt or not isinstance(renew_dt, datetime)):
+        if renewal and (not renew_dt or not isinstance(renew_dt, datetime)):
             renew_dt = now
         
         if self.never_expires:
@@ -162,8 +162,8 @@ class MembershipType(TendenciBaseModel):
             elif self.period_unit == 'months':
                 return now + relativedelta(months=self.period)
             
-            else: # if self.period_unit == 'years': 
-                if mode == 'join':
+            else: # if self.period_unit == 'years':
+                if not renewal:
                     if self.expiration_method == '0':
                         # expires on end of full period
                         return join_dt + relativedelta(years=self.period)
@@ -172,12 +172,14 @@ class MembershipType(TendenciBaseModel):
                         if not self.expiration_method_day:
                             self.expiration_method_day = 1
                         expiration_dt = join_dt + relativedelta(years=self.period)
-                        self.expiration_method_day = validate_day_in_month(join_dt, self.expiration_method_day)
+                        self.expiration_method_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
+                                                                    self.expiration_method_day)
+                        print self.expiration_method_day
                         
                         return datetime(expiration_dt.year, join_dt.month, 
                                                  self.expiration_method_day, expiration_dt.hour,
                                                  expiration_dt.minute, expiration_dt.second)
-                else: # mode == 'renew'
+                else: # renewal = True
                     if self.renew_expiration_method == '0':
                         # expires on the end of full period
                         return renew_dt + relativedelta(years=self.period)
@@ -186,7 +188,8 @@ class MembershipType(TendenciBaseModel):
                         if not self.renew_expiration_day:
                             self.renew_expiration_day = 1
                         expiration_dt = renew_dt + relativedelta(years=self.period)
-                        self.expiration_method_day = validate_day_in_month(join_dt, self.expiration_method_day)
+                        self.expiration_method_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
+                                                                    self.expiration_method_day)
                         return datetime(expiration_dt.year, join_dt.month, 
                                                  self.expiration_method_day, expiration_dt.hour,
                                                  expiration_dt.minute, expiration_dt.second)
@@ -195,8 +198,10 @@ class MembershipType(TendenciBaseModel):
                         if not self.renew_expiration_day2:
                             self.renew_expiration_day2 = 1
                         expiration_dt = renew_dt + relativedelta(years=self.period)
+                        self.renew_expiration_day2 = day_validate(datetime(expiration_dt.year, renew_dt.month, 1), 
+                                                                    self.renew_expiration_day2)
                         return datetime(expiration_dt.year, renew_dt.month, 
-                                                 self.expiration_method_day, expiration_dt.hour,
+                                                 self.renew_expiration_day2, expiration_dt.hour,
                                                  expiration_dt.minute, expiration_dt.second)
                     
                     
@@ -207,8 +212,14 @@ class MembershipType(TendenciBaseModel):
                     self.fixed_expiration_day = 1
                 if not self.fixed_expiration_month:
                     self.fixed_expiration_month = 1
+                if self.fixed_expiration_month > 12:
+                    self.fixed_expiration_month = 12
                 if not self.fixed_expiration_year:
                     self.fixed_expiration_year = now.year
+                    
+                self.fixed_expiration_day = day_validate(datetime(self.fixed_expiration_year, 
+                                                                  self.fixed_expiration_month, 1), 
+                                                                    self.fixed_expiration_day)
                     
                 return datetime(self.fixed_expiration_year, self.fixed_expiration_month, 
                                 self.fixed_expiration_day)
@@ -218,7 +229,12 @@ class MembershipType(TendenciBaseModel):
                     self.fixed_expiration_day2 = 1
                 if not self.fixed_expiration_month2:
                     self.fixed_expiration_month2 = 1
+                if self.fixed_expiration_month2 > 12:
+                    self.fixed_expiration_month2 = 12
                 
+                self.fixed_expiration_day2 = day_validate(datetime(now.year, 
+                                                                  self.fixed_expiration_month2, 1), 
+                                                                    self.fixed_expiration_day2)
                 
                 expiration_dt = datetime(now.year, self.fixed_expiration_month2,
                                         self.fixed_expiration_day2)
@@ -226,7 +242,7 @@ class MembershipType(TendenciBaseModel):
                     if not self.fixed_expiration_rollover_days:
                         self.fixed_expiration_rollover_days = 0
                     if (now - expiration_dt).days <= self.fixed_expiration_rollover_days:
-                        expiration_dt = relativedelta(years=1)
+                        expiration_dt = expiration_dt + relativedelta(years=1)
                         
                 return expiration_dt
                
