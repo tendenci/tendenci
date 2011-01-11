@@ -12,31 +12,47 @@
 
 {% block body %}
 <div class="t">
-	{# forms_nav request.user #}
-	<div class="form-builder-wrap">
-		<h2>{{ app_entry.app.name }}: {{ app_entry.app.confirmation_text }}</h2>
 
-         <div class="quick-options">
-			{# forms_entry_options request.user entry #}       
-         </div>
-    	{% for field in app_entry.fields.all %}
+    <div class="application-entry-wrap">
+
+        <h1>{{ entry.app.name }} Application Entry Confirmation</h1>
+        <div class="entry_dt">Submitted {{ entry.entry_time|date_short }}</div>
+
+        {% if entry.membership %}
+            {% if entry.membership.approved %}
+                <div class="approved_dt">Approved on
+                    {{ entry.membership.approved_denied_dt|date_short }}
+                    by <a href="{% url profile entry.membership.approved_denied_user %}">
+                    {{ entry.membership.approved_denied_user }}</a></div>
+            {% else %}
+                <div class="denied_dt">Denied on
+                    {{ entry.membership.approved_denied_dt|date_short }}
+                    by {{ entry.membership.approved_denied_user }}</div>
+            {% endif %}
+        {% else %}
+            <div class="pending">Pending</div>
+        {% endif %}
+
+    	{% for field in entry.fields.all %}
     		{% if field.field.field_type == 'FileField' %}
-    		<p>
-    			<strong>{{ field.field.label }}</strong><br />
-    			<a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
-    		</p>   		
+            <div class="field">
+                <div class="label">{{ field.field.label }}</div>
+    			<div class="value">
+                    <a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
+    			</div>
+            </div>
     		{% else %}
-    		<p>
-    			<strong>{{ field.field.label }}</strong><br />
-    			<em>{{ field.value }}</em>
-    		</p>
+            <div class="field">
+                <div class="label">{{ field.field.label }}</div>
+    			<div class="value">{{ field.value }}</div>
+            </div>
     		{% endif %}
     	{% endfor %}
+
     </div>
+
 </div>
 {% endblock %}
-
-
 
 {% block extra_body %}
 {% endblock %}

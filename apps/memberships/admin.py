@@ -11,6 +11,7 @@ from perms.models import ObjectPermission
 from memberships.models import  MembershipType, App, AppField
 from memberships.forms import AppForm, AppFieldForm, AppEntryForm
 from memberships.utils import get_default_membership_fields
+from payments.models import PaymentMethod
 
 
 class MembershipTypeAdmin(admin.ModelAdmin):
@@ -156,8 +157,15 @@ class AppFieldAdmin(admin.StackedInline):
     form = AppFieldForm
     extra = 0
     template = "memberships/admin/stacked.html"
+    
 
 class AppAdmin(admin.ModelAdmin):
+
+    def application_form_link(self):
+        return '<a href="%s">%s</a>' % (self.get_absolute_url(), self.slug)
+    application_form_link.allow_tags = True
+
+    list_display = ('name', application_form_link)
     fieldsets = (
         (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'membership_types', 'payment_methods', 'use_captcha')},),
         ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail')}),
@@ -175,6 +183,7 @@ class AppAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     form = AppForm
     add_form_template = "memberships/admin/add_form.html"
+
 
     def log_deletion(self, request, object, object_repr):
         super(AppAdmin, self).log_deletion(request, object, object_repr)
@@ -219,11 +228,7 @@ class AppAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, extra_context={}):
 
-#        self.inline_instances = []
-#        inline_instance = AppFieldAdmin(self.model, self.admin_site)
-#        self.inline_instances.append(inline_instance)
-
-#        self.inlines = [FieldInline]
+#        self.inlines = [AppFieldAdmin]
 #        self.inline_instances = []
 #        for inline_class in self.inlines:
 #            inline_instance = inline_class(self.model, self.admin_site)
@@ -232,33 +237,12 @@ class AppAdmin(admin.ModelAdmin):
         extra_context.update({
             'excluded_fields':['field_type', 'no_duplicates', 'admin_only'],
             'excluded_lines':[2, 3],
-            'fields_to_check':['membership-type','payment-method']
-        });
+#            'fields_to_check':['membership-type','payment-method'],
+        })
+        extra_context.update(extra_context)
 
         return super(AppAdmin, self).change_view(request, object_id, extra_context)
 
-#        self.inlines = [FieldInline]
-#        self.inline_instances = []
-#        for inline_class in self.inlines:
-#            inline_instance = inline_class(self.model, self.admin_site)
-#            self.inline_instances.append(inline_instance)
-#        # exclude fields for corporate_membership_type and payment_method
-#        excluded_lines = [2, 3]  # exclude lines in inline field_set - 'choices', 'field_layout', 'size'
-#        excluded_fields = ['field_type', 'no_duplicates', 'admin_only']
-#        fields_to_check = ['corporate_membership_type', 'payment_method']
-#
-#        if extra_context:
-#            extra_context.update({
-#                                  'excluded_lines': excluded_lines,
-#                                  "excluded_fields":excluded_fields,
-#                                  'fields_to_check': fields_to_check
-#                                  })
-#        else:
-#            extra_context = {'excluded_lines': excluded_lines,
-#                             "excluded_fields":excluded_fields,
-#                             'fields_to_check': fields_to_check}
-#
-#        return super(CorpAppAdmin, self).change_view(request, object_id, extra_context)
 
     def get_fieldsets(self, request, instance=None):
 
@@ -307,16 +291,19 @@ class AppAdmin(admin.ModelAdmin):
                 app_field = AppField(**field_kwarg)
                 app_field.save()
 
-        form.save_m2m()
 
-        # TODO: Fix relational queryset (e.g. app.fields.visible()); Pull latest records
+        form.save_m2m()
 
         for field in app.fields.visible():
             if 'membership-type' in field.field_type:
                 field.content_type = ContentType.objects.get_for_model(MembershipType)
                 choices = [item.name for item in app.membership_types.all()]
                 field.choices = ", ".join(choices)
-            elif 'first-name' in field.field_type:
+            elif 'payment-method' in field.field_type:
+                field.content_type = ContentType.objects.get_for_model(PaymentMethod)
+                choices = [item.human_name for item in app.payment_methods.all()]
+                field.choices = ", ".join(choices)
+            if 'first-name' in field.field_type:
                 field.content_type = ContentType.objects.get_for_model(User)
             elif 'last-name' in field.field_type:
                 field.content_type = ContentType.objects.get_for_model(User)
@@ -324,6 +311,7 @@ class AppAdmin(admin.ModelAdmin):
                 field.content_type = ContentType.objects.get_for_model(User)
 
             field.save()
+
 
         # permissions
         if add:
