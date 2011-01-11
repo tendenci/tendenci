@@ -85,7 +85,7 @@ class MembershipTypeAdmin(admin.ModelAdmin):
         type_exp_method = form.cleaned_data['type_exp_method']
         type_exp_method_list = type_exp_method.split(",")
         for i, field in enumerate(form.type_exp_method_fields):
-            if field=='fixed_expiration_rollover':
+            if field=='fixed_option2_can_rollover':
                 if type_exp_method_list[i]=='':
                     type_exp_method_list[i] = ''
             else:
