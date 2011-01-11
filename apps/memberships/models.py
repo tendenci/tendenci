@@ -88,21 +88,21 @@ class MembershipType(TendenciBaseModel):
     period_unit = models.CharField(choices=PERIOD_UNIT_CHOICES, max_length=10)
     period_type = models.CharField(_("Period Type"),default='rolling', choices=PERIOD_CHOICES, max_length=10)
     
-    expiration_method = models.CharField(_('Expires On'), max_length=50)
-    expiration_method_day = models.IntegerField(_('Expiration Day'), default=0)
-    renew_expiration_method = models.CharField(_('Renewal Expires On'), max_length=50)
-    renew_expiration_day = models.IntegerField(default=0)
-    renew_expiration_day2 = models.IntegerField(default=0)
+    rolling_option = models.CharField(_('Expires On'), max_length=50)
+    rolling_option1_day = models.IntegerField(_('Expiration Day'), default=0)
+    rolling_renew_option = models.CharField(_('Renewal Expires On'), max_length=50)
+    rolling_renew_option1_day = models.IntegerField(default=0)
+    rolling_renew_option2_day = models.IntegerField(default=0)
     
-    fixed_expiration_method = models.CharField(_('Expires On'), max_length=50)
-    fixed_expiration_day = models.IntegerField(default=0)
-    fixed_expiration_month = models.IntegerField(default=0)
-    fixed_expiration_year = models.IntegerField(default=0)
-    fixed_expiration_day2 = models.IntegerField(default=0)
-    fixed_expiration_month2 = models.IntegerField(default=0)
+    fixed_option = models.CharField(_('Expires On'), max_length=50)
+    fixed_option1_day = models.IntegerField(default=0)
+    fixed_option1_month = models.IntegerField(default=0)
+    fixed_option1_year = models.IntegerField(default=0)
+    fixed_option2_day = models.IntegerField(default=0)
+    fixed_option2_month = models.IntegerField(default=0)
     
-    fixed_expiration_rollover = models.BooleanField(_("Allow Rollover"), default=0)
-    fixed_expiration_rollover_days = models.IntegerField(default=0, 
+    fixed_option2_can_rollover = models.BooleanField(_("Allow Rollover"), default=0)
+    fixed_option2_rollover_days = models.IntegerField(default=0, 
             help_text=_("Membership signups after this date covers the following calendar year as well."))
     
     renewal_period_start = models.IntegerField(_('Renewal Period Start'), default=0, 
@@ -165,83 +165,83 @@ class MembershipType(TendenciBaseModel):
             
             else: # if self.period_unit == 'years':
                 if not renewal:
-                    if self.expiration_method == '0':
+                    if self.rolling_option == '0':
                         # expires on end of full period
                         return join_dt + relativedelta(years=self.period)
                     else: # self.expiration_method == '1':
                         # expires on ? days at signup (join) month
-                        if not self.expiration_method_day:
-                            self.expiration_method_day = 1
+                        if not self.rolling_option1_day:
+                            self.rolling_option1_day = 1
                         expiration_dt = join_dt + relativedelta(years=self.period)
-                        self.expiration_method_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
-                                                                    self.expiration_method_day)
+                        self.rolling_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
+                                                                    self.rolling_option1_day)
                         
                         return datetime(expiration_dt.year, join_dt.month, 
-                                                 self.expiration_method_day, expiration_dt.hour,
+                                                 self.rolling_option1_day, expiration_dt.hour,
                                                  expiration_dt.minute, expiration_dt.second)
                 else: # renewal = True
-                    if self.renew_expiration_method == '0':
+                    if self.rolling_renew_option == '0':
                         # expires on the end of full period
                         return renew_dt + relativedelta(years=self.period)
-                    elif self.renew_expiration_method == '1':
+                    elif self.rolling_renew_option == '1':
                         # expires on the ? days at signup (join) month
-                        if not self.renew_expiration_day:
-                            self.renew_expiration_day = 1
+                        if not self.rolling_renew_option1_day:
+                            self.rolling_renew_option1_day = 1
                         expiration_dt = renew_dt + relativedelta(years=self.period)
-                        self.expiration_method_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
-                                                                    self.expiration_method_day)
+                        self.rolling_renew_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
+                                                                    self.rolling_renew_option1_day)
                         return datetime(expiration_dt.year, join_dt.month, 
-                                                 self.expiration_method_day, expiration_dt.hour,
+                                                 self.rolling_renew_option1_day, expiration_dt.hour,
                                                  expiration_dt.minute, expiration_dt.second)
                     else:
                         # expires on the ? days at renewal month
-                        if not self.renew_expiration_day2:
-                            self.renew_expiration_day2 = 1
+                        if not self.rolling_renew_option2_day:
+                            self.rolling_renew_option2_day = 1
                         expiration_dt = renew_dt + relativedelta(years=self.period)
-                        self.renew_expiration_day2 = day_validate(datetime(expiration_dt.year, renew_dt.month, 1), 
-                                                                    self.renew_expiration_day2)
+                        self.rolling_renew_option2_day = day_validate(datetime(expiration_dt.year, renew_dt.month, 1), 
+                                                                    self.rolling_renew_option2_day)
                         return datetime(expiration_dt.year, renew_dt.month, 
-                                                 self.renew_expiration_day2, expiration_dt.hour,
+                                                 self.rolling_renew_option2_day, expiration_dt.hour,
                                                  expiration_dt.minute, expiration_dt.second)
                     
                     
         else: #self.period_type == 'fixed':
-            if self.fixed_expiration_method == '0':
+            if self.fixed_option == '0':
                 # expired on the fixed day, fixed month, fixed year
-                if not self.fixed_expiration_day:
-                    self.fixed_expiration_day = 1
-                if not self.fixed_expiration_month:
-                    self.fixed_expiration_month = 1
-                if self.fixed_expiration_month > 12:
-                    self.fixed_expiration_month = 12
-                if not self.fixed_expiration_year:
-                    self.fixed_expiration_year = now.year
+                if not self.fixed_option1_day:
+                    self.fixed_option1_day = 1
+                if not self.fixed_option1_month:
+                    self.fixed_option1_month = 1
+                if self.fixed_option1_month > 12:
+                    self.fixed_option1_month = 12
+                if not self.fixed_option1_year:
+                    self.fixed_option1_year = now.year
                     
-                self.fixed_expiration_day = day_validate(datetime(self.fixed_expiration_year, 
+                self.fixed_option1_day = day_validate(datetime(self.fixed_expiration_year, 
                                                                   self.fixed_expiration_month, 1), 
-                                                                    self.fixed_expiration_day)
+                                                                    self.fixed_option1_day)
                     
-                return datetime(self.fixed_expiration_year, self.fixed_expiration_month, 
-                                self.fixed_expiration_day)
-            else: # self.fixed_expiration_method == '1'
+                return datetime(self.fixed_option1_year, self.fixed_option1_month, 
+                                self.fixed_option1_day)
+            else: # self.fixed_option == '1'
                 # expired on the fixed day, fixed month of current year
-                if not self.fixed_expiration_day2:
-                    self.fixed_expiration_day2 = 1
-                if not self.fixed_expiration_month2:
-                    self.fixed_expiration_month2 = 1
-                if self.fixed_expiration_month2 > 12:
-                    self.fixed_expiration_month2 = 12
+                if not self.fixed_option2_day:
+                    self.fixed_option2_day = 1
+                if not self.fixed_option2_month:
+                    self.fixed_option2_month = 1
+                if self.fixed_option2_month > 12:
+                    self.fixed_option2_month = 12
                 
                 self.fixed_expiration_day2 = day_validate(datetime(now.year, 
-                                                                  self.fixed_expiration_month2, 1), 
-                                                                    self.fixed_expiration_day2)
+                                                                  self.fixed_option2_month, 1), 
+                                                                    self.fixed_option2_day)
                 
-                expiration_dt = datetime(now.year, self.fixed_expiration_month2,
-                                        self.fixed_expiration_day2)
-                if self.fixed_expiration_rollover:
-                    if not self.fixed_expiration_rollover_days:
-                        self.fixed_expiration_rollover_days = 0
-                    if (now - expiration_dt).days <= self.fixed_expiration_rollover_days:
+                expiration_dt = datetime(now.year, self.fixed_option2_month,
+                                        self.fixed_option2_day)
+                if self.fixed_option2_can_rollover:
+                    if not self.fixed_option2_rollover_days:
+                        self.fixed_option2_rollover_days = 0
+                    if (now - expiration_dt).days <= self.fixed_option2_rollover_days:
                         expiration_dt = expiration_dt + relativedelta(years=1)
                         
                 return expiration_dt

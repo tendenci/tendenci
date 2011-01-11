@@ -4,6 +4,8 @@ from django.utils import simplejson
 from site_settings.utils import get_setting
 from perms.utils import is_admin
 from corporate_memberships.models import CorpField, AuthorizedDomain
+from invoices.models import Invoice
+from payments.models import Payment
 
 # get the corpapp default fields list from json
 def get_corpapp_default_fields_list():
@@ -37,6 +39,43 @@ def get_payment_method_choices(user):
                 ('cash', 'Cash'),
                 ('cc', 'Credit Card'),)
         
+def corp_memb_inv_add(user, corp_memb, **kwargs): 
+    """
+    Add an invoice for this corporate membership
+    """
+    if not corp_memb.invoice:
+        inv = Invoice()
+        inv.invoice_object_type = "corporate_membership"
+        inv.invoice_object_type_id = corp_memb.id
+        inv.assign_corp_memb_info(user, corp_memb)
+        if not corp_memb.renewal:
+            inv.total = corp_memb.corporate_membership_type.price
+        else:
+            inv.total = corp_memb.corporate_membership_type.renewal_price
+        inv.subtotal = inv.total
+        inv.balance = inv.total
+        inv.estimate = 1
+        inv.status_detail = 'estimate'
+        inv.save(user)
+        
+        # update corp_memb
+        corp_memb.invoice = inv
+        corp_memb.save()
+        
+        if is_admin(user):
+            if corp_memb.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
+                boo_inv = inv.tender(user) 
+                
+                # payment
+                payment = Payment()
+                boo = payment.payments_pop_by_invoice_user(user, inv, inv.guid)
+                payment.mark_as_paid()
+                payment.method = corp_memb.payment_method
+                payment.save(user)
+                
+                # this will make accounting entry
+                inv.make_payment(user, payment.amount)
+        
 def update_auth_domains(corp_memb, domain_names):
     """
         Update the authorized domains for this corporate membership.
@@ -55,7 +94,7 @@ def update_auth_domains(corp_memb, domain_names):
                     auth_domain.delete()
                     
         # add the rest of the domain
-        for name in domain_names:
+        for name in dname_list:
             auth_domain = AuthorizedDomain(corporate_membership=corp_memb, name=name)
             auth_domain.save()
             
