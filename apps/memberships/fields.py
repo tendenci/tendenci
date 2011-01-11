@@ -18,8 +18,14 @@ class TypeExpMethodField(forms.MultiValueField):
         
     def compress(self, data_list):
         for i in range(0, len(data_list)):
-            if data_list[i] == None or data_list[i] == False:
+            if type(data_list[i]) is bool:
+                if data_list[i] == False:
+                    data_list[i] = ''
+                else:
+                    data_list[i] = '1'
+            if data_list[i] == None:
                 data_list[i] = ''
+        
         if data_list:
             return ','.join(data_list)
         return None

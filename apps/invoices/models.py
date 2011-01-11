@@ -307,6 +307,34 @@ class Invoice(models.Model):
         self.ship_date = datetime.now()
         self.message = 'Thank You.'
         self.status = True
+        
+    def assign_corp_memb_info(self, user, corp_memb, **kwargs):
+        self.title = "Corporate Membership Invoice"
+        self.invoice_date = datetime.now()
+        self.bill_to = corp_memb.name
+        self.bill_to_company = corp_memb.name
+        self.bill_to_address = corp_memb.address
+        self.bill_to_city = corp_memb.city
+        self.bill_to_state = corp_memb.state
+        self.bill_to_zip_code = corp_memb.zip
+        self.bill_to_country = corp_memb.country
+        self.bill_to_phone = corp_memb.phone
+        self.bill_to_email = corp_memb.email
+        self.ship_to = corp_memb.name
+        self.ship_to_company = corp_memb.name
+        self.ship_to_address = corp_memb.address
+        self.ship_to_city = corp_memb.city
+        self.ship_to_state = corp_memb.state
+        self.ship_to_zip_code = corp_memb.zip
+        self.ship_to_country = corp_memb.country
+        self.ship_to_phone = corp_memb.phone
+        self.ship_to_email =corp_memb.email
+        self.terms = "Due on Receipt"
+        self.due_date = datetime.now()
+        self.ship_date = datetime.now()
+        self.message = 'Thank You.'
+        self.status = True
+        
      
     # this function is to make accounting entries    
     def make_payment(self, user, amount):
