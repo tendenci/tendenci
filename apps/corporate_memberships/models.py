@@ -93,7 +93,7 @@ class CorporateMembership(TendenciBaseModel):
     phone = models.CharField(_('phone'), max_length=50, blank=True, null=True)
     email = models.CharField(_('email'), max_length=200,  blank=True, null=True)
     url = models.CharField(_('url'), max_length=100, blank=True, null=True)
-    authorized_domains = models.CharField(max_length=500, blank=True, null=True)
+    #authorized_domains = models.CharField(max_length=500, blank=True, null=True)
     secret_code = models.CharField(max_length=50, blank=True, null=True)
     
     renewal = models.BooleanField(default=0)
@@ -106,6 +106,8 @@ class CorporateMembership(TendenciBaseModel):
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
+    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    
     corp_app = models.ForeignKey("CorpApp")
     
     class Meta:
@@ -114,7 +116,7 @@ class CorporateMembership(TendenciBaseModel):
         verbose_name_plural = _("Corporate Memberships")
     
     def __unicode__(self):
-        return "%s (%s)" % (self.user.get_full_name(), self.member_number)
+        return "%s" % (self.name)
     
     def save(self, *args, **kwargs):
         if not self.id:
@@ -147,7 +149,7 @@ class CorporateMembershipArchive(models.Model):
     phone = models.CharField(_('phone'), max_length=50, blank=True)
     email = models.CharField(_('email'), max_length=200,  blank=True)
     url = models.CharField(_('url'), max_length=100, blank=True, null=True)
-    authorized_domains = models.CharField(max_length=500, blank=True, null=True)
+    #authorized_domains = models.CharField(max_length=500, blank=True, null=True)
     secret_code = models.CharField(max_length=50, unique=True, blank=True, null=True)
     
     renewal = models.BooleanField(default=0)
@@ -306,6 +308,8 @@ class CorpField(models.Model):
     def get_value(self, corporate_membership, **kwargs):
         if self.field_type not in ['section_break', 'page_break']:
             if self.field_name and self.object_type:
+                if self.field_name == 'authorized_domains':
+                    return ', '.join([ad.name for ad in corporate_membership.auth_domains.all()])
                 return eval("%s.%s" % (self.object_type, self.field_name))
             else:
                 entry = self.field.filter(corporate_membership=corporate_membership)
