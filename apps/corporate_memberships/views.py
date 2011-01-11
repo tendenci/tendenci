@@ -6,14 +6,24 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from base.http import Http403
 from perms.utils import has_perm, is_admin
 
+from event_logs.models import EventLog
+
 from corporate_memberships.models import CorpApp, CorpField, CorporateMembership
 from corporate_memberships.forms import CorpMembForm
 from corporate_memberships.utils import get_corporate_membership_type_choices, get_payment_method_choices
-from memberships.models import MembershipType
+from corporate_memberships.utils import corp_memb_inv_add
+#from memberships.models import MembershipType
+
+from perms.utils import get_notice_recipients
+try:
+    from notification import models as notification
+except:
+    notification = None
 
 
 def add(request, slug, template="corporate_memberships/add.html"):
@@ -26,6 +36,7 @@ def add(request, slug, template="corporate_memberships/add.html"):
     # if app requires login and they are not logged in, 
     # prompt them to log in and redirect them back to this add page
     if not request.user.is_authenticated():
+        messages.add_message(request, messages.INFO, 'Please log in or sign up to the site before signing up the corporate membership.')
         return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'), reverse('corp_memb.add', args=[corp_app.slug])))
     
     if not user_is_admin and corp_app.status <> 1 and corp_app.status_detail <> 'active':
@@ -75,12 +86,35 @@ def add(request, slug, template="corporate_memberships/add.html"):
             corporate_membership.save()
             
             # generate invoice
+            corp_memb_inv_add(request.user, corporate_membership)
             
-            # email admin
+            # send notification to administrators
+            recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': corporate_membership,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'corp_memb_added', extra_context)
+            
             
             # log an event
+            log_defaults = {
+                'event_id' : 681000,
+                'event_data': '%s (%d) added by %s' % (corporate_membership._meta.object_name, 
+                                                       corporate_membership.pk, request.user),
+                'description': '%s added' % corporate_membership._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': corporate_membership,
+            }
+            EventLog.objects.log(**log_defaults)
             
             # handle online payment
+            if corporate_membership.payment_method.lower() in ['credit card', 'cc']:
+                if corporate_membership.invoice and corporate_membership.invoice.balance > 0:
+                    return HttpResponseRedirect(reverse('payments.views.pay_online', args=[corporate_membership.invoice.id, corporate_membership.invoice.guid])) 
             
             return HttpResponseRedirect(reverse('corp_memb.add_conf', args=[corporate_membership.id]))
         
@@ -155,9 +189,27 @@ def edit(request, id, template="corporate_memberships/edit.html"):
         if form.is_valid():
             corporate_membership = form.save(request.user)
             
-            # email admin
+            # send notification to administrators
+            recipients = get_notice_recipients('module', 'corporate_membership', 'corporatemembershiprecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': corporate_membership,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'corp_memb_added', extra_context)
             
             # log an event
+            log_defaults = {
+                'event_id' : 682000,
+                'event_data': '%s (%d) edited by %s' % (corporate_membership._meta.object_name, 
+                                                       corporate_membership.pk, request.user),
+                'description': '%s edited' % corporate_membership._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': corporate_membership,
+            }
+            EventLog.objects.log(**log_defaults)
             
             
             return HttpResponseRedirect(reverse('corp_memb.view', args=[corporate_membership.id]))

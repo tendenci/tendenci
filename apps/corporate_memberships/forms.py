@@ -174,7 +174,7 @@ class CorpMembForm(forms.ModelForm):
                     field_key = "field_%s" % field.id
                 
                 self.fields[field_key] = field.get_field_class()
-                if not field.field_name and self.instance:
+                if ((not field.field_name) or field.field_name=='authorized_domains') and self.instance:
                     self.fields[field_key].initial = field.get_value(self.instance)
             
         #self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
@@ -232,7 +232,7 @@ class CorpMembForm(forms.ModelForm):
                     
         # update authorized domain if needed
         if self.corp_app.authentication_method == 'email':
-            update_auth_domains(corporate_membership, corporate_membership.authorized_domains)
+            update_auth_domains(corporate_membership, self.cleaned_data['authorized_domains'])
         
         return corporate_membership
         
