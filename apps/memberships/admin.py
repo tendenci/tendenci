@@ -228,11 +228,11 @@ class AppAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, extra_context={}):
 
-#        self.inlines = [AppFieldAdmin]
-#        self.inline_instances = []
-#        for inline_class in self.inlines:
-#            inline_instance = inline_class(self.model, self.admin_site)
-#            self.inline_instances.append(inline_instance)
+        self.inlines = [AppFieldAdmin]
+        self.inline_instances = []
+        for inline_class in self.inlines:
+            inline_instance = inline_class(self.model, self.admin_site)
+            self.inline_instances.append(inline_instance)
 
         extra_context.update({
             'excluded_fields':['field_type', 'no_duplicates', 'admin_only'],

@@ -325,3 +325,40 @@ div.forms fieldset.contact {
 div.forms fieldset.contact legend {
 	padding: 5px;
 }
+
+/* membership entry details page
+---------------------------------------- */
+.approval-status {
+    margin-top: 10px;
+    padding: 10px 5px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid;
+}
+.approval-status.pending {
+    background-color: #ffe44b;
+    border-color: #fcc500;
+    font-size: 1em;
+}
+.approval-status.approved {
+    background-color: #92ff6c;
+    border-color: green;
+}
+.approval-status.disapproved {
+    background-color: #fb9292;
+    border-color: red;
+}
+
+/* membership entries search page
+---------------------------------------- */
+.membership-status {
+    float: right;
+}
+.membership-status ul {
+    margin-left: 0; /* browser reset */
+}
+.membership-status li {
+    float: left;
+    list-style-type: none;
+    margin-left: 7px;
+}
