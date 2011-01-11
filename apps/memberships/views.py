@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect
 from event_logs.models import EventLog
@@ -35,7 +35,7 @@ def application_details(request, slug=None, template_name="memberships/applicati
     sqs = App.objects.search(query, user=request.user)
 
     if sqs:
-        app = sqs[0].object
+        app = sqs.best_match().object
     else:
         raise Http404
 
@@ -55,8 +55,8 @@ def application_details(request, slug=None, template_name="memberships/applicati
 
             membership_type = app_entry.membership_type
 
-            if membership_type and not membership_type.require_approval:
-                # create user and create membership
+            if app_entry.membership_type.require_approval:
+            # create user and create membership
 
                 user_dict = {
                     'username': app_entry.email,
@@ -76,7 +76,7 @@ def application_details(request, slug=None, template_name="memberships/applicati
                         'user':user,
                         'renewal':membership_type.renewal,
                         'join_dt':datetime.now(),
-                        'renew_dt':datetime.now() + timedelta(30), # TODO: calculate renew_dt
+                        'renew_dt': None,
                         'expiration_dt': membership_type.get_expiration_dt(join_dt = datetime.now()),
                         'approved': True,
                         'approved_denied_dt': datetime.now(),
@@ -98,10 +98,12 @@ def application_details(request, slug=None, template_name="memberships/applicati
         'app': app, "app_entry_form": app_entry_form}, 
         context_instance=RequestContext(request))
 
-def application_confirmation(request, hash=None, template_name="memberships/applications/confirmation.html"):
+def application_confirmation(request, hash=None, template_name="memberships/entries/details.html"):
     """
     Display this confirmation have a membership application is submitted.
     """
+    # TODO: log this event; we do not have an id for this action
+
     if not hash:
         raise Http404
 
@@ -112,8 +114,6 @@ def application_confirmation(request, hash=None, template_name="memberships/appl
         entry = sqs[0].object
     else:
         raise Http404
-
-    # TODO: log this event; we do not have an id for this action
 
     return render_to_response(template_name, {'entry': entry},
         context_instance=RequestContext(request))
@@ -161,59 +161,99 @@ def application_entries_search(request, template_name="memberships/entries/searc
         context_instance=RequestContext(request))
 
 @login_required
-def approve_entry(request, id=None, template_name="memberships/entries/search.html"):
+def approve_entry(request, id=0):
     """
     Approve membership application entry; then redirect at your discretion
     """
+    # TODO: log event; eventid does not exist yet
 
     if not is_admin(request.user):
         raise Http403
 
-    if not id:
-        raise Http404
-
-    app_entry = AppEntry.objects.get(pk=id)
+    entry = get_object_or_404(AppEntry, pk=id)
 
     user_dict = {
-        'username': app_entry.email,
-        'email': app_entry.email,
-        'password': hashlib.sha1(app_entry.email).hexdigest()[:6],
+        'username': entry.email,
+        'email': entry.email,
+        'password': hashlib.sha1(entry.email).hexdigest()[:6],
     }
 
-    try:
-        user = User.objects.get(email=user_dict['email'])
-        if not user:
-            user = User.objects.create_user(**user_dict)
-    except:
-        print sys.exc_info()[1]
-        user = None
+    try: # get user
+        user = User.objects.get(username=user_dict['username'])
+    except: # or create user
+        user = User.objects.create_user(**user_dict)
 
-    if user:
-        membership_dict = {
-            'member_number': app_entry.app.entries.count(),
-            'membership_type': app_entry.membership_type,
+    try: # get membership
+        membership = Membership.objects.get(ma=entry.app)
+    except: # or create membership
+        membership = Membership.objects.create(**{
+            'member_number': entry.app.entries.count(),
+            'membership_type': entry.membership_type,
             'user':user,
-            'renewal': app_entry.membership_type.renewal,
+            'renewal': entry.membership_type.renewal,
             'join_dt':datetime.now(),
-            'renew_dt':datetime.now() + timedelta(30), # TODO: calculate renew_dt
-            'expiration_dt': datetime.now() + timedelta(365), # TODO: calculate expiration_dt
+            'renew_dt': None,
+            'expiration_dt': entry.membership_type.get_expiration_dt(join_dt=datetime.now()),
             'approved': True,
             'approved_denied_dt': datetime.now(),
             'approved_denied_user': request.user,
-            'corporate_membership': None,
             'payment_method':'',
-            'ma':app_entry.app,
+            'ma':entry.app,
             'creator':user,
             'creator_username':user.username,
             'owner':user,
-            'owner_username':user,
-        }
+            'owner_username':user.username,
+        })
 
-        membership = Membership.objects.create(**membership_dict)
+    # mark as approved
+    entry.is_approved = True
+    entry.decision_dt = datetime.now()
+    entry.judge = request.user
 
-    app_entry.membership = membership
-    app_entry.save()
+    entry.membership = membership
+    entry.save()
 
-    # TODO: log this event; we do not have an id for this action
-    return redirect(reverse('membership.application_entries', args=[app_entry.pk]))
-    return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    return redirect(reverse('membership.application_entries', args=[entry.pk]))
+
+def disapprove_entry(request, id=0):
+    """
+        Mark application as disapproved.
+        Travel to [disapproved] membership application page.
+    """
+    # TODO: log event; eventid does not exist yet
+
+    query = 'id:%s' % id
+    sqs = AppEntry.objects.search(query, user=request.user)
+
+    if sqs:
+        entry = sqs.best_match().object
+    else:
+        # assume 404; could have been 403
+        raise Http404
+
+    # mark as disapproved
+    entry.is_approved = False
+    entry.decision_dt = datetime.now()
+    entry.judge = request.user
+
+    entry.save()
+
+    # redirect to application entry
+    return redirect(reverse('membership.application_entries', args=[entry.pk]))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
