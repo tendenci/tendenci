@@ -215,7 +215,7 @@
   "no_duplicates": "",
   "visible": true,
   "admin_only": "",
-  "instruction": "",
+  "instruction": "Comma delimited.",
   "default_value": "",
   "css_class": "",
   "order": 13
