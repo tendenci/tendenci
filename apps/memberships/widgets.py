@@ -39,19 +39,19 @@ class TypeExpMethodWidget(forms.MultiWidget):
         #self.pos_d = {'period_type': (0, forms.Select()),
         #              'period': (1, forms.TextInput()),
         #              'period_unit':(2, forms.Select()),
-        #              'expiration_method':(3, forms.RadioSelect()),
-        #              'expiration_method_day':(4, forms.TextInput()),
-        #              'renew_expiration_method':(5, forms.RadioSelect()),
-        #              'renew_expiration_day':(6, forms.TextInput()),
-        #              'renew_expiration_day2':(7, forms.TextInput()),
-        #              'fixed_expiration_method':(8, forms.RadioSelect()),
-        #              'fixed_expiration_day':(9, forms.Select()),
-        #              'fixed_expiration_month':(10, forms.Select()),
-        #              'fixed_expiration_year':(11, forms.Select()),
-        #              'fixed_expiration_day2':(12, forms.Select()),
-        #              'fixed_expiration_month2':(13, forms.Select()),
-        #              'fixed_expiration_rollover':(14, forms.CheckboxInput()),
-        #              'fixed_expiration_rollover_days':(15, forms.TextInput()),
+        #              'rolling_option':(3, forms.RadioSelect()),
+        #              'rolling_option1_day':(4, forms.TextInput()),
+        #              'rolling_renew_option':(5, forms.RadioSelect()),
+        #              'rolling_renew_option1_day':(6, forms.TextInput()),
+        #              'rolling_renew_option2_day':(7, forms.TextInput()),
+        #              'fixed_option':(8, forms.RadioSelect()),
+        #              'fixed_option1_day':(9, forms.Select()),
+        #              'fixed_option1_month':(10, forms.Select()),
+        #              'fixed_option1_year':(11, forms.Select()),
+        #              'fixed_option2_day':(12, forms.Select()),
+        #              'fixed_option2_month':(13, forms.Select()),
+        #              'fixed_option2_can_rollover':(14, forms.CheckboxInput()),
+        #              'fixed_option2_rollover_days':(15, forms.TextInput()),
         #               }
         self.widgets = ()
         if self.pos_d:
@@ -86,112 +86,112 @@ class TypeExpMethodWidget(forms.MultiWidget):
         rendered_period_unit = self.render_widget(period_unit_widget, 
                                                   name, value, final_attrs, self.pos_d['period_unit'][0], id_)
         # expiration_method_day
-        expiration_method_day_widget = self.pos_d['expiration_method_day'][1]
-        expiration_method_day_widget.attrs = {'size':'8'}
-        rendered_expiration_method_day = self.render_widget(expiration_method_day_widget, 
+        rolling_option1_day_widget = self.pos_d['rolling_option1_day'][1]
+        rolling_option1_day_widget.attrs = {'size':'8'}
+        rendered_rolling_option1_day = self.render_widget(rolling_option1_day_widget, 
                                                             name, value, final_attrs, 
-                                                            self.pos_d['expiration_method_day'][0], id_)
+                                                            self.pos_d['rolling_option1_day'][0], id_)
         # expiration_method
         JOIN_EXP_METHOD_CHOICE = (
                                   ("0", "End of full period"),
                                   ("1", mark_safe("%s day(s) at signup month" % \
-                                                  rendered_expiration_method_day)),)
-        expiration_method_widget = self.pos_d['expiration_method'][1]
-        expiration_method_widget.choices=JOIN_EXP_METHOD_CHOICE
-        rendered_expiration_method = self.render_widget(expiration_method_widget, 
+                                                  rendered_rolling_option1_day)),)
+        rolling_option_widget = self.pos_d['rolling_option'][1]
+        rolling_option_widget.choices=JOIN_EXP_METHOD_CHOICE
+        rendered_rolling_option = self.render_widget(rolling_option_widget, 
                                                   name, value, final_attrs, 
-                                                  self.pos_d['expiration_method'][0], id_)
+                                                  self.pos_d['rolling_option'][0], id_)
         
-        # renew_expiration_day
-        renew_expiration_day_widget = self.pos_d['renew_expiration_day'][1]
-        renew_expiration_day_widget.attrs = {'size':'8'}
-        rendered_renew_expiration_day = self.render_widget(renew_expiration_day_widget, 
+        # rolling_renew_option1_day
+        rolling_renew_option1_day_widget = self.pos_d['rolling_renew_option1_day'][1]
+        rolling_renew_option1_day_widget.attrs = {'size':'8'}
+        rendered_rolling_renew_option1_day = self.render_widget(rolling_renew_option1_day_widget, 
                                                             name, value, final_attrs, 
-                                                            self.pos_d['renew_expiration_day'][0], id_)
+                                                            self.pos_d['rolling_renew_option1_day'][0], id_)
         # renew_expiration_day2
-        renew_expiration_day2_widget = self.pos_d['renew_expiration_day2'][1]
-        renew_expiration_day2_widget.attrs = {'size':'8'}
-        rendered_renew_expiration_day2 = self.render_widget(renew_expiration_day2_widget, 
+        rolling_renew_option2_day_widget = self.pos_d['rolling_renew_option2_day'][1]
+        rolling_renew_option2_day_widget.attrs = {'size':'8'}
+        rendered_rolling_renew_option2_day = self.render_widget(rolling_renew_option2_day_widget, 
                                                             name, value, final_attrs, 
-                                                           self.pos_d['renew_expiration_day2'][0], id_)
+                                                           self.pos_d['rolling_renew_option2_day'][0], id_)
         # renew_expiration_method
         RENEW_EXP_METHOD_CHOICE = (
                                   ("0", "End of full period"),
                                   ("1", mark_safe("%s day(s) at signup month" % \
-                                                  rendered_renew_expiration_day)),
+                                                  rendered_rolling_renew_option1_day)),
                                   ("2", mark_safe("%s day(s) at renewal month" % \
-                                                  rendered_renew_expiration_day2)),)
-        renew_expiration_method_widget = self.pos_d['renew_expiration_method'][1]
-        renew_expiration_method_widget.choices=RENEW_EXP_METHOD_CHOICE
-        rendered_renew_expiration_method = self.render_widget(renew_expiration_method_widget, 
+                                                  rendered_rolling_renew_option2_day)),)
+        rolling_renew_option_widget = self.pos_d['rolling_renew_option'][1]
+        rolling_renew_option_widget.choices=RENEW_EXP_METHOD_CHOICE
+        rendered_rolling_renew_option = self.render_widget(rolling_renew_option_widget, 
                                                   name, value, final_attrs, 
-                                                  self.pos_d['renew_expiration_method'][0], id_)
-        # fixed_expiration_day
-        fixed_expiration_day_widget = self.pos_d['fixed_expiration_day'][1]
-        fixed_expiration_day_widget.choices=DAYS_CHOICES
-        rendered_fixed_expiration_day = self.render_widget(fixed_expiration_day_widget, 
+                                                  self.pos_d['rolling_renew_option'][0], id_)
+        # fixed_option1_day
+        fixed_option1_day_widget = self.pos_d['fixed_option1_day'][1]
+        fixed_option1_day_widget.choices=DAYS_CHOICES
+        rendered_fixed_option1_day = self.render_widget(fixed_option1_day_widget, 
                                                             name, value, final_attrs, 
-                                                            self.pos_d['fixed_expiration_day'][0], id_)
-        # fixed_expiration_month
-        fixed_expiration_month_widget = self.pos_d['fixed_expiration_month'][1]
-        fixed_expiration_month_widget.choices=MONTHS_CHOICES
-        rendered_fixed_expiration_month = self.render_widget(fixed_expiration_month_widget, 
+                                                            self.pos_d['fixed_option1_day'][0], id_)
+        # fixed_option1_month
+        fixed_option1_month_widget = self.pos_d['fixed_option1_month'][1]
+        fixed_option1_month_widget.choices=MONTHS_CHOICES
+        rendered_fixed_option1_month = self.render_widget(fixed_option1_month_widget, 
                                                             name, value, final_attrs, 
-                                                            self.pos_d['fixed_expiration_month'][0], id_)
-        # dynamically generate the year choices for ixed_expiration_year
-        fixed_expiration_year = ''
+                                                            self.pos_d['fixed_option1_month'][0], id_)
+        # dynamically generate the year choices for fixed_option1_year
+        fixed_option1_year = ''
         if value:
             try:
-                fixed_expiration_year = int(value[self.pos_d['fixed_expiration_year'][0]])
+                fixed_option1_year = int(value[self.pos_d['fixed_option1_year'][0]])
             except:
                 pass
-        if not fixed_expiration_year:
-            fixed_expiration_year = int(datetime.date.today().year)
-        years = [(year, year) for year in range(fixed_expiration_year-1, fixed_expiration_year+20)]
+        if not fixed_option1_year:
+            fixed_option1_year = int(datetime.date.today().year)
+        years = [(year, year) for year in range(fixed_option1_year-1, fixed_option1_year+20)]
 
         #fixed_expiration_year
-        fixed_expiration_year_widget =  self.pos_d['fixed_expiration_year'][1]
-        fixed_expiration_year_widget.choices=years
-        rendered_fixed_expiration_year = self.render_widget(fixed_expiration_year_widget, 
+        fixed_option1_year_widget =  self.pos_d['fixed_option1_year'][1]
+        fixed_option1_year_widget.choices=years
+        rendered_fixed_option1_year = self.render_widget(fixed_option1_year_widget, 
                                                             name, value, final_attrs, 
-                                                            self.pos_d['fixed_expiration_year'][0], id_)
-        # fixed_expiration_day2
-        fixed_expiration_day2_widget = self.pos_d['fixed_expiration_day2'][1]
-        fixed_expiration_day2_widget.choices=DAYS_CHOICES
-        rendered_fixed_expiration_day2 = self.render_widget(fixed_expiration_day2_widget, 
+                                                            self.pos_d['fixed_option1_year'][0], id_)
+        # fixed_option2_day
+        fixed_option2_day_widget = self.pos_d['fixed_option2_day'][1]
+        fixed_option2_day_widget.choices=DAYS_CHOICES
+        rendered_fixed_option2_day = self.render_widget(fixed_option2_day_widget, 
                                                             name, value, final_attrs, 
-                                                            self.pos_d['fixed_expiration_day2'][0], id_)
-        #fixed_expiration_month2
-        fixed_expiration_month2_widget = self.pos_d['fixed_expiration_month2'][1]
-        fixed_expiration_month2_widget.choices=MONTHS_CHOICES
-        rendered_fixed_expiration_month2 = self.render_widget(fixed_expiration_month2_widget, 
+                                                            self.pos_d['fixed_option2_day'][0], id_)
+        #fixed_option2_month
+        fixed_option2_month_widget = self.pos_d['fixed_option2_month'][1]
+        fixed_option2_month_widget.choices=MONTHS_CHOICES
+        rendered_fixed_option2_month = self.render_widget(fixed_option2_month_widget, 
                                                             name, value, final_attrs, 
-                                                            self.pos_d['fixed_expiration_month2'][0], id_)
+                                                            self.pos_d['fixed_option2_month'][0], id_)
         FIXED_EXP_METHOD_CHOICE = (
-                                  ("0", mark_safe("%s %s %s" % (rendered_fixed_expiration_month,
-                                                      rendered_fixed_expiration_day,
-                                                      rendered_fixed_expiration_year))),
+                                  ("0", mark_safe("%s %s %s" % (rendered_fixed_option1_month,
+                                                      rendered_fixed_option1_day,
+                                                      rendered_fixed_option1_year))),
                                   ("1", mark_safe("%s %s of current year" % \
-                                                  (rendered_fixed_expiration_month2,
-                                                   rendered_fixed_expiration_day2))))
+                                                  (rendered_fixed_option2_month,
+                                                   rendered_fixed_option2_day))))
         
-        # fixed_expiration_method
-        fixed_expiration_method_widget = self.pos_d['fixed_expiration_method'][1]  
-        fixed_expiration_method_widget.choices=FIXED_EXP_METHOD_CHOICE                     
-        rendered_fixed_expiration_method = self.render_widget(fixed_expiration_method_widget, 
+        # fixed_option
+        fixed_option_widget = self.pos_d['fixed_option'][1]  
+        fixed_option_widget.choices=FIXED_EXP_METHOD_CHOICE                     
+        rendered_fixed_option = self.render_widget(fixed_option_widget, 
                                                   name, value, final_attrs, 
-                                                  self.pos_d['fixed_expiration_method'][0], id_)
-        # fixed_expiration_rollover_days
-        fixed_expiration_rollover_days_widget = self.pos_d['fixed_expiration_rollover_days'][1]
-        fixed_expiration_rollover_days_widget.attrs={'size':'8'}
-        rendered_fixed_expiration_rollover_days = self.render_widget(fixed_expiration_rollover_days_widget, 
+                                                  self.pos_d['fixed_option'][0], id_)
+        # fixed_option2_rollover_days
+        fixed_option2_rollover_days_widget = self.pos_d['fixed_option2_rollover_days'][1]
+        fixed_option2_rollover_days_widget.attrs={'size':'8'}
+        rendered_fixed_option2_rollover_days = self.render_widget(fixed_option2_rollover_days_widget, 
                                                             name, value, final_attrs, 
-                                                            self.pos_d['fixed_expiration_rollover_days'][0], id_)
-        # fixed_expiration_rollover
-        fixed_expiration_rollover_widget = self.pos_d['fixed_expiration_rollover'][1]
-        rendered_fixed_expiration_rollover = self.render_widget(fixed_expiration_rollover_widget,
+                                                            self.pos_d['fixed_option2_rollover_days'][0], id_)
+        # fixed_option2_can_rollover
+        fixed_option2_can_rollover_widget = self.pos_d['fixed_option2_can_rollover'][1]
+        rendered_fixed_option2_can_rollover = self.render_widget(fixed_option2_can_rollover_widget,
                                                        name, value, final_attrs, 
-                                                       self.pos_d['fixed_expiration_rollover'][0], id_)
+                                                       self.pos_d['fixed_option2_can_rollover'][0], id_)
         
         output_html = """
                         <div id="exp-method-box">
@@ -214,10 +214,10 @@ class TypeExpMethodWidget(forms.MultiWidget):
                       """ % (rendered_period_type, 
                            name, self.pos_d['period'],
                            rendered_period, rendered_period_unit,
-                           name, self.pos_d['expiration_method'], rendered_expiration_method,
-                           name, self.pos_d['renew_expiration_method'], rendered_renew_expiration_method,
-                           name, self.pos_d['fixed_expiration_method'], rendered_fixed_expiration_method,
-                           rendered_fixed_expiration_rollover, rendered_fixed_expiration_rollover_days)
+                           name, self.pos_d['rolling_option'], rendered_rolling_option,
+                           name, self.pos_d['rolling_renew_option'], rendered_rolling_renew_option,
+                           name, self.pos_d['fixed_option'], rendered_fixed_option,
+                           rendered_fixed_option2_can_rollover, rendered_fixed_option2_rollover_days)
                       
         return mark_safe(output_html)
         
