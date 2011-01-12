@@ -1,4 +1,4 @@
-{% extends "memberships/base.html" %}
+{% extends "memberships/base-wide.html" %}
 {% load pagination_tags %}
 {% load membership_tags %}
 {% load base_tags %}
@@ -72,17 +72,37 @@
     {% endfor %}
 	</div>
 
+    <div class="membership-side-panel">
+
+        <div class="application-set">
+            <div>Applications</div>
+            <ul>
+                {% for app in apps %}
+                <li><a href="?q=application:{{ app.name|lower }}">{{ app.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="type-set">
+            <div>Membership Types</div>
+            <ul>
+                {% for type in types %}
+                <li><a href="?q=type:{{ type.name|lower }}">{{ type.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="entry-status">
+            <div>Status</div>
+            <ul>
+                <li><a href="?q=status:pending">Pending</a></li>
+                <li><a href="?q=status:approved">Approved</a></li>
+                <li><a href="?q=status:disapproved">Disapproved</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+
     {% paginate %}
 </div>
-{% endblock %}
-
-{% block extra_body %}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-		var iconrow = new dropdown({
-			container:	'more-options-wrap',
-			trigger:	'more-options-trigger',
-			target:		'more-options-target'
-		});
-	</script>
 {% endblock %}

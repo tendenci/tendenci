@@ -8,8 +8,7 @@ from perms.models import ObjectPermission
 from datetime import datetime, timedelta
 import hashlib
 from django.contrib.auth.models import User
-from memberships.models import Membership
-import sys
+from memberships.models import Membership, MembershipType
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from perms.utils import is_admin
@@ -148,17 +147,24 @@ def application_entries_search(request, template_name="memberships/entries/searc
     """
     Displays a page for searching membership application entries.
     """
+    # TODO: log this event; we do not have an id for this action
+
     if not is_admin(request.user):
         raise Http403
 
     query = request.GET.get('q', None)
     entries = AppEntry.objects.search(query, user=request.user)
-    entries = entries.order_by('entry_time')
+    entries = entries.order_by('-entry_time')
 
-    # TODO: log this event; we do not have an id for this action
+    apps = App.objects.all()
+    types = MembershipType.objects.all()
 
-    return render_to_response(template_name, {'entries':entries},
-        context_instance=RequestContext(request))
+
+    return render_to_response(template_name, {
+        'entries':entries,
+        'apps':apps,
+        'types':types,
+        }, context_instance=RequestContext(request))
 
 @login_required
 def approve_entry(request, id=0):
@@ -215,6 +221,7 @@ def approve_entry(request, id=0):
 
     return redirect(reverse('membership.application_entries', args=[entry.pk]))
 
+@login_required
 def disapprove_entry(request, id=0):
     """
         Mark application as disapproved.

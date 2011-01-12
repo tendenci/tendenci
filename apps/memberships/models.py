@@ -19,7 +19,6 @@ from base.utils import day_validate
 from payments.models import PaymentMethod
 
 
-
 FIELD_CHOICES = (
     ("text", _("Text")),
     ("paragraph-text", _("Paragraph Text")),
@@ -246,11 +245,6 @@ class MembershipType(TendenciBaseModel):
                         
                 return expiration_dt
 
-            
-
-
-               
-    
 class Membership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     member_number = models.CharField(_("Member Number"), max_length=50)
@@ -421,9 +415,11 @@ class AppEntry(models.Model):
     membership = models.ForeignKey("Membership", related_name="entries", null=True, editable=False)
     entry_time = models.DateTimeField(_("Date/Time"))
 
-    is_approved = models.NullBooleanField(null=True, editable=False)
+    is_approved = models.NullBooleanField(_('Status'), null=True, editable=False)
     decision_dt = models.DateTimeField(null=True, editable=False)
     judge = models.ForeignKey(User, null=True, editable=False)
+
+#    create_dt = models.DateTimeField(editable=False)
 
     objects = MemberAppEntryManager()
 
@@ -431,6 +427,13 @@ class AppEntry(models.Model):
         verbose_name = _("Application Entry")
         verbose_name_plural = _("Application Entries")
         permissions = (("view_appentry","Can view membership application entry"),)
+
+    def __unicode__(self):
+        return '%s - Submission #%s' % (self.app, self.pk)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('membership.application_entries', [self.pk])
 
     @property
     def name(self):
@@ -492,13 +495,22 @@ class AppEntry(models.Model):
         """Get User object"""
         # TODO: Figure out how to get the user
 
+    @property
+    def status(self):
+        status = 'Pending'
+
+        if self.is_approved == True:
+            status = 'Approved'
+        elif self.is_approved == False:
+            status = 'Disapproved'
+
+        return status
 
 
 class AppFieldEntry(models.Model):
     """
     A single field value for a form entry submitted via a membership application.
     """
-    
     entry = models.ForeignKey("AppEntry", related_name="fields")
     field = models.ForeignKey("AppField", related_name="field")
     value = models.CharField(max_length=200)
@@ -506,5 +518,3 @@ class AppFieldEntry(models.Model):
     class Meta:
         verbose_name = _("Application Field Entry")
         verbose_name_plural = _("Application Field Entries")
-
-
