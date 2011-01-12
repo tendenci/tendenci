@@ -15,6 +15,8 @@
 {% block body %}
 <div class="t">
 
+    <div>{{ entry.status }}</div>
+
     <div class="application-entry-wrap">
 
         <h1>{{ entry.app.name }} Submission</h1>
@@ -50,6 +52,7 @@
     		{% endif %}
     	{% endfor %}
 
+        {% if user.is_admin %}
         {% if entry.is_approved == 0 or entry.is_approved == 1 %}
         {% else %}
         <div class="membership-status">
@@ -59,11 +62,9 @@
             </ul>
         </div>
         {% endif %}
+        {% endif %}
 
     </div>
 
 </div>
-{% endblock %}
-
-{% block extra_body %}
 {% endblock %}

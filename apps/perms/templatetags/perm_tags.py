@@ -58,8 +58,6 @@ def has_perm(parser, token):
     
     return HasPermNode(user, perm, object, context_var=context_var)
 
-
-
 class IsAdminNode(Node):
     def __init__(self, user, context_var):
         self.user = user
@@ -70,7 +68,6 @@ class IsAdminNode(Node):
         
     def render(self, context):
         user = self.resolve(self.user, context)
-
 
         if isinstance(user, User):
             is_admin = utils.is_admin(user)
