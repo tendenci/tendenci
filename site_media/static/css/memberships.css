@@ -23,10 +23,14 @@
 	position: relative;
 }
 
+.t .search-form {
+    margin-bottom: 10px;
+}
+
 .t .memberships-wrap .membership-wrap-search {
 	border: 1px solid #CCC;
 	padding: 10px;
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 	position: relative;
 	background-color: white;
 }
@@ -351,6 +355,29 @@ div.forms fieldset.contact legend {
 
 /* membership entries search page
 ---------------------------------------- */
+.memberships-wrap {
+    width: 75%;
+    float: left;
+}
+.membership-side-panel {
+    width: 20%;
+    float: left;
+    background-color: #EEE;
+    margin-left: 10px;
+    padding: 10px 15px;
+}
+
+.membership-side-panel div {
+    margin: 5px 0;
+}
+.membership-side-panel ul {
+
+}
+.membership-side-panel li {
+    list-style-type: none;
+    margin-bottom: 5px;
+}
+
 .membership-status {
     float: right;
 }

@@ -8,7 +8,7 @@ from memberships.forms import MembershipTypeForm
 from user_groups.models import Group
 from event_logs.models import EventLog
 from perms.models import ObjectPermission 
-from memberships.models import  MembershipType, App, AppField
+from memberships.models import  MembershipType, App, AppField, AppEntry
 from memberships.forms import AppForm, AppFieldForm, AppEntryForm
 from memberships.utils import get_default_membership_fields
 from payments.models import PaymentMethod
@@ -157,7 +157,6 @@ class AppFieldAdmin(admin.StackedInline):
     form = AppFieldForm
     extra = 0
     template = "memberships/admin/stacked.html"
-    
 
 class AppAdmin(admin.ModelAdmin):
 
@@ -328,10 +327,24 @@ class AppAdmin(admin.ModelAdmin):
         return app
 
 class AppEntryAdmin(admin.ModelAdmin):
+
     form = AppEntryForm
+
+    def entry_name(self):
+        return '<a href="%s">%s</a>' % (self.get_absolute_url(), self)
+    entry_name.allow_tags = True
+    entry_name.short_description = 'Submission'
+
+    list_display = (entry_name, 'is_approved',)
+    list_filter = ('app', 'is_approved')
+
+    def __init__(self, *args, **kwargs):
+        super(AppEntryAdmin, self).__init__(*args, **kwargs)
+        self.list_display_links = (None, )
 
 admin.site.register(MembershipType, MembershipTypeAdmin)
 admin.site.register(App, AppAdmin)
+admin.site.register(AppEntry, AppEntryAdmin)
 
 
 
