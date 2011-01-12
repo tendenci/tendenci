@@ -15,26 +15,17 @@
 {% block body %}
 <div class="t">
 
-    <div>{{ entry.status }}</div>
-
     <div class="application-entry-wrap">
 
         <h1>{{ entry.app.name }} Submission</h1>
         <div class="entry_dt">Submitted {{ entry.entry_time|date_short }}</div>
 
-        {% if entry.is_approved == 1 %}
-                <div class="approval-status approved">
-                    Approved {{ entry.decision_dt|date_long }} by {{ entry.judge|capfirst }}
-                </div>
-        {% else %}
-                {% if entry.is_approved == 0 %}
-                    <div class="approval-status disapproved">
-                        Disapproved {{ entry.decision_dt|date_long }} by {{ entry.judge|capfirst }}
-                    </div>
-                {% else %}
-                    <div class="approval-status pending">Pending</div>
-                {% endif %}
-        {% endif %}
+        <div class="approval-status {{ entry.status|lower }}">
+            {{ entry.status }}
+            {% if entry.decision_dt %}
+                {{ entry.decision_dt|date_long }}
+            {% endif %}
+        </div>
 
     	{% for field in entry.fields.all %}
     		{% if field.field.field_type == 'FileField' %}
