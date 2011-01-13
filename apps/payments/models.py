@@ -218,11 +218,20 @@ class Payment(models.Model):
             self.save()
             
         return boo
-            
-                
-            
-            
-            
-            
-            
+
+class PaymentMethod(models.Model):
+    """
+        Manage payment methods with this object.
+        The payment methods chosen will affect the entire website.
+    """
+    human_name = models.CharField(max_length=200, blank=False)
+    machine_name = models.CharField(max_length=200, blank=False)
+    is_online = models.BooleanField()
+
+    def __unicode__(self):
+        name = "%s (%s)" % (self.human_name, self.machine_name)
+
+        if self.is_online:
+            return "%s Online" % name
+        return "%s Offline" % name
     

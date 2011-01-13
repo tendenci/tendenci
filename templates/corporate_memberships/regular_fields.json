@@ -215,11 +215,28 @@
   "no_duplicates": "",
   "visible": true,
   "admin_only": "",
-  "instruction": "",
+  "instruction": "Comma delimited.",
   "default_value": "",
   "css_class": "",
   "order": 13
- }, 
+ },
+ {
+  "label": "Secret Code", 
+  "field_name": "secret_code", 
+  "object_type": "corporate_membership", 
+  "field_type": "CharField",
+  "choices": "",
+  "field_layout": "",
+  "size": "l",
+  "required": "",
+  "no_duplicates": "1",
+  "visible": true,
+  "admin_only": "",
+  "instruction": "",
+  "default_value": "",
+  "css_class": "",
+  "order": 14
+ },  
  {
   "label": "Payment Details", 
   "field_name": "", 
@@ -235,7 +252,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 14
+  "order": 15
  }, 
  {
   "label": "Payment Method", 
@@ -252,7 +269,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 15
+  "order": 16
  }
  
 ]

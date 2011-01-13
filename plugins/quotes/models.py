@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.urlresolvers import reverse
 
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel

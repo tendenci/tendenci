@@ -161,7 +161,12 @@ a:hover{text-decoration: none; color:#000;}
 	border:20px solid #fff;
 	overflow:hidden;
 	}
-	
+
+#container p {
+    margin: 10px 0 10px 0;
+    line-height: 1.3em;
+}
+
 /* header */
 
 #header {

@@ -1,7 +1,8 @@
-{% extends "memberships/base.html" %}
+{% extends "memberships/base-wide.html" %}
 {% load pagination_tags %}
 {% load membership_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 
 {% block title %}Membership Entry Search{% endblock %}
@@ -37,14 +38,29 @@
 
             <h3>Submitted {{ entry.entry_time|date }}</h3>
 
-            {% if entry.membership %}
-            <div class="membership-status">
-                Approved on {{ entry.membership.approved_denied_dt|date }}
-            </div>
+            {% if entry.is_approved == 1 or entry.is_approved == 0 %}
+
+                {% if entry.is_approved == 1 %}
+                <div class="membership-status">
+                    Approved on {{ entry.decision_dt|date }}
+                </div>
+                {% else %}
+                    {% if entry.is_approved = 0 %}
+                    <div class="membership-status">
+                        Disapproved on {{ entry.decision_dt|date }}
+                    </div>
+                    {% endif %}
+                {% endif %}
+
             {% else %}
-            <div class="membership-status">
-                <a href="{% url membership.approve_entry entry.pk %}">Approve Membership</a>
-            </div>
+
+                <div class="membership-status">
+                    <ul>
+                        <li><a href="{% url membership.disapprove_entry entry.pk %}">Disapprove</a></li>
+                        <li><a href="{% url membership.approve_entry entry.pk %}">Approve</a></li>
+                    </ul>
+                </div>
+
             {% endif %}
 
             <div style="clear:both;"></div>
@@ -56,17 +72,37 @@
     {% endfor %}
 	</div>
 
+    <div class="membership-side-panel">
+
+        <div class="application-set">
+            <div>Applications</div>
+            <ul>
+                {% for app in apps %}
+                <li><a href="?q=application:{{ app.name|lower }}">{{ app.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="type-set">
+            <div>Membership Types</div>
+            <ul>
+                {% for type in types %}
+                <li><a href="?q=type:{{ type.name|lower }}">{{ type.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="entry-status">
+            <div>Status</div>
+            <ul>
+                <li><a href="?q=status:pending">Pending</a></li>
+                <li><a href="?q=status:approved">Approved</a></li>
+                <li><a href="?q=status:disapproved">Disapproved</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+
     {% paginate %}
 </div>
-{% endblock %}
-
-{% block extra_body %}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-		var iconrow = new dropdown({
-			container:	'more-options-wrap',
-			trigger:	'more-options-trigger',
-			target:		'more-options-target'
-		});
-	</script>
 {% endblock %}
