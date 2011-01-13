@@ -190,6 +190,21 @@ div.forms fieldset.admin-only legend {
 	padding: 5px;
 }
 
+/* capctha section */
+div.forms fieldset.captcha {
+	background-color: #EFEFEF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+
+div.forms fieldset.captcha legend {
+	padding: 5px;
+}
+
 /* permission section */
 
 div.id_group_perms {

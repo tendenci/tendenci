@@ -1,3 +1,4 @@
+import re
 from django.template import Library, Node, Variable, TemplateSyntaxError
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -315,3 +316,21 @@ def md5_hash(parser, token):
         raise TemplateSyntaxError(message)
 
     return Md5Hash(*args, **kwargs)
+
+class NoWhiteSpaceNode(Node):
+    def __init__(self, nodelist):
+        self.nodelist = nodelist
+
+    def render(self, context):
+        text = self.nodelist.render(context).strip()
+        return re.sub('\s{2,}', ' ', text)
+
+@register.tag
+def nowhitespace(parser, token):
+    """
+    Replaces two or more spaces between regular text
+    (*NOT* HTML) down to on space
+    """
+    nodelist = parser.parse(('endnowhitespace',))
+    parser.delete_first_token()
+    return NoWhiteSpaceNode(nodelist)

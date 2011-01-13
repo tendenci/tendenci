@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 from haystack.query import SearchQuerySet
 from perms.utils import is_admin
+from base.utils import now_localized
 
 class ResumeManager(Manager):
     def search(self, query=None, *args, **kwargs):
@@ -24,7 +25,7 @@ class ResumeManager(Manager):
         is_an_admin = is_admin(user)
             
         if query:
-            sqs = sqs.auto_query(sqs.query.clean(query)) 
+            sqs = sqs.auto_query(sqs.query.clean(query))
             if user:
                 if not is_an_admin:
                     if not user.is_anonymous():
@@ -46,11 +47,15 @@ class ResumeManager(Manager):
 
                         sqs = sqs.filter(query)
                     else:
-                    # if anonymous
+                        # if anonymous
+                        sqs = sqs.filter(activation_dt__lte=now_localized())
+                        sqs = sqs.filter(expiration_dt__gte=now_localized())
                         sqs = sqs.filter(status=1).filter(status_detail='active')
                         sqs = sqs.filter(allow_anonymous_view=True)
             else:
                 # if anonymous
+                sqs = sqs.filter(activation_dt__lte=now_localized())
+                sqs = sqs.filter(expiration_dt__gte=now_localized())
                 sqs = sqs.filter(status=1).filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True)
         else:
@@ -72,10 +77,14 @@ class ResumeManager(Manager):
                         sqs = sqs.filter(query)
                     else:
                         # if anonymous
+                        sqs = sqs.filter(activation_dt__lte=now_localized())
+                        sqs = sqs.filter(expiration_dt__gte=now_localized())
                         sqs = sqs.filter(status=1).filter(status_detail='active')
                         sqs = sqs.filter(allow_anonymous_view=True)               
             else:
                 # if anonymous
+                sqs = sqs.filter(activation_dt__lte=now_localized())
+                sqs = sqs.filter(expiration_dt__gte=now_localized())
                 sqs = sqs.filter(status=1).filter(status_detail='active')
                 sqs = sqs.filter(allow_anonymous_view=True)
 

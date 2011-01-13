@@ -37,7 +37,7 @@ def index(request, id=None, size=None, download=False, template_name="files/view
     if file.type()=='image' and size: # if size specified
         size= [int(s) for s in size.split('x')] # convert to list
         # gets resized image from cache or rebuilds
-        image = get_image(file, size)
+        image = get_image(file.file, size, cache=True)
         response = HttpResponse(mimetype='image/jpeg')
         response['Content-Disposition'] = '%s filename=%s'% (attachment, file.file.name)
         image.save(response, "JPEG", quality=100)

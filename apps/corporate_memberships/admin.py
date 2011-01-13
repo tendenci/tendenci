@@ -4,7 +4,7 @@ from django.conf import settings
 from corporate_memberships.models import CorporateMembershipType
 from corporate_memberships.models import CorpApp, CorpField
 from corporate_memberships.forms import CorporateMembershipTypeForm, CorpFieldForm, CorpAppForm
-from corporate_memberships.utils import get_corpapp_default_fields_list
+from corporate_memberships.utils import get_corpapp_default_fields_list, update_authenticate_fields
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'renewal_price', 'membership_type',  
@@ -53,7 +53,7 @@ class FieldInline(admin.StackedInline):
     template = "corporate_memberships/admin/stacked.html"
   
 class CorpAppAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug', 'use_captcha', 'require_login', 'status_detail']
+    list_display = ['name', 'slug', 'status_detail']
     list_filter = ['name', 'status_detail']
     
     #fieldsets = (
@@ -112,14 +112,14 @@ class CorpAppAdmin(admin.ModelAdmin):
                         (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 
                                            'description', 'confirmation_text', 'notes')}),
                         ('Other Options', {'fields': (
-                            ('use_captcha', 'require_login'), 'status', 'status_detail')}),
+                            'status', 'status_detail')}),
                     ) 
         else:
             return (
                         (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 
                                            'description', 'confirmation_text', 'notes')}),
                         ('Other Options', {'fields': (
-                            ('use_captcha', 'require_login'), 'status', 'status_detail')}),
+                             'status', 'status_detail')}),
                         ('Form Fields', {'fields':(), 
                                          'description': 'You will have the chance to add or manage the form fields later on editing.'}),
                     )
@@ -149,6 +149,9 @@ class CorpAppAdmin(admin.ModelAdmin):
                     f.save()
                                     
         form.save_m2m()
+        
+        if change:
+            update_authenticate_fields(instance)
         
         return instance
 

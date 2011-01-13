@@ -1,6 +1,7 @@
-import sys
 import uuid
 from hashlib import md5
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -10,6 +11,11 @@ from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
 from memberships.managers import MemberAppManager, MemberAppEntryManager
+from memberships.managers import MembershipManager
+
+from base.utils import day_validate
+
+from payments.models import PaymentMethod
 
 
 FIELD_CHOICES = (
@@ -27,6 +33,8 @@ FIELD_CHOICES = (
     ("header", _("Section Header")),
     ("description", _(" Description")),
     ("horizontal-rule", _("Horizontal Rule")),
+    ("membership-type", _("Membership Type")),
+    ("payment-method", _("Payment Method")),
 )
 
 OBJECT_TYPE_CHOICES = (
@@ -78,21 +86,21 @@ class MembershipType(TendenciBaseModel):
     period_unit = models.CharField(choices=PERIOD_UNIT_CHOICES, max_length=10)
     period_type = models.CharField(_("Period Type"),default='rolling', choices=PERIOD_CHOICES, max_length=10)
     
-    expiration_method = models.CharField(_('Expires On'), max_length=50)
-    expiration_method_day = models.IntegerField(_('Expiration Day'), default=0)
-    renew_expiration_method = models.CharField(_('Renewal Expires On'), max_length=50)
-    renew_expiration_day = models.IntegerField(default=0)
-    renew_expiration_day2 = models.IntegerField(default=0)
+    rolling_option = models.CharField(_('Expires On'), max_length=50)
+    rolling_option1_day = models.IntegerField(_('Expiration Day'), default=0)
+    rolling_renew_option = models.CharField(_('Renewal Expires On'), max_length=50)
+    rolling_renew_option1_day = models.IntegerField(default=0)
+    rolling_renew_option2_day = models.IntegerField(default=0)
     
-    fixed_expiration_method = models.CharField(_('Expires On'), max_length=50)
-    fixed_expiration_day = models.IntegerField(default=0)
-    fixed_expiration_month = models.IntegerField(default=0)
-    fixed_expiration_year = models.IntegerField(default=0)
-    fixed_expiration_day2 = models.IntegerField(default=0)
-    fixed_expiration_month2 = models.IntegerField(default=0)
+    fixed_option = models.CharField(_('Expires On'), max_length=50)
+    fixed_option1_day = models.IntegerField(default=0)
+    fixed_option1_month = models.IntegerField(default=0)
+    fixed_option1_year = models.IntegerField(default=0)
+    fixed_option2_day = models.IntegerField(default=0)
+    fixed_option2_month = models.IntegerField(default=0)
     
-    fixed_expiration_rollover = models.BooleanField(_("Allow Rollover"), default=0)
-    fixed_expiration_rollover_days = models.IntegerField(default=0, 
+    fixed_option2_can_rollover = models.BooleanField(_("Allow Rollover"), default=0)
+    fixed_option2_rollover_days = models.IntegerField(default=0, 
             help_text=_("Membership signups after this date covers the following calendar year as well."))
     
     renewal_period_start = models.IntegerField(_('Renewal Period Start'), default=0, 
@@ -119,8 +127,123 @@ class MembershipType(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
- 
     
+     
+    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
+        """
+        Calculate the expiration date - for join or renew (renewal=True)
+        
+        Examples: 
+            
+            For join:
+            expiration_dt = membership_type.get_expiration_dt(join_dt=membership.join_dt)
+            
+            For renew:
+            expiration_dt = membership_type.get_expiration_dt(renewal=1, 
+                                                              join_dt=membership.join_dt,
+                                                              renew_dt=membership.renew_dt)
+        
+        """
+        now = datetime.now()
+        
+        if not join_dt or not isinstance(join_dt, datetime):
+            join_dt = now
+        if renewal and (not renew_dt or not isinstance(renew_dt, datetime)):
+            renew_dt = now
+        
+        if self.never_expires:
+            return None
+        
+        if self.period_type == 'rolling':
+            if self.period_unit == 'days':
+                return now + timedelta(days=self.period)
+            
+            elif self.period_unit == 'months':
+                return now + relativedelta(months=self.period)
+            
+            else: # if self.period_unit == 'years':
+                if not renewal:
+                    if self.rolling_option == '0':
+                        # expires on end of full period
+                        return join_dt + relativedelta(years=self.period)
+                    else: # self.expiration_method == '1':
+                        # expires on ? days at signup (join) month
+                        if not self.rolling_option1_day:
+                            self.rolling_option1_day = 1
+                        expiration_dt = join_dt + relativedelta(years=self.period)
+                        self.rolling_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
+                                                                    self.rolling_option1_day)
+                        
+                        return datetime(expiration_dt.year, join_dt.month, 
+                                                 self.rolling_option1_day, expiration_dt.hour,
+                                                 expiration_dt.minute, expiration_dt.second)
+                else: # renewal = True
+                    if self.rolling_renew_option == '0':
+                        # expires on the end of full period
+                        return renew_dt + relativedelta(years=self.period)
+                    elif self.rolling_renew_option == '1':
+                        # expires on the ? days at signup (join) month
+                        if not self.rolling_renew_option1_day:
+                            self.rolling_renew_option1_day = 1
+                        expiration_dt = renew_dt + relativedelta(years=self.period)
+                        self.rolling_renew_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
+                                                                    self.rolling_renew_option1_day)
+                        return datetime(expiration_dt.year, join_dt.month, 
+                                                 self.rolling_renew_option1_day, expiration_dt.hour,
+                                                 expiration_dt.minute, expiration_dt.second)
+                    else:
+                        # expires on the ? days at renewal month
+                        if not self.rolling_renew_option2_day:
+                            self.rolling_renew_option2_day = 1
+                        expiration_dt = renew_dt + relativedelta(years=self.period)
+                        self.rolling_renew_option2_day = day_validate(datetime(expiration_dt.year, renew_dt.month, 1), 
+                                                                    self.rolling_renew_option2_day)
+                        return datetime(expiration_dt.year, renew_dt.month, 
+                                                 self.rolling_renew_option2_day, expiration_dt.hour,
+                                                 expiration_dt.minute, expiration_dt.second)
+                    
+                    
+        else: #self.period_type == 'fixed':
+            if self.fixed_option == '0':
+                # expired on the fixed day, fixed month, fixed year
+                if not self.fixed_option1_day:
+                    self.fixed_option1_day = 1
+                if not self.fixed_option1_month:
+                    self.fixed_option1_month = 1
+                if self.fixed_option1_month > 12:
+                    self.fixed_option1_month = 12
+                if not self.fixed_option1_year:
+                    self.fixed_option1_year = now.year
+                    
+                self.fixed_option1_day = day_validate(datetime(self.fixed_expiration_year, 
+                                                                  self.fixed_expiration_month, 1), 
+                                                                    self.fixed_option1_day)
+                    
+                return datetime(self.fixed_option1_year, self.fixed_option1_month, 
+                                self.fixed_option1_day)
+            else: # self.fixed_option == '1'
+                # expired on the fixed day, fixed month of current year
+                if not self.fixed_option2_day:
+                    self.fixed_option2_day = 1
+                if not self.fixed_option2_month:
+                    self.fixed_option2_month = 1
+                if self.fixed_option2_month > 12:
+                    self.fixed_option2_month = 12
+                
+                self.fixed_expiration_day2 = day_validate(datetime(now.year, 
+                                                                  self.fixed_option2_month, 1), 
+                                                                    self.fixed_option2_day)
+                
+                expiration_dt = datetime(now.year, self.fixed_option2_month,
+                                        self.fixed_option2_day)
+                if self.fixed_option2_can_rollover:
+                    if not self.fixed_option2_rollover_days:
+                        self.fixed_option2_rollover_days = 0
+                    if (now - expiration_dt).days <= self.fixed_option2_rollover_days:
+                        expiration_dt = expiration_dt + relativedelta(years=1)
+                        
+                return expiration_dt
+
 class Membership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     member_number = models.CharField(_("Member Number"), max_length=50)
@@ -130,18 +253,19 @@ class Membership(TendenciBaseModel):
     
     renewal = models.BooleanField(default=0)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
-    join_dt = models.DateTimeField(_("Join Date Time")) 
-    renew_dt = models.DateTimeField(_("Renew Date Time")) 
+    join_dt = models.DateTimeField(_("Join Date Time"), null=True)
+    renew_dt = models.DateTimeField(_("Renew Date Time"), blank=True, null=True)
     expiration_dt = models.DateTimeField(_("Expiration Date Time"))
     approved = models.BooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"))
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
-    #corporate_membership = models.ForeignKey(CorporateMembership, related_name="memberships", null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
     # add membership application id - so we can support multiple applications
     ma = models.ForeignKey("App")
+
+    objects = MembershipManager()
     
     class Meta:
         verbose_name = _("Membership")
@@ -149,7 +273,11 @@ class Membership(TendenciBaseModel):
         permissions = (("view_membership","Can view membership"),)
     
     def __unicode__(self):
-        return "%s (%s)" % (self.user.get_full_name(), self.member_number)
+        return "%s #%s" % (self.user.get_full_name(), self.member_number)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('membership.details', [self.pk])
     
     def save(self, *args, **kwargs):
         if not self.id:
@@ -210,6 +338,7 @@ class App(TendenciBaseModel):
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
 
     membership_types = models.ManyToManyField(MembershipType, verbose_name="Membership Types")
+    payment_methods = models.ManyToManyField(PaymentMethod, verbose_name="Payment Methods")
 
     objects = MemberAppManager()
 
@@ -219,6 +348,10 @@ class App(TendenciBaseModel):
 
     def __unicode__(self):
         return self.name
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('membership.application_details', [self.slug])
     
     def save(self, *args, **kwargs):
         if not self.id:
@@ -230,7 +363,7 @@ class AppFieldManager(models.Manager):
     Only show visible fields when displaying actual form..
     """
     def visible(self):
-        return self.filter(visible=True)
+        return self.filter(visible=True).order_by('pk')
 
 class AppField(models.Model):
     app = models.ForeignKey("App", related_name="fields")
@@ -258,19 +391,17 @@ class AppField(models.Model):
 
     objects = AppFieldManager()
 
-    def save(self, *args, **kwargs):
-        model = self.__class__
-        
-        if self.position is None:
-            # Append
-            try:
-                last = model.objects.order_by('-position')[0]
-                self.position = last.position + 1
-            except IndexError:
-                # First row
-                self.position = 0
-        
-        return super(AppField, self).save(*args, **kwargs)
+#    def save(self, *args, **kwargs):
+#        if self.position is None:
+#            # Append
+#            try:
+#                last = model.objects.order_by('-position')[0]
+#                self.position = last.position + 1
+#            except IndexError:
+#                # First row
+#                self.position = 0
+#
+#        return super(AppField, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _("Field")
@@ -284,10 +415,16 @@ class AppEntry(models.Model):
     """
     An entry submitted via a membership application.
     """
-    
+
     app = models.ForeignKey("App", related_name="entries", editable=False)
     membership = models.ForeignKey("Membership", related_name="entries", null=True, editable=False)
     entry_time = models.DateTimeField(_("Date/Time"))
+
+    is_approved = models.NullBooleanField(_('Status'), null=True, editable=False)
+    decision_dt = models.DateTimeField(null=True, editable=False)
+    judge = models.ForeignKey(User, null=True, editable=False)
+
+#    create_dt = models.DateTimeField(editable=False)
 
     objects = MemberAppEntryManager()
 
@@ -295,6 +432,13 @@ class AppEntry(models.Model):
         verbose_name = _("Application Entry")
         verbose_name_plural = _("Application Entries")
         permissions = (("view_appentry","Can view membership application entry"),)
+
+    def __unicode__(self):
+        return '%s - Submission #%s' % (self.app, self.pk)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('membership.application_entries', [self.pk])
 
     @property
     def name(self):
@@ -356,13 +500,22 @@ class AppEntry(models.Model):
         """Get User object"""
         # TODO: Figure out how to get the user
 
+    @property
+    def status(self):
+        status = 'Pending'
+
+        if self.is_approved == True:
+            status = 'Approved'
+        elif self.is_approved == False:
+            status = 'Disapproved'
+
+        return status
 
 
 class AppFieldEntry(models.Model):
     """
     A single field value for a form entry submitted via a membership application.
     """
-    
     entry = models.ForeignKey("AppEntry", related_name="fields")
     field = models.ForeignKey("AppField", related_name="field")
     value = models.CharField(max_length=200)
@@ -370,5 +523,3 @@ class AppFieldEntry(models.Model):
     class Meta:
         verbose_name = _("Application Field Entry")
         verbose_name_plural = _("Application Field Entries")
-
-

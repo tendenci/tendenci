@@ -17,23 +17,15 @@
 
     <div class="application-entry-wrap">
 
-        <h1>{{ entry.app.name }} Application Entry</h1>
+        <h1>{{ entry.app.name }} Submission</h1>
         <div class="entry_dt">Submitted {{ entry.entry_time|date_short }}</div>
 
-        {% if entry.membership %}
-            {% if entry.membership.approved %}
-                <div class="approved_dt">Approved on
-                    {{ entry.membership.approved_denied_dt|date_short }}
-                    by <a href="{% url profile entry.membership.approved_denied_user %}">
-                    {{ entry.membership.approved_denied_user }}</a></div>
-            {% else %}
-                <div class="denied_dt">Denied on
-                    {{ entry.membership.approved_denied_dt|date_short }}
-                    by {{ entry.membership.approved_denied_user }}</div>
+        <div class="approval-status {{ entry.status|lower }}">
+            {{ entry.status }}
+            {% if entry.decision_dt %}
+                {{ entry.decision_dt|date_long }}
             {% endif %}
-        {% else %}
-            <div class="pending">Pending</div>
-        {% endif %}
+        </div>
 
     	{% for field in entry.fields.all %}
     		{% if field.field.field_type == 'FileField' %}
@@ -51,10 +43,19 @@
     		{% endif %}
     	{% endfor %}
 
+        {% if user.is_admin %}
+        {% if entry.is_approved == 0 or entry.is_approved == 1 %}
+        {% else %}
+        <div class="membership-status">
+            <ul>
+                <li><a href="{% url membership.disapprove_entry entry.pk %}">Disapprove</a></li>
+                <li><a href="{% url membership.approve_entry entry.pk %}">Approve</a></li>
+            </ul>
+        </div>
+        {% endif %}
+        {% endif %}
+
     </div>
 
 </div>
-{% endblock %}
-
-{% block extra_body %}
 {% endblock %}
