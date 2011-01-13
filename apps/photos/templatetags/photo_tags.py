@@ -176,6 +176,7 @@ class ListPhotosNode(Node):
             query = '%s "%s"' % (query, q_item)
 
         photos = Image.objects.search(user=self.user, query=query)
+        photos = photos.order_by('-create_dt')
 
         photos = [photo.object for photo in photos[:self.limit]]
         context[self.context_var] = photos
