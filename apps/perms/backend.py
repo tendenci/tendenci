@@ -105,11 +105,11 @@ class ObjectPermBackend(object):
         
         if not obj:
             return False
-        
+
         # they are non-admin, should not view any content with status=0 - GJQ
-        if hasattr(obj, "status") and obj.status==0:
+        if hasattr(obj, "status") and obj.status == 0:
             return False
-            
+        
         # object anonymous and use bits
         if perm_type == 'view':
             if hasattr(obj, "allow_anonymous_view") and hasattr(obj, "allow_user_view"):
@@ -124,18 +124,18 @@ class ObjectPermBackend(object):
                 if user.is_authenticated() and obj.allow_user_edit:
                     return True
             
-        # no anonymous user currently... TODO: create one?   
+        # no anonymous user currently
         if not user.is_authenticated():
             return False
-        
+
         if not isinstance(obj, Model):
             return False
-        
+
         # check the permissions on the object level of groups or user
         perm = '%s.%s' % (obj.pk, perm)
         if perm in self.get_all_object_permissions(user, obj, codename):
-            return True            
-    
+            return True
+
 
     def has_module_perms(self, user_obj, app_label):
         """
