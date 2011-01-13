@@ -74,7 +74,7 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_object = confirm("Permenantly delete {% firstof MODULE_ARTICLES_LABEL 'Article' %}?");	// confirm
-				if(delete_object) $('form[name="article-delete"]').submit()
+				if(delete_object) $(this).parents('.article-wrap-search').find('form[name="article-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});
