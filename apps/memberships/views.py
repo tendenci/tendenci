@@ -97,7 +97,6 @@ def application_details(request, slug=None, template_name="memberships/applicati
                         'approved': True,
                         'approved_denied_dt': datetime.now(),
                         'approved_denied_user': None,
-                        'corporate_membership': None,
                         'payment_method':'',
                         'ma':app_entry.app,
                         'creator':user,

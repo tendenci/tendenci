@@ -47,15 +47,13 @@ from perms.utils import get_notice_recipients
 
 # view profile  
 @login_required 
-def index(request, username="", template_name="profiles/index.html"):
+def index(request, username='', template_name="profiles/index.html"):
     if not username:
         username = request.user.username
     user_this = get_object_or_404(User, username=username)
 
     try:
-        #profile = Profile.objects.get(user=user)
         profile = user_this.get_profile()
-        #if not has_perm(request.user,'profiles.view_profile',profile):raise Http403
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
         
@@ -79,7 +77,10 @@ def index(request, username="", template_name="profiles/index.html"):
     
     # group list
     group_memberships = user_this.group_member.all()
-                                    
+
+    # memberships
+    memberships = user_this.membership_set.all()
+
     log_defaults = {
         'event_id' : 125000,
         'event_data': '%s (%d) viewed by %s' % (profile._meta.object_name, profile.pk, request.user),
@@ -90,13 +91,14 @@ def index(request, username="", template_name="profiles/index.html"):
     }
     EventLog.objects.log(**log_defaults)
  
-    return render_to_response(template_name, {"user_this": user_this, 
-                                              "profile":profile,
-                                              'content_counts': content_counts,
-                                              'additional_owners': additional_owners,
-                                              'group_memberships': group_memberships
-                                               }, 
-                              context_instance=RequestContext(request))
+    return render_to_response(template_name, {
+        "user_this": user_this,
+        "profile":profile,
+        'content_counts': content_counts,
+        'additional_owners': additional_owners,
+        'group_memberships': group_memberships,
+        'memberships': memberships,
+        }, context_instance=RequestContext(request))
    
  
 def search(request, template_name="profiles/search.html"):

@@ -535,3 +535,13 @@ div.admin-meta p {
 div.admin-item {
     border-bottom: 1px solid #CCC;
 }
+
+/* membership tab
+------------------------------- */
+.membership-wrap {
+    border: 1px solid silver;
+    padding: 10px;
+}
+.membership-wrap div {
+    margin: 5px 0
+}
