@@ -163,7 +163,8 @@ a:hover{text-decoration: none; color:#000;}
 	}
 
 #container p {
-    margin: 8px 0 8px 0;
+    margin: 10px 0 10px 0;
+    line-height: 1.3em;
 }
 
 /* header */

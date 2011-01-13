@@ -1,34 +1,45 @@
 import Image
+from os import stat
 from cStringIO import StringIO
-from django.core.cache import cache
+from django.core.cache import cache as django_cache
 
 from files.cache import FILE_IMAGE_PRE_KEY
 
-def get_image(file, size):
+def get_image(file, size, constrain=False, cache=False):
     """
     Gets resized-image-object from cache or rebuilds
     the resized-image-object using the original image-file.
     """
     size = validate_image_size(size) # make sure it's not too big
-    key = generate_image_cache_key(file, size)
+    binary = None
 
-    binary = cache.get(key) # check if key exists
-    if not binary: binary = build_image(file, size)
+    if cache:
+        key = generate_image_cache_key(file, size)
+        binary = django_cache.get(key) # check if key exists
+    if not binary:
+        binary = build_image(file, size, constrain=constrain, cache=cache)
 
     try: return Image.open(StringIO(binary))
     except: return ''
 
-def build_image(file, size):
+def build_image(file, size, constrain=False, cache=False):
     """
     Builds a resized image based off of the original image.
     """
-    image = Image.open(file.file.path) # get image
-    image = image.resize(size, Image.ANTIALIAS) # resize image
+    if hasattr(file,'path'):
+        image = Image.open(file.path) # get image
+    else:
+        image = Image.open(file.name) # get image
 
     # handle infamous error
     # IOError: cannot write mode P as JPEG
     if image.mode != "RGB":
         image = image.convert("RGB")
+
+    if constrain:
+        image.thumbnail(size, Image.ANTIALIAS) # thumbnail image
+    else:
+        image = image.resize(size, Image.ANTIALIAS) # resize image
 
     # mission: get binary
     output = StringIO()
@@ -36,10 +47,10 @@ def build_image(file, size):
     binary = output.getvalue() # mission accomplished
     output.close()
 
-    key = generate_image_cache_key(file, size)
+    if cache:
+        key = generate_image_cache_key(file, size)
+        django_cache.add(key, binary, 60*60*24*30) # cache for 30 days #issue/134
 
-    cache.add(key, binary, 60*60*24*30) # cache for 30 days #issue/134
-    
     return binary
 
 def validate_image_size(size):
@@ -60,13 +71,17 @@ def validate_image_size(size):
 
 def generate_image_cache_key(file, size):
     """
-    Generates image cache key. You can use this for adding, 
+    Generates image cache key. You can use this for adding,
     retrieving or removing a cache record.
     """
     str_size = 'x'.join([str(i) for i in size])
-    key = '.'.join((FILE_IMAGE_PRE_KEY, file.update_dt.isoformat('.'), str_size))
-    # e.g. file_image.2005-08-08.16:09:43.200x300 file_image.<date>.<time>.<width>x<height>
-    
+
+    # e.g. file_image.1294851570.200x300 file_image.<file-system-modified-time>.<width>x<height>
+    if hasattr(file,'path'):
+        key = '.'.join((FILE_IMAGE_PRE_KEY, str(stat(file.path).st_mtime), str_size))
+    else:
+        key = '.'.join((FILE_IMAGE_PRE_KEY, str(stat(file.name).st_mtime), str_size))
+
     return key
 
 
