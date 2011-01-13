@@ -17,11 +17,6 @@
     {{ resume.title }}</h1>
 
     <div class="resume-wrap">
-		<div class="options">
-             <div class="quick-options">
-				{% resume_options request.user resume %} 	       
-             </div>
-		</div>
     	<form action="{% url resume.edit.meta resume.pk %}" method="post">
     	<div class="forms">
             {{ form|styled_form }}
@@ -34,16 +29,6 @@
 {% endblock %}
 
 {% block extra_body %}
-    <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_resume = confirm('Permenantly delete {% firstof MODULE_RESUMES_LABEL 'Resume' %}?');	// confirm
-				if(delete_resume) $('.t').find('form[name="resume-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
 	var iconrow = new dropdown({

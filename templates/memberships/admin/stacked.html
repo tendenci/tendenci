@@ -53,13 +53,14 @@
 	    {% for line in fieldset %}
 
 	    	{% if inline_admin_form.original.field_type in fields_to_check and forloop.counter in excluded_lines %}
+                {{ field.field }}
 	    	{% else %}
 		        <div class="form-row{% if line.errors %} errors{% endif %}{% for field in line %} {{ field.field.name }}{% endfor %}">
 		            {{ line.errors }}
 		            {% for field in line %}
 
 		            	{% if inline_admin_form.original.field_type in fields_to_check and field.field.name in excluded_fields%}
-                            <input type="hidden" name="{{ inline_admin_form.original.field_type }}"
+                            {{ field.field }}
 		            	{% else %}
 			                <div{% if not line.fields|length_is:"1" %} class="field-box"{% endif %}>
 			                    {% if field.is_checkbox %}

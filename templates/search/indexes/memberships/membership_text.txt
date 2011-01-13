@@ -1,0 +1,7 @@
+pk:{{ object.pk }}
+type:{{ object.membership_type }}
+number:{{ object.member_number }}
+user:{{ object.user.pk }}
+firstname:{{ object.user.profile.firstname }}
+lastname:{{ object.user.profile.lastname }}
+is:{{ object.status }}

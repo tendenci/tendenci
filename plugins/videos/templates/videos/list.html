@@ -20,7 +20,7 @@
         {%endif%}
         </a>
         <br>
-        {{ video.description|safe|truncatewords:"20" }}
+        {{ video.description|safe|truncatewords_html:"20" }}
     </div>
     {% endwith %}
 {% endfor %}

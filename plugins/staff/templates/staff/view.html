@@ -1,0 +1,86 @@
+{% extends "staff/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load staff_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+    {% nowhitespace %}
+        {{ staff.name }}
+        {% if staff.position %}
+            &nbsp;&ndash;&nbsp;{{ staff.position }}
+        {% endif %}
+        {% if staff.department %}
+            &nbsp;&ndash;&nbsp;{{ staff.department }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        staff {{ staff.name }}
+        {% if staff.position %}
+            {{ staff.position }}
+        {% endif %}
+        {% if staff.department %}
+            {{ staff.department }}
+        {% endif %}
+        {% if staff.tags %}
+            {{ staff.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ staff.name }}
+        {% if staff.position %}
+            ,{{ staff.position }}
+        {% endif %}
+        {% if staff.department %}
+            ,{{ staff.department }}
+        {% endif %}
+        {{ staff.biography|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+{% include "staff/media/css/staff.css" %}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <div class="view-staff-member">
+        <div class="quick-options">
+            {% staff_options request.user staff %}
+        </div>
+        <div class="member-photo">
+            <img src="{% url staff.photo staff.pk "256x256" %}" title="{{ staff.name }}"  />
+            <p>{{ staff.name }}</p>
+            {%  if staff.position %}
+            <p class="staff-position">{{ staff.position }}</p>
+            {% endif %}
+        </div>
+        <h1>
+            {{ staff.name }}
+            {% if staff.position %}
+                &nbsp;&ndash;&nbsp;{{ staff.position }}
+            {% endif %}
+            {% if staff.department %}
+                &nbsp;&ndash;&nbsp;{{ staff.department }}
+            {% endif %}
+        </h1>
+        {% if staff.biography %}
+        <p class="staff-bio">
+            {{ staff.biography|safe }}
+        </p>
+        {% endif %}
+        <div class="staff-meta">
+            <a href="{% url staff.search %}">&laquo;&nbsp;Search other staff</a>
+        </div>
+    </div>
+</div>
+{% endblock body %}

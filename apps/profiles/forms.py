@@ -10,10 +10,11 @@ from perms.utils import is_admin, is_developer
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
 # this is the list of apps whose permissions will be displayed on the permission edit page
-APPS = ['profiles', 'user_groups', 'articles', 
+APPS = ('profiles', 'user_groups', 'articles', 
         'news', 'pages', 'jobs', 'locations', 
         'stories', 'actions', 'photos', 'entities',
-        'locations', 'files', 'directories', 'resumes']
+        'locations', 'files', 'directories', 'resumes',
+        'memberships', 'corporate_memberships')
 
 class ProfileForm(TendenciBaseForm):
 

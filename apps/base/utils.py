@@ -1,9 +1,9 @@
 # python
 from datetime import datetime
 from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 
 from django.conf import settings
-from site_settings.utils import get_setting
 
 STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'among','an','and','any','are','as','at','be','because',
@@ -20,6 +20,23 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'whom','why','will','with','would','yet','you','your',
               'find','very','still','non','here', 'many', 'a','s','t','ve', 
               'use', 'don\'t', 'can\'t', 'wont', 'come','you\'ll', 'want']
+
+def now_localized():
+    from datetime import datetime
+    from timezones.utils import adjust_datetime_to_timezone
+    from time import strftime, gmtime
+    
+    os_timezone = strftime('%Z',gmtime())
+    if os_timezone == 'CST': os_timezone = 'US/Central'
+    django_timezone =  settings.TIME_ZONE
+
+    now = adjust_datetime_to_timezone(
+               datetime.now(),
+               from_tz=os_timezone,
+               to_tz=django_timezone)
+    now = now.replace(tzinfo=None)
+    return now
+
 
 def localize_date(date, from_tz=None, to_tz=None):
     """
@@ -80,6 +97,27 @@ def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_
                                       start_dt.strftime(format_time),
                                       end_dt.strftime(format_date),
                                       end_dt.strftime(format_time))
+            
+def day_validate(dt, day):
+    """
+        validate if this day is valid in the month of dt, and correct it if not.
+    """
+    if isinstance(dt, datetime):
+        try:
+            day = int(day)
+        except:
+            day = 1
+            
+        if day == 0: day = 1
+        
+        # the last day of this month
+        last_day_of_month = (datetime(dt.year, dt.month, 1) + relativedelta(months=1) - timedelta(days=1)).day
+         
+        # if last_day_of_month = 31 and day = 32, set day = 31   
+        if day > last_day_of_month:
+            day = last_day_of_month
+    return day
+        
             
 def get_unique_username(user):
     import uuid
