@@ -20,6 +20,23 @@ except:
     notification = None
 
 @login_required
+def membership_details(request, id=0, template_name="memberships/details.html"):
+    """
+    Membership details.
+    """
+    # TODO: log this event; we do not have an id for this action
+
+    query = 'pk:%s' % id
+    sqs = Membership.objects.search(query, user=request.user)
+
+    if sqs:
+        membership = sqs.best_match().object
+    else:
+        raise Http404
+
+    return render_to_response(template_name, {'membership': membership},
+        context_instance=RequestContext(request))
+
 def application_details(request, slug=None, template_name="memberships/applications/details.html"):
     """
     Display a built membership application and handle submission.
