@@ -1,0 +1,30 @@
+{% extends "memberships/base.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}Membership for {{ membership.user }}{% endblock %}
+{% block meta_description %}{{ membership.get_description }}{% endblock %}
+{% block meta_keywords %}{{ membership.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ membership.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+<div class="membership-wrap">
+
+    <h1>Membership for {{ membership.user.get_full_name }}</h1>
+    <div><a href="{{ membership.user.get_absolute_url }}">View profile</a><div>
+
+    <div>Joined {{ membership.join_dt|date }} ({{ membership.join_dt|timesince }})</div>
+
+    {% if membership.expiration_dt %}
+        <div>Expires {{ membership.expiration_dt }}</div>
+    {% else %}
+        <div>Never expires</div>
+    {% endif %}
+
+</div>
+{% endblock %}

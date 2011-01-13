@@ -1,9 +1,7 @@
-import sys
 import uuid
 from hashlib import md5
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -13,6 +11,7 @@ from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
 from memberships.managers import MemberAppManager, MemberAppEntryManager
+from memberships.managers import MembershipManager
 
 from base.utils import day_validate
 
@@ -265,6 +264,8 @@ class Membership(TendenciBaseModel):
     
     # add membership application id - so we can support multiple applications
     ma = models.ForeignKey("App")
+
+    objects = MembershipManager()
     
     class Meta:
         verbose_name = _("Membership")
@@ -272,7 +273,11 @@ class Membership(TendenciBaseModel):
         permissions = (("view_membership","Can view membership"),)
     
     def __unicode__(self):
-        return "%s (%s)" % (self.user.get_full_name(), self.member_number)
+        return "%s #%s" % (self.user.get_full_name(), self.member_number)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('membership.details', [self.pk])
     
     def save(self, *args, **kwargs):
         if not self.id:
