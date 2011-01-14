@@ -1,3 +1,5 @@
+import re
+import hashlib
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect
@@ -6,7 +8,6 @@ from memberships.models import App, AppEntry
 from memberships.forms import AppForm, AppEntryForm
 from perms.models import ObjectPermission
 from datetime import datetime, timedelta
-import hashlib
 from django.contrib.auth.models import User
 from memberships.models import Membership, MembershipType
 from django.core.urlresolvers import reverse
@@ -74,14 +75,24 @@ def application_details(request, slug=None, template_name="memberships/applicati
             if app_entry.membership_type.require_approval:
             # create user and create membership
 
+                spawned_username = '%s %s' % (app_entry.first_name, app_entry.last_name)
+                spawned_username = re.sub('\s+', '_', spawned_username)
+                spawned_username = re.sub('[^\w.-]+', '', spawned_username)
+                spawned_username = spawned_username.strip('_.- ').lower()
+
                 user_dict = {
-                    'username': app_entry.email,
+                    'username': spawned_username,
                     'email': app_entry.email,
                     'password': hashlib.sha1(app_entry.email).hexdigest()[:6],
                 }
 
                 try:
                     user = User.objects.create_user(**user_dict)
+
+                    user.first_name = app_entry.first_name
+                    user.last_name = app_entry.last_name
+                    user.save()
+
                 except:
                     user = None
 
