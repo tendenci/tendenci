@@ -3,7 +3,6 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from payments.models import Payment
 from payments.authorizenet.utils import prepare_authorizenet_sim_form
-from payments.utils import get_payment_object
 from invoices.models import Invoice
 from base.http import Http403
 from base.utils import tcurrency
@@ -79,10 +78,8 @@ def receipt(request, id, guid, template_name='payments/receipt.html'):
     payment = get_object_or_404(Payment, pk=id)
     if payment.guid <> guid:
         raise Http403
-
-    obj_d = get_payment_object(payment)
         
-    return render_to_response(template_name,{'payment':payment, 'obj_d': obj_d},
+    return render_to_response(template_name,{'payment':payment},
                               context_instance=RequestContext(request))
 
         
