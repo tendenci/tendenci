@@ -1,15 +1,44 @@
+from datetime import datetime
+
+from django.contrib.contenttypes.models import ContentType
 from invoices.models import Invoice
 
 def make_payment_inv_add(user, make_payment, **kwargs):
     inv = Invoice()
-    inv.assign_make_payment_info(user, make_payment)
+    # field to be populated to invoice
+    inv.title = "Make Payment Invoice"
+    inv.bill_to =  make_payment.first_name + ' ' + make_payment.last_name
+    inv.bill_to_first_name = make_payment.first_name
+    inv.bill_to_last_name = make_payment.last_name
+    inv.bill_to_company = make_payment.company
+    inv.bill_to_address = make_payment.address
+    inv.bill_to_city = make_payment.city
+    inv.bill_to_state =  make_payment.state
+    inv.bill_to_zip_code = make_payment.zip_code
+    inv.bill_to_country = make_payment.country
+    inv.bill_to_phone = make_payment.phone
+    inv.bill_to_email = make_payment.email
+    inv.ship_to =  make_payment.first_name + ' ' + make_payment.last_name
+    inv.ship_to_first_name = make_payment.first_name
+    inv.ship_to_last_name = make_payment.last_name
+    inv.ship_to_company = make_payment.company
+    inv.ship_to_address = make_payment.address
+    inv.ship_to_city = make_payment.city
+    inv.ship_to_state = make_payment.state
+    inv.ship_to_zip_code =  make_payment.zip_code
+    inv.ship_to_country = make_payment.country
+    inv.ship_to_phone =  make_payment.phone
+    inv.ship_to_email = make_payment.email
+    inv.terms = "Due on Receipt"
+    inv.due_date = datetime.now()
+    inv.ship_date = datetime.now()
+    inv.message = 'Thank You.'
+    inv.status = True
+    
     inv.estimate = True
     inv.status_detail = 'estimate'
-    if kwargs.has_key('object_type'):
-        inv.invoice_object_type = kwargs['object_type']
-    else:
-        inv.invoice_object_type = 'make_payment'
-    inv.invoice_object_type_id = make_payment.id
+    inv.object_type = ContentType.objects.get(app_label=make_payment._meta.app_label, model=make_payment._meta.module_name)
+    inv.object_id = make_payment.id
     inv.subtotal = make_payment.payment_amount
     inv.total = make_payment.payment_amount
     inv.balance = make_payment.payment_amount

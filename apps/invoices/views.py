@@ -40,8 +40,17 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     merchant_login = False
     if hasattr(settings, 'MERCHANT_LOGIN') and settings.MERCHANT_LOGIN:
         merchant_login = True
+    print type(invoice.object_type)    
+    obj = invoice.get_object()
+    
+    obj_name = ""
+    if obj:
+        obj_name = obj._meta.verbose_name
+    print obj
     
     return render_to_response(template_name, {'invoice': invoice,
+                                              'obj': obj,
+                                              'obj_name': obj_name,
                                               'guid':guid, 
                                               'notify': notify, 
                                               'form':form,
@@ -93,14 +102,17 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
             from accountings.models import AcctEntry
             ae = AcctEntry.objects.create_acct_entry(request.user, 'invoice', invoice.id)
             if invoice.variance < 0:
-                from invoices.utils import get_account_number
                 from accountings.utils import make_acct_entries_discount
                 #this is a discount
                 opt_d = {}
                 opt_d['discount'] = True
                 opt_d['original_invoice_total'] = original_total
                 opt_d['original_invoice_balance'] = original_balance
-                opt_d['discount_account_number'] = get_account_number(invoice, opt_d)
+                opt_d['discount_account_number'] = 460100
+                
+                obj = invoice.get_object()
+                if obj and hasattr(obj, 'get_acct_number'):
+                    opt_d['discount_account_number'] = obj.get_acct_number(discount=True)
                 
                 make_acct_entries_discount(request.user, invoice, ae, opt_d)
                 

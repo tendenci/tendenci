@@ -13,14 +13,8 @@
 <div class="t">
  {% invoice_nav  invoice %}
 <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice View 
-{% if invoice.invoice_object_type == 'make_payment'  %}
-	for General Payment
-{% endif %}
-{% if invoice.invoice_object_type == 'event_registration'  %}
-	for Event Registration
-{% endif %}
-{% if invoice.invoice_object_type == 'job'  %}
-	for Job
+{% if obj_name %}
+	for {{ obj_name|capfirst }}
 {% endif %}
 </h1>
 <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ SITE_GLOBAL_SITEMAILINGADDRESS }}</div>
@@ -37,21 +31,7 @@
 		<div class="subtitles">E-S-T-I-M-A-T-E &nbsp;&nbsp;</div>
 	{% endif %}
 	
-	{% if invoice.invoice_object_type == 'make_payment'  %}
-		{% invoice_makepayments_display request invoice %}
-	{% endif %}
-	{% if invoice.invoice_object_type == 'event_registration'  %}
-		{% invoice_event_display request invoice %}
-	{% endif %}
-	{% if invoice.invoice_object_type == 'job'  %}
-		{% invoice_job_display request invoice %}
-	{% endif %}
-	{% if invoice.invoice_object_type == 'directory'  %}
-		{% invoice_directory_display request invoice %}
-	{% endif %}
-	{% if invoice.invoice_object_type == 'donation'  %}
-		{% invoice_donation_display request invoice %}
-	{% endif %}
+	{% invoice_object_display request invoice %}
 
 	{% invoice_total_display request invoice %}
 	
