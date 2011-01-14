@@ -65,6 +65,11 @@ div.forms input[type="submit"] {
 	cursor: pointer;
 }
 
+div.forms li {
+    list-style-type: none;
+    margin: 3px 0;
+}
+
 div.forms div.checkbox {
 	float: left;
 }
