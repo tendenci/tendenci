@@ -25,22 +25,7 @@
 		<div class="subtitles">E-S-T-I-M-A-T-E &nbsp;&nbsp;</div>
 	{% endif %}
 	
-	{% if invoice.invoice_object_type == 'make_payment'  %}
-		{% invoice_makepayments_display request invoice %}
-	{% endif %}
-	{% if invoice.invoice_object_type == 'event_registration'  %}
-		{% invoice_event_display request invoice %}
-	{% endif %}
-	{% if invoice.invoice_object_type == 'job'  %}
-		{% invoice_job_display request invoice %}
-	{% endif %}
-	{% if invoice.invoice_object_type == 'directory'  %}
-		{% invoice_directory_display request invoice %}
-	{% endif %}
-	{% if invoice.invoice_object_type == 'donation'  %}
-		{% invoice_donation_display request invoice %}
-	{% endif %}
-
+	{% invoice_object_display request invoice %}
 	
 	{% invoice_total_display request invoice %}
 	

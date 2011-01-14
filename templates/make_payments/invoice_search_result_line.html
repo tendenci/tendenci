@@ -1,0 +1,28 @@
+{% load base_filters %}
+{% load invoice_tags %}
+
+<table width="100%">
+   {% invoices_search_line_header request invoice '#66cc00' %}  
+      
+    {# display make payment info #} 
+    <tr>
+    	<td>MakePaymentID</td>
+    	<td>First Name</td>
+    	<td>Last Name</td>
+    	<td>Date</td>
+    	<td>Amount</td>
+    	<td>Balance</td>
+    </tr>
+    
+    {% if obj %} 
+     <tr>
+     	<td><a href="{% url make_payments.views.view obj.id %}">{{obj.id}}</a></td>
+     	<td>{{obj.first_name}}</td>
+     	<td>{{obj.last_name}}</td>
+     	<td>{{obj.create_dt|date:'long'}}</td>
+     	<td>{{obj.payment_amount|format_currency}}</td>
+     	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+     </tr>  
+   {% endif %}  
+   
+</table>

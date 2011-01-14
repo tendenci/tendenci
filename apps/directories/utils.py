@@ -1,4 +1,6 @@
 # settings - directoriespaymenttypes, directoriesrequirespayment
+from datetime import datetime
+from django.contrib.contenttypes.models import ContentType
 from directories.models import DirectoryPricing
 from invoices.models import Invoice
 from payments.models import Payment
@@ -29,9 +31,41 @@ def directory_set_inv_payment(user, directory, **kwargs):
     if get_setting('module', 'directories', 'directoriesrequirespayment'):
         if not directory.invoice:
             inv = Invoice()
-            inv.invoice_object_type = "directory"
-            inv.invoice_object_type_id = directory.id
-            inv.assign_directory_info(user, directory)
+            inv.object_type = ContentType.objects.get(app_label=directory._meta.app_label, 
+                                              model=directory._meta.module_name)
+            inv.object_id = directory.id
+            profile = user.get_profile()
+            inv.title = "Directory Add Invoice"
+            inv.bill_to = '%s %s' % (user.first_name, user.last_name)
+            inv.bill_to_first_name = user.first_name
+            inv.bill_to_last_name = user.last_name
+            inv.bill_to_company = profile.company
+            inv.bill_to_address = profile.address
+            inv.bill_to_city = profile.city
+            inv.bill_to_state = profile.state
+            inv.bill_to_zip_code = profile.zipcode
+            inv.bill_to_country = profile.country
+            inv.bill_to_phone = profile.phone
+            inv.bill_to_fax = profile.fax
+            inv.bill_to_email = profile.email
+            inv.ship_to = inv.bill_to
+            inv.ship_to_first_name = user.first_name
+            inv.ship_to_last_name = user.last_name
+            inv.ship_to_company = profile.company
+            inv.ship_to_address = profile.address
+            inv.ship_to_city = profile.city
+            inv.ship_to_state = profile.state
+            inv.ship_to_zip_code = profile.zipcode
+            inv.ship_to_country = profile.country
+            inv.ship_to_phone = profile.phone
+            inv.ship_to_fax = profile.fax
+            inv.ship_to_email = profile.email
+            inv.terms = "Due on Receipt"
+            inv.due_date = datetime.now()
+            inv.ship_date = datetime.now()
+            inv.message = 'Thank You.'
+            inv.status = True
+            
             inv.total = get_directory_price(user, directory)
             inv.subtotal = inv.total
             inv.balance = inv.total
