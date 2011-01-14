@@ -46,3 +46,61 @@ class Donation(models.Model):
             self.owner_username=user.username
             
         super(self.__class__, self).save(*args, **kwargs)
+        
+    # Called by payments_pop_by_invoice_user in Payment model.
+    def get_payment_description(self, inv):
+        """
+        The description will be sent to payment gateway and displayed for on invoice.
+        If not supplied, the default description will be generated.
+        """
+        return 'Tendenci Invoice %d Payment for Donation %d' % (
+            inv.id,
+            inv.object_id,
+        )
+        
+    def make_acct_entries(self, user, inv, amount, **kwargs):
+        """
+        Make the accounting entries for the donation sale
+        """
+        from accountings.models import Acct, AcctEntry, AcctTran
+        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        
+        ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
+        if not inv.is_tendered:
+            make_acct_entries_initial(user, ae, amount)
+        else:
+            # payment has now been received
+            make_acct_entries_closing(user, ae, amount)
+            
+            # #CREDIT donation SALES
+            acct_number = self.get_acct_number()
+            acct = Acct.objects.get(account_number=acct_number)
+            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1)) 
+            
+    def get_acct_number(self, discount=False):
+        if discount:
+            return 465100
+        else:
+            return 405100
+            
+    def auto_update_paid_object(self, request, payment):
+        """
+        Update the object after online payment is received.
+        """
+        # email to admin
+        try:
+            from notification import models as notification
+        except:
+            notification = None
+        from perms.utils import get_notice_recipients
+        
+        recipients = get_notice_recipients('module', 'donations', 'donationsrecipients')
+        if recipients:
+            if notification:
+                extra_context = {
+                    'donation': self,
+                    'invoice': payment.invoice,
+                    'request': request,
+                }
+                notification.send_emails(recipients,'donation_added', extra_context)
+

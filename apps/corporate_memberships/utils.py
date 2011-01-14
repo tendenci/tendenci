@@ -1,4 +1,6 @@
 import os
+from datetime import datetime
+from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils import simplejson
 from site_settings.utils import get_setting
@@ -45,9 +47,34 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
     """
     if not corp_memb.invoice:
         inv = Invoice()
-        inv.invoice_object_type = "corporate_membership"
-        inv.invoice_object_type_id = corp_memb.id
-        inv.assign_corp_memb_info(user, corp_memb)
+        inv.object_type = ContentType.objects.get(app_label=corp_memb._meta.app_label, 
+                                              model=corp_memb._meta.module_name)
+        inv.object_id = corp_memb.id
+        inv.title = "Corporate Membership Invoice"
+        inv.bill_to = corp_memb.name
+        inv.bill_to_company = corp_memb.name
+        inv.bill_to_address = corp_memb.address
+        inv.bill_to_city = corp_memb.city
+        inv.bill_to_state = corp_memb.state
+        inv.bill_to_zip_code = corp_memb.zip
+        inv.bill_to_country = corp_memb.country
+        inv.bill_to_phone = corp_memb.phone
+        inv.bill_to_email = corp_memb.email
+        inv.ship_to = corp_memb.name
+        inv.ship_to_company = corp_memb.name
+        inv.ship_to_address = corp_memb.address
+        inv.ship_to_city = corp_memb.city
+        inv.ship_to_state = corp_memb.state
+        inv.ship_to_zip_code = corp_memb.zip
+        inv.ship_to_country = corp_memb.country
+        inv.ship_to_phone = corp_memb.phone
+        inv.ship_to_email =corp_memb.email
+        inv.terms = "Due on Receipt"
+        inv.due_date = datetime.now()
+        inv.ship_date = datetime.now()
+        inv.message = 'Thank You.'
+        inv.status = True
+        
         if not corp_memb.renewal:
             inv.total = corp_memb.corporate_membership_type.price
         else:

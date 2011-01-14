@@ -1,19 +1,48 @@
 # settings: label, donationspaymenttypes, donationsallocations, 
 #           donationsrecipients, 
+from datetime import datetime
+from django.contrib.contenttypes.models import ContentType
 from invoices.models import Invoice
 from perms.utils import is_admin
 from site_settings.utils import get_setting
 
 def donation_inv_add(user, donation, **kwargs):
     inv = Invoice()
-    inv.assign_donation_info(user, donation)
+    inv.title = "Donation Invoice"
+    inv.bill_to = donation.first_name + ' ' + donation.last_name
+    inv.bill_to_first_name = donation.first_name
+    inv.bill_to_last_name = donation.last_name
+    inv.bill_to_company = donation.company
+    inv.bill_to_address = donation.address
+    inv.bill_to_city = donation.city
+    inv.bill_to_state = donation.state
+    inv.bill_to_zip_code = donation.zip_code
+    inv.bill_to_country = donation.country
+    inv.bill_to_phone = donation.phone
+    inv.bill_to_email = donation.email
+    inv.ship_to = donation.first_name + ' ' + donation.last_name
+    inv.ship_to_first_name = donation.first_name
+    inv.ship_to_last_name = donation.last_name
+    inv.ship_to_company = donation.company
+    inv.ship_to_address = donation.address
+    inv.ship_to_city = donation.city
+    inv.ship_to_state = donation.state
+    inv.ship_to_zip_code = donation.zip_code
+    inv.ship_to_country = donation.country
+    inv.ship_to_phone = donation.phone
+    #self.ship_to_fax = make_payment.fax
+    inv.ship_to_email =donation.email
+    inv.terms = "Due on Receipt"
+    inv.due_date = datetime.now()
+    inv.ship_date = datetime.now()
+    inv.message = 'Thank You.'
+    inv.status = True
+        
     inv.estimate = True
     inv.status_detail = 'estimate'
-    if kwargs.has_key('object_type'):
-        inv.invoice_object_type = kwargs['object_type']
-    else:
-        inv.invoice_object_type = 'donation'
-    inv.invoice_object_type_id = donation.id
+    inv.object_type = ContentType.objects.get(app_label=donation._meta.app_label, 
+                                              model=donation._meta.module_name)
+    inv.object_id = donation.id
     inv.subtotal = donation.donation_amount
     inv.total = donation.donation_amount
     inv.balance = donation.donation_amount

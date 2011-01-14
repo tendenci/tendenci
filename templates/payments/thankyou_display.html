@@ -1,17 +1,12 @@
-<h1>
-{% if obj_d.job %}
-Job Posting - 
+{% if obj_header %}
+	{{ obj_header }}
+{% else %}
+	<h1>
+	{% if obj %}
+		{{ obj._meta.verbose_name }} - 
+	{% endif %}
+	Payment Status</h1>
 {% endif %}
-{% if obj_d.directory %}
-Directory Posting - 
-{% endif %}
-{% if obj_d.donation %}
-Donation - 
-{% endif %}
-{% if obj_d.registration %}
-Calendar Event Registration - 
-{% endif %}
-Payment Status</h1>
 
 <p>&nbsp;</p>
     <p>
@@ -45,36 +40,11 @@ Payment Status</h1>
         <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.print_view payment.invoice.id payment.invoice.guid %}">Print Friendly Invoice.</a>
         </p>
         <p><a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id payment.invoice.guid %}">View my Invoice</a></p>
-       {% if obj_d.donation %}
-       		<p>Thank you for your donation!</p>
-       {% else %}
-        	<p>Thank you for your payment!</p>
-       {% endif %}
+       
    {% endif %}
+   
+   
     
-	{% if obj_d.job %}
-		<h3>What would you like to do now?</h3>
-		<ul>
-			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url job obj_d.job.slug %}" class="links">View Job</a></li>
-			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url job.search %}" class="links">Search Job Bank</a></li>
-			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url job.add %}" class="links">Add a Job </a></li>
-		</ul>
-	{% endif %}
-	
-	{% if obj_d.directory %}
-		<h3>What would you like to do now?</h3>
-		<ul>
-			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url directory obj_d.directory.slug %}" class="links">View Directory</a></li>
-			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url directory.search %}" class="links">Search Directories</a></li>
-			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url directory.add %}" class="links">Add a Directory </a></li>
-		</ul>
-	{% endif %}
-	
-	{% if obj_d.registration %}
-		<h3>What would you like to do now?</h3>
-		<ul>
-			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event obj_d.registration.event.id %}" class="links">View Event Details</a></li>
-			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.month %}" class="links">Monthly View</a></li>
-			<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registrant.search obj_d.registration.event.id %}" class="links">Search Registrations</a></li>
-		</ul>
+	{% if obj_display %}
+		{{ obj_display }}
 	{% endif %}
