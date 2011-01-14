@@ -1,6 +1,7 @@
 import uuid
 from hashlib import md5
 from datetime import datetime
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -187,6 +188,44 @@ class Registration(models.Model):
     owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
+    
+    # Called by payments_pop_by_invoice_user in Payment model.
+    def get_payment_description(self, inv):
+        """
+        The description will be sent to payment gateway and displayed for on invoice.
+        If not supplied, the default description will be generated.
+        """
+        return 'Tendenci Invoice %d for Event (%d): %s (Reg# %d)' % (
+            inv.id,
+            self.event.pk,
+            self.event.title,
+            inv.object_id,
+        )
+        
+    def make_acct_entries(self, user, inv, amount, **kwargs):
+        """
+        Make the accounting entries for the event sale
+        """
+        from accountings.models import Acct, AcctEntry, AcctTran
+        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        
+        ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
+        if not inv.is_tendered:
+            make_acct_entries_initial(user, ae, amount)
+        else:
+            # payment has now been received
+            make_acct_entries_closing(user, ae, amount)
+            
+            # #CREDIT event SALES
+            acct_number = self.get_acct_number()
+            acct = Acct.objects.get(account_number=acct_number)
+            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
+            
+    def get_acct_number(self, discount=False):
+        if discount:
+            return 462000
+        else:
+            return 402000
 
 
     @property
@@ -207,18 +246,21 @@ class Registration(models.Model):
 
     def save_invoice(self, *args, **kwargs):
         status_detail = kwargs.get('status_detail', 'estimate')
+        
+        object_type = ContentType.objects.get(app_label=self._meta.app_label, 
+                                              model=self._meta.module_name)
 
         try: # get invoice
             invoice = Invoice.objects.get(
-                invoice_object_type = 'calendarevents',
-                invoice_object_type_id = self.pk,
+                object_type = object_type,
+                object_id = self.pk,
             )
         except: # else; create invoice
             # cannot use get_or_create method
             # because too many fields are required
             invoice = Invoice()
-            invoice.invoice_object_type = 'event_registration'
-            invoice.invoice_object_type_id = self.pk
+            invoice.object_type = object_type
+            invoice.object_id = self.pk
 
         # update invoice with details
         invoice.estimate = True

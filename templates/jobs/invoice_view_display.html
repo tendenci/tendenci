@@ -4,10 +4,10 @@
 <div class="invoice-view-box">
 	{# make 3 blocks in the first box #}
 	<div class="invoice-view-detail-left">
-		{% if job %}
-			<a href="{% url job job.slug %}" title="View Job">{{ job.id }}</a>
+		{% if obj %}
+			<a href="{% url job obj.slug %}" title="View Job">{{ obj.id }}</a>
 		{% else %}
-			{{ invoice.invoice_object_type_id }}
+			{{ invoice.object_id }}
 		{% endif%}
 	</div>
 	
@@ -16,18 +16,18 @@
 		<tr>
 		 <td width="60%">
 			<div class="invoice-item">
-				{% if job %}
-					Title: <a href="{% url job job.slug %}">{{ job.title|truncatewords:5 }}</a>
+				{% if obj %}
+					Title: <a href="{% url job obj.slug %}">{{ obj.title|truncatewords:5 }}</a>
 				{% else %}
 					Job Information not available
 				{% endif%}
 			</div>
-			<div class="invoice-item">{{ job.contact_name }}</div>
-			<div class="invoice-item">Description: {{ job.description|striptags|truncatewords:5 }}</div>
+			<div class="invoice-item">{{ obj.contact_name }}</div>
+			<div class="invoice-item">Description: {{ obj.description|striptags|truncatewords:5 }}</div>
 		 </td>
 		 <td width="40%">
-			<div class="invoice-item">List Type: {{ job.list_type }}</div>
-			<div class="invoice-item">Duration: {{ job.requested_duration }}</div>
+			<div class="invoice-item">List Type: {{ obj.list_type }}</div>
+			<div class="invoice-item">Duration: {{ obj.requested_duration }}</div>
 		 </td>
 		</tr>
 		</table>

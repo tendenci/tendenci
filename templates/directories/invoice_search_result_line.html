@@ -1,0 +1,27 @@
+{% load base_filters %}
+{% load invoice_tags %}
+
+<table width="100%">
+   {% invoices_search_line_header request invoice '#cccc33' %}  
+     
+   {# display directory info #} 
+   <tr>
+   	<td>ID</td>
+   	<td>Name</td>
+   	<td>Headline</td>
+   	<td>Date</td>
+   	<td>Amount</td>
+   	<td>Balance</td>
+   </tr>
+   
+   {% if obj %} 
+   <tr>
+   	<td><a href="{% url directory obj.slug %}">{{obj.id}}</a></td>
+   	<td>{{obj.first_name}} {{obj.last_name}}</td>
+   	<td><a href="{% url directory obj.slug %}">{{obj.headline|truncatewords:5}}</a></td>
+   	<td>{{obj.activation_dt|date:'long'}}</td>
+   	<td>{{invoice.total|format_currency}}</td>
+   	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+   </tr> 
+   {% endif %}         
+ </table>
