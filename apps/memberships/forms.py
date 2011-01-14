@@ -264,10 +264,12 @@ class AppEntryForm(forms.ModelForm):
 
             if "choices" in arg_names:
                 if field.field_type == 'membership-type':
-                    choices = ['%s $%s' % (type.name, type.price) for type in app.membership_types.all()]
+                    choices = [type.name for type in app.membership_types.all()]
+                    choices_with_price = ['%s $%s' % (type.name, type.price) for type in app.membership_types.all()]
+                    field_args["choices"] = zip(choices, choices_with_price)
                 else:
                     choices = field.choices.split(",")
-                field_args["choices"] = zip(choices, choices)
+                    field_args["choices"] = zip(choices, choices)
 
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
