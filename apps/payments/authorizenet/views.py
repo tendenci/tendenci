@@ -5,14 +5,13 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.template import RequestContext
 from payments.authorizenet.utils import authorizenet_thankyou_processing
-from payments.utils import get_payment_object
 
 def sim_thank_you(request, payment_id, template_name='payments/authorizenet/thankyou.html'):
     payment = authorizenet_thankyou_processing(request, dict(request.POST.items()))
         
-    obj_d = get_payment_object(payment)
+    #obj_d = get_payment_object(payment)
     
-    return render_to_response(template_name,{'payment':payment, 'obj_d': obj_d}, 
+    return render_to_response(template_name,{'payment':payment}, 
                               context_instance=RequestContext(request))
     
     

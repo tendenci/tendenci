@@ -1,5 +1,5 @@
-{{ object.invoice_object_type }} 
-{{ object.invoice_object_type_id }} 
+{{ object.object_type }} 
+{{ object.object_id }} 
 {{ object.bill_to }} 
 {{ object.bill_to_company }} 
 {{ object.bill_to_address }} 

@@ -1,7 +1,6 @@
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from payments.firstdata.utils import firstdata_thankyou_processing
-from payments.utils import get_payment_object
 from event_logs.models import EventLog
 # http://www.firstdata.com/en_us/customer-center/merchants/support/first-data-global-gateway-api-software-landing#/content-product-1
 # http://www.firstdata.com/downloads/marketing-merchant/fd_globalgatewayconnect_usermanualnorthamerica.pdf
@@ -29,7 +28,6 @@ def thank_you(request, payment_id, template_name='payments/receipt.html'):
         }
         EventLog.objects.log(**log_defaults)
         
-    obj_d = get_payment_object(payment)
     
     if payment:
         if payment.is_approved:
@@ -37,5 +35,5 @@ def thank_you(request, payment_id, template_name='payments/receipt.html'):
         else:
             payment.response_reason_text = "Your transaction has been declined."
     
-    return render_to_response(template_name,{'payment':payment, 'obj_d': obj_d}, 
+    return render_to_response(template_name,{'payment':payment}, 
                               context_instance=RequestContext(request))
