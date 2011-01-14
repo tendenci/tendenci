@@ -242,7 +242,7 @@ class AppEntryForm(forms.ModelForm):
             'file-uploader': ('FileField', None),
             'date': ('DateField', 'django.forms.extras.SelectDateWidget'),
             'date-time': ('DateTimeField', None),
-            'membership-type': ('ChoiceField', None),
+            'membership-type': ('ChoiceField', 'django.forms.RadioSelect'),
             'payment-method': ('ChoiceField', None),
             'first-name': ('CharField', None),
             'last-name': ('CharField', None),
@@ -261,9 +261,14 @@ class AppEntryForm(forms.ModelForm):
 
             if "max_length" in arg_names:
                 field_args["max_length"] = FIELD_MAX_LENGTH
+
             if "choices" in arg_names:
-                choices = field.choices.split(",")
+                if field.field_type == 'membership-type':
+                    choices = ['%s %s' % (type.name, type.price) for type in app.membership_types.all()]
+                else:
+                    choices = field.choices.split(",")
                 field_args["choices"] = zip(choices, choices)
+
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
