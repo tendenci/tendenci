@@ -4,8 +4,8 @@ from invoices.models import Invoice
 
 class InvoiceIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-    invoice_object_type = indexes.CharField(model_attr='invoice_object_type')
-    invoice_object_type_id = indexes.IntegerField(model_attr='invoice_object_type_id', null=True)
+    object_type = indexes.CharField(model_attr='object_type', null=True)
+    object_id = indexes.IntegerField(model_attr='object_id', null=True)
     bill_to = indexes.CharField(model_attr='bill_to')
     bill_to_first_name = indexes.CharField(model_attr='bill_to_first_name', default='')
     bill_to_last_name = indexes.CharField(model_attr='bill_to_last_name', default='')
@@ -29,5 +29,11 @@ class InvoiceIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
     #tender_date = indexes.DateTimeField(model_attr='tender_date')
+    
+    def prepare_object_type(self, obj):
+        myobj = obj.get_object()
+        if myobj:
+            return myobj._meta.verbose_name
+        return obj.object_type
 
 site.register(Invoice, InvoiceIndex)

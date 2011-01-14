@@ -12,48 +12,26 @@ def invoice_nav(context, invoice=None):
 
 @register.inclusion_tag("invoices/invoice_item.html")
 def invoices_search_results_line(request, invoice):
-    if invoice.invoice_object_type == 'make_payment':
-        from make_payments.models import MakePayment
+    obj = invoice.get_object()
+    
+    search_line_display = None
+    if invoice.object_type:
+        from django.template.loader import render_to_string
+        from django.template import RequestContext
+        from django.template import TemplateDoesNotExist
+        
+        app_label = invoice.object_type.app_label
+        template_name = "%s/invoice_search_result_line.html" % (app_label)
         
         try:
-            mp = MakePayment.objects.get(id=invoice.invoice_object_type_id)
-        except MakePayment.DoesNotExist:
-            mp = None
-        return {'request':request, 'invoice':invoice, 'mp':mp}
-    elif invoice.invoice_object_type == 'event_registration':
-        from events.models import Registration
+            search_line_display = render_to_string(template_name, {'obj':obj,
+                                                              'invoice':invoice},
+                                                            context_instance=RequestContext(request))
+        except TemplateDoesNotExist:
+            pass
         
-        try:
-            reg8n = Registration.objects.get(id=invoice.invoice_object_type_id)
-        except Registration.DoesNotExist:
-            reg8n = None
-        return {'request':request, 'invoice':invoice, 'reg8n':reg8n}
-    elif invoice.invoice_object_type == 'job':
-        from jobs.models import Job
-        
-        try:
-            job = Job.objects.get(id=invoice.invoice_object_type_id)
-        except Job.DoesNotExist:
-            job = None
-        return {'request':request, 'invoice':invoice, 'job':job}
-    elif invoice.invoice_object_type == 'directory':
-        from directories.models import Directory
-        
-        try:
-            directory = Directory.objects.get(id=invoice.invoice_object_type_id)
-        except Directory.DoesNotExist:
-            directory = None
-        return {'request':request, 'invoice':invoice, 'directory':directory}
-    elif invoice.invoice_object_type == 'donation':
-        from donations.models import Donation
-        
-        try:
-            donation = Donation.objects.get(id=invoice.invoice_object_type_id)
-        except Donation.DoesNotExist:
-            donation = None
-        return {'request':request, 'invoice':invoice, 'donation':donation}
-    else:
-        return {'request':request, 'invoice':invoice}
+    
+    return {'request':request, 'invoice':invoice, 'obj':obj, 'search_line_display':search_line_display}
  
  
 @register.inclusion_tag("invoices/search_line_header.html")
@@ -65,60 +43,29 @@ def invoices_search_line_header(request, invoice, obj_color):
 def invoice_search(context):
     return context
 
-# display make_payment on invoice view
-@register.inclusion_tag("invoices/makepayment_display.html")
-def invoice_makepayments_display(request, invoice):
-    from make_payments.models import MakePayment
-    #item_display = invoices_display_make_payments(request, invoice)
-    try:
-        mp = MakePayment.objects.get(id=invoice.invoice_object_type_id)
-    except MakePayment.DoesNotExist:
-        mp = None
-    return {'request':request, 'invoice':invoice, 'mp':mp}
 
-# display event registration on invoice view
-@register.inclusion_tag("invoices/event_display.html")
-def invoice_event_display(request, invoice):
-    from events.models import Registration
-    #item_display = invoices_display_make_payments(request, invoice)
-    try:
-        reg8n = Registration.objects.get(id=invoice.invoice_object_type_id)
-    except Registration.DoesNotExist:
-        reg8n = None
-    return {'request':request, 'invoice':invoice, 'reg8n':reg8n}
-
-# display job on invoice view
-@register.inclusion_tag("invoices/job_display.html")
-def invoice_job_display(request, invoice):
-    from jobs.models import Job
-    #item_display = invoices_display_make_payments(request, invoice)
-    try:
-        job = Job.objects.get(id=invoice.invoice_object_type_id)
-    except Job.DoesNotExist:
-        job = None
-    return {'request':request, 'invoice':invoice, 'job':job}
-
-# display directory on invoice view
-@register.inclusion_tag("invoices/directory_display.html")
-def invoice_directory_display(request, invoice):
-    from directories.models import Directory
-    #item_display = invoices_display_make_payments(request, invoice)
-    try:
-        directory = Directory.objects.get(id=invoice.invoice_object_type_id)
-    except Directory.DoesNotExist:
-        directory = None
-    return {'request':request, 'invoice':invoice, 'directory':directory}
-
-# display donation on invoice view
-@register.inclusion_tag("invoices/donation_display.html")
-def invoice_donation_display(request, invoice):
-    from donations.models import Donation
-    #item_display = invoices_display_make_payments(request, invoice)
-    try:
-        donation = Donation.objects.get(id=invoice.invoice_object_type_id)
-    except Donation.DoesNotExist:
-        donation = None
-    return {'request':request, 'invoice':invoice, 'donation':donation}
+# display object on invoice view
+@register.inclusion_tag("invoices/object_display.html")
+def invoice_object_display(request, invoice):
+    obj = invoice.get_object()
+    
+    object_display = None
+    if invoice.object_type:
+        from django.template.loader import render_to_string
+        from django.template import RequestContext
+        from django.template import TemplateDoesNotExist
+        
+        app_label = invoice.object_type.app_label
+        template_name = "%s/invoice_view_display.html" % (app_label)
+        
+        try:
+            object_display = render_to_string(template_name, {'obj':obj,
+                                                              'invoice':invoice},
+                                                            context_instance=RequestContext(request))
+        except TemplateDoesNotExist:
+            pass
+  
+    return {'request':request, 'invoice':invoice, 'obj':obj, 'object_display':object_display}
 
 
 # display invoice total on invoice view

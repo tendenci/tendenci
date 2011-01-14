@@ -5,6 +5,8 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
+
 from perms.utils import is_admin
 from invoices.managers import InvoiceManager
 
@@ -12,9 +14,12 @@ from event_logs.models import EventLog
 
 class Invoice(models.Model):
     guid = models.CharField(max_length=50)
-    invoice_object_type = models.CharField(_('object_type'), max_length=50, blank=True, null=True)
-    invoice_object_type_id = models.IntegerField(blank=True, null=True)
-    job_id = models.IntegerField(null=True)
+    #invoice_object_type = models.CharField(_('object_type'), max_length=50, blank=True, null=True)
+    #invoice_object_type_id = models.IntegerField(blank=True, null=True)
+    object_type = models.ForeignKey(ContentType, verbose_name=_("Object Type"), blank=True, null=True)
+    object_id = models.IntegerField(default=0, blank=True, null=True)
+    
+    #job_id = models.IntegerField(null=True)
     title = models.CharField(max_length=150, blank=True, null=True)
     tender_date = models.DateTimeField(null=True)
     #session_id = models.CharField(max_length=40, null=True) # used to replace rmid in T4
@@ -106,6 +111,16 @@ class Invoice(models.Model):
             self.owner_username=user.username
             
         super(self.__class__, self).save()
+        
+    def get_object(self):
+        obj = None
+        if self.object_type:
+            try:
+                obj = self.object_type.get_object_for_this_type(pk=self.object_id)
+            except:
+                pass
+                
+        return obj
     
     @property
     def is_tendered(self):
@@ -167,173 +182,6 @@ class Invoice(models.Model):
                     if self.status == 1 and not self.is_tendered:  
                         boo = True
         return boo
-    
-    def assign_make_payment_info(self, user, make_payment, **kwargs):
-        self.title = "Make Payment Invoice"
-        self.invoice_date = datetime.now()
-        self.bill_to = make_payment.first_name + ' ' + make_payment.last_name
-        self.bill_to_first_name = make_payment.first_name
-        self.bill_to_last_name = make_payment.last_name
-        self.bill_to_company = make_payment.company
-        self.bill_to_address = make_payment.address
-        self.bill_to_city = make_payment.city
-        self.bill_to_state = make_payment.state
-        self.bill_to_zip_code = make_payment.zip_code
-        self.bill_to_country = make_payment.country
-        self.bill_to_phone = make_payment.phone
-        #self.bill_to_fax = make_payment.fax
-        self.bill_to_email = make_payment.email
-        self.ship_to = make_payment.first_name + ' ' + make_payment.last_name
-        self.ship_to_first_name = make_payment.first_name
-        self.ship_to_last_name = make_payment.last_name
-        self.ship_to_company = make_payment.company
-        self.ship_to_address = make_payment.address
-        self.ship_to_city = make_payment.city
-        self.ship_to_state = make_payment.state
-        self.ship_to_zip_code = make_payment.zip_code
-        self.ship_to_country = make_payment.country
-        self.ship_to_phone = make_payment.phone
-        #self.ship_to_fax = make_payment.fax
-        self.ship_to_email =make_payment.email
-        self.terms = "Due on Receipt"
-        self.due_date = datetime.now()
-        self.ship_date = datetime.now()
-        self.message = 'Thank You.'
-        self.status = True
-        
-    def assign_job_info(self, user, job, **kwargs):
-        self.title = "Job Add Invoice"
-        self.invoice_date = datetime.now()
-        self.bill_to = job.contact_name
-        first_name = ''
-        last_name = ''
-        if job.contact_name:
-            name_list = job.contact_name.split(' ')
-            if len(name_list) >= 2:
-                first_name = name_list[0]
-                last_name = ' '.join(name_list[1:])
-        self.bill_to_first_name = first_name
-        self.bill_to_last_name = last_name
-        self.bill_to_company = job.contact_company
-        self.bill_to_address = job.contact_address
-        self.bill_to_city = job.contact_city
-        self.bill_to_state = job.contact_state
-        self.bill_to_zip_code = job.contact_zip_code
-        self.bill_to_country = job.contact_country
-        self.bill_to_phone = job.contact_phone
-        self.bill_to_fax = job.contact_fax
-        self.bill_to_email = job.contact_email
-        self.ship_to = job.contact_name
-        self.ship_to_first_name = first_name
-        self.ship_to_last_name = last_name
-        self.ship_to_company = job.contact_company
-        self.ship_to_address = job.contact_address
-        self.ship_to_city = job.contact_city
-        self.ship_to_state = job.contact_state
-        self.ship_to_zip_code = job.contact_zip_code
-        self.ship_to_country = job.contact_country
-        self.ship_to_phone = job.contact_phone
-        self.ship_to_fax = job.contact_fax
-        self.ship_to_email =job.contact_email
-        self.terms = "Due on Receipt"
-        self.due_date = datetime.now()
-        self.ship_date = datetime.now()
-        self.message = 'Thank You.'
-        self.status = True
-        
-    def assign_directory_info(self, user, directory, **kwargs):
-        profile = user.get_profile()
-        self.title = "Directory Add Invoice"
-        self.invoice_date = datetime.now()
-        self.bill_to = '%s %s' % (user.first_name, user.last_name)
-        self.bill_to_first_name = user.first_name
-        self.bill_to_last_name = user.last_name
-        self.bill_to_company = profile.company
-        self.bill_to_address = profile.address
-        self.bill_to_city = profile.city
-        self.bill_to_state = profile.state
-        self.bill_to_zip_code = profile.zipcode
-        self.bill_to_country = profile.country
-        self.bill_to_phone = profile.phone
-        self.bill_to_fax = profile.fax
-        self.bill_to_email = profile.email
-        self.ship_to = self.bill_to
-        self.ship_to_first_name = user.first_name
-        self.ship_to_last_name = user.last_name
-        self.ship_to_company = profile.company
-        self.ship_to_address = profile.address
-        self.ship_to_city = profile.city
-        self.ship_to_state = profile.state
-        self.ship_to_zip_code = profile.zipcode
-        self.ship_to_country = profile.country
-        self.ship_to_phone = profile.phone
-        self.ship_to_fax = profile.fax
-        self.ship_to_email = profile.email
-        self.terms = "Due on Receipt"
-        self.due_date = datetime.now()
-        self.ship_date = datetime.now()
-        self.message = 'Thank You.'
-        self.status = True
-        
-    def assign_donation_info(self, user, donation, **kwargs):
-        self.title = "Donation Invoice"
-        self.invoice_date = datetime.now()
-        self.bill_to = donation.first_name + ' ' + donation.last_name
-        self.bill_to_first_name = donation.first_name
-        self.bill_to_last_name = donation.last_name
-        self.bill_to_company = donation.company
-        self.bill_to_address = donation.address
-        self.bill_to_city = donation.city
-        self.bill_to_state = donation.state
-        self.bill_to_zip_code = donation.zip_code
-        self.bill_to_country = donation.country
-        self.bill_to_phone = donation.phone
-        #self.bill_to_fax = make_payment.fax
-        self.bill_to_email = donation.email
-        self.ship_to = donation.first_name + ' ' + donation.last_name
-        self.ship_to_first_name = donation.first_name
-        self.ship_to_last_name = donation.last_name
-        self.ship_to_company = donation.company
-        self.ship_to_address = donation.address
-        self.ship_to_city = donation.city
-        self.ship_to_state = donation.state
-        self.ship_to_zip_code = donation.zip_code
-        self.ship_to_country = donation.country
-        self.ship_to_phone = donation.phone
-        #self.ship_to_fax = make_payment.fax
-        self.ship_to_email =donation.email
-        self.terms = "Due on Receipt"
-        self.due_date = datetime.now()
-        self.ship_date = datetime.now()
-        self.message = 'Thank You.'
-        self.status = True
-        
-    def assign_corp_memb_info(self, user, corp_memb, **kwargs):
-        self.title = "Corporate Membership Invoice"
-        self.invoice_date = datetime.now()
-        self.bill_to = corp_memb.name
-        self.bill_to_company = corp_memb.name
-        self.bill_to_address = corp_memb.address
-        self.bill_to_city = corp_memb.city
-        self.bill_to_state = corp_memb.state
-        self.bill_to_zip_code = corp_memb.zip
-        self.bill_to_country = corp_memb.country
-        self.bill_to_phone = corp_memb.phone
-        self.bill_to_email = corp_memb.email
-        self.ship_to = corp_memb.name
-        self.ship_to_company = corp_memb.name
-        self.ship_to_address = corp_memb.address
-        self.ship_to_city = corp_memb.city
-        self.ship_to_state = corp_memb.state
-        self.ship_to_zip_code = corp_memb.zip
-        self.ship_to_country = corp_memb.country
-        self.ship_to_phone = corp_memb.phone
-        self.ship_to_email =corp_memb.email
-        self.terms = "Due on Receipt"
-        self.due_date = datetime.now()
-        self.ship_date = datetime.now()
-        self.message = 'Thank You.'
-        self.status = True
         
      
     # this function is to make accounting entries    
@@ -343,6 +191,7 @@ class Invoice(models.Model):
             self.balance -= amount
             self.payments_credits += amount
             self.save()
+            
             # Make the accounting entries here
             make_acct_entries(user, self, amount)
         

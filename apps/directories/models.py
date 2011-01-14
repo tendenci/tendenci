@@ -1,6 +1,6 @@
 import uuid
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -15,6 +15,7 @@ from meta.models import Meta as MetaTags
 from directories.module_meta import DirectoryMeta
 from entities.models import Entity
 from invoices.models import Invoice
+from perms.utils import is_admin
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
@@ -96,6 +97,52 @@ class Directory(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
             
         super(self.__class__, self).save(*args, **kwargs)
+    
+    # Called by payments_pop_by_invoice_user in Payment model.
+    def get_payment_description(self, inv):
+        """
+        The description will be sent to payment gateway and displayed for on invoice.
+        If not supplied, the default description will be generated.
+        """
+        return 'Tendenci Invoice %d for Directory: %s (%d).' % (
+            inv.id,
+            self.headline,
+            inv.object_id,
+        )
+        
+    def make_acct_entries(self, user, inv, amount, **kwargs):
+        """
+        Make the accounting entries for the directory sale
+        """
+        from accountings.models import Acct, AcctEntry, AcctTran
+        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        
+        ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
+        if not inv.is_tendered:
+            make_acct_entries_initial(user, ae, amount)
+        else:
+            # payment has now been received
+            make_acct_entries_closing(user, ae, amount)
+            
+            # #CREDIT directory SALES
+            acct_number = self.get_acct_number()
+            acct = Acct.objects.get(account_number=acct_number)
+            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
+            
+    def get_acct_number(self, discount=False):
+        if discount:
+            return 464400
+        else:
+            return 404400
+            
+    def auto_update_paid_object(self, request, payment):
+        """
+        Update the object after online payment is received.
+        """
+        if not is_admin(request.user):
+            self.status_detail = 'paid - pending approval'
+        self.expiration_dt = self.activation_dt + timedelta(days=self.requested_duration)
+        self.save()
 
     
     def age(self):
