@@ -1,0 +1,23 @@
+{% load base_filters %}
+{% load invoice_tags %}
+<table width="100%">
+    {% invoices_search_line_header request invoice '#ff6600' %}  
+      
+    {# display event registration #} 
+    <tr>
+    	<td>RegID</td>
+    	<td colspan="2">Title</td>
+    	<td>Date</td>
+    	<td>Price</td>
+    	<td>Balance</td>
+    </tr>
+    {% if obj %}  
+      <tr>
+     	<td><a href="{% url event.registration_confirmation obj.event.id obj.id%}">{{obj.id}}</a></td>
+     	<td colspan="2"><a href="{% url events.views.index obj.event.id %}">{{obj.event.title|truncatewords:5}}</a></td>
+     	<td>{{obj.event.start_dt|date:'long'}}</td>
+     	<td>{{obj.amount_paid|format_currency}}</td>
+     	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+     </tr> 
+     {% endif %}     
+  </table>

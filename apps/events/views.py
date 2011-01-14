@@ -2,6 +2,7 @@ import calendar
 from datetime import datetime
 from datetime import date
 
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
@@ -527,8 +528,9 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 if reg8n.payment_method and (reg8n.payment_method.label).lower() == 'credit card' and reg8n_created:
 
                     invoice = Invoice.objects.get(
-                        invoice_object_type = 'event_registration', # TODO: remove hard-coded object_type (content_type)
-                        invoice_object_type_id = reg8n.pk,          # this is an update within the invoice model
+                        object_type = ContentType.objects.get(app_label=reg8n._meta.app_label, 
+                                                                  model=reg8n._meta.module_name),
+                        object_id = reg8n.id,
                     )
 
                     response = HttpResponseRedirect(reverse(

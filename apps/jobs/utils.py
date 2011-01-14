@@ -1,4 +1,6 @@
 # settings - jobspaymenttypes, jobsrequirespayment
+from datetime import datetime
+from django.contrib.contenttypes.models import ContentType
 from jobs.models import JobPricing
 from invoices.models import Invoice
 from payments.models import Payment
@@ -29,9 +31,47 @@ def job_set_inv_payment(user, job, **kwargs):
     if get_setting('module', 'jobs', 'jobsrequirespayment'):
         if not job.invoice:
             inv = Invoice()
-            inv.invoice_object_type = "job"
-            inv.invoice_object_type_id = job.id
-            inv.assign_job_info(user, job)
+            inv.object_type = ContentType.objects.get(app_label=job._meta.app_label, 
+                                              model=job._meta.module_name)
+            inv.object_id = job.id
+            inv.title = "Job Add Invoice"
+            inv.bill_to = job.contact_name
+            first_name = ''
+            last_name = ''
+            if job.contact_name:
+                name_list = job.contact_name.split(' ')
+                if len(name_list) >= 2:
+                    first_name = name_list[0]
+                    last_name = ' '.join(name_list[1:])
+            inv.bill_to_first_name = first_name
+            inv.bill_to_last_name = last_name
+            inv.bill_to_company = job.contact_company
+            inv.bill_to_address = job.contact_address
+            inv.bill_to_city = job.contact_city
+            inv.bill_to_state = job.contact_state
+            inv.bill_to_zip_code = job.contact_zip_code
+            inv.bill_to_country = job.contact_country
+            inv.bill_to_phone = job.contact_phone
+            inv.bill_to_fax = job.contact_fax
+            inv.bill_to_email = job.contact_email
+            inv.ship_to = job.contact_name
+            inv.ship_to_first_name = first_name
+            inv.ship_to_last_name = last_name
+            inv.ship_to_company = job.contact_company
+            inv.ship_to_address = job.contact_address
+            inv.ship_to_city = job.contact_city
+            inv.ship_to_state = job.contact_state
+            inv.ship_to_zip_code = job.contact_zip_code
+            inv.ship_to_country = job.contact_country
+            inv.ship_to_phone = job.contact_phone
+            inv.ship_to_fax = job.contact_fax
+            inv.ship_to_email =job.contact_email
+            inv.terms = "Due on Receipt"
+            inv.due_date = datetime.now()
+            inv.ship_date = datetime.now()
+            inv.message = 'Thank You.'
+            inv.status = True
+            
             inv.total = get_job_price(user, job)
             inv.subtotal = inv.total
             inv.balance = inv.total
