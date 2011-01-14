@@ -68,7 +68,10 @@ def application_details(request, slug=None, template_name="memberships/applicati
     app_entry_form = AppEntryForm(app, request.POST or None, request.FILES or None)
     if request.method == "POST":
         if app_entry_form.is_valid():
-            app_entry = app_entry_form.save()
+            app_entry = app_entry_form.save(commit=False)
+
+            app_entry.user = request.user
+            app_entry.save()
 
             membership_type = app_entry.membership_type
 
@@ -149,6 +152,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     """
     Displays the details of a membership application entry.
     """
+    # TODO: log this event; we do not have an id for this action
 
     if not is_admin(request.user):
         raise Http403
@@ -163,8 +167,6 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         entry = sqs[0].object
     else:
         raise Http404
-
-    # TODO: log this event; we do not have an id for this action
 
     return render_to_response(template_name, {'entry': entry},
         context_instance=RequestContext(request))

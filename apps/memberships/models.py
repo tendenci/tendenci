@@ -12,9 +12,7 @@ from directories.models import Directory
 from user_groups.models import Group
 from memberships.managers import MemberAppManager, MemberAppEntryManager
 from memberships.managers import MembershipManager
-
 from base.utils import day_validate
-
 from payments.models import PaymentMethod
 
 
@@ -255,7 +253,7 @@ class Membership(TendenciBaseModel):
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time"), null=True)
     renew_dt = models.DateTimeField(_("Renew Date Time"), blank=True, null=True)
-    expiration_dt = models.DateTimeField(_("Expiration Date Time"))
+    expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
     approved = models.BooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"))
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
@@ -415,14 +413,14 @@ class AppEntry(models.Model):
     """
     An entry submitted via a membership application.
     """
-
     app = models.ForeignKey("App", related_name="entries", editable=False)
+    user = models.OneToOneField(User, null=True, editable=False)
     membership = models.ForeignKey("Membership", related_name="entries", null=True, editable=False)
     entry_time = models.DateTimeField(_("Date/Time"))
 
     is_approved = models.NullBooleanField(_('Status'), null=True, editable=False)
     decision_dt = models.DateTimeField(null=True, editable=False)
-    judge = models.ForeignKey(User, null=True, editable=False)
+    judge = models.ForeignKey(User, null=True, related_name='entries', editable=False)
 
 #    create_dt = models.DateTimeField(editable=False)
 
@@ -510,7 +508,6 @@ class AppEntry(models.Model):
             status = 'Disapproved'
 
         return status
-
 
 class AppFieldEntry(models.Model):
     """
