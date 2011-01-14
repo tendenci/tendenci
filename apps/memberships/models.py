@@ -457,7 +457,7 @@ class AppEntry(models.Model):
     @property
     def email(self):
         """Get email string"""
-        return self.get_field_value('email-field')
+        return self.get_field_value('email')
 
     def get_field_value(self, field_type):
         try:
