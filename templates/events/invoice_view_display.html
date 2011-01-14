@@ -1,0 +1,19 @@
+{% load base_filters %}
+
+{# user info #}
+{% if obj %}
+	<div class="invoice-view-box">
+		<div>Event Title: <a href="{% url events.views.index obj.event.id %}">{{ obj.event.title }}</a></div>
+		<div>Time: {{obj.event.dt_display}}</div>
+		<div>Price: {{obj.amount_paid|format_currency}}</div>
+		{% with obj.registrant_set.all as registrants %}
+		{% if registrants %}
+		<b>Registrants...({{registrants.count}})</b><br />
+			{% for reg in registrants %}
+				
+				<div>{{ reg.name }}</div>
+			{% endfor %}
+		{% endif %}
+		{% endwith %}
+	</div>
+{% endif %}

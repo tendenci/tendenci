@@ -123,6 +123,43 @@ class CorporateMembership(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
         
+    # Called by payments_pop_by_invoice_user in Payment model.
+    def get_payment_description(self, inv):
+        """
+        The description will be sent to payment gateway and displayed for on invoice.
+        If not supplied, the default description will be generated.
+        """
+        return 'Tendenci Invoice %d for Corp. Memb. (%d): %s. ' % (
+            inv.id,
+            inv.object_id,
+            self.name,
+        )
+        
+    def make_acct_entries(self, user, inv, amount, **kwargs):
+        """
+        Make the accounting entries for the corporate membership sale
+        """
+        from accountings.models import Acct, AcctEntry, AcctTran
+        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        
+        ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
+        if not inv.is_tendered:
+            make_acct_entries_initial(user, ae, amount)
+        else:
+            # payment has now been received
+            make_acct_entries_closing(user, ae, amount)
+            
+            # #CREDIT corporate membership SALES
+            acct_number = self.get_acct_number()
+            acct = Acct.objects.get(account_number=acct_number)
+            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
+            
+    def get_acct_number(self, discount=False):
+        if discount:
+            return 466800
+        else:
+            return 406800
+        
         
 class AuthorizedDomain(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership", related_name="auth_domains")
