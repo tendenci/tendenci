@@ -264,7 +264,7 @@ class AppEntryForm(forms.ModelForm):
 
             if "choices" in arg_names:
                 if field.field_type == 'membership-type':
-                    choices = ['%s %s' % (type.name, type.price) for type in app.membership_types.all()]
+                    choices = ['%s $%s' % (type.name, type.price) for type in app.membership_types.all()]
                 else:
                     choices = field.choices.split(",")
                 field_args["choices"] = zip(choices, choices)
