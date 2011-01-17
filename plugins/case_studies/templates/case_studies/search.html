@@ -1,0 +1,60 @@
+{% extends "case_studies/base.html" %}
+{% load pagination_tags %}
+{% load case_study_tags %}
+{% load perm_tags %}
+
+{% block title %}Staff{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+{% include "case_studies/media/css/casestudy.css" %}
+</style>
+<link rel="alternate" type="application/rss+xml" title="Latest Case Studies" href="{% url case_study.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate case_studies 5 %}
+{% has_perm user case_studies.add_casestudy as can_add_case_study %}
+
+<div class="t">
+    <h1>Case Studies Search</h1>
+    {% case_study_search %}
+    {% if can_add_case_study %}
+    <div><a href="{% url admin:case_studies_casestudy_add %}">Add Case Study</a></div>
+    {% endif %}
+    <div class="cs-search-wrap">
+        {% for case_study in case_studies %}
+        {% with case_study.object as case_study %}
+        <div class="cs-search-item">
+            <div class="quick-options">
+                {% case_study_options request.user case_study %}
+            </div>
+            <h3><a href="{{ case_study.get_absolute_url }}" title="{{ case_study.client }}">{{ case_study.client }}</a></h3>
+
+            {% if case_study.overview or case_study.execution or case_study.results %}
+            <p class="cs-search-item-desc">
+                {% filter striptags|truncatewords:"60" %}
+                {% firstof case_study.overview case_study.execution case_study.results %}
+                {% endfilter %}
+            </p>
+            {%  endif %}
+        </div>
+        {% endwith %}
+        {% empty %}
+            <p>0 Case Studies Found</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock body %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+	</script>
+{% endblock %}
