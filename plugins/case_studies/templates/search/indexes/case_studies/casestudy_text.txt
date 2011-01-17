@@ -1,0 +1,12 @@
+{% load tagging_tags %}
+{% load base_filters %}
+
+{{ object.client }}
+{{ object.overview|striptags|stripentities }}
+{{ object.execution|striptags|stripentities }}
+{{ object.results|striptags|stripentities }}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+tag:{{ tag }} 
+{% endfor %}

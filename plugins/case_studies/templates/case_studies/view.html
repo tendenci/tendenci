@@ -1,0 +1,60 @@
+{% extends "case_studies/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load case_study_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+        {{ case_study.client }}&nbsp;&ndash;&nbsp;Case Study
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        casestudy {{ staff.client }}
+        {% if case_study.tags %}
+            {{ case_study.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ case_study.client }} case study
+        {{ case_study.overview|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+{% include "case_studies/media/css/casestudy.css" %}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <div class="cs-view">
+        <div class="quick-options">
+            {% case_study_options request.user case_study %}
+        </div>
+        <h1>
+            {{ case_study.client }} Case Study
+        </h1>
+        {% if case_study.overview %}
+            <h2>Overview</h2>
+            <p>{{ case_study.overview|safe }}</p>
+        {% endif %}
+        {% if case_study.execution %}
+            <h2>Execution</h2>
+            <p>{{ case_study.execution|safe }}</p>
+        {% endif %}
+        {% if case_study.results %}
+            <h2>Results</h2>
+            <p>{{ case_study.results|safe }}</p>
+        {% endif %}
+        <div class="case-meta">
+            <a href="{% url case_study.search %}">&laquo;&nbsp;Search other case studies</a>
+        </div>
+    </div>
+</div>
+{% endblock body %}
