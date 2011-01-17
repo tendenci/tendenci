@@ -18,7 +18,7 @@ class GetBoxNode(Node):
             box = Box.objects.search(query=query).best_match()
             context['box'] = box.object
             template = get_template('boxes/edit-link.html')
-            output = '%s %s' % (box.object.content, template.render(context),)
+            output = '<div class="boxes">%s %s</div>' % (box.object.content, template.render(context),)
             return output
         except:
             return ""
@@ -30,7 +30,12 @@ def box(parser, token):
         {% box 123 %}
     """
     bits = token.split_contents()
-    pk = bits[1]  
+    
+    try:
+        pk = bits[1]  
+    except:
+        message = "Box tag must include an ID of a box."
+        raise TemplateSyntaxError(message)
     
     return GetBoxNode(pk)  
 
@@ -111,6 +116,15 @@ def list_boxes(parser, token):
     """
     args, kwargs = [], {}
     bits = token.split_contents()
+    
+    if len(bits) < 3:
+        message = "'%s' tag requires more than 2" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    if bits[1] != "as":
+        message = "'%s' second argument must be 'as'" % bits[0]
+        raise TemplateSyntaxError(message)
+        
     context_var = bits[2]
 
     for bit in bits:
@@ -125,13 +139,7 @@ def list_boxes(parser, token):
         if "pk=" in bit:
             kwargs["pk"] = bit.split("=")[1]
 
-    if len(bits) < 3:
-        message = "'%s' tag requires more than 2" % bits[0]
-        raise TemplateSyntaxError(message)
-
-    if bits[1] != "as":
-        message = "'%s' second argument must be 'as'" % bits[0]
-        raise TemplateSyntaxError(message)
+   
 
     return ListBoxesNode(context_var, *args, **kwargs)
 
