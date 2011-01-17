@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+{% load base_tags %}
+ 
+{% block title %}{{ title }} | {{ SITE_GLOBAL_SITEDISPLAYNAME }} Tendenci{% endblock %}
+ 
+{% block extrastyle %}
+<style>
+#header, #footer{ background-color: #861100; border-bottom: solid 3px #999; }
+ 
+#branding h1{ color: #fff; }
+.module h2, .module caption, .inline-group h2 { background:#ccc url(/admin_media/img/admin/nav-bg.gif) bottom left repeat-x; color: #333940; }
+a.section:link, a.section:visited { color: #666666; }
+#branding img{margin-right:20px; height:32px; width:62px;}
+#footer {color: #eee;}
+#footer a:link, #footer a:visited {color: #eee; text-decoration: underline;}
+
+</style>
+{% endblock %}
+ 
+{% block branding %}
+<h1 id="site-name" ><span><img src="{{ STATIC_URL }}/images/tendenci_white_small_100x51.gif"></span>
+{% if user.is_authenticated %}<a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }} ({{ SITE_GLOBAL_SITEURL }})</a>
+{% else %}
+Web Administration
+{% endif %}
+</h1>
+{% endblock %}
+
+{% block footer %}
+<div id="footer">
+<p><a href="http://tendenci.com">Tendenci Membership Management Software</a> by <a href="http://schipul.com">Schipul - The Web Marketing Company</a></p>
+</div>
+{% endblock %}
+ 
+{% block nav-global %}{% endblock %}
