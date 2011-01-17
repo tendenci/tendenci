@@ -42,9 +42,6 @@ def application_details(request, slug=None, template_name="memberships/applicati
     """
     Display a built membership application and handle submission.
     """
-    if not is_admin(request.user):
-        raise Http403
-
     if not slug:
         raise Http404
 
@@ -167,6 +164,9 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         entry = sqs[0].object
     else:
         raise Http404
+
+    app_approve_form = AppApproveForm()
+    
 
     return render_to_response(template_name, {'entry': entry},
         context_instance=RequestContext(request))
