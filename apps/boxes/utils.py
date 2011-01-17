@@ -18,7 +18,7 @@ def render_content(content, arg=None, limit=None, image_preview=True):
         currently it is only rendering streams
     """
     match = detect_template_tags(content)
-    print content
+
     if match:
         p = re.compile('{%([\w\s\=]+)%}')
         tags = list(set(re.findall(p, content)))
