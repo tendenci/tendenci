@@ -1,0 +1,195 @@
+<div id="admin-bar">
+	<ul>
+    	<li><a href="#">Content</a>
+        	<div class="sub">
+            	<div class="column">
+            	<h4>App List</h4>
+                	<div class="column app-list">               
+                        <ul>
+                            <li class="app"><a href="{% url articles %}">Articles</a></li>
+                            <li><a href="{% url article.search %}">List</a></li>
+                            <li><a href="{% url article.add %}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{# url admin:app_list "boxes" #}">Boxes</a></li>
+                            <li><a href="{# url admin:app_list "boxes" #}">List</a></li>
+                            <li><a href="{# url admin:boxes_box_add #}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url contact %}">Contacts</a></li>
+                            <li><a href="{% url contact.search %}">List</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url directories %}">Directories</a></li>
+                            <li><a href="{% url directory.search %}">List</a></li>
+                            <li><a href="{% url directory.add %}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url events %}">Events</a></li>
+                            <li><a href="{% url event.search %}">List</a></li>
+                            <li><a href="{% url event.add %}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url files %}">Files</a></li>
+                            <li><a href="{% url file.search %}">List</a></li>
+                            <li><a href="{% url file.add %}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url forms %}">Forms</a></li>
+                            <li><a href="{% url forms %}">List</a></li>
+                            <li><a href="{% url form_add %}">Add</a></li>
+                        </ul>     
+                        <ul>
+                            <li class="app"><a href="{% url help_files %}">Help Files</a></li>
+                            <li><a href="{% url help_files.search %}">List</a></li>
+                            <li><a href="{% url admin:help_files_helpfile_add %}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url invoices %}">Invoices</a></li>
+                            <li><a href="{% url invoice.search %}">List</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url jobs %}">Jobs</a></li>
+                            <li><a href="{% url job.search %}">List</a></li>
+                            <li><a href="{% url job.add %}">Add</a></li>
+                        </ul>
+                        </div>
+                        <div class="column app-list">
+                        <ul>
+                            <li class="app"><a href="{% url news %}">News</a></li>
+                            <li><a href="{% url news.search %}">List</a></li>
+                            <li><a href="{% url news.add %}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url pages %}">Pages</a></li>
+                            <li><a href="{% url page.search %}">List</a></li>
+                            <li><a href="{% url page.add %}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url photoset_latest %}">Photos</a></li>
+                            <li><a href="{% url photoset_latest %}">List</a></li>
+                            <li><a href="{% url photoset_add %}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url redirects %}">Redirects</a></li>
+                            <li><a href="{% url redirects %}">List</a></li>
+                            <li><a href="{% url redirect.add %}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url resumes %}">Resumes</a></li>
+                            <li><a href="{% url resume.search %}">List</a></li>
+                            <li><a href="{% url resume.add %}">Add</a></li>
+                        </ul>
+                        <ul>
+                            <li class="app"><a href="{% url stories %}">Stories</a></li>
+                            <li><a href="{% url story.search %}">List</a></li>
+                            <li><a href="{% url story.add %}">Add</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="column app-list">
+                    <h4>Plugins</h4>
+                    <ul>
+                        <li class="app"><a href="{% url video %}">Videos</a></li>
+                        <li><a href="{% url video.search %}">List</a></li>
+                        <li><a href="{% url admin:videos_video_add %}">Add</a></li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h4>Quick Links</h4>
+                    <ul style="margin-bottom:18px;">
+                        <li><a href="{% url dashboard %}">Dashboard</a></li>
+                        <li><a href="/admin/">Admin Backend</a></li>
+                        <li><a href="{% url theme_editor %}">Theme Editor</a></li>
+                        <li><a href="{% url event_log.search %}">Event Logs</a></li>
+                    </ul>    
+                </div>
+            </div>
+        </li>
+    	<li><a href="#">Users</a>
+        	<div class="sub">
+            	<div class="column">                
+                    <ul>
+                        <li><a href="#">List</a></li>
+                        <li><a href="#">Add</a></li>
+                        <li><a href="#">Search</a></li>
+                        <li><a href="#">Groups</a></li>
+                        <li><a href="#">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+    	<li><a href="#">Members</a>
+        	<div class="sub">
+            	<div class="column">                
+                    <ul>
+                        <li><a href="#">List</a></li>
+                        <li><a href="#">Add</a></li>
+                        <li><a href="#">Search</a></li>
+                        <li><a href="#">Types</a></li>
+                        <li><a href="#">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        <li><a href="{% url settings %}">Settings</a>
+        	<div class="sub">
+            	<div class="column">                
+                    <ul>
+                        <li><a href="#">List</a></li>
+                        <li><a href="#">Add</a></li>
+                        <li><a href="#">Search</a></li>
+                        <li><a href="#">Types</a></li>
+                        <li><a href="#">Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        <li><a href="#">Reports</a>
+        	<div class="sub">
+            	<div class="column">                
+                    <h4>Recently Viewed</h4>
+                    <ul>
+                        <li><a href="#">Event Logs</a></li>
+                        <li><a href="#">Invoice for Event #4554</a></li>
+                        <li><a href="#">List</a></li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <h4>Find a Report</h4>
+                    <ul>
+                        <li><a href="#">All</a></li>
+                        <li><a href="#">By App</a></li>
+                        <li><a href="#">User Reports</a></li>
+                        <li><a href="#">Financial Reports</a></li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+    	<li class="right"><a href="/accounts/logout">Logout</a></li>
+    	<li class="right"><a href="/profiles">{{ user.username }}</a></li>
+    	<!-- <li class="right search"><a href="#">Search</a>
+        	<div class="sub">
+            	<div class="column">                
+                    <ul>
+                        <li>
+                        	<form action="/search" method="get" name="search">
+                            <table cellspacing="0" cellpadding="0" border="0" class="search-table">
+                                <tbody><tr>
+                                    <td><input type="text" maxlength="255" value="test" name="q" id="admin-search-bar"></td>
+                                    <td><input type="submit" value="Search Site"></td>
+                                </tr>
+                            </tbody></table>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </li> -->
+        <li class="right">
+            <form action="/search" method="get" name="search" id="admin-search-box">
+                            <input type="text" maxlength="255" value="" name="q" id="admin-search-bar"><input type="submit" value="Search" id="admin-search-submit">                            </form>
+        </li>
+    </ul>
+     
+</div>
