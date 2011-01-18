@@ -1,7 +1,8 @@
-{% extends "site_base.html" %}
+{% extends "default.html" %}
 
-{% block title %}{{ block.super }}Site Map{% endblock%}
+{% block title %}{{ block.super }} Site Map{% endblock%}
 
 {% block body %}
-    # site map goes here
+    <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Sitemap</h1>
+    {% include "nav.html" %}
 {% endblock %}
