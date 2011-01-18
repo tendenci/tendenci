@@ -8,6 +8,7 @@ django
 # ignore all django themes except for default theme
 themes/*
 !themes/default/
+!themes/iceman/
 
 # Ignore media files
 site_media/directories/
