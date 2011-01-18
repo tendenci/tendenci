@@ -15,6 +15,7 @@ from perms.utils import is_admin
 from base.http import Http403
 from memberships.models import Membership, MembershipType
 from memberships.forms import MemberApproveForm
+from user_groups.models import GroupMembership
 
 try:
     from notification import models as notification
@@ -170,15 +171,17 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         form = MemberApproveForm(entry, request.POST)
         if form.is_valid():
 
-            status = request.POST.get('status', None)
+            status = request.POST.get('status', '')
 
             approve = False
-            if status == 'approve':
+            if status.lower() == 'approve':
                 approve = True
+
+            print 'approve', approve
 
             if approve:
 
-                user = User.objects.get(pk=form.cleaned_data['user'])
+                user = User.objects.get(pk=form.cleaned_data['users'])
 
                 try: # get membership
                     membership = Membership.objects.get(ma=entry.app)
@@ -201,6 +204,19 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                         'owner':user,
                         'owner_username':user.username,
                     })
+
+                # create group-membership object; add to group
+                entry.membership_type.group.groupmembership_set.add(
+                    GroupMembership(**{
+                    'group':entry.membership_type.group,
+                    'member':user,
+                    'creator_id': request.user.pk,
+                    'creator_username':request.user.username,
+                    'owner_id':request.user.pk,
+                    'owner_username':request.user.username,
+                    'status':True,
+                    'status_detail':'active',
+                }))
 
                 # mark as approved
                 entry.is_approved = True
