@@ -11,9 +11,9 @@
                             <li><a href="{% url article.add %}">Add</a></li>
                         </ul>
                         <ul>
-                            <li class="app"><a href="{# url admin:app_list "boxes" #}">Boxes</a></li>
-                            <li><a href="{# url admin:app_list "boxes" #}">List</a></li>
-                            <li><a href="{# url admin:boxes_box_add #}">Add</a></li>
+                            <li class="app"><a href="{% url admin:app_list "boxes" %}">Boxes</a></li>
+                            <li><a href="{% url admin:app_list "boxes" %}">List</a></li>
+                            <li><a href="{% url admin:boxes_box_add %}">Add</a></li>
                         </ul>
                         <ul>
                             <li class="app"><a href="{% url contact %}">Contacts</a></li>
@@ -90,9 +90,9 @@
                 <div class="column app-list">
                     <h4>Plugins</h4>
                     <ul>
-                        <li class="app"><a href="{% url video %}">Videos</a></li>
-                        <li><a href="{% url video.search %}">List</a></li>
-                        <li><a href="{% url admin:videos_video_add %}">Add</a></li>
+                        <li class="app"><a href="{# url video #}">Videos</a></li>
+                        <li><a href="{# url video.search #}">List</a></li>
+                        <li><a href="{# url admin:videos_video_add #}">Add</a></li>
                     </ul>
                 </div>
                 <div class="column">
