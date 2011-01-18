@@ -5,7 +5,7 @@ from models import Staff
 
 class LatestEntriesFeed(Feed):
     title =  'Latest Staff'
-    link =  "/quotes/"
+    link =  "/staff/"
     description =  "Latest Staff"
 
     def items(self):
