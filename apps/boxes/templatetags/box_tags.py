@@ -37,7 +37,7 @@ def box(parser, token):
         message = "Box tag must include an ID of a box."
         raise TemplateSyntaxError(message)
     
-    return GetBoxNode(pk)  
+    return GetBoxNode(pk) 
 
 # Output the box as safe HTML
 box.safe = True 
@@ -51,6 +51,7 @@ class ListBoxesNode(Node):
         self.limit = 3
         self.user = None
         self.tags = ''
+        self.tags_string = ''
         self.q = []
         self.pk = ''
         self.context_var = context_var
@@ -88,7 +89,8 @@ class ListBoxesNode(Node):
 
         for tag in self.tags:
             tag = tag.strip()
-            query = '%s "tag:%s"' % (query, tag)
+            if tag:
+                query = '%s "tag:%s"' % (query, tag)
                     
         for q_item in self.q:
             q_item = q_item.strip()
@@ -110,7 +112,8 @@ def list_boxes(parser, token):
     Example:
         {% list_boxes as boxes [user=user limit=3 tags=bloop bleep q=searchterm pk=123] %}
         {% for box in boxes %}
-            <div class="boxes">{{ box.get_content }}</div>
+            <div class="boxes">{{ box.safe_content }}
+            {% include 'boxes/edit-link.html' %}</div>
         {% endfor %}
 
     """
