@@ -414,7 +414,7 @@ class AppEntry(models.Model):
     An entry submitted via a membership application.
     """
     app = models.ForeignKey("App", related_name="entries", editable=False)
-    user = models.OneToOneField(User, null=True, editable=False)
+    user = models.ForeignKey(User, null=True, editable=False)
     membership = models.ForeignKey("Membership", related_name="entries", null=True, editable=False)
     entry_time = models.DateTimeField(_("Date/Time"))
 

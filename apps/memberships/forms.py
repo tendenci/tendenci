@@ -1,11 +1,13 @@
+import operator
 from uuid import uuid4
-from sys import exc_info
 from django.forms.fields import CharField
 from django.forms.widgets import HiddenInput
+from haystack.query import SearchQuerySet
 from os.path import join
 from datetime import datetime
 
 from django import forms
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
 from django.core.files.storage import FileSystemStorage
@@ -15,36 +17,127 @@ from models import MembershipType, App, AppEntry, AppField
 from fields import TypeExpMethodField, PriceInput
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from widgets import CustomRadioSelect, TypeExpMethodWidget
-from sys import exc_info
 from django.http import Http404
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
 
-type_exp_method_fields = ('period_type', 'period', 'period_unit', 'rolling_option', 
-                        'rolling_option1_day', 'rolling_renew_option', 'rolling_renew_option1_day',
-                        'rolling_renew_option2_day', 'fixed_option','fixed_option1_day',
-                        'fixed_option1_month', 'fixed_option1_year', 'fixed_option2_day',
-                        'fixed_option2_month', 'fixed_option2_can_rollover',
-                        'fixed_option2_rollover_days')
+type_exp_method_fields = (
+    'period_type', 'period', 'period_unit', 'rolling_option',
+    'rolling_option1_day', 'rolling_renew_option', 'rolling_renew_option1_day',
+    'rolling_renew_option2_day', 'fixed_option','fixed_option1_day',
+    'fixed_option1_month', 'fixed_option1_year', 'fixed_option2_day',
+    'fixed_option2_month', 'fixed_option2_can_rollover',
+    'fixed_option2_rollover_days'
+)
+
 type_exp_method_widgets = (
-                        forms.Select(),
-                        forms.TextInput(),
-                        forms.Select(),
-                        CustomRadioSelect(),
-                        forms.TextInput(),
-                        CustomRadioSelect(),
-                        forms.TextInput(),
-                        forms.TextInput(),
-                        CustomRadioSelect(),
-                        forms.Select(),
-                        forms.Select(),
-                        forms.Select(),
-                        forms.Select(),
-                        forms.Select(),
-                        forms.CheckboxInput(),
-                        forms.TextInput(),
-                        )
+    forms.Select(),
+    forms.TextInput(),
+    forms.Select(),
+    CustomRadioSelect(),
+    forms.TextInput(),
+    CustomRadioSelect(),
+    forms.TextInput(),
+    forms.TextInput(),
+    CustomRadioSelect(),
+    forms.Select(),
+    forms.Select(),
+    forms.Select(),
+    forms.Select(),
+    forms.Select(),
+    forms.CheckboxInput(),
+    forms.TextInput(),
+)
+
+def get_suggestions(entry):
+    """
+        Generate list of suggestions [people]
+        Use the authenticated user that filled out the application
+        Use the fn, ln, em mentioned within the application
+    """
+    user_set = {}
+
+    if entry.user:
+        auth_fn = entry.user.first_name
+        auth_ln = entry.user.last_name
+        auth_un = entry.user.username
+        auth_em = entry.user.email
+        user_set[entry.user.pk] = '%s %s %s %s' % (auth_fn, auth_ln, auth_un, auth_em)
+
+    if entry.first_name and entry.last_name:
+        mentioned_fn = entry.first_name
+        mentioned_ln = entry.last_name
+        mentioned_em = entry.email
+    else:
+        mentioned_fn, mentioned_ln, mentioned_em = None, None, None
+
+    sqs = SearchQuerySet()
+
+#    full_name_q = Q(content='%s %s' % (mentioned_fn, mentioned_ln))
+    email_q = Q(content=mentioned_em)
+#    q = reduce(operator.or_, [full_name_q, email_q])
+    sqs = sqs.filter(email_q)
+
+    sqs_users = [sq.object.user for sq in sqs]
+
+    for u in sqs_users:
+        user_set[u.pk] = '%s %s %s %s' % (u.first_name, u.last_name, u.username, u.email)
+
+    user_set[0] = 'Create new user'
+
+    return user_set.items()
+
+
+class MemberApproveForm(forms.Form):
+
+    users = forms.ChoiceField(label='Connect this membership with', choices=[])
+#    approve = forms.ChoiceField(choices=((True,'Approve'),(False,'Disapprove')))
+
+    def get_suggestions(self, entry):
+        """
+            Generate list of suggestions [people]
+            Use the authenticated user that filled out the application
+            Use the fn, ln, em mentioned within the application
+        """
+        user_set = {}
+
+        if entry.user:
+            auth_fn = entry.user.first_name
+            auth_ln = entry.user.last_name
+            auth_un = entry.user.username
+            auth_em = entry.user.email
+            user_set[entry.user.pk] = '%s %s %s %s' % (auth_fn, auth_ln, auth_un, auth_em)
+
+        if entry.first_name and entry.last_name:
+            mentioned_fn = entry.first_name
+            mentioned_ln = entry.last_name
+            mentioned_em = entry.email
+        else:
+            mentioned_fn, mentioned_ln, mentioned_em = None, None, None
+
+        sqs = SearchQuerySet()
+
+    #    full_name_q = Q(content='%s %s' % (mentioned_fn, mentioned_ln))
+        email_q = Q(content=mentioned_em)
+    #    q = reduce(operator.or_, [full_name_q, email_q])
+        sqs = sqs.filter(email_q)
+
+        sqs_users = [sq.object.user for sq in sqs]
+
+        for u in sqs_users:
+            user_set[u.pk] = '%s %s %s %s' % (u.first_name, u.last_name, u.username, u.email)
+            self.fields['users'].initial = u.pk
+
+        user_set[0] = 'Create new user'
+
+        return user_set.items()
+
+    def __init__(self, entry, *args, **kwargs):
+        super(MemberApproveForm, self).__init__(*args, **kwargs)
+
+        self.entry = entry
+        self.fields['users'].choices = self.get_suggestions(entry)     
 
 class MembershipTypeForm(forms.ModelForm):
     type_exp_method = TypeExpMethodField(label='Period Type')

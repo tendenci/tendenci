@@ -9,11 +9,12 @@ from memberships.forms import AppForm, AppEntryForm
 from perms.models import ObjectPermission
 from datetime import datetime, timedelta
 from django.contrib.auth.models import User
-from memberships.models import Membership, MembershipType
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from perms.utils import is_admin
 from base.http import Http403
+from memberships.models import Membership, MembershipType
+from memberships.forms import MemberApproveForm
 
 try:
     from notification import models as notification
@@ -165,11 +166,68 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     else:
         raise Http404
 
-    app_approve_form = AppApproveForm()
-    
+    if request.method == "POST":
+        form = MemberApproveForm(entry, request.POST)
+        if form.is_valid():
 
-    return render_to_response(template_name, {'entry': entry},
-        context_instance=RequestContext(request))
+            status = request.POST.get('status', None)
+
+            approve = False
+            if status == 'approve':
+                approve = True
+
+            if approve:
+
+                user = User.objects.get(pk=form.cleaned_data['user'])
+
+                try: # get membership
+                    membership = Membership.objects.get(ma=entry.app)
+                except: # or create membership
+                    membership = Membership.objects.create(**{
+                        'member_number': entry.app.entries.count(),
+                        'membership_type': entry.membership_type,
+                        'user':user,
+                        'renewal': entry.membership_type.renewal,
+                        'join_dt':datetime.now(),
+                        'renew_dt': None,
+                        'expiration_dt': entry.membership_type.get_expiration_dt(join_dt=datetime.now()),
+                        'approved': True,
+                        'approved_denied_dt': datetime.now(),
+                        'approved_denied_user': request.user,
+                        'payment_method':'',
+                        'ma':entry.app,
+                        'creator':user,
+                        'creator_username':user.username,
+                        'owner':user,
+                        'owner_username':user.username,
+                    })
+
+                # mark as approved
+                entry.is_approved = True
+                entry.decision_dt = datetime.now()
+                entry.judge = request.user
+
+                entry.membership = membership
+                entry.save()
+
+            else:
+
+                # mark as disapproved
+                entry.is_approved = False
+                entry.decision_dt = datetime.now()
+                entry.judge = request.user
+
+                entry.save()
+
+            return redirect(reverse('membership.application_entries', args=[entry.pk]))
+
+    else:
+        form = MemberApproveForm(entry)
+
+    return render_to_response(template_name, {
+        'entry': entry,
+        'form': form,
+        }, context_instance=RequestContext(request))
 
 @login_required
 def application_entries_search(request, template_name="memberships/entries/search.html"):
