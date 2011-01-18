@@ -39,7 +39,6 @@
             <h3>Submitted {{ entry.entry_time|date }}</h3>
 
             {% if entry.is_approved == 1 or entry.is_approved == 0 %}
-
                 {% if entry.is_approved == 1 %}
                 <div class="membership-status">
                     Approved on {{ entry.decision_dt|date }}
@@ -51,16 +50,6 @@
                     </div>
                     {% endif %}
                 {% endif %}
-
-            {% else %}
-
-                <div class="membership-status">
-                    <ul>
-                        <li><a href="{% url membership.disapprove_entry entry.pk %}">Disapprove</a></li>
-                        <li><a href="{% url membership.approve_entry entry.pk %}">Approve</a></li>
-                    </ul>
-                </div>
-
             {% endif %}
 
             <div style="clear:both;"></div>
