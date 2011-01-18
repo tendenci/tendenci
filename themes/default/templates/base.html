@@ -10,24 +10,19 @@
 	<meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />
 	{% block meta_canonical_url %}{% endblock %} 
 	<link rel="stylesheet" href="{{ THEME_URL }}media/css/style.css" type="text/css" media="screen" />  
-	<link href="{{ STATIC_URL }}css/global_tendenci.css" rel="stylesheet" type="text/css">
+	<link href="{{ STATIC_URL }}css/global_tendenci.css" rel="stylesheet" type="text/css" />
 	
 	{% block extra_head %}{% endblock %}
 	
-	{% if admin %}{% include "admin_menu/admin_extras.html" %}{% endif %}
+	
 </head> 
 
 <body class="{% block body_classes %}{% endblock %}">
-{% if admin %}{% include "admin_menu/admin_top.html" %}{% endif %}
-
 {% block html_body %}{% endblock %}
-
-{% if admin %}{% include "admin_menu/admin_bottom.html" %}{% endif %}
 </body>
 
 <script type="text/javascript" src="{{ THEME_URL }}media/js/jquery-1.4.4.min.js"></script>
 <script type="text/javascript" src="{{ THEME_URL }}media/js/menu.js"></script> 
-
 {% block extra_body %}{% endblock %}
 
 </html>
