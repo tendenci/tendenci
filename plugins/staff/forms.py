@@ -4,7 +4,6 @@ from os.path import splitext
 from django import forms
 
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin
 from models import Staff
 from tinymce.widgets import TinyMCE
 

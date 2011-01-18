@@ -1,24 +1,23 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser
 
-from staff.models import Staff
+from case_studies.models import CaseStudy
 
 register = Library()
 
-@register.inclusion_tag("staff/options.html", takes_context=True)
-def staff_options(context, user, staff):
+@register.inclusion_tag("case_studies/options.html", takes_context=True)
+def case_study_options(context, user, case_study):
     context.update({
-        "opt_object": staff,
+        "opt_object": case_study,
         "user": user
     })
     return context
 
-@register.inclusion_tag("staff/search-form.html", takes_context=True)
-def staff_search(context):
+@register.inclusion_tag("case_studies/search-form.html", takes_context=True)
+def case_study_search(context):
     return context
 
-
-class ListStaffNode(Node):
+class ListCaseStudyNode(Node):
     def __init__(self, context_var, *args, **kwargs):
         self.context_var = context_var
         self.kwargs = kwargs
@@ -67,21 +66,21 @@ class ListStaffNode(Node):
             tag = tag.strip()
             query = '%s "tag:%s"' % (query, tag)
 
-        # get the list of staff
-        staff_members = Staff.objects.search(user=user, query=query)
-        staff_members = staff_members.order_by('-start_dt')
-        staff_members = [member.object for member in staff_members[:limit]]
+        # get the list of case studies
+        case_studies = CaseStudy.objects.search(user=user, query=query)
+        case_studies = case_studies.order_by('create_dt')
+        case_studies = [cs.object for cs in case_studies[:limit]]
 
-        context[self.context_var] = staff_members
+        context[self.context_var] = case_studies
         return ""
 
 @register.tag
-def list_staff(parser, token):
+def list_case_studies(parser, token):
     """
     Example:
-        {% list_staff as the_staff user=user limit=3 %}
-        {% for staff_member in the_staff %}
-            {{ staff_member.name }}
+        {% list_case_studies as the_case_studies user=user limit=3 %}
+        {% for cs in the_case_studies %}
+            {{ cs.client }}
         {% endfor %}
 
     """
@@ -107,4 +106,4 @@ def list_staff(parser, token):
         if "q=" in bit:
             kwargs["q"] = bit.split("=")[1].replace('"','').split(',')
 
-    return ListStaffNode(context_var, *args, **kwargs)
+    return ListCaseStudyNode(context_var, *args, **kwargs)

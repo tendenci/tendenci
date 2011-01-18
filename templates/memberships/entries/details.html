@@ -43,17 +43,18 @@
     		{% endif %}
     	{% endfor %}
 
-        {% if user.is_admin %}
-        {% if entry.is_approved == 0 or entry.is_approved == 1 %}
-        {% else %}
-        <div class="membership-status">
-            <ul>
-                <li><a href="{% url membership.disapprove_entry entry.pk %}">Disapprove</a></li>
-                <li><a href="{% url membership.approve_entry entry.pk %}">Approve</a></li>
-            </ul>
-        </div>
-        {% endif %}
-        {% endif %}
+            {% if user.is_admin %}
+            {% if entry.is_approved == 0 or entry.is_approved == 1 %}
+            {% else %}
+                <form action="" method="post">
+                    <div>{{ form }}</div>
+                    <input type="submit" name="status" value="Disapprove">
+                    <input type="submit" name="status" value="Approve">
+                </form>
+            {% endif %}
+            {% endif %}
+
+
 
     </div>
 
