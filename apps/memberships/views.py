@@ -172,12 +172,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         if form.is_valid():
 
             status = request.POST.get('status', '')
-
-            approve = False
-            if status.lower() == 'approve':
-                approve = True
-
-            print 'approve', approve
+            approve = (status.lower() == 'approve')
 
             if approve:
 
@@ -205,8 +200,8 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                         'owner_username':user.username,
                     })
 
-                # create group-membership object; add to group
-                entry.membership_type.group.groupmembership_set.add(
+                # create group-membership object
+                # this adds the user to the group
                     GroupMembership(**{
                     'group':entry.membership_type.group,
                     'member':user,
@@ -216,7 +211,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                     'owner_username':request.user.username,
                     'status':True,
                     'status_detail':'active',
-                }))
+                })
 
                 # mark as approved
                 entry.is_approved = True
