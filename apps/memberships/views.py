@@ -257,94 +257,11 @@ def application_entries_search(request, template_name="memberships/entries/searc
     apps = App.objects.all()
     types = MembershipType.objects.all()
 
-
     return render_to_response(template_name, {
         'entries':entries,
         'apps':apps,
         'types':types,
         }, context_instance=RequestContext(request))
-
-@login_required
-def approve_entry(request, id=0):
-    """
-    Approve membership application entry; then redirect at your discretion
-    """
-    # TODO: log event; eventid does not exist yet
-
-    if not is_admin(request.user):
-        raise Http403
-
-    entry = get_object_or_404(AppEntry, pk=id)
-
-    user_dict = {
-        'username': entry.email,
-        'email': entry.email,
-        'password': hashlib.sha1(entry.email).hexdigest()[:6],
-    }
-
-    try: # get user
-        user = User.objects.get(username=user_dict['username'])
-    except: # or create user
-        user = User.objects.create_user(**user_dict)
-
-    try: # get membership
-        membership = Membership.objects.get(ma=entry.app)
-    except: # or create membership
-        membership = Membership.objects.create(**{
-            'member_number': entry.app.entries.count(),
-            'membership_type': entry.membership_type,
-            'user':user,
-            'renewal': entry.membership_type.renewal,
-            'join_dt':datetime.now(),
-            'renew_dt': None,
-            'expiration_dt': entry.membership_type.get_expiration_dt(join_dt=datetime.now()),
-            'approved': True,
-            'approved_denied_dt': datetime.now(),
-            'approved_denied_user': request.user,
-            'payment_method':'',
-            'ma':entry.app,
-            'creator':user,
-            'creator_username':user.username,
-            'owner':user,
-            'owner_username':user.username,
-        })
-
-    # mark as approved
-    entry.is_approved = True
-    entry.decision_dt = datetime.now()
-    entry.judge = request.user
-
-    entry.membership = membership
-    entry.save()
-
-    return redirect(reverse('membership.application_entries', args=[entry.pk]))
-
-@login_required
-def disapprove_entry(request, id=0):
-    """
-        Mark application as disapproved.
-        Travel to [disapproved] membership application page.
-    """
-    # TODO: log event; eventid does not exist yet
-
-    query = 'id:%s' % id
-    sqs = AppEntry.objects.search(query, user=request.user)
-
-    if sqs:
-        entry = sqs.best_match().object
-    else:
-        # assume 404; could have been 403
-        raise Http404
-
-    # mark as disapproved
-    entry.is_approved = False
-    entry.decision_dt = datetime.now()
-    entry.judge = request.user
-
-    entry.save()
-
-    # redirect to application entry
-    return redirect(reverse('membership.application_entries', args=[entry.pk]))
 
 
 
