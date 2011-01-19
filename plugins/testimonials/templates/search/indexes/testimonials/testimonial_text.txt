@@ -1,0 +1,15 @@
+{% load tagging_tags %}
+{% load base_filters %}
+
+{{ object.first_name }}
+{{ object.last_name }}
+{{ object.testimonial }}
+{{ object.city }}
+{{ object.state }}
+{{ object.country }}
+{{ object.company }}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+tag:{{ tag }} 
+{% endfor %}
