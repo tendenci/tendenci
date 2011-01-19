@@ -16,6 +16,7 @@ from base.http import Http403
 from memberships.models import Membership, MembershipType
 from memberships.forms import MemberApproveForm
 from user_groups.models import GroupMembership
+from perms.utils import get_notice_recipients, has_perm
 
 try:
     from notification import models as notification
@@ -72,53 +73,51 @@ def application_details(request, slug=None, template_name="memberships/applicati
             app_entry.user = request.user
             app_entry.save()
 
-            membership_type = app_entry.membership_type
-
-            if app_entry.membership_type.require_approval:
-            # create user and create membership
-
-                spawned_username = '%s %s' % (app_entry.first_name, app_entry.last_name)
-                spawned_username = re.sub('\s+', '_', spawned_username)
-                spawned_username = re.sub('[^\w.-]+', '', spawned_username)
-                spawned_username = spawned_username.strip('_.- ').lower()
-
-                user_dict = {
-                    'username': spawned_username,
-                    'email': app_entry.email,
-                    'password': hashlib.sha1(app_entry.email).hexdigest()[:6],
-                }
-
-                try:
-                    user = User.objects.create_user(**user_dict)
-
-                    user.first_name = app_entry.first_name
-                    user.last_name = app_entry.last_name
-                    user.save()
-
-                except:
-                    user = None
-
-                if user:
-                    membership_dict = {
-                        'member_number': app_entry.app.entries.count(),
-                        'membership_type':membership_type,
-                        'user':user,
-                        'renewal':membership_type.renewal,
-                        'join_dt':datetime.now(),
-                        'renew_dt': None,
-                        'expiration_dt': membership_type.get_expiration_dt(join_dt = datetime.now()),
-                        'approved': True,
-                        'approved_denied_dt': datetime.now(),
-                        'approved_denied_user': None,
-                        'payment_method':'',
-                        'ma':app_entry.app,
-                        'creator':user,
-                        'creator_username':user.username,
-                        'owner':user,
-                        'owner_username':user,
-                    }
-
-                    membership = Membership.objects.create(**membership_dict)
+#            if not app_entry.membership_type.require_approval:
+#            # create user and create membership
+#
+#                spawned_username = '%s %s' % (app_entry.first_name, app_entry.last_name)
+#                spawned_username = re.sub('\s+', '_', spawned_username)
+#                spawned_username = re.sub('[^\w.-]+', '', spawned_username)
+#                spawned_username = spawned_username.strip('_.- ').lower()
+#
+#                user_dict = {
+#                    'username': spawned_username,
+#                    'email': app_entry.email,
+#                    'password': hashlib.sha1(app_entry.email).hexdigest()[:6],
+#                }
+#
+#                try:
+#                    user = User.objects.create_user(**user_dict)
+#
+#                    user.first_name = app_entry.first_name
+#                    user.last_name = app_entry.last_name
+#                    user.save()
+#
+#                except:
+#                    user = None
+#
+#                if user:
+#                    membership_dict = {
+#                        'member_number': app_entry.app.entries.count(),
+#                        'membership_type':app_entry.membership_type,
+#                        'user':user,
+#                        'renewal':app_entry.membership_type.renewal,
+#                        'join_dt':datetime.now(),
+#                        'renew_dt': None,
+#                        'expiration_dt': app_entry.membership_type.get_expiration_dt(join_dt = datetime.now()),
+#                        'approved': True,
+#                        'approved_denied_dt': datetime.now(),
+#                        'approved_denied_user': None,
+#                        'payment_method':'',
+#                        'ma':app_entry.app,
+#                        'creator':user,
+#                        'creator_username':user.username,
+#                        'owner':user,
+#                        'owner_username':user,
+#                    }
+#
+#                    membership = Membership.objects.create(**membership_dict)
 
             return redirect(app_entry.confirmation_url)
 
@@ -171,6 +170,8 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         form = MemberApproveForm(entry, request.POST)
         if form.is_valid():
 
+            membership_total = Membership.objects.filter(status=True, status_detail='active').count()
+
             status = request.POST.get('status', '')
             approve = (status.lower() == 'approve')
 
@@ -221,6 +222,15 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                 entry.membership = membership
                 entry.save()
 
+                # send notification to administrator(s) and module recipient(s)
+                recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+                if recipients and notification:
+                    notification.send_emails(recipients,'membership_application_approved', {
+                        'object':entry,
+                        'request':request,
+                        'membership_total':membership_total,
+                    })
+
             else:
 
                 # mark as disapproved
@@ -229,6 +239,15 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                 entry.judge = request.user
 
                 entry.save()
+
+                # send notification to administrator(s) and module recipient(s)
+                recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+                if recipients and notification:
+                    notification.send_emails(recipients,'membership_application_disapproved', {
+                        'object': entry,
+                        'request': request,
+                        'membership_total': membership_total,
+                    })
 
             return redirect(reverse('membership.application_entries', args=[entry.pk]))
 
