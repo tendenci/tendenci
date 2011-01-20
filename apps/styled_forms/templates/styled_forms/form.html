@@ -1,4 +1,5 @@
 {% load styled_forms %}
+{% load base_filters %}
 
 {% if form.errors.values %}
 <div class="errors">
@@ -92,7 +93,7 @@ There were some problems in the form. Please review. Thanks!
 	    {{ field }}
 	{% else %}
 	    <div class="form-field">
-	        <div class="{{ field.auto_id }}">
+	        <div class="{{ field.auto_id }}{{ field.field.css_classes }}">
 	        	{% if field|is_checkbox %}
 	            	<div class="checkbox">
 	               		{% if field.errors %}         
