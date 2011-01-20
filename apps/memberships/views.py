@@ -65,12 +65,14 @@ def application_details(request, slug=None, template_name="memberships/applicati
         'instance': app,
     })
 
-    app_entry_form = AppEntryForm(app, request.POST or None, request.FILES or None)
+    app_entry_form = AppEntryForm(app, request.POST or None, request.FILES or None, user=request.user)
     if request.method == "POST":
         if app_entry_form.is_valid():
             app_entry = app_entry_form.save(commit=False)
 
-            app_entry.user = request.user
+            if isinstance(request.user, User):
+                app_entry.user = request.user
+
             app_entry.save()
 
 #            if not app_entry.membership_type.require_approval:
