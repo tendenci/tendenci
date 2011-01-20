@@ -1,9 +1,12 @@
+import operator
+import hashlib
 import uuid
 from hashlib import md5
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.query_utils import Q
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from perms.models import TendenciBaseModel
@@ -14,6 +17,9 @@ from memberships.managers import MemberAppManager, MemberAppEntryManager
 from memberships.managers import MembershipManager
 from base.utils import day_validate
 from payments.models import PaymentMethod
+from user_groups.models import GroupMembership
+from haystack.query import SearchQuerySet
+import re
 
 
 FIELD_CHOICES = (
@@ -496,6 +502,123 @@ class AppEntry(models.Model):
     def applicant(self):
         """Get User object"""
         # TODO: Figure out how to get the user
+
+    def approve(self, user, judge):
+
+        # order of suggestions
+        # ----------------------
+        # auth user
+        # fn ln em (match)
+        # create new user
+
+        if not user and judge:
+            user = judge
+
+        if not isinstance(user, User):
+
+            if isinstance(judge, User):
+                user = judge
+            elif self.suggested_users():
+                user = self.suggested_users()[0]
+            else:
+                spawned_username = '%s %s' % (app_entry.first_name, app_entry.last_name)
+                spawned_username = re.sub('\s+', '_', spawned_username)
+                spawned_username = re.sub('[^\w.-]+', '', spawned_username)
+                spawned_username = spawned_username.strip('_.- ').lower()
+
+                user = User.objects.create_user(**{
+                    'username': spawned_username,
+                    'email': self.email,
+                    'password': hashlib.sha1(app_entry.email).hexdigest()[:6]
+                })
+
+        if instance(judge, User):
+            judge_username = judge.username
+            judge_pk = judge.pk
+        else:
+            judge_pk, judge_username = 0, ''
+
+        try: # get membership
+            membership = Membership.objects.get(ma=self.app)
+        except: # or create membership
+            membership = Membership.objects.create(**{
+                'member_number': self.app.entries.count(),
+                'membership_type': self.membership_type,
+                'user':user,
+                'renewal': self.membership_type.renewal,
+                'join_dt':datetime.now(),
+                'renew_dt': None,
+                'expiration_dt': self.membership_type.get_expiration_dt(join_dt=datetime.now()),
+                'approved': True,
+                'approved_denied_dt': datetime.now(),
+                'approved_denied_user': judge,
+                'payment_method':'',
+                'ma':self.app,
+                'creator':user,
+                'creator_username':user.username,
+                'owner':user,
+                'owner_username':user.username,
+            })
+
+        # create group-membership object
+        # this adds the user to the group
+        GroupMembership.objects.create(**{
+            'group':self.membership_type.group,
+            'member':user,
+            'creator_id': judge_pk,
+            'creator_username': judge_username,
+            'owner_id':judge_pk,
+            'owner_username':judge_username,
+            'status':True,
+            'status_detail':'active',
+        })
+
+        self.is_approved = True
+        self.decision_dt = datetime.now()
+        self.judge = judge
+        self.membership = membership
+        self.save()
+
+    def disapprove(self):
+        self.is_approved = False
+        self.decision_dt = datetime.now()
+        self.judge = judge
+        self.save()
+
+    def suggested_users(self, grouping=[('first_name', 'last_name', 'email')]):
+        """
+            Generate list of suggestions [people]
+            Use the authenticated user that filled out the application
+            Use the fn, ln, em mentioned within the application
+
+            Grouping Example:
+                [('first_name', 'last_name'), ('email',)]
+                >> (first_name AND last_name) OR (email)
+
+            Grouping Example:
+                [('first_name', 'last_name', 'email)]
+                >> (first_name AND last_name AND email)
+        """
+        user_set = {}
+
+        if self.user:
+            user_set[self.user.pk] = ' '.join([
+                self.user.first_name,
+                self.user.last_name,
+                self.user.username,
+                self.user.email,
+            ])
+
+        query_list = [Q(content=' '.join([getattr(self, item) for item in group])) for group in grouping]
+
+        sqs = SearchQuerySet()
+        sqs = sqs.filter(reduce(operator.or_, query_list))
+        sqs_users = [sq.object.user for sq in sqs]
+
+        for u in sqs_users:
+            user_set[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
+
+        return user_set.items()
 
     @property
     def status(self):

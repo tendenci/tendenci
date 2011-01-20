@@ -68,12 +68,25 @@ def application_details(request, slug=None, template_name="memberships/applicati
     app_entry_form = AppEntryForm(app, request.POST or None, request.FILES or None, user=request.user)
     if request.method == "POST":
         if app_entry_form.is_valid():
-            app_entry = app_entry_form.save(commit=False)
+
+            membership_total = Membership.objects.filter(status=True, status_detail='active').count()
+            entry = app_entry_form.save(commit=False)
 
             if isinstance(request.user, User):
-                app_entry.user = request.user
+                entry.user = request.user
 
-            app_entry.save()
+            entry.approve(user=request.user, judge=request.user)
+
+            # send notification to administrator(s) and module recipient(s)
+            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+            if recipients and notification:
+                notification.send_emails(recipients,'membership_application_approved', {
+                    'object':entry,
+                    'request':request,
+                    'membership_total':membership_total,
+                })
+
+            entry.save()
 
 #            if not app_entry.membership_type.require_approval:
 #            # create user and create membership
@@ -121,7 +134,7 @@ def application_details(request, slug=None, template_name="memberships/applicati
 #
 #                    membership = Membership.objects.create(**membership_dict)
 
-            return redirect(app_entry.confirmation_url)
+            return redirect(entry.confirmation_url)
 
     return render_to_response(template_name, {
         'app': app, "app_entry_form": app_entry_form}, 
@@ -178,51 +191,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
             approve = (status.lower() == 'approve')
 
             if approve:
-
-                user = User.objects.get(pk=form.cleaned_data['users'])
-
-                try: # get membership
-                    membership = Membership.objects.get(ma=entry.app)
-                except: # or create membership
-                    membership = Membership.objects.create(**{
-                        'member_number': entry.app.entries.count(),
-                        'membership_type': entry.membership_type,
-                        'user':user,
-                        'renewal': entry.membership_type.renewal,
-                        'join_dt':datetime.now(),
-                        'renew_dt': None,
-                        'expiration_dt': entry.membership_type.get_expiration_dt(join_dt=datetime.now()),
-                        'approved': True,
-                        'approved_denied_dt': datetime.now(),
-                        'approved_denied_user': request.user,
-                        'payment_method':'',
-                        'ma':entry.app,
-                        'creator':user,
-                        'creator_username':user.username,
-                        'owner':user,
-                        'owner_username':user.username,
-                    })
-
-                # create group-membership object
-                # this adds the user to the group
-                    GroupMembership(**{
-                    'group':entry.membership_type.group,
-                    'member':user,
-                    'creator_id': request.user.pk,
-                    'creator_username':request.user.username,
-                    'owner_id':request.user.pk,
-                    'owner_username':request.user.username,
-                    'status':True,
-                    'status_detail':'active',
-                })
-
-                # mark as approved
-                entry.is_approved = True
-                entry.decision_dt = datetime.now()
-                entry.judge = request.user
-
-                entry.membership = membership
-                entry.save()
+                entry.approve(user=user, judge=request.user)
 
                 # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
@@ -234,13 +203,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                     })
 
             else:
-
-                # mark as disapproved
-                entry.is_approved = False
-                entry.decision_dt = datetime.now()
-                entry.judge = request.user
-
-                entry.save()
+                entry.disapprove()
 
                 # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
