@@ -369,6 +369,8 @@ class AppEntryForm(forms.ModelForm):
                     choices = field.choices.split(",")
                     field_args["choices"] = zip(choices, choices)
 
+            field_args["help_text"] = field.help_text
+
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
