@@ -541,6 +541,7 @@ div.admin-item {
 .membership-wrap {
     border: 1px solid silver;
     padding: 10px;
+    margin: 10px 0;
 }
 .membership-wrap div {
     margin: 5px 0

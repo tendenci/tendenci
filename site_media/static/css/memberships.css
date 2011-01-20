@@ -129,6 +129,10 @@
 	cursor: pointer;
 }
 
+.t .profile-link {
+    text-align: right;
+}
+
 /* Membership details
  ------------------------- */
 .t .membership-wrap .meta, .t .membership-wrap-search .meta {

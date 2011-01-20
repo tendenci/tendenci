@@ -1,5 +1,7 @@
 import operator
 from uuid import uuid4
+from captcha.fields import CaptchaField
+from django.contrib.auth.models import AnonymousUser
 from django.forms.fields import CharField
 from django.forms.widgets import HiddenInput
 from haystack.query import SearchQuerySet
@@ -323,6 +325,9 @@ class AppEntryForm(forms.ModelForm):
         self.app = app
         self.form_fields = app.fields.visible()
         self.types_field = app.membership_types
+
+        user = kwargs.pop('user', AnonymousUser)
+
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
         CLASS_AND_WIDGET = {
@@ -364,10 +369,20 @@ class AppEntryForm(forms.ModelForm):
                     choices = field.choices.split(",")
                     field_args["choices"] = zip(choices, choices)
 
+            field_args["help_text"] = field.help_text
+
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
+
             self.fields[field_key] = field_class(**field_args)
+
+        if app.use_captcha and not user.is_authenticated():
+            self.fields['field_captcha'] = CaptchaField(**{
+                'label':'',
+                'error_messages':{'required':'CAPTCHA is required'}
+                })
+
 
     def save(self, **kwargs):
         """
