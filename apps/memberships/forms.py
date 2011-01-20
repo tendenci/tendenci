@@ -367,6 +367,7 @@ class AppEntryForm(forms.ModelForm):
                     field_args["choices"] = zip(choices, choices_with_price)
                 else:
                     choices = field.choices.split(",")
+                    choices = [c.strip() for c in choices]
                     field_args["choices"] = zip(choices, choices)
 
             field_args['initial'] = field.default_value
