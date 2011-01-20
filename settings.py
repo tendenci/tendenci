@@ -113,6 +113,7 @@ MIDDLEWARE_CLASSES = (
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
     'redirects.middleware.RedirectMiddleware',
+    'mobile.middleware.MobileMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
