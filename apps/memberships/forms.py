@@ -369,13 +369,15 @@ class AppEntryForm(forms.ModelForm):
                     choices = field.choices.split(",")
                     field_args["choices"] = zip(choices, choices)
 
-            field_args["help_text"] = field.help_text
+            field_args['initial'] = field.default_value
+            field_args['help_text'] = field.help_text
 
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
 
             self.fields[field_key] = field_class(**field_args)
+            self.fields[field_key].css_classes = ' %s' % field.css_class
 
         if app.use_captcha and not user.is_authenticated():
             self.fields['field_captcha'] = CaptchaField(**{
