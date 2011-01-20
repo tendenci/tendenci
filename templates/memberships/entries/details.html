@@ -53,10 +53,13 @@
                 </form>
             {% endif %}
             {% endif %}
-
-
-
     </div>
+
+    {% if entry.membership %}
+    <div class="profile-link">
+        <a href="{% url profile  entry.membership.user %}#userview-memberships">View Profile & Membership</a>
+    </div>
+    {% endif %}
 
 </div>
 {% endblock %}

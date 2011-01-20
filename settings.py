@@ -8,7 +8,7 @@ LIBS_PATH = os.path.join(PROJECT_ROOT, 'libs')
 sys.path.insert(0, APPS_PATH)
 sys.path.insert(0, LIBS_PATH)
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 SITE_THEME = "default"
 
@@ -113,6 +113,7 @@ MIDDLEWARE_CLASSES = (
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
     'redirects.middleware.RedirectMiddleware',
+    'mobile.middleware.MobileMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
