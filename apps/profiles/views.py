@@ -78,8 +78,11 @@ def index(request, username='', template_name="profiles/index.html"):
     # group list
     group_memberships = user_this.group_member.all()
 
-    # memberships
-    memberships = user_this.membership_set.all()
+    try:
+        # memberships
+        memberships = user_this.membership_set.all()
+    except:
+        memberships = None
 
     log_defaults = {
         'event_id' : 125000,
