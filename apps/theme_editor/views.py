@@ -18,7 +18,7 @@ from theme_editor.utils import qstr_is_file
 from base.http import Http403
 from perms.utils import has_perm
 
-DEFAULT_FILE = 'templates/nav.html'
+DEFAULT_FILE = 'templates/homepage.html'
 
 @permission_required('theme_editor.change_themefileversion')
 def edit_file(request, form_class=FileForm, template_name="theme_editor/index.html"):
