@@ -57,23 +57,22 @@ class MembershipType(TendenciBaseModel):
     name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
     price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0,
-                                help_text="Set 0 for free membership.")
+        help_text="Set 0 for free membership.")
     renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15, decimal_places=2, 
-                                        blank=True, default=0, null=True,
-                                        help_text="Set 0 for free membership.")
+        blank=True, default=0, null=True, help_text="Set 0 for free membership.")
     # for first time processing
     admin_fee = models.DecimalField(_('Admin Fee'),
-                                    max_digits=15, decimal_places=2, blank=True, default=0, null=True, 
-                                    help_text="Admin fee for the first time processing")
+        max_digits=15, decimal_places=2, blank=True, default=0, null=True,
+        help_text="Admin fee for the first time processing")
     
     group = models.ForeignKey(Group, related_name="membership_types",
-                              help_text="Members joined will be added to this group")
+        help_text="Members joined will be added to this group")
     
     require_approval = models.BooleanField(_('Require Approval'), default=1)
     allow_renewal = models.BooleanField(_('Allow Renewal'), default=1)
     renewal = models.BooleanField(_('Renewal Only'), default=0)
     order = models.IntegerField(_('Order'), default=0, 
-                                help_text='Types will be displayed in ascending order based on this field')
+        help_text='Types will be displayed in ascending order based on this field')
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
     
     #expiration_method = models.CharField(_('Expiration Method'), max_length=50)
