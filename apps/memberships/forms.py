@@ -139,7 +139,11 @@ class MemberApproveForm(forms.Form):
         super(MemberApproveForm, self).__init__(*args, **kwargs)
 
         self.entry = entry
-        self.fields['users'].choices = self.get_suggestions(entry)     
+        suggested_users = entry.suggested_users(grouping=[('email',)])
+        suggested_users.append((0, 'Create new user'))
+        self.fields['users'].choices = suggested_users
+
+#        self.fields['users'].choices = self.get_suggestions(entry)
 
 class MembershipTypeForm(forms.ModelForm):
     type_exp_method = TypeExpMethodField(label='Period Type')
