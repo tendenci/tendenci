@@ -46,7 +46,7 @@
             {% if user.is_admin %}
             {% if entry.is_approved == 0 or entry.is_approved == 1 %}
             {% else %}
-                <form action="" method="post">
+                <form action="" method="post" class="connect-with">
                     <div>{{ form }}</div>
                     <input type="submit" name="status" value="Disapprove">
                     <input type="submit" name="status" value="Approve">
