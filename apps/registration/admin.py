@@ -8,4 +8,4 @@ class RegistrationAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'user__first_name')
 
 
-admin.site.register(RegistrationProfile, RegistrationAdmin)
+#admin.site.register(RegistrationProfile, RegistrationAdmin)
