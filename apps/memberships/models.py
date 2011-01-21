@@ -5,7 +5,7 @@ from hashlib import md5
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.db.models.query_utils import Q
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -503,43 +503,37 @@ class AppEntry(models.Model):
         """Get User object"""
         # TODO: Figure out how to get the user
 
-    def approve(self, user, judge):
+    def approve(self):
+        """
+        order of candidates (for user-binding)
+            authenticated user
+            suggestions per fn, ln, em
+            new user creation
+        """
 
-        # order of suggestions
-        # ----------------------
-        # auth user
-        # fn ln em (match)
-        # create new user
-
-        if not user and judge:
-            user = judge
-
-        if not isinstance(user, User):
-
-            if isinstance(judge, User):
-                user = judge
-            elif self.suggested_users():
-                user = self.suggested_users()[0]
-            else:
-                spawned_username = '%s %s' % (app_entry.first_name, app_entry.last_name)
-                spawned_username = re.sub('\s+', '_', spawned_username)
-                spawned_username = re.sub('[^\w.-]+', '', spawned_username)
-                spawned_username = spawned_username.strip('_.- ').lower()
-
-                user = User.objects.create_user(**{
-                    'username': spawned_username,
-                    'email': self.email,
-                    'password': hashlib.sha1(app_entry.email).hexdigest()[:6]
-                })
-
-        if instance(judge, User):
-            judge_username = judge.username
-            judge_pk = judge.pk
+        if self.user and self.user.is_authenticated():
+            user = self.user
+        elif self.suggested_users():
+            user = self.suggested_users()[0]
         else:
-            judge_pk, judge_username = 0, ''
+            user = User.objects.create_user(**{
+                'username': self.spawn_username(self.first_name, self.last_name),
+                'email': self.email,
+                'password': hashlib.sha1(self.email).hexdigest()[:6]
+            })
+
+        if self.judge and self.judge.is_authenticated():
+            judge, judge_pk, judge_username = self.judge, self.judge.pk, self.judge.username
+        else:
+            judge, judge_pk, judge_username = None, 0, ''
 
         try: # get membership
-            membership = Membership.objects.get(ma=self.app)
+            membership = Membership.objects.get(**{
+                'membership_type': self.membership_type,
+                'user': user,
+                'status': True,
+                'status_detail': 'active',
+            })
         except: # or create membership
             membership = Membership.objects.create(**{
                 'member_number': self.app.entries.count(),
@@ -560,26 +554,34 @@ class AppEntry(models.Model):
                 'owner_username':user.username,
             })
 
-        # create group-membership object
-        # this adds the user to the group
-        GroupMembership.objects.create(**{
-            'group':self.membership_type.group,
-            'member':user,
-            'creator_id': judge_pk,
-            'creator_username': judge_username,
-            'owner_id':judge_pk,
-            'owner_username':judge_username,
-            'status':True,
-            'status_detail':'active',
-        })
+        try:
+            # create group-membership object
+            # this adds the user to the group
+            GroupMembership.objects.create(**{
+                'group':self.membership_type.group,
+                'member':user,
+                'creator_id': judge_pk,
+                'creator_username': judge_username,
+                'owner_id':judge_pk,
+                'owner_username':judge_username,
+                'status':True,
+                'status_detail':'active',
+            })
+        except:
+            pass
 
         self.is_approved = True
         self.decision_dt = datetime.now()
-        self.judge = judge
         self.membership = membership
         self.save()
 
     def disapprove(self):
+
+        if self.judge and self.judge.is_authenticated():
+            judge, judge_pk, judge_username = self.judge, self.judge.pk, self.judge.username
+        else:
+            judge, judge_pk, judge_username = None, 0, ''
+
         self.is_approved = False
         self.decision_dt = datetime.now()
         self.judge = judge
@@ -592,12 +594,12 @@ class AppEntry(models.Model):
             Use the fn, ln, em mentioned within the application
 
             Grouping Example:
-                [('first_name', 'last_name'), ('email',)]
-                >> (first_name AND last_name) OR (email)
+                grouping=[('first_name', 'last_name'), ('email',)]
+                (first_name AND last_name) OR (email)
 
             Grouping Example:
-                [('first_name', 'last_name', 'email)]
-                >> (first_name AND last_name AND email)
+                grouping=[('first_name', 'last_name', 'email)]
+                (first_name AND last_name AND email)
         """
         user_set = {}
 
@@ -619,6 +621,32 @@ class AppEntry(models.Model):
             user_set[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
 
         return user_set.items()
+
+    def spawn_username(self, *args):
+        """
+            Join arguments to create username [string].
+            Find similiar usernames; auto-increment newest username.
+            Return new username [string].
+        """
+        if not args:
+            raise Exception(
+                'spawn_username() requires atleast 1 argument; 0 were given'
+            )
+
+        un = ' '.join(args)             # concat args into one string
+        un = re.sub('\s+','_',un)       # replace spaces w/ underscores
+        un = re.sub('[^\w.-]+','',un)   # remove non-word-characters
+        un = un.strip('_.- ').lower()   # strip funny-characters from sides
+
+        others = [] # find similiar usernames
+        for u in User.objects.filter(username__startswith=un):
+            if u.username.replace(un, '0').isdigit():
+                others.append(int(u.username.replace(un,'0')))
+
+        if others and 0 in others:
+            un = '%s%d' % (un, max(others)+1)
+
+        return un
 
     @property
     def status(self):
