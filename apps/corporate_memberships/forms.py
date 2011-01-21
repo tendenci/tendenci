@@ -149,7 +149,8 @@ class CorpMembForm(forms.ModelForm):
                  ('archive','Archive'),))
     join_dt = SplitDateTimeField(label=_('Join Date/Time'),
         initial=datetime.now())
-    expiration_dt = SplitDateTimeField(label=_('Expiration Date/Time'))
+    expiration_dt = SplitDateTimeField(label=_('Expiration Date/Time'), required=False,
+                                       help_text='Not specified = Never expires')
     
     class Meta:
         model = CorporateMembership

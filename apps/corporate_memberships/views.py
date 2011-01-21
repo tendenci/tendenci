@@ -165,7 +165,9 @@ def edit(request, id, template="corporate_memberships/edit.html"):
     if user_is_admin:
         field_objs.append(CorpField(label='Admin Only', field_type='section_break', admin_only=1))
         field_objs.append(CorpField(label='Join Date', field_name='join_dt', admin_only=1))
-        field_objs.append(CorpField(label='Expiration Date', field_name='expiration_dt', admin_only=1))
+        field_objs.append(CorpField(label='Expiration Date', 
+                                    field_name='expiration_dt', 
+                                    admin_only=1))
         field_objs.append(CorpField(label='Status', field_name='status', admin_only=1))
         field_objs.append(CorpField(label='status_detail', field_name='status_detail', admin_only=1))
     else:
@@ -268,12 +270,54 @@ def search(request, template_name="corporate_memberships/search.html"):
     else:
         if request.user.is_authenticated():
             from django.db.models import Q
-            corp_members = corp_members.objects.filter(Q(creator=request.user) | Q(owner=request.user) | Q(status_detail='active')).order_by('name')
+            corp_members = corp_members.objects.filter(Q(creator=request.user) | 
+                                                       Q(owner=request.user) | 
+                                                       Q(status_detail='active'))
+            corp_members = corp_members.order_by('name_exact')
         else:
             raise Http403
     
     return render_to_response(template_name, {'corp_members': corp_members}, 
         context_instance=RequestContext(request))
+    
+    
+@login_required
+def delete(request, id, template_name="corporate_memberships/delete.html"):
+    corp_memb = get_object_or_404(CorporateMembership, pk=id)
+
+    if has_perm(request.user,'corporate_memberships.delete_corporatemembership'):   
+        if request.method == "POST":
+            log_defaults = {
+                'event_id' : 683000,
+                'event_data': '%s (%d) deleted by %s' % (corp_memb._meta.object_name, corp_memb.pk, request.user),
+                'description': '%s deleted' % corp_memb._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': corp_memb,
+            }
+            
+            EventLog.objects.log(**log_defaults)
+            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % corp_memb)
+            
+#            # send notification to administrators
+#            recipients = get_notice_recipients('module', 'corporate_membership', 'corporatemembershiprecipients')
+#            if recipients:
+#                if notification:
+#                    extra_context = {
+#                        'object': corp_memb,
+#                        'request': request,
+#                    }
+#                    notification.send_emails(recipients,'corp_memb_deleted', extra_context)
+#            
+            corp_memb.delete()
+                
+            return HttpResponseRedirect(reverse('corp_memb.search'))
+    
+        return render_to_response(template_name, {'corp_memb': corp_memb}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
+    
     
 
 

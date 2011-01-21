@@ -9,36 +9,36 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 <style>
-	.corpmember-box{
+	.t-search .corpmember-box{
 		border: 1px solid silver;
 		margin: 1em 0;
 	}
 	.clear-left{
 		clear: left;
 	}
-	.corpmember-left{
+	.t-search .corpmember-left{
 		width: 65%;
 	}
-	.corpmember-right{
+	.t-search .corpmember-right{
 		width: 35%;
 	}
-	.float-left{
+	.t-search .float-left{
 	    float: left;
 	}
-	.corpmember-box-header{
+	.t-search .corpmember-box-header{
 		font-size: 1.4em;
 		background-color: #f2f2f2;
 		padding: 3px;
 	}
-	.corpmember-box-body{
-		margin: 1em 0;
-		padding: 0 1em;
+	.t-search .corpmember-box-body{
+		margin-bottom: 1em;
+		padding: 0 2em;
 		line-height: 1.5em;
 	}
 	.t-search .label{
 		font-weight: bold;
 	}
-	.search-form input[type="text"]{
+	.t-search .search-form input[type="text"]{
 		width: 500px;
 	}
 </style>
@@ -54,41 +54,56 @@
 <div class="corpmembers-wrap">
     {% for corp_memb in corp_members %}
 	    {% with corp_memb.object as corp_memb %}
+			
 	    	<div class="corpmember-box">
 		    	<div class="corpmember-box-header"><a href="{% url corp_memb.view corp_memb.pk %}">{{ corp_memb.name }}</a></div>
+		    	<div class="options options-search" align="right">
+	                <div class="quick-options">
+						{% corpmemb_options request.user corp_memb %} 	       
+	                </div>
+				</div>
 		    	<div class="corpmember-box-body">
-		    	<div class="float-left label">Corporate Address: </div>
-		    	<div class="float-left">
-			    	{% if corp_memb.address or corp_memb.address2 %}
-			    		{{ corp_memb.address }} {{ corp_memb.address }} <br />
-			    	{% endif %}
+			    	<div class="float-left label">Corporate Address: </div>
+			    	<div class="float-left">
+				    	{% if corp_memb.address or corp_memb.address2 %}
+				    		{{ corp_memb.address }} {{ corp_memb.address2 }} <br />
+				    	{% endif %}
+				    	
+				    	{{ corp_memb.city }} {{ corp_memb.state }} 
+				    	{{ corp_memb.zip }} {{ corp_memb.country }}
+				    	
+				    	
+			    	</div>
+			    	<div class="clear-left"></div>
 			    	
-			    	{{ corp_memb.city }} {{ corp_memb.state }} 
-			    	{{ corp_memb.zip }} {{ corp_memb.country }}
+			    	<div class="corpmember-left float-left">
+			    		<div><span class="label">Corporate Phone:</span> {{ corp_memb.phone }}</div>
+			    		<div><span class="label">Website:</span> {{ corp_memb.url|safe|urlize }}</div>
+			    		<div><span class="label">Member Type:</span> {{ corp_memb.corporate_membership_type.name }}
+			    		{% if corp_memb.invoice %}
+			    			- {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corp_memb.invoice.total }}
+			    		{% endif %}
+			    		</div>
+			    		<div><a href="">Invite others to join under this company</a></div>
+			    	</div>
 			    	
-			    	
+			    	<div class="corpmember-right float-left">
+			    		<div><span class="label">Join Date:</span> {{ corp_memb.join_dt|date:'Y-n-j' }}</div>
+			    		<div><span class="label">Expiration Date:</span> {% if corp_memb.expiration_dt %}
+			    							{{ corp_memb.expiration_dt|date:'Y-n-j' }}
+			    							{% else %}
+			    							Never Expire
+			    							{% endif %}
+			    		</div>
+			    	</div>
+			    	<div class="clear-left"></div>
 		    	</div>
-		    	<div class="clear-left"></div>
 		    	
-		    	<div class="corpmember-left float-left">
-		    		<div><span class="label">Corporate Phone:</span> {{ corp_memb.phone }}</div>
-		    		<div><span class="label">Website:</span> {{ corp_memb.url|safe|urlize }}</div>
-		    		<div><span class="label">Member Type:</span> {{ corp_memb.corporate_membership_type.name }}
-		    		- {{ corp_memb.corporate_membership_type.price }}</div>
-		    		<div><a href="">Invite others to join under this company</a></div>
-		    	</div>
-		    	
-		    	<div class="corpmember-right float-left">
-		    		<div><span class="label">Join Date:</span> {{ corp_memb.join_dt|date:'Y-n-j' }}</div>
-		    		<div><span class="label">Expiration Date:</span> {% if corp_memb.expiration_dt %}
-		    							{{ corp_memb.expiration_dt|date:'Y-n-j' }}
-		    							{% else %}
-		    							Never Expire
-		    							{% endif %}
-		    							</div>
-		    	</div>
-		    	<div class="clear-left"></div>
-		    	</div>
+		    	<!-- delete-corp_memb form -->
+	            <form name="corp-memb-delete" method="POST" action="{% url corp_memb.delete corp_memb.pk %}">
+	                <input type="hidden" name="action" value="delete">
+	            </form>
+            
 			</div>
 		{% endwith %}	
 	{% empty %}
@@ -102,4 +117,27 @@
  </div>
 </div>
 
+{% endblock %}
+
+{% block extra_body %}
+ <script type="text/javascript">
+	$(document).ready(function(){
+
+		// delete confirmation
+		$('.delete').click(function(){
+			var delete_corp_memb = confirm('Permenantly delete {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Membership' %}?');	// confirm
+			if(delete_corp_memb) $(this).parents('.corpmember-box').find('form[name="corp-memb-delete"]').submit() // delete: if OK
+			return false;	// cancel
+		});
+	});
+   </script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+<script type="text/javascript">
+var iconrow = new dropdown({
+	container:	'more-options-wrap',
+	trigger:	'more-options-trigger',
+	target:		'more-options-target'
+});
+</script>
+	
 {% endblock %}

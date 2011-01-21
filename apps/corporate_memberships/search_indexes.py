@@ -6,6 +6,7 @@ class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     corporate_membership_type = indexes.CharField(model_attr='corporate_membership_type')
     name = indexes.CharField(model_attr='name', faceted=True)
+    #name = indexes.CharField(model_attr='name', index_fieldname='corp_name', faceted=True)
     address = indexes.CharField(model_attr='address', default='')
     address2 = indexes.CharField(model_attr='address2', default='')
     city = indexes.CharField(model_attr='city', default='')

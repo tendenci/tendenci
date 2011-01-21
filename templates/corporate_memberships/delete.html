@@ -1,0 +1,43 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% corpmemb_nav request.user %}
+
+<h2>Are you sure you want to delete this corporate membership?</h2>
+<br />
+<h3>Corporate Name: <a href="{% url corp_memb.view corp_memb.pk %}">{{ corp_memb.name }}</a></h3>
+<br />
+<div><b>Corporate Address:</b> </div>
+    	{% if corp_memb.address or corp_memb.address2 %}
+    		{{ corp_memb.address }} {{ corp_memb.address2 }} <br />
+    	{% endif %}
+    	
+    	{{ corp_memb.city }} {{ corp_memb.state }} 
+    	{{ corp_memb.zip }} {{ corp_memb.country }}
+    	
+    	
+</div>
+ <br />
+<div><span class="label"><b>Join Date:</b></span> {{ corp_memb.join_dt|date:'Y-n-j' }}</div>
+<div><span class="label"><b>Expiration Date:</b></span> {% if corp_memb.expiration_dt %}
+	{{ corp_memb.expiration_dt|date:'Y-n-j' }}
+	{% else %}
+	Never Expire
+	{% endif %}
+</div>
+<br />
+<form action="{% url corp_memb.delete corp_memb.pk %}" method="post">
+<input type="hidden" name="id" value="{{ corp_memb.pk }}" />
+<input type="submit" value="Delete Corporate" />
+</form>
+
+
+</div>
+{% endblock %}

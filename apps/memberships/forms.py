@@ -220,6 +220,10 @@ class MembershipTypeForm(forms.ModelForm):
     def clean_type_exp_method(self):
         value = self.cleaned_data['type_exp_method']
         
+        # if never expires is checked, no need to check further
+        if self.cleaned_data['never_expires']:
+            return value
+        
         data_list = value.split(',')
         d = dict(zip(self.type_exp_method_fields, data_list))
         if d['period_type'] == 'rolling':
@@ -282,7 +286,7 @@ class MembershipTypeForm(forms.ModelForm):
                     d['fixed_option2_rollover_days'] = int(d['fixed_option2_rollover_days'])
                 except:
                     raise forms.ValidationError(_("The grace period day(s) for optoin 2 must be a numeric number."))
-        print value
+        
         return value
     
     def save(self, *args, **kwargs):

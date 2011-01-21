@@ -1,0 +1,31 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user corporate_memberships.change_corporatemembership as can_edit %}
+{% has_perm user corporate_memberships.delete_corporatemembership as can_delete %}
+
+<div class="t-iconrow">
+
+	{% if can_edit %}
+	<span>{{ opt_object.status_detail|capfirst }}</span>
+	{% endif %}
+
+	{% if can_edit %}
+		<a class="option-link edit" href="{% url corp_memb.edit opt_object.pk %}">Edit</a>
+	{% endif %}
+
+ {% if can_edit %}
+	  <div class="more-options-wrap">
+	    <a href="javascript:;" class="more-options-trigger">More options <small>&#9660;</small></a>
+	    <div class="more-options-target">
+	        <ul>
+				{% if can_delete %}
+					<li>
+						<a class="option-link delete" href="{% url corp_memb.delete opt_object.pk %}">Delete</a>
+					</li>				
+				{% endif %}
+			 </ul>
+	        </div>
+	  </div>
+  {% endif %}
+</div>
