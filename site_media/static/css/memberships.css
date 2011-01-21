@@ -393,3 +393,13 @@ div.forms fieldset.contact legend {
     list-style-type: none;
     margin-left: 7px;
 }
+.membership-status.approved {
+    background-color: #92ff6c;
+    border: 1px solid green;
+    padding: 10px 5px;
+}
+.membership-status.disapproved {
+    background-color: #fb9292;
+    border: 1px solid red;
+    padding: 10px 5px;
+}
