@@ -11,6 +11,8 @@
 
 {% block body %}
 <div class="t">
+	{% corpmemb_nav request.user %}
+	
      <h1>{{ corp_app.name }}</h1>
     <p>{{ corp_app.description|safe }}</p>
 

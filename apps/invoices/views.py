@@ -40,13 +40,12 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     merchant_login = False
     if hasattr(settings, 'MERCHANT_LOGIN') and settings.MERCHANT_LOGIN:
         merchant_login = True
-    print type(invoice.object_type)    
+      
     obj = invoice.get_object()
     
     obj_name = ""
     if obj:
         obj_name = obj._meta.verbose_name
-    print obj
     
     return render_to_response(template_name, {'invoice': invoice,
                                               'obj': obj,
@@ -56,6 +55,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
                                               'form':form,
                                               'merchant_login': merchant_login}, 
         context_instance=RequestContext(request))
+    
     
 def search(request, template_name="invoices/search.html"):
     query = request.GET.get('q', None)
@@ -68,6 +68,7 @@ def search(request, template_name="invoices/search.html"):
             invoices = invoices.objects.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
         else:
             raise Http403
+    
     return render_to_response(template_name, {'invoices': invoices}, 
         context_instance=RequestContext(request))
     

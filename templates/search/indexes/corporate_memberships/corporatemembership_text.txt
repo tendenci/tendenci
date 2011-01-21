@@ -1,0 +1,16 @@
+{{ object.name }}
+app: {{ object.corp_app }}
+{{ object.corporate_membership_type }}  
+{{ object.address }} 
+{{ object.address2 }} 
+{{ object.city }} 
+{{ object.state }} 
+{{ object.zip }} 
+{{ object.country }} 
+{{ object.phone }} 
+{{ object.email }}   
+{{ object.secret_code }}
+{{ object.status_detail }}
+{% for authorized_domain in object.authorized_domains %}
+authorized domain:{{ authorized_domain }} 
+{% endfor %}

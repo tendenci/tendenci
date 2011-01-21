@@ -1,0 +1,105 @@
+{% extends "corporate_memberships/base.html" %}
+{% load pagination_tags %}
+{% load base_filters %}
+{% load corporate_memberships_tags %}
+
+{% block title %}{{ block.super }}Corporate Membership Search{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+<style>
+	.corpmember-box{
+		border: 1px solid silver;
+		margin: 1em 0;
+	}
+	.clear-left{
+		clear: left;
+	}
+	.corpmember-left{
+		width: 65%;
+	}
+	.corpmember-right{
+		width: 35%;
+	}
+	.float-left{
+	    float: left;
+	}
+	.corpmember-box-header{
+		font-size: 1.4em;
+		background-color: #f2f2f2;
+		padding: 3px;
+	}
+	.corpmember-box-body{
+		margin: 1em 0;
+		padding: 0 1em;
+		line-height: 1.5em;
+	}
+	.t-search .label{
+		font-weight: bold;
+	}
+	.search-form input[type="text"]{
+		width: 500px;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<div class="t-search">
+ {% corpmemb_nav request.user %}
+<h1>Corporate Membership Search</h1>
+{% corp_memb_search %}
+{% autopaginate corp_members 10 %}
+<div class="corpmembers-wrap">
+    {% for corp_memb in corp_members %}
+	    {% with corp_memb.object as corp_memb %}
+	    	<div class="corpmember-box">
+		    	<div class="corpmember-box-header"><a href="{% url corp_memb.view corp_memb.pk %}">{{ corp_memb.name }}</a></div>
+		    	<div class="corpmember-box-body">
+		    	<div class="float-left label">Corporate Address: </div>
+		    	<div class="float-left">
+			    	{% if corp_memb.address or corp_memb.address2 %}
+			    		{{ corp_memb.address }} {{ corp_memb.address }} <br />
+			    	{% endif %}
+			    	
+			    	{{ corp_memb.city }} {{ corp_memb.state }} 
+			    	{{ corp_memb.zip }} {{ corp_memb.country }}
+			    	
+			    	
+		    	</div>
+		    	<div class="clear-left"></div>
+		    	
+		    	<div class="corpmember-left float-left">
+		    		<div><span class="label">Corporate Phone:</span> {{ corp_memb.phone }}</div>
+		    		<div><span class="label">Website:</span> {{ corp_memb.url|safe|urlize }}</div>
+		    		<div><span class="label">Member Type:</span> {{ corp_memb.corporate_membership_type.name }}
+		    		- {{ corp_memb.corporate_membership_type.price }}</div>
+		    		<div><a href="">Invite others to join under this company</a></div>
+		    	</div>
+		    	
+		    	<div class="corpmember-right float-left">
+		    		<div><span class="label">Join Date:</span> {{ corp_memb.join_dt|date:'Y-n-j' }}</div>
+		    		<div><span class="label">Expiration Date:</span> {% if corp_memb.expiration_dt %}
+		    							{{ corp_memb.expiration_dt|date:'Y-n-j' }}
+		    							{% else %}
+		    							Never Expire
+		    							{% endif %}
+		    							</div>
+		    	</div>
+		    	<div class="clear-left"></div>
+		    	</div>
+			</div>
+		{% endwith %}	
+	{% empty %}
+		<div>0 Results Found</div>
+	{% endfor %}
+</div>
+
+
+ {% paginate %}
+ 
+ </div>
+</div>
+
+{% endblock %}

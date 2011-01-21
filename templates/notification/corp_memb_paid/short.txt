@@ -1,0 +1,1 @@
+Payment Received for Corporate Membership Application - ({{ object.name }})
