@@ -357,6 +357,15 @@ div.forms fieldset.contact legend {
     border-color: red;
 }
 
+form.connect-with ul {
+    margin-top: 10px;
+}
+
+form.connect-with li {
+    list-style-type: none;
+    margin: 5px 0;
+}
+
 /* membership entries search page
 ---------------------------------------- */
 .memberships-wrap {
@@ -392,4 +401,14 @@ div.forms fieldset.contact legend {
     float: left;
     list-style-type: none;
     margin-left: 7px;
+}
+.membership-status.approved {
+    background-color: #92ff6c;
+    border: 1px solid green;
+    padding: 10px 5px;
+}
+.membership-status.disapproved {
+    background-color: #fb9292;
+    border: 1px solid red;
+    padding: 10px 5px;
 }
