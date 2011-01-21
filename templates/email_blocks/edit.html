@@ -6,8 +6,7 @@
 {% block title %}{{ block.super }}{% trans 'Email Block Record '%}{% if email_block.id %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}{% endblock %}
 
 {% block extra_head %}
-
-
+{{ block.super }}
 <style>
 .field-wrapper{
 	margin: 5px 0;
@@ -30,7 +29,6 @@
 }
 
 </style>
-
 {% endblock %}
 
 {% block body %}

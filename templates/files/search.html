@@ -7,6 +7,7 @@
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/files.css">
 <link rel="alternate" type="application/rss+xml" title="Latest Files" href="{% url file.feed %}" />
 <style type="text/css">
@@ -90,7 +91,7 @@
 {% endblock %}
 
 {% block extra_body %}
-
+    {{ block.super }}
 	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){

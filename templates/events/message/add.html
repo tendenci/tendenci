@@ -7,6 +7,7 @@
 {% block title %}{{ block.super }}Add{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
 <style type="text/css">
@@ -51,7 +52,5 @@
     </div>
 
 </div>
-
-
 {% endblock %}
 

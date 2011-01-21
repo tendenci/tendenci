@@ -5,6 +5,7 @@
 {% block title %}{{ block.super }}Register{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 {% endblock %}
 
@@ -77,7 +78,4 @@
 	</div>
 
 </div>
-{% endblock %}
-
-{% block extra_body %}
 {% endblock %}
