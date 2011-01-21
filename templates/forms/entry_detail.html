@@ -5,6 +5,7 @@
 {% block title %}Entry - {{ entry.form.title }}{% endblock %}
 
 {% block extra_head %}
+{% block extra_body %}{% endblock %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms-builder.css">
 {% endblock %}
 
@@ -32,5 +33,3 @@
     </div>
 </div>
 {% endblock %}
-
-{% block extra_body %}{% endblock %}

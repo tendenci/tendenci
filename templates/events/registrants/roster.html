@@ -8,6 +8,7 @@
 {% block title %}{{ event.title }} - {{ event.start_dt|date }} - Registrant Roster{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 {% endblock %}
 
@@ -250,6 +251,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
 		var iconrow = new dropdown({

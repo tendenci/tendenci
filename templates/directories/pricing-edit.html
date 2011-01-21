@@ -5,6 +5,7 @@
 {% block title %}Edit {% firstof MODULE_JOBS_LABEL 'Job' %} Price{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
 {% endblock %}
 
@@ -90,8 +91,4 @@
  
 
 </div>
-{% endblock %}
-
-{% block extra_body %}
-	
 {% endblock %}

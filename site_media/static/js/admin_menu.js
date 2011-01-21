@@ -1,4 +1,3 @@
-<script>
 $(document).ready(function() {
 	$('#admin-bar li.right.search a').mouseenter(function() {
 		$('#admin-bar li.right.search .sub').css({'display':'block','right':'20px','left':'auto'});
@@ -11,4 +10,3 @@ $(document).ready(function() {
 		$(this).text('Search');
 	});
 });
-</script>

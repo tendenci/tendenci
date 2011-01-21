@@ -6,6 +6,7 @@
 {% block meta_description %}{{ help_file.answer|striptags|safe|truncatewords:40 }}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
 {% endblock %}
 
@@ -51,5 +52,3 @@
     </div>
 </div>
 {% endblock %}
-
-{% block extra_body %}{% endblock %}

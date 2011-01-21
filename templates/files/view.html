@@ -5,6 +5,7 @@
 {% block title %}{{ block.super }}{{ file.headline }}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/files.css">
 <style type="text/css">
 	.t h2 {

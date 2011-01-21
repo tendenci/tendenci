@@ -6,6 +6,7 @@
 {% block title %}View {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} Price Details{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
 {% endblock %}
 
@@ -79,6 +80,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 

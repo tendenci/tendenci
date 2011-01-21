@@ -5,6 +5,7 @@
 {% block title %}{{ block.super }}Edit{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/locations.css">
 {% endblock %}
 
@@ -32,6 +33,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation
