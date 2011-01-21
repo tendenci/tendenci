@@ -11,6 +11,7 @@
 {% block meta_canonical_url %}<link rel="canonical" href="{{ resume.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/resumes.css">
 {% endblock %}
 
@@ -104,6 +105,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
 	var iconrow = new dropdown({

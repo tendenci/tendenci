@@ -6,6 +6,7 @@
 {% block meta_keywords %}{{ resumes.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ resume.get_canonical_url }}" />{% endblock %}
 {% block extra_head %}
+{{ block.super }}
 <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/resumes.css" />
 {% endblock %}
 

@@ -6,6 +6,7 @@
 
 {% block title %}{% blocktrans %}Latest Photo Sets{% endblocktrans %}{% endblock %}
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
 <link rel="alternate" type="application/rss+xml" title="Latest photo albums" href="{% url photo.feed.latest-albums %}" />
 {% endblock %}
@@ -53,6 +54,7 @@
 
 {% endblock %}
 {% block extra_body %}
+{{ block.super }}
 <script type="text/javascript">
 
 	// photo: delete confirmation

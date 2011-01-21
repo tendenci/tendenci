@@ -6,6 +6,7 @@
 {% block title %}{% firstof MODULE_PAGE_LABEL 'Page' %} Add{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
 <script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
@@ -32,6 +33,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
 	<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
 	<script type="text/javascript">

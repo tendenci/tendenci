@@ -2,9 +2,10 @@
 {% load pagination_tags %}
 {% load forms_tags %}
 
-{% block title %}{{ block.super }}Search{% endblock %}
+{% block title %}{{ block.super }} Search{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms-builder.css">
 {% endblock %}
 
@@ -38,6 +39,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation

@@ -5,6 +5,7 @@
 {% block title %}{% firstof MODULE_ARTICLES_LABEL 'Article' %} Edit Meta Information{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
 {% endblock %}
 
@@ -33,6 +34,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation
