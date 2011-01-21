@@ -157,7 +157,11 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                 if user_pk:
                     entry.user = User.objects.get(pk=user_pk)
                 else:
-                    entry.user = None
+                    entry.user = User.objects.create_user(**{
+                        'username': entry.spawn_username(entry.first_name, entry.last_name),
+                        'email': entry.email,
+                        'password': hashlib.sha1(entry.email).hexdigest()[:6]
+                    })
 
                 entry.approve()
 

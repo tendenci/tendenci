@@ -514,7 +514,8 @@ class AppEntry(models.Model):
         if self.user and self.user.is_authenticated():
             user = self.user
         elif self.suggested_users():
-            user = self.suggested_users()[0]
+            user_pk, user_label = self.suggested_users()[0]
+            user = User.objects.get(pk=user_pk)
         else:
             user = User.objects.create_user(**{
                 'username': self.spawn_username(self.first_name, self.last_name),
