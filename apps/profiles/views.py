@@ -84,8 +84,6 @@ def index(request, username='', template_name="profiles/index.html"):
     except:
         memberships = None
 
-    print 'memberships', memberships
-
     log_defaults = {
         'event_id' : 125000,
         'event_data': '%s (%d) viewed by %s' % (profile._meta.object_name, profile.pk, request.user),

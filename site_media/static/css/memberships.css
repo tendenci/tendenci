@@ -357,6 +357,15 @@ div.forms fieldset.contact legend {
     border-color: red;
 }
 
+form.connect-with ul {
+    margin-top: 10px;
+}
+
+form.connect-with li {
+    list-style-type: none;
+    margin: 5px 0;
+}
+
 /* membership entries search page
 ---------------------------------------- */
 .memberships-wrap {
