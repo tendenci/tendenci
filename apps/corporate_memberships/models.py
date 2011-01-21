@@ -11,6 +11,7 @@ from perms.models import TendenciBaseModel
 from invoices.models import Invoice
 from memberships.models import MembershipType
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
+from corporate_memberships.managers import CorporateMembershipManager
 
 FIELD_CHOICES = (
                     ("CharField", _("Text")),
@@ -110,6 +111,8 @@ class CorporateMembership(TendenciBaseModel):
     
     corp_app = models.ForeignKey("CorpApp")
     
+    objects = CorporateMembershipManager()
+    
     class Meta:
         permissions = (("view_corporatemembership", "Can view corporate membership"),)
         verbose_name = _("Corporate Membership")
@@ -126,7 +129,7 @@ class CorporateMembership(TendenciBaseModel):
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """
-        The description will be sent to payment gateway and displayed for on invoice.
+        The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
         return 'Tendenci Invoice %d for Corp. Memb. (%d): %s. ' % (
@@ -159,6 +162,35 @@ class CorporateMembership(TendenciBaseModel):
             return 466800
         else:
             return 406800
+        
+    def auto_update_paid_object(self, request, payment):
+        """
+        Update the object after online payment is received.
+        """
+        from datetime import datetime
+        try:
+            from notification import models as notification
+        except:
+            notification = None
+        from perms.utils import get_notice_recipients
+         
+        # approve it
+        if (self.status_detail).lower() <> 'active':
+            self.status_detail = 'active'
+        self.approved = 1
+        self.approved_denied_dt = datetime.now()
+        self.approved_denied_user = request.user
+        self.save()
+        
+        # send notification to administrators
+        recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
+        if recipients:
+            if notification:
+                extra_context = {
+                    'object': self,
+                    'request': request,
+                }
+                notification.send_emails(recipients,'corp_memb_paid', extra_context)
         
         
 class AuthorizedDomain(models.Model):

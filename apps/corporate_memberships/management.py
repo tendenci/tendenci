@@ -19,8 +19,8 @@ if "notification" in settings.INSTALLED_APPS:
     def create_notice_types(app, created_models, verbosity, **kwargs):
         notification.create_notice_type("corp_memb_added", _("Corporate Membership Added"), 
                                         _("A corporate membership  has been added."))
-        #notification.create_notice_type("corp_memb_paid", _("Payment Received for Corporate Membership"), 
-        #                                _("Payment for a corporate membership has been received."))
+        notification.create_notice_type("corp_memb_paid", _("Payment Received for Corporate Membership"), 
+                                        _("Payment for a corporate membership has been received."))
 
     post_syncdb.connect(create_notice_types, sender=notification)
 else:
