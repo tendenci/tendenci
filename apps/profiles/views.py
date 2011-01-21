@@ -80,9 +80,11 @@ def index(request, username='', template_name="profiles/index.html"):
 
     try:
         # memberships
-        memberships = user_this.membership_set.all()
+        memberships = user_this.memberships.all()
     except:
         memberships = None
+
+    print 'memberships', memberships
 
     log_defaults = {
         'event_id' : 125000,
