@@ -21,6 +21,6 @@ class EventLogColorAdmin(admin.ModelAdmin):
 class EventLogBaseColorAdmin(EventLogColorAdmin):
     list_display = ['source', 'event_id', 'color']
 
-admin.site.register(EventLog, EventLogAdmin)
-admin.site.register(EventLogColor, EventLogColorAdmin)
-admin.site.register(EventLogBaseColor, EventLogBaseColorAdmin)
+#admin.site.register(EventLog, EventLogAdmin)
+#admin.site.register(EventLogColor, EventLogColorAdmin)
+#admin.site.register(EventLogBaseColor, EventLogBaseColorAdmin)
