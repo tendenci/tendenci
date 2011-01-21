@@ -254,9 +254,26 @@ def view(request, id, template="corporate_memberships/view.html"):
             field_obj.is_date = True
         else:
             field_obj.is_date = False
+            
     
     context = {"corporate_membership": corporate_membership, 'field_objs': field_objs}
     return render_to_response(template, context, RequestContext(request))
+
+
+def search(request, template_name="corporate_memberships/search.html"):
+    query = request.GET.get('q', None)
+    corp_members = CorporateMembership.objects.search(query)
+    if is_admin(request.user):
+        corp_members = corp_members.order_by('name_exact')
+    else:
+        if request.user.is_authenticated():
+            from django.db.models import Q
+            corp_members = corp_members.objects.filter(Q(creator=request.user) | Q(owner=request.user) | Q(status_detail='active')).order_by('name')
+        else:
+            raise Http403
+    
+    return render_to_response(template_name, {'corp_members': corp_members}, 
+        context_instance=RequestContext(request))
     
 
 

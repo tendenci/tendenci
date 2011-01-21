@@ -192,7 +192,7 @@ class Registration(models.Model):
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """
-        The description will be sent to payment gateway and displayed for on invoice.
+        The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
         return 'Tendenci Invoice %d for Event (%d): %s (Reg# %d)' % (

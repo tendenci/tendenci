@@ -13,3 +13,15 @@ def render_corp_field(request, field_obj, form):
         field = eval("form['%s']" % field_name)
     return {'request':request, 'field_obj':field_obj, 'field':field}
 
+
+@register.inclusion_tag("corporate_memberships/nav.html", takes_context=True)
+def corpmemb_nav(context, user, corp_memb=None):
+    context.update({
+        'nav_object': corp_memb,
+        "user": user
+    })
+    return context
+
+@register.inclusion_tag("corporate_memberships/search_form.html", takes_context=True)
+def corp_memb_search(context):
+    return context
