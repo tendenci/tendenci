@@ -9,6 +9,7 @@
 {% block meta_keywords %}{{ block.super }}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
 <link rel="alternate" type="application/rss+xml" title="Latest jobs" href="{% url job.feed %}" />
 {% endblock %}
@@ -54,6 +55,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 

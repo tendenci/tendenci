@@ -6,6 +6,7 @@
 {% block title %}View {% firstof MODULE_JOBS_LABEL 'Job' %} Price Details{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
 {% endblock %}
 
@@ -89,7 +90,7 @@
 
 </div>
 {% endblock %}
-
+{{ block.super }}
 {% block extra_body %}
     <script type="text/javascript">
 		$(document).ready(function(){

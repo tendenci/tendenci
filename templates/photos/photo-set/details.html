@@ -9,6 +9,7 @@
 {% block title %}{{ block.super }}{{ photo_set.name }}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
 {% endblock %}
 
@@ -49,6 +50,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 

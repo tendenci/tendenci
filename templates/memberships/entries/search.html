@@ -10,6 +10,7 @@
 {% block meta_keywords %}{{ block.super }}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
 {% endblock %}
 
@@ -40,12 +41,12 @@
 
             {% if entry.is_approved == 1 or entry.is_approved == 0 %}
                 {% if entry.is_approved == 1 %}
-                <div class="membership-status">
+                <div class="membership-status approved">
                     Approved on {{ entry.decision_dt|date }}
                 </div>
                 {% else %}
                     {% if entry.is_approved = 0 %}
-                    <div class="membership-status">
+                    <div class="membership-status disapproved">
                         Disapproved on {{ entry.decision_dt|date }}
                     </div>
                     {% endif %}
@@ -91,7 +92,7 @@
 
     </div>
 
-
+    <div style="clear:both;"></div>
     {% paginate %}
 </div>
 {% endblock %}

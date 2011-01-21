@@ -4,4 +4,4 @@ from articles.models import Article
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ['headline','create_dt']
 
-admin.site.register(Article, ArticleAdmin)
+#admin.site.register(Article, ArticleAdmin)

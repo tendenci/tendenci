@@ -6,6 +6,7 @@
 {% block meta_description %}{{ topic.content|striptags|safe|truncatewords:40 }}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
 {% endblock %}
 

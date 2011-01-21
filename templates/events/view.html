@@ -11,6 +11,7 @@
 {% block meta_canonical_url %}<link rel="canonical" href="{{ event.get_canonical_url }}" />{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
 {% endblock %}
@@ -163,7 +164,8 @@ by {% firstof event.creator.get_profile.display_name event.creator %}</div>
 <p>{% fb_like_button_iframe the_url %}</p>
 
 {% block extra_body %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation
