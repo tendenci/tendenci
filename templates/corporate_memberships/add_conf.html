@@ -9,6 +9,7 @@
 
 {% block body %}
 <div class="t">
+{% corpmemb_nav request.user corporate_membership %} 
      <h1>Corporate Membership Add Confirmation</h1>
     <p>{% if corporate_membership.corp_app.confirmation_text %}
     	{{ corporate_membership.corp_app.confirmation_text|safe }}

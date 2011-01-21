@@ -2,6 +2,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load corporate_memberships_tags %}
 
 {% block title %}{{ corporate_membership.name|safe }}{% endblock %}
 {% block meta_description %}{{ corporate_membership.name|safe }}{% endblock %}
@@ -14,17 +15,22 @@
 {% block body %}
 
 <div class="t">
-    {#{% corpmemb_nav request.user corporate_membership %} #}
+    {% corpmemb_nav request.user corporate_membership %} 
 
     <div class="corpmemb-view">
 
         <h1>View Corporate Membership Information</h1>
 
-		<div class="options">
+		<div class="options" align="right">
              <div class="quick-options">
-				{#{% corpmemb_options request.user corporate_membership %} #}	       
+				{% corpmemb_options request.user corporate_membership %}        
              </div>
 		</div>
+		
+		<!-- delete-corp_memb form -->
+	    <form name="corp-memb-delete" method="POST" action="{% url corp_memb.delete corporate_membership.pk %}">
+	        <input type="hidden" name="action" value="delete">
+	    </form>
 
 		<div class="content">
 			{% has_perm request.user corporate_memberships.change_corpapp corporate_membership.corp_app as can_change %}
@@ -53,10 +59,29 @@
 		</div>
     </div>
 
-
+	
 </div>
 {% endblock %}
 
 {% block extra_body %}
-   
+ <script type="text/javascript">
+	$(document).ready(function(){
+
+		// delete confirmation
+		$('.delete').click(function(){
+			var delete_corp_memb = confirm('Permenantly delete {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Membership' %}?');	// confirm
+			if(delete_corp_memb) $(this).parents('.corpmemb-view').find('form[name="corp-memb-delete"]').submit() // delete: if OK
+			return false;	// cancel
+		});
+	});
+   </script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+<script type="text/javascript">
+var iconrow = new dropdown({
+	container:	'more-options-wrap',
+	trigger:	'more-options-trigger',
+	target:		'more-options-target'
+});
+</script>
+	
 {% endblock %}
