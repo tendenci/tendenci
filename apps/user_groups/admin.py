@@ -45,4 +45,4 @@ class GroupMembershipAdmin(admin.ModelAdmin):
     )    
 
 admin.site.register(Group, GroupAdmin)
-admin.site.register(GroupMembership, GroupMembershipAdmin)
+#admin.site.register(GroupMembership, GroupMembershipAdmin)

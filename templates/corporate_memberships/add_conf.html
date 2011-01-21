@@ -4,6 +4,7 @@
 {% block title %}Corporate Membership Add Confirmation{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 {% endblock %}
 
@@ -20,8 +21,4 @@
    
     <p><a href="{% url corp_memb.view corporate_membership.id %}">View this Corporate Membership</a></p>
 </div>
-{% endblock %}
-
-{% block extra_body %}
-
 {% endblock %}

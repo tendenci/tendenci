@@ -5,6 +5,7 @@
 {% block title %}{% firstof MODULE_PAGE_LABEL 'Page' %} Edit Meta Information{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
 {% endblock %}
 
@@ -34,6 +35,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 

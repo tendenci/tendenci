@@ -6,6 +6,7 @@
 {% block title %}{% firstof MODULE_RESUMES_LABEL 'Resumes' %} Add{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/resumes.css">
@@ -32,6 +33,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
 	<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
 	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>

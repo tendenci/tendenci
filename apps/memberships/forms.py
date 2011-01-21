@@ -93,7 +93,11 @@ def get_suggestions(entry):
 
 class MemberApproveForm(forms.Form):
 
-    users = forms.ChoiceField(label='Connect this membership with', choices=[])
+    users = forms.ChoiceField(
+        label='Connect this membership with',
+        choices=[],
+        widget=forms.RadioSelect,
+        )
 #    approve = forms.ChoiceField(choices=((True,'Approve'),(False,'Disapprove')))
 
     def get_suggestions(self, entry):

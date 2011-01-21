@@ -7,6 +7,7 @@
 {% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
 {% endblock %}
 
@@ -52,7 +53,4 @@
     </div>
 
 </div>
-{% endblock %}
-
-{% block extra_body %}
 {% endblock %}

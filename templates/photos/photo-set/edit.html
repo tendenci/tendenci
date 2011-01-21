@@ -6,6 +6,7 @@
 {% block head_title %}{% blocktrans %}Edit Photo Set{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/photos.css">
 {% endblock %}
         
@@ -19,7 +20,4 @@
         <input type="submit" value="{% trans "Edit" %}"/>
     </form>
     </div>
-{% endblock %}
-
-{% block extra_body %}
 {% endblock %}
