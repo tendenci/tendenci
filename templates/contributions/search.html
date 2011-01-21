@@ -7,6 +7,7 @@
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="/site_media/static/css/contribution.css">
 <link rel="alternate" type="application/rss+xml" title="Latest Contributions" href="{% url contribution.feed %}" />
 {% endblock %}
@@ -45,7 +46,4 @@
 
     {% paginate %}
 </div>
-{% endblock %}
-
-{% block extra_body %}
 {% endblock %}

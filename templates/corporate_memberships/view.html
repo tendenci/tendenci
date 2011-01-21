@@ -8,6 +8,7 @@
 {% block meta_keywords %}{{ corporate_membership.name|safe}}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 {% endblock %}
 
@@ -55,8 +56,4 @@
 
 
 </div>
-{% endblock %}
-
-{% block extra_body %}
-   
 {% endblock %}

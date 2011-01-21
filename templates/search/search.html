@@ -10,6 +10,7 @@
 {% block head_title %}{% blocktrans %}Search{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/search.css" /> 
 <link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form.css" /> 
 <link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form-generic.css" /> 
@@ -214,6 +215,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
 	<script type="text/javascript">		
 		function toggle_adv_models() {
 			$('div.search-adv-models').toggle();

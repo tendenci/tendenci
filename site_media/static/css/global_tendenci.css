@@ -6,3 +6,7 @@
 span.status-pending {
     color: #ff4500;
 }
+
+.content-wide {
+    width: 100% !important;
+}
