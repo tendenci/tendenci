@@ -8,6 +8,7 @@
 {% block title %}Job Pricing List{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
 {% endblock %}
 
@@ -58,6 +59,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 

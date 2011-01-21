@@ -10,6 +10,7 @@
 {% block meta_keywords %}{{ block.super }}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
 <link rel="alternate" type="application/rss+xml" title="Latest Directories" href="{% url directory.feed %}" />
 {% endblock %}
@@ -71,6 +72,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation
