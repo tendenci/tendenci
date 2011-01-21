@@ -69,18 +69,17 @@ class GroupMembership(models.Model):
     
     role = models.CharField(max_length=255, default="", blank=True)
     sort_order =  models.IntegerField(_('Sort Order'), default=0, blank=True)
-    
+
     # the reason this model doesn't inherit from TendenciBaseModel is
     # because it cannot have more than two foreignKeys on User
+    # http://docs.djangoproject.com/en/dev/topics/db/models/#extra-fields-on-many-to-many-relationships
     creator_id = models.IntegerField(default=0, editable=False)
     creator_username = models.CharField(max_length=50, editable=False)
-    owner_id = models.IntegerField(default=0, editable=False)   
+    owner_id = models.IntegerField(default=0, editable=False)
     owner_username = models.CharField(max_length=50, editable=False)
     status = models.BooleanField(default=True)
     status_detail = models.CharField(max_length=50, choices=(
-                                     ('active','Active'),
-                                     ('inactive','Inactive'),),
-                                     default='active')
+        ('active','Active'), ('inactive','Inactive'),), default='active')
     
     create_dt = models.DateTimeField(auto_now_add=True, editable=False)
     update_dt = models.DateTimeField(auto_now=True)

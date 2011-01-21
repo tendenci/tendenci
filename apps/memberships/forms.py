@@ -1,5 +1,7 @@
 import operator
 from uuid import uuid4
+from captcha.fields import CaptchaField
+from django.contrib.auth.models import AnonymousUser
 from django.forms.fields import CharField
 from django.forms.widgets import HiddenInput
 from haystack.query import SearchQuerySet
@@ -137,7 +139,11 @@ class MemberApproveForm(forms.Form):
         super(MemberApproveForm, self).__init__(*args, **kwargs)
 
         self.entry = entry
-        self.fields['users'].choices = self.get_suggestions(entry)     
+        suggested_users = entry.suggested_users(grouping=[('email',)])
+        suggested_users.append((0, 'Create new user'))
+        self.fields['users'].choices = suggested_users
+
+#        self.fields['users'].choices = self.get_suggestions(entry)
 
 class MembershipTypeForm(forms.ModelForm):
     type_exp_method = TypeExpMethodField(label='Period Type')
@@ -323,6 +329,9 @@ class AppEntryForm(forms.ModelForm):
         self.app = app
         self.form_fields = app.fields.visible()
         self.types_field = app.membership_types
+
+        user = kwargs.pop('user', AnonymousUser)
+
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
         CLASS_AND_WIDGET = {
@@ -362,12 +371,25 @@ class AppEntryForm(forms.ModelForm):
                     field_args["choices"] = zip(choices, choices_with_price)
                 else:
                     choices = field.choices.split(",")
+                    choices = [c.strip() for c in choices]
                     field_args["choices"] = zip(choices, choices)
+
+            field_args['initial'] = field.default_value
+            field_args['help_text'] = field.help_text
 
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
+
             self.fields[field_key] = field_class(**field_args)
+            self.fields[field_key].css_classes = ' %s' % field.css_class
+
+        if app.use_captcha and not user.is_authenticated():
+            self.fields['field_captcha'] = CaptchaField(**{
+                'label':'',
+                'error_messages':{'required':'CAPTCHA is required'}
+                })
+
 
     def save(self, **kwargs):
         """

@@ -8,7 +8,7 @@ LIBS_PATH = os.path.join(PROJECT_ROOT, 'libs')
 sys.path.insert(0, APPS_PATH)
 sys.path.insert(0, LIBS_PATH)
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 SITE_THEME = "default"
 
@@ -17,7 +17,7 @@ ADMINS = (
 	('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jennifer Ulmer', 'julmer@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
-    ('JMO', 'jmowswalt@schipul.com'),
+    ('JMO', 'jmoswalt@schipul.com'),
 )
 
 MANAGERS = ADMINS
@@ -113,6 +113,7 @@ MIDDLEWARE_CLASSES = (
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
     'redirects.middleware.RedirectMiddleware',
+    'mobile.middleware.MobileMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
