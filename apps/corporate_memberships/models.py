@@ -7,6 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
 
+#from completion import AutocompleteProvider, site
+
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
 from memberships.models import MembershipType
@@ -204,6 +206,15 @@ class CorporateMembershipRep(models.Model):
     is_member_rep = models.BooleanField(default=0, blank=True)
     is_alternate_rep = models.BooleanField(default=0, blank=True)
     
+#class RepProvider(AutocompleteProvider):
+#    def get_title(self, obj):
+#        return '%s %s' % (obj.firstname, obj.lastname)
+    
+#    def get_queryset(self):
+#        return self.model._default_manager.filter(status=True, status_detail='active')
+    
+#site.register(User, RepProvider)
+    
     
 class CorporateMembershipArchive(models.Model):
     guid = models.CharField(max_length=50)
@@ -379,6 +390,8 @@ class CorpField(models.Model):
             if self.field_name and self.object_type:
                 if self.field_name == 'authorized_domains':
                     return ', '.join([ad.name for ad in corporate_membership.auth_domains.all()])
+                if self.field_name == 'expiration_dt' and (not corporate_membership.expiration_dt):
+                    return "Never Expire"
                 return eval("%s.%s" % (self.object_type, self.field_name))
             else:
                 entry = self.field.filter(corporate_membership=corporate_membership)
