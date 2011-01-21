@@ -1,62 +1,71 @@
 from django.contrib import admin
-from django.core.urlresolvers import reverse
 from django.utils.encoding import iri_to_uri
+from django.utils.text import truncate_words
+from django.utils.html import strip_tags
+from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
-from models import Staff, Position, Department
-from forms import StaffForm
+from models import Testimonial
+from forms import TestimonialForm
 
-class StaffAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site','staff_photo', 'name', 'slug', 'department','position', 'start_date', 'years']
-    list_display_links = ['name']
-    list_filter = ['start_date']
-    search_fields = ['name','biography']
-    ordering = ('-start_date',)
-    prepopulated_fields = {'slug': ['name']}
+
+class TestimonialAdmin(admin.ModelAdmin):
+    list_display = ['view_on_site', 'first_last_name', 'testimonial_parsed', 'create_dt']
+    list_filter = ['last_name', 'first_name', 'create_dt']
+    search_fields = ['first_name','last_name', 'testimonial']
+    ordering = ('-create_dt',)
     fieldsets = (
         (None, {'fields': (
-            'name',
-            'slug',
-            'photo',
-            'start_date',
-            'biography',
-            'department',
-            'position',
+            'first_name',
+            'last_name',
+            'testimonial',
+            'tags',
+        )}),
+        ('Personal Information', {'fields': (
+            'city',
+            'state',
+            'country',
             'email',
-            'phone',
-            'tags'
+            'company',
+            'title',
+            'website',
         )}),
         ('Administrative', {'fields': (
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
-    form = StaffForm
+    form = TestimonialForm
 
     def view_on_site(self, obj):
         link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
-            reverse('staff.view', args=[obj.slug]),
-            obj.name,
+            reverse('testimonial.view', args=[obj.pk]),
+            (obj.first_name, obj.last_name),
             link_icon,
         )
         return link
     view_on_site.allow_tags = True
     view_on_site.short_description = 'view'
 
-    def staff_photo(self, obj):
-        return '<img src="%s" title="%s" />' % (
-            reverse('staff.photo', args=[obj.pk, '48x48']),
-            obj.name
+    def first_last_name(self, obj):
+        return '<a href="%s">%s %s</a>' % (
+            reverse('admin:testimonials_testimonial_change', args=[obj.pk]),
+            obj.first_name,
+            obj.last_name,
         )
-    staff_photo.allow_tags = True
-    staff_photo.short_description = 'photo'
+    first_last_name.allow_tags = True
+    first_last_name.short_description = 'name'
+    
+    def testimonial_parsed(self, obj):
+        testimonial = strip_tags(obj.testimonial)
+        testimonial = truncate_words(testimonial, 50)
+        return testimonial
+    testimonial_parsed.short_description = 'testimonial'
 
-    def years(self, obj):
-        return obj.years()
 
     def log_deletion(self, request, object, object_repr):
-        super(StaffAdmin, self).log_deletion(request, object, object_repr)
+        super(TestimonialAdmin, self).log_deletion(request, object, object_repr)
         log_defaults = {
             'event_id' : 1000300,
             'event_data': '%s (%d) deleted by %s' % (object._meta.object_name,
@@ -69,7 +78,7 @@ class StaffAdmin(admin.ModelAdmin):
         # EventLog.objects.log(**log_defaults)
 
     def log_change(self, request, object, message):
-        super(StaffAdmin, self).log_change(request, object, message)
+        super(TestimonialAdmin, self).log_change(request, object, message)
         log_defaults = {
             'event_id' : 1000200,
             'event_data': '%s (%d) edited by %s' % (object._meta.object_name,
@@ -82,7 +91,7 @@ class StaffAdmin(admin.ModelAdmin):
         # EventLog.objects.log(**log_defaults)
 
     def log_addition(self, request, object):
-        super(StaffAdmin, self).log_addition(request, object)
+        super(TestimonialAdmin, self).log_addition(request, object)
         log_defaults = {
             'event_id' : 1000100,
             'event_data': '%s (%d) added by %s' % (object._meta.object_name,
@@ -126,12 +135,10 @@ class StaffAdmin(admin.ModelAdmin):
         return instance
 
     def change_view(self, request, object_id, extra_context=None):
-		result = super(StaffAdmin, self).change_view(request, object_id, extra_context)
+		result = super(TestimonialAdmin, self).change_view(request, object_id, extra_context)
 
 		if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
 			result['Location'] = iri_to_uri("%s") % request.GET.get('next')
 		return result
 
-admin.site.register(Staff, StaffAdmin)
-admin.site.register(Department)
-admin.site.register(Position)
+admin.site.register(Testimonial, TestimonialAdmin)

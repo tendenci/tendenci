@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib import admin
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -340,8 +341,20 @@ class AppAdmin(admin.ModelAdmin):
         return app
 
 class AppEntryAdmin(admin.ModelAdmin):
-
     form = AppEntryForm
+    actions = ['disapprove']
+
+    def disapprove(self, request, entries):
+        for entry in entries:
+            entry.is_approved = False
+            entry.decision_dt = datetime.now()
+            entry.judge = request.user
+            entry.save()
+
+    def get_actions(self, request):
+        actions = super(AppEntryAdmin, self).get_actions(request)
+        del actions['delete_selected']
+        return actions
 
     def entry_name(self):
         return '<a href="%s">%s</a>' % (self.get_absolute_url(), self)
