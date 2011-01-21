@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.utils.encoding import iri_to_uri
 from django.utils.text import truncate_words
 from django.utils.html import strip_tags
+from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
@@ -9,7 +11,7 @@ from models import CaseStudy
 from forms import CaseStudyForm
 
 class CaseStudyAdmin(admin.ModelAdmin):
-    list_display = ['client', 'overview_parsed', 'create_dt']
+    list_display = ['view_on_site', 'client', 'slug', 'overview_parsed', 'create_dt']
     list_filter = ['create_dt']
     search_fields = ['client','overview', 'execution', 'results']
     ordering = ('-create_dt',)
@@ -27,6 +29,17 @@ class CaseStudyAdmin(admin.ModelAdmin):
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
     form = CaseStudyForm
+
+    def view_on_site(self, obj):
+        link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
+        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+            reverse('case_study.view', args=[obj.slug]),
+            obj.client,
+            link_icon,
+        )
+        return link
+    view_on_site.allow_tags = True
+    view_on_site.short_description = 'view'
 
     def overview_parsed(self, obj):
         overview = strip_tags(obj.overview)

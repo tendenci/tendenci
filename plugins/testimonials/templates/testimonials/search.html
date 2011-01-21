@@ -1,0 +1,91 @@
+{% extends "testimonials/base.html" %}
+{% load pagination_tags %}
+{% load testimonial_tags %}
+{% load perm_tags %}
+
+{% block title %}Testimonials{% endblock %}
+
+{% block extra_head %}
+<style type="text/css">
+{% include "testimonials/media/css/testimonial.css" %}
+</style>
+<link rel="alternate" type="application/rss+xml" title="Latest Testimonials" href="{% url testimonial.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate testimonials 5 %}
+{% has_perm user testimonials.add_testimonial as can_add_testimonial %}
+
+<div class="t">
+    <h1>Testimonials Search</h1>
+    {% testimonial_search %}
+    {% if can_add_testimonial %}
+    <div><a href="{% url admin:testimonials_testimonial_add %}">Add Testimonial</a></div>
+    {% endif %}
+    <div class="tsm-search-wrap">
+        {% for testimonial in testimonials %}
+        {% with testimonial.object as testimonial %}
+        <div class="tsm-search-item">
+            <div class="quick-options">
+                {% testimonial_options request.user testimonial %}
+            </div>
+            <p class="tsm-search-item-desc">
+                {% filter truncatewords:"20" %}
+                {{ testimonial.testimonial|striptags }}
+                {% endfilter %}
+            </p>
+
+            <div class="tsm-person-box">
+            <p class="tsm-person-info">
+                {{ testimonial.first_name }}&nbsp;{{ testimonial.last_name }}
+                {% if testimonial.title %}
+                 &nbsp;&ndash;&nbsp;{{ testimonial.title }}
+                {% endif %}
+                {% if testimonial.company %}
+                &nbsp;&ndash;&nbsp;{{ testimonial.company }}
+                {% endif %}
+            </p>
+            {% if testimonial.website %}
+            <p class="tsm-person-info">
+                {{ testimonial.website|urlize }}
+            </p>
+            {% endif %}
+            {%  if testimonial.country or testimonial.city or testimonial.state %}
+            <p class="tsm-person-info">
+                {% if testimonial.city %}
+                    {{ testimonial.city }}
+                {% endif %}
+                {% if testimonial.state and testimonial.city %}
+                    ,&nbsp;{{ testimonial.state }}
+                {% else %}
+                    &nbsp;{{ testimonial.state }}
+                {% endif %}
+                {% if testimonial.country %}
+                    &nbsp;{{ testimonial.country }}
+                {% endif %}
+            </p>
+            {% endif %}
+            </div>
+            <a href="{{ testimonial.get_absolute_url }}" title="View testimonial by {{ testimonial.first_name }}&nbsp;{{ testimonial.last_name }}">
+                &raquo;&nbsp;View testimonial by {{ testimonial.first_name }}&nbsp;{{ testimonial.last_name }}
+            </a>
+        </div>
+        {% endwith %}
+        {% empty %}
+            <p>0 Testimonials Found</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock body %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+	</script>
+{% endblock %}
