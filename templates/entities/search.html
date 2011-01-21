@@ -8,6 +8,7 @@
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/entities.css">
 {% endblock %}
 
@@ -70,6 +71,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 
