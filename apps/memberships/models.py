@@ -619,7 +619,10 @@ class AppEntry(models.Model):
         sqs_users = [sq.object.user for sq in sqs]
 
         for u in sqs_users:
-            user_set[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
+            try:
+                user_set[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
+            except:
+                pass
 
         return user_set.items()
 
