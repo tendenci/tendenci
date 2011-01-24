@@ -259,9 +259,6 @@ class Membership(TendenciBaseModel):
     join_dt = models.DateTimeField(_("Join Date Time"), null=True)
     renew_dt = models.DateTimeField(_("Renew Date Time"), blank=True, null=True)
     expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
-    approved = models.BooleanField(_("Approved"), default=0)
-    approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"))
-    approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     
@@ -544,9 +541,6 @@ class AppEntry(models.Model):
                 'join_dt':datetime.now(),
                 'renew_dt': None,
                 'expiration_dt': self.membership_type.get_expiration_dt(join_dt=datetime.now()),
-                'approved': True,
-                'approved_denied_dt': datetime.now(),
-                'approved_denied_user': judge,
                 'payment_method':'',
                 'ma':self.app,
                 'creator':user,
