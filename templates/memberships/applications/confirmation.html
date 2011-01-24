@@ -22,12 +22,12 @@
         {% if entry.membership %}
             {% if entry.membership.approved %}
                 <div class="approved_dt">Approved on
-                    {{ entry.membership.approved_denied_dt|date_short }}
+                    {{ entry.decision_dt|date_short }}
                     by <a href="{% url profile entry.membership.approved_denied_user %}">
                     {{ entry.membership.approved_denied_user }}</a></div>
             {% else %}
                 <div class="denied_dt">Denied on
-                    {{ entry.membership.approved_denied_dt|date_short }}
+                    {{ entry.decision_dt|date_short }}
                     by {{ entry.membership.approved_denied_user }}</div>
             {% endif %}
         {% else %}

@@ -8,8 +8,6 @@ from haystack.query import SearchQuerySet
 from perms.utils import is_admin
 
 
-
-
 class MemberAppManager(Manager):
     def search(self, query=None, *args, **kwargs):
         """
