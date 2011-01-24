@@ -98,7 +98,6 @@ class MemberApproveForm(forms.Form):
         choices=[],
         widget=forms.RadioSelect,
         )
-#    approve = forms.ChoiceField(choices=((True,'Approve'),(False,'Disapprove')))
 
     def get_suggestions(self, entry):
         """
@@ -146,6 +145,7 @@ class MemberApproveForm(forms.Form):
         suggested_users = entry.suggested_users(grouping=[('email',)])
         suggested_users.append((0, 'Create new user'))
         self.fields['users'].choices = suggested_users
+        self.fields['users'].initial = 0
 
 #        self.fields['users'].choices = self.get_suggestions(entry)
 
