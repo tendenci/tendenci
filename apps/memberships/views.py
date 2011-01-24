@@ -84,10 +84,17 @@ def application_details(request, slug=None, template_name="memberships/applicati
 
                     entry.approve()
 
+                    # send email to approved membership applicant
+                    notification.send_emails([entry.email],'membership_approved_to_member', {
+                        'object':entry,
+                        'request':request,
+                        'membership_total':membership_total,
+                    })
+
                     # send email to admins
                     recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                     if recipients and notification:
-                        notification.send_emails(recipients,'membership_application_approved', {
+                        notification.send_emails(recipients,'membership_approved_to_admin', {
                             'object':entry,
                             'request':request,
                             'membership_total':membership_total,
@@ -165,10 +172,17 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
                 entry.approve()
 
+                # send email to approved membership applicant
+                notification.send_emails([entry.email],'membership_approved_to_member', {
+                    'object':entry,
+                    'request':request,
+                    'membership_total':membership_total,
+                })
+
                 # send email to admins
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                 if recipients and notification:
-                    notification.send_emails(recipients,'membership_application_approved', {
+                    notification.send_emails(recipients,'membership_approved_to_admin', {
                         'object':entry,
                         'request':request,
                         'membership_total':membership_total,
@@ -177,10 +191,17 @@ def application_entries(request, id=None, template_name="memberships/entries/det
             else:
                 entry.disapprove()
 
+                # send email to disapproved membership applicant
+                notification.send_emails([entry.email],'membership_disapproved_to_member', {
+                    'object':entry,
+                    'request':request,
+                    'membership_total':membership_total,
+                })
+
                 # send email to admins
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                 if recipients and notification:
-                    notification.send_emails(recipients,'membership_application_disapproved', {
+                    notification.send_emails(recipients,'membership_disapproved_to_admin', {
                         'object': entry,
                         'request': request,
                         'membership_total': membership_total,
@@ -218,20 +239,3 @@ def application_entries_search(request, template_name="memberships/entries/searc
         'apps':apps,
         'types':types,
         }, context_instance=RequestContext(request))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
