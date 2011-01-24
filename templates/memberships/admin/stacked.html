@@ -1,4 +1,6 @@
 {% load i18n adminmedia %}
+{% load base_filters %}
+
 <div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
   <h2>{{ inline_admin_formset.opts.verbose_name_plural|title }}</h2>
 {{ inline_admin_formset.formset.management_form }}
@@ -66,7 +68,11 @@
 			                    {% if field.is_checkbox %}
 			                        {{ field.field }}{{ field.label_tag }}
 			                    {% else %}
-			                        {{ field.label_tag }}
+
+                                    {% if not field.field.is_hidden %}
+                                        {{ field.label_tag }}
+                                    {% endif %}
+
 			                        {% if field.is_readonly %}
 			                            <p>{{ field.contents }}</p>
 			                        {% else %}
