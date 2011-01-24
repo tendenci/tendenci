@@ -394,17 +394,17 @@ class AppField(models.Model):
 
     objects = AppFieldManager()
 
-#    def save(self, *args, **kwargs):
-#        if self.position is None:
-#            # Append
-#            try:
-#                last = model.objects.order_by('-position')[0]
-#                self.position = last.position + 1
-#            except IndexError:
-#                # First row
-#                self.position = 0
-#
-#        return super(AppField, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if self.position is None:
+            # Append
+            try:
+                last = AppField.objects.order_by('-position')[0]
+                self.position = last.position + 1
+            except IndexError:
+                # First row
+                self.position = 0
+
+        return super(AppField, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = _("Field")
