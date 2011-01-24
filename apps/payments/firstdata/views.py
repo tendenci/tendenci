@@ -8,7 +8,7 @@ from event_logs.models import EventLog
 
 def thank_you(request, payment_id, template_name='payments/receipt.html'):
     payment = firstdata_thankyou_processing(request, dict(request.POST.items()))
-    
+   
     # log an event for payment edit
     if payment:
         if payment.response_code == '1':
