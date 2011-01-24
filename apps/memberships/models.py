@@ -424,8 +424,6 @@ class AppEntry(models.Model):
     decision_dt = models.DateTimeField(null=True, editable=False)
     judge = models.ForeignKey(User, null=True, related_name='entries', editable=False)
 
-#    create_dt = models.DateTimeField(editable=False)
-
     objects = MemberAppEntryManager()
 
     class Meta:
@@ -564,6 +562,18 @@ class AppEntry(models.Model):
             })
         except:
             pass
+
+        # update user account
+        user.first_name = self.first_name
+        user.last_name = self.last_name
+        user.email = self.email
+
+        try:
+            user.get_profile().email = self.email
+        except:
+            pass
+
+        user.save()
 
         self.is_approved = True
         self.decision_dt = datetime.now()
