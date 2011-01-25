@@ -48,6 +48,7 @@
 <div class="t">
 <div class="t-search">
  {% corpmemb_nav request.user %}
+ 
 <h1>Corporate Membership Search</h1>
 {% corp_memb_search %}
 {% autopaginate corp_members 10 %}
@@ -131,7 +132,16 @@
 		});
 	});
    </script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+<script>
+	var filename = "{{ STATIC_URL }}js/global/dropdown.js";
+	if (typeof dropdown == "undefined")
+	{
+		var fileref=document.createElement('script');
+		fileref.setAttribute("type","text/javascript");
+		fileref.setAttribute("src", filename);
+	}
+</script>
+
 <script type="text/javascript">
 var iconrow = new dropdown({
 	container:	'more-options-wrap',
@@ -139,5 +149,7 @@ var iconrow = new dropdown({
 	target:		'more-options-target'
 });
 </script>
+
+
 	
 {% endblock %}

@@ -1,0 +1,70 @@
+{% if corp_apps %}
+	{% if app_count == 1 %}
+		{% for corp_app in corp_apps %}
+			<a href="{% url corp_memb.add corp_app.slug %}">Add</a>
+		{% endfor %}
+	{% else %}
+	<style>
+		.add-links-all-wrapper{
+			position: relative;
+		}
+		.add-links-all-wrapper a{
+			cursor: pointer;
+			font-size: 11px;
+			text-decoration:none;
+		}
+		.add-links-all-target{
+			display: block;
+			background: none repeat scroll 0 0 #FFFFFF;
+		    border-color: silver #666666 #666666 silver;
+		    border-style: solid;
+		    border-width: 1px;
+		    left: 0;
+		    position: absolute;
+		    top: 16px;
+		    width: 140px;
+		    z-index: 9999;
+		}
+		.add-links-all-target ul{
+			width: 140px;
+		}
+		.add-links-all-target ul li{
+			list-style: none;
+			cursor: pointer;
+			padding:2px 3px; 
+			text-align: left;
+		}
+		.add-links-all-target ul li a{
+			 background-position: left top;
+    		 background-repeat: no-repeat;
+    		 display: block;
+    		 padding-left: 20px;
+    		 text-decoration: none;
+		}
+		
+	</style>
+	 <div class="add-links-all-wrapper">
+		 <a href="javascript:;" class="add-links-all-trigger">Add <small>&#9660;</small></a>
+		 <div class="add-links-all-target">
+			<ul>
+			{% for corp_app in corp_apps %}
+				<li>
+				<a href="{% url corp_memb.add corp_app.slug %}">{{ corp_app.name }}</a>
+				</li>
+			{% endfor %}
+			</ul>
+		</div>
+	</div>
+	{% endif %}
+{% endif %}
+
+{% if app_count > 1 %}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+	var moreAddLinks = new dropdown({
+		container:	'add-links-all-wrapper',
+		trigger:	'add-links-all-trigger',
+		target:		'add-links-all-target'
+	});
+	</script>
+{% endif %}
