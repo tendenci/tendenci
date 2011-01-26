@@ -85,7 +85,7 @@
 						    {% endif %} 
 			 				
 			 			{% else %}
-			 				<span class="label">{{ field_obj.label }} {{ field_obj.field_name }}</span>: 
+			 				<span class="label">{{ field_obj.label }}</span>: 
 			 				<span{% if field_obj.required %} class="bolded-content"{% endif %}>
 				 			{% if  field_obj.is_date %}
 				 				{{ field_obj.value|date:'long' }}
