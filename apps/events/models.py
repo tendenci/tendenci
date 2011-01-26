@@ -98,6 +98,8 @@ class Registrant(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
     
     name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
     mail_name = models.CharField(max_length=100)
     address = models.CharField(max_length=200)
     city = models.CharField(max_length=100)
@@ -121,30 +123,9 @@ class Registrant(models.Model):
 
     @property
     def lastname_firstname(self):
-        
-        name_list = [n for n in self.name.split() if n]
-        prefix = first = middle = last = suffix = ""
-
-        if len(name_list) == 5:
-            prefix, first, middle, last, suffix = name_list
-        elif len(name_list) == 4:
-            first, middle, last, suffix = name_list
-        elif len(name_list) == 3:
-            first, middle, last = name_list
-        elif len(name_list) == 2:
-            first, last = name_list
-        elif len(name_list) == 1:
-            first = name_list[0]
-        else:
-            first = self.name
-
-        if first and last:
-            return "%s, %s" % (last, first)
-        elif first:
-            return "%s" % first
-
-
-        
+        fn = self.first_name or None
+        ln = self.last_name or None
+        return ', '.join([ln, fn])
 
     @classmethod
     def event_registrants(cls, event=None):
@@ -171,7 +152,7 @@ class Registrant(models.Model):
 
 class Registration(models.Model):
 
-    guid = models.TextField(max_length=40, editable=False, default=uuid.uuid1)
+    guid = models.TextField(max_length=40, editable=False)
     event = models.ForeignKey('Event') # dynamic (should be static)
 
     reminder = models.BooleanField(default=False)
@@ -243,6 +224,11 @@ class Registration(models.Model):
             registrant = None
 
         return registrant
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.guid = str(uuid.uuid1())
+        super(self.__class__, self).save(*args, **kwargs)
 
     def save_invoice(self, *args, **kwargs):
         status_detail = kwargs.get('status_detail', 'estimate')
@@ -450,7 +436,7 @@ class Event(TendenciBaseModel):
     """
     Calendar Event
     """
-    guid = models.CharField(max_length=40, editable=False, default=uuid.uuid1)
+    guid = models.CharField(max_length=40, editable=False)
     entity = models.ForeignKey(Entity, blank=True, null=True)
 
     type = models.ForeignKey(Type, blank=True, null=True)
@@ -492,6 +478,11 @@ class Event(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("event", [self.pk])
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.guid = str(uuid.uuid1())
+        super(self.__class__, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.title
