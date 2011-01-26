@@ -1,10 +1,10 @@
 {% load base_tags %}
 {% load perm_tags %}
 
-{% has_perm user photo.view_image as can_view %}
-{% has_perm user photo.add_image as can_add %}
-{% has_perm user photo.change_image as can_change %}
-{% has_perm user photo.delete_image as can_delete %}
+{% has_perm user photologue.view_photo as can_view %}
+{% has_perm user photologue.add_photo as can_add %}
+{% has_perm user photologue.change_photo as can_change %}
+{% has_perm user photologue.delete_photo as can_delete %}
 
 {% if can_change %}
 <ul>
