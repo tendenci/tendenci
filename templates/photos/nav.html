@@ -2,14 +2,14 @@
 {% load perm_tags %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
-{% has_perm user photoset.add_photoset as can_add_photoset %}
+{% has_perm user photologue.add_photo as can_add_photoset %}
 
 {% if nav_object %}
-	{% has_perm user photoset.view_photoset nav_object as can_view_photoset %}
-	{% has_perm user photoset.change_photoset nav_object as can_edit_photoset %}
+	{% has_perm user photologue.view_photo nav_object as can_view_photoset %}
+	{% has_perm user photologue.change_photo nav_object as can_edit_photoset %}
 {% else %}
-	{% has_perm user photoset.view_photoset as can_view_photoset %}
-	{% has_perm user photoset.change_photoset as can_edit_photoset %}
+	{% has_perm user photologue.view_photo as can_view_photoset %}
+	{% has_perm user photologue.change_photo as can_edit_photoset %}
 {% endif %}
 
 
