@@ -57,13 +57,8 @@ class RegistrantIndex(indexes.RealTimeSearchIndex):
     create_dt = indexes.DateTimeField(model_attr='create_dt')
     update_dt = indexes.DateTimeField(model_attr='update_dt')
 
-    last_name = indexes.CharField()
+    last_name = indexes.CharField(model_attr='last_name')
     who_can_view = indexes.CharField()
-
-    def prepare_last_name(self, obj):
-        name = obj.name
-        if len(name.split()) > 1:
-            return name.split()[1]
 
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('registrants.view_registrant', obj)
