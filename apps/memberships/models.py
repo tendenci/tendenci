@@ -246,6 +246,18 @@ class MembershipType(TendenciBaseModel):
                         expiration_dt = expiration_dt + relativedelta(years=1)
                         
                 return expiration_dt
+            
+    def get_app_top1(self):
+        """
+        Get the top 1 application for this membership type.
+        This is mainly for the individual membership under
+        a corporate membership.
+        """
+        apps = self.app_set.filter(status=1, status_detail='published')
+        if apps:
+            return apps[0]
+        return None
+        
 
 class Membership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
