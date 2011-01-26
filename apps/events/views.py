@@ -442,12 +442,12 @@ def delete(request, id, template_name="events/delete.html"):
 def register(request, event_id=0, form_class=Reg8nForm, template_name="events/reg8n/register.html"):
         event = get_object_or_404(Event, pk=event_id)
         
-        user_account = None
-        if isinstance(request.user, User):
-            user_account = request.user
-            user_name = request.user.username
-            user_email = user_account.email
-
+        user = None
+        email = ''
+        if request.user.is_authenticated():
+            user = request.user
+            email = user.email
+        
         # free or priced event (choose template)
         free = (event.registration_configuration.price == 0)                
         if free: template_name = "events/reg8n/register-free.html"
@@ -458,17 +458,15 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
             raise Http404
 
         try: # if they're registered; show them their confirmation
-
             registrant = Registrant.objects.filter(
                 registration__event=event,
-                email = user_email,
+                email = email,
             )
 
             return HttpResponseRedirect(
                 reverse('event.registration_confirmation', 
                 args=(event_id, registrant.hash)),
             )
-
         except: pass
 
         bad_scenarios = [
@@ -482,29 +480,25 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
             return HttpResponseRedirect(reverse('event', args=(event_id,)))
 
         if request.method == "POST":
-            form = form_class(event_id, request.POST, user=user_account)
+            form = form_class(event_id, request.POST, user=user)
             if form.is_valid():
-
-                if user_account: # if logged in
-                    user_name = user_account.username
-                    user_email = user_account.email
-                else:
-                    user_name = form.cleaned_data.get("name", None)
-                    user_email = form.cleaned_data.get("email", None)
-
                 price = form.cleaned_data['price']
                 payment_method = form.cleaned_data['payment_method']
 
+                reg_defaults = {
+                    'user': user,
+                    'email': form.cleaned_data.get("email", email),
+                    'first_name': form.cleaned_data.get("first_name", ''),
+                    'last_name': form.cleaned_data.get("last_name", ''),
+                    'company_name': form.cleaned_data.get("company_name", ''),
+                    'event': event,
+                    'payment_method': payment_method,
+                    'price': price,
+                }
+                    
                 # create registration record; then take payment
                 # this allows someone to be registered with an outstanding balance 
-                reg8n, reg8n_created = save_registration(
-                    user = user_account,
-                    name = user_name, 
-                    email = user_email, 
-                    event = event, 
-                    payment_method = payment_method, 
-                    price = price,
-                )
+                reg8n, reg8n_created = save_registration(**reg_defaults)
 
                 site_label = get_setting('site', 'global', 'sitedisplayname')
                 site_url = get_setting('site', 'global', 'siteurl')
@@ -513,7 +507,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 if reg8n_created:
                     if notification:
                         notification.send_emails(
-                            [user_email], 
+                            [reg_defaults['email']],
                             'event_registration_confirmation', 
                             {   'site_label': site_label,
                                 'site_url': site_url,
@@ -578,20 +572,22 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 EventLog.objects.log(**log_defaults)
 
         else: # else request.method != "POST"
-
             if request.user.is_authenticated():
-
                 payment_method = PaymentMethod.objects.get(pk=3)
 
                 if free:
-                # if free event; then register w/o payment method
-                    reg8n, created = save_registration(
-                        user=user_account,
-                        email=user_email, 
-                        event=event, 
-                        payment_method=payment_method, 
-                        price='0.00'
-                    )
+                    reg_defaults = {
+                       'user': user,
+                       'email': user.email,
+                       'first_name': user.first_name,
+                       'last_name': user.last_name,
+                       'company_name': '',
+                       'event': event,
+                       'payment_method': payment_method,
+                       'price': '0.00',
+                    }
+                     # if free event; then register w/o payment method
+                    reg8n, created = save_registration(**reg_defaults)
                     response = HttpResponseRedirect(reverse(
                         'event.registration_confirmation', 
                         args=(event_id, reg8n.registrant.hash)
@@ -963,7 +959,8 @@ def registrant_export(request, event_id):
     # excel sheet. the value is the database lookup
     # Used OrderedDict to maintain the column order
     registrant_mappings = OrderedDict([
-        ('name', 'name'),
+        ('first_name', 'first_name'),
+        ('last_name', 'last_name'),
         ('phone', 'phone'),
         ('email', 'email'),
         ('registration_id', 'registration__pk'),
@@ -971,6 +968,7 @@ def registrant_export(request, event_id):
         ('registration price', 'registration__amount_paid'),
         ('payment method', 'registration__payment_method__label'),
         ('balance', 'registration__invoice__balance'),
+        ('company', 'company_name'),
         ('address', 'address'),
         ('city', 'city'),
         ('state', 'state'),

@@ -213,7 +213,7 @@
 
 	<td> <!-- name & phone -->
 		{% if registrant.user %}
-		<div title="View {{ registrant.name}}'s profile"><a href="{{ registrant.user.get_absolute_url }}">
+		<div title="View {{ registrant.first_name}}'s profile"><a href="{{ registrant.user.get_absolute_url }}">
 			{% firstof registrant.lastname_firstname registrant.email %}
 		</a></div>
 		{% else %}
