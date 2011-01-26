@@ -13,12 +13,22 @@ post_syncdb.connect(assign_permissions, sender=membership)
 def create_notice_types(app, created_models, verbosity, **kwargs):
 
     notification.create_notice_type(
-        'membership_application_approved',
+        'membership_approved_to_admin',
         _('Membership Application Approved'),
         _('Membership Application Approved'))
 
     notification.create_notice_type(
-        'membership_application_disapproved',
+        'membership_disapproved_to_admin',
+        _('Membership Application Disapproved'),
+        _('Membership Application Disapproved'))
+
+    notification.create_notice_type(
+        'membership_approved_to_member',
+        _('Membership Application Approved'),
+        _('Membership Application Approved'))
+
+    notification.create_notice_type(
+        'membership_disapproved_to_member',
         _('Membership Application Disapproved'),
         _('Membership Application Disapproved'))
 

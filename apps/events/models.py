@@ -201,7 +201,8 @@ class Registration(models.Model):
             acct_number = self.get_acct_number()
             acct = Acct.objects.get(account_number=acct_number)
             AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
-            
+    
+    # to lookup for the number, go to /accountings/account_numbers/        
     def get_acct_number(self, discount=False):
         if discount:
             return 462000

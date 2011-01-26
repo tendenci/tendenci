@@ -200,20 +200,15 @@ class AuthorizedDomain(models.Model):
     name = models.CharField(max_length=100)
         
 class CorporateMembershipRep(models.Model):
-    corporate_membership = models.ForeignKey("CorporateMembership", related_name="reps")
-    user = models.ForeignKey(User)
-    is_dues_rep = models.BooleanField(default=0, blank=True)
-    is_member_rep = models.BooleanField(default=0, blank=True)
-    is_alternate_rep = models.BooleanField(default=0, blank=True)
+    corporate_membership = models.ForeignKey("CorporateMembership",
+                                             related_name="reps")
+    user = models.ForeignKey(User, verbose_name=_("Representative"),)
+    is_dues_rep = models.BooleanField(_('is dues rep?'), default=0, blank=True)
+    is_member_rep = models.BooleanField(_('is member rep?'), default=0, blank=True)
+    #is_alternate_rep = models.BooleanField(_('is alternate rep?'), default=0, blank=True)
     
-#class RepProvider(AutocompleteProvider):
-#    def get_title(self, obj):
-#        return '%s %s' % (obj.firstname, obj.lastname)
-    
-#    def get_queryset(self):
-#        return self.model._default_manager.filter(status=True, status_detail='active')
-    
-#site.register(User, RepProvider)
+    class Meta:
+        unique_together = (("corporate_membership", "user"),)
     
     
 class CorporateMembershipArchive(models.Model):
@@ -392,6 +387,9 @@ class CorpField(models.Model):
                     return ', '.join([ad.name for ad in corporate_membership.auth_domains.all()])
                 if self.field_name == 'expiration_dt' and (not corporate_membership.expiration_dt):
                     return "Never Expire"
+                if self.field_name == 'reps':
+                    # get representatives
+                    return CorporateMembershipRep.objects.filter(corporate_membership=corporate_membership).order_by('user')
                 return eval("%s.%s" % (self.object_type, self.field_name))
             else:
                 entry = self.field.filter(corporate_membership=corporate_membership)
