@@ -256,6 +256,55 @@ colors = {
     '273000':'FFCC99', # delete
     '274000':'FFCC99', # search
     '275000':'FFCC99', # view
+
+    # membership
+    '470000':'333366', # base
+    '471000':'333366', # add
+    '472000':'333366', # edit
+    '473000':'333366', # delete
+    '474000':'333366', # search view
+    '475000':'333366', # details view
+    '475105':'333366', # export
+
+    # membership type
+    '475100':'333366', # add
+    '475200':'333366', # edit
+    '475300':'333366', # delete
+    '475400':'333366', # search view
+    '475500':'333366', # details view
+
+    # membership application
+    '650000':'FF0066', # base
+    '651000':'FF0066', # add
+    '652000':'FF3366', # edit
+    '653000':'FF0099', # delete
+    '654000':'FF3399', # search view
+    '655000':'FF00CC', # details view
+
+    # membership application fields
+    '660000':'FF6633', # base
+    '661000':'FF6633', # add
+    '662000':'FF3366', # edit
+    '663000':'FF9933', # delete
+    '664000':'FF6666', # search view
+    '665000':'FF9966', # details view
+
+    # membership entries
+    '1080000':'FF6633', # base
+    '1081000':'FF6633', # add
+    '1084000':'FF6633', # search view
+    '1085000':'FF6633', # details view
+    '1082101':'FF6633', # approved
+    '1082102':'FF6633', # disapproved
+
+    # membership notice
+    '900000':'FFFF00', # base
+    '901000':'FFDB00', # add
+    '902000':'FFB600', # edit
+    '903000':'FF9200', # delete
+    '904000':'FF6D00', # search view
+    '905000':'FF4900', # details view
+    '906000':'FF2400', # print view
 }
 
 def get_color(event_id):

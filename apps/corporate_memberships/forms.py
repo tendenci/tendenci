@@ -9,7 +9,7 @@ from django.core.files.storage import FileSystemStorage
 from tinymce.widgets import TinyMCE
 
 from memberships.fields import PriceInput
-from models import CorporateMembershipType, CorpApp, CorpField, CorporateMembership
+from models import CorporateMembershipType, CorpApp, CorpField, CorporateMembership, CorporateMembershipRep
 from corporate_memberships.utils import get_corpapp_default_fields_list, update_auth_domains
 from corporate_memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from base.fields import SplitDateTimeField
@@ -236,6 +236,37 @@ class CorpMembForm(forms.ModelForm):
             update_auth_domains(corporate_membership, self.cleaned_data['authorized_domains'])
         
         return corporate_membership
+    
+    
+class CorpMembRepForm(forms.ModelForm):
+    class Meta:
+        model = CorporateMembershipRep
+        exclude = (
+                  'corporate_membership',
+                  )
+        
+    def __init__(self, corp_memb, *args, **kwargs):
+        self.corporate_membership = corp_memb
+        super(CorpMembRepForm, self).__init__(*args, **kwargs)
+        from django.contrib.auth.models import User
+        #self.fields['user'].queryset = User.objects.filter(is_active=1)
+        users = User.objects.filter(is_active=1)
+        self.fields['user'].choices = [(0, 'Select One')] + [(u.id, '%s %s (%s)' % (u.first_name, 
+                                                                                    u.last_name, 
+                                                                                    u.email)) for u in users]
+        self.fields['user'].label = "Add a Representative"
+        
+    def clean_user(self):
+        value = self.cleaned_data['user']
+        try:
+            rep = CorporateMembershipRep.objects.get(corporate_membership=self.corporate_membership, 
+                                                     user=value)
+            raise forms.ValidationError(_("This user is already a representative."))
+        except CorporateMembershipRep.DoesNotExist:
+            pass
+        return value
+    
+        
         
         
             

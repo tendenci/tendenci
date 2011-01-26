@@ -1,13 +1,11 @@
-import re
 import hashlib
-from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect
 from event_logs.models import EventLog
 from memberships.models import App, AppEntry
 from memberships.forms import AppForm, AppEntryForm
 from perms.models import ObjectPermission
-from datetime import datetime, timedelta
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -28,8 +26,6 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     """
     Membership details.
     """
-    # TODO: log this event; we do not have an id for this action
-
     query = 'pk:%s' % id
     sqs = Membership.objects.search(query, user=request.user)
 
@@ -37,6 +33,16 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         membership = sqs.best_match().object
     else:
         raise Http404
+
+    # log membership details view
+    EventLog.objects.log(**{
+        'event_id' : 475000,
+        'event_data': '%s (%d) viewed by %s' % (membership._meta.object_name, membership.pk, request.user),
+        'description': '%s viewed' % membership._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': membership,
+    })
 
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
@@ -56,6 +62,7 @@ def application_details(request, slug=None, template_name="memberships/applicati
     else:
         raise Http404
 
+    # log application details view
     EventLog.objects.log(**{
         'event_id' : 655000,
         'event_data': '%s (%d) viewed by %s' % (app._meta.object_name, app.pk, request.user),
@@ -84,14 +91,41 @@ def application_details(request, slug=None, template_name="memberships/applicati
 
                     entry.approve()
 
+                    # send email to approved members
+                    notification.send_emails([entry.email],'membership_approved_to_member', {
+                        'object':entry,
+                        'request':request,
+                        'membership_total':membership_total,
+                    })
+
                     # send email to admins
                     recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                     if recipients and notification:
-                        notification.send_emails(recipients,'membership_application_approved', {
+                        notification.send_emails(recipients,'membership_approved_to_admin', {
                             'object':entry,
                             'request':request,
                             'membership_total':membership_total,
                         })
+
+                    # log entry approval
+                    EventLog.objects.log(**{
+                        'event_id' : 1082101,
+                        'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, entry.judge),
+                        'description': '%s viewed' % entry._meta.object_name,
+                        'user': request.user,
+                        'request': request,
+                        'instance': entry,
+                    })
+
+            # log entry submission
+            EventLog.objects.log(**{
+                'event_id' : 1081000,
+                'event_data': '%s (%d) submitted by %s' % (entry._meta.object_name, entry.pk, request.user),
+                'description': '%s viewed' % entry._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': entry,
+            })
 
             return redirect(entry.confirmation_url)
 
@@ -103,7 +137,6 @@ def application_confirmation(request, hash=None, template_name="memberships/entr
     """
     Display this confirmation have a membership application is submitted.
     """
-    # TODO: log this event; we do not have an id for this action
 
     if not hash:
         raise Http404
@@ -124,7 +157,6 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     """
     Displays the details of a membership application entry.
     """
-    # TODO: log this event; we do not have an id for this action
 
     if not is_admin(request.user):
         raise Http403
@@ -139,6 +171,16 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         entry = sqs[0].object
     else:
         raise Http404
+
+    # log entry view
+    EventLog.objects.log(**{
+        'event_id' : 1085000,
+        'event_data': '%s (%d) viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
+        'description': '%s viewed' % entry._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': entry,
+    })
 
     if request.method == "POST":
         form = MemberApproveForm(entry, request.POST)
@@ -165,26 +207,60 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
                 entry.approve()
 
+                # send email to approved membership applicant
+                notification.send_emails([entry.email],'membership_approved_to_member', {
+                    'object':entry,
+                    'request':request,
+                    'membership_total':membership_total,
+                })
+
                 # send email to admins
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                 if recipients and notification:
-                    notification.send_emails(recipients,'membership_application_approved', {
+                    notification.send_emails(recipients,'membership_approved_to_admin', {
                         'object':entry,
                         'request':request,
                         'membership_total':membership_total,
                     })
 
+                # log entry approved
+                EventLog.objects.log(**{
+                    'event_id' : 1085000,
+                    'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, request.user),
+                    'description': '%s approved' % entry._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': entry,
+                })
+
             else:
                 entry.disapprove()
+
+                # send email to disapproved membership applicant
+                notification.send_emails([entry.email],'membership_disapproved_to_member', {
+                    'object':entry,
+                    'request':request,
+                    'membership_total':membership_total,
+                })
 
                 # send email to admins
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                 if recipients and notification:
-                    notification.send_emails(recipients,'membership_application_disapproved', {
+                    notification.send_emails(recipients,'membership_disapproved_to_admin', {
                         'object': entry,
                         'request': request,
                         'membership_total': membership_total,
                     })
+
+                # log entry disapproved
+                EventLog.objects.log(**{
+                    'event_id' : 1082102,
+                    'event_data': '%s (%d) disapproved by %s' % (entry._meta.object_name, entry.pk, request.user),
+                    'description': '%s disapproved' % entry._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': entry,
+                })
 
             return redirect(reverse('membership.application_entries', args=[entry.pk]))
 
@@ -201,7 +277,6 @@ def application_entries_search(request, template_name="memberships/entries/searc
     """
     Displays a page for searching membership application entries.
     """
-    # TODO: log this event; we do not have an id for this action
 
     if not is_admin(request.user):
         raise Http403
@@ -213,25 +288,18 @@ def application_entries_search(request, template_name="memberships/entries/searc
     apps = App.objects.all()
     types = MembershipType.objects.all()
 
+    # log entry search view
+    EventLog.objects.log(**{
+        'event_id' : 1084000,
+        'event_data': '%s (%d) search viewed by %s' % (app._meta.object_name, app.pk, request.user),
+        'description': '%s viewed' % app._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': app,
+    })
+
     return render_to_response(template_name, {
         'entries':entries,
         'apps':apps,
         'types':types,
         }, context_instance=RequestContext(request))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    

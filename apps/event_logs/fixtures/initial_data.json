@@ -1420,5 +1420,131 @@
             "source": "email_blocks", 
             "hex_color": "CC3300"
         }
+    },
+    {
+        "pk": 19,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 630000,
+            "source": "rss",
+            "hex_color": "00FF00"
+        }
+    },
+    {
+        "pk": 20,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 587000,
+            "source": "forms",
+            "hex_color": "33FFFF"
+        }
+    },
+    {
+        "pk": 21,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 440000,
+            "source": "directories",
+            "hex_color": "CCCC33"
+        }
+    },
+    {
+        "pk": 22,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1000000,
+            "source": "help_files",
+            "hex_color": "D11300"
+        }
+    },
+    {
+        "pk": 23,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1001000,
+            "source": "help_file_topics",
+            "hex_color": "A20900"
+        }
+    },
+    {
+        "pk": 24,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1080000,
+            "source": "impersonation",
+            "hex_color": "FF0000"
+        }
+    },
+    {
+        "pk": 25,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 170000,
+            "source": "events",
+            "hex_color": "FF6600"
+        }
+    },
+    {
+        "pk": 26,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 270000,
+            "source": "event_types",
+            "hex_color": "FFCC99"
+        }
+    },
+    {
+        "pk": 27,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 470000,
+            "source": "membership",
+            "hex_color": "333366"
+        }
+    },
+    {
+        "pk": 28,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 475100,
+            "source": "membership_type",
+            "hex_color": "333366"
+        }
+    },
+    {
+        "pk": 29,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 650000,
+            "source": "membership_application",
+            "hex_color": "FF0066"
+        }
+    },
+    {
+        "pk": 30,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 660000,
+            "source": "membership_application_fields",
+            "hex_color": "FF6633"
+        }
+    },
+    {
+        "pk": 31,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1080000,
+            "source": "membership_entry",
+            "hex_color": "FF6633"
+        }
+    },
+    {
+        "pk": 32,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 900000,
+            "source": "membership_notice",
+            "hex_color": "FFFF00"
+        }
     }
 ]
