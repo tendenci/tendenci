@@ -48,12 +48,44 @@
 			 		</div>
 			 		
 			 	{% else %}
-			 		<div><span class="label">{{ field_obj.label }}</span>: 
-			 			{% if  field_obj.is_date %}
-			 				{{ field_obj.value|date:'long' }}
+			 		<div>
+			 			{% if field_obj.field_name == 'reps' %}
+				 				<table width="70%">
+						     	<tr>
+						     		<td class="header" width="55%">Name</td>
+						     		<td class="header" width="20%">Is Dues Rep.</td>
+						     		<td class="header" width="20%">Is Member Rep.</td>
+						     	</tr>
+						     	{% for rep in field_obj.value %}
+						     		<tr class="corp-rep">
+						     		<td><a href="{% url profile rep.user.username %}">
+						     			{{ rep.user.get_full_name }} ({{ rep.user.email  }})</a>
+							     		
+						            </td>
+						     		<td>
+						     			{% if rep.is_dues_rep %}
+						     				True
+						     			{% endif %}
+						     		</td>
+						     		<td>
+						     		{% if rep.is_member_rep %}
+						     				True
+						     			{% endif %}
+						     		</td>
+						     		</tr>
+						     	{% endfor %}
+						     	</table>
+			 					<div>&nbsp;</div>
+			 					<div><a href="{% url corp_memb.edit_reps corporate_membership.pk %}">Add/Edit Representatives</a></div>
+			 				
 			 			{% else %}
-			 				{{ field_obj.value|safe|urlize }}
-			 			{% endif %}
+			 				<span class="label">{{ field_obj.label }}</span>: 
+				 			{% if  field_obj.is_date %}
+				 				{{ field_obj.value|date:'long' }}
+				 			{% else %}
+				 				{{ field_obj.value|safe|urlize }}
+				 			{% endif %}
+				 		{% endif %}
 			 		</div>
 			 	{% endif %}
 			 {% endfor %}
@@ -79,11 +111,14 @@
    </script>
 <script>
 	var filename = "{{ STATIC_URL }}js/global/dropdown.js";
+	
 	if (typeof dropdown == "undefined")
 	{
 		var fileref=document.createElement('script');
 		fileref.setAttribute("type","text/javascript");
 		fileref.setAttribute("src", filename);
+		var head = document.getElementsByTagName('head')[0];
+		head.appendChild(fileref);
 	}
 </script>
 <script type="text/javascript">

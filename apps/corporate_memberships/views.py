@@ -13,8 +13,9 @@ from perms.utils import has_perm, is_admin
 
 from event_logs.models import EventLog
 
-from corporate_memberships.models import CorpApp, CorpField, CorporateMembership
-from corporate_memberships.forms import CorpMembForm
+from corporate_memberships.models import CorpApp, CorpField, CorporateMembership, CorporateMembershipType
+from corporate_memberships.models import CorporateMembershipRep
+from corporate_memberships.forms import CorpMembForm, CorpMembRepForm
 from corporate_memberships.utils import get_corporate_membership_type_choices, get_payment_method_choices
 from corporate_memberships.utils import corp_memb_inv_add
 #from memberships.models import MembershipType
@@ -235,6 +236,10 @@ def view(request, id, template="corporate_memberships/view.html"):
     if not has_perm(request.user,'corporate_memberships.view_corporatemembership',corporate_membership):
         raise Http403
     
+    can_edit = False
+    if has_perm(request.user,'corporate_memberships.edit_corporatemembership',corporate_membership):
+        can_edit = True
+    
     user_is_admin = is_admin(request.user)
     
     field_objs = corporate_membership.corp_app.fields.filter(visible=1)
@@ -243,6 +248,11 @@ def view(request, id, template="corporate_memberships/view.html"):
     
     field_objs = list(field_objs.order_by('order'))
     
+    if can_edit:
+        field_objs.append(CorpField(label='Representatives', field_type='section_break', admin_only=0))
+        field_objs.append(CorpField(label='Reps', field_name='reps', object_type='corporate_membership', admin_only=0))
+        
+        
     if user_is_admin:
         field_objs.append(CorpField(label='Admin Only', field_type='section_break', admin_only=1))
         field_objs.append(CorpField(label='Join Date', field_name='join_dt', object_type='corporate_membership', admin_only=1))
@@ -314,6 +324,62 @@ def delete(request, id, template_name="corporate_memberships/delete.html"):
             return HttpResponseRedirect(reverse('corp_memb.search'))
     
         return render_to_response(template_name, {'corp_memb': corp_memb}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
+    
+    
+def index(request, template_name="corporate_memberships/index.html"):
+    corp_apps = CorpApp.objects.filter(status=1, status_detail='active').order_by('name')
+    cm_types = CorporateMembershipType.objects.filter(status=1, status_detail='active').order_by('-price')
+    
+    return render_to_response(template_name, {'corp_apps': corp_apps,
+                                              'cm_types': cm_types}, 
+        context_instance=RequestContext(request))
+    
+    
+def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_memberships/edit_reps.html"):
+    corp_memb = get_object_or_404(CorporateMembership, pk=id)
+    
+    if not has_perm(request.user,'corporate_memberships.change_corporatemembership',corp_memb):
+        raise Http403
+    
+    reps = CorporateMembershipRep.objects.filter(corporate_membership=corp_memb).order_by('user')
+    form = form_class(corp_memb, request.POST or None)
+    
+    if request.method == "POST":
+        if form.is_valid():
+            rep = form.save(commit=False)
+            rep.corporate_membership = corp_memb
+            rep.save()
+            
+            # log an event here
+            
+            if (request.POST.get('submit', '')).lower() == 'save':
+                return HttpResponseRedirect(reverse('corp_memb.view', args=[corp_memb.id]))
+
+    
+    return render_to_response(template_name, {'corp_memb': corp_memb, 
+                                              'form': form,
+                                              'reps': reps}, 
+        context_instance=RequestContext(request))
+    
+    
+@login_required
+def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html"):
+    rep = get_object_or_404(CorporateMembershipRep, pk=id)
+    corp_memb = rep.corporate_membership
+
+    if has_perm(request.user,'corporate_memberships.edit_corporatemembership'):   
+        if request.method == "POST":
+            
+            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % rep)
+            
+            rep.delete()
+                
+            return HttpResponseRedirect(reverse('corp_memb.edit_reps', args=[corp_memb.pk]))
+    
+        return render_to_response(template_name, {'corp_memb': rep}, 
             context_instance=RequestContext(request))
     else:
         raise Http403
