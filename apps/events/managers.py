@@ -141,9 +141,6 @@ class RegistrantManager(Manager):
         
         sqs = sqs.models(self.model)
 
-        for sq in sqs:
-            sq.object.registration.event.pk
-
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query)) 
             if user:

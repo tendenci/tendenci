@@ -237,7 +237,9 @@ class Reg8nForm(forms.Form):
     """
     Registration form.
     """
-    name = forms.CharField(max_length=50)
+    first_name = forms.CharField(max_length=50)
+    last_name = forms.CharField(max_length=50)
+    company_name = forms.CharField(max_length=100, required=False)
     username = forms.CharField(max_length=50, required=False)
     email = forms.EmailField()
     captcha = CaptchaField(label=_('Type the code below'))
