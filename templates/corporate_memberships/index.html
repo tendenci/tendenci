@@ -1,0 +1,68 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+
+{% block title %}Corporate Membership{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+<style>
+	.corp-index h2{
+		margin: 1em 0;
+	}
+	.corp-index table tr td{
+		padding: 3px;
+	}
+	.corp-index table tr td.header{
+		background-color: #e5ecf9;
+		border-bottom: 1px dotted #ccc;
+	}
+	
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+	{% corpmemb_nav request.user %}
+	<div class="corp-index">
+		<h1>Corporate Memberships</h1>
+	     <h2>Applications:</h2>
+	     {% if corp_apps %}
+	     	<ol>
+	     	{% for corp_app in corp_apps %}
+	     		<li><a href="{% url corp_memb.add corp_app.slug %}">{{ corp_app.name }}</a></li>
+	     	{% endfor %}
+	     	</ol>
+	     	
+	     	<h2>Types:</h2>
+	     	<table width="90%">
+	     	<tr>
+	     		<td class="header" width="33%">Name</td>
+	     		<td class="header" width="33%">Individual Member Type</td>
+	     		<td class="header" width="33%">Individual Member App.</td>
+	     	</tr>
+	     	{% for cm_type in cm_types %}
+	     		<tr>
+	     		<td><a href="{% url admin:corporate_memberships_corporatemembershiptype_change cm_type.id %}">{{ cm_type.name }}</a></td>
+	     		<td><a href="{% url admin:memberships_membershiptype_change cm_type.membership_type.id %}">{{ cm_type.membership_type.name }}</a></td>
+	     		{% with cm_type.membership_type.get_app_top1 as indiv_app %}
+		     		{% if indiv_app %}
+		     			<td>{{ indiv_app.name }}</td>
+		     		{% else %}
+		     			<td>Not available. <a href="{% url admin:memberships_app_add %}">Create it</a></td>
+		     		{% endif %}
+	     		{% endwith %}
+	     		</tr>
+	     	{% endfor %}
+	     	</table>
+	     	
+	     	<h2>Other links:</h2>
+	     	<ol>
+	     	<li><a href="{% url corp_memb.search %}">Search Corporate Memberships</a></li>
+	     	</ol>
+	     {% else %}
+	    	No applications available. <a href="{% url admin:corporate_memberships_corpapp_add %}">Add one</a>.
+		 {% endif %}
+	</div>
+</div>
+{% endblock %}
