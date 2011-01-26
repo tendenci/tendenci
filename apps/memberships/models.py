@@ -679,6 +679,7 @@ class AppEntry(models.Model):
 
         return status
 
+
 class AppFieldEntry(models.Model):
     """
     A single field value for a form entry submitted via a membership application.
