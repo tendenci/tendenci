@@ -31,7 +31,7 @@ def details(request, id, set_id=0, template_name="photos/details.html"):
     set_id = int(set_id)
 
     # permissions
-    if not has_perm(request.user,'photos.view_image',photo):
+    if not has_perm(request.user,'photologue.view_photo',photo):
         raise Http403
 
     # if not public
@@ -132,7 +132,7 @@ def photo_size(request, id=None, size=None, crop=False):
         size = [int(s) for s in size.split('x')]
 
     # check permissions
-    if not has_perm(request.user,'photos.view_image',photo):
+    if not has_perm(request.user,'photologue.view_photo',photo):
         raise Http403
 
     if crop: crop = True
@@ -191,7 +191,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
     set_id = int(set_id)
 
     # permissions
-    if not has_perm(request.user,'photos.change_image',photo):
+    if not has_perm(request.user,'photologue.change_photo',photo):
         raise Http403
 
     # get available photo sets
@@ -251,7 +251,7 @@ def delete(request, id, set_id=0):
     photo = get_object_or_404(Image, id=id)
 
     # permissions
-    if not has_perm(request.user,'photos.delete_image',photo):
+    if not has_perm(request.user,'photologue.delete_photo',photo):
         raise Http403
 
     if request.method == "POST":
@@ -332,7 +332,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
-    if not has_perm(request.user,'photos.edit_photoset',photo_set):
+    if not has_perm(request.user,'photos.change_photoset',photo_set):
         raise Http403
     
     if request.method == "POST":
@@ -437,7 +437,7 @@ def photos_batch_add(request, photoset_id=0):
     """
 
     # if no permission; permission exception
-    if not has_perm(request.user,'photos.add_image'):
+    if not has_perm(request.user,'photos.add_photoset'):
         raise Http403
 
     if request.method == 'POST':
