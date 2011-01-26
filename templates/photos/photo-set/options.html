@@ -1,10 +1,10 @@
 {% load base_tags %}
 {% load perm_tags %}
 
-{% has_perm user photoset.view_photoset as can_view %}
-{% has_perm user photoset.add_photoset as can_add %}
-{% has_perm user photoset.change_photoset as can_change %}
-{% has_perm user photoset.delete_photoset as can_delete %}
+{% has_perm user photos.view_photoset as can_view %}
+{% has_perm user photos.add_photoset as can_add %}
+{% has_perm user photos.change_photoset as can_change %}
+{% has_perm user photos.delete_photoset as can_delete %}
 
 {% if can_change %}
 <a href="{% url photoset_edit opt_object.pk %}">Edit Set</a> 
