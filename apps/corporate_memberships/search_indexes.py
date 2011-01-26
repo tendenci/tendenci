@@ -16,7 +16,7 @@ class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
     phone = indexes.CharField(model_attr='phone', default='')
     email = indexes.CharField(model_attr='email', default='')
     
-    authorized_domains = indexes.CharField(null=True)
+    authorized_domains = indexes.MultiValueField(null=True)
     secret_code = indexes.CharField(model_attr='secret_code', null=True)
     
     corp_app = indexes.CharField(model_attr='corp_app')
