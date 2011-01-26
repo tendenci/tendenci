@@ -85,7 +85,7 @@
 			    			- {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corp_memb.invoice.total }}
 			    		{% endif %}
 			    		</div>
-			    		<div><a href="">Invite others to join under this company</a></div>
+			    		<div><a href="">Join under this corporation</a></div>
 			    	</div>
 			    	
 			    	<div class="corpmember-right float-left">
@@ -134,11 +134,14 @@
    </script>
 <script>
 	var filename = "{{ STATIC_URL }}js/global/dropdown.js";
+	
 	if (typeof dropdown == "undefined")
 	{
 		var fileref=document.createElement('script');
 		fileref.setAttribute("type","text/javascript");
 		fileref.setAttribute("src", filename);
+		var head = document.getElementsByTagName('head')[0];
+		head.appendChild(fileref);
 	}
 </script>
 
