@@ -64,6 +64,9 @@ def application_details(request, slug=None, template_name="memberships/applicati
     else:
         raise Http404
 
+    if not app:
+        raise Http404
+
     # log application details view
     EventLog.objects.log(**{
         'event_id' : 655000,
