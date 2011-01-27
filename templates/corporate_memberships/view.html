@@ -50,6 +50,7 @@
 			 	{% else %}
 			 		<div>
 			 			{% if field_obj.field_name == 'reps' %}
+			 				{% if field_obj.value %}
 				 				<table width="70%">
 						     	<tr>
 						     		<td class="header" width="55%">Name</td>
@@ -75,16 +76,33 @@
 						     		</tr>
 						     	{% endfor %}
 						     	</table>
-			 					<div>&nbsp;</div>
+						     	<div>&nbsp;</div>
 			 					<div><a href="{% url corp_memb.edit_reps corporate_membership.pk %}">Add/Edit Representatives</a></div>
+						    {% else %}
+						    	<div>No representatives available</div>
+						    	<div>&nbsp;</div>
+			 					<div><a href="{% url corp_memb.edit_reps corporate_membership.pk %}">Add Representatives</a></div>
+						    {% endif %} 
 			 				
 			 			{% else %}
 			 				<span class="label">{{ field_obj.label }}</span>: 
+			 				<span{% if field_obj.required %} class="bolded-content"{% endif %}>
 				 			{% if  field_obj.is_date %}
 				 				{{ field_obj.value|date:'long' }}
 				 			{% else %}
 				 				{{ field_obj.value|safe|urlize }}
 				 			{% endif %}
+				 			</span>
+				 			
+				 			{% if field_obj.field_name == 'payment_method' %}
+				 				{% if corporate_membership.invoice %}
+				 					<div>&nbsp;</div>
+				 					<div>
+				 					<a href="{{ corporate_membership.invoice.get_absolute_url }}">View Invoice</a>
+				 					</div>
+				 				{% endif %}
+				 			{% endif %}
+				 			
 				 		{% endif %}
 			 		</div>
 			 	{% endif %}
