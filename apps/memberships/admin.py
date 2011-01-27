@@ -297,17 +297,15 @@ class AppAdmin(admin.ModelAdmin):
         app.save()
 
         if add:
-            # set some default fields to the app
-            field_kwargs = get_default_membership_fields()
-            for field_kwarg in field_kwargs:
-                field_kwarg.update({'app':app})
-                app_field = AppField(**field_kwarg)
-                app_field.save()
-
+            # default application fields
+            for default_field in get_default_membership_fields():
+                default_field.update({'app':app})
+                AppField.objects.create(**default_field)
 
         form.save_m2m()
 
         for field in app.fields.visible():
+
             if 'membership-type' in field.field_type:
                 field.content_type = ContentType.objects.get_for_model(MembershipType)
                 choices = [item.name for item in app.membership_types.all()]
@@ -320,7 +318,7 @@ class AppAdmin(admin.ModelAdmin):
                 field.content_type = ContentType.objects.get_for_model(User)
             elif 'last-name' in field.field_type:
                 field.content_type = ContentType.objects.get_for_model(User)
-            elif 'email-field' in field.field_type:
+            elif 'email' in field.field_type:
                 field.content_type = ContentType.objects.get_for_model(User)
 
             field.save()
