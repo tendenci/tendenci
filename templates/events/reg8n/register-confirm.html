@@ -83,7 +83,16 @@
         </h3>
 		<div class='avatar'>{% avatar registrant.user 56 %}</div>
 		<div class="info">
-			<div class="name">{% firstof registrant.name "Name Not Recorded" %}</div>
+            {% if registrant.first_name or registrant.last_name %}
+			<div class="name">
+                {% if registrant.first_name %}
+                    {{ registrant.first_name }}
+                {% endif %}
+                {%  if registrant.last_name %}
+                    {{ registrant.last_name }}
+                {% endif %}
+            </div>
+            {% endif %}
 			<div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
 		</div>
         {% if not registrant.cancel_dt %}
