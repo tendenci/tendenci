@@ -528,8 +528,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 if reg8n.payment_method and (reg8n.payment_method.label).lower() == 'credit card' and reg8n_created:
 
                     invoice = Invoice.objects.get(
-                        object_type = ContentType.objects.get(app_label=reg8n._meta.app_label, 
-                                                                  model=reg8n._meta.module_name),
+                        object_type = ContentType.objects.get(app_label=reg8n._meta.app_label, model=reg8n._meta.module_name),
                         object_id = reg8n.id,
                     )
 
