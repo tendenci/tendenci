@@ -48,3 +48,11 @@ div.forms div.form-field input.timepicker{
 	padding: 10px;
 	width: 75%;
 }
+
+/* view */
+.bolded-content{
+	font-weight: bold;
+}
+.corpmemb-view .content{
+	line-height: 1.3em;
+}

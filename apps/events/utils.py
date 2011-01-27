@@ -290,54 +290,64 @@ def save_registration(*args, **kwargs):
     """
     from events.models import Registrant
 
+    user = kwargs.get('user', None)
     event = kwargs.get('event', None)
-    user_account = kwargs.get('user', None)
-
-    user_name = kwargs.get('name', '')
-    user_email = kwargs.get('email', '')
-
     payment_method = kwargs.get('payment_method', None)
     price = kwargs.get('price', None)
 
-    if not isinstance(user_account, User):
-        user_account = None
+    if not isinstance(user, User):
+        user = None
+        
+    registrant_set_defaults = {
+        'user': user,
+        'name': '',
+        'first_name': kwargs.get('first_name', ''),
+        'last_name': kwargs.get('last_name', ''),
+        'email': kwargs.get('email', ''),
+        'mail_name': '',
+        'address': '',
+        'city': '',
+        'state': '',
+        'zip': '',
+        'country': '',
+        'phone': '',
+        'company_name': kwargs.get('company_name', ''),
+        'position_title': ''
+    }
 
     # standardize user_account & user_profile
     # consider authenticated and anonymous
-    if user_account:
-        user_profile = user_account.get_profile()
-    else:
-        # account
-        user_account = User()
+    if user:
+        user_profile = user.get_profile()
 
-        # first name
-        if len(user_name.split()) > 0: user_account.first_name = user_name.split()[0]
-        else: user_account.first_name = ''
-
-        # last name
-        if len(user_name.split()) > 1: user_account.last_name = user_name.split()[1]
-        else: user_account.last_name = ''
-
-        # profile
-        user_profile = Profile()
-        user_profile.email = user_email
-        user_profile.display_name = user_name
+        registrant_set_defaults.update({
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'mail_name': user_profile.display_name,
+            'address': user_profile.address,
+            'city': user_profile.city,
+            'state': user_profile.state,
+            'zip': user_profile.zipcode,
+            'country': user_profile.country,
+            'phone': user_profile.phone,
+            'company_name': user_profile.company,
+            'position_title': user_profile.position_title,
+        })
 
     # if no name; use email address
-#    if not user_profile.display_name:
-#        user_profile.display_name = user_profile.email
-
+    # if not user_profile.display_name:
+    # user_profile.display_name = user_profile.email
     try:
-    # find registrant using event + email
+        # find registrant using event + email
         registrant = Registrant.objects.get(
             registration__event=event, 
-            email=user_profile.email,
+            email=registrant_set_defaults['email'],
             cancel_dt=None,
         )
         reg8n = registrant.registration
         created = False
-    except:
-    # create registration; then registrant
+    except: # create registration; then registrant
         reg8n_attrs = {
             "event": event,
             "payment_method": payment_method,
@@ -345,30 +355,16 @@ def save_registration(*args, **kwargs):
         }
 
         # volatile fields
-        if user_account:
-            reg8n_attrs["creator"] = user_account
-            reg8n_attrs["owner"] = user_account
+        if user:
+            reg8n_attrs["creator"] = user
+            reg8n_attrs["owner"] = user
 
         # create registration
         reg8n = Registration.objects.create(**reg8n_attrs)
 
         # create registrant
-        registrant = reg8n.registrant_set.create(
-            user = user_account,
-            name = user_profile.display_name,
-            email = user_profile.email,
-            mail_name = user_profile.display_name,
-            address = user_profile.address,
-            city = user_profile.city,
-            state = user_profile.state,
-            zip = user_profile.zipcode,
-            country = user_profile.country,
-            phone = user_profile.phone,
-            company_name = user_profile.company,
-            position_title = user_profile.position_title,
-            
-        )
-
+        registrant = reg8n.registrant_set.create(**registrant_set_defaults)
+        
         created = True
 
     reg8n.save_invoice()
