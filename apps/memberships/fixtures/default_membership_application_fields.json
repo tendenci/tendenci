@@ -7,7 +7,6 @@
         "required": true,
         "label": "First Name",
         "visible": true,
-        "content_type_id": 3,
         "position": 0,
         "choices": ""
     },
@@ -19,7 +18,6 @@
         "required": true,
         "label": "Last Name",
         "visible": true,
-        "content_type_id": 3,
         "position": 1,
         "choices": ""
     },
@@ -31,7 +29,6 @@
         "required": true,
         "label": "Email",
         "visible": true,
-        "content_type_id": 3,
         "position": 2,
         "choices": ""
     },
@@ -43,7 +40,6 @@
         "required": true,
         "label": "Membership Type",
         "visible": true,
-        "content_type_id": 91,
         "position": 3,
         "choices": ""
     },
@@ -55,7 +51,6 @@
         "required": true,
         "label": "Payment Method",
         "visible": true,
-        "content_type_id": 113,
         "position": 4,
         "choices": ""
     }
