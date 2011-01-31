@@ -259,12 +259,12 @@ class Reg8nForm(forms.Form):
 
         if user and user.is_authenticated():
             self.fields.pop('captcha')
-            user_fields = ['name', 'username', 'email']
+            user_fields = ['first_name', 'last_name', 'company_name', 'username', 'email']
             for user_field in user_fields:
                 self.fields.pop(user_field)
 
-    def clean_name(self):
-        data = self.cleaned_data['name']
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name']
 
         # detect markup
         markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
