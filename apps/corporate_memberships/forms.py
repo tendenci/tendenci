@@ -176,7 +176,14 @@ class CorpMembForm(forms.ModelForm):
                 
                 self.fields[field_key] = field.get_field_class()
                 if ((not field.field_name) or field.field_name=='authorized_domains') and self.instance:
-                    self.fields[field_key].initial = field.get_value(self.instance)
+                    initial = field.get_value(self.instance)
+                    if field.field_type in ['MultipleChoiceField/django.forms.CheckboxSelectMultiple', 
+                                            'MultipleChoiceField']:
+                        if initial:
+                            self.fields[field_key].initial = [item.strip() for item in initial.split(',')]
+                    else:
+                        self.fields[field_key].initial = initial
+                    
             
         #self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
         
@@ -225,7 +232,7 @@ class CorpMembForm(forms.ModelForm):
                     value = ','.join(value)
                 if not value: value=''
                 
-                if hasattr(field_obj, 'entry'):
+                if hasattr(field_obj, 'entry') and field_obj.entry:
                     field_obj.entry.value = value
                     field_obj.entry.save()
                 else:

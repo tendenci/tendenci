@@ -47,7 +47,7 @@
 	     		<td><a href="{% url admin:memberships_membershiptype_change cm_type.membership_type.id %}">{{ cm_type.membership_type.name }}</a></td>
 	     		{% with cm_type.membership_type.get_app_top1 as indiv_app %}
 		     		{% if indiv_app %}
-		     			<td>{{ indiv_app.name }}</td>
+		     			<td><a href="{% url membership.application_details indiv_app.slug %}">{{ indiv_app.name }}</a></td>
 		     		{% else %}
 		     			<td>Not available. <a href="{% url admin:memberships_app_add %}">Create it</a></td>
 		     		{% endif %}
