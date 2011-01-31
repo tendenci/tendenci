@@ -1,3 +1,4 @@
+import re
 import operator
 import hashlib
 import uuid
@@ -19,7 +20,8 @@ from base.utils import day_validate
 from payments.models import PaymentMethod
 from user_groups.models import GroupMembership
 from haystack.query import SearchQuerySet
-import re
+from event_logs.models import EventLog
+from perms.utils import get_notice_recipients
 
 
 FIELD_CHOICES = (
@@ -436,6 +438,8 @@ class AppEntry(models.Model):
     decision_dt = models.DateTimeField(null=True, editable=False)
     judge = models.ForeignKey(User, null=True, related_name='entries', editable=False)
 
+    invoice = models.ForeignKey(Invoice, null=True, editable=False)
+
     objects = MemberAppEntryManager()
 
     class Meta:
@@ -492,9 +496,8 @@ class AppEntry(models.Model):
     @property
     def membership_type(self):
         """Get MembershipType object"""
-
         # TODO: don't like this; would prefer object column in field_entry
-        # This is prone to error; We're depending on a string membership type name
+        # TODO: Prone to error; We're depending on a string membership type name
         try:
             entry_field = self.fields.get(field__field_type="membership-type")
             membership_type_class = entry_field.field.content_type.model_class()
@@ -502,13 +505,22 @@ class AppEntry(models.Model):
         except:
             return None
 
+    @property
     def payment_method(self):
         """Get PaymentMethod object"""
-        # TODO: Figure out how to get the payment_method
+        # TODO: don't like this; would prefer object column in field_entry
+        # TODO: Prone to error; We're depending on a string membership type name
+        try:
+            entry_field = self.fields.get(field__field_type="payment-method")
+            payment_method_class = entry_field.field.content_type.model_class()
+            return payment_method_class.objects.get(human_name__exact=entry_field.value.strip())
+        except:
+            return None
 
     def applicant(self):
         """Get User object"""
-        # TODO: Figure out how to get the user
+        if self.membership:
+            return self.membership.user
 
     def approve(self):
         """
@@ -679,6 +691,104 @@ class AppEntry(models.Model):
 
         return status
 
+    def make_acct_entries(self, user, inv, amount, **kwargs):
+        """
+        Make the accounting entries for the event sale
+        """
+        from accountings.models import Acct, AcctEntry, AcctTran
+        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+
+        ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
+        if not inv.is_tendered:
+            make_acct_entries_initial(user, ae, amount)
+        else:
+            # payment has now been received
+            make_acct_entries_closing(user, ae, amount)
+
+            # CREDIT event SALES
+            acct_number = self.get_acct_number()
+            acct = Acct.objects.get(account_number=acct_number)
+            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
+
+    # to lookup for the number, go to /accountings/account_numbers/
+    def get_acct_number(self, discount=False):
+        if discount:
+            return 462000
+        else:
+            return 402000
+
+    def auto_update_paid_object(self, request, payment):
+        """
+        Update the object after online payment is received.
+        """
+
+        # if auto-approve; approve entry; send emails
+        # -------------------------------------------
+
+        if not self.membership_type.require_approval:
+
+            self.approve()
+
+            # send email to approved members
+            notification.send_emails([self.email],'membership_approved_to_member', {
+                'object':self,
+                'request':request,
+                'membership_total':membership_total,
+            })
+
+            # send email to admins
+            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+            if recipients and notification:
+                notification.send_emails(recipients,'membership_approved_to_admin', {
+                    'object':self,
+                    'request':request,
+                    'membership_total':membership_total,
+                })
+
+            # log entry approval
+            EventLog.objects.log(**{
+                'event_id' : 1082101,
+                'event_data': '%s (%d) approved by %s' % (self._meta.object_name, self.pk, self.judge),
+                'description': '%s viewed' % self._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': self,
+            })
+
+    def save_invoice(self, **kwargs):
+        status_detail = kwargs.get('status_detail', 'estimate')
+
+        content_type = ContentType.objects.get(app_label=self._meta.app_label,
+              model=self._meta.module_name)
+
+        try: # get invoice
+            invoice = Invoice.objects.get(
+                object_type = content_type,
+                object_id = self.pk,
+            )
+        except: # else; create invoice
+            # cannot use get_or_create method
+            # because too many fields are required
+            invoice = Invoice()
+            invoice.object_type = content_type
+            invoice.object_id = self.pk
+
+        # update invoice with details
+        invoice.estimate = True
+        invoice.status_detail = status_detail
+        invoice.subtotal = self.membership_type.price
+        invoice.total = self.membership_type.price
+        invoice.balance = self.membership_type.price
+
+        invoice.due_date = datetime.now() # TODO: change model field to null=True
+        invoice.ship_date = datetime.now()  # TODO: change model field to null=True
+
+        invoice.save()
+
+        self.invoice = invoice
+        self.save()
+
+        return invoice
 
 class AppFieldEntry(models.Model):
     """

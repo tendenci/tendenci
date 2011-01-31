@@ -11,7 +11,9 @@ def payment_thankyou_display(request, payment):
         obj = None
     else:
         obj = payment.invoice.get_object()
-        
+
+        print 'obj', obj._meta.app_label
+
         if obj:
             from django.template.loader import render_to_string
             from django.template import RequestContext

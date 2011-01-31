@@ -1,0 +1,23 @@
+{% load base_filters %}
+{% load invoice_tags %}
+
+<table style="width:100%;">
+    {% invoices_search_line_header request invoice '#ff6600' %}
+
+    <tr>
+    	<td>Memb. App. ID</td>
+    	<td colspan="2">First Name</td>
+    	<td>Last Name</td>
+    	<td>Price</td>
+    	<td>Balance</td>
+    </tr>
+    {% if obj %}
+      <tr>
+     	<td><a href="{% url membership.application_entries obj.pk %}">{{ obj.pk }}</a></td>
+     	<td colspan="2">{{ obj.first_name }}</td>
+     	<td>{{ obj.last_name }}</td>
+     	<td>{{ obj.invoice.total }}</td>
+     	<td class="body-copy-yellow">{{ obj.invoice.balance }}</td>
+     </tr>
+     {% endif %}
+</table>

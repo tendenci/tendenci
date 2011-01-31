@@ -181,7 +181,8 @@ class CorporateMembership(TendenciBaseModel):
             self.status_detail = 'active'
         self.approved = 1
         self.approved_denied_dt = datetime.now()
-        self.approved_denied_user = request.user
+        if not request.user.is_anonymous():
+            self.approved_denied_user = request.user
         self.save()
         
         # send notification to administrators
