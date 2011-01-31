@@ -1,4 +1,5 @@
 import hashlib
+from django.contrib.contenttypes.models import ContentType, ContentTypeManager
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect
@@ -15,6 +16,7 @@ from memberships.models import Membership, MembershipType
 from memberships.forms import MemberApproveForm
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, has_perm
+from invoices.models import Invoice
 
 try:
     from notification import models as notification
@@ -62,6 +64,9 @@ def application_details(request, slug=None, template_name="memberships/applicati
     else:
         raise Http404
 
+    if not app:
+        raise Http404
+
     # log application details view
     EventLog.objects.log(**{
         'event_id' : 655000,
@@ -76,20 +81,29 @@ def application_details(request, slug=None, template_name="memberships/applicati
     if request.method == "POST":
         if app_entry_form.is_valid():
 
-            membership_total = Membership.objects.filter(status=True, status_detail='active').count()
-
             entry = app_entry_form.save(commit=False)
+            entry_invoice = entry.save_invoice()
 
             if request.user.is_authenticated():
                 entry.user = request.user
                 entry.save()
 
+            # administrators go to approve/disapprove page
             if is_admin(request.user):
                 return redirect(reverse('membership.application_entries', args=[entry.pk]))
+
+            # online payment
+            if entry.payment_method.is_online:
+                return HttpResponseRedirect(reverse(
+                    'payments.views.pay_online',
+                    args=[entry_invoice.pk, entry_invoice.guid]
+                ))
 
             if not entry.membership_type.require_approval:
 
                     entry.approve()
+
+                    membership_total = Membership.objects.filter(status=True, status_detail='active').count()
 
                     # send email to approved members
                     notification.send_emails([entry.email],'membership_approved_to_member', {
