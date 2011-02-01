@@ -25,7 +25,7 @@ class LegacyUserBackend(object):
        cause duplicates (very rare, but possible. Usually happens if
        the backends are not in correct order in AUTHENTICATION_BACKENDS
     """
-    def create_user_from_legacy(self, legacy_user):
+    def create_user_from_legacy(self, legacy_user, original_password):
         """
         Create a new django user from the information
         provided by the legacy database.
@@ -38,7 +38,7 @@ class LegacyUserBackend(object):
         # create the user
         user = User()
         user.username = legacy_user.username
-        user.set_password(legacy_user.password)
+        user.set_password(original_password)
         user.first_name = legacy_user.firstname
         user.last_name = legacy_user.lastname
         user.email = legacy_user.email
@@ -104,6 +104,10 @@ class LegacyUserBackend(object):
         Login a user from a legacy Tendenci database
         """
         from re import search
+
+        # save the typed in password for md5 to sha1 conversion
+        original_password = password
+        
         try:
             # this query is pulling using a .filter() query because for some reason
             # when you use .get() it causes an error when connecting to the
@@ -132,7 +136,7 @@ class LegacyUserBackend(object):
             password = hashlib.md5(password).hexdigest()
             
         if password == legacy_user.password:
-            user = self.create_user_from_legacy(legacy_user)
+            user = self.create_user_from_legacy(legacy_user, original_password=original_password)
             return user
         return None # user was found but passwords didn't match, send back failure
 
