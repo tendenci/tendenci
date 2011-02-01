@@ -11,6 +11,9 @@ class LegacyUserBackend(object):
     """
     backend used to authenticate users against a MSSQL legacy user table
 
+    MSSQL server: Any Tendenci DB Server
+    Database: users
+
     Possible reasons why a login could fail:
     
     1. Password does not match on the django or legacy database
@@ -152,10 +155,9 @@ class LegacyUserBackend(object):
 
 class MasterUserBackend(LegacyUserBackend):
     """
-    backend used to authenticate users against MSSQL master
-    user table for employee master login to the site
+    backend used to authenticate users against a MSSQL legacy user table
 
-    MSSQL server: NTSERVER28
+    MSSQL server: NTSERVER29
     Database: tendencistats
     """
     def authenticate(self, username=None, password=None):
