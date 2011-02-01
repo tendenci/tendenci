@@ -230,8 +230,12 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     recipients = get_notice_recipients('module', 'events', 'eventrecipients')
                     if recipients and notification:
                         notification.send_emails(recipients, 'event_edited', {
-                            'object': event, 
-                            'request': request
+                            'event':event,
+                            'user':request.user,
+                            'registrants_paid':event.registrants(with_balance=False),
+                            'registrants_pending':event.registrants(with_balance=True),
+                            'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                            'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                         })
 
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -369,9 +373,13 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     # notification to administrator(s) and module recipient(s)
                     recipients = get_notice_recipients('module', 'events', 'eventrecipients')
                     if recipients and notification:
-                        notification.send_emails(recipients, 'event_edited', {
-                            'object': event, 
-                            'request': request
+                        notification.send_emails(recipients, 'event_added', {
+                            'event':event,
+                            'user':request.user,
+                            'registrants_paid':event.registrants(with_balance=False),
+                            'registrants_pending':event.registrants(with_balance=True),
+                            'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                            'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                         })
 
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -418,7 +426,7 @@ def delete(request, id, template_name="events/delete.html"):
     if has_perm(request.user,'events.delete_event'):   
         if request.method == "POST":
 
-            EventLog.objects.log(
+            eventlog = EventLog.objects.log(
                 event_id =  173000, # delete event
                 event_data = '%s (%d) deleted by %s' % (event._meta.object_name, event.pk, request.user),
                 description = '%s deleted' % event._meta.object_name,
@@ -429,6 +437,19 @@ def delete(request, id, template_name="events/delete.html"):
 
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % event)
             if notification: notification.send_emails(get_administrators(),'event_deleted', {'object': event, 'request': request})
+
+            # send email to admins
+            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+            if recipients and notification:
+                notification.send_emails(recipients,'event_deleted', {
+                    'event':event,
+                    'user':request.user,
+                    'registrants_paid':event.registrants(with_balance=False),
+                    'registrants_pending':event.registrants(with_balance=True),
+                    'eventlog_url': reverse('event_log', args=[eventlog.pk]),
+                    'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                    'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+                })
 
             event.delete()
 
