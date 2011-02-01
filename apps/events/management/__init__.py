@@ -2,8 +2,9 @@ from django.conf import settings
 from django.utils.translation import ugettext_noop as _
 from django.db.models.signals import post_syncdb
 
-def create_notice_types(app, created_models, verbosity, **kwargs):
+from notification import models as notification
 
+def create_notice_types(app, created_models, verbosity, **kwargs):
     notification.create_notice_type(
         'event_added',
         _('Event Added'),
