@@ -3,6 +3,7 @@ from hashlib import md5
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models.aggregates import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
@@ -153,7 +154,7 @@ class Registrant(models.Model):
 class Registration(models.Model):
 
     guid = models.TextField(max_length=40, editable=False)
-    event = models.ForeignKey('Event') # dynamic (should be static)
+    event = models.ForeignKey('Event')
 
     reminder = models.BooleanField(default=False)
     note = models.TextField(blank=True)
@@ -493,3 +494,48 @@ class Event(TendenciBaseModel):
     def dt_display(self, format_date='%a, %b %d, %Y', format_time='%I:%M %p'):
         from base.utils import format_datetime_range
         return format_datetime_range(self.start_dt, self.end_dt, format_date, format_time)
+
+    @property
+    def money_collected(self):
+        """
+        Total collected from this event
+        """
+        total_sum = Registration.objects.filter(event=self).aggregate(
+            Sum('invoice__total'),
+        )['invoice__total__sum']
+
+        # total_sum is the amount of money received when all is said and done
+        return total_sum - self.money_outstanding
+
+    @property
+    def money_outstanding(self):
+        """
+        Outstanding balance for this event
+        """
+        figures = Registration.objects.filter(event=self).aggregate(
+            Sum('invoice__total'),
+            Sum('invoice__balance'),
+        )
+        balance_sum = figures['invoice__balance__sum']
+        total_sum = figures['invoice__total__sum']
+
+        return total_sum - balance_sum
+
+    def registrants(self, **kwargs):
+        """
+        This method can return 3 different values.
+        All registrants, registrants with a balance, registrants without a balance.
+        """
+
+        registrants = Registrant.objects.filter(registration__event=self)
+
+        if 'with_balance' in kwargs:
+            with_balance = kwargs['with_balance']
+
+            if with_balance:
+                registrants = registrants.filter(registration__invoice__balance__gt=0)
+            else:
+                registrants = registrants.filter(registration__invoice__balance=0)
+
+        return registrants
+        
