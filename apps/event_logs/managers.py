@@ -188,3 +188,5 @@ class EventLogManager(Manager):
         if not event_log.source: event_log.source = ''
         
         event_log.save()
+
+        return event_log
