@@ -5,6 +5,7 @@
 {% block title %}{{ block.super }}Print{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-logs.css">
 {% endblock %}
 

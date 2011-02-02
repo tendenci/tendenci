@@ -9,6 +9,7 @@
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link rel="alternate" type="application/rss+xml" title="Latest Events" href="{% url event.feed %}" />
 {% endblock %}
