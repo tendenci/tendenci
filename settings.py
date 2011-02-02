@@ -41,6 +41,7 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = 'DO-NOT-REPLY-TENDENCI@schipul.net'
 
+
 # user agent for external retrieval of files/images
 TENDENCI_USER_AGENT = 'Tendenci/5.0 +http://www.tendenci.com'
 
