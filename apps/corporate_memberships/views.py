@@ -193,14 +193,15 @@ def edit(request, id, template="corporate_memberships/edit.html"):
             corporate_membership = form.save(request.user)
             
             # send notification to administrators
-            recipients = get_notice_recipients('module', 'corporate_membership', 'corporatemembershiprecipients')
-            if recipients:
-                if notification:
-                    extra_context = {
-                        'object': corporate_membership,
-                        'request': request,
-                    }
-                    notification.send_emails(recipients,'corp_memb_added', extra_context)
+            if not user_is_admin:
+                recipients = get_notice_recipients('module', 'corporate_membership', 'corporatemembershiprecipients')
+                if recipients:
+                    if notification:
+                        extra_context = {
+                            'object': corporate_membership,
+                            'request': request,
+                        }
+                        notification.send_emails(recipients,'corp_memb_edited', extra_context)
             
             # log an event
             log_defaults = {
