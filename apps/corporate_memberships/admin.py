@@ -53,7 +53,11 @@ class FieldInline(admin.StackedInline):
     template = "corporate_memberships/admin/stacked.html"
   
 class CorpAppAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug', 'status_detail']
+    def corp_app_form_link(self):
+        return '<a href="%s">%s</a>' % (self.get_absolute_url(), self.slug)
+    corp_app_form_link.allow_tags = True
+    
+    list_display = ['name', corp_app_form_link, 'status_detail']
     list_filter = ['name', 'status_detail']
     
     #fieldsets = (

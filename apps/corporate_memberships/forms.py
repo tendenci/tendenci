@@ -226,7 +226,8 @@ class CorpMembForm(forms.ModelForm):
                 field_key = "field_%s" % field_obj.id
                 value = self.cleaned_data[field_key]
                 if value and self.fields[field_key].widget.needs_multipart_form:
-                    value = fs.save(join("forms", str(uuid4()), value.name), value)
+                    if not type(value) is unicode:
+                        value = fs.save(join("forms", str(uuid4()), value.name), value)
                 # if the value is a list convert is to a comma delimited string
                 if isinstance(value,list):
                     value = ','.join(value)

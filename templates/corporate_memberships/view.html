@@ -90,7 +90,11 @@
 				 			{% if  field_obj.is_date %}
 				 				{{ field_obj.value|date:'long' }}
 				 			{% else %}
-				 				{{ field_obj.value|safe|urlize }}
+				 				{% if field_obj.field_type == 'FileField' %}
+				 					<a href="{{ MEDIA_URL }}{{ field_obj.value }}">{{ field_obj.value|basename }}</a>
+				 				{% else %}
+				 					{{ field_obj.value|safe|urlize }}
+				 				{% endif %}
 				 			{% endif %}
 				 			</span>
 				 			
