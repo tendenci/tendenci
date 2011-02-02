@@ -207,8 +207,6 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     organizer.event = [event]
                     organizer.save()
 
-                    print "organizer.pk", organizer.pk
-
                 # registration configuration validation
                 form_regconf = Reg8nEditForm(request.POST, instance=event.registration_configuration, prefix='regconf')
                 if form_regconf.is_valid():
@@ -227,9 +225,10 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 if all([form.is_valid() for form in forms]):
                     messages.add_message(request, messages.INFO, 'Successfully updated %s' % event)
                     # notification to administrator(s) and module recipient(s)
-                    recipients = get_notice_recipients('module', 'events', 'eventrecipients')
+                    
+                    recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                     if recipients and notification:
-                        notification.send_emails(recipients, 'event_edited', {
+                        notification.send_emails(recipients, 'event_added', {
                             'event':event,
                             'user':request.user,
                             'registrants_paid':event.registrants(with_balance=False),
@@ -237,7 +236,6 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                             'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
                             'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                         })
-
                     return HttpResponseRedirect(reverse('event', args=[event.pk]))
         else:
 
@@ -371,7 +369,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
 
                     messages.add_message(request, messages.INFO, 'Successfully added %s' % event)
                     # notification to administrator(s) and module recipient(s)
-                    recipients = get_notice_recipients('module', 'events', 'eventrecipients')
+                    recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                     if recipients and notification:
                         notification.send_emails(recipients, 'event_added', {
                             'event':event,
@@ -656,6 +654,17 @@ def cancel_registration(request, event_id=0, reg8n_id=0, hash='', template_name=
         # TODO: invoice updates
         registrant.cancel_dt = datetime.now()
         registrant.save()
+
+        recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+        if recipients and notification:
+            notification.send_emails(recipients, 'event_registration_cancelled', {
+                'event':event,
+                'user':request.user,
+                'registrants_paid':event.registrants(with_balance=False),
+                'registrants_pending':event.registrants(with_balance=True),
+                'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+            })
 
         # back to invoice
         return HttpResponseRedirect(

@@ -25,4 +25,9 @@ def create_notice_types(app, created_models, verbosity, **kwargs):
         _('Event Registration Confirmation'),
         _('The email you receive confirming your registration'))
 
+    notification.create_notice_type(
+        'event_registration_cancelled',
+        _('Event Registration Cancelled'),
+        _('Notify administrators that someone has cancelled their event registration'))
+
 post_syncdb.connect(create_notice_types, sender=notification)
