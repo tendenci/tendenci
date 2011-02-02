@@ -5,6 +5,7 @@
 {% block title %}{{ block.super }} {{ SITE_GLOBAL_SITEDISPLAYNAME }} Events{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link type="text/css" href="{{ STATIC_URL }}tablesorter/sortthemes.css" rel="Stylesheet" />	
 <style type="text/css">
 
@@ -182,6 +183,7 @@
 {% endblock %}
 
 {% block extra_body %}
+{{ block.super }}
 <script>
 	if (!(window.jQuery)) { 
 		
