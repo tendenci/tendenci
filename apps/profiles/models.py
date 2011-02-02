@@ -130,6 +130,5 @@ class Profile(TendenciBaseModel):
                     if user2_compare.has_perm('profiles.change_profile', self):
                         return True
         return False
-    
 
-            
+
