@@ -6,6 +6,7 @@
 {% block title %}Case Studies{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <style type="text/css">
 {% include "case_studies/media/css/casestudy.css" %}
 </style>
@@ -49,6 +50,7 @@
 {% endblock body %}
 
 {% block extra_body %}
+{{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
 		var iconrow = new dropdown({
