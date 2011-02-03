@@ -38,7 +38,7 @@ class File(TendenciBaseModel):
             'spreadsheet' : ('.csv','.xls','.xlsx'),
             'powerpoint' : ('.ppt','.pptx'),
             'pdf' : ('.pdf'),
-            'video' : ('.wmv','.mov','.mpg'),
+            'video' : ('.wmv','.mov','.mpg','.mp4','.m4v'),
             'zip' : ('.zip'),
         }
 
