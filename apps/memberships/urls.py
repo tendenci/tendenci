@@ -13,7 +13,9 @@ urlpatterns = patterns("memberships.views",
 
     # application
     url(r"^confirmation/(?P<hash>[\w]+)/$", "application_confirmation", name="membership.application_confirmation"),
+    url(r"^(?P<id>\d+)/corp-pre/$", "application_details_corp_pre", name="membership.application_details_corp_pre"),
     url(r"^(?P<slug>[\w\-\/]+)/$", "application_details", name="membership.application_details"),
+    
 )
 
 
