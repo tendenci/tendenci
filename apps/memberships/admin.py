@@ -180,8 +180,10 @@ class AppAdmin(admin.ModelAdmin):
 
     list_display = ('name', application_form_link)
     fieldsets = (
-        (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'membership_types', 'payment_methods', 'use_captcha')},),
-        ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail')}),
+        (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 
+                           'membership_types', 'payment_methods', 'use_for_corp', 'use_captcha')},),
+        ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms',
+                                       'status','status_detail')}),
     )
 
     class Media:
@@ -262,7 +264,8 @@ class AppAdmin(admin.ModelAdmin):
         field_list = [
             
                     (None, {
-                        'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 'membership_types', 'payment_methods', 'use_captcha'),
+                        'fields': ('name','slug', 'use_for_corp', 'description', 'confirmation_text', 'notes', 
+                                   'membership_types', 'payment_methods', 'use_captcha'),
                     }),
 
                     ('Administrative', {
@@ -298,7 +301,7 @@ class AppAdmin(admin.ModelAdmin):
 
         if add:
             # default application fields
-            for default_field in get_default_membership_fields():
+            for default_field in get_default_membership_fields(use_for_corp=app.use_for_corp):
                 default_field.update({'app':app})
                 AppField.objects.create(**default_field)
 
