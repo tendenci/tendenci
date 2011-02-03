@@ -7,7 +7,7 @@ from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
-from models import CaseStudy
+from models import CaseStudy, Service, Technology
 from forms import CaseStudyForm
 
 class CaseStudyAdmin(admin.ModelAdmin):
@@ -20,8 +20,11 @@ class CaseStudyAdmin(admin.ModelAdmin):
         (None, {'fields': (
             'client',
             'slug',
+            'url',
             'overview',
             'execution',
+            'services',
+            'technologies',
             'results',
             'tags'
         )}),
@@ -126,3 +129,5 @@ class CaseStudyAdmin(admin.ModelAdmin):
 		return result
 
 admin.site.register(CaseStudy, CaseStudyAdmin)
+admin.site.register(Service)
+admin.site.register(Technology)
