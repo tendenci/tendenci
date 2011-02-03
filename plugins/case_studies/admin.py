@@ -8,7 +8,20 @@ from django.conf import settings
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
 from models import CaseStudy, Service, Technology
-from forms import CaseStudyForm
+from forms import CaseStudyForm, FileForm
+from files.models import File
+
+class FileAdmin(admin.StackedInline):
+    fieldsets = (
+        (None, {'fields': (
+            'file',
+            'description',
+        )},),
+    )
+    model = File
+    form = FileForm
+    # extra = 0
+    # template = "memberships/admin/stacked.html"
 
 class CaseStudyAdmin(admin.ModelAdmin):
     list_display = ['view_on_site', 'client', 'slug', 'overview_parsed', 'create_dt']
@@ -32,6 +45,7 @@ class CaseStudyAdmin(admin.ModelAdmin):
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
     form = CaseStudyForm
+    # inlines = (FileAdmin,)
 
     def view_on_site(self, obj):
         link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
@@ -122,11 +136,11 @@ class CaseStudyAdmin(admin.ModelAdmin):
         return instance
 
     def change_view(self, request, object_id, extra_context=None):
-		result = super(CaseStudyAdmin, self).change_view(request, object_id, extra_context)
+        result = super(CaseStudyAdmin, self).change_view(request, object_id, extra_context)
 
-		if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
-			result['Location'] = iri_to_uri("%s") % request.GET.get('next')
-		return result
+        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
+            result['Location'] = iri_to_uri("%s") % request.GET.get('next')
+        return result
 
 admin.site.register(CaseStudy, CaseStudyAdmin)
 admin.site.register(Service)
