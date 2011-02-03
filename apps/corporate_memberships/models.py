@@ -11,7 +11,7 @@ from tinymce import models as tinymce_models
 
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
-from memberships.models import MembershipType
+from memberships.models import MembershipType, App
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from corporate_memberships.managers import CorporateMembershipManager
 
@@ -38,8 +38,8 @@ FIELD_LAYOUT_CHOICES = (
                         ('0', _('Side by Side')),
                         )
 AUTH_METHOD_CHOICES = (
-                       ('admin', _('Admin')),
-                       ('email', _('E-mail')),
+                       ('admin', _('Admin Approval')),
+                       ('email', _('E-mail Domain')),
                        ('secret_code', _('Secret Code')),
                        )
 SIZE_CHOICES = (
@@ -276,7 +276,7 @@ class CorpApp(TendenciBaseModel):
     corp_memb_type = models.ManyToManyField("CorporateMembershipType", verbose_name=_("Corp. Memb. Type"))
     authentication_method = models.CharField(_("Authentication Method"), choices=AUTH_METHOD_CHOICES, 
                                     default='admin', max_length=50, 
-                                    help_text='for individuals applying under a Corporate Membership')
+                                    help_text='Define a method for individuals to be bound to their corporate memberships when signing up.')
     #description = models.TextField(_("Description"),blank=True, null=True, 
     #                               help_text='Will display at the top of the application form.')
     description = tinymce_models.HTMLField(_("Description"),blank=True, null=True, 
@@ -284,6 +284,9 @@ class CorpApp(TendenciBaseModel):
     notes = models.TextField(_("Notes"),blank=True, null=True, 
                                    help_text='Notes for editor. Will not display on the application form.')
     confirmation_text = models.TextField(_("Confirmation Text"), blank=True, null=True)
+    
+    memb_app = models.OneToOneField(App, help_text=_("App for individual memberships."), 
+                                    related_name='corp_app', verbose_name=_("Membership Application")) 
    
     #use_captcha = models.BooleanField(_("Use Captcha"), default=1)
     #require_login = models.BooleanField(_("Require User Login"), default=0)
