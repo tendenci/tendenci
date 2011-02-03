@@ -14,6 +14,7 @@
 {% block title %}{% firstof photo.title "Untitled" %} - {% blocktrans %}Photo{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
+{{ block.super }}
 <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
 {% endblock %}
 
