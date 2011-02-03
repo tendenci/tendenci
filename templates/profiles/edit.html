@@ -325,7 +325,8 @@
 								{% if form.username.errors %}
 									{{ form.username.errors }}
 								{% endif %}
-                              {{ form.username }}
+                              <div>{{ form.username }}</div>
+			      <a href="{% url auth_password_change user_this.pk %}">change password</a>
 							 </td>
                            </tr>
                       
