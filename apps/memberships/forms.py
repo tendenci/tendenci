@@ -295,6 +295,12 @@ class MembershipTypeForm(forms.ModelForm):
     
     def save(self, *args, **kwargs):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
+    
+class AppCorpPreForm(forms.Form):
+    corporate_membership_id = forms.ChoiceField(label=_('Join Under the Corporation:'))
+    secret_code = forms.CharField(label=_('Secret Code'), max_length=50)
+    email = forms.CharField(label=_('Email'), max_length=100)
+    
 
 class AppForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(choices=(('draft','Draft'),('published','Published')))
@@ -360,6 +366,8 @@ class AppEntryForm(forms.ModelForm):
             'header': ('CharField', 'memberships.widgets.Header'),
             'description': ('CharField', 'memberships.widgets.Description'),
             'horizontal-rule': ('CharField', 'memberships.widgets.Description'),
+            'secret_code': ('CharField', None),
+            'corporate_membership_id': ('ChoiceField', None),
         }
 
         for field in self.form_fields:
