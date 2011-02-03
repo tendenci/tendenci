@@ -41,6 +41,8 @@ FIELD_CHOICES = (
     ("horizontal-rule", _("Horizontal Rule")),
     ("membership-type", _("Membership Type")),
     ("payment-method", _("Payment Method")),
+    ("corporate_membership_id", _("Corporate Membership ID")),
+    ("secret_code", _("Secret Code")),
 )
 
 OBJECT_TYPE_CHOICES = (
@@ -353,6 +355,8 @@ class App(TendenciBaseModel):
 
     membership_types = models.ManyToManyField(MembershipType, verbose_name="Membership Types")
     payment_methods = models.ManyToManyField(PaymentMethod, verbose_name="Payment Methods")
+    
+    use_for_corp = models.BooleanField(_("Use for Corporate Individuals"), default=1)
 
     objects = MemberAppManager()
 

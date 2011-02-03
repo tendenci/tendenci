@@ -69,6 +69,7 @@ class CorpAppForm(forms.ModelForm):
                   'slug',
                   'corp_memb_type',
                   'authentication_method',
+                  'memb_app',
                   'description',
                   'confirmation_text',
                   'notes',
