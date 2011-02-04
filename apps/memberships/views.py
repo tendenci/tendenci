@@ -17,6 +17,7 @@ from memberships.forms import MemberApproveForm
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, has_perm
 from invoices.models import Invoice
+from corporate_memberships.models import CorporateMembership
 
 try:
     from notification import models as notification
@@ -49,13 +50,13 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
 
-def application_details(request, slug=None, template_name="memberships/applications/details.html"):
+def application_details(request, slug=None, cmb_id=None, template_name="memberships/applications/details.html"):
     """
     Display a built membership application and handle submission.
     """
+    # cmb_id - corporate_membership_id
     if not slug:
         raise Http404
-    # request.META.get('HTTP_REFERER', '')
     
     query = '"slug:%s"' % slug
     sqs = App.objects.search(query, user=request.user)
@@ -67,6 +68,18 @@ def application_details(request, slug=None, template_name="memberships/applicati
 
     if not app:
         raise Http404
+    
+    # if this app is for corporation individuals, redirect them to corp-pre page first.
+    # from there, we can decide which corp they'll be in.
+    if hasattr(app, 'corp_app') and app.corp_app:
+        is_corp_ind = True
+        
+        if request.method <> "POST":
+            http_referer = request.META.get('HTTP_REFERER', '')
+        
+            corp_pre_url = reverse('membership.application_details_corp_pre', args=[slug])
+            if not http_referer or not corp_pre_url in http_referer:
+                return redirect(corp_pre_url)
 
     # log application details view
     EventLog.objects.log(**{
@@ -78,7 +91,14 @@ def application_details(request, slug=None, template_name="memberships/applicati
         'instance': app,
     })
 
-    app_entry_form = AppEntryForm(app, request.POST or None, request.FILES or None, user=request.user)
+    if is_corp_ind and cmb_id:
+        corporate_membership = CorporateMembership.objects.get(id=cmb_id)
+    else:
+        corporate_membership = None
+    app_entry_form = AppEntryForm(app, request.POST or None, request.FILES or None, 
+                              user=request.user, corporate_membership=corporate_membership)
+    
+    
     if request.method == "POST":
         if app_entry_form.is_valid():
 
@@ -148,10 +168,10 @@ def application_details(request, slug=None, template_name="memberships/applicati
         'app': app, "app_entry_form": app_entry_form}, 
         context_instance=RequestContext(request))
     
-def application_details_corp_pre(request, id, template_name="memberships/applications/details_corp_pre.html"):
+def application_details_corp_pre(request, slug, template_name="memberships/applications/details_corp_pre.html"):
     
     try:
-        app = App.objects.get(pk=id)
+        app = App.objects.get(slug=slug)
     except App.DoesNotExist:
         raise Http404
     
@@ -168,19 +188,26 @@ def application_details_corp_pre(request, id, template_name="memberships/applica
         del form.fields['email']
         from utils import get_corporate_membership_choices
         form.fields['corporate_membership_id'].choices = get_corporate_membership_choices()
+        form.auth_method = 'corporate_membership_id'
         
     elif app.corp_app.authentication_method == 'email':
         del form.fields['corporate_membership_id']
         del form.fields['secret_code']
+        form.auth_method = 'email'
     else: # secret_code
         del form.fields['corporate_membership_id']
         del form.fields['email']
+        form.auth_method = 'secret_code'
         
     if request.method == "POST":
         if form.is_valid():
             # find the corporate_membership_id and redirect to membership.application_details
+            if form.auth_method == 'corporate_membership_id':
+                corporate_membership_id = form.cleaned_data['corporate_membership_id']
+            else:
+                corporate_membership_id = form.corporate_membership_id
             
-            return redirect(reverse('membership.application_details', args=[app.slug]))
+            return redirect(reverse('membership.application_details', args=[app.slug, corporate_membership_id]))
     
     
     return render_to_response(template_name, {

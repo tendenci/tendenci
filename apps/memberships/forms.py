@@ -8,6 +8,7 @@ from haystack.query import SearchQuerySet
 from os.path import join
 from datetime import datetime
 
+from django.http import Http404
 from django import forms
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -19,7 +20,7 @@ from models import MembershipType, App, AppEntry, AppField
 from fields import TypeExpMethodField, PriceInput
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from widgets import CustomRadioSelect, TypeExpMethodWidget
-from django.http import Http404
+from corporate_memberships.models import CorporateMembership, AuthorizedDomain
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -298,9 +299,32 @@ class MembershipTypeForm(forms.ModelForm):
     
 class AppCorpPreForm(forms.Form):
     corporate_membership_id = forms.ChoiceField(label=_('Join Under the Corporation:'))
-    secret_code = forms.CharField(label=_('Secret Code'), max_length=50)
-    email = forms.CharField(label=_('Email'), max_length=100)
+    secret_code = forms.CharField(label=_('Enter the Secret Code'), max_length=50)
+    email = forms.EmailField(label=_('Enter Your Email Address'), max_length=100,
+                             help_text="Your email address will help us to find your corporation.")
     
+    def __init__(self, *args, **kwargs):
+        super(AppCorpPreForm, self).__init__(*args, **kwargs)
+        self.auth_method = ''
+        self.corporate_membership_id = 0
+    
+    def clean_secret_code(self):
+        secret_code = self.cleaned_data['secret_code']
+        corporate_memberships = CorporateMembership.objects.filter(secret_code=secret_code, 
+                                                                   status=1,
+                                                                   status_detail='active')
+        if not corporate_memberships:
+            raise forms.ValidationError(_("Invalid Secret Code."))
+        self.corporate_membership_id = corporate_memberships[0].id
+        
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if email:
+            email_domain = (email.split('@')[1]).strip()
+            auth_domains = AuthorizedDomain.objects.filter(name=email_domain)
+            if not auth_domains:
+                raise forms.ValidationError(_("Sorry but we're not able to find your corporation."))
+            self.corporate_membership_id = auth_domains[0].corporate_membership.id  
 
 class AppForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(choices=(('draft','Draft'),('published','Published')))
@@ -321,7 +345,7 @@ class AppFieldForm(forms.ModelForm):
         del choices_dict['payment-method']
         self.fields['field_type'].choices = choices_dict.items()
 
-        # user hidden widget for membership-type
+        # use hidden widget for membership-type
         if self.instance.field_type == 'membership-type':
             self.fields['field_type'] = CharField(label="Type", widget=HiddenInput)
 
@@ -343,8 +367,10 @@ class AppEntryForm(forms.ModelForm):
         self.app = app
         self.form_fields = app.fields.visible()
         self.types_field = app.membership_types
-
+        
         user = kwargs.pop('user', AnonymousUser)
+        # corporate_membership_id for corp. individuals
+        self.corporate_membership = kwargs.pop('corporate_membership', None)
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
@@ -366,7 +392,6 @@ class AppEntryForm(forms.ModelForm):
             'header': ('CharField', 'memberships.widgets.Header'),
             'description': ('CharField', 'memberships.widgets.Description'),
             'horizontal-rule': ('CharField', 'memberships.widgets.Description'),
-            'secret_code': ('CharField', None),
             'corporate_membership_id': ('ChoiceField', None),
         }
 
@@ -382,15 +407,26 @@ class AppEntryForm(forms.ModelForm):
 
             if "choices" in arg_names:
                 if field.field_type == 'membership-type':
-                    choices = [type.name for type in app.membership_types.all()]
-                    choices_with_price = ['%s $%s' % (type.name, type.price) for type in app.membership_types.all()]
-                    field_args["choices"] = zip(choices, choices_with_price)
+                    if not self.corporate_membership:
+                        choices = [type.name for type in app.membership_types.all()]
+                        choices_with_price = ['%s $%s' % (type.name, type.price) for type in app.membership_types.all()]
+                        field_args["choices"] = zip(choices, choices_with_price)
+                    else:
+                        membership_type = self.corporate_membership.corporate_membership_type.membership_type 
+                        choices = [membership_type.name]
+                        choices_with_price = ['%s $%s' % (membership_type.name, membership_type.price)]
+                        field_args["choices"] = zip(choices, choices_with_price)
+                elif field.field_type == 'corporate_membership_id' and self.corporate_membership:
+                    field_args["choices"] = ((self.corporate_membership.id, self.corporate_membership.name),)
                 else:
                     choices = field.choices.split(",")
                     choices = [c.strip() for c in choices]
                     field_args["choices"] = zip(choices, choices)
-
-            field_args['initial'] = field.default_value
+            
+            if field.field_type == 'corporate_membership_id' and self.corporate_membership:
+                pass
+            else:
+                field_args['initial'] = field.default_value
             field_args['help_text'] = field.help_text
 
             if field_widget is not None:
