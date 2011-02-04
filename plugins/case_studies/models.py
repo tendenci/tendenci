@@ -66,3 +66,19 @@ class Technology(models.Model):
 
 class Image(File):
     case_study = models.ForeignKey(CaseStudy)
+    position = models.IntegerField(blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.position is None:
+            # Append
+            try:
+                last = Image.objects.order_by('-position')[0]
+                self.position = last.position + 1
+            except IndexError:
+                # First row
+                self.position = 0
+
+        return super(Image, self).save(*args, **kwargs)
+
+    class Meta:
+        ordering = ('position',)
