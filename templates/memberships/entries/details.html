@@ -39,7 +39,15 @@
     		{% else %}
             <div class="field">
                 <div class="label">{{ field.field.label }}</div>
-    			<div class="value">{{ field.value }}</div>
+    			<div class="value">
+    			{% with field.corporate_membership_name as cm_name %}
+    			{% if cm_name %}
+    				{{ cm_name }} (ID:{{ field.value }})
+    			{% else %}
+    				{{ field.value }}
+    			{% endif %}
+    			{% endwith %}
+    			</div>
             </div>
     		{% endif %}
     	{% endfor %}

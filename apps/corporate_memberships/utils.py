@@ -6,6 +6,7 @@ from django.utils import simplejson
 from site_settings.utils import get_setting
 from perms.utils import is_admin
 from corporate_memberships.models import CorpField, AuthorizedDomain
+from memberships.models import AppField
 from invoices.models import Invoice
 from payments.models import Payment
 
@@ -168,5 +169,26 @@ def update_authenticate_fields(corpapp):
         authorized_domains.save()
         secret_code.save()  
             
+def edit_corpapp_update_memb_app(corpapp):
+    """
+    Update the membership application's corporate membership fields (corporate_membership_id)
+    when editing a corporate membership application.
+    """
+    if corpapp.memb_app:
+        app = corpapp.memb_app
+        if not app.use_for_corp:
+            app.use_for_corp = 1
+            app.save()
+        try:  
+            app_field = AppField.objects.get(app=app, field_type='corporate_membership_id')
+        except AppField.DoesNotExist:
+            from memberships.utils import get_default_membership_corp_fields
+            field_list = get_default_membership_corp_fields()
+            for field in field_list:
+                field.update({'app':app})
+                AppField.objects.create(**field)
             
+            
+        
+               
     

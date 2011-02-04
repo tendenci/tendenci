@@ -344,7 +344,7 @@ class App(TendenciBaseModel):
     membership_types = models.ManyToManyField(MembershipType, verbose_name="Membership Types")
     payment_methods = models.ManyToManyField(PaymentMethod, verbose_name="Payment Methods")
     
-    use_for_corp = models.BooleanField(_("Use for Corporate Individuals"), default=1)
+    use_for_corp = models.BooleanField(_("Use for Corporate Individuals"), default=0)
 
     objects = MemberAppManager()
 
@@ -464,6 +464,16 @@ class AppEntry(models.Model):
     def email(self):
         """Get email string"""
         return self.get_field_value('email')
+    
+    @property
+    def corporate_membership_id(self):
+        """Get corporate_membership_id """
+        corporate_membership_id = self.get_field_value('corporate_membership_id')
+        try:
+            corporate_membership_id = int(corporate_membership_id)
+        except:
+            corporate_membership_id = 0
+        return corporate_membership_id
 
     def get_field_value(self, field_type):
         try:
@@ -557,6 +567,7 @@ class AppEntry(models.Model):
                 'expiration_dt': self.membership_type.get_expiration_dt(join_dt=datetime.now()),
                 'payment_method':'',
                 'ma':self.app,
+                'corporate_membership_id': self.corporate_membership_id,
                 'creator':user,
                 'creator_username':user.username,
                 'owner':user,
@@ -633,8 +644,8 @@ class AppEntry(models.Model):
             ])
 
         query_list = [Q(content=' '.join([getattr(self, item) for item in group])) for group in grouping]
-
-        sqs = SearchQuerySet()
+        # added .models(User) - should only search User, not anything else - GJQ
+        sqs = SearchQuerySet().models(User)
         sqs = sqs.filter(reduce(operator.or_, query_list))
         sqs_users = [sq.object.user for sq in sqs]
 
@@ -793,3 +804,26 @@ class AppFieldEntry(models.Model):
     class Meta:
         verbose_name = _("Application Field Entry")
         verbose_name_plural = _("Application Field Entries")
+      
+    def corporate_membership_name(self):
+        if self.field.field_type == 'corporate_membership_id':
+            try:
+                value = int(self.value)
+                #from corporate_memberships.models import CorporateMembership
+                from django.db import connection
+                cursor = connection.cursor()
+                cursor.execute("""
+                    SELECT name 
+                    FROM corporate_memberships_corporatemembership 
+                    WHERE id=%d  
+                    LIMIT 1 """ % int(self.value))
+                rows = cursor.fetchall()
+                if rows: return rows[0][0]
+            except:
+                pass
+            
+        return None
+            
+            
+            
+            

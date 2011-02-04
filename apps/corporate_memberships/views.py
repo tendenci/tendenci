@@ -332,10 +332,9 @@ def delete(request, id, template_name="corporate_memberships/delete.html"):
     
 def index(request, template_name="corporate_memberships/index.html"):
     corp_apps = CorpApp.objects.filter(status=1, status_detail='active').order_by('name')
-    cm_types = CorporateMembershipType.objects.filter(status=1, status_detail='active').order_by('-price')
+    #cm_types = CorporateMembershipType.objects.filter(status=1, status_detail='active').order_by('-price')
     
-    return render_to_response(template_name, {'corp_apps': corp_apps,
-                                              'cm_types': cm_types}, 
+    return render_to_response(template_name, {'corp_apps': corp_apps}, 
         context_instance=RequestContext(request))
     
     
