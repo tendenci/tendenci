@@ -40,3 +40,12 @@ class CaseStudyForm(TendenciBaseForm):
 class FileForm(forms.ModelForm):
     class Meta:
         model = File
+        fields = (
+            'file',
+            'description',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(FileForm, self).__init__(*args, **kwargs)
+
+    
