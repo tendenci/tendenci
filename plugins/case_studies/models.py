@@ -1,9 +1,12 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from managers import CaseStudyManager
+
+from files.models import File
 
 class CaseStudy(TendenciBaseModel):
     client = models.CharField(max_length=75)
@@ -60,3 +63,6 @@ class Technology(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("case_study.technology", [self.pk])
+
+class Image(File):
+    case_study = models.ForeignKey(CaseStudy, related_name='case_studies')
