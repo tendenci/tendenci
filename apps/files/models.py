@@ -23,7 +23,7 @@ class File(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
             
-        super(self.__class__, self).save(*args, **kwargs)
+        super(File, self).save(*args, **kwargs)
 
     def basename(self):
         return os.path.basename(str(self.file))

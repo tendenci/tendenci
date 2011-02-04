@@ -1,7 +1,7 @@
 from haystack import indexes
 from haystack import site
 
-from models import CaseStudy
+from models import CaseStudy, Image
 from perms.models import ObjectPermission
 
 class CaseStudyIndex(indexes.RealTimeSearchIndex):
@@ -38,3 +38,4 @@ class CaseStudyIndex(indexes.RealTimeSearchIndex):
             return ''
 
 site.register(CaseStudy, CaseStudyIndex)
+site.register(Image)
