@@ -259,7 +259,7 @@ def view(request, id, template="corporate_memberships/view.html"):
         field_objs.append(CorpField(label='Join Date', field_name='join_dt', object_type='corporate_membership', admin_only=1))
         field_objs.append(CorpField(label='Expiration Date', field_name='expiration_dt', object_type='corporate_membership', admin_only=1))
         field_objs.append(CorpField(label='Status', field_name='status', object_type='corporate_membership', admin_only=1))
-        field_objs.append(CorpField(label='status_detail', field_name='status_detail', object_type='corporate_membership', admin_only=1))
+        field_objs.append(CorpField(label='Status Detail', field_name='status_detail', object_type='corporate_membership', admin_only=1))
         
     for field_obj in field_objs:
         field_obj.value = field_obj.get_value(corporate_membership)

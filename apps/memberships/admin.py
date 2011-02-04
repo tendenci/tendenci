@@ -14,6 +14,7 @@ from memberships.forms import AppForm, AppFieldForm, AppEntryForm
 from memberships.utils import get_default_membership_fields
 from payments.models import PaymentMethod
 
+
 class MembershipAdmin(admin.ModelAdmin):
 
     def member_name(self):
@@ -323,9 +324,10 @@ class AppAdmin(admin.ModelAdmin):
                 field.content_type = ContentType.objects.get_for_model(User)
             elif 'email' in field.field_type:
                 field.content_type = ContentType.objects.get_for_model(User)
+            elif 'corporate_membership_id' in field.field_type:
+                field.content_type = ContentType.objects.get_for_model(Membership)
 
             field.save()
-
 
         # permissions
         if add:

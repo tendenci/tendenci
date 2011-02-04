@@ -2,6 +2,7 @@ import os
 from django.conf import settings
 from django.utils import simplejson
 
+
 def get_default_membership_fields(use_for_corp=False):
     json_file_path = os.path.join(settings.PROJECT_ROOT,
         'apps/memberships/fixtures/default_membership_application_fields.json')
