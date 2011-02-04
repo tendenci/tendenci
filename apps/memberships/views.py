@@ -71,6 +71,7 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
     
     # if this app is for corporation individuals, redirect them to corp-pre page first.
     # from there, we can decide which corp they'll be in.
+    is_corp_ind = False
     if hasattr(app, 'corp_app') and app.corp_app:
         is_corp_ind = True
         
@@ -168,7 +169,7 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
         'app': app, "app_entry_form": app_entry_form}, 
         context_instance=RequestContext(request))
     
-def application_details_corp_pre(request, slug, template_name="memberships/applications/details_corp_pre.html"):
+def application_details_corp_pre(request, slug, cmb_id=None, template_name="memberships/applications/details_corp_pre.html"):
     
     try:
         app = App.objects.get(slug=slug)
@@ -188,6 +189,8 @@ def application_details_corp_pre(request, slug, template_name="memberships/appli
         del form.fields['email']
         from utils import get_corporate_membership_choices
         form.fields['corporate_membership_id'].choices = get_corporate_membership_choices()
+        if cmb_id:
+            form.fields['corporate_membership_id'].initial = cmb_id
         form.auth_method = 'corporate_membership_id'
         
     elif app.corp_app.authentication_method == 'email':

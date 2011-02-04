@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
 from django.utils import simplejson
+from memberships.models import AppField
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -14,13 +15,7 @@ def get_default_membership_fields(use_for_corp=False):
     
     # add default fields for corp. individuals
     if use_for_corp:
-        json_file_path = os.path.join(settings.PROJECT_ROOT,
-            'apps/memberships/fixtures/default_membership_application_fields_for_corp.json')
-        json_file = open(json_file_path, 'r')
-        data = ''.join(json_file.read())
-        json_file.close()
-        
-        corp_field_list = simplejson.loads(data)
+        corp_field_list = get_default_membership_corp_fields()
     else:
         corp_field_list = None
         
@@ -32,6 +27,38 @@ def get_default_membership_fields(use_for_corp=False):
 
     
     return field_list
+
+def get_default_membership_corp_fields():
+    json_file_path = os.path.join(settings.PROJECT_ROOT,
+        'apps/memberships/fixtures/default_membership_application_fields_for_corp.json')
+    json_file = open(json_file_path, 'r')
+    data = ''.join(json_file.read())
+    json_file.close()
+    
+    corp_field_list = simplejson.loads(data)
+    
+    return corp_field_list
+
+def edit_app_update_corp_fields(app):
+    """
+    Update the membership application's corporate membership fields (corporate_membership_id)
+    when editing a membership application.
+    """
+    if app:
+        try:  
+            app_field = AppField.objects.get(app=app, field_type='corporate_membership_id')
+            if not app.use_for_corp:
+                if not hasattr(app, 'corp_app'):
+                    app_field.delete()
+                else:
+                    app.use_for_corp = 1
+                    app.save()
+        except AppField.DoesNotExist:
+            if app.use_for_corp:
+                field_list = get_default_membership_corp_fields()
+                for field in field_list:
+                    field.update({'app':app})
+                    AppField.objects.create(**field)
 
 def get_corporate_membership_choices():
     cm_list = [(0, 'SELECT ONE')]

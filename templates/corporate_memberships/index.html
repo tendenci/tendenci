@@ -46,7 +46,7 @@
 			     		<td class="header" width="50%">Name</td>
 			     		<td class="header" width="50%">Individual Member Type</td>
 			     	</tr>
-			     	{% for cm_type in cm_types %}
+			     	{% for cm_type in corp_app.corp_memb_type.all %}
 			     		<tr>
 			     		<td><a href="{% url admin:corporate_memberships_corporatemembershiptype_change cm_type.id %}">{{ cm_type.name }}</a></td>
 			     		<td><a href="{% url admin:memberships_membershiptype_change cm_type.membership_type.id %}">{{ cm_type.membership_type.name }}</a></td>

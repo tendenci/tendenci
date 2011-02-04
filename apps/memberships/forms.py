@@ -396,6 +396,9 @@ class AppEntryForm(forms.ModelForm):
         }
 
         for field in self.form_fields:
+            if field.field_type == 'corporate_membership_id' and not self.corporate_membership:
+                continue
+                
             field_key = "field_%s" % field.id
             field_class, field_widget = CLASS_AND_WIDGET[field.field_type]
             field_class = getattr(forms, field_class)
@@ -454,6 +457,8 @@ class AppEntryForm(forms.ModelForm):
         app_entry.save()
 
         for field in self.form_fields:
+            if field.field_type == 'corporate_membership_id' and not self.corporate_membership:
+                continue
             field_key = "field_%s" % field.id
             value = self.cleaned_data[field_key]
             if value and self.fields[field_key].widget.needs_multipart_form:
