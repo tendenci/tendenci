@@ -9,7 +9,7 @@ class FileForm(forms.ModelForm):
         'is_public',
         )
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         if 'user' in kwargs:
             self.user = kwargs.pop('user', None)
         else:

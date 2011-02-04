@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import iri_to_uri
 from django.utils.text import truncate_words
 from django.utils.html import strip_tags
@@ -7,9 +8,8 @@ from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
-from models import CaseStudy, Service, Technology
+from models import CaseStudy, Service, Technology, Image
 from forms import CaseStudyForm, FileForm
-from files.models import File
 
 class FileAdmin(admin.StackedInline):
     fieldsets = (
@@ -18,10 +18,9 @@ class FileAdmin(admin.StackedInline):
             'description',
         )},),
     )
-    model = File
+    model = Image
     form = FileForm
-    # extra = 0
-    # template = "memberships/admin/stacked.html"
+
 
 class CaseStudyAdmin(admin.ModelAdmin):
     list_display = ['view_on_site', 'client', 'slug', 'overview_parsed', 'create_dt']
@@ -45,7 +44,8 @@ class CaseStudyAdmin(admin.ModelAdmin):
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
     form = CaseStudyForm
-    # inlines = (FileAdmin,)
+    inlines = (FileAdmin,)
+#    change_form_template = 'case_studies/admin/change_form.html'
 
     def view_on_site(self, obj):
         link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
@@ -106,12 +106,12 @@ class CaseStudyAdmin(admin.ModelAdmin):
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
+        add = not change
 
         # set up user permission
         instance.allow_user_view, instance.allow_user_edit = form.cleaned_data['user_perms']
 
-        # adding the quote
-        if not change:
+        if add:
             instance.creator = request.user
             instance.creator_username = request.user.username
             instance.owner = request.user
@@ -122,7 +122,7 @@ class CaseStudyAdmin(admin.ModelAdmin):
         form.save_m2m()
 
         # permissions
-        if not change:
+        if add:
             # assign permissions for selected groups
             ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
             # assign creator permissions
@@ -135,6 +135,23 @@ class CaseStudyAdmin(admin.ModelAdmin):
 
         return instance
 
+    def save_formset(self, request, form, formset, change):
+
+        from pprint import pprint
+
+        for f in formset.forms:
+            image = f.save(commit=False)
+            if image.file:
+                image.case_study = form.save()
+                image.content_type = ContentType.objects.get_for_model(image.case_study)
+                image.object_id = image.case_study.pk
+                image.creator = request.user
+                image.owner = request.user
+                image.save()
+
+        formset.save()
+
+
     def change_view(self, request, object_id, extra_context=None):
         result = super(CaseStudyAdmin, self).change_view(request, object_id, extra_context)
 
@@ -145,3 +162,4 @@ class CaseStudyAdmin(admin.ModelAdmin):
 admin.site.register(CaseStudy, CaseStudyAdmin)
 admin.site.register(Service)
 admin.site.register(Technology)
+admin.site.register(Image)
