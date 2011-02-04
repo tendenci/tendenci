@@ -748,16 +748,6 @@ def types(request, template_name='events/types/index.html'):
     from django.forms.models import modelformset_factory
     TypeFormSet = modelformset_factory(Type, form=TypeForm, extra=2, can_delete=True)
 
-    if request.method == 'GET':
-        # log "view" event
-        EventLog.objects.log(**{
-            'event_id' : 275000,
-            'event_data': 'Types viewed',
-            'description': 'Types viewed',
-            'user': request.user,
-            'request': request,
-        })
-
     if request.method == 'POST':
         formset = TypeFormSet(request.POST)
         if formset.is_valid():
