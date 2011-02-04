@@ -4,7 +4,7 @@ from django.conf import settings
 from corporate_memberships.models import CorporateMembershipType
 from corporate_memberships.models import CorpApp, CorpField
 from corporate_memberships.forms import CorporateMembershipTypeForm, CorpFieldForm, CorpAppForm
-from corporate_memberships.utils import get_corpapp_default_fields_list, update_authenticate_fields
+from corporate_memberships.utils import get_corpapp_default_fields_list, update_authenticate_fields, edit_corpapp_update_memb_app
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'renewal_price', 'membership_type',  
@@ -154,8 +154,9 @@ class CorpAppAdmin(admin.ModelAdmin):
                                     
         form.save_m2m()
         
-        if change:
-            update_authenticate_fields(instance)
+        #if change:
+        update_authenticate_fields(instance)
+        edit_corpapp_update_memb_app(instance)
         
         return instance
 

@@ -11,7 +11,7 @@ from event_logs.models import EventLog
 from perms.models import ObjectPermission 
 from memberships.models import  Membership, MembershipType, App, AppField, AppEntry
 from memberships.forms import AppForm, AppFieldForm, AppEntryForm
-from memberships.utils import get_default_membership_fields
+from memberships.utils import get_default_membership_fields, edit_app_update_corp_fields
 from payments.models import PaymentMethod
 
 
@@ -305,6 +305,9 @@ class AppAdmin(admin.ModelAdmin):
             for default_field in get_default_membership_fields(use_for_corp=app.use_for_corp):
                 default_field.update({'app':app})
                 AppField.objects.create(**default_field)
+                
+        if change:
+            edit_app_update_corp_fields(app)
 
         form.save_m2m()
 
