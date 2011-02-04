@@ -30,31 +30,36 @@
 	     {% if corp_apps %}
 	     	<ol>
 	     	{% for corp_app in corp_apps %}
-	     		<li><a href="{% url corp_memb.add corp_app.slug %}">{{ corp_app.name }}</a></li>
+	     		<li>
+		     		<a href="{% url corp_memb.add corp_app.slug %}">{{ corp_app.name }}</a>
+		     		--------------->>
+		     		Individual Member App: 
+		     		{% if corp_app.memb_app %}
+		     		<a href="{% url membership.application_details corp_app.memb_app.slug %}">{{ corp_app.memb_app.name }}</a>
+		     		{% else %}
+		     			<a href="{% url admin:memberships_app_add %}?use_for_corp=1">Create it</a>
+		     		{% endif %}
+		     		
+		     		<h2>Types:</h2>
+			     	<table width="90%">
+			     	<tr>
+			     		<td class="header" width="50%">Name</td>
+			     		<td class="header" width="50%">Individual Member Type</td>
+			     	</tr>
+			     	{% for cm_type in cm_types %}
+			     		<tr>
+			     		<td><a href="{% url admin:corporate_memberships_corporatemembershiptype_change cm_type.id %}">{{ cm_type.name }}</a></td>
+			     		<td><a href="{% url admin:memberships_membershiptype_change cm_type.membership_type.id %}">{{ cm_type.membership_type.name }}</a></td>
+			     		
+			     		</tr>
+			     	{% endfor %}
+			     	</table>
+			     	<br />
+	     		
+	     		</li>
+	     		
 	     	{% endfor %}
 	     	</ol>
-	     	
-	     	<h2>Types:</h2>
-	     	<table width="90%">
-	     	<tr>
-	     		<td class="header" width="33%">Name</td>
-	     		<td class="header" width="33%">Individual Member Type</td>
-	     		<td class="header" width="33%">Individual Member App.</td>
-	     	</tr>
-	     	{% for cm_type in cm_types %}
-	     		<tr>
-	     		<td><a href="{% url admin:corporate_memberships_corporatemembershiptype_change cm_type.id %}">{{ cm_type.name }}</a></td>
-	     		<td><a href="{% url admin:memberships_membershiptype_change cm_type.membership_type.id %}">{{ cm_type.membership_type.name }}</a></td>
-	     		{% with cm_type.membership_type.get_app_top1 as indiv_app %}
-		     		{% if indiv_app %}
-		     			<td><a href="{% url membership.application_details indiv_app.slug %}">{{ indiv_app.name }}</a></td>
-		     		{% else %}
-		     			<td>Not available. <a href="{% url admin:memberships_app_add %}">Create it</a></td>
-		     		{% endif %}
-	     		{% endwith %}
-	     		</tr>
-	     	{% endfor %}
-	     	</table>
 	     	
 	     	<h2>Other links:</h2>
 	     	<ol>

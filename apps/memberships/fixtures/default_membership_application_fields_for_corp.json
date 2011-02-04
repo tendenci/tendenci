@@ -9,16 +9,5 @@
         "visible": true,
         "position": 5,
         "choices": ""
-    },
-    {
-        "field_type": "secret_code",
-        "attribute_name": "",
-        "description": "",
-        "vital": true,
-        "required": false,
-        "label": "Secret Code",
-        "visible": true,
-        "position": 6,
-        "choices": ""
     }
 ]
