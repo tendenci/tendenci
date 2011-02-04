@@ -65,4 +65,4 @@ class Technology(models.Model):
         return ("case_study.technology", [self.pk])
 
 class Image(File):
-    case_study = models.ForeignKey(CaseStudy, related_name='case_studies')
+    case_study = models.ForeignKey(CaseStudy)

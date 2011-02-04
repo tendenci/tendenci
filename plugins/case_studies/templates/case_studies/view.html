@@ -53,6 +53,11 @@
             <h2>Results</h2>
             <p>{{ case_study.results|safe }}</p>
         {% endif %}
+
+        {% for image in case_study.image_set.all %}
+            <div><img src="{% url file image.pk %}" /></div>
+        {% endfor %}
+
         <div class="case-meta">
             <a href="{% url case_study.search %}">&laquo;&nbsp;Search other case studies</a>
         </div>
