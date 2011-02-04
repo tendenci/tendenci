@@ -178,6 +178,10 @@ class EventLogManager(Manager):
                 event_log.url = request.path or ''
                   
         # setup instance information
+        # Source may need to be a required field. The event log reports use source to
+        # generate colors and use the source name on the display.
+        # This will have to move forward when the eventlog ids and changes can
+        # be approved with ED
         if instance:
             ct = ContentType.objects.get_for_model(instance)
             event_log.content_type = ct
