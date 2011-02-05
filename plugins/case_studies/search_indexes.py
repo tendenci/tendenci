@@ -7,7 +7,7 @@ from perms.models import ObjectPermission
 class CaseStudyIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
 
-    client = indexes.CharField(model_attr='client')
+    #client = indexes.CharField(model_attr='client')
 
     # base fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
@@ -28,7 +28,7 @@ class CaseStudyIndex(indexes.RealTimeSearchIndex):
     who_can_view = indexes.CharField()
 
     def prepare_who_can_view(self, obj):
-        users = ObjectPermission.objects.who_has_perm('staff.view_staff', obj)
+        users = ObjectPermission.objects.who_has_perm('case_study.view_case_study', obj)
         user_list = []
         if users:
             for user in users:
