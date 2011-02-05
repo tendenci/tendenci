@@ -7,7 +7,7 @@ from base.http import Http403
 from perms.utils import has_perm
 from perms.utils import is_admin
 
-from models import CaseStudy
+from models import CaseStudy, Service, Technology
 
 def index(request, slug=None, template_name="case_studies/view.html"):
     if not slug: return HttpResponseRedirect(reverse('case_study.search'))
@@ -29,4 +29,24 @@ def search(request, template_name="case_studies/search.html"):
     case_studies = CaseStudy.objects.search(query, user=request.user)
 
     return render_to_response(template_name, {'case_studies': case_studies},
+        context_instance=RequestContext(request))
+        
+def service(request, id, template_name="case_studies/search.html"):
+    "List of case studies by service"
+    service = get_object_or_404(Service, pk=id)
+    query = '"service:%s"' % service
+
+    case_studies = CaseStudy.objects.search(query, user=request.user)
+
+    return render_to_response(template_name, {'service':service, 'case_studies': case_studies}, 
+        context_instance=RequestContext(request))
+        
+def technology(request, id, template_name="case_studies/search.html"):
+    "List of case studies by technology"
+    technology = get_object_or_404(Technology, pk=id)
+    query = '"technology:%s"' % technology
+
+    case_studies = CaseStudy.objects.search(query, user=request.user)
+
+    return render_to_response(template_name, {'technology':technology, 'case_studies': case_studies}, 
         context_instance=RequestContext(request))
