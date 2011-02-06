@@ -10,15 +10,17 @@ from django.contrib import messages
 
 from base.http import Http403
 from perms.utils import has_perm, is_admin
+from site_settings.utils import get_setting
 
 from event_logs.models import EventLog
 
 from corporate_memberships.models import CorpApp, CorpField, CorporateMembership, CorporateMembershipType
 from corporate_memberships.models import CorporateMembershipRep
-from corporate_memberships.forms import CorpMembForm, CorpMembRepForm
+from corporate_memberships.forms import CorpMembForm, CorpMembRepForm, RosterSearchForm
 from corporate_memberships.utils import get_corporate_membership_type_choices, get_payment_method_choices
 from corporate_memberships.utils import corp_memb_inv_add
 #from memberships.models import MembershipType
+from memberships.models import Membership
 
 from perms.utils import get_notice_recipients
 try:
@@ -274,19 +276,14 @@ def view(request, id, template="corporate_memberships/view.html"):
 
 
 def search(request, template_name="corporate_memberships/search.html"):
+    allow_anonymous_search = get_setting('module', 'corporatememberships', 'allowanonymoususersearchcorporatemember')
+    if request.user.is_anonymous() and not allow_anonymous_search:
+        raise Http403
+    
     query = request.GET.get('q', None)
-    corp_members = CorporateMembership.objects.search(query)
-    if is_admin(request.user):
-        corp_members = corp_members.order_by('name_exact')
-    else:
-        if request.user.is_authenticated():
-            from django.db.models import Q
-            corp_members = corp_members.objects.filter(Q(creator=request.user) | 
-                                                       Q(owner=request.user) | 
-                                                       Q(status_detail='active'))
-            corp_members = corp_members.order_by('name_exact')
-        else:
-            raise Http403
+    corp_members = CorporateMembership.objects.search(query, user=request.user)
+    
+    corp_members = corp_members.order_by('name_exact')
     
     return render_to_response(template_name, {'corp_members': corp_members}, 
         context_instance=RequestContext(request))
@@ -379,10 +376,35 @@ def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html
                 
             return HttpResponseRedirect(reverse('corp_memb.edit_reps', args=[corp_memb.pk]))
     
-        return render_to_response(template_name, {'corp_memb': rep}, 
+        return render_to_response(template_name, {'corp_memb': corp_memb}, 
             context_instance=RequestContext(request))
     else:
         raise Http403
+
+@login_required    
+def roster_search(request, template_name='corporate_memberships/roster_search.html'):
+    name = request.GET.get('name', None)
+    corp_memb = get_object_or_404(CorporateMembership, name=name)
+    
+    query = request.GET.get('q', None)
+    memberships = Membership.objects.corp_roster_search(query, user=request.user).filter(corporate_membership_id=corp_memb.id)
+    
+    if is_admin(request.user) or corp_memb.is_rep(request.user):
+        pass
+    else:
+        memberships = memberships.filter(status=1, status_detail='active')
+        
+    # a list of corporate memberships for the drop down
+    corp_members = CorporateMembership.objects.search(None, user=request.user).order_by('name_exact')
+    name_choices = ((corp_member.name, corp_member.name) for corp_member in corp_members)
+    form = RosterSearchForm(request.GET or None)
+    form.fields['name'].choices = name_choices
+    form.fields['name'].initial = corp_memb.name
+        
+    return render_to_response(template_name, {'corp_memb': corp_memb,
+                                              'memberships': memberships, 
+                                              'form': form}, 
+            context_instance=RequestContext(request))
     
     
 
