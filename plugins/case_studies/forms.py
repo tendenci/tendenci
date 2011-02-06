@@ -43,6 +43,7 @@ class FileForm(forms.ModelForm):
         fields = (
             'file',
             'description',
+            'position',
         )
 
     def __init__(self, *args, **kwargs):

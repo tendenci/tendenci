@@ -6,6 +6,14 @@
 {{ object.execution|striptags|stripentities }}
 {{ object.results|striptags|stripentities }}
 
+{% for service in object.service.all %}
+service:{{ service }} 
+{% endfor %}
+
+{% for technology in object.technology.all %}
+technology:{{ technology }} 
+{% endfor %}
+
 {% tags_for_object object as tags %}
 {% for tag in tags %}
 tag:{{ tag }} 
