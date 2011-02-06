@@ -14,3 +14,6 @@ app: {{ object.corp_app }}
 {% for authorized_domain in object.authorized_domains %}
 authorized domain:{{ authorized_domain }} 
 {% endfor %}
+{% for rep in object.reps %}
+rep:{{ rep.username }} {{ rep.first_name }} {{ rep.last_name }}
+{% endfor %}

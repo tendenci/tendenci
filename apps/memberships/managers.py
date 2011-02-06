@@ -155,3 +155,15 @@ class MembershipManager(Manager):
                 sqs = user_sqs(sqs, user=user) # user
 
         return sqs.models(self.model)
+    
+    def corp_roster_search(self, query=None, *args, **kwargs):
+        """
+        Use Django Haystack search index
+        Used by the corporate membership roster search 
+        which requires different security check
+        """
+        sqs = SearchQuerySet()
+        if query:
+            sqs = sqs.auto_query(sqs.query.clean(query))
+
+        return sqs.models(self.model)

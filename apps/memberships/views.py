@@ -375,11 +375,11 @@ def application_entries_search(request, template_name="memberships/entries/searc
     # log entry search view
     EventLog.objects.log(**{
         'event_id' : 1084000,
-        'event_data': '%s (%d) search viewed by %s' % (app._meta.object_name, app.pk, request.user),
-        'description': '%s viewed' % app._meta.object_name,
+        'event_data': '%s searched by %s' % ('Membership Entries', request.user),
+        'description': '%s searched' % 'Membership Entries',
         'user': request.user,
         'request': request,
-        'instance': app,
+        #'instance': app,
     })
 
     return render_to_response(template_name, {

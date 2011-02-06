@@ -1,4 +1,5 @@
 from django.db.models import Manager
+from django.db.models import Q
 from haystack.query import SearchQuerySet
 
 class CorporateMembershipManager(Manager):
@@ -8,12 +9,24 @@ class CorporateMembershipManager(Manager):
             Returns a SearchQuerySet
         """
         from corporate_memberships.models import CorporateMembership
-        sqs = SearchQuerySet()
+        from perms.utils import is_admin
+        
+        user = kwargs.get('user', None)
+        if user.is_anonymous(): return None
+        
+        is_an_admin = is_admin(user)
+        
+        sqs = SearchQuerySet().models(CorporateMembership)
        
         if query: 
             sqs = sqs.filter(content=sqs.query.clean(query))
         else:
             sqs = sqs.all()
-        #sqs = sqs.order_by('user')
+            
+        if not is_an_admin:
+            sqs = sqs.filter(Q(reps__contain='rep:%s' % user.username) |
+                             Q(creator=user) |
+                             Q(owner=user) |
+                             Q(status_detail='active'))
         
-        return sqs.models(CorporateMembership)
+        return sqs
