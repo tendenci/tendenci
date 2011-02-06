@@ -275,6 +275,14 @@ class CorpMembRepForm(forms.ModelForm):
             pass
         return value
     
+    
+class RosterSearchForm(forms.Form):
+    name = forms.ChoiceField(choices=[])
+    q = forms.CharField(max_length=100, required=False)
+    
+    
+        
+    
         
         
         

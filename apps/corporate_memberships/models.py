@@ -194,6 +194,17 @@ class CorporateMembership(TendenciBaseModel):
                     'request': request,
                 }
                 notification.send_emails(recipients,'corp_memb_paid', extra_context)
+                
+    def is_rep(self, this_user):
+        """
+        Check if this user is one of the representatives of this corporate membership.
+        """
+        if this_user.is_anonymous(): return False
+        reps = self.reps.all()
+        for rep in reps:
+            if rep.id == this_user.id:
+                return True
+        return False
         
         
 class AuthorizedDomain(models.Model):

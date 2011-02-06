@@ -1,0 +1,161 @@
+{% extends "corporate_memberships/base.html" %}
+{% load pagination_tags %}
+{% load avatar_tags %}
+{% load base_filters %}
+{% load corporate_memberships_tags %}
+
+{% block title %}{{ block.super }}Corporate Membership Roster Search{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+<style>
+	#corp-info{
+		background-color: #efefef;
+		border: 1px solid #ccc;
+		padding: 1em;
+		margin: 1em 0;
+		width: 90%;
+	}
+	#corp-info tr td{
+		padding: 3px;
+	}
+	.search-form .form-field{
+		margin-bottom: 1em;
+	}
+	.search-form input[type="text"]{
+		width: 60%;
+	}
+	.clear-left{
+		clear: left;
+	}
+	.roster-search-wrap .member-line{
+		border: 1px solid #ccc;
+		margin-botton: 1em;
+		padding: 5px;
+		
+	}
+	.roster-search-wrap .avatar, .roster-search-wrap .member-details, .roster-search-wrap .member-left, .roster-search-wrap .member-right{
+		float: left;
+		
+	}
+	roster-search-wrap .member-detail, .roster-search-wrap .member-right{
+		padding-left: 1em;
+		line-length: 1.2em;
+	}
+	.member-line .member-name{
+		font-size: 1.2em;
+		margin-bottom: 5px;
+	}
+	.member-line{
+		margin-bottom: 1em;
+	}
+	
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<div class="t-search">
+ {% corpmemb_nav request.user corp_memb %}
+ 
+<h1>Roster - {{ corp_memb.name }}</h1>
+
+{% if corp_memb %}
+<div id="corp-info">
+	<table width="100%">
+		<tr>
+			<td width="20%">Address:</td>
+			<td width="80%" colspan="3">{{ corp_memb.address }} {{ corp_memb.address2 }}</td>
+		</tr>
+		<tr>
+			<td width="20%">&nbsp;</td>
+			<td width="80%" colspan="3">{{ corp_memb.city }} {{ corp_memb.state }} {{ corp_memb.zip }}</td>
+		</tr>
+		<tr>
+			<td width="20%">Phone:</td>
+			<td width="40%">{{ corp_memb.phone }}</td>
+			<td width="20%">Join Date:</td>
+			<td width="40%">{{ corp_memb.join_dt|date:'Y-n-j' }}</td>
+		</tr>
+		<tr>
+			<td width="20%">Member Type:</td>
+			<td width="40%">{{ corp_memb.corporate_membership_type.name }}</td>
+			<td width="20%">Expiration Date:</td>
+			<td width="40%">{% if corp_memb.expiration_dt %}
+			    							{{ corp_memb.expiration_dt|date:'Y-n-j' }}
+			    							{% else %}
+			    							Never Expire
+			    							{% endif %}</td>
+		</tr>
+	</table>
+
+</div>
+{% endif %}
+
+<form class="search-form" action="" method="get">
+<div class="form-field">Corporate Name: {{ form.name }}</div>
+<div class="form-field">
+{{ form.q }}
+<input type="submit" name="search" value="Search" />
+</div>
+</form>
+
+{% autopaginate memberships 10 %}
+<div class="roster-search-wrap">
+    {% for membership in memberships %}
+	    {% with membership.object as membership %}
+			<div class="member-line">
+				<div class="avatar">{% avatar membership.user 56 %}</div>
+				<div class="member-details">
+					<div class="member-name">
+							<a href="{% url profiles.views.index membership.user.username %}">
+							{{ membership.user.get_full_name }}
+							</a>
+					</div>
+					
+					<div class="member-left">
+						<div>Email: {{ membership.user.email }}</div>
+						<div>Member Type: {{ membership.membership_type }}</div>
+					</div>
+					<div class="member-right">
+						<div>Join Date: {{ membership.join_dt|date:'Y-n-j' }}</div>
+						<div>Expiration Date: {% if membership.expiration_dt %}
+				    							{{ membership.expiration_dt|date:'Y-n-j' }}
+				    							{% else %}
+				    							Never Expire
+				    							{% endif %}
+				    	</div>
+					</div>
+					
+				</div>
+	    	
+	    	<div class="clear-left"></div>	
+	    	</div>
+	    	
+		{% endwith %}	
+	{% empty %}
+		<div>0 Results Found</div>
+	{% endfor %}
+</div>
+
+
+ {% paginate %}
+ 
+ </div>
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+ <script type="text/javascript">
+	$(document).ready(function(){
+
+		
+	});
+   </script>
+
+
+
+	
+{% endblock %}

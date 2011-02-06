@@ -6,6 +6,7 @@ from perms.models import ObjectPermission
 
 class MembershipIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
+    corporate_membership_id = indexes.BooleanField(model_attr='corporate_membership_id')
 
     # tendenci_base fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')

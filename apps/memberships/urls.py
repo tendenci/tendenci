@@ -17,5 +17,3 @@ urlpatterns = patterns("memberships.views",
     url(r"^(?P<slug>[\w\-]+)/corp-pre/(?P<cmb_id>\d+)?/?$", "application_details_corp_pre", name="membership.application_details_corp_pre"),
     
 )
-
-
