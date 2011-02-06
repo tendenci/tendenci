@@ -16,11 +16,12 @@ class FileAdmin(admin.StackedInline):
         (None, {'fields': (
             'file',
             'description',
+            'position',
         )},),
     )
     model = Image
     form = FileForm
-
+    extra = 0
 
 class CaseStudyAdmin(admin.ModelAdmin):
     list_display = ['view_on_site', 'client', 'slug', 'overview_parsed', 'create_dt']
@@ -46,6 +47,14 @@ class CaseStudyAdmin(admin.ModelAdmin):
     form = CaseStudyForm
     inlines = (FileAdmin,)
 #    change_form_template = 'case_studies/admin/change_form.html'
+
+    class Media:
+        js = (
+            '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/case-studies-dynamic-sort.js' % settings.STATIC_URL,
+        )
+        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
     def view_on_site(self, obj):
         link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
