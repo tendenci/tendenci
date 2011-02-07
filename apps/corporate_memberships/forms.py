@@ -174,16 +174,24 @@ class CorpMembForm(forms.ModelForm):
                     field_key = field.field_name
                 else:
                     field_key = "field_%s" % field.id
+                    
+                # if field is display only, remove it from the form
+                # for example, on the edit page, we set corporate_membership_type
+                # and payment_method as the display only fields
+                if hasattr(field, 'display_only') and field.display_only:
+                    del self.fields[field_key]
+                else:
                 
-                self.fields[field_key] = field.get_field_class()
-                if ((not field.field_name) or field.field_name=='authorized_domains') and self.instance:
-                    initial = field.get_value(self.instance)
-                    if field.field_type in ['MultipleChoiceField/django.forms.CheckboxSelectMultiple', 
-                                            'MultipleChoiceField']:
-                        if initial:
-                            self.fields[field_key].initial = [item.strip() for item in initial.split(',')]
-                    else:
-                        self.fields[field_key].initial = initial
+                    # get field class and set field initial
+                    self.fields[field_key] = field.get_field_class()
+                    if ((not field.field_name) or field.field_name=='authorized_domains') and self.instance:
+                        initial = field.get_value(self.instance)
+                        if field.field_type in ['MultipleChoiceField/django.forms.CheckboxSelectMultiple', 
+                                                'MultipleChoiceField']:
+                            if initial:
+                                self.fields[field_key].initial = [item.strip() for item in initial.split(',')]
+                        else:
+                            self.fields[field_key].initial = initial
                     
             
         #self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
@@ -192,6 +200,17 @@ class CorpMembForm(forms.ModelForm):
         if self.cleaned_data['corporate_membership_type']:
             return CorporateMembershipType.objects.get(pk=int(self.cleaned_data['corporate_membership_type']))
         return self.cleaned_data['corporate_membership_type']
+    
+    def clean_secret_code(self):
+        secret_code = self.cleaned_data['secret_code']
+        if secret_code:
+            # check if this secret_code is available to ensure the uniqueness
+            corp_membs = CorporateMembership.objects.filter(secret_code=secret_code)
+            if self.instance:
+                corp_membs = corp_membs.exclude(id=self.instance.id)
+            if corp_membs:
+                raise forms.ValidationError(_("This secret code is already taken. Please use a different one."))
+        return self.cleaned_data['secret_code']
         
     def save(self, user,  **kwargs):
         """
