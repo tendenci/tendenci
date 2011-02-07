@@ -10,7 +10,13 @@ def render_corp_field(request, field_obj, form):
         field_name = field_obj.field_name
         if not field_name: 
             field_name = "field_%s" % field_obj.id
-        field = eval("form['%s']" % field_name)
+        # skip the form field generation if it's a display only field
+        if not hasattr(field_obj, 'display_only'):
+            field_obj.display_only = False
+        if field_obj.display_only:
+            field = None
+        else:
+            field = eval("form['%s']" % field_name)
     return {'request':request, 'field_obj':field_obj, 'field':field}
 
 

@@ -160,6 +160,16 @@ def edit(request, id, template="corporate_memberships/edit.html"):
     # get the field entry for each field_obj if exists
     for field_obj in field_objs:
         field_obj.entry = field_obj.get_entry(corporate_membership)
+        field_obj.display_only = False
+        
+        # make corporate_membership_type and payment_method as the display_only fields
+        # because we're not allowing them to edit those fields
+        if field_obj.field_name in ['corporate_membership_type', 'payment_method']:
+            field_obj.display_only = True
+            if field_obj.field_name == 'corporate_membership_type':
+                field_obj.display_content = corporate_membership.corporate_membership_type.name
+            if field_obj.field_name == 'payment_method':
+                field_obj.display_content = corporate_membership.payment_method
         
     form = CorpMembForm(corporate_membership.corp_app, field_objs, request.POST or None, 
                         request.FILES or None, instance=corporate_membership)
@@ -180,11 +190,11 @@ def edit(request, id, template="corporate_memberships/edit.html"):
         del form.fields['status_detail']
        
     
-    # corporate_membership_type choices
-    form.fields['corporate_membership_type'].choices = get_corporate_membership_type_choices(request.user, 
-                                                                                corp_app)
-    
-    form.fields['payment_method'].choices = get_payment_method_choices(request.user)
+#    # corporate_membership_type choices
+#    form.fields['corporate_membership_type'].choices = get_corporate_membership_type_choices(request.user, 
+#                                                                                corp_app)
+#    
+#    form.fields['payment_method'].choices = get_payment_method_choices(request.user)
     
     # we don't need the captcha on edit because it requires login
     #del form.fields['captcha']
