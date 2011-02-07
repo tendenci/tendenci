@@ -10,50 +10,59 @@
 		</div>
 	{% endif %}
 {% else %}
-	<div class="form-field{% if field_obj.admin_only %} admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
-        <div class="{{ field.auto_id }}">
-        	{% if field|is_checkbox %}
-            	<div class="checkbox">
-               		{% if field.errors %}         
-	                    <div class="error">
-	                        {% for error in field.errors %}
-	                        <p>{{ error }}</p>
-	                        {% endfor %}
+	{% if field_obj.display_only %}
+		<div class="form-field">
+			<div class="label required">
+	              {{  field_obj.label }}:
+	         </div>
+	         <div class="field">{{field_obj.display_content}}</div>
+	     </div>
+	{% else %}
+		<div class="form-field{% if field_obj.admin_only %} admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
+	        <div class="{{ field.auto_id }}">
+	        	{% if field|is_checkbox %}
+	            	<div class="checkbox">
+	               		{% if field.errors %}         
+		                    <div class="error">
+		                        {% for error in field.errors %}
+		                        <p>{{ error }}</p>
+		                        {% endfor %}
+		                    </div>
+	                    {% endif %}  
+	                    <div class="field">
+	                        {{ field }}
+	                    </div> 
+	                    <div class="label{% if field.field.required %} required{% endif %}">
+	                        {{ field.label_tag }}
+	                    </div> 
+	                    {% if field.help_text %}
+	                    	<div class="help-text">{{ field.help_text }}</div>   
+	                    {% endif %}
+	                </div>
+	                <div style="clear: both"><!-- IE7 --></div>
+	            {% else %}
+	                    <div class="label{% if field.field.required %} required{% endif %}">
+	                        {{ field.label_tag }}
 	                    </div>
-                    {% endif %}  
-                    <div class="field">
-                        {{ field }}
-                    </div> 
-                    <div class="label{% if field.field.required %} required{% endif %}">
-                        {{ field.label_tag }}
-                    </div> 
-                    {% if field.help_text %}
-                    	<div class="help-text">{{ field.help_text }}</div>   
-                    {% endif %}
-                </div>
-                <div style="clear: both"><!-- IE7 --></div>
-            {% else %}
-                    <div class="label{% if field.field.required %} required{% endif %}">
-                        {{ field.label_tag }}
-                    </div>
-                    {% if field.errors %}
-                     <div class="error">
-                         {% for error in field.errors %}
-                         	<p>{{ error }}</p>
-                         {% endfor %}
-                     </div>
-                    {% endif %}
-                    <div class="field{% if field|is_textinput %} size-{{ field_obj.size }}{% endif %}{% if field|is_radioselect or field|is_checkboxselectmultiple %} column{{ field_obj.field_layout }}{% endif %}">
-                        {{ field }}
-                    </div>
-                    {% if field.help_text %}
-                    	<div class="help-text">{{ field.help_text }}</div>
-                    {% endif %}
-                    
-                    {% if field|is_radioselect or field|is_checkboxselectmultiple %}
-                    <div style="clear: both"><!-- IE7 --></div>
-                    {% endif %}
-            {% endif %}
-         </div>       
-    </div>
+	                    {% if field.errors %}
+	                     <div class="error">
+	                         {% for error in field.errors %}
+	                         	<p>{{ error }}</p>
+	                         {% endfor %}
+	                     </div>
+	                    {% endif %}
+	                    <div class="field{% if field|is_textinput %} size-{{ field_obj.size }}{% endif %}{% if field|is_radioselect or field|is_checkboxselectmultiple %} column{{ field_obj.field_layout }}{% endif %}">
+	                        {{ field }}
+	                    </div>
+	                    {% if field.help_text %}
+	                    	<div class="help-text">{{ field.help_text }}</div>
+	                    {% endif %}
+	                    
+	                    {% if field|is_radioselect or field|is_checkboxselectmultiple %}
+	                    <div style="clear: both"><!-- IE7 --></div>
+	                    {% endif %}
+	            {% endif %}
+	         </div>       
+	    </div>
+    {% endif %}
 {% endif %}

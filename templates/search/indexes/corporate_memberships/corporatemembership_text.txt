@@ -11,9 +11,9 @@ app: {{ object.corp_app }}
 {{ object.email }}   
 {{ object.secret_code }}
 {{ object.status_detail }}
-{% for authorized_domain in object.authorized_domains %}
+{% for authorized_domain in object.authorized_domains.all %}
 authorized domain:{{ authorized_domain }} 
 {% endfor %}
-{% for rep in object.reps %}
-rep:{{ rep.username }} {{ rep.first_name }} {{ rep.last_name }}
+{% for rep in object.reps.all %}
+rep:{{ rep.user.username }} {{ rep.user.first_name }} {{ rep.user.last_name }}
 {% endfor %}

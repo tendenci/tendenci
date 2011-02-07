@@ -16,8 +16,8 @@ class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
     phone = indexes.CharField(model_attr='phone', default='')
     email = indexes.CharField(model_attr='email', default='')
     
-    authorized_domains = indexes.MultiValueField(null=True)
-    reps = indexes.MultiValueField(null=True)
+#    authorized_domains = indexes.MultiValueField(null=True)
+#    reps = indexes.MultiValueField(null=True)
     secret_code = indexes.CharField(model_attr='secret_code', null=True)
     
     corp_app = indexes.CharField(model_attr='corp_app')
@@ -36,13 +36,13 @@ class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
     status_detail = indexes.CharField(model_attr='status_detail')
     
     
-    def prepare_authorized_domains(self, obj):
-        if obj.auth_domains:
-            return list(obj.auth_domains.all())
-        
-    def prepare_reps(self, obj):
-        if obj.reps:
-            return [rep.user for rep in obj.reps.all()]
+#    def prepare_authorized_domains(self, obj):
+#        if obj.auth_domains:
+#            return list(obj.auth_domains.all())
+#        
+#    def prepare_reps(self, obj):
+#        if obj.reps:
+#            return [rep.user for rep in obj.reps.all()]
     
     def prepare_corporate_membership_type(self, obj):
         if obj.corporate_membership_type:
