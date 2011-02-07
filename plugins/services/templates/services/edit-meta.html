@@ -1,0 +1,44 @@
+{% extends "services/base.html" %}
+{% load service_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Edit Meta Information{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
+<style type="text/css">
+{% include "services/media/css/services.css" %}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    {% service_nav user %}
+    <h1>Service Meta Information for<br />
+    {{ service.title }}</h1>
+
+    <div class="service-wrap">
+    	<form action="{% url service.edit.meta service.pk %}" method="post">
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Save Changes" />
+			 or <a href="javascript:history.go(-1);">Cancel</a>
+		</div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+	var iconrow = new dropdown({
+		container:	'more-options-wrap',
+		trigger:	'more-options-trigger',
+		target:		'more-options-target'
+	});
+	</script>
+{% endblock %}

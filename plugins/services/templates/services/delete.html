@@ -1,0 +1,19 @@
+{% extends "services/base.html" %}
+{% load service_tags %}
+
+{% block body %}
+<div class="t">
+    {% service_nav request.user service %}
+
+    <div class="service-wrap">
+        <h1>Service Delete</h1>
+        <p><a href="{{ service.get_absolute_url }}" title="{{ service.title }}">{{ service.title }}</a></p>
+        <p>Are you sure you want to delete this service?</p>
+        <form action="{% url service.delete service.pk %}" method="post">
+        <div class="forms">
+            <input type="submit" value="Yes, delete it." /> or <a href="javascript:history.go(-1);">Cancel</a>
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
