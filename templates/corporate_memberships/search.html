@@ -85,7 +85,7 @@
 			    			- {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corp_memb.invoice.total }}
 			    		{% endif %}
 			    		</div>
-			    		<div><a href="">Join under this corporation</a></div>
+			    		<div><a href="{% url membership.application_details_corp_pre corp_memb.corp_app.memb_app.slug corp_memb.id %}">Join under this corporation</a></div>
 			    	</div>
 			    	
 			    	<div class="corpmember-right float-left">

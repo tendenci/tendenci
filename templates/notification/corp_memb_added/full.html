@@ -58,6 +58,9 @@
                 </tr>
               </table>              <p>                  <br>
                 To view the complete application, go to: <strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}</strong>
+                {% if object.status_detail == 'pending' and object.payment_method != 'cc' %}
+                	<p>To approve the application, go to: <strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.edit object.pk %}</strong></p>           
+                {% endif %}
               <p>For more on the person who submitted the application, go to: <strong>{{ SITE_GLOBAL_SITEURL }}{{ profile.get_absolute_url }}</strong></p>
               <p>If you have received this in error, please contact the webmaster below. </p>
               <p>                Thanks!</p>

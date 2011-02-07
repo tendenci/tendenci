@@ -15,7 +15,7 @@
 			<div class="label required">
 	              {{  field_obj.label }}:
 	         </div>
-	         <div class="field">{{field_obj.display_content}}</div>
+	         <div class="field">{{field_obj.display_content|safe}}</div>
 	     </div>
 	{% else %}
 		<div class="form-field{% if field_obj.admin_only %} admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
