@@ -146,8 +146,7 @@ class CorpMembForm(forms.ModelForm):
                  ('paid - pending approval','Paid - Pending Approval'),
                  ('admin hold','Admin Hold'),
                  ('inactive','Inactive'), 
-                 ('expired','Expired'),
-                 ('archive','Archive'),))
+                 ('expired','Expired'),))
     join_dt = SplitDateTimeField(label=_('Join Date/Time'),
         initial=datetime.now())
     expiration_dt = SplitDateTimeField(label=_('Expiration Date/Time'), required=False,

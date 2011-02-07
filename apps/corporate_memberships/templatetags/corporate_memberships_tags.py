@@ -1,4 +1,4 @@
-from django.template import Library
+from django.template import Node, Variable, Library
 
 register = Library()
 
@@ -50,3 +50,86 @@ def corp_memb_render_add_links(context):
         'app_count': app_count
     })
     return context
+
+
+class AllowViewCorpNode(Node):
+    def __init__(self, corp_memb, user, context_var):
+        self.corp_memb = corp_memb
+        self.user = user
+        self.var_name = context_var
+        
+    def resolve(self, var, context):
+        return Variable(var).resolve(context)
+        
+    def render(self, context):
+        corp_memb = self.resolve(self.corp_memb, context)
+        user = self.resolve(self.user, context)
+
+        boo = corp_memb.allow_view_by(user)
+    
+        if self.var_name:
+            context[self.var_name] = boo
+            return ""
+        else:
+            return boo
+
+@register.tag
+def allow_view_corp(parser, token):
+    """
+        {% allow_view_corp corp_memb user as allow_view %}
+    """
+    bits  = token.split_contents()
+    
+    try: corp_memb = bits[1]
+    except: corp_memb = None
+    
+    try: user = bits[2]
+    except: user = None
+    
+    if len(bits) >= 5:
+        context_var = bits[4]
+    else:
+        context_var = None
+    return AllowViewCorpNode(corp_memb, user, context_var=context_var)
+
+
+class AllowEditCorpNode(Node):
+    def __init__(self, corp_memb, user, context_var):
+        self.corp_memb = corp_memb
+        self.user = user
+        self.var_name = context_var
+        
+    def resolve(self, var, context):
+        return Variable(var).resolve(context)
+        
+    def render(self, context):
+        corp_memb = self.resolve(self.corp_memb, context)
+        user = self.resolve(self.user, context)
+
+        boo = corp_memb.allow_edit_by(user)
+    
+        if self.var_name:
+            context[self.var_name] = boo
+            return ""
+        else:
+            return boo
+
+@register.tag
+def allow_edit_corp(parser, token):
+    """
+        {% allow_view_corp corp_memb user as allow_view %}
+    """
+    bits  = token.split_contents()
+    
+    try: corp_memb = bits[1]
+    except: corp_memb = None
+    
+    try: user = bits[2]
+    except: user = None
+    
+    if len(bits) >= 5:
+        context_var = bits[4]
+    else:
+        context_var = None
+    return AllowEditCorpNode(corp_memb, user, context_var=context_var)
+
