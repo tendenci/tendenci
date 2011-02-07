@@ -124,14 +124,15 @@ def add(request, slug, template="corporate_memberships/add.html"):
     context = {"corp_app": corp_app, "field_objs": field_objs, 'form':form}
     return render_to_response(template, context, RequestContext(request))
 
+@login_required
 def add_conf(request, id, template="corporate_memberships/add_conf.html"):
     """
         add a corporate membership
     """ 
     corporate_membership = get_object_or_404(CorporateMembership, id=id)
     
-    if not has_perm(request.user,'corporate_memberships.view_corporatemembership',corporate_membership):
-        raise Http403
+#    if not has_perm(request.user,'corporate_memberships.view_corporatemembership',corporate_membership):
+#        raise Http403
     
     context = {"corporate_membership": corporate_membership}
     return render_to_response(template, context, RequestContext(request))
@@ -144,7 +145,8 @@ def edit(request, id, template="corporate_memberships/edit.html"):
     corporate_membership = get_object_or_404(CorporateMembership, id=id)
     
     if not has_perm(request.user,'corporate_memberships.change_corporatemembership',corporate_membership):
-        raise Http403
+        if not corporate_membership.allow_edit_by(request.user):
+            raise Http403
     
     user_is_admin = is_admin(request.user)
     
@@ -168,8 +170,12 @@ def edit(request, id, template="corporate_memberships/edit.html"):
             field_obj.display_only = True
             if field_obj.field_name == 'corporate_membership_type':
                 field_obj.display_content = corporate_membership.corporate_membership_type.name
+                
             if field_obj.field_name == 'payment_method':
                 field_obj.display_content = corporate_membership.payment_method
+                if corporate_membership.invoice:
+                    field_obj.display_content = '%s - <a href="%s">View Invoice</a>' % (field_obj.display_content,
+                                                                                        corporate_membership.invoice.get_absolute_url)
         
     form = CorpMembForm(corporate_membership.corp_app, field_objs, request.POST or None, 
                         request.FILES or None, instance=corporate_membership)
@@ -247,7 +253,8 @@ def view(request, id, template="corporate_memberships/view.html"):
     corporate_membership = get_object_or_404(CorporateMembership, id=id)
     
     if not has_perm(request.user,'corporate_memberships.view_corporatemembership',corporate_membership):
-        raise Http403
+        if not corporate_membership.allow_view_by(request.user):
+            raise Http403
     
     can_edit = False
     if has_perm(request.user,'corporate_memberships.edit_corporatemembership',corporate_membership):
@@ -286,7 +293,7 @@ def view(request, id, template="corporate_memberships/view.html"):
 
 
 def search(request, template_name="corporate_memberships/search.html"):
-    allow_anonymous_search = get_setting('module', 'corporatememberships', 'allowanonymoususersearchcorporatemember')
+    allow_anonymous_search = get_setting('module', 'corporatememberships', 'allowanonymoussearchcorporatemember')
     if request.user.is_anonymous() and not allow_anonymous_search:
         raise Http403
     

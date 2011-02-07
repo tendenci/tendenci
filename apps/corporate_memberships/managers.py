@@ -24,9 +24,9 @@ class CorporateMembershipManager(Manager):
             sqs = sqs.all()
             
         if not is_an_admin:
-            sqs = sqs.filter(Q(reps__contain='rep:%s' % user.username) |
+            # reps__contain
+            sqs = sqs.filter(Q(content='rep\:%s' % user.username) |
                              Q(creator=user) |
-                             Q(owner=user) |
-                             Q(status_detail='active'))
+                             Q(owner=user)).filter(status_detail='active')
         
         return sqs

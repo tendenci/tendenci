@@ -14,6 +14,8 @@ from invoices.models import Invoice
 from memberships.models import MembershipType, App
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from corporate_memberships.managers import CorporateMembershipManager
+from perms.utils import is_admin
+#from site_settings.utils import get_setting
 
 FIELD_CHOICES = (
                     ("CharField", _("Text")),
@@ -205,6 +207,32 @@ class CorporateMembership(TendenciBaseModel):
             if rep.id == this_user.id:
                 return True
         return False
+    
+    def allow_view_by(self, this_user):
+        if is_admin(this_user): return True
+        
+        if not this_user.is_anonymous():
+            if self.is_rep(this_user): return True
+            if self.creator:
+                if this_user.id == self.creator.id: return True
+            if self.owner:
+                if this_user.id == self.owner.id: return True
+                
+        return False
+    
+    def allow_edit_by(self, this_user):
+        if is_admin(this_user): return True
+        
+        if not this_user.is_anonymous():
+            if self.status == 1 and self.status_detail == 'active':
+                if self.is_rep(this_user): return True
+                if self.creator:
+                    if this_user.id == self.creator.id: return True
+                if self.owner:
+                    if this_user.id == self.owner.id: return True
+                
+        return False
+
         
         
 class AuthorizedDomain(models.Model):

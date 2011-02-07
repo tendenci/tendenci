@@ -1,20 +1,22 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load corporate_memberships_tags %}
 
 {% has_perm user corporate_memberships.change_corporatemembership as can_edit %}
+{% allow_edit_corp opt_object user as allow_edit %}
 {% has_perm user corporate_memberships.delete_corporatemembership as can_delete %}
 
 <div class="t-iconrow">
 
-	{% if can_edit %}
-	<span>{{ opt_object.status_detail|capfirst }}</span>
+	{% if can_edit or allow_edit %}
+	<span{% if opt_object.status_detail in 'pending'%} class="status-pending"{%endif%}>{{ opt_object.status_detail|capfirst }}</span>
 	{% endif %}
 
-	{% if can_edit %}
+	{% if can_edit or allow_edit %}
 		<a class="option-link edit" href="{% url corp_memb.edit opt_object.pk %}">Edit</a>
 	{% endif %}
 
- {% if can_edit %}
+ {% if can_edit or allow_edit %}
 	  <div class="more-options-wrap">
 	    <a href="javascript:;" class="more-options-trigger">More options <small>&#9660;</small></a>
 	    <div class="more-options-target">
