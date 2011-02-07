@@ -1,0 +1,9 @@
+<h1>{% firstof MODULE_SERVICES_LABEL 'Services' %} Index Page</h1>
+
+<ul>
+	<li><a href="{% url service.search %}">Search</a></li>
+	<li><a href="{% url service.view %}">View</a></li>
+	<li><a href="{% url service.print_view %}">Print View</a></li>
+	<li><a href="{% url service.edit %}">Edit</a></li>
+	<li><a href="{% url service.delete %}">Delete</a></li>
+</ul>

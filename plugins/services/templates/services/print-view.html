@@ -1,0 +1,82 @@
+{% extends "services/base-print.html" %}
+{% load service_tags %}
+
+{% block title %}{{ services.get_title }}{% endblock %}
+{% block meta_description %}{{ services.get_description }}{% endblock %}
+{% block meta_keywords %}{{ services.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ service.get_canonical_url }}" />{% endblock %}
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "services/media/css/services.css" %}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t-print">
+
+	<div class='hide-this'>
+		<h1>Print View</h1>
+
+		<div class="guide">
+			<div><a href="{{ service.get_absolute_url }}">&laquo; Back to regular service view</a></div>
+			<div>Your printed page will look <em>something</em> like this.</div>
+		</div>
+	</div>
+
+     <div class="service-wrap">
+        <h2>{{ service.title }}</h2>
+		<h2>Service Information</h2>
+
+{% if service.description %}
+		<div class="section-block">
+			<div class="label">Description</div>
+			<div class="value">{{ service.description|safe }}</div>
+		</div>
+{% endif %}
+
+{% if service.location %}
+		<div class="section-block">
+			<div class="label">Location</div>
+			<div class="value">{{ service.location }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+
+{% if service.experience %}
+		<div class="section-block">
+			<div class="label">Experience</div>
+			<div class="value">{{ service.experience }}</div>
+		</div>
+{% endif %}
+
+{% if service.skills %}
+		<div class="section-block">
+			<div class="label">Skills</div>
+			<div class="value">{{ service.skills }}</div>
+		</div>
+{% endif %}
+
+{% if service.education %}
+		<div class="section-block">
+			<div class="label">Education</div>
+			<div class="value">{{ service.education }}</div>
+			<div class="clear"></div>
+		</div>
+{% endif %}
+
+		<h2>Contact Information</h2>
+{% if service.contact_name %}
+		<div class="contact-wrap">
+			<div>{{ service.contact_name }}</div>
+			<div>{{ service.contact_phone }}</div>
+			<div>{{ service.contact_phone2 }}</div>
+			<div>{{ service.contact_fax }}</div>
+			<div><a href="">{{ service.contact_email|urlize }}</a></div>
+		</div>
+{% endif %}
+    </div>
+
+</div>
+{% endblock %}

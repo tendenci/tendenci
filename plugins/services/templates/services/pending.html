@@ -1,0 +1,32 @@
+{% extends "services/base.html" %}
+{% load service_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "services/media/css/services.css" %}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% service_nav request.user %}
+    <h1>Pending Services</h1>
+    
+    <div class="service-wrap">
+    <ul class="pending-services">
+    {% for service in services %}
+        <li>
+            <a href="{{ service.get_absolute_url }}" title="{{ service.title }}">{{ service.title|truncatewords:"10" }}</a>
+            &nbsp;&ndash;&nbsp;
+            {{ service.create_dt|date }}&nbsp;{{ service.create_dt|time }}
+            &nbsp;&ndash;&nbsp;
+            <a href="{% url service.approve service.pk %}">Approve</a>
+        </li>
+    {% empty %}
+        <li>There are no pending services.</li>
+    {% endfor %}
+    </div>
+    </ul>
+</div>
+{% endblock %}
