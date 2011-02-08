@@ -30,6 +30,7 @@ def index(request, cat_slug=None, template_name="video/list.html"):
 def search(request, cat_slug=None, template_name="video/list.html"):
     query = request.GET.get('q', None)
     videos = Video.objects.search(query, user=request.user) 
+    videos = videos.order_by('-create_dt')
     categories = Category.objects.all()   
 
     log_defaults = {

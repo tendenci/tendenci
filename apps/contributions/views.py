@@ -23,6 +23,7 @@ def index(request, id=None, template_name="contributions/view.html"):
 def search(request, template_name="contributions/search.html"):
     query = request.GET.get('q', None)
     contributions = Contribution.objects.search(query, user=request.user)
+    contributions = contributions.order_by('-create_dt')
 
     return render_to_response(template_name, {'contributions':contributions}, 
         context_instance=RequestContext(request))

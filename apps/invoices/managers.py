@@ -29,6 +29,5 @@ class InvoiceManager(Manager):
             sqs = sqs.filter(content=sqs.query.clean(query))
         else:
             sqs = sqs.all()
-        #sqs = sqs.order_by('user')
         
         return sqs.models(Invoice)
