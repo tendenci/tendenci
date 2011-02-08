@@ -21,12 +21,12 @@ def index(request, id=None, template_name="contacts/view.html"):
         raise Http403
 
 def search(request, template_name="contacts/search.html"):
-
     if not has_perm(request.user,'contacts.view_contact'):
         raise Http403
 
     query = request.GET.get('q', None)
     contacts = Contact.objects.search(query, user=request.user)
+    contacts = contacts.order_by('-create_dt')
     
     return render_to_response(template_name, {'contacts':contacts}, 
         context_instance=RequestContext(request))

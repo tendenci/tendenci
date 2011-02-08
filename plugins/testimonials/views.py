@@ -27,6 +27,7 @@ def index(request, pk=None, template_name="testimonials/view.html"):
 def search(request, template_name="testimonials/search.html"):
     query = request.GET.get('q', None)
     testimonials = Testimonial.objects.search(query, user=request.user)
+    testimonials = testimonials.order_by('-create_dt')
 
     return render_to_response(template_name, {'testimonials': testimonials},
         context_instance=RequestContext(request))
