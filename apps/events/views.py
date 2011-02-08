@@ -891,32 +891,34 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
     if request.method == "POST":
         email = Email()
         form = form_class(event.id, request.POST, instance=email)
+
         if form.is_valid():
+
             email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
-            if not email.sender:
-                email.sender = request.user.email
-                
+            email.sender = email.sender or request.user.email
+
             email.sender_display = request.user.get_full_name()
             email.reply_to = request.user.email
-            email.recipient = request.user
+            email.recipient = request.user.email
             email.content_type = "text/html"
             email.subject = '%s notice from %s' % (event.title, get_setting('site', 'global', 'sitedisplayname'))
             email.save(request.user)
             subject = email.subject
-            
-            d = {'summary': ''}
-            d['summary'] = '<font face=""Arial"" color=""#000000"">'
-            d['summary'] += 'Emails sent as a result of Calendar Event Notification</font><br><br>'
-            email_registrants(event, email, d)
-            
-            d['summary'] += '<font face=""Arial"" color=""#000000"">'
-            d['summary'] += '<br><br>Email Sent Appears Below in Raw Format'
-            d['summary'] += '</font><br><br>'
-            d['summary'] += email.body
-                    
+
+            registrant_kwargs = {}
+            registrant_kwargs['payment_status'] = form.cleaned_data['payment_status']
+            email_registrants(event, email, **registrant_kwargs)
+
+            registrant_kwargs['summary'] = '<font face=""Arial"" color=""#000000"">'
+            registrant_kwargs['summary'] += 'Emails sent as a result of Calendar Event Notification</font><br><br>'
+            registrant_kwargs['summary'] += '<font face=""Arial"" color=""#000000"">'
+            registrant_kwargs['summary'] += '<br><br>Email Sent Appears Below in Raw Format'
+            registrant_kwargs['summary'] += '</font><br><br>'
+            registrant_kwargs['summary'] += email.body
+
             # send summary
             email.subject = 'SUMMARY: %s' % email.subject
-            email.body = d['summary']
+            email.body = registrant_kwargs['summary']
             email.recipient = request.user.email
             email.send()
             
@@ -926,17 +928,15 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
                 email.subject = 'WEBMASTER SUMMARY: %s' % email.subject
                 email.body = '<h2>Site Webmaster Notification of Calendar Event Send</h2>%s' % email.body
                 email.send()
-            
-            # log an event
-            log_defaults = {
-                    'event_id' : 131101,
-                    'event_data': '%s (%d) sent by %s to event registrants' % (email._meta.object_name, email.pk, request.user),
-                    'description': '%s (%d) sent to event registrants of %s' % (email._meta.object_name, email.pk, event.title),
-                    'user': request.user,
-                    'request': request,
-                    'instance': email,
-            }
-            EventLog.objects.log(**log_defaults)
+
+            EventLog.objects.log(**{
+                'event_id' : 131101,
+                'event_data': '%s (%d) sent by %s to event registrants' % (email._meta.object_name, email.pk, request.user),
+                'description': '%s (%d) sent to event registrants of %s' % (email._meta.object_name, email.pk, event.title),
+                'user': request.user,
+                'request': request,
+                'instance': email,
+            })
             
             messages.add_message(request, messages.INFO, 'Successfully sent email "%s" to event registrants for event "%s".' % (subject, event.title))
             
@@ -944,13 +944,13 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
         
     else:
         openingtext = render_to_string('events/message/opening-text.txt', {'event': event}, 
-                                        context_instance=RequestContext(request))
+            context_instance=RequestContext(request))
         form = form_class(event.id, initial={'body': openingtext})
     
-    return render_to_response(template_name, 
-                              {'event':event,
-                               'form': form}, 
-                               context_instance=RequestContext(request))
+    return render_to_response(template_name, {
+        'event':event,
+        'form': form
+        },context_instance=RequestContext(request))
 
 
 def registrant_export(request, event_id):
