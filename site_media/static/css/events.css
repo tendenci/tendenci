@@ -572,3 +572,20 @@ input#id_regconf-limit {
 	border: 2px solid #FFC;
 }
 
+/*= Messages
+ ------------------------- */
+.recipient-set {
+    background-color: #EEE;
+    padding: 5px;
+    border: 1px solid silver;
+    margin-bottom: 5px;
+
+}
+.recipient-set ul {
+    margin-left: 0;
+}
+.recipient-set li {
+    display: inline;
+    list-style-type: none;
+    margin-right: 5px;
+}

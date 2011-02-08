@@ -13,4 +13,6 @@
 is:confirmed
 {% endif %}
 
+{{ object. }}
+
 hash:{{ object.hash }}
