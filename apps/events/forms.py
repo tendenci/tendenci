@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 
 from django import forms
+from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext_lazy as _
 
 from captcha.fields import CaptchaField
@@ -284,17 +285,22 @@ class Reg8nForm(forms.Form):
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'}, 
-                                          mce_attrs={'storme_app_label':'Message', 
-                                                    'storme_model':Email._meta.module_name.lower()}),
-                            label=_('Email Content'))
-    
+        mce_attrs={'storme_app_label':'Message',
+        'storme_model':Email._meta.module_name.lower()}),
+        label=_('Email Content'))
+
+    payment_status = forms.ChoiceField(
+        initial='all',
+        widget=RadioSelect(),
+        choices=(
+            ('all','All'),
+            ('paid','Paid'),
+            ('not-paid','Not Paid'),
+    ))
+
     class Meta:
         model = Email
-        fields = ('body',
-                  )
+        fields = ('body',)
     
     def __init__(self, event_id=None, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
-       
-
-
