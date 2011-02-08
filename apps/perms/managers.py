@@ -1,7 +1,13 @@
+import operator
+
 from django.db import models
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
+from django.contrib.auth.models import User, AnonymousUser
+
+from haystack.query import SearchQuerySet
 
 class ObjectPermissionManager(models.Manager):
     def who_has_perm(self, perm, instance):
@@ -251,123 +257,72 @@ class ObjectPermissionManager(models.Manager):
         perms = self.filter(content_type=content_type,
                             object_id=object.pk)
         for perm in perms:
-            perm.delete()          
+            perm.delete()
 
-# the function below were removed cause they were not needed as of yet. 
-# They need to be updated and tested
-            
-#    def remove_group(self, group_or_groups, object, perms=None):
-#        """
-#            Remove permissions to group or multiple groups
-#            assign_group(self, group_or_groups, object, perms=None)
-#            
-#            -- group_or_groups: can be a single group object, list, queryset
-#            or tuple.
-#            
-#            -- object: is the instance of a model class
-#            
-#            -- perms: a list of individual permissions to assign to each group
-#               leave blank for all permissions.
-#        """    
-#        multi_group = False
-#        
-#        if isinstance(group_or_groups,list):
-#            multi_group = True
-#        if isinstance(group_or_groups,QuerySet):
-#            multi_group = True
-#        if isinstance(group_or_groups,tuple):
-#            multi_group = True
-#                        
-#        
-#        if multi_group:
-#            for group in group_or_groups:
-#                if perms:
-#                    for perm in perms:
-#                        codename = '%s_%s' % (perm, object._meta.object_name.lower())
-#                        content_type = ContentType.objects.get_for_model(object)
-#                        perm = self.objects.get(codename=codename,
-#                                                content_type=content_type,
-#                                                object_id=object.pk,
-#                                                group=group)
-#                        perm.delete()                 
-#                else: 
-#                    content_type = ContentType.objects.get_for_model(object)
-#                    perms = self.filter(content_type=content_type,
-#                                        object_id=object.pk,
-#                                        group=group)
-#                    for perm in perms:
-#                        perm.delete()        
-#        else:
-#            if perms:
-#                for perm in perms:
-#                    codename = '%s_%s' % (perm, object._meta.object_name.lower())
-#                    content_type = ContentType.objects.get_for_model(object)
-#                    perm = self.objects.get(codename=codename,
-#                                            content_type=content_type,
-#                                            object_id=object.pk,
-#                                            group=group_or_groups)
-#                    perm.delete()
-#            else:
-#                content_type = ContentType.objects.get_for_model(object)
-#                perms = self.filter(content_type=content_type,
-#                                    object_id=object.pk,
-#                                    group=group_or_groups)
-#                for perm in perms:
-#                    perm.delete()             
-#        
-#    def remove(self, user_or_users, object, perms=None):
-#        """
-#            Remove permissions to user or multiple users
-#            remove(self, user_or_users, object, perms=None)
-#            
-#            user_or_users can be a single users object, list, or queryset
-#            object is the instance of a model
-#            perms are if you want to remove individual permissions
-#            ie. ['change','add','view']
-#        """
-#        multi_user = False
-#        
-#        
-#        if isinstance(user_or_users,list):
-#            multi_user = True
-#        if isinstance(user_or_users,QuerySet):
-#            multi_user = True
-#            
-#        if perms:
-#            if multi_user:
-#                for user in user_or_users:
-#                    for perm in perms:
-#                        codename = '%s_%s' % (perm, object._meta.object_name.lower())
-#                        content_type = ContentType.objects.get_for_model(object)
-#                        perm = self.objects.get(codename=codename,
-#                                                content_type=content_type,
-#                                                object_id=object.pk,
-#                                                user=user)
-#                        perm.delete()                 
-#            else:
-#                for perm in perms:
-#                    codename = '%s_%s' % (perm, object._meta.object_name.lower())
-#                    content_type = ContentType.objects.get_for_model(object)
-#                    perm = self.objects.get(codename=codename,
-#                                            content_type=content_type,
-#                                            object_id=object.pk,
-#                                            user=user_or_users)
-#                    perm.delete()
-#        else:
-#            if multi_user:
-#                for user in user_or_users:
-#                    content_type = ContentType.objects.get_for_model(object)
-#                    perms = self.filter(content_type=content_type,
-#                                        object_id=object.pk,
-#                                        user=user)
-#                    for perm in perms:
-#                        perm.delete()
-#            else:
-#                content_type = ContentType.objects.get_for_model(object)
-#                perms = self.filter(content_type=content_type,
-#                                    object_id=object.pk,
-#                                    user=user_or_users)
-#                for perm in perms:
-#                    perm.delete()              
-                    
+
+class TendenciBaseManager(models.Manager):
+    """
+    Base manager for all TendenciBase models
+    """
+    user = None
+    
+    # Private functions
+    def _anon_sqs(self, sqs):
+        """
+        Filter the query set for anonymous users
+        """
+        sqs = sqs.filter(status=1).filter(status_detail='active')
+        sqs = sqs.filter(allow_anonymous_view=True)
+        return sqs
+
+    def _user_sqs(self, sqs, **kwargs):
+        """
+        Filter the query set for people between admin and anon permission
+        (status+status_detail+(anon OR user)) OR (who_can_view__exact)
+        """
+        user = kwargs.get('user', None)
+
+        anon_q = Q(allow_anonymous_view=True)
+        user_q = Q(allow_user_view=True)
+        status_q = Q(status=1, status_detail='active')
+        perm_q = Q(who_can_view__exact=user.username)
+
+        q = reduce(operator.or_, [anon_q, user_q])
+        q = reduce(operator.and_, [status_q, q])
+        q = reduce(operator.or_, [q, perm_q])
+
+        return sqs.filter(q)
+
+    def _impersonation(self, user):
+        """
+        Test for impersonation and return the impersonee
+        """
+        if hasattr(user,'impersonated_user'):
+            if isinstance(user.impersonated_user, User):
+                user = user.impersonated_user
+        return user    
+
+    # Public functions
+    def search(self, query=None, *args, **kwargs):
+        """
+        Search the Django Haystack search index
+        Returns a SearchQuerySet object
+        """
+        from perms.utils import is_admin
+        sqs = SearchQuerySet()
+        user = kwargs.get('user', AnonymousUser())
+        user = self._impersonation(user)
+        self.user = user
+
+        if query:
+            sqs = sqs.auto_query(sqs.query.clean(query))
+
+        if is_admin(user):
+            sqs = sqs.all() # admin
+        else:
+            if user.is_anonymous():
+                sqs = self._anon_sqs(sqs) # anonymous
+            else:
+                sqs = self._user_sqs(sqs, user=user) # user
         
+        return sqs.models(self.model)

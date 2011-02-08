@@ -53,6 +53,7 @@ def index(request, slug=None, template_name="directories/view.html"):
 def search(request, template_name="directories/search.html"):
     query = request.GET.get('q', None)
     directories = Directory.objects.search(query, user=request.user)
+    directories = directories.order_by('-activation_dt')
 
     log_defaults = {
         'event_id' : 444000,

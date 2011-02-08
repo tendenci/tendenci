@@ -15,7 +15,7 @@ class FormManager(Manager):
 
     def search(self, query=None, *args, **kwargs):
         """
-            Uses haystack to query news.
+            Uses haystack to query forms.
             Returns a SearchQuerySet
         """
         sqs = SearchQuerySet()

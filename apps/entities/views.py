@@ -34,8 +34,9 @@ def index(request, id=None, template_name="entities/view.html"):
 
 def search(request, template_name="entities/search.html"):
     query = request.GET.get('q', None)
-    is_an_admin = is_admin(request.user)
-    entities = Entity.objects.search(query, user=request.user, is_admin=is_an_admin)
+    entities = Entity.objects.search(query, user=request.user)
+    # TODO: Facet entity_name so that it can be ordered by
+    # entities = entities.order_by('entity_name')
 
     log_defaults = {
         'event_id' : 294000,

@@ -45,6 +45,7 @@ def index(request, slug=None, template_name="services/view.html"):
 def search(request, template_name="services/search.html"):
     query = request.GET.get('q', None)
     services = Service.objects.search(query, user=request.user)
+    services = services.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 354000,

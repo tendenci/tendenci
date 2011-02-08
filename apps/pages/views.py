@@ -50,6 +50,7 @@ def index(request, slug=None, template_name="pages/view.html"):
 def search(request, template_name="pages/search.html"):
     query = request.GET.get('q', None)
     pages = Page.objects.search(query, user=request.user)
+    pages = pages.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 584000,
