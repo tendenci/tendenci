@@ -50,6 +50,7 @@ def index(request, slug=None, template_name="news/view.html"):
 def search(request, template_name="news/search.html"):
     query = request.GET.get('q', None)
     news = News.objects.search(query, user=request.user)
+    news = news.order_by('-release_dt')
 
     log_defaults = {
         'event_id' : 305400,

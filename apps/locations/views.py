@@ -35,6 +35,7 @@ def index(request, id=None, template_name="locations/view.html"):
 def search(request, template_name="locations/search.html"):
     query = request.GET.get('q', None)
     locations = Location.objects.search(query, user=request.user)
+    locations = locations.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 834000,

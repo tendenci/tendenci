@@ -27,6 +27,7 @@ def search(request, template_name="help_files/search.html"):
     """ Help Files Search """
     query = request.GET.get('q', None)
     help_files = HelpFile.objects.search(query, user=request.user)
+    help_files = help_files.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 1000400,
