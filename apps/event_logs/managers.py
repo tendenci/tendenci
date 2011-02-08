@@ -27,7 +27,7 @@ default_keyword_args = (
 class EventLogManager(Manager):
     def search(self, query=None, *args, **kwargs):
         """
-            Uses haystack to query articles. 
+            Uses haystack to query event logs
             Returns a SearchQuerySet
         """
         sqs = SearchQuerySet()
