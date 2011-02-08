@@ -525,9 +525,10 @@ class Event(TendenciBaseModel):
         """
         This method can return 3 different values.
         All registrants, registrants with a balance, registrants without a balance.
+        This method does not respect permissions.
         """
 
-        registrants = Registrant.objects.filter(registration__event=self)
+        registrants = Registrant.objects.filter(registration__event=self, cancel_dt=None)
 
         if 'with_balance' in kwargs:
             with_balance = kwargs['with_balance']
