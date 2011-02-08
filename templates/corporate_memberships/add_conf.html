@@ -16,11 +16,14 @@
     <p>{% if corporate_membership.corp_app.confirmation_text %}
     	{{ corporate_membership.corp_app.confirmation_text|safe }}
     {% else %}
-    	Thank you for your submitting! <br /><br />Your membership will be reviewed by an administrator 
-    	who will be contacting you shortly.
+    	Thank you for your submitting! <br /><br />
+    	{% is_admin request.user as admin %}
+    	{% if not admin %}
+	    	Your membership will be reviewed by an administrator 
+	    	who will be contacting you shortly.
+    	{% endif %}
     {% endif %}
     </p>
-    
     {% has_perm request.user corporate_memberships.view_corporatemembership as can_view %}
     {% has_perm request.user corporate_memberships.change_corporatemembership as can_edit %}
    	
