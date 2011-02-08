@@ -27,10 +27,10 @@
     <div class="event-message-wrap">
     	<form action="." method="post" name="form1">
     	<div class="message-forms">
-    		<div class="message-item">
-    			<h2>Event Title: <a href="{% url event event.id %}">{{ event.title }}</a></h2>
-    		</div>
-    		
+    		<h2>Event Title: <a href="{% url event event.id %}">{{ event.title }}</a></h2>
+
+            <div class="recipient-set">{{ form.payment_status }}</div>
+
     		<div class="message-item"><a href="{% url event.registrant.roster event.id %}">View all registrant(s)</a></div>
     		
     		<div class="message-item">
