@@ -4,6 +4,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import slugify
+from django.http import HttpResponse
+from django.utils.html import escape
 
 from memberships.forms import MembershipTypeForm
 from user_groups.models import Group
@@ -258,6 +260,16 @@ class AppAdmin(admin.ModelAdmin):
         extra_context.update(extra_context)
 
         return super(AppAdmin, self).change_view(request, object_id, extra_context)
+    
+    def response_change(self, request, obj, *args, **kwargs):
+        if request.POST.has_key('_popup'):
+            return HttpResponse("""
+                    <script type="text/javascript">
+                        opener.dismissAddAnotherPopup(window, "%s", "%s");
+                    </script>
+            """ % (escape(obj._get_pk_val()), escape(obj)))
+        else:
+            return  super(AppAdmin, self).response_change(request, obj, *args, **kwargs)
 
 
     def get_fieldsets(self, request, instance=None):
