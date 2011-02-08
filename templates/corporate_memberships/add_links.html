@@ -6,7 +6,7 @@
 	{% else %}
 	<style>
 		.add-links-all-wrapper{
-			position: relative;
+			position: relative !important;
 		}
 		.add-links-all-wrapper a{
 			cursor: pointer;
@@ -19,34 +19,33 @@
 		    border-color: silver #666666 #666666 silver;
 		    border-style: solid;
 		    border-width: 1px;
-		    left: 0;
-		    position: absolute;
-		    top: 16px;
-		    width: 140px;
+		    position: absolute !important;
+		    left: 0px !important;
+		    top: 16px !important;
 		    z-index: 9999;
 		}
 		.add-links-all-target ul{
-			width: 140px;
+			width: 160px;
 		}
 		.add-links-all-target ul li{
 			list-style: none;
 			cursor: pointer;
-			padding:2px 3px; 
 			text-align: left;
 		}
 		.add-links-all-target ul li a{
-			 background-position: left top;
-    		 background-repeat: no-repeat;
     		 display: block;
-    		 padding-left: 20px;
-    		 text-decoration: none;
+    		 padding: 2px !important;
+    		 text-align: left !important;
+    		 text-decoration: none !important;
+    		 line-height: 1em !important;
+    		 float: none !important;
 		}
 		
 	</style>
 	 <div class="add-links-all-wrapper">
 		 <a href="javascript:;" class="add-links-all-trigger">Add <small>&#9660;</small></a>
 		 <div class="add-links-all-target">
-			<ul>
+			<ul style="margin:0;">
 			{% for corp_app in corp_apps %}
 				<li>
 				<a href="{% url corp_memb.add corp_app.slug %}">{{ corp_app.name }}</a>
