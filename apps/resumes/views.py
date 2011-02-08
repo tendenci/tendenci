@@ -45,6 +45,7 @@ def index(request, slug=None, template_name="resumes/view.html"):
 def search(request, template_name="resumes/search.html"):
     query = request.GET.get('q', None)
     resumes = Resume.objects.search(query, user=request.user)
+    resumes = resumes.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 354000,

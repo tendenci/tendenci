@@ -27,10 +27,10 @@ def index(request, slug=None, template_name="case_studies/view.html"):
 def search(request, template_name="case_studies/search.html"):
     query = request.GET.get('q', None)
     case_studies = CaseStudy.objects.search(query, user=request.user)
+    case_studies = case_studies.order_by('-create_dt')
 
     return render_to_response(template_name, {'case_studies': case_studies},
-        context_instance=RequestContext(request))
-        
+        context_instance=RequestContext(request))        
 def service(request, id, template_name="case_studies/search.html"):
     "List of case studies by service"
     service = get_object_or_404(Service, pk=id)
