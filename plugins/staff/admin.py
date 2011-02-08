@@ -1,12 +1,26 @@
 from django.contrib import admin
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.utils.encoding import iri_to_uri
 from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
-from models import Staff, Position, Department
-from forms import StaffForm
+from models import Staff, Position, Department, StaffFile
+from forms import StaffForm, FileForm
+
+class FileAdmin(admin.StackedInline):
+    fieldsets = (
+        (None, {
+            'fields': (
+            'file',
+            'description',
+            'position',
+        )},),
+    )
+    model = StaffFile
+    form = FileForm
+    extra = 0
 
 class StaffAdmin(admin.ModelAdmin):
     list_display = ['view_on_site','staff_photo', 'name', 'slug', 'department','position', 'start_date', 'years']
@@ -26,12 +40,27 @@ class StaffAdmin(admin.ModelAdmin):
             'position',
             'email',
             'phone',
+            ('facebook','twitter','linkedin','get_satisfaction','flickr','slideshare'),
+            'cv',
+            'tiny_bio',
+            'question',
+            'answer',
+            'personal_sites',
             'tags'
         )}),
         ('Administrative', {'fields': (
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
     form = StaffForm
+    inlines = (FileAdmin,)
+
+    class Media:
+        js = (
+            '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/staff-dynamic-sort.js' % settings.STATIC_URL,
+        )
+        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
     def view_on_site(self, obj):
         link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
@@ -124,6 +153,20 @@ class StaffAdmin(admin.ModelAdmin):
             ObjectPermission.objects.assign(instance.creator, instance)
 
         return instance
+
+    def save_formset(self, request, form, formset, change):
+
+        for f in formset.forms:
+            file = f.save(commit=False)
+            if file.file:
+                file.staff = form.save()
+                file.content_type = ContentType.objects.get_for_model(file.staff)
+                file.object_id = file.staff.pk
+                file.creator = request.user
+                file.owner = request.user
+                file.save()
+
+        formset.save()
 
     def change_view(self, request, object_id, extra_context=None):
 		result = super(StaffAdmin, self).change_view(request, object_id, extra_context)

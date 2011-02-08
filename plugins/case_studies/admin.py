@@ -46,7 +46,6 @@ class CaseStudyAdmin(admin.ModelAdmin):
     )
     form = CaseStudyForm
     inlines = (FileAdmin,)
-#    change_form_template = 'case_studies/admin/change_form.html'
 
     class Media:
         js = (
@@ -145,8 +144,6 @@ class CaseStudyAdmin(admin.ModelAdmin):
         return instance
 
     def save_formset(self, request, form, formset, change):
-
-        from pprint import pprint
 
         for f in formset.forms:
             image = f.save(commit=False)
