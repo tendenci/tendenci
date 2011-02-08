@@ -5,6 +5,7 @@ from django import forms
 
 from perms.forms import TendenciBaseForm
 from models import Staff
+from files.models import File
 from tinymce.widgets import TinyMCE
 
 ALLOWED_LOGO_EXT = (
@@ -15,10 +16,18 @@ ALLOWED_LOGO_EXT = (
 )
 
 class StaffForm(TendenciBaseForm):
+
     biography = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Staff._meta.app_label,
         'storme_model':Staff._meta.module_name.lower()}))
+
+    cv = forms.CharField(
+        label='CV',
+        required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+            mce_attrs={'storme_app_label':Staff._meta.app_label,
+            'storme_model':Staff._meta.module_name.lower()}))
     
     status_detail = forms.ChoiceField(choices=(('active','Active'),('inactive','Inactive')))
 
@@ -47,3 +56,15 @@ class StaffForm(TendenciBaseForm):
 
     class Meta:
         model = Staff
+
+class FileForm(forms.ModelForm):
+    class Meta:
+        model = File
+        fields = (
+            'file',
+            'description',
+            'position',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(FileForm, self).__init__(*args, **kwargs)
