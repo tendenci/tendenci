@@ -11,7 +11,7 @@
 
 <div style="margin-bottom:20px;">
 
-<p style="margin:2px">{{ user.username }} just cancelled his registration on {{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
+<p style="margin:2px">{{ user.username }} just cancelled their registration on {{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
 <p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">View registration details</a></p>
 </div>
 
@@ -21,7 +21,8 @@
 <p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">View event details</a></p>
 </div>
 
-<p>We now have 30 registrants, {{ registrants_paid.count }} payed (${{ event.money_collected }}) and 7 pending ({{ event.money_outstanding }})</p>
+<p>We now have {{ event.registrants.count }} registrants, {{ registrants_paid.count }} payed
+    (${{ event.money_collected }}) and {{ registrants_pending.count }} pending ({{ event.money_outstanding }})</p>
 
 <p><a href="{{ SITE_GLOBAL_SITEURL }}/settings/site/global/#id_allnoticerecipients">
     Remove my email from this notification list</a></p>
