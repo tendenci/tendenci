@@ -1,4 +1,4 @@
-body { margin-top: 30px !important; }
+html { margin-top: 30px !important; margin-bottom: 26px !important;  }
 	#admin-bar { width: 100%; position: fixed; top: 0; left: 0; background: #6A120D; color: #ebebeb; height: 30px; z-index: 99999 !important;}
 	#admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 12px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
 	#admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
@@ -14,6 +14,7 @@ body { margin-top: 30px !important; }
 	#admin-bar .app-list ul li {float: right;}
 	#admin-bar .app-list ul li.app {float: left;}
 	#admin-bar h4 {padding: 0 0 8px; font-size: 14px;}
+	#admin-bar li a.admin-logo {padding: 2px 8px 0;}
 	
 	#admin-bar .sub { background: #810D00; position: absolute; left: -999em; display: none; }
 	#admin-bar li:hover .sub { left: auto; display: block; }
@@ -28,7 +29,7 @@ body { margin-top: 30px !important; }
 	#admin-bar li #admin-search-box {margin-top: 3px; padding-right: 4px; border-right: 1px solid #4B0D09; }
 	#admin-bar #admin-search-box input#admin-search-submit {border: 1px solid #eee; color: #eee; background-color: #6A120D;}
 	
-	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #6A120D; color: #ebebeb; height: 30px; z-index: 99999 !important; }
+	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #6A120D; color: #ebebeb; height: 26px; z-index: 99999 !important; }
 	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
 	#bottom-admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
 	#bottom-admin-bar a { display: block; padding: 4px 8px 6px 8px; font-size: 11px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #6A120D; text-decoration: none; border-right: 1px solid #4B0D09; color: #ebebeb; }
