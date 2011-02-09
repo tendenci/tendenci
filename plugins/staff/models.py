@@ -80,6 +80,14 @@ class Position(models.Model):
 
 class StaffFile(File):
     staff = models.ForeignKey(Staff)
+    photo_type = models.CharField(
+        max_length=50,
+        choices=(
+            ('polaroid','Polaroid'),
+            ('professional','Professional'),
+            ('fun','Fun'),
+            ('other','Other'),
+        ))
     position = models.IntegerField(blank=True)
 
     def save(self, *args, **kwargs):
