@@ -15,6 +15,7 @@ class FileAdmin(admin.StackedInline):
             'fields': (
             'file',
             'description',
+            'photo_type',
             'position',
         )},),
     )
