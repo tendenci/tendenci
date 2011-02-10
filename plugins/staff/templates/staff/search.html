@@ -32,9 +32,11 @@
             <table border="0" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                     <td class="member-photo">
+                        {% if staff_member.professional_photo %}
                         <a href="{{ staff_member.get_absolute_url }}">
-                        <img src="{% url staff.photo staff_member.pk "128x128" %}" title="{{ staff_member.name }}"  />
+                        <img src="{% url file staff_member.professional_photo.pk %}128x128/" title="{{ staff_member.name }}"  />
                         </a>
+                        {% endif %}
                         <p><a href="{{ staff_member.get_absolute_url }}">{{ staff_member.name }}</a></p>
                     </td>
                     <td class="member-info">

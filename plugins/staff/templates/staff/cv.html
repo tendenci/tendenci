@@ -7,7 +7,7 @@
 
 {% block title %}
     {% nowhitespace %}
-        {{ staff.name }}
+        {{ staff.name }} Curriculum Vitae (CV)
         {% if staff.position %}
             &nbsp;&ndash;&nbsp;{{ staff.position }}
         {% endif %}
@@ -68,17 +68,11 @@
             {% endif %}
         </div>
         <h1>
-            {{ staff.name }}
-            {% if staff.position %}
-                &nbsp;&ndash;&nbsp;{{ staff.position }}
-            {% endif %}
-            {% if staff.department %}
-                &nbsp;&ndash;&nbsp;{{ staff.department }}
-            {% endif %}
+            {{ staff.name }} Curriculum Vitae (CV)
         </h1>
-        {% if staff.biography %}
+        {% if staff.cv %}
         <p class="staff-bio">
-            {{ staff.biography|safe }}
+            {{ staff.cv|safe }}
         </p>
         {% endif %}
         <div class="staff-meta">

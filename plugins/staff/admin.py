@@ -34,20 +34,23 @@ class StaffAdmin(admin.ModelAdmin):
         (None, {'fields': (
             'name',
             'slug',
-            'photo',
             'start_date',
-            'biography',
             'department',
             'position',
-            'email',
-            'phone',
-            ('facebook','twitter','linkedin','get_satisfaction','flickr','slideshare'),
-            'cv',
             'tiny_bio',
             'question',
             'answer',
+            'biography',
+            'cv',         
+            'email',
+            'phone',
             'personal_sites',
             'tags'
+        )}),
+        ('Social Media', {
+        'description': ('Enter just your usernames for any of these social media sites. No need to enter the full links.'), 
+        'fields': (
+             ('facebook','twitter','linkedin','get_satisfaction','flickr','slideshare'),
         )}),
         ('Administrative', {'fields': (
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
