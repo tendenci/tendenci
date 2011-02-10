@@ -25,6 +25,7 @@ class FileAdmin(admin.StackedInline):
 
 class CaseStudyAdmin(admin.ModelAdmin):
     list_display = ['view_on_site', 'client', 'slug', 'overview_parsed', 'create_dt']
+    list_display_links = ['client']
     list_filter = ['create_dt']
     search_fields = ['client','overview', 'execution', 'results']
     ordering = ('-create_dt',)
