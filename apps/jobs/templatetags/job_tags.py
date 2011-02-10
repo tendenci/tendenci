@@ -128,12 +128,9 @@ class ListJobNode(Node):
         jobs = Job.objects.search(user=user, query=query)
         jobs = jobs.order_by(order)
         if randomize:
-            if jobs.count() < limit:
-                jobs = [cs.object for cs in jobs]
-            else:
-                jobs = [cs.object for cs in random.sample(jobs, limit)]
+            jobs = [job.object for job in random.sample(jobs, jobs.count())][:limit]
         else:
-            jobs = [cs.object for cs in jobs[:limit]]
+            jobs = [job.object for job in jobs[:limit]]
 
         context[self.context_var] = jobs
         return ""

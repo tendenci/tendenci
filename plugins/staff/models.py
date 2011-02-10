@@ -22,20 +22,18 @@ class Staff(TendenciBaseModel):
     biography = models.TextField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=25, blank=True, null=True)
-    photo = models.ImageField(max_length=260, upload_to=file_directory,
-        help_text=_('Employee Photo. Only valid images.'), blank=True)
 
-    facebook = models.URLField(blank=True)
-    twitter = models.URLField(blank=True)
-    linkedin = models.URLField(blank=True)
-    get_satisfaction = models.URLField('GetSatisfaction', blank=True)
-    flickr = models.URLField(blank=True)
-    slideshare = models.URLField(blank=True)
+    facebook = models.CharField(blank=True, max_length=100)
+    twitter = models.CharField(blank=True, max_length=100)
+    linkedin = models.CharField(blank=True, max_length=100)
+    get_satisfaction = models.CharField('GetSatisfaction', blank=True, max_length=100)
+    flickr = models.CharField(blank=True, max_length=100)
+    slideshare = models.CharField(blank=True, max_length=100)
 
     cv = models.TextField()
-    tiny_bio = models.TextField(blank=True)
+    tiny_bio = models.CharField('5 second bio', blank=True, max_length=140, help_text=_('140 characters max.'))
 
-    question = models.TextField(blank=True)
+    question = models.CharField(blank=True, max_length=150)
     answer = models.TextField(blank=True)
 
     personal_sites = models.TextField(
@@ -65,6 +63,12 @@ class Staff(TendenciBaseModel):
         delta = datetime.now().date() - self.start_date
         years = abs(round((delta.days / (365.25)), 2))
         return years
+        
+    def professional_photo(self):
+        try:
+            return self.stafffile_set.get(photo_type='Professional')
+        except:
+            return False
 
 class Department(models.Model):
     name = models.CharField(max_length=50)

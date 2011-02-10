@@ -14,7 +14,7 @@ from perms.utils import is_admin
 
 from models import Staff
 
-def index(request, slug=None, template_name="staff/view.html"):
+def index(request, slug=None, cv=None):
     if not slug: return HttpResponseRedirect(reverse('staff.search'))
     staff = get_object_or_404(Staff, slug=slug)
 
@@ -23,6 +23,11 @@ def index(request, slug=None, template_name="staff/view.html"):
     if (staff.status_detail).lower() <> 'active' and (not is_admin(request.user)):
         raise Http403
 
+    if cv:
+        template_name="staff/cv.html"
+    else:
+        template_name="staff/view.html"
+    
     if has_perm(request.user, 'staff.view_staff', staff):
         return render_to_response(template_name, {'staff': staff},
             context_instance=RequestContext(request))
@@ -36,7 +41,7 @@ def search(request, template_name="staff/search.html"):
 
     return render_to_response(template_name, {'staff':staff},
         context_instance=RequestContext(request))
-
+        
 def photo(request, pk, size):
     if not id: raise Http404
     staff = get_object_or_404(Staff, pk=pk)
