@@ -1,8 +1,8 @@
 {% load base_tags %}
 {% load perm_tags %}
 
-{% has_perm user staff.change_staff opt_object as can_edit %}
-{% has_perm user staff.delete_staff opt_object as can_delete %}
+{% has_perm user case_study.change_case_study opt_object as can_edit %}
+{% has_perm user case_study.delete_case_study opt_object as can_delete %}
 
 <div class="t-iconrow">
 	{% if can_edit %}

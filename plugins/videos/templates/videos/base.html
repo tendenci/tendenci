@@ -1,9 +1,23 @@
 {% extends "site_base.html" %}
 {% load video_tags %}
+{% load perm_tags %}
+
+{% has_perm user videos.add_video as can_add_video %}
 
 {% block title %}Videos{% endblock %}
 
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "videos/media/css/video.css" %}
+</style>
+{% endblock %}
+
 {% block sidebar %}
+<div id="videos-sidebar">
+{% if can_add_video %}
+    <div><a href="{% url admin:videos_video_add %}">Add Video</a></div>
+    {% endif %}
 <form class="search" action="{% url video.search %}" method="get">
 <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
 <input type="submit" value="Search" />
@@ -19,6 +33,8 @@
 	</ul>
 </li>
 </ul>
+</div>
+{{ block.super }}
 {% endblock sidebar %}
 
 {% block extra_body %}

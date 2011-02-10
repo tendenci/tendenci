@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.models import ObjectPermission
@@ -11,7 +13,8 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class VideoAdmin(admin.ModelAdmin):
 
-    list_display = ['title', 'category']
+    list_display = ['view_on_site','title', 'category']
+    list_display_links = ['title']
     list_filter = ['category']
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['question','answer']
@@ -21,6 +24,17 @@ class VideoAdmin(admin.ModelAdmin):
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
     form = VideoForm
+    
+    def view_on_site(self, obj):
+        link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
+        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+            reverse('video.details', args=[obj.slug]),
+            obj.title,
+            link_icon,
+        )
+        return link
+    view_on_site.allow_tags = True
+    view_on_site.short_description = 'view'
     
     def log_deletion(self, request, object, object_repr):
         super(VideoAdmin, self).log_deletion(request, object, object_repr)
