@@ -3,6 +3,14 @@ from videos.models import Video
 
 register = Library()
 
+@register.inclusion_tag("videos/options.html", takes_context=True)
+def video_options(context, user, video):
+    context.update({
+        "opt_object": video,
+        "user": user
+    })
+    return context
+
 class ListVideosNode(Node):
     
     def __init__(self, context_var, *args, **kwargs):
