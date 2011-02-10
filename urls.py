@@ -75,6 +75,8 @@ urlpatterns = patterns('',
     # lEGACY REDIRECTS
     # rss redirect
     url(r'^en/rss/$', redirect_to, {'url':'/rss'}),
+    url(r'^en/$', redirect_to, {'url': '/accounts/login/'}),
+    url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
 )
 
 handler500 = 'base.views.custom_error'
