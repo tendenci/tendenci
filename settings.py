@@ -207,6 +207,7 @@ INSTALLED_APPS = (
     'help_files',
     'resumes',
     'boxes',
+    'legacy',
 
     # celery task system, must stay at the bottom
     # of installed apps
