@@ -85,13 +85,17 @@ handler500 = 'base.views.custom_error'
 if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^site_media/(?P<path>.*)$', 
-        'django.views.static.serve',
-        {'document_root': join(settings.PROJECT_ROOT,'site_media')}),
+            'django.views.static.serve',
+            {'document_root': join(settings.PROJECT_ROOT,'site_media')}),
+
         (r'^themes/%s/(?P<path>.*)$' % settings.SITE_THEME, 
-        'django.views.static.serve',
-        {'document_root': settings.THEME_ROOT}),           
+            'django.views.static.serve',
+            {'document_root': settings.THEME_ROOT}),
+
+        (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
+            'base.views.plugin_static_serve'),
     )
-    
+
 # Local url patterns for development
 try:
     from local_urls import extra_patterns
