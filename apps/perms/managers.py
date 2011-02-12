@@ -310,11 +310,7 @@ class TendenciBaseManager(models.Manager):
         """
         from perms.utils import is_admin
         sqs = SearchQuerySet()
-        user = kwargs.get('user', AnonymousUser())
-
-        # check for user == None and set it to anonymous
-        if not user:
-            user = AnonymousUser()
+        user = kwargs.get('user') or AnonymousUser()
             
         user = self._impersonation(user)
         self.user = user
