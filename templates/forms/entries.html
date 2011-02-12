@@ -6,7 +6,7 @@
 {% block title %}{{ block.super }}Entries{% endblock %}
 
 {% block extra_head %}
-{% block extra_body %}{% endblock %}
+{{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms-builder.css">
 {% endblock %}
 
@@ -50,7 +50,7 @@
 {% endblock %}
 
 {% block extra_body %}
-    {% block extra_body %}{% endblock %}
+    {{ block.super }}
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation
