@@ -87,7 +87,7 @@ class ListStaffNode(Node):
         if randomize:
             staff_members = [member.object for member in random.sample(staff_members, staff_members.count())][:limit]
         else:
-            staff_members = [member.object for member in jobs[:limit]]
+            staff_members = [member.object for member in staff_members[:limit]]
 
         context[self.context_var] = staff_members
         return ""

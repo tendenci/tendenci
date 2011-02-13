@@ -36,20 +36,30 @@ def forms_entry_options(context, user, entry):
     
 class GetFormNode(Node):
     
-    def __init__(self, pk):
-        self.pk = pk
+    def __init__(self,  **kwargs):
+        self.kwargs = kwargs
 
     def render(self, context):
-        query = '"pk:%s"' % (self.pk)
-        print query
+        pk = 0
+
+        if 'pk' in self.kwargs:
+            try:
+                pk = Variable(self.kwargs['pk'])
+                pk = pk.resolve(context)
+            except:
+                pk = self.kwargs['pk'] # context string
+                
+        query = '"pk:%s"' % (pk)
         
-        form = Form.objects.search(query=query).best_match()
-        context['form'] = form.object
-        context['form_for_form'] = FormForForm(form.object)
-        template = get_template('forms/embed_form.html')
-        output = '<div class="embed_form">%s</div>' % template.render(context)
-        return output
-        
+        try:
+            form = Form.objects.search(query=query).best_match()
+            context['form'] = form.object
+            context['form_for_form'] = FormForForm(form.object)
+            template = get_template('forms/embed_form.html')
+            output = '<div class="embed-form">%s</div>' % template.render(context)
+            return output
+        except:
+            return ""        
         
 @register.tag
 def embed_form(parser, token):
@@ -57,12 +67,14 @@ def embed_form(parser, token):
     Example:
         {% embed_form 123 %}
     """
-    bits = token.split_contents()
     
+    kwargs = {}
+    bits = token.split_contents()
+      
     try:
-        pk = bits[1]  
+        kwargs["pk"] = bits[1]  
     except:
         message = "Form tag must include an ID of a form."
         raise TemplateSyntaxError(message)
     
-    return GetFormNode(pk) 
+    return GetFormNode(**kwargs) 
