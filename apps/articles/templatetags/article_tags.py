@@ -61,6 +61,7 @@ class ListArticlesNode(Node):
 
 
         articles = Article.objects.search(user=self.user, query=query)
+        articles = articles.order_by('-release_dt')
         articles = [article.object for article in articles[:self.limit]]
         context[self.context_var] = articles
         return ""
