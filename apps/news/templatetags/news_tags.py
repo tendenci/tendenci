@@ -60,6 +60,7 @@ class ListNewsNode(Node):
             query = '%s "%s"' % (query, q_item)
 
         news = News.objects.search(user=self.user, query=query)
+        news = news.order_by('-release_dt')
         news = [news_item.object for news_item in news[:self.limit]]
         context[self.context_var] = news
         return ""
