@@ -210,7 +210,6 @@ class Registration(models.Model):
         else:
             return 402000
 
-
     @property
     def registrant(self):
         """
@@ -236,7 +235,7 @@ class Registration(models.Model):
         status_detail = kwargs.get('status_detail', 'estimate')
         
         object_type = ContentType.objects.get(app_label=self._meta.app_label, 
-                                              model=self._meta.module_name)
+            model=self._meta.module_name)
 
         try: # get invoice
             invoice = Invoice.objects.get(
@@ -256,6 +255,7 @@ class Registration(models.Model):
         invoice.subtotal = self.amount_paid
         invoice.total = self.amount_paid
         invoice.balance = invoice.total
+        invoice.tender_date = datetime.now()
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
         invoice.save()

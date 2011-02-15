@@ -475,13 +475,13 @@ def delete(request, id, template_name="events/delete.html"):
 
 def register(request, event_id=0, form_class=Reg8nForm, template_name="events/reg8n/register.html"):
         event = get_object_or_404(Event, pk=event_id)
-        
+
         user = None
         email = ''
         if request.user.is_authenticated():
             user = request.user
             email = user.email
-        
+
         # free or priced event (choose template)
         free = (event.registration_configuration.price == 0)                
         if free: template_name = "events/reg8n/register-free.html"
@@ -501,7 +501,8 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 reverse('event.registration_confirmation', 
                 args=(event_id, registrant.hash)),
             )
-        except: pass
+        except:
+            pass
 
         bad_scenarios = [
             event.end_dt < datetime.now(), # event has passed
@@ -529,7 +530,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                     'payment_method': payment_method,
                     'price': price,
                 }
-                    
+
                 # create registration record; then take payment
                 # this allows someone to be registered with an outstanding balance 
                 reg8n, reg8n_created = save_registration(**reg_defaults)
