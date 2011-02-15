@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load avatar_tags %}
+{% load base_filters %}
 
 {% block title %}{{ event.title }} - {{ event.start_dt|date }} - Registrant Roster{% endblock %}
 
@@ -36,7 +37,6 @@
 	}
 	.hr {
 		height: 1px;
-		xbackground-color: #EEE;
 		margin: 10px auto;
 	}
 	#registrant-table {
@@ -50,9 +50,6 @@
 		background-color: #EEE;
 		margin-bottom: 10px;
 		padding: 10px 0;
-	}
-	td {
-
 	}
 	#registrant-table td.counter {
 		text-align: center;
@@ -73,13 +70,11 @@
 		text-align: left;
 		border: 1px solid silver;
 		width: 25px;
-		height: 25px;
-		margin: 5px 0;
+		height: 17px;
 	}
 
 	table#registrant-table a {
 		color: inherit;
-		xtext-decoration: none;
 	}
 
 	table#registrant-table a:active,
@@ -104,8 +99,6 @@
 	}
 
 	.bottom-row {
-		xcolor: white;
-		xbackground-color: #AAA;
 		border-top: 1px solid silver;
 	}
 
@@ -236,6 +229,17 @@
 	<td><a href="{{ registrant.get_absolute_url }}">R-{{ registrant.registration.pk }}</a></td> <!-- registration number -->
 	<td>${{ registrant.registration.amount_paid|floatformat:"2" }}</td> <!-- registration amount -->
 	<td>${{ registrant.registration.invoice.balance|floatformat:"2" }}</td> <!-- balance -->
+</tr>
+<tr class="{% cycle 'odd' 'even' %}">
+    <td colspan="4"></td>
+    <td colspan="5">
+
+        {% if registrant.registration.invoice.tender_date %}
+            TENDERED: {{ registrant.registration.invoice.tender_date|date_long }}
+        {% else %}
+            Not Tendered
+        {% endif %}
+    </td>
 </tr>
 {% endwith %}
 {% endfor %}
