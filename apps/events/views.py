@@ -803,27 +803,36 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
         context_instance=RequestContext(request))
 
 @login_required
-def registrant_roster(request, event_id=0, template_name='events/registrants/roster.html'):
+def registrant_roster(request, event_id=0, roster_view='', template_name='events/registrants/roster.html'):
     from django.db.models import Sum
-
-    query = request.GET.get('q', '')
-
     event = get_object_or_404(Event, pk=event_id)
+    query = ''
+
+    if not roster_view: # default to total page
+        return HttpResponseRedirect(reverse('event.registrant.roster.total', args=[event.pk]))
+
+    # is:paid or is:non-paid
+    if 'paid' in roster_view:
+        query = '"is:%s"' % roster_view
+
+    query = '%s "is:confirmed"' % query
 
     registrants = Registrant.objects.search(
-        query, user=request.user, event=event).order_by("last_name")
-
-    query = "%s is:confirmed" % query
-    confirmed_registrants = Registrant.objects.search(
         query, user=request.user, event=event)
 
     total_balance = Registration.objects.filter(event=event).aggregate(Sum('amount_paid'))['amount_paid__sum']
 
+    num_registrants_who_payed = event.registrants(with_balance=False).count()
+    num_registrants_who_owe = event.registrants(with_balance=True).count()
+
     return render_to_response(template_name, {
         'event':event, 
         'registrants':registrants,
-        'confirmed_registrants':confirmed_registrants, 
-        'total_balance':total_balance}, 
+        'total_balance':total_balance,
+        'num_registrants_who_payed':num_registrants_who_payed,
+        'num_registrants_who_owe':num_registrants_who_owe,
+        'roster_view':roster_view,
+        },
         context_instance=RequestContext(request))
 
 @login_required
