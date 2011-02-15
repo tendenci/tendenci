@@ -14,7 +14,7 @@ class FieldDict(dict):
     representation based on a models verbose_name
     """
     def __unicode__(self):
-        return self['verbose_name']
+        return self['verbose_name_plural'].lower()
 
 
 class DeclarativeMetaclass(type):
