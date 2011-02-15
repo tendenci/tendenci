@@ -31,6 +31,13 @@ class RegisteredApps(object):
             # append all apps for main iterable
             self.all_apps.append(registry.fields)
 
+        # sort the applications alphabetically by
+        # object representation
+        key = lambda x: unicode(x)
+        self.all_apps = sorted(self.all_apps, key=key)
+        self.core = sorted(self.core, key=key)
+        self.plugins = sorted(self.plugins, key=key)
+
     def __iter__(self):
         return iter(self.all_apps)
 
