@@ -162,5 +162,6 @@ class PasswordResetForm(forms.Form):
                 'token': token_generator.make_token(user),
                 'protocol': use_https and 'https' or 'http',
             }
+            from_email = get_setting('site', 'global', 'siteemailnoreplyaddress')
             send_mail(_("Password reset on %s") % site_name,
-                t.render(Context(c)), None, [user.email])
+                t.render(Context(c)), from_email, [user.email])
