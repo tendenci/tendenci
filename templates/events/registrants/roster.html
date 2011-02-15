@@ -168,7 +168,19 @@
 
 <div class='event-info'>
 	<h1>{{ event.title }} - Registrant Roster</h1>
-    <div><a href="{% url event.registrant.export event.pk %}">Export Registrants</a></div>
+
+    {% if roster_view == 'non-paid' %}
+        <div><a href="{% url event.registrant.export.non_paid event.pk %}">Export Only Non-Paid Registrants</a></div>
+    {% endif %}
+
+    {% if roster_view == 'paid' %}
+        <div><a href="{% url event.registrant.export.paid event.pk %}">Export Only Paid Registrants </a></div>
+    {% endif %}
+
+    {% if roster_view == 'total' %}
+        <div><a href="{% url event.registrant.export.total event.pk %}">Export Non-Paid and Paid Registrants (one file)</a></div>
+    {% endif %}
+
 	<h3>{{ event.place.address }} {{ event.place.city_state|join:", "}} {{ event.place.zip }}</h3>
 	<div id="event-time">{{ event.start_dt|date }} {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}</div>
 </div>

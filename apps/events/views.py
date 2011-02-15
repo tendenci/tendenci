@@ -17,8 +17,10 @@ from haystack.query import SearchQuerySet
 
 from base.http import Http403
 from site_settings.utils import get_setting
-from events.models import Event, RegistrationConfiguration, Registration, Registrant, Speaker, Organizer, Type, PaymentMethod
-from events.forms import EventForm, Reg8nForm, Reg8nEditForm, PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm
+from events.models import Event, RegistrationConfiguration, \
+    Registration, Registrant, Speaker, Organizer, Type, PaymentMethod
+from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
+    PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants
 from perms.models import ObjectPermission
@@ -28,10 +30,14 @@ from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
+import re
 
 
-try: from notification import models as notification
-except: notification = None
+try:
+    from notification import models as notification
+except:
+    notification = None
+
 
 def index(request, id=None, template_name="events/view.html"):
 
@@ -39,64 +45,73 @@ def index(request, id=None, template_name="events/view.html"):
         return HttpResponseRedirect(reverse('event.month'))
 
     event = get_object_or_404(Event, pk=id)
-    
-    if has_perm(request.user,'events.view_event',event):
+
+    if has_perm(request.user, 'events.view_event', event):
 
         EventLog.objects.log(
-            event_id =  175000, # view event
-            event_data = '%s (%d) viewed by %s' % (event._meta.object_name, event.pk, request.user),
-            description = '%s viewed' % event._meta.object_name,
-            user = request.user,
-            request = request,
-            instance = event
+            event_id=175000,  # view event
+            event_data='%s (%d) viewed by %s' %
+                (event._meta.object_name, event.pk, request.user),
+            description='%s viewed' % event._meta.object_name,
+            user=request.user,
+            request=request,
+            instance=event
         )
 
-        
-        try: speaker = event.speaker_set.all().order_by('pk')[0]
-        except: speaker = None
+        try:
+            speaker = event.speaker_set.all().order_by('pk')[0]
+        except:
+            speaker = None
 
-        try: organizer = event.organizer_set.all().order_by('pk')[0]
-        except: organizer = None
+        try:
+            organizer = event.organizer_set.all().order_by('pk')[0]
+        except:
+            organizer = None
 
         return render_to_response(template_name, {
             'event': event,
             'speaker': speaker,
             'organizer': organizer,
             'now': datetime.now(),
-            }, 
+            },
             context_instance=RequestContext(request))
     else:
         raise Http403
+
 
 def search(request, template_name="events/search.html"):
     query = request.GET.get('q', None)
     events = Event.objects.search(query, user=request.user)
 
     EventLog.objects.log(
-        event_id =  174000, # searched event
-        event_data = '%s searched by %s' % ('Event', request.user),
-        description = 'Event searched',
-        user = request.user,
-        request = request,
-        source = 'events',
+        event_id=174000,  # searched event
+        event_data='%s searched by %s' % ('Event', request.user),
+        description='Event searched',
+        user=request.user,
+        request=request,
+        source='events',
     )
 
-    return render_to_response(template_name, {'events':events, 'now':datetime.now()}, 
-        context_instance=RequestContext(request))
-    
+    return render_to_response(
+        template_name,
+        {'events': events, 'now': datetime.now()},
+        context_instance=RequestContext(request)
+    )
+
+
 def icalendar(request):
     import re
     from events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
-    
+
     d['site_url'] = get_setting('site', 'global', 'siteurl')
     match = p.search(d['site_url'])
     if match:
         d['domain_name'] = match.group(3)
     else:
         d['domain_name'] = ""
-        
+
     ics_str = "BEGIN:VCALENDAR\n"
     ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
     ics_str += "VERSION:2.0\n"
@@ -962,7 +977,7 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
         },context_instance=RequestContext(request))
 
 
-def registrant_export(request, event_id):
+def registrant_export(request, event_id, roster_view=''):
     """
     Export all registration for a specific event
     """
@@ -980,8 +995,18 @@ def registrant_export(request, event_id):
     book = xlwt.Workbook(encoding='utf8')
     sheet = book.add_sheet('Registrants')
 
-    # Get all the registrations
-    registrations = event.registration_set.all()
+    if roster_view == 'non-paid':
+        registrants = event.registrants(with_balance=True)
+        file_name = event.title.strip().replace(' ','-')
+        file_name = 'Event-%s-Non-Paid.xls' % re.sub(r'[^a-zA-Z0-9._]+', '', file_name)
+    elif roster_view == 'paid':
+        registrants = event.registrants(with_balance=False)
+        file_name = event.title.strip().replace(' ','-')
+        file_name = 'Event-%s-Paid.xls' % re.sub(r'[^a-zA-Z0-9._]+', '', file_name)
+    else:
+        registrants = event.registrants()
+        file_name = event.title.strip().replace(' ','-')
+        file_name = 'Event-%s-Total.xls' % re.sub(r'[^a-zA-Z0-9._]+', '', file_name)
 
     # the key is what the column will be in the
     # excel sheet. the value is the database lookup
@@ -1017,16 +1042,19 @@ def registrant_export(request, event_id):
     datetime_style = xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm')
     date_style = xlwt.easyxf(num_format_str='mm/dd/yyyy')
 
-    if registrations:
-        # bulk of the work happens here
-        # loop through all the registrations and append the output
-        # of values_list django method to the values_list list
-        for registration in registrations:
-            registrants = registration.registrant_set.all()
-            registrants = registrants.exclude(cancel_dt__isnull=False)
-            registrants = registrants.values_list(*registrant_lookups)
-            for registrant in registrants:
-                values_list.append(registrant)
+#    if registrations:
+#        # bulk of the work happens here
+#        # loop through all the registrations and append the output
+#        # of values_list django method to the values_list list
+#        for registration in registrations:
+#            registrants = registration.registrant_set.all()
+#            registrants = registrants.exclude(cancel_dt__isnull=False)
+#            registrants = registrants.values_list(*registrant_lookups)
+#            for registrant in registrants:
+#                values_list.append(registrant)
+
+    for registrant in registrants.values_list(*registrant_lookups):
+        values_list.append(registrant)
 
     # Write the data enumerated to the excel sheet
     for row, row_data in enumerate(values_list):
@@ -1052,7 +1080,7 @@ def registrant_export(request, event_id):
             sheet.write(row, col, val, style=style)
 
     response = HttpResponse(mimetype='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=event_%s_registrant_export.xls' % event_id
+    response['Content-Disposition'] = 'attachment; filename=%s' % file_name
     book.save(response)
     return response
 
