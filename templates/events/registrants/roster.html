@@ -43,7 +43,7 @@
 		width: 98%;
 		border-collapse: collapse;
 		border: 1px solid #DDD;
-		margin-bottom: 20px;
+		margin-bottom: 10px;
 	}
 	th {
 		text-align: left;
@@ -61,11 +61,7 @@
 	.row-spacer {
 		height: 10px;
 	}
-	
-	#registrant-table td {
 
-	}
-	
 	table tr.even {
 		background-color: #F7F7F7;
 	}
@@ -172,18 +168,12 @@
 
 <div class='event-info'>
 	<h1>{{ event.title }} - Registrant Roster</h1>
-    <div><a href="{% url event.registrant.export event.pk %}">Export Confirmed Registrants</a></div>
+    <div><a href="{% url event.registrant.export event.pk %}">Export Registrants</a></div>
 	<h3>{{ event.place.address }} {{ event.place.city_state|join:", "}} {{ event.place.zip }}</h3>
 	<div id="event-time">{{ event.start_dt|date }} {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}</div>
 </div>
 
 <div class="hr"></div>
-
-
-<div class="total">
-	<div class="int">{{ confirmed_registrants|length }}</div>
-	<div class="label">Confirmed Registrant{{ confirmed_registrants|length|pluralize }}</div>
-</div>
 
 <center>
 <table id="registrant-table">
@@ -247,6 +237,50 @@
 </table>
 </center>
 
+<div class="counts">
+
+    {% if roster_view == 'paid' or roster_view == 'total' %}
+    <div class="count-box">
+        <div>{{ num_registrants_who_payed }}</div>
+        <div>Paid</div>
+    </div>
+    {% endif %}
+
+    {% if roster_view == 'non-paid' or roster_view == 'total' %}
+    <div class="count-box">
+        <div>{{ num_registrants_who_owe }}</div>
+        <div>Non-Paid</div>
+    </div>
+    {% endif %}
+
+    {% if roster_view == 'total' %}
+    <div class="count-box">
+        <div>{{ event.registrants.count }}</div>
+        <div>Total</div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="roster-view-options">
+
+    {% if roster_view = 'non-paid' %}
+    <div>Showing only non-paid registrants.</div>
+    {% endif %}
+
+    {% if roster_view = 'paid' %}
+    <div>Showing only paid registrants.</div>
+    {% endif %}
+
+    {% if roster_view = 'total' %}
+    <div>Showing paid and non-paid registrants.</div>
+    {% endif %}
+
+    <div>
+        <a href="{% url event.registrant.roster.paid event.pk %}">Show only <strong>paid</strong></a>
+        <a href="{% url event.registrant.roster.non_paid event.pk %}">Show only <strong>non-paid</strong></a>
+        <a href="{% url event.registrant.roster.total event.pk %}">Show <strong>total</strong></a>
+    </div>
+</div>
 
 {% endblock %}
 

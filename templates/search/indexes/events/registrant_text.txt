@@ -13,6 +13,10 @@
 is:confirmed
 {% endif %}
 
-{{ object. }}
+{% if object.registration.invoice.balance <= 0 %}
+is:paid
+{% else %}
+is:non-paid
+{% endif %}
 
 hash:{{ object.hash }}
