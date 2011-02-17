@@ -7,6 +7,7 @@ from django.db.models.aggregates import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
+from django.core.exceptions import ObjectDoesNotExist
 
 from timezones.fields import TimeZoneField
 from entities.models import Entity
@@ -242,7 +243,7 @@ class Registration(models.Model):
                 object_type = object_type,
                 object_id = self.pk,
             )
-        except: # else; create invoice
+        except ObjectDoesNotExist: # else; create invoice
             # cannot use get_or_create method
             # because too many fields are required
             invoice = Invoice()

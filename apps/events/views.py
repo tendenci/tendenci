@@ -492,7 +492,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
             raise Http404
 
         try: # if they're registered; show them their confirmation
-            registrant = Registrant.objects.filter(
+            registrant = Registrant.objects.get(
                 registration__event=event,
                 email = email,
             )
@@ -532,7 +532,8 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 }
 
                 # create registration record; then take payment
-                # this allows someone to be registered with an outstanding balance 
+                # this allows someone to be registered with an outstanding balance
+                # gets or creates records
                 reg8n, reg8n_created = save_registration(**reg_defaults)
 
                 site_label = get_setting('site', 'global', 'sitedisplayname')
@@ -568,6 +569,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                 else:
 
                     try:
+                        # should always work
                         registrant = Registrant.objects.get(registration__event=event, email=user_email)
                     except:
                         registrant = None
@@ -582,8 +584,7 @@ def register(request, event_id=0, form_class=Reg8nForm, template_name="events/re
                             messages.add_message(
                                 request, 
                                 messages.INFO, 
-                                'You were already registered on %s' % date_filter(reg8n.create_dt))                            
-                        
+                                'You were already registered on %s' % date_filter(reg8n.create_dt))
                     
                     response = HttpResponseRedirect(reverse(
                         'event.registration_confirmation', 
@@ -832,11 +833,22 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         query = '"is:%s"' % roster_view
 
     query = '%s "is:confirmed"' % query
-
     registrants = Registrant.objects.search(
-        query, user=request.user, event=event)
+            query, user=request.user, event=event)
 
-    total_balance = Registration.objects.filter(event=event).aggregate(Sum('amount_paid'))['amount_paid__sum']
+    registrations = Registration.objects.filter(event=event)
+
+    total_sum = 0
+    if roster_view != 'paid':
+        total_sum = Invoice.objects.filter(
+            object_id__in=registrations,
+            object_type=ContentType.objects.get_for_model(
+                Registration)).distinct().aggregate(Sum('total'))['total__sum'] or float()
+
+    balance_sum = Invoice.objects.filter(
+        object_id__in=registrations,
+        object_type=ContentType.objects.get_for_model(Registration),
+        tender_date__isnull=False).distinct().aggregate(Sum('balance'))['balance__sum'] or float()
 
     num_registrants_who_payed = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
@@ -844,7 +856,8 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     return render_to_response(template_name, {
         'event':event, 
         'registrants':registrants,
-        'total_balance':total_balance,
+        'balance_sum':balance_sum,
+        'total_sum':total_sum,
         'num_registrants_who_payed':num_registrants_who_payed,
         'num_registrants_who_owe':num_registrants_who_owe,
         'roster_view':roster_view,
