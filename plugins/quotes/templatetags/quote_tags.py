@@ -4,58 +4,56 @@ from quotes.models import Quote
 register = Library()
 
 class ListQuotesNode(Node):
-    
     def __init__(self, context_var, *args, **kwargs):
-
-        self.limit = 3
-        self.user = None
-        self.tags = ''
-        self.q = []
         self.context_var = context_var
-
-        if "limit" in kwargs:
-            self.limit = Variable(kwargs["limit"])
-        if "user" in kwargs:
-            self.user = Variable(kwargs["user"])
-        if "tags" in kwargs:
-            self.tags_string = kwargs['tags']
-            self.tags = Variable(kwargs["tags"])
-        if "q" in kwargs:
-            self.q = kwargs["q"]
+        self.kwargs = kwargs
 
     def render(self, context):
+
+        limit = 3
+        user = None
+        tags = ''
         query = ''
 
-        try:
-            self.tags = self.tags.resolve(context)
-        except:
-            self.tags = self.tags_string
-        
-        if self.tags:
-            self.tags = self.tags.split(',')
-        if not self.tags:
-            self.tags = self.tags_string.split(',')
-            
-        if self.user:
-            self.user = self.user.resolve(context)
+        if 'limit' in self.kwargs:
+            try:
+                limit = Variable(self.kwargs['limit'])
+                limit = limit.resolve(context)
+            except:
+                pass # use default
 
-        if hasattr(self.limit, "resolve"):
-            self.limit = self.limit.resolve(context)
+        if 'user' in self.kwargs:
+            try:
+                user = Variable(self.kwargs['user'])
+                user = user.resolve(context)
+            except:
+                pass # use default
+        else:
+            # check the context for an already existing user
+            if 'user' in context:
+                user = context['user']
 
-        for tag in self.tags:
-            tag = tag.strip()
-            query = '%s "tag:%s"' % (query, tag)
+        if 'tags' in self.kwargs:
+            try:
+                tags = Variable(self.kwargs['tags'])
+                tags = unicode(tags.resolve(context))
+            except:
+                tags = self.kwargs['tags'] # context string
+            tags = tags.split(',')
 
-        for q_item in self.q:
-            q_item = q_item.strip()
-            query = '%s "%s"' % (query, q_item)
+        q = self.kwargs.get('q') or []
 
+        for tag in tags:
+            query = '%s "tag:%s"' % (query, tag.strip())
 
-        quotes = Quote.objects.search(user=self.user, query=query)
+        for q_item in q:
+            query = '%s "%s"' % (query, q_item.strip())
+
+        quotes = Quote.objects.search(user=user, query=query)
         quotes = quotes.order_by('create_dt')
-        quotes = [quote.object for quote in quotes[:self.limit]]
-        context[self.context_var] = quotes
-        return ""
+        context[self.context_var] = [quote.object for quote in quotes[:limit]]
+
+        return ''
 
 @register.tag
 def list_quotes(parser, token):

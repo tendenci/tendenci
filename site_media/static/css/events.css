@@ -589,3 +589,33 @@ input#id_regconf-limit {
     list-style-type: none;
     margin-right: 5px;
 }
+
+/*= Roster
+ ------------------------- */
+tr.non-paid-top {
+    border: 1px solid #708090;
+    border-bottom: none;
+}
+tr.non-paid-bottom {
+    border: 1px solid #708090;
+    border-top: none;
+}
+
+.count-box {
+    border: 1px solid silver;
+    float: left;
+    padding: 5px;
+    margin-left: 7px;
+}
+.count-box div {
+    text-align: center;
+}
+.roster-view-options {
+    border: 1px solid silver;
+    padding: 5px;
+    margin-left: 7px;
+    float: left;
+}
+.counts {
+    margin-left:8px;
+}

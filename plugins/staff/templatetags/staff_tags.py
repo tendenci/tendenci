@@ -1,3 +1,5 @@
+import random
+
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser
 
@@ -28,6 +30,11 @@ class ListStaffNode(Node):
         query = u''
         user = AnonymousUser()
         limit = 3
+        order = u'-create_dt'
+        randomize = False
+        
+        if 'random' in self.kwargs:
+            randomize = True
 
         if 'tags' in self.kwargs:
             try:
@@ -61,7 +68,14 @@ class ListStaffNode(Node):
                 query = query.resolve(context)
             except:
                 query = self.kwargs['query'] # context string
-
+        
+        if 'order' in self.kwargs:
+            try:
+                order = Variable(self.kwargs['order'])
+                order = order.resolve(context)
+            except:
+                pass # use order default
+                
         # process tags
         for tag in tags:
             tag = tag.strip()
@@ -69,8 +83,11 @@ class ListStaffNode(Node):
 
         # get the list of staff
         staff_members = Staff.objects.search(user=user, query=query)
-        staff_members = staff_members.order_by('-start_dt')
-        staff_members = [member.object for member in staff_members[:limit]]
+        staff_members = staff_members.order_by(order)
+        if randomize:
+            staff_members = [member.object for member in random.sample(staff_members, staff_members.count())][:limit]
+        else:
+            staff_members = [member.object for member in staff_members[:limit]]
 
         context[self.context_var] = staff_members
         return ""
@@ -105,6 +122,10 @@ def list_staff(parser, token):
         if "tags=" in bit:
             kwargs["tags"] = bit.split("=")[1].replace('"','')
         if "q=" in bit:
-            kwargs["q"] = bit.split("=")[1].replace('"','').split(',')
+            kwargs["query"] = bit.split("=")[1]
+        if "order=" in bit:
+            kwargs["order"] = bit.split("=")[1]
+        if "random" in bit:
+            kwargs["random"] = True
 
     return ListStaffNode(context_var, *args, **kwargs)
