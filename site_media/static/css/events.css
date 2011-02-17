@@ -592,6 +592,15 @@ input#id_regconf-limit {
 
 /*= Roster
  ------------------------- */
+tr.non-paid-top {
+    border: 1px solid #708090;
+    border-bottom: none;
+}
+tr.non-paid-bottom {
+    border: 1px solid #708090;
+    border-top: none;
+}
+
 .count-box {
     border: 1px solid silver;
     float: left;

@@ -47,7 +47,7 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
     # post payment form to gateway and redirect to the vendor so customer can pay from there
     if boo:
         merchant_account = (get_setting("site", "global", "merchantaccount")).lower()
-        #merchant_account = "authorizenet"
+
         if merchant_account == "authorizenet":
             form = prepare_authorizenet_sim_form(request, payment)
             post_url = settings.AUTHNET_POST_URL
