@@ -7,98 +7,42 @@
     	<li><a href="#">Content</a>
         	<div class="sub">
             	<div class="column">
-            	<h4>App List</h4>
-                	<div class="column app-list">               
-                        <ul>
-                            <li class="app"><a href="{% url articles %}">Articles</a></li>
-                            <li><a href="{% url article.search %}">List</a></li>
-                            <li><a href="{% url article.add %}">Add</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url admin:app_list "boxes" %}">Boxes</a></li>
-                            <li><a href="{% url admin:boxes_box_changelist %}">List</a></li>
-                            <li><a href="{% url admin:boxes_box_add %}">Add</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url contact %}">Contacts</a></li>
-                            <li><a href="{% url contact.search %}">List</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url directories %}">Directories</a></li>
-                            <li><a href="{% url directory.search %}">List</a></li>
-                            <li><a href="{% url directory.add %}">Add</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url events %}">Events</a></li>
-                            <li><a href="{% url event.search %}">List</a></li>
-                            <li><a href="{% url event.add %}">Add</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url files %}">Files</a></li>
-                            <li><a href="{% url file.search %}">List</a></li>
-                            <li><a href="{% url file.add %}">Add</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url forms %}">Forms</a></li>
-                            <li><a href="{% url forms %}">List</a></li>
-                            <li><a href="{% url form_add %}">Add</a></li>
-                        </ul>     
-                        <ul>
-                            <li class="app"><a href="{% url help_files %}">Help Files</a></li>
-                            <li><a href="{% url help_files.search %}">List</a></li>
-                            <li><a href="{% url admin:help_files_helpfile_add %}">Add</a></li>
-                        </ul>
-                        </div>
-                        <div class="column app-list">
-                        <ul>
-                            <li class="app"><a href="{% url invoices %}">Invoices</a></li>
-                            <li><a href="{% url invoice.search %}">List</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url jobs %}">Jobs</a></li>
-                            <li><a href="{% url job.search %}">List</a></li>
-                            <li><a href="{% url job.add %}">Add</a></li>
-                        </ul>
-                        
-                        <ul>
-                            <li class="app"><a href="{% url news %}">News</a></li>
-                            <li><a href="{% url news.search %}">List</a></li>
-                            <li><a href="{% url news.add %}">Add</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url pages %}">Pages</a></li>
-                            <li><a href="{% url page.search %}">List</a></li>
-                            <li><a href="{% url page.add %}">Add</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url photoset_latest %}">Photos</a></li>
-                            <li><a href="{% url photoset_latest %}">List</a></li>
-                            <li><a href="{% url photoset_add %}">Add</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url redirects %}">Redirects</a></li>
-                            <li><a href="{% url redirects %}">List</a></li>
-                            <li><a href="{% url redirect.add %}">Add</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url resumes %}">Resumes</a></li>
-                            <li><a href="{% url resume.search %}">List</a></li>
-                            <li><a href="{% url resume.add %}">Add</a></li>
-                        </ul>
-                        <ul>
-                            <li class="app"><a href="{% url stories %}">Stories</a></li>
-                            <li><a href="{% url story.search %}">List</a></li>
-                            <li><a href="{% url story.add %}">Add</a></li>
-                        </ul>
+            	<h4><a href="{% url dashboard %}">App List</a></h4>
+                	<div class="column app-list">  
+                        {% for app in registered_apps.core %}
+                            <ul>
+                                <li class="app">
+                                     <a href="{{ app.url.search }}" title="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                         {{ app|capfirst }}
+                                     </a>
+                                </li>
+                                {% if app.url.search %}
+                                <li><a href="{{ app.url.search }}">List</a></li>
+                                {% endif %}
+                                {% if app.url.add %}
+                                <li><a href="{{ app.url.add }}">Add</a></li>
+                                {% endif %}
+                            </ul>
+                        {% endfor %}             
                     </div>
                 </div>
-                {% if plugins %}
+                {% if registered_apps.plugins %}
                 <div class="column app-list">
-                    <h4>Plugins</h4>
-                    {% for plugin in plugins %}
-                    <ul>
-                        <li class="app"><a href="/{{ plugin.title|slugify }}">{{ plugin.title }}</a></li>
-                    </ul>
+                    <h4><a href="{% url admin:pluginmanager_pluginapp_changelist %}">Plugins</a></h4>
+                    {% for app in registered_apps.plugins %}
+                        <ul>
+                            <li class="app">
+                                 <a href="{{ app.url.search }}" title="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                     {{ app|capfirst }}
+                                 </a>
+                            </li>
+                            {% if app.url.search %}
+                            <li><a href="{{ app.url.search }}">List</a></li>
+                            {% endif %}
+                            {% if app.url.add %}
+                            <li><a href="{{ app.url.add }}">Add</a></li>
+                            {% endif %}
+                        </ul>
                     {% endfor %}
                 </div>
                 {% endif %}

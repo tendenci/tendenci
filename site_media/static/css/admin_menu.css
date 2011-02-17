@@ -3,6 +3,7 @@ html { margin-top: 30px !important; margin-bottom: 26px !important;  }
 	#admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 12px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
 	#admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
 	#admin-bar a { display: block; padding: 8px 8px 6px; font-size: 12px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #6A120D; text-decoration: none; border-right: 1px solid #4B0D09; color: #ebebeb; }
+	#admin-bar h4 a { background: none; border: 0; }
 	#admin-bar li.app, #admin-bar h4 { font-size: 12px; line-height: 14px; margin: 0; border-bottom: 1px solid #4B0D09; }
 	#admin-bar li li a { background: #810D00; border-bottom: 1px dashed #4B0D09; border-right: none; padding: 4px 8px 4px;}
 	#admin-bar li li.app {clear: left; }

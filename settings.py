@@ -138,7 +138,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # tendenci context processors
     'theme.context_processors.theme',
     'site_settings.context_processors.settings',
-    'base.context_processors.static_url'
+    'base.context_processors.static_url',
+    'registry.context_processors.registered_apps',
 )
 
 INSTALLED_APPS = (
@@ -160,6 +161,7 @@ INSTALLED_APPS = (
     'avatar',
     'tinymce',
     'haystack',
+    'registry',
     'captcha',
     'south',
     'forms_builder.forms',
