@@ -4,8 +4,11 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load avatar_tags %}
+{% load base_filters %}
 
-{% block title %}{{ event.title }} - {{ event.start_dt|date }} - Registrant Roster{% endblock %}
+{% block title %}
+    {{ event.title }} - {{ event.start_dt|date }} - Registrant Roster {{ roster_view }}
+{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -36,23 +39,19 @@
 	}
 	.hr {
 		height: 1px;
-		xbackground-color: #EEE;
 		margin: 10px auto;
 	}
 	#registrant-table {
 		width: 98%;
 		border-collapse: collapse;
 		border: 1px solid #DDD;
-		margin-bottom: 20px;
+		margin-bottom: 10px;
 	}
 	th {
 		text-align: left;
 		background-color: #EEE;
 		margin-bottom: 10px;
 		padding: 10px 0;
-	}
-	td {
-
 	}
 	#registrant-table td.counter {
 		text-align: center;
@@ -61,11 +60,7 @@
 	.row-spacer {
 		height: 10px;
 	}
-	
-	#registrant-table td {
 
-	}
-	
 	table tr.even {
 		background-color: #F7F7F7;
 	}
@@ -77,13 +72,11 @@
 		text-align: left;
 		border: 1px solid silver;
 		width: 25px;
-		height: 25px;
-		margin: 5px 0;
+		height: 17px;
 	}
 
 	table#registrant-table a {
 		color: inherit;
-		xtext-decoration: none;
 	}
 
 	table#registrant-table a:active,
@@ -108,8 +101,6 @@
 	}
 
 	.bottom-row {
-		xcolor: white;
-		xbackground-color: #AAA;
 		border-top: 1px solid silver;
 	}
 
@@ -171,19 +162,25 @@
 </div>
 
 <div class='event-info'>
-	<h1>{{ event.title }} - Registrant Roster</h1>
-    <div><a href="{% url event.registrant.export event.pk %}">Export Confirmed Registrants</a></div>
+	<h1>{{ event.title }} - Registrant Roster {{ roster_view|capfirst }}</h1>
+
+    {% if roster_view == 'non-paid' %}
+        <div><a href="{% url event.registrant.export.non_paid event.pk %}">Export Only Non-Paid Registrants</a></div>
+    {% endif %}
+
+    {% if roster_view == 'paid' %}
+        <div><a href="{% url event.registrant.export.paid event.pk %}">Export Only Paid Registrants </a></div>
+    {% endif %}
+
+    {% if roster_view == 'total' %}
+        <div><a href="{% url event.registrant.export.total event.pk %}">Export Non-Paid and Paid Registrants (one file)</a></div>
+    {% endif %}
+
 	<h3>{{ event.place.address }} {{ event.place.city_state|join:", "}} {{ event.place.zip }}</h3>
 	<div id="event-time">{{ event.start_dt|date }} {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}</div>
 </div>
 
 <div class="hr"></div>
-
-
-<div class="total">
-	<div class="int">{{ confirmed_registrants|length }}</div>
-	<div class="label">Confirmed Registrant{{ confirmed_registrants|length|pluralize }}</div>
-</div>
 
 <center>
 <table id="registrant-table">
@@ -202,8 +199,8 @@
 {% for registrant in registrants %}
 {% with registrant.object as registrant %}
 
-{% if registrant.cancel_dt %}
-<tr class="{% cycle 'odd' 'even' %} canceled">
+{% if registrant.registration.invoice.balance > 0 %}
+<tr class="{% cycle 'odd' 'even' %} non-paid-top">
 {% else%}
 <tr class="{% cycle 'odd' 'even' %}">
 {% endif %}
@@ -232,8 +229,24 @@
 	<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">I-{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
 	<td>${{ registrant.registration.invoice.total }}</td> <!-- invoice amount -->
 	<td><a href="{{ registrant.get_absolute_url }}">R-{{ registrant.registration.pk }}</a></td> <!-- registration number -->
-	<td>${{ registrant.registration.amount_paid|floatformat:"2" }}</td> <!-- registration amount -->
+	<td>${{ registrant.registration.invoice.total|floatformat:"2" }}</td> <!-- registration amount -->
 	<td>${{ registrant.registration.invoice.balance|floatformat:"2" }}</td> <!-- balance -->
+</tr>
+
+{% if registrant.registration.invoice.balance > 0 %}
+<tr class="{% cycle 'odd' 'even' %} non-paid-bottom">
+{% else%}
+<tr class="{% cycle 'odd' 'even' %}">
+{% endif %}
+    <td colspan="4"></td>
+    <td colspan="5">
+
+        {% if registrant.registration.invoice.tender_date %}
+            TENDERED: {{ registrant.registration.invoice.tender_date|date_long }}
+        {% else %}
+            Not Tendered
+        {% endif %}
+    </td>
 </tr>
 {% endwith %}
 {% endfor %}
@@ -241,12 +254,59 @@
 <tr class="bottom-row">
 	<td></td>
 	<td colspan="2" class="total-label">Total</td>
-	<td colspan="5"></td>
-	<td>${{ total_balance }}</td>
+	<td colspan="4"></td>
+    <td>${{ total_sum|floatformat:2 }}</td>
+	<td>${{ balance_sum|floatformat:2 }}</td>
 </tr>
 </table>
 </center>
 
+<div class="counts">
+
+    {% if roster_view == 'paid' or roster_view == 'total' %}
+    <div class="count-box">
+        <div>{{ num_registrants_who_payed }}</div>
+        <div>Paid</div>
+    </div>
+    {% endif %}
+
+    {% if roster_view == 'non-paid' or roster_view == 'total' %}
+    <div class="count-box">
+        <div>{{ num_registrants_who_owe }}</div>
+        <div>Non-Paid</div>
+    </div>
+    {% endif %}
+
+    {% if roster_view == 'total' %}
+    <div class="count-box">
+        <div>{{ event.registrants.count }}</div>
+        <div>Total</div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="roster-view-options">
+
+    {% if roster_view = 'non-paid' %}
+    <div>Showing only non-paid registrants.</div>
+    {% endif %}
+
+    {% if roster_view = 'paid' %}
+    <div>Showing only paid registrants.</div>
+    {% endif %}
+
+    {% if roster_view = 'total' %}
+    <div>Showing paid and non-paid registrants.</div>
+    {% endif %}
+
+    <div>
+        <a href="{% url event.registrant.roster.paid event.pk %}">Show only <strong>paid</strong></a>
+        <a href="{% url event.registrant.roster.non_paid event.pk %}">Show only <strong>non-paid</strong></a>
+        <a href="{% url event.registrant.roster.total event.pk %}">Show <strong>total</strong></a>
+    </div>
+</div>
+
+<div style="clear:both; height:10px;"></div>
 
 {% endblock %}
 

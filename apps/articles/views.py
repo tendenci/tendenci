@@ -27,7 +27,7 @@ except:
 def index(request, slug=None, template_name="articles/view.html"):
     if not slug: return HttpResponseRedirect(reverse('article.search'))
     article = get_object_or_404(Article, slug=slug)
-    
+
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
     if (article.status_detail).lower() <> 'active' and (not is_admin(request.user)):

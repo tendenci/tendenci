@@ -7,6 +7,7 @@ from django.db.models.aggregates import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
+from django.core.exceptions import ObjectDoesNotExist
 
 from timezones.fields import TimeZoneField
 from entities.models import Entity
@@ -210,7 +211,6 @@ class Registration(models.Model):
         else:
             return 402000
 
-
     @property
     def registrant(self):
         """
@@ -236,14 +236,14 @@ class Registration(models.Model):
         status_detail = kwargs.get('status_detail', 'estimate')
         
         object_type = ContentType.objects.get(app_label=self._meta.app_label, 
-                                              model=self._meta.module_name)
+            model=self._meta.module_name)
 
         try: # get invoice
             invoice = Invoice.objects.get(
                 object_type = object_type,
                 object_id = self.pk,
             )
-        except: # else; create invoice
+        except ObjectDoesNotExist: # else; create invoice
             # cannot use get_or_create method
             # because too many fields are required
             invoice = Invoice()
@@ -256,6 +256,7 @@ class Registration(models.Model):
         invoice.subtotal = self.amount_paid
         invoice.total = self.amount_paid
         invoice.balance = invoice.total
+        invoice.tender_date = datetime.now()
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
         invoice.save()
@@ -536,7 +537,7 @@ class Event(TendenciBaseModel):
             if with_balance:
                 registrants = registrants.filter(registration__invoice__balance__gt=0)
             else:
-                registrants = registrants.filter(registration__invoice__balance=0)
+                registrants = registrants.filter(registration__invoice__balance__lte=0)
 
         return registrants
         
