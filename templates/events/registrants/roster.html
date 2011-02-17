@@ -6,7 +6,9 @@
 {% load avatar_tags %}
 {% load base_filters %}
 
-{% block title %}{{ event.title }} - {{ event.start_dt|date }} - Registrant Roster{% endblock %}
+{% block title %}
+    {{ event.title }} - {{ event.start_dt|date }} - Registrant Roster {{ roster_view }}
+{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -160,7 +162,7 @@
 </div>
 
 <div class='event-info'>
-	<h1>{{ event.title }} - Registrant Roster</h1>
+	<h1>{{ event.title }} - Registrant Roster {{ roster_view|capfirst }}</h1>
 
     {% if roster_view == 'non-paid' %}
         <div><a href="{% url event.registrant.export.non_paid event.pk %}">Export Only Non-Paid Registrants</a></div>
@@ -197,8 +199,8 @@
 {% for registrant in registrants %}
 {% with registrant.object as registrant %}
 
-{% if registrant.cancel_dt %}
-<tr class="{% cycle 'odd' 'even' %} canceled">
+{% if registrant.registration.invoice.balance > 0 %}
+<tr class="{% cycle 'odd' 'even' %} non-paid-top">
 {% else%}
 <tr class="{% cycle 'odd' 'even' %}">
 {% endif %}
@@ -227,10 +229,15 @@
 	<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">I-{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
 	<td>${{ registrant.registration.invoice.total }}</td> <!-- invoice amount -->
 	<td><a href="{{ registrant.get_absolute_url }}">R-{{ registrant.registration.pk }}</a></td> <!-- registration number -->
-	<td>${{ registrant.registration.amount_paid|floatformat:"2" }}</td> <!-- registration amount -->
+	<td>${{ registrant.registration.invoice.total|floatformat:"2" }}</td> <!-- registration amount -->
 	<td>${{ registrant.registration.invoice.balance|floatformat:"2" }}</td> <!-- balance -->
 </tr>
+
+{% if registrant.registration.invoice.balance > 0 %}
+<tr class="{% cycle 'odd' 'even' %} non-paid-bottom">
+{% else%}
 <tr class="{% cycle 'odd' 'even' %}">
+{% endif %}
     <td colspan="4"></td>
     <td colspan="5">
 
@@ -247,8 +254,9 @@
 <tr class="bottom-row">
 	<td></td>
 	<td colspan="2" class="total-label">Total</td>
-	<td colspan="5"></td>
-	<td>${{ total_balance }}</td>
+	<td colspan="4"></td>
+    <td>${{ total_sum|floatformat:2 }}</td>
+	<td>${{ balance_sum|floatformat:2 }}</td>
 </tr>
 </table>
 </center>
@@ -297,6 +305,8 @@
         <a href="{% url event.registrant.roster.total event.pk %}">Show <strong>total</strong></a>
     </div>
 </div>
+
+<div style="clear:both; height:10px;"></div>
 
 {% endblock %}
 
