@@ -1,0 +1,28 @@
+{% extends "emails/base.html" %}
+{% load i18n %}
+{% load email_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Amazon SES - Verify Email Address{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% emails_nav %}
+<h1>Amazon SES - Verify Email Address</h1>
+<p>&nbsp;</p>
+<form method="post" action=".">
+	<div class="forms">
+		{{ form|styled_form }}
+       	<input type="submit" value="Verify" />
+	</div>
+</form>
+
+</div>
+{% endblock %}
