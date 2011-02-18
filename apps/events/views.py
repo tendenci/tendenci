@@ -473,42 +473,47 @@ def delete(request, id, template_name="events/delete.html"):
     else:
         raise Http403# Create your views here.
 
-def register(request, event_id=0, form_class=Reg8nForm, template_name="events/reg8n/register.html"):
+def register(request, event_id=0, form_class=Reg8nForm):
         event = get_object_or_404(Event, pk=event_id)
 
-        user = None
-        email = ''
-        if request.user.is_authenticated():
-            user = request.user
-            email = user.email
-
-        # free or priced event (choose template)
-        free = (event.registration_configuration.price == 0)                
-        if free: template_name = "events/reg8n/register-free.html"
-        else: template_name = "events/reg8n/register-priced.html"
-
-        # check for registry; else 404
-        if not RegistrationConfiguration.objects.filter(event=event).exists():
+        # check if event allows registration
+        if not event.registration_configuration and \
+           event.registration_configuration.enabled:
             raise Http404
 
-        try: # if they're registered; show them their confirmation
-            registrant = Registrant.objects.get(
-                registration__event=event,
-                email = email,
+        # choose template
+        if event.registration_configuration.price <= 0:
+            template_name = "events/reg8n/register-free.html"
+        else:
+            template_name = "events/reg8n/register-priced.html"
+
+        # if logged in; use their info to register
+        if request.user.is_authenticated():
+            user, email = request.user, request.user.email
+        else:
+            user, email = None, ''
+
+        # get registrants for this event
+        registrants = Registrant.objects.filter(
+            registration__event = event,
+        )
+
+        # if person is registered; show them their confirmation
+        if registrants.filter(email=email).exists():
+            return HttpResponseRedirect(
+                reverse('event.registration_confirmation',
+                args=(event_id, registrants.filter(email=email)[0].hash)),
             )
 
-            return HttpResponseRedirect(
-                reverse('event.registration_confirmation', 
-                args=(event_id, registrant.hash)),
-            )
-        except:
-            pass
+        # pull registrants based off "payment required"
+        if event.registration_configuration.payment_required:
+            registrants = registrants.filter(registration__invoice__balance__lte = 0)
 
         bad_scenarios = [
             event.end_dt < datetime.now(), # event has passed
             event.registration_configuration.late_dt < datetime.now(), # registration period has passed
             event.registration_configuration.early_dt > datetime.now(), # registration period has not started
-            event.registration_configuration.enabled == False, # registration is not enabled
+            event.registration_configuration.limit <= registrants.count(), # registration limit exceeded
         ]
 
         if any(bad_scenarios):

@@ -1,10 +1,12 @@
 import hashlib
 from datetime import datetime
-
+from django.contrib.humanize.templatetags.humanize import naturalday
+from django.core.urlresolvers import reverse
 
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser
 from events.models import Event, Registrant, Type
+from django.template.defaultfilters import floatformat
 
 
 register = Library()
@@ -47,6 +49,77 @@ def registrant_search(context, event=None):
 
     return context
 
+@register.inclusion_tag('events/reg8n/register-button.html', takes_context=True)
+def register_button(context):
+    event = context['event']
+    user = context['user']
+    reg8n_config = event.registration_configuration
+
+    # Set the variables ------------------
+
+    reg8n_enabled = reg8n_config and reg8n_config.enabled
+
+    if reg8n_enabled:
+        reg8n_price = reg8n_config.price or float(0)
+
+    if user.is_anonymous():
+        registrant = False
+    else:
+        registrant = Registrant.objects.filter(
+            registration__event = event,
+            email = user.email,
+            cancel_dt = None,
+        ).exists()
+
+    registrants = Registrant.objects.filter(registration__event=event)
+    if reg8n_config.payment_required:
+        registrants = registrants.filter(registration__invoice__balance__lte=0)
+
+    reg8n_full = registrants.count() >= reg8n_config.limit
+
+    ## Do the logic ----------------------
+
+    url1,msg1,msg2,status_class = '','','',''
+
+    if reg8n_enabled:
+        if reg8n_config.within_time:
+
+            msg2 = 'Registration ends %s' % naturalday(reg8n_config.late_dt)
+            status_class = 'open'
+            url1 = reverse('event.register', args=[event.pk])
+
+            if registrant:
+                msg1 = 'You are registered'
+                status_class = 'registered'
+                url1 = registrant.hash_url
+            else:
+
+                if reg8n_price:
+                    msg1 = '$%s to Register' % floatformat(reg8n_price)
+                else:
+                    msg1 = 'Register for Free'
+
+                if reg8n_full:
+                    msg1 = 'Registration Full'
+                    status_class = 'closed'
+                    url1 = ''
+        else:
+
+            if reg8n_config.early_dt > datetime.now():
+                msg2 = 'Registration opens %s' % naturalday(reg8n_config.early_dt)
+            else:
+                msg2 = 'Registration ended %s' % naturalday(reg8n_config.late_dt)
+
+            status_class = 'closed'
+
+            if registrant:
+                msg1 = 'You are registered'
+                status_class = 'registered'
+                url1 = registrant.hash_url
+            else:
+                msg1 = 'Registration Closed'
+
+    return {'reg8n_enabled':reg8n_enabled, 'url1':url1, 'msg1':msg1, 'msg2':msg2, 'status_class':status_class}
 
 class EventListNode(Node):    
     
