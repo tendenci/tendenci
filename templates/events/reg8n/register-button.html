@@ -1,0 +1,13 @@
+{% if reg8n_enabled %}
+    <div class="register-wrap">
+        <div class="register-btn {{ status_class }}">
+            {% if url1 %}
+                <a href="{{ url1 }}">{{ msg1 }}</a>
+            {% else %}
+                <a>{{ msg1 }}</a>
+            {% endif %}
+        </div>
+        <div>{{ msg2 }}</div>
+    </div>
+    <div class="hr"></div>
+{% endif %}

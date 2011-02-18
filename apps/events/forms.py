@@ -229,6 +229,7 @@ class Reg8nEditForm(BetterModelForm):
                      'early_dt',
                      'regular_dt',
                      'late_dt',
+                     'payment_required',
                      ],
           'legend': ''
           })
