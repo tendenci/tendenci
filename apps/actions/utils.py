@@ -313,7 +313,7 @@ def distribute_newsletter_v2(action, request=None, **kwargs):
                     
                 recap_d.append(myrecap)
              
-            connection.close()
+            #connection.close()
             
             # update the status
             action.status_detail = 'closed'

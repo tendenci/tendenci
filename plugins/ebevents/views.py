@@ -74,8 +74,10 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         #if event_type <> u'HPL Express Events':
         start_date = node.date_range.start_date.string
         if start_date:
-            #start_date = (datetime.strptime(start_date, '%Y-%b-%d')).strftime('%m/%d/%Y')
-            start_date = datetime.strptime(start_date, '%Y-%b-%d')
+            # start_date = (datetime.strptime(start_date, '%Y-%b-%d')).strftime('%m/%d/%Y')
+            # datetime(*(time.strptime('2010-Aug-12', '%Y-%b-%d')[0:6]))
+            # start_date = datetime.strptime(start_date, '%Y-%b-%d')
+            start_date = datetime(*(time.strptime(start_date, '%Y-%b-%d')[0:6]))
         
         
         events.append({'event_name': event_name, 
