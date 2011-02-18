@@ -14,7 +14,8 @@ from base.http import Http403
 from perms.utils import has_perm
 
 # in order to send email instantly, the number of members in group should be less than LIMIT
-LIMIT = 50
+# no longer needed cause we're queueing the emails on amazon
+#LIMIT = 50
 
 @login_required 
 def view(request, action_id, template_name="actions/view.html"):
@@ -108,11 +109,11 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
                 
                 action.save()
                 
-            if action.group.members.count() < LIMIT:
-                return HttpResponseRedirect(reverse('action.send', args=[action.id]))
-            else:
-                # return to confirmation page    
-                return HttpResponseRedirect(reverse('action.confirm', args=[action.id]))
+            #if action.group.members.count() < LIMIT:
+            return HttpResponseRedirect(reverse('action.send', args=[action.id]))
+            #else:
+            #    # return to confirmation page    
+            #    return HttpResponseRedirect(reverse('action.confirm', args=[action.id]))
     else:
         form = form_class()
     
@@ -139,16 +140,19 @@ def send(request, action_id):
     if not has_perm(request.user,'actions.add_action'): raise Http403
     
     if action.status_detail == 'open':
-        if action.group.members.count() < LIMIT:
-            # send the newsletter immediately
-            from actions.utils import distribute_newsletter_v2
-            boo = distribute_newsletter_v2(action)
-        else:
-            from actions.tasks import task_queue_distribute_newsletter
-            result = task_queue_distribute_newsletter.delay(action)
-            # store the AsyncResult of the task so we can check the state of the task later
-            action.task_result = cPickle.dumps(result)
-            action.save()
+        from actions.utils import distribute_newsletter_v2
+        boo = distribute_newsletter_v2(action)
+        
+#        if action.group.members.count() < LIMIT:
+#            # send the newsletter immediately
+#            from actions.utils import distribute_newsletter_v2
+#            boo = distribute_newsletter_v2(action)
+#        else:
+#            from actions.tasks import task_queue_distribute_newsletter
+#            result = task_queue_distribute_newsletter.delay(action)
+#            # store the AsyncResult of the task so we can check the state of the task later
+#            action.task_result = cPickle.dumps(result)
+#            action.save()
     
     return HttpResponseRedirect(reverse('action.confirm', args=[action.id]))
 
