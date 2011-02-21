@@ -75,7 +75,8 @@ def register_button(context):
     if reg8n_config.payment_required:
         registrants = registrants.filter(registration__invoice__balance__lte=0)
 
-    reg8n_full = registrants.count() >= reg8n_config.limit
+    infinite_limit = reg8n_config.limit <= 0
+    reg8n_full = (registrants.count() >= reg8n_config.limit) and not infinite_limit
 
     ## Do the logic ----------------------
 
