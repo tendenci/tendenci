@@ -36,7 +36,7 @@ Arguments work together, so if you have `tags="featured"` and `limit=100`, you m
 ## Articles
 
 #### Template tag:
-    {% list_articles as articles_list user=user limit=3 %}
+    {% list_articles as articles_list %}
         {% for article in articles_list %}
             {{ article.FIELDNAME }}
         {% endfor %}
@@ -115,7 +115,7 @@ The foreign fields come from separate tables, so they are used as `{{ event.FORE
 
 #### HTML code example
 
-    {% list_events as events_list limit=3 %}
+    {% list_events as events_list %}
         {% for event in events_list %}
             <h2><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h2>
             <div class="event desc">{{ event.description}}</div>
@@ -151,6 +151,34 @@ Fieldnames used in the template tag as `{{ photo.FIELDNAME }}`
             <span class="photo-title"><a href="{{ photo.get_absolute_url }}">{{ photo.title }}</a></span>
         {% endfor %}
 
+## Articles
+
+#### Template tag:
+    {% list_news as news_list %}
+        {% for news in news_list %}
+            {{ news.FIELDNAME }}
+        {% endfor %}
+
+#### Fields
+Fieldnames used in the template tag as `{{ news.FIELDNAME }}`
+
+- **slug** the slug for the news
+- **headline** the title of the news
+- **summary** the summary of the news
+- **body** the full body of the news
+- **source** the source URL for the news
+- **website** the link to the website for the news (not the slug)
+- **release_dt** the published date of the news
+
+#### HTML code example
+
+    {% list_news as news_list %}
+        {% for news in news_list %}
+            <h2><a href="{{ news.get_absolute_url }}">{{ news.headline }}</a></h2>
+            <span class="date">{{ news.release_dt }}</span>
+            <div class="article summary">{{ news.summary }}</div>
+        {% endfor %}
+        
 ## Stories
 
 #### Template tag:
