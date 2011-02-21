@@ -360,8 +360,8 @@ FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
 # https://github.com/hmarr/django-ses/tree/d9825e046fdc490187ef90a048eea983c2dd4606
 #EMAIL_BACKEND = 'django_ses.SESBackend'
 
-#AWS_ACCESS_KEY_ID = 'AKIAJCUZQZ7AOEX45S7Q'
-#AWS_SECRET_ACCESS_KEY = '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'
+#AWS_ACCESS_KEY_ID = ''
+#AWS_SECRET_ACCESS_KEY = ''
 #----------------------------------------------#
 
 
