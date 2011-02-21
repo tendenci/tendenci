@@ -63,13 +63,17 @@ def register_button(context):
         reg8n_price = reg8n_config.price or float(0)
 
     if user.is_anonymous():
-        registrant = False
+        registrant = None
     else:
-        registrant = Registrant.objects.filter(
-            registration__event = event,
-            email = user.email,
-            cancel_dt = None,
-        ).exists()
+        try:
+            registrant = Registrant.objects.get(
+                registration__event = event,
+                email = user.email,
+                cancel_dt = None,
+            )
+        except:
+            registrant = None
+
 
     registrants = Registrant.objects.filter(registration__event=event)
     if reg8n_config.payment_required:
@@ -92,7 +96,7 @@ def register_button(context):
             if registrant:
                 msg1 = 'You are registered'
                 status_class = 'registered'
-                url1 = registrant.hash_url
+                url1 = registrant.hash_url()
             else:
 
                 if reg8n_price:
@@ -116,7 +120,7 @@ def register_button(context):
             if registrant:
                 msg1 = 'You are registered'
                 status_class = 'registered'
-                url1 = registrant.hash_url
+                url1 = registrant.hash_url()
             else:
                 msg1 = 'Registration Closed'
 
