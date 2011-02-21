@@ -13,8 +13,8 @@ import registry
 registry.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', direct_to_template, {"template": "homepage.html",}, name="home"),
-    
+    url(r'^$', direct_to_template, {"template": "homepage.html", }, name="home"),
+
     #Reports:
     (r'^reports/', include('reports.urls')),
     url(r'^event-logs/reports/summary/$', 'event_logs.views.event_summary_report', name='reports-events-summary'),
@@ -73,12 +73,12 @@ urlpatterns = patterns('',
     (r'^redirects/', include('redirects.urls')),
     (r'^resumes/', include('resumes.urls')),
 
-    url(r'^sitemap/$', direct_to_template, {"template": "site_map.html",}, name="site_map"),
-    url(r'^robots.txt', direct_to_template, {"template": "robots.txt",}, name="robots"),
-    
+    url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
+    url(r'^robots.txt', direct_to_template, {"template": "robots.txt", }, name="robots"),
+
     # lEGACY REDIRECTS
     # rss redirect
-    url(r'^en/rss/$', redirect_to, {'url':'/rss'}),
+    url(r'^en/rss/$', redirect_to, {'url': '/rss'}),
     url(r'^en/$', redirect_to, {'url': '/accounts/login/'}),
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
 )
@@ -88,16 +88,22 @@ handler500 = 'base.views.custom_error'
 # serve static files
 if settings.DEBUG:
     urlpatterns += patterns('',
-        (r'^site_media/(?P<path>.*)$', 
+        (r'^site_media/(?P<path>.*)$',
             'django.views.static.serve',
-            {'document_root': join(settings.PROJECT_ROOT,'site_media')}),
+            {'document_root': join(settings.PROJECT_ROOT, 'site_media')}),
 
-        (r'^themes/%s/(?P<path>.*)$' % settings.SITE_THEME, 
+        (r'^themes/%s/(?P<path>.*)$' % settings.SITE_THEME,
             'django.views.static.serve',
             {'document_root': settings.THEME_ROOT}),
 
         (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
             'base.views.plugin_static_serve'),
+    )
+
+# template tag testing environment
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^tag-test/$', direct_to_template, {"template": "tag_test.html", }, name="tag_test"),
     )
 
 # Local url patterns for development
@@ -114,7 +120,7 @@ urlpatterns += pluginmanager.get_url_patterns()
 # tack on the pages pattern at the very end so let custom and software patterns
 # happen first
 pattern_pages = patterns('',
-    # page view  
-    url(r'^(?P<slug>[\w\-\/]+)/$', 'pages.views.index', name="page"),              
+    # page view
+    url(r'^(?P<slug>[\w\-\/]+)/$', 'pages.views.index', name="page"),  
 )
 urlpatterns += pattern_pages
