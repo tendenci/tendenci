@@ -482,7 +482,8 @@ def register(request, event_id=0, form_class=Reg8nForm):
             raise Http404
 
         # choose template
-        if event.registration_configuration.price <= 0:
+        free_reg8n = event.registration_configuration.price <= 0
+        if free_reg8n:
             template_name = "events/reg8n/register-free.html"
         else:
             template_name = "events/reg8n/register-priced.html"
@@ -505,6 +506,8 @@ def register(request, event_id=0, form_class=Reg8nForm):
                 args=(event_id, registrants.filter(email=email)[0].hash)),
             )
 
+        infinite_limit = event.registration_configuration.limit <= 0
+
         # pull registrants based off "payment required"
         if event.registration_configuration.payment_required:
             registrants = registrants.filter(registration__invoice__balance__lte = 0)
@@ -513,7 +516,8 @@ def register(request, event_id=0, form_class=Reg8nForm):
             event.end_dt < datetime.now(), # event has passed
             event.registration_configuration.late_dt < datetime.now(), # registration period has passed
             event.registration_configuration.early_dt > datetime.now(), # registration period has not started
-            event.registration_configuration.limit <= registrants.count(), # registration limit exceeded
+            (event.registration_configuration.limit <= registrants.count()) and \
+                not infinite_limit, # registration limit exceeded
         ]
 
         if any(bad_scenarios):
@@ -615,7 +619,7 @@ def register(request, event_id=0, form_class=Reg8nForm):
             if request.user.is_authenticated():
                 payment_method = PaymentMethod.objects.get(pk=3)
 
-                if free:
+                if free_reg8n:
                     reg_defaults = {
                        'user': user,
                        'email': user.email,
