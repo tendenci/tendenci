@@ -12,5 +12,7 @@ urlpatterns = patterns('',
     url(r'^delete/(?P<id>\d+)/$', 'emails.views.delete', name="email.delete"),
     url(r'^amazon_ses/verify_email/$', 'emails.views.amazon_ses_verify_email', 
         name="email.amazon_ses_verify_email"),
+    url(r'^amazon_ses/list_verified_emails/$', 'emails.views.amazon_ses_list_verified_emails', 
+        name="email.amazon_ses_list_verified_emails"),
     (r'^blocks/', include('email_blocks.urls')),
 )

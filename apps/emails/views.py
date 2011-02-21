@@ -82,8 +82,12 @@ def delete(request, id, template_name="emails/delete.html"):
     return render_to_response(template_name, {'email':email}, 
         context_instance=RequestContext(request))
 
+@login_required
 def amazon_ses_verify_email(request, form_class=AmazonSESVerifyEmailForm, 
                             template_name="emails/amazon_ses_verify_email.html"):
+    # admin only
+    if not is_admin(request.user):raise Http403
+
     from emails.amazon_ses import AmazonSES
     form = form_class(request.POST or None)
     
@@ -99,6 +103,21 @@ def amazon_ses_verify_email(request, form_class=AmazonSESVerifyEmailForm,
                                  email to complete the verification.' % email_addr)
         
     return render_to_response(template_name, {'form':form}, 
+        context_instance=RequestContext(request))
+
+@login_required   
+def amazon_ses_list_verified_emails(request, template_name="emails/amazon_ses_list_verified_emails.html"):
+    # admin only
+    if not is_admin(request.user):raise Http403
+    
+    from emails.amazon_ses import AmazonSES
+    amazon_ses = AmazonSES()
+    verified_emails = amazon_ses.listVerifiedEmailAddresses()
+    if verified_emails:
+        verified_emails = verified_emails.members
+        verified_emails.sort()
+    
+    return render_to_response(template_name, {'verified_emails':verified_emails}, 
         context_instance=RequestContext(request))
     
     
