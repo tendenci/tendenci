@@ -91,8 +91,6 @@ var ImageDialog = {
 	insert : function(file, title) {
 		var ed = tinyMCEPopup.editor, t = this, f = document.forms[0];
 
-		console.log("f:", f);
-
 		if (f.src.value === '') {
 			if (ed.selection.getNode().nodeName == 'IMG') {
 				ed.dom.remove(ed.selection.getNode());
@@ -102,8 +100,6 @@ var ImageDialog = {
 			tinyMCEPopup.close();
 			return;
 		}
-
-		console.log("tinymce: passed the first 'if' statement ");
 
 		if (tinyMCEPopup.getParam("accessibility_warnings", 1)) {
 			if (!f.alt.value) {
@@ -418,7 +414,7 @@ var ImageDialog = {
 			}
 
 			// Merge
-			dom.get('style').value = dom.serializeStyle(dom.parseStyle(img.style.cssText));
+			dom.get('style').value = dom.serializeStyle(dom.parseStyle(img.style.cssText), 'img');
 		}
 	},
 
@@ -434,9 +430,7 @@ var ImageDialog = {
 		if (!st && tinyMCEPopup.getParam("advimage_update_dimensions_onchange", true))
 			this.resetImageData();
 
-		console.log(u);
 		u = tinyMCEPopup.editor.documentBaseURI.toAbsolute(u);
-		console.log(u);
 
 		if (!st)
 			tinyMCEPopup.dom.setHTML('prev', '<img id="previewImg" src="' + u + '" border="0" onload="ImageDialog.updateImageData(this);" onerror="ImageDialog.resetImageData();" />');
