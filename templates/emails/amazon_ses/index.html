@@ -1,0 +1,35 @@
+{% extends "emails/base.html" %}
+{% load i18n %}
+{% load email_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Amazon SES - Verify Email Address{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+.amazon-ses-index h1{
+	margin-bottom: 1em;
+}
+.amazon-ses-index ul{
+	list-style: square outside none;
+}
+.amazon-ses-index ul li{
+	padding: 2px 0;
+}
+</style>
+
+{% endblock %}
+
+{% block body %}
+<div class="t amazon-ses-index">
+{% emails_nav %}
+<h1>Amazon SES</h1>
+<ul>
+<li><a href="{% url email.amazon_ses_verify_email %}">Verify Email Addresses</a></li>
+<li><a href="{% url email.amazon_ses_list_verified_emails %}">View Verified Email Addresses</a></li>
+<li><a href="{% url email.amazon_ses_send_quota %}">View Sending Limits</a></li>
+</ul>
+</div>
+{% endblock %}
