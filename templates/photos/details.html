@@ -41,7 +41,7 @@
             </div>
         </div>
         <div class="photo-caption-wrap">
-            {{ photo.caption }}
+            {{ photo.caption|safe }}
         </div>
         <div class="photo-tags">
             Tags: {% for tag in tags %} {{ tag }} {% endfor %}
