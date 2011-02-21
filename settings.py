@@ -241,7 +241,7 @@ TINYMCE_COMPRESSOR = False
 
 TINYMCE_DEFAULT_CONFIG = {
     'plugins': "stormeimage,table,paste,searchreplace,inlinepopups,\
-                tabfocus,fullscreen,media,spellchecker",
+                tabfocus,fullscreen,media,spellchecker,codemirror",
     'gecko_spellcheck': False,
     'theme': "advanced",
 
@@ -249,7 +249,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,\
                                 bullist,numlist,table, |,justifyleft,\
                                 justifycenter,justifyright,|,link,unlink,|,\
-                                image,|,pagebreak,fullscreen,code",
+                                image,|,pagebreak,fullscreen,codemirror",
     'theme_advanced_buttons2': "formatselect,underline,justifyfull,\
                                 forecolor,|,pastetext,pasteword,\
                                 removeformat,media,charmap,|,\
@@ -265,8 +265,8 @@ TINYMCE_DEFAULT_CONFIG = {
     'dialog_type': "modal",
     'tab_focus': ":prev, :next",
     'apply_source_formatting': True,
+    'remove_line_breaks': False,
     'convert_urls': False,
-    'apply_source_formatting': False,
     'handle_event_callback': "event_handler",
 
     # Additions - JMO
