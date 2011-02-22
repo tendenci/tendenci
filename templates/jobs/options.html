@@ -7,7 +7,11 @@
 <div class="t-iconrow">
 
 	{% if can_edit %}
-	<span>{{ opt_object.status_detail|capfirst }}</span>
+        {% if opt_object.is_pending %}
+            <span class="status-pending">{{ opt_object.status_detail|capfirst }}</span>
+	    {% else %}
+            <span>{{ opt_object.status_detail|capfirst }}</span>
+        {% endif %}
 	{% endif %}
 
 	<a class="option-link print" href="{% url job.print_view opt_object.slug %}">Print</a>
