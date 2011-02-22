@@ -6,11 +6,14 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.tokens import default_token_generator
 from django.template import Context, loader
 from django.utils.http import int_to_base36
+
+from captcha.fields import CaptchaField
 from registration.forms import RegistrationForm
 from profiles.models import Profile
 from registration.models import RegistrationProfile
 from site_settings.utils import get_setting
 from accounts.utils import send_registration_activation_email
+
 
 class RegistrationCustomForm(RegistrationForm):
     first_name = forms.CharField(max_length=100)
@@ -22,7 +25,8 @@ class RegistrationCustomForm(RegistrationForm):
     state = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'size':'10'}), required=False)
     country = forms.CharField(max_length=50, required=False)
     zipcode = forms.CharField(max_length=50, required=False)
-    
+    captcha = CaptchaField()
+
     def save(self, profile_callback=None):
         # 
         #new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
