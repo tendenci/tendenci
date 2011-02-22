@@ -10,58 +10,53 @@
 
 {% block body %}
 <h2>{% trans 'Fill out the form below to create your account' %}</h2>
-<form method="post" action="">
+<form method="post" action="." id="registration_form">
+{% if form.errors.values %}
+<div class="errors">
+	{% for field in form %}
+		{% if field.errors %}
+		{% for error in field.errors %}
+		<p>{{ field.label }} - {{ error }}</p>
+		{% endfor %}
+		{% endif %}
+	{% endfor %}
+</div>
+{% endif %}
 
-<div class="field-wrapper required">
-	{% if form.first_name.errors %}
-		{{ form.first_name.errors }}
-	{% endif %}
-	<label for="id_first_name">{% trans 'First Name:'%}</label>
-	{{ form.first_name }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper required">
-	{% if form.last_name.errors %}
-		{{ form.last_name.errors }}
-	{% endif %}
-	<label for="id_last_name">{% trans 'Last Name:'%}</label>
-	{{ form.last_name }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper required">
-	{{ form.email.errors }}
-	<label for="id_email">{% trans 'Email Address:'%}</label>
-	{{ form.email }}
-</div>
-<div class="clear-left"></div>
-
-<p></p>
-<div class="field-wrapper required">
-	{% if form.username.errors %}
-		{{ form.username.errors }}
-	{% endif %}
-	<label for="id_username">Username:</label>
-	{{ form.username }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper required">
-	{{ form.password1.errors }}
-	<label for="id_password1">Password:</label>
-	{{ form.password1 }}
-</div>
-<div class="clear-left"></div>
-<div class="field-wrapper">
-	{{ form.password2.errors }}
-	<label for="id_password2">Password (again):</label>
-	{{ form.password2 }}
-</div>
-<div class="clear-left"></div>
-<div class="submitbutton">
-<input type="submit" name="submit" value="Create Account" />
-</div>
+<table border="0" cellspacing="0" cellpadding="0">
+     <tr>
+         <td><label for="id_username" class="required">{% trans 'Username'%}</label></td>
+         <td>{{ form.username }}</td>
+     </tr>
+     <tr>
+         <td><label for="id_first_name" class="required">{% trans 'First Name:'%}</label></td>
+         <td>{{ form.first_name }}</td>
+     </tr>
+     <tr>
+         <td><label for="id_last_name" class="required">{% trans 'Last Name:'%}</label></td>
+         <td>{{ form.last_name }}</td>
+     </tr>
+     <tr>
+         <td><label for="id_email" class="required">{% trans 'Email Address:'%}</label></td>
+         <td>{{ form.email }}</td>
+     </tr>
+     <tr>
+         <td><label for="id_password1" class="required">Password:</label></td>
+         <td>{{ form.password1 }}</td>
+     </tr>
+     <tr>
+         <td><label for="id_password2" class="required">Password (again):</label></td>
+         <td>{{ form.password2 }}</td>
+     </tr>
+     <tr>
+         <td><label for="id_captcha" class="required">Security:</label></td>
+         <td>{{ form.captcha }}</td>
+     </tr>
+     <tr>
+         <td>&nbsp;</td>
+         <td><input class="create-button" type="submit" name="submit" value="Create Account" /></td>
+     </tr>
+</table>
 </form>
  
 {% endblock %}

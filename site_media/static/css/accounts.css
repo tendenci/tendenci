@@ -1,24 +1,21 @@
-.field-wrapper label{
-        float: left;
-        width: 8em;
-        margin-right: 1em;
-        text-align:right;
-    }
-    .field-wrapper{
-        margin: 5px 0;
-    }
-    .clear-left{
-    	clear:left;
-    }
-    .submitbutton{
-        margin: 1em 0 1em 9em;
-    }
-    .errorlist{
-    	color: red;
-    	list-style: none;
-    	font-size: 0.8em;
-    	margin: 0 0 0 9em;
-    }
-    .required{
-    	font-weight: bold;
-    }
+#registration_form table {
+    margin-top: 15px;
+}
+#registration_form table td {
+    padding: 8px;
+}
+#registration_form div.errors {
+    color: #990000;
+    padding: 10px;
+    font-weight: bold;
+    border: 1px solid #CCC; 
+    margin: 10px 0 10px 0;
+    color: #F76868;
+}
+#registration_form .create-button {
+    cursor: pointer;
+    padding: 5px;
+}
+#registration_form .required {
+	font-weight: bold;
+}
