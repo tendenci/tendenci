@@ -3,6 +3,8 @@
 {% load base_tags %}
 {% load cache %}
 {% load photo_tags %}
+{% load event_tags %}
+{% load file_tags %}
 
 {% block html_body %}
 <div id="container">
@@ -41,6 +43,15 @@
             {% list_photos as photos limit=24 %}
             {% for photo in photos %}
                 <img src="{% photo_image_url photo size=100x100 crop=True %}" />
+            {% endfor %}
+
+            {% list_events as events limit=24 %}
+            {% for event in events %}
+                {% files_for_model event.speaker_set.all.0 as speaker_files%}
+                {% for speaker_file in speaker_files %}
+                    <div>{{ speaker_file }}</div>
+                    <!-- <div><img src="{{ MEDIA_URL }}{{ speaker_file.file }}" /></div> -->
+                {% endfor %}
             {% endfor %}
 
         {% endblock %}

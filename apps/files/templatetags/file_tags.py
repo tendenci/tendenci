@@ -1,4 +1,4 @@
-from django.template import Library, Node, TemplateSyntaxError
+from django.template import Library, Node, TemplateSyntaxError, Variable, VariableDoesNotExist
 from files.models import File
 
 register = Library()
@@ -30,11 +30,17 @@ class FilesForModelNode(Node):
         self.context_var = context_var
 
     def render(self, context):
-        instance = kwargs['instance']
+        instance = self.kwargs['instance']
+
+        try:
+            instance = Variable(instance).resolve(context)
+        except VariableDoesNotExist:
+            return ''
+
         files = File.objects.get_for_model(instance)
 
         context[self.context_var] = files
-        return ""
+        return ''
 
 @register.tag
 def files_for_model(parser, token):
