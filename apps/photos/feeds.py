@@ -1,3 +1,4 @@
+from django.contrib.syndication.views import Feed
 from rss.feedsmanager import SubFeed
 from haystack.query import SearchQuerySet
 from site_settings.utils import get_setting
