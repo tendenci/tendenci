@@ -17,6 +17,7 @@ from meta.models import Meta as MetaTags
 from events.module_meta import EventMeta
 
 from invoices.models import Invoice
+from files.models import File
 
 class TypeColorSet(models.Model):
     """
@@ -436,6 +437,9 @@ class Speaker(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def files(self):
+        return File.objects.get_for_model(self)
 
 class Event(TendenciBaseModel):
     """
