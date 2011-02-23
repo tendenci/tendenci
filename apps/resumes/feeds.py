@@ -1,9 +1,9 @@
-from django.contrib.syndication.views import Feed
+from rss.feedsmanager import SubFeed
 
 from site_settings.utils import get_setting
 from resumes.models import Resume
 
-class LatestEntriesFeed(Feed):
+class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Resumes' % get_setting('site','global','sitedisplayname')
     link =  "/resumes/"
     description =  "Latest Resumes by %s" % get_setting('site','global','sitedisplayname')

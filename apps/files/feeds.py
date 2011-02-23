@@ -1,10 +1,10 @@
-from django.contrib.syndication.views import Feed
+from rss.feedsmanager import SubFeed
 from django.core.urlresolvers import reverse
 
 from site_settings.utils import get_setting
 from files.models import File
 
-class LatestEntriesFeed(Feed):
+class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Files' % get_setting('site','global','sitedisplayname')
     link =  "/files/"
     description =  "Latest Files by %s" % get_setting('site','global','sitedisplayname')
