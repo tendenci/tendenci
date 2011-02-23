@@ -72,6 +72,14 @@
 			</div>
 			{% endif %}
 
+			{% if form.phone %}
+			<div class="form-field">
+				<div class="error">{{ form.phone.errors }}</div>
+				<div class="label required">Phone</div>
+				<div class="field">{{ form.phone }}</div>
+			</div>
+			{% endif %}
+
 			{% if form.email %}
 			<div class="form-field">
 				<div class="error">{{ form.email.errors }}</div>
