@@ -47,11 +47,17 @@
 
             {% list_events as events limit=24 %}
             {% for event in events %}
+
+                {% for speaker_file in event.speaker_set.all.0.files %}
+                    <div>{{ speaker_file }}</div>
+                {% endfor %}
+
                 {% files_for_model event.speaker_set.all.0 as speaker_files%}
                 {% for speaker_file in speaker_files %}
                     <div>{{ speaker_file }}</div>
                     <!-- <div><img src="{{ MEDIA_URL }}{{ speaker_file.file }}" /></div> -->
                 {% endfor %}
+
             {% endfor %}
 
         {% endblock %}
