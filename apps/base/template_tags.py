@@ -1,6 +1,6 @@
 import random
 
-from django.template import Node
+from django.template import Node, Variable
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AnonymousUser
