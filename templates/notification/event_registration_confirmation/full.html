@@ -31,11 +31,7 @@
 	<h1 style="margin-bottom:0;">{{ event.title }} on {{ event.start_dt|date:"N j, Y \a\t f A" }}</h1>
 	<h3 style="margin:0;">{{ site_label }} Event Confirmation</h3>
 	<h3 style="margin-top:0;">Price: ${{ price|floatformat:"2" }} </h3>
-	
-	<div style="background-color:#FFC; padding:10px; font-size:1.2em;">
-		This email does not confirm payment.
-	</div>
-	
+
 	{% if event.description %}
 	<div>{{ event.description|safe }}</div>
 	{% endif %}
@@ -55,5 +51,7 @@
 	<div><a href="{{ site_url }}{% url registration_register %}">You should register for an account!</a></div>
 	{% endif %}
 {% endif %}
+
 <div>This email contains your registration details. Keep it in a safe place. Do not forward this email to an untrusted person.</div>
+
 </body></html>
