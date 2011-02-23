@@ -28,7 +28,7 @@
              </div>
 		</div>
 
-    	<form action="{% url event.edit event.pk %}" method="post">
+    	<form action="{% url event.edit event.pk %}" method="post" enctype="multipart/form-data">
     	<div class="forms">
 			{{ multi_event_forms|styled_multi_forms }}
 			<input type="submit" value="Save Changes" />
