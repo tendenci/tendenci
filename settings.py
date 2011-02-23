@@ -380,3 +380,5 @@ INSTALLED_APPS = pluginmanager.plugin_apps(INSTALLED_APPS)
 # add the plugins to the sys path - GJQ 10/12/2010
 PLUGINS_PATH = os.path.join(PROJECT_ROOT, 'plugins')
 sys.path.insert(0, PLUGINS_PATH)
+
+MAX_FEED_ITEMS_PER_APP = 10
