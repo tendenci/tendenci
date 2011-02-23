@@ -248,6 +248,7 @@ class Reg8nForm(forms.Form):
     last_name = forms.CharField(max_length=50)
     company_name = forms.CharField(max_length=100, required=False)
     username = forms.CharField(max_length=50, required=False)
+    phone = forms.CharField(max_length=20, required=False)
     email = forms.EmailField()
     captcha = CaptchaField(label=_('Type the code below'))
 
@@ -266,7 +267,7 @@ class Reg8nForm(forms.Form):
 
         if user and user.is_authenticated():
             self.fields.pop('captcha')
-            user_fields = ['first_name', 'last_name', 'company_name', 'username', 'email']
+            user_fields = ['first_name', 'last_name', 'company_name', 'username', 'phone','email']
             for user_field in user_fields:
                 self.fields.pop(user_field)
 

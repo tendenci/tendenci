@@ -242,7 +242,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     speaker.event = [event]
                     speaker.save()
 
-                    File.objects.save_files_for_instance(request, speaker)
+                    File.objects.save_files_for_model(request, speaker)
 
                 # organizer validation
                 form_organizer = OrganizerForm(request.POST, instance=organizer, prefix='organizer')
@@ -560,10 +560,11 @@ def register(request, event_id=0, form_class=Reg8nForm):
 
                 reg_defaults = {
                     'user': user,
-                    'email': form.cleaned_data.get("email", email),
-                    'first_name': form.cleaned_data.get("first_name", ''),
-                    'last_name': form.cleaned_data.get("last_name", ''),
-                    'company_name': form.cleaned_data.get("company_name", ''),
+                    'phone': form.cleaned_data.get('phone', ''),
+                    'email': form.cleaned_data.get('email', email),
+                    'first_name': form.cleaned_data.get('first_name', ''),
+                    'last_name': form.cleaned_data.get('last_name', ''),
+                    'company_name': form.cleaned_data.get('company_name', ''),
                     'event': event,
                     'payment_method': payment_method,
                     'price': price,
