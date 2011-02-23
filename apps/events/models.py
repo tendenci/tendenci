@@ -18,6 +18,7 @@ from events.module_meta import EventMeta
 
 from invoices.models import Invoice
 from files.models import File
+from site_settings.utils import get_setting
 
 class TypeColorSet(models.Model):
     """
@@ -211,6 +212,53 @@ class Registration(models.Model):
             return 462000
         else:
             return 402000
+
+    def auto_update_paid_object(self, request, payment):
+        """
+        Update the object after online payment is received.
+        """
+        from datetime import datetime
+        try:
+            from notification import models as notification
+        except:
+            notification = None
+        from perms.utils import get_notice_recipients
+
+        site_label = get_setting('site', 'global', 'sitedisplayname')
+        site_url = get_setting('site', 'global', 'siteurl')
+        self_reg8n = get_setting('module', 'users', 'selfregistration')
+
+        if payment.is_paid:
+            # registration confirmation
+            notification.send_emails(
+                [self.registrant.email],  # recipient(s)
+                'event_registration_confirmation',  # template
+                {
+                    'site_label': site_label,
+                    'site_url': site_url,
+                    'self_reg8n': self_reg8n,
+                    'reg8n': self,
+                    'event': self.event,
+                    'price': self.invoice.total,
+                },
+                True,  # notice object created in DB
+            )
+
+        else:
+            # registration confirmation
+            notification.send_emails(
+                [self.registrant.email],  # recipient(s)
+                'event_registration_confirmation',  # template
+                {
+                    'site_label': site_label,
+                    'site_url': site_url,
+                    'self_reg8n': self_reg8n,
+                    'reg8n': self,
+                    'event': self.event,
+                    'price': self.invoice.total,
+                },
+                True,  # notice object created in DB
+            )
 
     @property
     def registrant(self):

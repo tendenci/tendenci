@@ -242,7 +242,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     speaker.event = [event]
                     speaker.save()
 
-                    File.objects.save_files_for_model(request, speaker)
+                    File.objects.save_files_for_instance(request, speaker)
 
                 # organizer validation
                 form_organizer = OrganizerForm(request.POST, instance=organizer, prefix='organizer')
@@ -579,20 +579,21 @@ def register(request, event_id=0, form_class=Reg8nForm):
                 site_url = get_setting('site', 'global', 'siteurl')
                 self_reg8n = get_setting('module', 'users', 'selfregistration')
 
-                if reg8n_created:
-                    if notification:
-                        notification.send_emails(
-                            [reg_defaults['email']],
-                            'event_registration_confirmation', 
-                            {   'site_label': site_label,
-                                'site_url': site_url,
-                                'self_reg8n': self_reg8n,
-                                'reg8n': reg8n,
-                                'event': event,
-                                'price': price,
-                             },
-                            True, # notice object created in DB
-                        )
+                if not event.registration_configuration.payment_required:
+                    if reg8n_created:
+                        if notification:
+                            notification.send_emails(
+                                [reg_defaults['email']],
+                                'event_registration_confirmation',
+                                {   'site_label': site_label,
+                                    'site_url': site_url,
+                                    'self_reg8n': self_reg8n,
+                                    'reg8n': reg8n,
+                                    'event': event,
+                                    'price': price,
+                                 },
+                                True, # notice object created in DB
+                            )
 
                 if reg8n.payment_method and (reg8n.payment_method.label).lower() == 'credit card' and reg8n_created:
 
