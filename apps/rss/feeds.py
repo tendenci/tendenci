@@ -15,7 +15,7 @@ from news.models import News
 from pages.models import Page
 from photos.models import PhotoSet
 from directories.models import Directory
-
+import feedsmanager
 
 site_url = get_setting('site', 'global', 'siteurl')
 site_display_name = get_setting('site', 'global', 'sitedisplayname')
@@ -24,7 +24,66 @@ if site_description == '': site_description = 'All syndicated rss feeds on %s' %
 
 max_items = settings.MAX_RSS_ITEMS
 if not max_items: max_items = 100
+
+
+class GlobalFeed(Feed):
+    title =  '%s RSS Feed' % site_display_name
+    link = '%s/rss' % (site_url)
+    description = site_description
+
+    def items(self):
+        self.load_feeds_items()
+        items = []
+        for feed in self.feeds_items:
+            items.append(self.feeds_items[feed][:settings.MAX_FEED_ITEMS_PER_APP])
+        return items[:max_items]
+
+    def item_title(self, item):
+        feed = self.get_feed_from_item(item)
+        if not feed is None:
+            return feed.item_title(item)
+        return ''
+
+    def item_description(self, item):
+        feed = self.get_feed_from_item(item)
+        if not feed is None:
+            return feed.item_description(item)
+        return ''
     
+    def item_pubdate(self, item):
+        feed = self.get_feed_from_item(item)
+        if not feed is None:
+            return feed.item_pubdate(item)
+        return None
+
+    def item_link(self, item):
+        feed = self.get_feed_from_item(item)
+        if not feed is None:
+            return feed.item_link(item)
+        return ''
+    
+    def item_author_name(self, item):
+        feed = self.get_feed_from_item(item)
+        if not feed is None:
+            return feed.item_author_name(item)
+        return ''
+
+    def get_feed_from_item(self, item):
+        for feed in self.feeds_items:
+            if item in self.feeds_items[feed]:
+                return feed
+        return None
+
+    def load_feeds_items(self):
+        if not hasattr(self, 'feeds_items'):
+            self.feeds_items = {}
+        if len(self.feeds_items) == 0:
+            feeds = feedsmanager.get_all_feeds()
+            for feed in feeds:
+                feed_instance = feed()
+                print "Feed found: %s" % feed_instance.title
+                self.feeds_items[feed_instance] = feed_instance.items()
+
 
 class MainRSSFeed(Feed):
     #feed_type = Rss201rev2Feed

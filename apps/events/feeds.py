@@ -1,9 +1,9 @@
-from django.contrib.syndication.views import Feed
+from rss.feedsmanager import SubFeed
 from haystack.query import SearchQuerySet
 from site_settings.utils import get_setting
 from events.models import Event
 
-class LatestEntriesFeed(Feed):
+class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Events' % get_setting('site','global','sitedisplayname')
     link =  "/events/"
     description =  "Latest Events by %s" % get_setting('site','global','sitedisplayname')

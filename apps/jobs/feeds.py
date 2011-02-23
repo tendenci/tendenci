@@ -1,9 +1,9 @@
-from django.contrib.syndication.views import Feed
+from rss.feedsmanager import SubFeed
 from haystack.query import SearchQuerySet
 from site_settings.utils import get_setting
 from jobs.models import Job
 
-class LatestEntriesFeed(Feed):
+class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Jobs' % get_setting('site','global','sitedisplayname')
     link =  "/jobs/"
     description =  "Latest Jobs by %s" % get_setting('site','global','sitedisplayname')
