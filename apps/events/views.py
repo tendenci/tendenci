@@ -242,21 +242,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     speaker.event = [event]
                     speaker.save()
 
-                    speaker_file = request.FILES['speaker-file']
-                    speaker_file_path = handle_uploaded_file(speaker_file, speaker)
-
-                    file = File(**{
-                        'file':speaker_file_path,
-                        'name':speaker_file.name,
-                        'description':form_speaker.cleaned_data['description'],
-                        'content_type':ContentType.objects.get_for_model(Speaker),
-                        'object_id':speaker.pk,
-                        'creator':request.user,
-                        'creator_username':request.user.username,
-                        'owner':request.user,
-                        'owner_username':request.user.username,
-                    })
-                    file.save() # auto generates GUID
+                    File.objects.save_files_for_instance(request, speaker)
 
                 # organizer validation
                 form_organizer = OrganizerForm(request.POST, instance=organizer, prefix='organizer')
