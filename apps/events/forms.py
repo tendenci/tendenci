@@ -164,16 +164,21 @@ class SponsorForm(forms.ModelForm):
 
 class SpeakerForm(forms.ModelForm):
     label = 'Speaker'
+    file = forms.FileField(required=False)
+
     class Meta:
         model = Speaker
         
         fields = (
             'name',
+            'file',
             'description',
         )
 
+
 class OrganizerForm(forms.ModelForm):
     label = 'Organizer'
+
     class Meta:
         model = Organizer
 

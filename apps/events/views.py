@@ -1,3 +1,4 @@
+import re
 import calendar
 from datetime import datetime
 from datetime import date
@@ -30,7 +31,7 @@ from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
-import re
+from files.models import File
 
 
 try:
@@ -149,7 +150,33 @@ def print_view(request, id, template_name="events/print-view.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
+def handle_uploaded_file(f, instance):
+    import os
+    from settings import MEDIA_ROOT
+
+    file_name = re.sub(r'[^a-zA-Z0-9._]+', '-', f.name)
+
+    relative_directory = os.path.join(
+        'files',
+        instance._meta.app_label,
+        instance._meta.module_name,
+        unicode(instance.pk),
+    )
+
+    absolute_directory = os.path.join(MEDIA_ROOT, relative_directory)
+
+    if not os.path.exists(absolute_directory):
+        os.makedirs(absolute_directory)
+
+    destination = open(os.path.join(absolute_directory, file_name), 'wb+')
+    for chunk in f.chunks():
+        destination.write(chunk)
+    destination.close()
+
+    # relative path
+    return os.path.join(relative_directory, file_name)
+
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
@@ -209,11 +236,27 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     event.save() # save event
 
                 # speaker validation
-                form_speaker = SpeakerForm(request.POST, instance=speaker, prefix='speaker')
+                form_speaker = SpeakerForm(request.POST, request.FILES, instance=speaker, prefix='speaker')
                 if form_speaker.is_valid():
-                    speaker = form_speaker.save(commit=False)                   
+                    speaker = form_speaker.save(commit=False)
                     speaker.event = [event]
                     speaker.save()
+
+                    speaker_file = request.FILES['speaker-file']
+                    speaker_file_path = handle_uploaded_file(speaker_file, speaker)
+
+                    file = File(**{
+                        'file':speaker_file_path,
+                        'name':speaker_file.name,
+                        'description':form_speaker.cleaned_data['description'],
+                        'content_type':ContentType.objects.get_for_model(Speaker),
+                        'object_id':speaker.pk,
+                        'creator':request.user,
+                        'creator_username':request.user.username,
+                        'owner':request.user,
+                        'owner_username':request.user.username,
+                    })
+                    file.save() # auto generates GUID
 
                 # organizer validation
                 form_organizer = OrganizerForm(request.POST, instance=organizer, prefix='organizer')
