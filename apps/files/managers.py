@@ -1,5 +1,5 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
-
 from haystack.query import SearchQuerySet
 
 class FileManager(Manager):
@@ -8,7 +8,6 @@ class FileManager(Manager):
             Uses Haystack to query. 
             Returns a SearchQuerySet
         """
-        from files.models import File
         sqs = SearchQuerySet()
         
         if query: 
@@ -18,4 +17,10 @@ class FileManager(Manager):
 
         sqs = sqs.order_by('-update_dt')
         
-        return sqs.models(File)
+        return sqs.models(self.model)
+
+    def get_for_model(self, instance):
+        return self.model.objects.filter(
+            content_type=ContentType.objects.get_for_model(instance),
+            object_id=instance.pk,
+        )
