@@ -40,14 +40,14 @@ class GlobalFeed(Feed):
 
     def load_feeds_items(self):
         """ Load all feeds items """
-        print "creating new feeds_items"
+        #print "creating new feeds_items"
         feeds = feedsmanager.get_all_feeds()
         for feed in feeds:
             feed_instance = feed()
-            print "Feed found: %s" % feed_instance.title
+            #print "Feed found: %s" % feed_instance.title
             item_per_feed_cnt = 0
             for item in feed_instance.items():
-                print "Item: %s" % feed_instance.item_title(item)
+                #print "Item: %s" % feed_instance.item_title(item)
                 self.feed_for_item[item] = feed_instance
                 self.all_items.append(item)
                 item_per_feed_cnt += 1
@@ -61,7 +61,7 @@ class GlobalFeed(Feed):
         feed = self.feed_for_item[item]
         if hasattr(feed, 'title_template') and not feed.title_template is None:
             # use the template instead of the method
-            print feed.title_template
+            #print feed.title_template
             return render_to_string(feed.title_template, { 'obj' : item })
         return self.get_attr_item('title', item)
 
@@ -69,7 +69,7 @@ class GlobalFeed(Feed):
         feed = self.feed_for_item[item]
         if hasattr(feed, 'description_template') and not feed.description_template is None:
             # use the template instead
-            print feed.description_template
+            #print feed.description_template
             return render_to_string(feed.description_template, { 'obj' : item })
         return self.get_attr_item('description', item)
 

@@ -56,7 +56,6 @@ class FanCountNode(Node):
             cache_key = md5(xml_path).hexdigest()
             fancount = cache.get(cache_key)
             if not fancount:
-                print "not pulling from cache"
                 try:
                     xml = urllib2.urlopen(xml_path)
                     content = xml.read()
@@ -74,7 +73,6 @@ class FanCountNode(Node):
             cache_key = md5(xml_path).hexdigest()
             fancount = cache.get(cache_key)
             if not fancount:
-                print "not pulling from cache"
                 try:
                     xml = urllib2.urlopen(xml_path)
                     content = xml.read()
