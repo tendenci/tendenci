@@ -15,3 +15,10 @@ class BoxForm(TendenciBaseForm):
 
     class Meta:
         model = Box
+        
+    def __init__(self, *args, **kwargs): 
+        super(BoxForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['content'].widget.mce_attrs['app_instance_id'] = 0

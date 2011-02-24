@@ -3,32 +3,51 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load tagging_tags %}
+{% load quote_tags %}
 
-{% block title %}{{ quote.quote }} - {{ quote.author }} Quotes{% endblock %}
-{% block meta_description %}{{ quote.category }} Quotes from {{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ quote.quote }} - {{ video.author}}{% endblock %}
+{% tags_for_object quote as tags %}
+
+{% block title %}{% spaceless %}{{ quote.quote|truncatewords:"12" }} - {{ quote.author }} Quotes{% endspaceless %}{% endblock %}
+{% block meta_description %}
+{% spaceless %}
+Quotes from {{ quote.author}} - {{ quote.quote }}, 
+{% if tags %}{% for tag in tags %}
+{{ tag }} Quotes,
+{% endfor %}{% endif %} 
+{% endspaceless %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+.related-quotes {margin-bottom: 10px;}
+</style>
+{% endblock extra_head %}
 
 {% block body %}
 {% tags_for_object quote as tags %}
 <h1>Quote by {{ quote.author }}</h1>
 <div class="quote">
-        {{ quote.quote|linebreaks }}
-        <br />
-        - {% if quote.source %}
-            <a href="{{ quote.source }}">{{ quote.author }}</a>
-        {% else %}
-            {{ quote.author }}
+        <blockquote>{% spaceless %}{{ quote.quote|linebreaks }}{% endspaceless %}</blockquote>
+        <h3>&mdash; {{ quote.author }}</h3>
+        {% if quote.source %}<strong>Source: </strong>
+            {% ifequal quote.source|slice:"4" "http" %}
+                {{ quote.source|urlize }}
+            {% else %}
+                {{ quote.source }}
+            {% endifequal %}
         {% endif %}
     </div>
 <div class="meta">
 	{% if tags %}
     <div class="tags">
-<strong>Quote Tags:<strong> {% for tag in tags %}
-<a href="{% url quote.search %}?q={{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+<strong>Quote Tags: </strong> {% for tag in tags %}
+<a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
 {% endfor %}
 		</div>
 	{% endif %}		
 <ul>	
-    {% has_perm request.user quote.change_video quote as can_edit %}
+    {% has_perm request.user quote.change_quote quote as can_edit %}
     {% if quote.status_detail == 'pending' %}
    	 <span class="copyright body-copy-alerts"><em>Pending</em></span>
     {% endif %}
@@ -36,5 +55,26 @@
     	<li><a href="{% url admin:quotes_quote_change quote.pk %}" title="Edit Quote" class="option-link edit">Edit</a></li>
     {% endif %}    
 </ul>
+<div class="related-quotes">
+{% if tags %}
+    {% for tag in tags %}
+        {% if forloop.first %}
+            {% list_quotes as quotes_list tags=tag.name limit=5 %}
+                {% if quotes_list %}
+                    <h3>More {{ tag.name|title }} Quotes</h3>
+                    {% for quote in quotes_list %}
+                        <div class="quote">
+                            {{ quote.quote|truncatewords:20 }}
+                            &nbsp;<a href="{{ quote.get_absolute_url }}">Full Quote</a><br />
+                            {% spaceless %}&mdash; <a href="{% url quote.search %}?q=author:{{ quote.author }}">{{ quote.author }}</a>{% endspaceless %} 
+                        </div>
+                    {% endfor %}
+                {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+</div>
+
+<a href="{% url quote.search %}">View more quotes</a>
 </div>
 {% endblock body %}
