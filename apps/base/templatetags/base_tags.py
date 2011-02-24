@@ -1,9 +1,14 @@
 import re
+import urllib2
+from hashlib import md5
+
+from BeautifulSoup import BeautifulStoneSoup
 from django.template import Library, Node, Variable, TemplateSyntaxError
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from base.utils import url_exists
+from django.core.cache import cache
 
+from base.utils import url_exists
 from profiles.models import Profile
 
 register = Library()
@@ -31,6 +36,71 @@ def fb_like_button_iframe(url, show_faces='false', width=400, height=30):
             'width': width,
             'height': height,
             'show_faces':show_faces}
+
+class FanCountNode(Node):
+    def __init__(self, service, service_id):
+        self.service = service
+        self.service_id = service_id
+    
+    def render(self, context):
+        fancount = ''
+        fb_api_url = 'http://api.facebook.com/restserver.php'
+        tw_api_url = 'http://api.twitter.com'
+        
+        cache_key = ''
+        cache_time = 1800
+        
+        if self.service == "facebook":
+            query = '%s?method=facebook.fql.query&query=SELECT%%20fan_count%%20FROM%%20page%%20WHERE%%20page_id=%s'
+            xml_path = query % (fb_api_url, self.service_id)
+            cache_key = md5(xml_path).hexdigest()
+            fancount = cache.get(cache_key)
+            if not fancount:
+                print "not pulling from cache"
+                try:
+                    xml = urllib2.urlopen(xml_path)
+                    content = xml.read()
+                    soup = BeautifulStoneSoup(content)
+                    nodes = soup.findAll('page')
+                    for node in nodes:
+                        fancount = node.fan_count.string
+                    cache.set(cache_key, fancount, cache_time)
+                except:
+                    pass
+
+        if self.service == "twitter":
+            query = "%s/1/users/show/%s.xml"
+            xml_path = query % (tw_api_url, self.service_id)
+            cache_key = md5(xml_path).hexdigest()
+            fancount = cache.get(cache_key)
+            if not fancount:
+                print "not pulling from cache"
+                try:
+                    xml = urllib2.urlopen(xml_path)
+                    content = xml.read()
+                    soup = BeautifulStoneSoup(content)
+                    nodes = soup.findAll('user')
+                    for node in nodes:
+                        fancount = node.followers_count.string
+                    cache.set(cache_key, fancount, cache_time)
+                except:
+                    pass
+
+        return fancount
+    
+@register.tag
+def fan_count(parser, token):
+    """
+        {% fan_count facebook 12345 %}
+        or
+        {% fan_count twitter username %}
+    """
+    bits = token.contents.split()
+    if len(bits) < 3:
+        raise TemplateSyntaxError("'%s' tag takes two arguments" % bits[0])
+    service = bits[1]
+    service_id = bits[2]
+    return FanCountNode(service, service_id)
 
 def callMethod(obj, methodName):
     """
