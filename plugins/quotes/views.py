@@ -43,6 +43,7 @@ def index(request, pk=None, template_name="quotes/view.html"):
 def search(request, template_name="quotes/search.html"):
     query = request.GET.get('q', None)
     quotes = Quote.objects.search(query, user=request.user)
+    quotes = quotes.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 434000,
