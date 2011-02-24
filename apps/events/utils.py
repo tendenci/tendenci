@@ -294,7 +294,7 @@ def save_registration(*args, **kwargs):
         'state': '',
         'zip': '',
         'country': '',
-        'phone': '',
+        'phone': kwargs.get('phone', ''),
         'company_name': kwargs.get('company_name', ''),
         'position_title': ''
     }

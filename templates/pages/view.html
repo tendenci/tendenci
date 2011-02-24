@@ -41,13 +41,10 @@
 				{% if tags %}
 					Tags: 
 					{% for tag in tags %}
-						<a href="{% url page.search %}?q={{ tag }}">{{ tag }}</a>
+						<a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>
 					{% endfor %}
 				{% endif %}
 			</div>
-
-            <div class="submitted">Submitted on {{ page.create_dt|date:"long" }} 
-			by {% firstof page.creator.get_profile.display_name page.creator %}</div>
 
         </div>
 

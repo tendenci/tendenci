@@ -433,3 +433,13 @@ div.id_payment_method ul li{
 div.id_payment_method input{
 	width: 1em !important;
 }
+
+.t div.job-wrap ul.job-resumes {
+    list-style-type: none;
+    padding: 2px;
+    margin: 2px;
+}
+
+.t div.job-wrap ul.job-resumes li {
+    padding: 5px;
+}

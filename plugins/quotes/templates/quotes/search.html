@@ -1,22 +1,54 @@
 {% extends "quotes/base.html" %}
+{% load pagination_tags %}
+{% load quote_tags %}
+{% load tagging_tags %}
+{% load perm_tags %}
 
-{% block title %}Quotes{% endblock %}
+{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Quotes, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }} Quotes{% endblock %}
+{% block meta_description %}{{ request.GET.q|striptags }} Quotes from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+form.search-form input[type="text"] {width: 60%; margin-bottom: 10px;}
+.quote {margin-bottom: 10px;}
+</style>
+{% endblock %}
 
 {% block body %}
-<h1>Quotes</h1>
+{% has_perm user quotes.add_quote as can_add_quote %}
+
+<h1>{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Quotes</h1>
+<form class="search-form" action="{% url quote.search %}" method="get">
+<input type="text" id="" name="q" value="{{ request.GET.q|striptags }}" />
+<input type="submit" value="Search" />
+</form>
+{% autopaginate quotes 20 %}
+{% if can_add_quote %}
+    <div><a href="{% url admin:quotes_quote_add %}">Add a Quote</a></div>
+    {% endif %}
+
+<div class="quotes-wrap">
 {% for quote in quotes %}
     {% with quote.object as quote %}
+    {% tags_for_object quote as tags %}
     <div class="quote">
-        <a href="{{ quote.get_absolute_url }}">
         {{ quote.quote|truncatewords:20 }}
-        </a>
-        <br />
-        - {% if quote.source %}
-            <a href="{{ quote.source }}">{{ quote.author }}</a>
-        {% else %}
-            {{ quote.author }}
-        {% endif %}    
+        &nbsp;<a href="{{ quote.get_absolute_url }}">Full Quote</a><br />
+        {% spaceless %}&mdash; <a href="{% url quote.search %}?q=author:{{ quote.author }}">{{ quote.author }}</a> 
+        {% if tags %}
+            {% for tag in tags %}{% if forloop.first %}(<a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag|title }}</a>){% endif %}{% endfor %}
+        {% endif %}{% endspaceless %}
+        <div class="meta">	
+            {% if quote.status_detail == 'pending' %}
+           	 <span class="copyright body-copy-alerts"><em>Pending</em></span>
+            {% endif %}   
+        </div>   
     </div>
     {% endwith %}
-{% endfor %}
+    {% empty %}
+		<div>0 {{ request.GET.q|striptags }} Quotes Found</div>
+    {% endfor %}
+</div>
+{% paginate %}
 {% endblock body %}
