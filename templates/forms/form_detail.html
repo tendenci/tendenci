@@ -7,7 +7,7 @@
 
 <div class="t">
     <h2>{{ form.title }}</h2>
-    <p>{{ form.intro|urlize }}</p>
+    <p>{{ form.intro|safe }}</p>
 
 	<div class="form-builder-wrap">
     	<form method="post" enctype="multipart/form-data">

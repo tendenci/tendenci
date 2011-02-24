@@ -1,10 +1,10 @@
-from django.contrib.syndication.views import Feed
+from rss.feedsmanager import SubFeed
 from haystack.query import SearchQuerySet
 
 from site_settings.utils import get_setting
 from quotes.models import Quote
 
-class LatestEntriesFeed(Feed):
+class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Quotes' % get_setting('site','global','sitedisplayname')
     link =  "/quotes/"
     description =  "Latest Quotes by %s" % get_setting('site','global','sitedisplayname')

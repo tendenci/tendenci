@@ -1,8 +1,11 @@
- /**
- * $Id: editor_plugin_src.js 42 2006-08-08 14:32:24Z spocke $
+/**
+ * del.js
  *
- * @author Moxiecode - based on work by Andrew Tetlaw
- * @copyright Copyright © 2004-2008, Moxiecode Systems AB, All rights reserved.
+ * Copyright 2009, Moxiecode Systems AB
+ * Released under LGPL License.
+ *
+ * License: http://tinymce.moxiecode.com/license
+ * Contributing: http://tinymce.moxiecode.com/contributing
  */
 
 function init() {
@@ -40,16 +43,6 @@ function insertDel() {
 	tinyMCEPopup.editor.nodeChanged();
 	tinyMCEPopup.execCommand('mceEndUndoLevel');
 	tinyMCEPopup.close();
-}
-
-function insertInlineElement(en) {
-	var ed = tinyMCEPopup.editor, dom = ed.dom;
-
-	ed.getDoc().execCommand('FontName', false, 'mceinline');
-	tinymce.each(dom.select(tinymce.isWebKit ? 'span' : 'font'), function(n) {
-		if (n.style.fontFamily == 'mceinline' || n.face == 'mceinline')
-			dom.replace(dom.create(en), n, 1);
-	});
 }
 
 function removeDel() {

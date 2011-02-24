@@ -1,9 +1,9 @@
-from django.contrib.syndication.views import Feed
+from rss.feedsmanager import SubFeed
 from haystack.query import SearchQuerySet
 
 from models import CaseStudy
 
-class LatestEntriesFeed(Feed):
+class LatestEntriesFeed(SubFeed):
     title =  'Latest Case Studies'
     link =  "/case-studies/"
     description =  "Latest Case Studies"

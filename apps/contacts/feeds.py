@@ -1,9 +1,9 @@
-from django.contrib.syndication.views import Feed
+from rss.feedsmanager import SubFeed
 
 from site_settings.utils import get_setting
 from contacts.models import Contact
 
-class LatestEntriesFeed(Feed):
+class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Contacts' % get_setting('site','global','sitedisplayname')
     link =  "/contacts/"
     description =  "Latest Contacts by %s" % get_setting('site','global','sitedisplayname')

@@ -17,6 +17,8 @@ from meta.models import Meta as MetaTags
 from events.module_meta import EventMeta
 
 from invoices.models import Invoice
+from files.models import File
+from site_settings.utils import get_setting
 
 class TypeColorSet(models.Model):
     """
@@ -143,7 +145,7 @@ class Registrant(models.Model):
 
     @models.permalink
     def hash_url(self):
-        return ('membership.application_confirmation', [self.registration.event.pk, self.hash])
+        return ('event.registration_confirmation', [self.registration.event.pk, self.hash])
 
     class Meta:
         permissions = (("view_registrant","Can view registrant"),)
@@ -210,6 +212,40 @@ class Registration(models.Model):
             return 462000
         else:
             return 402000
+
+    def auto_update_paid_object(self, request, payment):
+        """
+        Update the object after online payment is received.
+        """
+        from datetime import datetime
+        try:
+            from notification import models as notification
+        except:
+            notification = None
+        from perms.utils import get_notice_recipients
+
+        site_label = get_setting('site', 'global', 'sitedisplayname')
+        site_url = get_setting('site', 'global', 'siteurl')
+        self_reg8n = get_setting('module', 'users', 'selfregistration')
+
+        payment_attempts = self.invoice.payment_set.count()
+
+        # only send email on success! or first fail
+        if payment.is_paid or payment_attempts <= 1:
+            notification.send_emails(
+                [self.registrant.email],  # recipient(s)
+                'event_registration_confirmation',  # template
+                {
+                    'site_label': site_label,
+                    'site_url': site_url,
+                    'self_reg8n': self_reg8n,
+                    'reg8n': self,
+                    'event': self.event,
+                    'price': self.invoice.total,
+                    'is_paid': payment.is_paid,
+                },
+                True,  # notice saved in db
+            )
 
     @property
     def registrant(self):
@@ -284,6 +320,8 @@ class RegistrationConfiguration(models.Model):
     early_dt = models.DateTimeField(_('Early Date'))
     regular_dt = models.DateTimeField(_('Regular Date'))
     late_dt = models.DateTimeField(_('Late Date'))
+
+    payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
 
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'),default=False)
@@ -370,7 +408,7 @@ class PaymentMethod(models.Model):
 #class PaymentPeriod(models.Model):
 #    """
 #    Defines the time-range and price a registrant must pay.
-#    e.g. (early price, regular price, late price) 
+#    e.g. (early price, regular price, late price)
 #    """
 #    label = models.CharField(max_length=50)
 #    start_dt = models.DateTimeField()
@@ -419,7 +457,7 @@ class Organizer(models.Model):
     description = models.TextField(blank=True) # static info.
 
     def __unicode__(self):
-        return self.name    
+        return self.name
 
 class Speaker(models.Model):
     """
@@ -431,9 +469,12 @@ class Speaker(models.Model):
     user = models.OneToOneField(User, blank=True, null=True)
     name = models.CharField(max_length=100, blank=True) # static info.
     description = models.TextField(blank=True) # static info.
-    
+
     def __unicode__(self):
         return self.name
+
+    def files(self):
+        return File.objects.get_for_model(self)
 
 class Event(TendenciBaseModel):
     """
@@ -471,7 +512,7 @@ class Event(TendenciBaseModel):
         This method is standard across all models that are
         related to the Meta model.  Used to generate dynamic
         methods coupled to this instance.
-        """    
+        """
         return EventMeta().get_meta(self, name)
 
     def is_registrant(self, user):
@@ -490,7 +531,7 @@ class Event(TendenciBaseModel):
     def __unicode__(self):
         return self.title
 
-    # this function is to display the event date in a nice way. 
+    # this function is to display the event date in a nice way.
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010
     def dt_display(self, format_date='%a, %b %d, %Y', format_time='%I:%M %p'):
         from base.utils import format_datetime_range
@@ -540,4 +581,3 @@ class Event(TendenciBaseModel):
                 registrants = registrants.filter(registration__invoice__balance__lte=0)
 
         return registrants
-        

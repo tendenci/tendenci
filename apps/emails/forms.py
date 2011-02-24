@@ -28,4 +28,7 @@ class EmailForm(forms.ModelForm):
             self.instance.owner_username = user.username
             
         return super(EmailForm, self).save(*args, **kwargs)
+    
+class AmazonSESVerifyEmailForm(forms.Form):
+    email_address = forms.EmailField(max_length=255, label="Enter an email address to verify")
         

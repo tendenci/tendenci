@@ -1,9 +1,10 @@
 from django.contrib.syndication.views import Feed
+from rss.feedsmanager import SubFeed
 from haystack.query import SearchQuerySet
 from site_settings.utils import get_setting
 from photos.models import Image, PhotoSet
 
-class LatestAlbums(Feed):
+class LatestAlbums(SubFeed):
     title =  '%s - Latest Photo Albums' % get_setting('site','global','sitedisplayname')
     link =  "/photos/"
     description =  "Latest Photo Albums from %s" % get_setting('site','global','sitedisplayname')

@@ -1,4 +1,5 @@
 import uuid
+
 from datetime import timedelta
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -6,7 +7,7 @@ from django.contrib.auth.models import User
 
 from tagging.fields import TagField
 from base.fields import SlugField
-from perms.models import TendenciBaseModel 
+from perms.models import TendenciBaseModel
 from jobs.managers import JobManager
 from entities.models import Entity
 from tinymce import models as tinymce_models
@@ -15,40 +16,41 @@ from jobs.module_meta import JobMeta
 from invoices.models import Invoice
 from perms.utils import is_admin
 
-class Job(TendenciBaseModel ):
+
+class Job(models.Model):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=250)
-    slug = SlugField(_('URL Path'), unique=True)  
+    slug = SlugField(_('URL Path'), unique=True)
     description = tinymce_models.HTMLField()
-    list_type = models.CharField(max_length=50) #premium or regular
+    list_type = models.CharField(max_length=50)  # premium or regular
 
-    code = models.CharField(max_length=50, blank=True) # internal job-code
-    location = models.CharField(max_length=500) #cannot be foreign, needs to be open 'Texas' 'All 50 States' 'US and International'
+    code = models.CharField(max_length=50, blank=True)  # internal job-code
+    location = models.CharField(max_length=500)  # cannot be foreign, needs to be open 'Texas' 'All 50 States' 'US and International'
     skills = models.TextField(blank=True)
     experience = models.TextField(blank=True)
     education = models.TextField(blank=True)
-    level = models.CharField(max_length=50, blank=True) # e.g. entry, part-time, permanent, contract
-    period = models.CharField(max_length=50, blank=True) # full time, part time, contract
-    is_agency = models.BooleanField() #defines if the job posting is by a third party agency
-    percent_travel = models.IntegerField() #how much travel is required for the position
-    
-    contact_method = models.TextField(blank=True) #preferred method - email, phone, fax. leave open field for user to define
-    position_reports_to = models.CharField(max_length=200, blank=True) #manager, CEO, VP, etc
-    salary_from = models.CharField(max_length=50, blank=True) 
+    level = models.CharField(max_length=50, blank=True)  # e.g. entry, part-time, permanent, contract
+    period = models.CharField(max_length=50, blank=True)  # full time, part time, contract
+    is_agency = models.BooleanField()  # defines if the job posting is by a third party agency
+    percent_travel = models.IntegerField()  # how much travel is required for the position
+
+    contact_method = models.TextField(blank=True)  # preferred method - email, phone, fax. leave open field for user to define
+    position_reports_to = models.CharField(max_length=200, blank=True)  # manager, CEO, VP, etc
+    salary_from = models.CharField(max_length=50, blank=True)
     salary_to = models.CharField(max_length=50, blank=True)
     computer_skills = models.TextField(blank=True)
 
     # date related fields
-    requested_duration = models.IntegerField()# 30, 60, 90 days - should be relational table
-    activation_dt = models.DateTimeField(null=True, blank=True) #date job listing was activated 
-    post_dt = models.DateTimeField(null=True, blank=True) #date job was posted (same as create date?)
-    expiration_dt = models.DateTimeField(null=True, blank=True) #date job expires based on activation date and duration
-    start_dt = models.DateTimeField(null=True, blank=True) #date job starts(defined by job poster)
+    requested_duration = models.IntegerField()  # 30, 60, 90 days - should be relational table
+    activation_dt = models.DateTimeField(null=True, blank=True)  # date job listing was activated
+    post_dt = models.DateTimeField(null=True, blank=True)  # date job was posted (same as create date?)
+    expiration_dt = models.DateTimeField(null=True, blank=True)  # date job expires based on activation date and duration
+    start_dt = models.DateTimeField(null=True, blank=True)  # date job starts(defined by job poster)
 
-    job_url = models.CharField(max_length=300, blank=True) #link to other (fuller) job posting    
+    job_url = models.CharField(max_length=300, blank=True)  # link to other (fuller) job posting
     syndicate = models.BooleanField(blank=True)
     design_notes = models.TextField(blank=True)
-           
+
     #TODO: foreign
     contact_company = models.CharField(max_length=300, blank=True)
     contact_name = models.CharField(max_length=150, blank=True)
@@ -62,25 +64,39 @@ class Job(TendenciBaseModel ):
     contact_fax = models.CharField(max_length=50, blank=True)
     contact_email = models.CharField(max_length=300, blank=True)
     contact_website = models.CharField(max_length=300, blank=True)
- 
+
     meta = models.OneToOneField(MetaTags, null=True)
-    entity = models.ForeignKey(Entity,null=True, blank=True)
+    entity = models.ForeignKey(Entity, null=True, blank=True)
     tags = TagField(blank=True)
-    
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)   
+
+    invoice = models.ForeignKey(Invoice, blank=True, null=True)
     payment_method = models.CharField(max_length=50, blank=True, default='')
     member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     member_count = models.IntegerField(blank=True, null=True)
     non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     non_member_count = models.IntegerField(blank=True, null=True)
-    
-    #override_price = models.DecimalField(null=True, max_digits=20, decimal_places=2, blank=True)
-    #override_userid = models.IntegerField(null=True, blank=True)
- 
+
+    # authority fields
+    allow_anonymous_view = models.BooleanField(_("Public can view"))
+    allow_user_view = models.BooleanField(_("Signed in user can view"))
+    allow_member_view = models.BooleanField()
+    allow_anonymous_edit = models.BooleanField()
+    allow_user_edit = models.BooleanField(_("Signed in user can change"))
+    allow_member_edit = models.BooleanField()
+
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False, null=True)
+    creator_username = models.CharField(max_length=50, null=True)
+    owner = models.ForeignKey(User, related_name="%(class)s_owner", null=True)
+    owner_username = models.CharField(max_length=50, null=True)
+    status = models.BooleanField("Active", default=True)
+    status_detail = models.CharField(max_length=50, default='active')
+
     objects = JobManager()
 
     class Meta:
-        permissions = (("view_job","Can view job"),)
+        permissions = (("view_job", "Can view job"),)
 
     def get_meta(self, name):
         """
@@ -93,16 +109,16 @@ class Job(TendenciBaseModel ):
     @models.permalink
     def get_absolute_url(self):
         return ("job", [self.slug])
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-            
+
         super(self.__class__, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.title
-    
+
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """
@@ -114,32 +130,32 @@ class Job(TendenciBaseModel ):
             self.title,
             inv.object_id,
         )
-        
+
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
         Make the accounting entries for the job sale
         """
         from accountings.models import Acct, AcctEntry, AcctTran
         from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
-        
+
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:
             make_acct_entries_initial(user, ae, amount)
         else:
             # payment has now been received
             make_acct_entries_closing(user, ae, amount)
-            
+
             # #CREDIT job SALES
             acct_number = self.get_acct_number()
             acct = Acct.objects.get(account_number=acct_number)
-            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
-            
+            AcctTran.objects.create_acct_tran(user, ae, acct, amount * (-1))
+
     def get_acct_number(self, discount=False):
         if discount:
             return 462500
         else:
             return 402500
-            
+
     def auto_update_paid_object(self, request, payment):
         """
         Update the object after online payment is received.
@@ -148,13 +164,20 @@ class Job(TendenciBaseModel ):
             self.status_detail = 'paid - pending approval'
         self.expiration_dt = self.activation_dt + timedelta(days=self.requested_duration)
         self.save()
-        
-            
-       
+
+    @property
+    def opt_app_label(self):
+        return self._meta.app_label
+
+    @property
+    def opt_module_name(self):
+        return self._meta.module_name
+
+
 class JobPricing(models.Model):
     guid = models.CharField(max_length=40)
-    duration =models.IntegerField(blank=True)
-    regular_price =models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    duration = models.IntegerField(blank=True)
+    regular_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     premium_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     regular_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     premium_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
@@ -166,20 +189,23 @@ class JobPricing(models.Model):
     owner = models.ForeignKey(User, related_name="job_pricing_owner", null=True)
     owner_username = models.CharField(max_length=50, null=True)
     status = models.BooleanField(default=True)
-    
+
     def save(self, user=None, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
             if user and user.id:
-                self.creator=user
-                self.creator_username=user.username
+                self.creator = user
+                self.creator_username = user.username
         if user and user.id:
-            self.owner=user
-            self.owner_username=user.username
-        if not self.regular_price_member: self.regular_price_member = 0
-        if not self.premium_price_member: self.premium_price_member = 0
-        if not self.regular_price: self.regular_price = 0
-        if not self.premium_price: self.premium_price = 0
-            
-        super(self.__class__, self).save(*args, **kwargs)
+            self.owner = user
+            self.owner_username = user.username
+        if not self.regular_price_member:
+            self.regular_price_member = 0
+        if not self.premium_price_member:
+            self.premium_price_member = 0
+        if not self.regular_price:
+            self.regular_price = 0
+        if not self.premium_price:
+            self.premium_price = 0
 
+        super(self.__class__, self).save(*args, **kwargs)
