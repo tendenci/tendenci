@@ -13,7 +13,7 @@
 <body>
 	
 	<h1>{{ form.title }}</h1>
-	<p>{{ form.intro }}</p>
+	<p>{{ form.intro|safe }}</p>
 	
 	<form method="post" enctype="multipart/form-data">
 		{{ form_for_form.as_p }}
