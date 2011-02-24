@@ -5,7 +5,7 @@ from django.conf import settings
 from django.template.defaultfilters import stringfilter
 from django.utils import formats
 from django.utils.safestring import mark_safe
-from django.utils.html import conditional_escape
+from django.utils.html import conditional_escape, strip_tags, urlize
 from django.contrib.auth.models import AnonymousUser
 
 register = Library()
@@ -227,4 +227,18 @@ def split_str(s, args):
             return s.split(splitter)
         return s
     return s
+
+@register.filter
+@stringfilter
+def twitterize(value, autoescape=None):
+    value = strip_tags(value)
+    # Link URLs
+    value = urlize(value, nofollow=False, autoescape=autoescape)
+    # Link twitter usernames prefixed with @
+    value = re.sub(r'(\s+|\A)@([a-zA-Z0-9\-_]*)\b',r'\1<a href="http://twitter.com/\2">@\2</a>&nbsp;',value)
+    # Link hash tags
+    value = re.sub(r'(\s+|\A)#([a-zA-Z0-9\-_]*)\b',r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>&nbsp;',value)
+    return mark_safe(value)
+twitterize.is_safe=True
+twitterize.needs_autoescape = True
     
