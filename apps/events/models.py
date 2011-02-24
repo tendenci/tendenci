@@ -228,24 +228,10 @@ class Registration(models.Model):
         site_url = get_setting('site', 'global', 'siteurl')
         self_reg8n = get_setting('module', 'users', 'selfregistration')
 
-        if payment.is_paid:
-            # registration confirmation
-            notification.send_emails(
-                [self.registrant.email],  # recipient(s)
-                'event_registration_confirmation',  # template
-                {
-                    'site_label': site_label,
-                    'site_url': site_url,
-                    'self_reg8n': self_reg8n,
-                    'reg8n': self,
-                    'event': self.event,
-                    'price': self.invoice.total,
-                },
-                True,  # notice object created in DB
-            )
+        payment_attempts = self.invoice.payment_set.count()
 
-        else:
-            # registration confirmation
+        # only send email on success! or first fail
+        if payment.is_paid or payment_attempts <= 1:
             notification.send_emails(
                 [self.registrant.email],  # recipient(s)
                 'event_registration_confirmation',  # template
@@ -256,8 +242,9 @@ class Registration(models.Model):
                     'reg8n': self,
                     'event': self.event,
                     'price': self.invoice.total,
+                    'is_paid': payment.is_paid,
                 },
-                True,  # notice object created in DB
+                True,  # notice saved in db
             )
 
     @property
