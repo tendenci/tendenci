@@ -37,7 +37,7 @@ def index(request, slug=None, cv=None):
 def search(request, template_name="staff/search.html"):
     query = request.GET.get('q', None)
     staff = Staff.objects.search(query, user=request.user)
-    staff = staff.order_by('-start_date')
+    staff = staff.order_by('start_date')
 
     return render_to_response(template_name, {'staff':staff},
         context_instance=RequestContext(request))
