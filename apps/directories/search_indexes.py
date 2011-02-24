@@ -9,7 +9,7 @@ from categories.models import Category
 
 class DirectoryIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-    headline = indexes.CharField(model_attr='headline')
+    headline = indexes.CharField(model_attr='headline', faceted=True)
     body = indexes.CharField(model_attr='body')
     activation_dt = indexes.DateTimeField(model_attr='activation_dt', null=True)
     expiration_dt = indexes.DateTimeField(model_attr='expiration_dt', null=True)
