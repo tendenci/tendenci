@@ -1,7 +1,7 @@
 {% load tagging_tags %}
 
 {{ object.quote }}
-{{ object.author }}
+author:{{ object.author }}
 {{ object.source }}
 
 {% tags_for_object object as tags %}

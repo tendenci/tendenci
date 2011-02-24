@@ -15,6 +15,7 @@ class QuoteAdmin(admin.ModelAdmin):
             'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
     )
     form = QuoteForm
+    actions = ['update_quotes']
 
     def log_deletion(self, request, object, object_repr):
         super(QuoteAdmin, self).log_deletion(request, object, object_repr)
@@ -85,5 +86,17 @@ class QuoteAdmin(admin.ModelAdmin):
             ObjectPermission.objects.assign(instance.creator, instance) 
         
         return instance
+
+    def update_quotes(self, request, queryset):
+        """
+        Method to mass update and save quotes, used on text imports.
+        """
+        for obj in queryset:
+            obj.save()
+
+        self.message_user(request, "Quotes were successfully updated.")
+
+    update_quotes.short_description = "Update quotes tags and index for imports"
+    
     
 admin.site.register(Quote, QuoteAdmin)
