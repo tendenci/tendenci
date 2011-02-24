@@ -15,7 +15,7 @@
     </div>
 {% else %}
 
-    {% if payment_required %}
+    {% if event.registration_configuration.payment_required %}
         <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
             Almost Registered. Payment is still required.
             <a href="{{ site_url }}{% url payment.pay_online reg8n.invoice.pk reg8n.invoice.guid %}">Complete this registration.</a>
