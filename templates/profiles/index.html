@@ -358,6 +358,7 @@
 {% endblock %}
 
 {% block extra_body %}
+{{ block.super }}
 {# dynamically load jquery #}
 <script>
 	if (!(window.jQuery)) { 
