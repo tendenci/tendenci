@@ -5,6 +5,6 @@
 {% block body %}
 <div class="t">
     <h2>{{ form.title }}</h2>
-    <p>{{ form.response }}</p>	
+    {{ form.response|safe }}	
 </div>
 {% endblock %}

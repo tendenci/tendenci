@@ -1,9 +1,9 @@
-from django.contrib.syndication.views import Feed
+from rss.feedsmanager import SubFeed
 
 from site_settings.utils import get_setting
 from contributions.models import Contribution
 
-class LatestEntriesFeed(Feed):
+class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Contributions' % get_setting('site','global','sitedisplayname')
     link =  "/contributions/"
     description =  "Latest Contributions by %s" % get_setting('site','global','sitedisplayname')

@@ -212,6 +212,7 @@ def distribute_newsletter_v2(action, request=None, **kwargs):
             
             email_subject = action.email.subject
             email_body = action.email.body
+            no_reply_email = get_setting('site', 'global', 'siteemailnoreplyaddress')
             
             # if there is [password], replace here
             password_txt = render_to_string('newsletters/password.txt',
@@ -291,13 +292,15 @@ def distribute_newsletter_v2(action, request=None, **kwargs):
                 
                 email = mail.EmailMessage(subject, 
                                   body,
-                                  action.email.sender,
+                                  no_reply_email,
                                   recipient,
+                                  headers={'Reply-To':action.email.sender},
                                   connection=connection)
                 email.content_subtype= action.email.content_type
                 boo = email.send()  # send the e-mail
                 
-                myrecap = {'direct_mail':direct_mail,
+                myrecap = {'direct_mail'
+                           :direct_mail,
                              'first_name':user_this.first_name,
                              'last_name':user_this.last_name,
                              'email':user_this.email,
@@ -313,7 +316,7 @@ def distribute_newsletter_v2(action, request=None, **kwargs):
                     
                 recap_d.append(myrecap)
              
-            connection.close()
+            #connection.close()
             
             # update the status
             action.status_detail = 'closed'

@@ -14,7 +14,7 @@ SITE_THEME = "default"
 
 ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
-	('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
+    ('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jennifer Ulmer', 'julmer@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
     ('JMO', 'jmoswalt@schipul.com'),
@@ -122,7 +122,8 @@ ROOT_URLCONF = 'Tendenci50.urls'
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, "themes", SITE_THEME, "templates"),
     os.path.join(PROJECT_ROOT, "templates"),
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Put strings here, like "/home/html/django_templates"
+    # or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
@@ -134,7 +135,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    
+
     # tendenci context processors
     'theme.context_processors.theme',
     'site_settings.context_processors.settings',
@@ -165,9 +166,9 @@ INSTALLED_APPS = (
     'captcha',
     'south',
     'forms_builder.forms',
-    
+
     'pluginmanager',
-    
+
     # tendenci applications
     'base',
     'accounts',
@@ -219,8 +220,8 @@ INSTALLED_APPS = (
 # This is the number of days users will have to activate their
 # accounts after registering. If a user does not activate within
 # that period, the account will remain permanently inactive and may
-#be deleted by maintenance scripts provided in django-registration.
-ACCOUNT_ACTIVATION_DAYS = 7 
+# be deleted by maintenance scripts provided in django-registration.
+ACCOUNT_ACTIVATION_DAYS = 7
 
 LOGIN_REDIRECT_URL = '/dashboard'
 
@@ -239,38 +240,50 @@ TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
 
 TINYMCE_DEFAULT_CONFIG = {
-    'plugins': "stormeimage,table,paste,searchreplace,inlinepopups,tabfocus,fullscreen,media,spellchecker",
+    'plugins': "stormeimage,table,paste,searchreplace,inlinepopups,\
+                tabfocus,fullscreen,media,spellchecker,codemirror",
     'gecko_spellcheck': False,
     'theme': "advanced",
 
     # theme options
-    'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,bullist,numlist,table, |,justifyleft,justifycenter,justifyright,|,link,unlink,|,image,|,pagebreak,fullscreen,code",
-    'theme_advanced_buttons2': "formatselect,underline,justifyfull,forecolor,|,pastetext,pasteword,removeformat,media,charmap,|,outdent,indent,|,undo,redo",
+    'theme_advanced_buttons1': "bold,italic,underline,strikethrough,|,\
+                                bullist,numlist,table, |,justifyleft,\
+                                justifycenter,justifyright,|,link,unlink,|,\
+                                image,|,pagebreak,fullscreen,codemirror",
+    'theme_advanced_buttons2': "formatselect,underline,justifyfull,\
+                                forecolor,|,pastetext,pasteword,\
+                                removeformat,media,charmap,|,\
+                                outdent,indent,|,undo,redo",
     'theme_advanced_buttons3': "",
     'theme_advanced_toolbar_location': "top",
     'theme_advanced_toolbar_align': "left",
     'theme_advanced_statusbar_location': "bottom",
-    'theme_advanced_resizing' : True,
-    
+    'theme_advanced_resizing': True,
+
 
     'theme_advanced_resize_horizontal': True,
     'dialog_type': "modal",
     'tab_focus': ":prev, :next",
-    'apply_source_formatting' : True,
-    'convert_urls' : False,
-    'apply_source_formatting' : False,
-    'handle_event_callback' : "event_handler",
-    
+    'apply_source_formatting': True,
+    'remove_line_breaks': False,
+    'convert_urls': False,
+    'handle_event_callback': "event_handler",
+
     # Additions - JMO
     'height': 400,
-	'extended_valid_elements': "iframe[align<bottom?left?middle?right?top|class|frameborder|height|id|longdesc|marginheight|marginwidth|name|scrolling<auto?no?yes|src|style|title|width]"
+    'extended_valid_elements': "iframe[align<bottom?left?middle?\
+                                right?top|class|\
+                                frameborder|height|id|longdesc|\
+                                marginheight|marginwidth|\
+                                name|scrolling<auto?no?yes|src|\
+                                style|title|width]"
 }
 
 # -------------------------------------- #
 # CACHING
 # -------------------------------------- #
 CACHE_DIR = PROJECT_ROOT + "/cache"
-CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800" # 7 days
+CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800"   # 7 days
 
 # --------------------------------------#
 # Celery
@@ -287,11 +300,12 @@ BROKER_VHOST = "/"
 HAYSTACK_SITECONF = 'search'
 HAYSTACK_SEARCH_ENGINE = 'xapian'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
-HAYSTACK_XAPIAN_PATH = os.path.join(PROJECT_ROOT,'index')
+HAYSTACK_XAPIAN_PATH = os.path.join(PROJECT_ROOT, 'index')
 
 # custom haystack settings (not related to core haystack code)
 # HAYSTACK_INCLUDED_APPS - Tell the /search interface which apps to search in
-HAYSTACK_INCLUDED_APPS = ('article','directory','event','photoset','job','page','news','resume','story')
+HAYSTACK_INCLUDED_APPS = ('article', 'directory', 'event',
+                          'photoset', 'job', 'page', 'news', 'resume', 'story')
 
 # HAYSTACK_INDEX_LIMITS - row amount to index per core application
 # Override for rebuild_index command exist in base core app
@@ -300,7 +314,8 @@ HAYSTACK_INDEX_LIMITS = {
 }
 
 #---------------------------------------------------------------
-# payment gateway settings - LOGIN and KEY need to be moved to local_urls.py later
+# payment gateway settings - LOGIN and KEY need to be moved
+# to local_urls.py later
 #---------------------------------------------------------------
 #AUTHNET_POST_URL = "https://secure.authorize.net/gateway/transact.dll"
 AUTHNET_POST_URL = "https://test.authorize.net/gateway/transact.dll"
@@ -310,9 +325,11 @@ AUTHNET_POST_URL = "https://test.authorize.net/gateway/transact.dll"
 AUTHNET_MD5_HASH_VALUE = ''
 
 # First Data
-FIRSTDATA_POST_URL = 'https://secure.linkpt.net/lpcentral/servlet/lppay' # latest version
+# latest version
+FIRSTDATA_POST_URL = 'https://secure.linkpt.net/lpcentral/servlet/lppay'
 #FIRSTDATA_POST_URL = 'https://www.linkpointcentral.com/lpc/servlet/lppay'
-#FIRSTDATA_POST_URL = 'https://www.staging.linkpointcentral.com/lpc/servlet/lppay' # test
+# test link
+#FIRSTDATA_POST_URL = 'https://www.staging.linkpointcentral.com/lpc/servlet/lppay'
 
 MERCHANT_LOGIN = ""
 MERCHANT_TXN_KEY = ""
@@ -337,6 +354,17 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # Fomrs upload path
 FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
 
+# Amazon SES 
+#----------------------------------------------#
+# http://docs.amazonwebservices.com/ses/latest/GettingStartedGuide/
+# https://github.com/hmarr/django-ses/tree/d9825e046fdc490187ef90a048eea983c2dd4606
+#EMAIL_BACKEND = 'django_ses.SESBackend'
+
+#AWS_ACCESS_KEY_ID = ''
+#AWS_SECRET_ACCESS_KEY = ''
+#----------------------------------------------#
+
+
 # local settings for development
 try:
     from local_settings import *
@@ -352,3 +380,5 @@ INSTALLED_APPS = pluginmanager.plugin_apps(INSTALLED_APPS)
 # add the plugins to the sys path - GJQ 10/12/2010
 PLUGINS_PATH = os.path.join(PROJECT_ROOT, 'plugins')
 sys.path.insert(0, PLUGINS_PATH)
+
+MAX_FEED_ITEMS_PER_APP = 10

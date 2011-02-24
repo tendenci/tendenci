@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
-from emails.forms import EmailForm
+from django.contrib import messages
+from emails.forms import EmailForm, AmazonSESVerifyEmailForm
 from emails.models import Email
 from site_settings.utils import get_setting
 from base.http import Http403
@@ -80,4 +81,65 @@ def delete(request, id, template_name="emails/delete.html"):
 
     return render_to_response(template_name, {'email':email}, 
         context_instance=RequestContext(request))
+
+@login_required   
+def amazon_ses_index(request, template_name="emails/amazon_ses/index.html"):
+    # admin only
+    if not is_admin(request.user):raise Http403
+    
+    return render_to_response(template_name,
+        context_instance=RequestContext(request))
+    
+
+@login_required
+def amazon_ses_verify_email(request, form_class=AmazonSESVerifyEmailForm, 
+                            template_name="emails/amazon_ses/verify_email.html"):
+    # admin only
+    if not is_admin(request.user):raise Http403
+
+    from emails.amazon_ses import AmazonSES
+    form = form_class(request.POST or None)
+    
+    if request.method == "POST":
+        if form.is_valid():
+            email_addr = form.cleaned_data['email_address']
+            amazon_ses = AmazonSES()
+            result = amazon_ses.verifyEmailAddress(email_addr)
+            
+            messages.add_message(request, messages.INFO, 
+                                 'The email address "%s" has been sent to amazon to verify. \
+                                 Please check your inbox and follow the instruction in the \
+                                 email to complete the verification.' % email_addr)
+        
+    return render_to_response(template_name, {'form':form}, 
+        context_instance=RequestContext(request))
+
+@login_required   
+def amazon_ses_list_verified_emails(request, template_name="emails/amazon_ses/list_verified_emails.html"):
+    # admin only
+    if not is_admin(request.user):raise Http403
+    
+    from emails.amazon_ses import AmazonSES
+    amazon_ses = AmazonSES()
+    verified_emails = amazon_ses.listVerifiedEmailAddresses()
+    if verified_emails:
+        verified_emails = verified_emails.members
+        verified_emails.sort()
+    
+    return render_to_response(template_name, {'verified_emails':verified_emails}, 
+        context_instance=RequestContext(request))
+
+@login_required    
+def amazon_ses_send_quota(request, template_name="emails/amazon_ses/send_quota.html"):
+    # admin only
+    if not is_admin(request.user):raise Http403
+    
+    from emails.amazon_ses import AmazonSES
+    amazon_ses = AmazonSES()
+    send_quota = amazon_ses.getSendQuota()
+    
+    return render_to_response(template_name, {'send_quota':send_quota}, 
+        context_instance=RequestContext(request))
+    
+    
     
