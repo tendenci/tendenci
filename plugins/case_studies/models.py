@@ -66,6 +66,16 @@ class Technology(models.Model):
 
 class Image(File):
     case_study = models.ForeignKey(CaseStudy)
+    file_type = models.CharField(
+        _('File type'),
+        max_length=50,
+        choices=(
+            ('featured','Featured'),
+            ('screenshot','Screenshot'),
+            ('other','Other'),
+        ),
+        default='other',
+    )
     position = models.IntegerField(blank=True)
 
     def save(self, *args, **kwargs):

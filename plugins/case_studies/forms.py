@@ -43,6 +43,7 @@ class FileForm(forms.ModelForm):
         fields = (
             'file',
             'description',
+            'file_type',
             'position',
         )
 
