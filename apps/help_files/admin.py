@@ -20,6 +20,11 @@ class HelpFileAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ['question']}
     form = HelpFileForm
 
+    class Media:
+        js = (
+            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+        )
+
     def log_deletion(self, request, object, object_repr):
         super(HelpFileAdmin, self).log_deletion(request, object, object_repr)
         log_defaults = {
