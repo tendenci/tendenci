@@ -58,15 +58,6 @@
         <div class="quick-options">
             {% staff_options request.user staff %}
         </div>
-        <div class="member-photo">
-            {% if staff_member.professional_photo %}
-            <img src="{% url file staff_member.professional_photo.pk %}128x128/" title="{{ staff_member.name }}"  />
-            {% endif %}
-            <p>{{ staff.name }}</p>
-            {%  if staff.position %}
-            <p class="staff-position">{{ staff.position }}</p>
-            {% endif %}
-        </div>
         <h1>
             {{ staff.name }} Curriculum Vitae (CV)
         </h1>
