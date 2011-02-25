@@ -6,8 +6,9 @@ from perms.models import ObjectPermission
 from perms.utils import is_admin, get_notice_recipients
 from boxes.models import Box 
 from boxes.forms import BoxForm
+import settings
 
-    
+
 class BoxAdmin(admin.ModelAdmin):
     list_display = ('title','pk', 'tags')
     search_fields = ('title','content','tags',)
