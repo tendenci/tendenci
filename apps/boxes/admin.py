@@ -18,6 +18,11 @@ class BoxAdmin(admin.ModelAdmin):
     )
     form = BoxForm
 
+    class Media:
+        js = (
+            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+        )
+
     def log_deletion(self, request, object, object_repr):
         super(BoxAdmin, self).log_deletion(request, object, object_repr)
         log_defaults = {
