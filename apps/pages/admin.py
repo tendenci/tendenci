@@ -5,6 +5,7 @@ from perms.models import ObjectPermission
 from perms.utils import is_admin, get_notice_recipients
 from models import Page 
 from forms import PageAdminForm
+import settings
 
 try:
     from notification import models as notification

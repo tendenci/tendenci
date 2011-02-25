@@ -4,6 +4,7 @@ from event_logs.models import EventLog
 from perms.models import ObjectPermission
 from models import Topic, HelpFile, Request
 from forms import HelpFileForm
+import settings
 
 class HelpFileAdmin(admin.ModelAdmin):
     list_display = ['question', 'level', 'is_faq', 'is_featured', 'is_video', 'syndicate', 'view_totals']
