@@ -26,6 +26,11 @@ class PageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ['title']}
     form = PageAdminForm
 
+    class Media:
+        js = (
+            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+        )
+
     def link(self, obj):
         return '<a href="%s" title="%s">%s</a>' % (
             obj.get_absolute_url(),
