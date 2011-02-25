@@ -60,25 +60,22 @@ class ListNode(Node):
             randomize = bool(self.kwargs['random'])
 
         if 'tags' in self.kwargs:
-            if self.kwargs['tags'] == 'tags':
-                try:
-                    tags = Variable(self.kwargs['tags'])
-                    tags = unicode(tags.resolve(context))
-                except:
-                    tags = self.kwargs['tags']
-            else:
+            try:
+                tags = Variable(self.kwargs['tags'])
+                tags = unicode(tags.resolve(context))
+            except:
                 tags = self.kwargs['tags']
+
             tags = tags.replace('"', '')
             tags = tags.split(',')
+            
+            print tags
 
         if 'user' in self.kwargs:
-            if self.kwargs['user'] == 'user':
-                try:
-                    user = Variable(self.kwargs['user'])
-                    user = user.resolve(context)
-                except:
-                    pass
-            else:
+            try:
+                user = Variable(self.kwargs['user'])
+                user = user.resolve(context)
+            except:
                 user = self.kwargs['user']
         else:
             # check the context for an already existing user
@@ -86,33 +83,26 @@ class ListNode(Node):
                 user = context['user']
 
         if 'limit' in self.kwargs:
-            if self.kwargs['limit'] == 'limit':
-                try:
-                    limit = Variable(self.kwargs['limit'])
-                    limit = limit.resolve(context)
-                except:
-                    pass
-            else:
+            try:
+                limit = Variable(self.kwargs['limit'])
+                limit = limit.resolve(context)
+            except:
                 limit = self.kwargs['limit']
 
+        limit = int(limit)
+
         if 'query' in self.kwargs:
-            if self.kwargs['query'] == 'query':
-                try:
-                    query = Variable(self.kwargs['query'])
-                    query = query.resolve(context)
-                except:
-                    query = self.kwargs['query']  # context string
-            else:
-                query = self.kwargs['query']
+            try:
+                query = Variable(self.kwargs['query'])
+                query = query.resolve(context)
+            except:
+                query = self.kwargs['query']  # context string
 
         if 'order' in self.kwargs:
-            if self.kwargs['order'] == 'order':
-                try:
-                    order = Variable(self.kwargs['order'])
-                    order = order.resolve(context)
-                except:
-                    pass
-            else:
+            try:
+                order = Variable(self.kwargs['order'])
+                order = order.resolve(context)
+            except:
                 order = self.kwargs['order']
 
         # process tags
