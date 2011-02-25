@@ -13,8 +13,10 @@ from forms import CaseStudyForm, FileForm
 
 class FileAdmin(admin.StackedInline):
     fieldsets = (
-        (None, {'fields': (
+        (None, {
+            'fields': (
             'file',
+            'file_type',
             'description',
             'position',
         )},),
