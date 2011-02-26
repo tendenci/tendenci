@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
+from django.forms.formsets import formset_factory
 
 from haystack.query import SearchQuerySet
 
@@ -21,7 +22,8 @@ from site_settings.utils import get_setting
 from events.models import Event, RegistrationConfiguration, \
     Registration, Registrant, Speaker, Organizer, Type, PaymentMethod
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
-    PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm
+    PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
+    RegistrationForm, RegistrantForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants
 from perms.models import ObjectPermission
@@ -683,6 +685,73 @@ def register(request, event_id=0, form_class=Reg8nForm):
                     context_instance=RequestContext(request))
 
         return response
+    
+def multi_register(request, event_id=0, template_name="events/reg8n/multi_register.html"):
+    event = get_object_or_404(Event, pk=event_id)
+
+    # check if event allows registration
+    if not event.registration_configuration and \
+       event.registration_configuration.enabled:
+        raise Http404 
+    
+    RegistrantFormSet = formset_factory(RegistrantForm, can_delete=True, max_num=1)
+    total_regt_forms = 1
+    
+    if request.method == 'POST':
+        if 'add_registrant' in request.POST:
+            # add a registrant
+            post_copy = request.POST.copy()
+            post_copy['registrant-TOTAL_FORMS'] = int(post_copy['registrant-TOTAL_FORMS'])+ 1
+            total_regt_forms = post_copy['registrant-TOTAL_FORMS']
+            registrant = RegistrantFormSet(post_copy, prefix='registrant')
+            reg_form = RegistrationForm(event, user=request.user)
+            
+        else:
+            # submit
+            reg_form = RegistrationForm(event, request.POST or None, user=request.user)
+            registrant = RegistrantFormSet(request.POST, prefix='registrant')
+    else:
+        # set the initial data if logged in
+        initial = {}
+        if request.user.is_authenticated():
+            try:
+                profile = request.user.get_profile()
+            except:
+                profile = None
+            initial = {'first_name':request.user.first_name,
+                        'last_name':request.user.last_name,
+                        'email':request.user.email,}
+            if profile:
+                initial.update({'company_name': profile.company,
+                                'phone':profile.phone,})
+            
+            
+        registrant = RegistrantFormSet(request.POST or None, 
+                                           prefix='registrant',
+                                           initial=[initial])
+        reg_form = RegistrationForm(event, user=request.user)
+        
+    event_price = event.registration_configuration.price
+    price_list = []
+    total_price = 0
+    free_event = event_price <= 0
+    if request.user.is_authenticated():
+        del reg_form.fields['captcha']
+        
+    # if not free event, store price in the list for each registrant
+    if not free_event:
+        for form in registrant.forms:
+            price_list.append(event_price)
+            total_price += event_price
+
+    return render_to_response(template_name, {'event':event, 'reg_form':reg_form,
+                                       'registrant': registrant,
+                                       'total_regt_forms': total_regt_forms,
+                                       'free_event': free_event,
+                                       'price_list':price_list,
+                                       'total_price':total_price,
+                                       }, 
+                    context_instance=RequestContext(request))
 
 def cancel_registration(request, event_id=0, reg8n_id=0, hash='', template_name="events/reg8n/cancel.html"):
     event = get_object_or_404(Event, pk=event_id)
