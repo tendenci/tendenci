@@ -100,6 +100,7 @@ class Registrant(models.Model):
     """
     registration = models.ForeignKey('Registration')
     user = models.ForeignKey(User, blank=True, null=True)
+    amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     
     name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=50)

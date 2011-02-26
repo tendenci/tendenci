@@ -288,6 +288,75 @@ class Reg8nForm(forms.Form):
             raise forms.ValidationError("URL's and Emails are not allowed in the name field")
 
         return data
+    
+class RegistrationForm(forms.Form):
+    """
+    Registration form - not include the registrant.
+    """
+    captcha = CaptchaField(label=_('Type the code below'))
+
+    def __init__(self, event=None, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+        free_event = event.registration_configuration.price <= 0
+        if not free_event:
+            payment_method = event.registration_configuration.payment_method.all()
+    
+            self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
+                queryset=payment_method, widget=forms.RadioSelect(), initial=1, required=False)
+
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name']
+
+        # detect markup
+        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup = markup_pattern.search(data)
+        if markup:
+            raise forms.ValidationError("Markup is not allowed in the name field")
+
+        # detect URL and Email
+        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
+        pattern = re.compile(pattern_string, re.I and re.M)
+        domain_extension = pattern.search(data)
+        if domain_extension or "://" in data:
+            raise forms.ValidationError("URL's and Emails are not allowed in the name field")
+
+        return data
+    
+class RegistrantForm(forms.Form):
+    """
+    Registrant form.
+    """
+    first_name = forms.CharField(max_length=50)
+    last_name = forms.CharField(max_length=50)
+    company_name = forms.CharField(max_length=100, required=False)
+    #username = forms.CharField(max_length=50, required=False)
+    phone = forms.CharField(max_length=20, required=False)
+    email = forms.EmailField()
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(self.__class__, self).__init__(*args, **kwargs)
+        
+
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name']
+
+        # detect markup
+        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup = markup_pattern.search(data)
+        if markup:
+            raise forms.ValidationError("Markup is not allowed in the name field")
+
+        # detect URL and Email
+        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
+        pattern = re.compile(pattern_string, re.I and re.M)
+        domain_extension = pattern.search(data)
+        if domain_extension or "://" in data:
+            raise forms.ValidationError("URL's and Emails are not allowed in the name field")
+
+        return data
                 
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
