@@ -27,6 +27,7 @@ urlpatterns = patterns('events',
 
     # register for event
     url(r'^(?P<event_id>\d+)/register/$', 'views.register', name='event.register'),
+    url(r'^(?P<event_id>\d+)/multi-register/$', 'views.multi_register', name='event.multi_register'),
 
     # cancel event
     url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<reg8n_id>\d+)/$', 
