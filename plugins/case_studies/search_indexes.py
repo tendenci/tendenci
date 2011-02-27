@@ -7,7 +7,9 @@ from perms.models import ObjectPermission
 class CaseStudyIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
 
-    #client = indexes.CharField(model_attr='client')
+    client = indexes.CharField(model_attr='client')
+    service = indexes.CharField(model_attr='services')
+    technology = indexes.CharField(model_attr='technologies')
 
     # base fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
