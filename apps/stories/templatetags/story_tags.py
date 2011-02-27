@@ -57,6 +57,8 @@ def list_stories(parser, token):
         message = "'%s' second argument must be 'as" % bits[0]
         raise TemplateSyntaxError(message)
 
+    kwargs = parse_tag_kwargs(bits)
+
     if 'order' not in kwargs:
         kwargs['order'] = '-start_dt'
 
