@@ -17,3 +17,6 @@ class LatestEntriesFeed(SubFeed):
 
     def item_description(self, item):
         return item.body
+
+    def item_link(self, item):
+        return item.get_absolute_url()
