@@ -68,8 +68,6 @@ class ListNode(Node):
 
             tags = tags.replace('"', '')
             tags = tags.split(',')
-            
-            print tags
 
         if 'user' in self.kwargs:
             try:
@@ -88,7 +86,6 @@ class ListNode(Node):
                 limit = limit.resolve(context)
             except:
                 limit = self.kwargs['limit']
-
         limit = int(limit)
 
         if 'query' in self.kwargs:

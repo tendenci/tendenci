@@ -33,7 +33,30 @@ class CaseStudy(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("case_study.view", [self.slug])
-
+        
+    def featured_screenshots(self):
+        try:
+            return self.image_set.filter(file_type='featured')
+        except:
+            return False
+    
+    def screenshots(self):
+        try:
+            return self.image_set.filter(file_type='screenshot')
+        except:
+            return False
+            
+    def other_images(self):
+        try:
+            return self.image_set.filter(file_type='other')
+        except:
+            return False
+            
+    def homepage_images(self):
+        try:
+            return self.image_set.filter(file_type='homepage')
+        except:
+            return False
 
 class Service(models.Model):
     title = models.CharField(max_length=200)
@@ -70,8 +93,9 @@ class Image(File):
         _('File type'),
         max_length=50,
         choices=(
-            ('featured','Featured'),
+            ('featured','Featured Screenshot'),
             ('screenshot','Screenshot'),
+            ('homepage', 'Homepage Image'),
             ('other','Other'),
         ),
         default='other',
