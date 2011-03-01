@@ -76,30 +76,11 @@ urlpatterns = patterns('',
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
     url(r'^robots.txt', direct_to_template, {"template": "robots.txt", }, name="robots"),
 
-    # lEGACY REDIRECTS
-    # rss redirect
-    url(r'^en/rss/$', redirect_to, {'url': '/rss'}),
-    url(r'^en/$', redirect_to, {'url': '/accounts/login/'}),
+    # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
     
-    # T4 redirects
-    url(r'^en/art((icles/v((iew.asp)?)(/?))?)(/?)(?P<id>\d+)(/?)$', 'legacy.views.redirect', {'content_type': 'articles'}, name='legacy.articles'),
-    url(r'^en/art((icles/v((iew.asp)?)(?P<qs>/?))?)(/?)$', 'legacy.views.redirect', {'content_type': 'articles'}, name='legacy.articles_string'),
-    
-    url(r'^en/rel((eases/v((iew.asp)?)(/?))?)(/?)(?P<id>\d+)(/?)$', 'legacy.views.redirect', {'content_type': 'news'}, name='legacy.news'),
-    url(r'^en/rel((eases/v((iew.asp)?)(?P<qs>/?))?)(/?)$', 'legacy.views.redirect', {'content_type': 'news'}, name='legacy.news_string'),
-    
-    url(r'^en/c(((ev|alendarevents)((/view.asp)?))?)(/?)(?P<id>\d+)(/?)$', 'legacy.views.redirect', {'content_type': 'events'}, name='legacy.events'),
-    url(r'^en/c(((ev|alendarevents)((/view.asp)?))?)(?P<qs>/?)$', 'legacy.views.redirect', {'content_type': 'events'}, name='legacy.events_string'),
-    
-    url(r'^en/helpfiles/(v?)((iew.asp)?)(/?)(?P<id>\d+)(/?)$', 'legacy.views.redirect', {'content_type': 'help_files'}, name='legacy.help_files'),
-    url(r'^en/helpfiles/(v?)((iew.asp)?)(?P<qs>/?)$', 'legacy.views.redirect', {'content_type': 'help_files'}, name='legacy.help_files'),
-    
-    url(r'^en/c(((ms|ontentmanagers)((/view.asp)?))?)(/?)(\??)(?P<id>\d+)(/?)$', 'legacy.views.redirect', {'content_type': 'pages'}, name='legacy.pages'),
-    url(r'^en/c(((ms|ontentmanagers)((/view.asp)?))?)(?P<qs>/?)$', 'legacy.views.redirect', {'content_type': 'pages'}, name='legacy.pages'),
-    
-    url(r'^en/photos/albums/v/(?P<id>\d+)(/?)$', 'legacy.views.redirect', {'content_type': 'photo_sets'}, name='legacy.photo_sets'),
-    url(r'^en/photos/v/(?P<id>\d+)(/?)$', 'legacy.views.redirect', {'content_type': 'photos'}, name='legacy.photos'),
+    # other t4 to t5 legacy redirects
+    url(r'^en/', include('legacy.urls')),
 )
 
 handler500 = 'base.views.custom_error'
