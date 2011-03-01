@@ -88,11 +88,18 @@
 		background-color: lightblue;
 		font-weight: bold;
 		font-size: 1.2em;
+		
 	}
 	div.add-registrant-button{
 		display: none;
+		
+		
+	}
+	div.add-registrant-button a{
+		text-decoration: none;
+		color: #000;
 		padding: 0.6em;
-		width: 12em;
+		
 		border-color: #ccc black black #ccc;
 		border-style: solid;
 		border-width: 1px;
@@ -101,10 +108,20 @@
 		border-radius: 4px;
 		
 	}
-	div.add-registrant-button a{
-		text-decoration: none;
-		color: #000;
-		
+	#update_summary{
+		margin-bottom: 1em;
+		padding: 3px;
+	}
+	
+	.errors-box{
+		background-color: #FFEBE8;
+		border: 2px solid #FF8B78;
+		margin-bottom: 20px;
+		padding: 10px;
+		width: 80%;
+	}
+	.deleted-item td{
+		text-decoration: line-through;
 	}
 
 </style>
@@ -115,28 +132,44 @@
 		<div class="event-price-display">
 		Price:
 		{{ event.registration_configuration.price|format_currency }}</div>
-	{{ form.non_field_errors }}
-	{% for field in form %}
-		{% if field.errors %}
-			<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
-		{% endif %}
-	{% endfor %}
+		
+	{% if reg_form.errors.values or has_registrant_form_errors %}
+		<div class="errors-box">
+			<ul>
+				{{ reg_form.non_field_errors }}
+				{% for field in reg_form %}
+					{% if field.errors %}
+						<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+					{% endif %}
+				{% endfor %}
+				
+				{% for form in registrant.forms %}
+					{{ form.non_field_errors }}
+					{% for field in form %}
+						{% if field.errors %}
+							<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+						{% endif %}
+					{% endfor %}
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
 
 	<div class="form-wrap" style="position:relative;">
     	<form action="" method="post">
     	<div class="forms">
     		<div id="reg-form-box">
+				
     			<div id="reg-summary">Summary</div>
     			
-    			{% if not free_event %}
     				{# price list #}
     				<table id="summary-price">
-    					{% for price in price_list %}
-    					<tr id="price_registrant_{{ forloop.counter }}">
-	    					<td width="50%">Reg #<span class="item-counter">{{ forloop.counter }}</span></td>
+    					{% for price_entry in price_list %}
+    					<tr id="price_registrant_{{ forloop.counter }}"{% if price_entry.deleted %} class="deleted-item"{% endif %}>
+	    					<td width="50%">Reg#<span class="item-counter">{{ forloop.counter }}</span></td>
 	    					<td width="50%" align="right">
 		    					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-		    					<span class="reg-price">{{ price}}</span>
+		    					<span class="reg-price">{{ price_entry.price}}</span>
 	    					</td>
     					</tr>
     					{% endfor %}
@@ -151,7 +184,12 @@
     					</tr>
     				</table>
     			
-    			{% endif %}
+    			
+    			<noscript>
+    			<div>
+    				<input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
+				</div>
+    			</noscript>
     			
    				{% if reg_form.payment_method %}
 					<div class="form-field">
@@ -168,7 +206,7 @@
 						<div class="field">{{ reg_form.captcha }}</div>
 					</div>
 				{% endif %}
-   				<input type="submit" id="register-button" value="{% if free_event %}Register{%else%}Register & Pay{%endif%}" />
+   				<input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register & Pay{%endif%}" />
     		</div>
     		
     		<div id="registrant-forms">
@@ -236,16 +274,14 @@
 			</div>
 			<div class="clear"></div>
 			
-			<div class="add-registrant-button" onClick="addRegistrant(this, 'registrant')">
-			<a href="javascript:;">Add another registrant</a></div>
 			
-			<noscript>
 				<div class="add-registrant-box">
 					 <input title='Add a registrant' type='submit' name='add_registrant' 
 					 onClick="addRegistrant(this, 'registrant');return false;"
 				 value='Add another registrant' />
 				</div>
-			</noscript>
+			
+			<br />
 
 		</div>
         </form>
@@ -256,6 +292,12 @@
 
 {% block extra_body %}
  <script type="text/javascript">
+ 	function disableAddAnotherSubmit(btn){
+ 		if ($(btn).attr("name") == 'add_registrant') {
+ 	 		alert($(btn).attr("name"));
+ 	 		return false;
+ 		}
+ 	}
 
  	function deleteRegistrant(ele, prefix) {
 		var registrant_form = $(ele).parents('.registrant-form');
