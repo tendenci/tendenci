@@ -155,6 +155,27 @@ class Registrant(models.Model):
     def get_absolute_url(self):
         return ('event.registration_confirmation', [self.registration.event.pk, self.pk])
 
+    def reg8n_status(self):
+        """
+        Returns string status.
+        """
+        config = self.registration.event.registration_configuration
+
+        balance = self.registration.invoice.balance
+        payment_required = config.payment_required
+
+        if self.cancel_dt:
+            return 'cancelled'
+
+        if balance > 0:
+            if payment_required:
+                return 'payment-required'
+            else:
+                return 'registered-with-balance'
+        else:
+            return 'registered'
+
+
 class Registration(models.Model):
 
     guid = models.TextField(max_length=40, editable=False)
@@ -304,6 +325,7 @@ class Registration(models.Model):
 
         return invoice
 
+
 # TODO: use shorter name
 class RegistrationConfiguration(models.Model):
     """
@@ -384,7 +406,12 @@ class RegistrationConfiguration(models.Model):
             if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
                 return True
         return False
-    
+
+    @property
+    def can_pay_online(self):
+        # TODO: Update event payment method; use global payment method
+        methods = [method.label.lower() for method in self.payment_method.all()]
+        return 'credit card' in methods
 
 
 class Payment(models.Model):
