@@ -4,10 +4,12 @@ from datetime import datetime
 from django import forms
 from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext_lazy as _
+from django.forms.formsets import BaseFormSet
+from django.forms.util import ErrorList
 
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
-    Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, TypeColorSet
+    Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, TypeColorSet, Registrant
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
@@ -337,6 +339,7 @@ class RegistrantForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
+        self.event = kwargs.pop('event', None)
         super(self.__class__, self).__init__(*args, **kwargs)
         
 
@@ -357,6 +360,53 @@ class RegistrantForm(forms.Form):
             raise forms.ValidationError("URL's and Emails are not allowed in the name field")
 
         return data
+    
+    def clean_email(self):
+        # check if user by this email has already registered
+        print self.event.id
+        data = self.cleaned_data['email']
+        registrants = Registrant.objects.filter(email=data)
+        for registrant in registrants:
+            print registrant.registration.event.id 
+            if registrant.registration.event.id == self.event.id:
+                raise forms.ValidationError("User by this email address has already registered.")
+
+        return data
+  
+# extending the BaseFormSet because i want to pass the event obj 
+# but the BaseFormSet doesn't accept extra parameters 
+class RegistrantBaseFormSet(BaseFormSet):
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
+                 initial=None, error_class=ErrorList, **kwargs):
+        self.event = kwargs.pop('event', None)
+        super(RegistrantBaseFormSet, self).__init__(data, files, auto_id, prefix,
+                 initial, error_class)
+        
+    def _construct_form(self, i, **kwargs):
+        """
+        Instantiates and returns the i-th form instance in a formset.
+        """
+        defaults = {'auto_id': self.auto_id, 'prefix': self.add_prefix(i)}
+        
+        defaults['event'] = self.event
+        
+        if self.data or self.files:
+            defaults['data'] = self.data
+            defaults['files'] = self.files
+        if self.initial:
+            try:
+                defaults['initial'] = self.initial[i]
+            except IndexError:
+                pass
+        # Allow extra forms to be empty.
+        if i >= self.initial_form_count():
+            defaults['empty_permitted'] = True
+        defaults.update(kwargs)
+        form = self.form(**defaults)
+        self.add_fields(form, i)
+        return form
+        
+    
                 
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
