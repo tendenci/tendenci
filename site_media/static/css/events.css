@@ -619,3 +619,34 @@ tr.non-paid-bottom {
 .counts {
     margin-left:8px;
 }
+
+/*= Registration Confirmation
+ ----------------------------- */
+.regconf-section.payment a {
+    text-decoration: underline;
+}
+.regconf-section.payment .payment-accounting {
+    text-align: right;
+}
+
+.registration-status div {
+    color: white;
+    border: 1px solid;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.registration-status .registered {
+	background-color: #006018;
+	border-color: #005F18;
+}
+
+.registration-status .almost-registered {
+	background-color: orange;
+	border-color: orange;
+}
+
+.registration-status .not-registered {
+	background-color: darkred;
+	border-color: darkred;
+}

@@ -54,7 +54,43 @@
 
 <div class="t">    
     {% event_nav user %}
-    <h1>Proof of Registration</h1>
+    <h1>Registration</h1>
+
+    <div class="registration-status">
+
+        {% if registrant.reg8n_status == 'cancelled' %}
+            <div class="not-registered">Registration cancelled.</div>
+        {% endif %}
+
+        {% if registrant.reg8n_status == 'payment-required' %}
+            <div class="almost-registered">Almost registered. Payment is still required.
+
+            {% if event.registration_configuration.can_pay_online %}
+            <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">
+                Complete registration.</a>
+            {% endif %}
+            </div>
+
+        {% endif %}
+
+        {% if registrant.reg8n_status == 'registered-with-balance' %}
+            <div class="registered">You are registered. Balance is ${{ registration.invoice.balance }}.
+
+            {% if event.registration_configuration.can_pay_online %}
+            <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">
+                Pay online.</a>
+            {% endif %}
+            </div>
+
+        {% endif %}
+
+        {% if registrant.reg8n_status == 'registered' %}
+            <div class="registered">You are registered. Enjoy the event!</div>
+        {% endif %}
+
+    </div>
+
+
 
 	{% if registrant.cancel_dt %}
 		<div class="cancel-notice">
@@ -102,6 +138,25 @@
             <div><a href="{% url event.cancel_registration event.pk registrant.hash %}">Cancel Registation</a></div>
         {% endif %}
         {% endif %}
+		<div style="clear:both;"></div>
+	</div>
+
+	<div class="regconf-section payment">
+		<h2>Payment Details</h2>
+
+        <div class="payment-links">
+            <a href="{% url invoice.view registration.invoice.pk registration.invoice.guid %}">View invoice</a>
+
+            {% if event.registration_configuration.can_pay_online and registration.invoice.balance > 0 %}
+                <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">Pay online</a>
+            {% endif %}
+        </div>
+
+        <div class="payment-accounting">
+            <div>Total ${{ registration.invoice.total|floatformat:"2" }}</div>
+            <div><strong>Balance ${{ registration.invoice.balance|floatformat:"2" }}</strong></div>
+        </div>
+
 		<div style="clear:both;"></div>
 	</div>
 
