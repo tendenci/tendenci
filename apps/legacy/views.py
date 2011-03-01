@@ -126,6 +126,7 @@ def redirect(request, content_type=None, view=None, id=None):
     if query_string:
         if len(query_string) == 1:
             if query_string.keys()[0].isdigit():
+                id = query_string.keys()[0]
                 return redirect_for_view(content_type, id)
 
     # no criteria matched, 404 them
