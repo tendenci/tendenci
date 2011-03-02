@@ -23,6 +23,8 @@ def redirect_for_search(content_type):
         name = 'photoset_latest'
     if content_type == 'photos':
         name = 'photoset_latest'
+    if content_type == 'quotes':
+        name = 'quote.search'
 
     # app not found
     if not name:
@@ -75,6 +77,10 @@ def redirect_for_view(content_type, id):
     if content_type == 'photos':
         redirect_name = 'photo_details'
         sql = "SELECT t5_id FROM mig_photos_image_t4_to_t5 WHERE t4_id = %s"
+
+    if content_type == 'quotes':
+        redirect_name = 'quote.view'
+        sql = "SELECT t5_id FROM mig_quotes_quote_t4_to_t5 WHERE t4_id = %s"
 
     # app not found
     if not sql or not redirect_name:

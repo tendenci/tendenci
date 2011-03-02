@@ -30,14 +30,19 @@ mobile_agents = [
     'SEJ001'
 ]
 
-def is_mobile_browser(request):
+def user_agent(request):
     if 'HTTP_USER_AGENT' in request.META:
-        full_user_agent = request.META['HTTP_USER_AGENT'].lower()
+        return request.META['HTTP_USER_AGENT'].lower()
+    return None
+    
+def is_mobile_browser(request):
+    if request.user_agent:
         for ma in mobile_agents:
-            if ma.lower() in full_user_agent:
+            if ma.lower() in request.user_agent:
                 return True
     return False
 
 class MobileMiddleware(object):
     def process_request(self, request):
+        request.user_agent = user_agent(request)
         request.mobile = is_mobile_browser(request)
