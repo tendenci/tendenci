@@ -340,7 +340,14 @@ class RegistrantForm(forms.Form):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         self.event = kwargs.pop('event', None)
+        self.form_index = kwargs.pop('form_index', None)
+        
         super(self.__class__, self).__init__(*args, **kwargs)
+        
+        # make the fields in the subsequent forms as not required
+        if self.form_index and self.form_index > 0:
+            for key in self.fields.keys():
+                self.fields[key].required = False
         
 
     def clean_first_name(self):
@@ -363,13 +370,12 @@ class RegistrantForm(forms.Form):
     
     def clean_email(self):
         # check if user by this email has already registered
-        print self.event.id
         data = self.cleaned_data['email']
-        registrants = Registrant.objects.filter(email=data)
-        for registrant in registrants:
-            print registrant.registration.event.id 
-            if registrant.registration.event.id == self.event.id:
-                raise forms.ValidationError("User by this email address has already registered.")
+        if data.strip() <> '':
+            registrants = Registrant.objects.filter(email=data)
+            for registrant in registrants:
+                if registrant.registration.event.id == self.event.id:
+                    raise forms.ValidationError("User by this email address has already registered.")
 
         return data
   
@@ -389,6 +395,7 @@ class RegistrantBaseFormSet(BaseFormSet):
         defaults = {'auto_id': self.auto_id, 'prefix': self.add_prefix(i)}
         
         defaults['event'] = self.event
+        defaults['form_index'] = i
         
         if self.data or self.files:
             defaults['data'] = self.data
