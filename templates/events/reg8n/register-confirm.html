@@ -126,6 +126,10 @@
 		          <div><a href="{% url event.cancel_registration event.pk registrant.hash %}">Cancel Registation</a></div>
 		      {% endif %}
 	     {% endif %}
+	     
+	    {% if count_registrants > 1 %}
+	    	<div style="font-weight: bold;">Registrants ... ({{ count_registrants }})</div>
+	    {% endif %}
         
         {% for registrant in registrants %}
 			<div class='avatar'>{% avatar registrant.user 56 %}</div>
