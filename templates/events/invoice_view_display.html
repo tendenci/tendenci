@@ -10,8 +10,15 @@
 		{% if registrants %}
 		<b>Registrants...({{registrants.count}})</b><br />
 			{% for reg in registrants %}
-				
-				<div>{{ reg.name }}</div>
+				<div>
+				{% if reg.user %}
+					<a href="{% url profile reg.user.username %}">
+				{% endif %}
+				{{ reg.first_name }} {{ reg.last_name }} ({{ reg.email }})
+				{% if reg.user %}
+					</a>
+				{% endif %}
+				</div>
 			{% endfor %}
 		{% endif %}
 		{% endwith %}

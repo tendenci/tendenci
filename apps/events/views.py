@@ -765,22 +765,33 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                                 args=[reg8n.invoice.id, reg8n.invoice.guid]
                                                 )) 
                     else:
-                        pass
                         # offline payment:
                         # send email; add message; redirect to confirmation
-#                        notification.send_emails(
-#                            [reg_defaults['email']],
-#                            'event_registration_confirmation',
-#                            {   'site_label': site_label,
-#                                'site_url': site_url,
-#                                'self_reg8n': self_reg8n,
-#                                'reg8n': reg8n,
-#                                'event': event,
-#                                'price': event_price,
-#                                'is_paid': reg8n.invoice.balance == 0
-#                             },
-#                            True, # save notice in db
-#                        )
+                        notification.send_emails(
+                            [reg8n.registrant.email],
+                            'event_registration_confirmation',
+                            {   'site_label': site_label,
+                                'site_url': site_url,
+                                'self_reg8n': self_reg8n,
+                                'reg8n': reg8n,
+                                'event': event,
+                                'price': event_price,
+                                'is_paid': reg8n.invoice.balance == 0
+                             },
+                            True, # save notice in db
+                        )
+                        
+                    # log an event
+                    log_defaults = {
+                        'event_id' : 431000,
+                        'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
+                        'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
+                        'user': request.user,
+                        'request': request,
+                        'instance': event,
+                    }
+                    EventLog.objects.log(**log_defaults)
+                
                 else:
                     messages.add_message(request, messages.INFO,
                                  'You were already registered on %s' % date_filter(reg8n.create_dt)
@@ -790,18 +801,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                                 'event.registration_confirmation',
                                                 args=(event_id, reg8n.registrant.hash)
                                                 ))         
-       
-#        # get a list of deleted form, and remove them from the forms
-#        deleted_forms = []
-#        i = 0
-#        for form in registrant.forms:
-#            if form.data.get('registrant-%d-DELETE' % i, False):
-#                deleted_forms.append(form)
-#            i = i+1
-#        for form in deleted_forms:
-#            registrant.forms.remove(form)
-        
-    
+
     
     total_price = 0
     free_event = event_price <= 0
@@ -1080,6 +1080,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     """ Registration confirmation """
 
     event = get_object_or_404(Event, pk=id)
+    count_registrants = 1
 
     if reg8n_id:
 
@@ -1097,6 +1098,10 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
                 raise Http403
 
             registration = registrant.registration
+            
+            # for now, just get a list of registrants
+            registrants = registration.registrant_set.all().order_by('id')
+            count_registrants = registration.registrant_set.count()
 
         except:
             raise Http404
@@ -1111,6 +1116,9 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         try:
             registrant = sqs[0].object
             registration = registrant.registration
+            
+            registrants = registration.registrant_set.all().order_by('id')
+            count_registrants = registration.registrant_set.count()
         except:
             raise Http404
 
@@ -1118,6 +1126,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         'event':event,
         'registrant':registrant,
         'registration':registration,
+        'registrants': registrants,
+        'count_registrants': count_registrants,
         }, 
         context_instance=RequestContext(request))
     
