@@ -23,11 +23,11 @@ def _try_import(module):
 
 def create_sitemap(request):
     sitemap_classes = get_all_sitemaps()
-    print "Found %d sitemap classes" % len(sitemap_classes)
-    for cls in sitemap_classes:
-        print cls.__name__
+    #print "Found %d sitemap classes" % len(sitemap_classes)
+    #for cls in sitemap_classes:
+    #    print cls.__name__
     sitemaps = dict([(cls.__name__, cls) for cls in sitemap_classes])
-    print str(sitemaps)
+    #print str(sitemaps)
     return sitemap(request, sitemaps)
 
 
