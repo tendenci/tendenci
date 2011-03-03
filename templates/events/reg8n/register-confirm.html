@@ -108,7 +108,7 @@
 			</a>
 		</div>
 
-		<h3>Registration Price: ${{ registration.amount_paid|floatformat:"2" }}</h3>
+		
 		<div>{{ event.description|safe }}</div>
 	</div>
 
@@ -117,29 +117,43 @@
 		<h3>
             Registration Number: {{ registration.pk }}
         </h3>
-		<div class='avatar'>{% avatar registrant.user 56 %}</div>
-		<div class="info">
-            {% if registrant.first_name or registrant.last_name %}
-			<div class="name">
-                {% if registrant.first_name %}
-                    {{ registrant.first_name }}
-                {% endif %}
-                {%  if registrant.last_name %}
-                    {{ registrant.last_name }}
-                {% endif %}
-            </div>
-            {% endif %}
-			<div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
-		</div>
-        {% if not registrant.cancel_dt %}
-        {% if user.is_authenticated %}
-            <div><a href="{% url event.cancel_registration event.pk registration.pk %}">Cancel Registation</a></div>
-        {% else %}
-            <div><a href="{% url event.cancel_registration event.pk registrant.hash %}">Cancel Registation</a></div>
-        {% endif %}
-        {% endif %}
-		<div style="clear:both;"></div>
+        
+        
+		{% if not registrant.cancel_dt %}
+		      {% if user.is_authenticated %}
+		          <div><a href="{% url event.cancel_registration event.pk registration.pk %}">Cancel Registation</a></div>
+		      {% else %}
+		          <div><a href="{% url event.cancel_registration event.pk registrant.hash %}">Cancel Registation</a></div>
+		      {% endif %}
+	     {% endif %}
+        
+        {% for registrant in registrants %}
+			<div class='avatar'>{% avatar registrant.user 56 %}</div>
+			<div class="info">
+	            {% if registrant.first_name or registrant.last_name %}
+				<div class="name">
+	                {% if registrant.first_name %}
+	                    {{ registrant.first_name }}
+	                {% endif %}
+	                {%  if registrant.last_name %}
+	                    {{ registrant.last_name }}
+	                {% endif %}
+	            </div>
+	            {% endif %}
+				<div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
+				<div class="amount">Amount: 
+				{% if count_registrants == 1 %} {# the amount field in registrant is newly added. #}
+					{{ registration.invoice.total|format_currency }}
+				{% else %}
+					{{ registrant.amount|format_currency }}
+				{% endif %}
+				</div>
+			</div>
+			<div style="clear:both;"></div>
+		 {% endfor %}
+		
 	</div>
+	
 
 	<div class="regconf-section payment">
 		<h2>Payment Details</h2>
