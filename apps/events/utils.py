@@ -359,7 +359,7 @@ def add_registration(request, event, reg_form, registrant_formset, *args, **kwar
     
     reg8n_attrs = {
             "event": event,
-            "payment_method": reg_form.cleaned_data.get('payment_method', ''),
+            "payment_method": reg_form.cleaned_data.get('payment_method', None),
             "amount_paid": str(total_amount),
     }
     if request.user.is_authenticated():
