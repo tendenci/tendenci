@@ -1,4 +1,4 @@
-{% extends "events/base.html" %}
+{% extends "events/base-wide.html" %}
 {% load event_tags %}
 {% load styled_forms %}
 {% load base_filters %}
@@ -51,18 +51,27 @@
 		width: 10em;
 	}
 	#reg-form-box{
-		position: absolute;
-		top: 0;
-		right: 0;
+	
 		border: 1px solid #ccc;
 		background-color: #fff;
 		padding: 1em;
 		-moz-border-radius: 8px;
 		border-radius: 8px;
+		width: 200px;
+		
+	}
+	#reg-form-box input[type="text"]{
+		width: 150px;
+	}
+	#reg-form-wrap{
+		float: right;
+		width: 200px;
+		margin:2px;
 	}
 	#registrant-forms{
-		width: 90%;
+		width: 70%;
 	}
+	
 	#reg-summary{
 		font-weight: bold;
 		font-size: 1.2em;
@@ -123,6 +132,9 @@
 	.deleted-item td{
 		text-decoration: line-through;
 	}
+	.clear{
+		clear: both;
+	}
 
 </style>
 
@@ -155,12 +167,16 @@
 		</div>
 	{% endif %}
 
-	<div class="form-wrap" style="position:relative;">
+	<div class="form-wrap">
     	<form action="" method="post">
     	<div class="forms">
-    		<div id="reg-form-box">
-				
-    			<div id="reg-summary">Summary</div>
+    	
+    		<div id="reg-form-wrap">
+    			<div class="float-anchor"><!-- ie7 fix --></div>
+                <div class="float-window">
+                
+				<div id="reg-form-box">	
+    				<div id="reg-summary">Summary</div>
     			
     				{# price list #}
     				<table id="summary-price">
@@ -207,6 +223,9 @@
 					</div>
 				{% endif %}
    				<input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register & Pay{%endif%}" />
+    		
+    		   </div>
+    		   </div>  {# float-widow#}
     		</div>
     		
     		<div id="registrant-forms">
@@ -402,6 +421,8 @@
 		var row = $('.registrant-form:first').clone(true).get(0);
 		$('.registrant-form:first').find('.registrant-header').removeClass('hidden');
 		$(row).insertAfter($('.registrant-form:last')).find('.hidden').removeClass('hidden');
+		// remove the error
+		$(row).find('div.error').remove();
 		// update id attr
 		var id_regex = new RegExp('(registrant_\\d+)');
 		var replacement = prefix + '_' + formCount
@@ -438,6 +459,18 @@
 		});
 
 		
+	});
+
+	$(window).scroll(function(){
+		if  ($(window).scrollTop() > $(".float-anchor").offset().top){
+			$(".float-window").css("position", "fixed");
+			$(".float-window").css("top", "8px");
+		}
+		
+		if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
+			$(".float-window").css("position", "relative");
+			$(".float-window").css("top", $(".float-anchor").offset);
+		}
 	});
 
 
