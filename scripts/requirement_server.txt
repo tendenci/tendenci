@@ -20,17 +20,19 @@ webcolors>=1.3.1
 xlrd>=0.7.1
 xlwt>=0.7.2
 pyparseuri>=0.1
-whoosh==0.3.18
 BeautifulSoup==3.1.0.1
+ordereddict==1.1
+pysolr>=2.0.13
 
+# ----------------
 # git repositories
-git+http://github.com/notanumber/xapian-haystack.git
+# ----------------
 
 # haystack from master to allow for faceted charfields
-git+http://github.com/toastdriven/django-haystack.git
+git+git://github.com/toastdriven/django-haystack.git
 
 # timezones from master, fixes binding issue on sqlite
-git+http://github.com/brosner/django-timezones.git
+git+git://github.com/brosner/django-timezones.git
 
 # boto
 git+git://github.com/hmarr/boto@ses#egg=boto
