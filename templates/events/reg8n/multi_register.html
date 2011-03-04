@@ -121,6 +121,12 @@
 	.clear{
 		clear: both;
 	}
+	.delete-button{
+		padding: 3px;
+		color: #cc3434;
+		background: url("/site_media/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 0 50%;
+	}
+	
 
 </style>
 
@@ -269,7 +275,7 @@
 							{% if form.DELETE %}
 							<div class="form-field delete{% if forloop.first %} hidden{% endif %}">
 								<div class="delete-button-wrap">
-									<button class="delete-button">Delete</button>
+									<button class="delete-button">&nbsp;&nbsp;Delete</button>
 								</div>
 								
 								<noscript>
