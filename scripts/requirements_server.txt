@@ -40,3 +40,6 @@ git+git://github.com/hmarr/boto@ses#egg=boto
 
 # django ses
 git+git://github.com/hmarr/django-ses#egg=django_ses
+
+# pyodbc
+git+git://github.com/mkleehammer/pyodbc.git
