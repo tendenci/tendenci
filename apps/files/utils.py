@@ -5,7 +5,8 @@ from django.core.cache import cache as django_cache
 
 from files.cache import FILE_IMAGE_PRE_KEY
 
-def get_image(file, size, constrain=False, cache=False):
+
+def get_image(file, size, constrain=False, cache=False, unique_key=None):
     """
     Gets resized-image-object from cache or rebuilds
     the resized-image-object using the original image-file.
@@ -14,15 +15,21 @@ def get_image(file, size, constrain=False, cache=False):
     binary = None
 
     if cache:
-        key = generate_image_cache_key(file, size)
+        key = generate_image_cache_key(file, size, unique_key)
         binary = django_cache.get(key) # check if key exists
     if not binary:
-        binary = build_image(file, size, constrain=constrain, cache=cache)
+        kwargs = {
+            'constrain': constrain,
+            'cache': cache,
+            'unique_key': unique_key
+        }
+        binary = build_image(file, size, **kwargs)
 
     try: return Image.open(StringIO(binary))
     except: return ''
 
-def build_image(file, size, constrain=False, cache=False):
+
+def build_image(file, size, constrain=False, cache=False, unique_key=None):
     """
     Builds a resized image based off of the original image.
     """
@@ -48,10 +55,11 @@ def build_image(file, size, constrain=False, cache=False):
     output.close()
 
     if cache:
-        key = generate_image_cache_key(file, size)
+        key = generate_image_cache_key(file, size, unique_key)
         django_cache.add(key, binary, 60*60*24*30) # cache for 30 days #issue/134
 
     return binary
+
 
 def validate_image_size(size):
     """
@@ -69,7 +77,8 @@ def validate_image_size(size):
 
     return new_size
 
-def generate_image_cache_key(file, size):
+
+def generate_image_cache_key(file, size, unique_key):
     """
     Generates image cache key. You can use this for adding,
     retrieving or removing a cache record.
@@ -77,11 +86,12 @@ def generate_image_cache_key(file, size):
     str_size = 'x'.join([str(i) for i in size])
 
     # e.g. file_image.1294851570.200x300 file_image.<file-system-modified-time>.<width>x<height>
-    if hasattr(file,'path'):
-        key = '.'.join((FILE_IMAGE_PRE_KEY, str(stat(file.path).st_mtime), str_size))
+    if unique_key:
+        key = '.'.join((FILE_IMAGE_PRE_KEY, unique_key, str_size))
     else:
-        key = '.'.join((FILE_IMAGE_PRE_KEY, str(stat(file.name).st_mtime), str_size))
+        if hasattr(file,'path'):
+            key = '.'.join((FILE_IMAGE_PRE_KEY, str(stat(file.path).st_mtime), str_size))
+        else:
+            key = '.'.join((FILE_IMAGE_PRE_KEY, str(stat(file.name).st_mtime), str_size))
 
     return key
-
-
