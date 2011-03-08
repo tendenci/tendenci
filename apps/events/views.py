@@ -841,11 +841,16 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                                }, 
                     context_instance=RequestContext(request))
     
-def registration_edit(request, reg8n_id=0, template_name="events/reg8n/reg8n_edit.html"):
+def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/reg8n_edit.html"):
     reg8n = get_object_or_404(Registration, pk=reg8n_id)
     
     # check permission
-    if not has_perm(request.user, 'events.change_registration', reg8n):
+    boo = False
+    if has_perm(request.user, 'events.change_registration', reg8n) or \
+        (hash and reg8n.registrant.hash == hash):
+        boo = True
+            
+    if not boo:
         raise Http403
     
     RegistrantFormSet = modelformset_factory(Registrant, extra=0,
@@ -1202,6 +1207,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         'registration':registration,
         'registrants': registrants,
         'count_registrants': count_registrants,
+        'hash': hash,
         }, 
         context_instance=RequestContext(request))
     
