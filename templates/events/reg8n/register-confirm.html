@@ -126,7 +126,7 @@
 		      {% else %}
 		          <a href="{% url event.cancel_registration event.pk registrant.hash %}">Cancel Registation</a>
 		      {% endif %}
-		      &nbsp;&nbsp;<a href="{% url event.registration_edit registration.id %}">Edit Registrant(s) Info</a>
+		      &nbsp;&nbsp;<a href="{% if hash %}{% url event.registration_edit registration.pk, hash %}{% else %}{% url event.registration_edit registration.pk %}{% endif %}">Edit Registrant(s) Info</a>
 		      </div>
 	     {% endif %}
 	     
