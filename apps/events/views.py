@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
+from django.forms.models import modelformset_factory
 
 from haystack.query import SearchQuerySet
 
@@ -837,6 +838,79 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                                'price_list':price_list,
                                                'total_price':total_price,
                                                'has_registrant_form_errors': has_registrant_form_errors,
+                                               }, 
+                    context_instance=RequestContext(request))
+    
+def registration_edit(request, reg8n_id=0, template_name="events/reg8n/reg8n_edit.html"):
+    reg8n = get_object_or_404(Registration, pk=reg8n_id)
+    
+    # check permission
+    if not has_perm(request.user, 'events.change_registration', reg8n):
+        raise Http403
+    
+    RegistrantFormSet = modelformset_factory(Registrant, extra=0,
+                                fields=('first_name', 'last_name', 'email', 'phone', 'company_name'))
+    formset = RegistrantFormSet(request.POST or None,
+                                queryset=Registrant.objects.filter(registration=reg8n).order_by('id'))
+    
+    # required fields only stay on the first form
+    for i, form in enumerate(formset.forms):
+        for key in form.fields.keys():
+            if i > 0:
+                form.fields[key].required = False
+            else:
+                if key in ['phone', 'company_name']:
+                    form.fields[key].required = False
+        
+    
+    if request.method == 'POST':
+        if formset.is_valid():
+            instances = formset.save()
+            
+            reg8n_conf_url = reverse( 
+                                    'event.registration_confirmation',
+                                    args=(reg8n.event.id, reg8n.registrant.hash)
+                                    )
+        
+            if instances:
+            
+                # log an event
+                log_defaults = {
+                    'event_id' : 202000,
+                    'event_data': '%s (%d) edited by %s' % (reg8n._meta.object_name, reg8n.pk, request.user),
+                    'description': '%s edited registrants info for event registrations %s' % (request.user, reg8n_conf_url),
+                    'user': request.user,
+                    'request': request,
+                    'instance': reg8n,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                msg = 'Registrant(s) info updated'
+            else:
+                msg = 'No changes made to the registrant(s)'
+            
+            messages.add_message(request, messages.INFO, msg) 
+                    
+            return HttpResponseRedirect(reg8n_conf_url)  
+   
+   
+    total_regt_forms = Registrant.objects.filter(registration=reg8n).count()
+    
+    # check formset error
+    formset_errors = False
+    for form in formset.forms:
+        for field in form:
+            if field.errors:
+                formset_errors = True
+                break
+        if formset_errors:
+            break
+    
+    
+    return render_to_response(template_name, {'formset': formset,
+                                              'formset_errors':formset_errors,
+                                              'total_regt_forms':total_regt_forms,
+                                              'reg8n': reg8n,
                                                }, 
                     context_instance=RequestContext(request))
 
