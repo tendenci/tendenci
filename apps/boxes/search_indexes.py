@@ -31,6 +31,9 @@ class BoxIndex(indexes.RealTimeSearchIndex):
     
     # for rss
     order = indexes.DateTimeField()
+    
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
         
     def prepare_order(self, obj):
         return obj.update_dt

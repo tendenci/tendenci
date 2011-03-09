@@ -54,6 +54,7 @@ class ListNode(Node):
         user = AnonymousUser()
         limit = 3
         order = u''
+        exclude = u''
         randomize = False
 
         if 'random' in self.kwargs:
@@ -101,7 +102,17 @@ class ListNode(Node):
                 order = order.resolve(context)
             except:
                 order = self.kwargs['order']
+                
+        if 'exclude' in self.kwargs:
+            try:
+                exclude = Variable(self.kwargs['exclude'])
+                exclude = unicode(tags.resolve(context))
+            except:
+                exclude = self.kwargs['exclude']
 
+            exclude = exclude.replace('"', '')
+            exclude = exclude.split(',')
+        
         # process tags
         for tag in tags:
             tag = tag.strip()
@@ -109,6 +120,10 @@ class ListNode(Node):
 
         # get the list of staff
         items = self.model.objects.search(user=user, query=query)
+        
+        #exclude certain primary keys
+        if exclude:
+            items = items.exclude(primary_key__in=exclude)
 
         # if order is not specified it sorts by relevance
         if order:

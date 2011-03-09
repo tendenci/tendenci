@@ -35,6 +35,9 @@ class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
     
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
+    
     
     def prepare_authorized_domains(self, obj):
         if obj.auth_domains:
