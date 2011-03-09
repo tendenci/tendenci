@@ -120,17 +120,20 @@
         
         
 		{% if not registrant.cancel_dt %}
+			<div>
 		      {% if user.is_authenticated %}
-		          <div><a href="{% url event.cancel_registration event.pk registration.pk %}">Cancel Registation</a></div>
+		          <a href="{% url event.cancel_registration event.pk registration.pk %}">Cancel Registation</a>
 		      {% else %}
-		          <div><a href="{% url event.cancel_registration event.pk registrant.hash %}">Cancel Registation</a></div>
+		          <a href="{% url event.cancel_registration event.pk registrant.hash %}">Cancel Registation</a>
 		      {% endif %}
+		      &nbsp;&nbsp;<a href="{% if hash %}{% url event.registration_edit registration.pk, hash %}{% else %}{% url event.registration_edit registration.pk %}{% endif %}">Edit Registrant(s) Info</a>
+		      </div>
 	     {% endif %}
 	     
 	    {% if count_registrants > 1 %}
 	    	<div style="font-weight: bold;">Registrants ... ({{ count_registrants }})</div>
 	    {% endif %}
-        
+	            
         {% for registrant in registrants %}
 			<div class='avatar'>{% avatar registrant.user 56 %}</div>
 			<div class="info">
