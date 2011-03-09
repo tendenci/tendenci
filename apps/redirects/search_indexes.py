@@ -12,5 +12,8 @@ class RedirectIndex(indexes.RealTimeSearchIndex):
     uses_regex = indexes.BooleanField(model_attr='uses_regex')
     create_dt = indexes.DateTimeField(model_attr='create_dt')
     update_dt = indexes.DateTimeField(model_attr='update_dt')
+    
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
 
 site.register(Redirect, RedirectIndex)

@@ -24,6 +24,9 @@ class FormsIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
+    
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
 
     def prepare_intro(self, obj):
         intro = obj.intro

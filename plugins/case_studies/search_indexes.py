@@ -28,6 +28,9 @@ class CaseStudyIndex(indexes.RealTimeSearchIndex):
     update_dt = indexes.DateTimeField(model_attr='update_dt', null=True)
 
     who_can_view = indexes.CharField()
+    
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
 
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('case_study.view_case_study', obj)

@@ -29,6 +29,9 @@ class DonationIndex(indexes.RealTimeSearchIndex):
     status_detail = indexes.CharField(model_attr='status_detail')
     
     who_can_view = indexes.CharField()
+    
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
 
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('donations.view_donation', obj)

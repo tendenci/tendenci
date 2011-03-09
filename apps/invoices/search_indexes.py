@@ -30,6 +30,9 @@ class InvoiceIndex(indexes.RealTimeSearchIndex):
     status_detail = indexes.CharField(model_attr='status_detail')
     #tender_date = indexes.DateTimeField(model_attr='tender_date')
     
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
+    
     def prepare_object_type(self, obj):
         myobj = obj.get_object()
         if myobj:
