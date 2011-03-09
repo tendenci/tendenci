@@ -26,6 +26,9 @@ class MembershipIndex(indexes.RealTimeSearchIndex):
 
     # permission
     who_can_view = indexes.CharField()
+    
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
 
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('memberships.view_membership', obj)
@@ -58,6 +61,9 @@ class MemberAppIndex(indexes.RealTimeSearchIndex):
     # permission
     who_can_view = indexes.CharField()
     
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
+    
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('articles.view_article', obj)
         user_list = []
@@ -77,6 +83,9 @@ class MemberAppIndex(indexes.RealTimeSearchIndex):
 class MemberAppEntryIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     entry_time = indexes.DateTimeField(model_attr='entry_time')
+    
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
 
 site.register(Membership, MembershipIndex)
 site.register(App, MemberAppIndex)

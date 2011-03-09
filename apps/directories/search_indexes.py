@@ -38,6 +38,9 @@ class DirectoryIndex(indexes.RealTimeSearchIndex):
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
     
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
+    
     def prepare_can_syndicate(self, obj):
         args = [
             obj.allow_anonymous_view,
