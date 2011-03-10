@@ -296,7 +296,8 @@ def save_registration(*args, **kwargs):
         'country': '',
         'phone': kwargs.get('phone', ''),
         'company_name': kwargs.get('company_name', ''),
-        'position_title': ''
+        'position_title': '',
+        'amount': price
     }
 
     # standardize user_account & user_profile
