@@ -34,7 +34,7 @@ urlpatterns = patterns('events',
         name="event.registration_edit"),
 
     # cancel event
-    url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<reg8n_id>\d+)/$', 
+    url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<registrant_id>\d+)/$', 
         'views.cancel_registration', name='event.cancel_registration'),
     url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<hash>\w+)/$',
         'views.cancel_registration', name='event.cancel_registration'),

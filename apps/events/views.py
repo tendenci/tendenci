@@ -532,11 +532,12 @@ def register(request, event_id=0, form_class=Reg8nForm):
         )
 
         # if person is registered; show them their confirmation
-        if registrants.filter(email=email).exists():
-            return HttpResponseRedirect(
-                reverse('event.registration_confirmation',
-                args=(event_id, registrants.filter(email=email)[0].hash)),
-            )
+        if email:
+            if registrants.filter(email=email).exists():
+                return HttpResponseRedirect(
+                    reverse('event.registration_confirmation',
+                    args=(event_id, registrants.filter(email=email)[0].hash)),
+                )
 
         infinite_limit = event.registration_configuration.limit <= 0
 
@@ -920,13 +921,13 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                     context_instance=RequestContext(request))
 
 
-def cancel_registration(request, event_id=0, reg8n_id=0, hash='', template_name="events/reg8n/cancel.html"):
+def cancel_registration(request, event_id=0, registrant_id=0, hash='', template_name="events/reg8n/cancel.html"):
     event = get_object_or_404(Event, pk=event_id)
-    if reg8n_id:
+    if registrant_id:
         try:
             registrant = Registrant.objects.get(
                 registration__event = event,
-                pk = reg8n_id,
+                pk = registrant_id,
             )
 
             # check permission
@@ -948,20 +949,37 @@ def cancel_registration(request, event_id=0, reg8n_id=0, hash='', template_name=
             raise Http404
 
     if request.method == "POST":
-        # TODO: invoice updates
-        registrant.cancel_dt = datetime.now()
-        registrant.save()
+        # check if already canceled. if so, do nothing
+        if not registrant.cancel_dt:
+            registrant.cancel_dt = datetime.now()
+            registrant.save()
+            
+            # update the amount_paid in registration
+            if registrant.amount:
+                if registrant.registration.amount_paid:
+                    registrant.registration.amount_paid -= registrant.amount
+                    registrant.registration.save()
+                
+                # update the invoice if invoice is not tendered
+                invoice = registrant.registration.invoice
+                if not invoice.is_tendered:
+                    invoice.total -= registrant.amount
+                    invoice.subtotal -= registrant.amount
+                    invoice.balance -= registrant.amount
+                    invoice.save(request.user)
+            
+        
 
-        recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-        if recipients and notification:
-            notification.send_emails(recipients, 'event_registration_cancelled', {
-                'event':event,
-                'user':request.user,
-                'registrants_paid':event.registrants(with_balance=False),
-                'registrants_pending':event.registrants(with_balance=True),
-                'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
-                'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
-            })
+            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+            if recipients and notification:
+                notification.send_emails(recipients, 'event_registration_cancelled', {
+                    'event':event,
+                    'user':request.user,
+                    'registrants_paid':event.registrants(with_balance=False),
+                    'registrants_pending':event.registrants(with_balance=True),
+                    'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                    'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+                })
 
         # back to invoice
         return HttpResponseRedirect(
@@ -1099,6 +1117,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
     return render_to_response(template_name, {'event':event, 'registrants':registrants}, 
         context_instance=RequestContext(request))
 
+# http://127.0.0.1/events/4/registrants/roster/total
 @login_required
 def registrant_roster(request, event_id=0, roster_view='', template_name='events/registrants/roster.html'):
     from django.db.models import Sum
@@ -1167,20 +1186,19 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         # permission check
 
         try:
-            registrant = Registrant.objects.get(
-                registration__event = event,
+            registration = Registration.objects.get(
+                event = event,
                 pk = reg8n_id,
             )
-
+    
             # check permission
-            if not has_perm(request.user, 'events.view_registrant', registrant):
+            if not has_perm(request.user, 'events.view_registration', registration):
                 raise Http403
-
-            registration = registrant.registration
             
             # for now, just get a list of registrants
             registrants = registration.registrant_set.all().order_by('id')
             count_registrants = registration.registrant_set.count()
+            registrant = registrants[0]
 
         except:
             raise Http404
