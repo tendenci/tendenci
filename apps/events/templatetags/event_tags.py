@@ -56,6 +56,26 @@ def registrant_search(context, event=None):
 
     return context
 
+@register.inclusion_tag("events/registrants/roster_registrants.html")
+def roster_display_registrants(registrants_search_list, registration):
+    # given a list of registrants, display them if they belong to this registration
+    # the purpose of this template is to reduce the db access. so we don't need to 
+    # call registration.registrant_set.
+    registrants = []
+    for registrant in registrants_search_list:
+        registrant = registrant.object
+        if registrant.registration.pk == registration.pk:
+            registrants.append(registrant)
+    registrants.sort(cmp=cmp_registrants)
+    
+    return {'registrants': registrants}
+
+def cmp_registrants(r1, r2):
+    # sort by id in ascending order
+    if r1.id > r2.id: return 1
+    if r1.id == r2.id: return 0
+    if r1.id < r2.id: return -1
+
 
 @register.inclusion_tag('events/reg8n/register-button.html', takes_context=True)
 def register_button(context):
