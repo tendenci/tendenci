@@ -111,17 +111,18 @@ def get_event_by_id(id, **kwargs):
     # location
     event['location'] = node.location.string
     event['venue_name'] = node.venue_name.string
-    event['venue_website'] = node.venue_website.string
+    # event['venue_website'] = node.venue_website.string
     
     # additional info
     event['additional_info'] = node.additional_info.string
     event['additional_info'] = sfr(event['additional_info'])
     
-    # picture thumb
-    event['picture_thumb'] = node.picture_thumb.string
-    if event['picture_thumb']:
-        event['picture_thumb_height'] = int(node.picture_thumb['height'])
-        event['picture_thumb_width'] = int(node.picture_thumb['width'])
+# Commented out for use with new XML feed
+#     # picture thumb
+#     event['picture_thumb'] = node.picture_thumb.string
+#     if event['picture_thumb']:
+#         event['picture_thumb_height'] = int(node.picture_thumb['height'])
+#         event['picture_thumb_width'] = int(node.picture_thumb['width'])
     
     # picture full
     event['picture_full'] = node.picture_full.string
