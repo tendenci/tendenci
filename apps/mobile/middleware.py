@@ -1,3 +1,5 @@
+from django.conf import settings
+
 mobile_agents = [
     'iPad',
     'iPhone',
@@ -36,7 +38,7 @@ def user_agent(request):
     return None
     
 def is_mobile_cookie_on(request):
-    cookiename = "tendenci_mobile"
+    cookiename =  getattr(settings, 'MOBILE_COOKIE_NAME', "tendenci_mobile")
     if cookiename in request.COOKIES:
         if request.COOKIES[cookiename] == "1":  
             return True

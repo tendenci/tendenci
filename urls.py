@@ -72,6 +72,7 @@ urlpatterns = patterns('',
     (r'^captcha/', include('captcha.urls')),
     (r'^redirects/', include('redirects.urls')),
     (r'^resumes/', include('resumes.urls')),
+    (r'^mobile/', include('mobile.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
     url(r'^robots.txt', direct_to_template, {"template": "robots.txt", }, name="robots"),
