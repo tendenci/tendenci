@@ -212,6 +212,7 @@ INSTALLED_APPS = (
     'resumes',
     'boxes',
     'legacy',
+    'mobile',
 
     # celery task system, must stay at the bottom
     # of installed apps
@@ -354,6 +355,12 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Fomrs upload path
 FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
+
+# --------------------------------------#
+# MOBILE SETTINGS
+# --------------------------------------#
+MOBILE_COOKIE_NAME = "tendenci_mobile"
+
 
 # Amazon SES 
 #----------------------------------------------#
