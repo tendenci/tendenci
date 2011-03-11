@@ -199,7 +199,6 @@
 </tr>
 <tr class='row-spacer'><td colspan="9"></td></tr>
 {% for registrant in registrants %}
-{% with registrant.object as registrant %}
 
 {% if registrant.registration.invoice.balance > 0 %}
 <tr class="{% cycle 'odd' 'even' %} non-paid-top">
@@ -220,7 +219,7 @@
 	{% if registrant.lastname_firstname or registrant.email%}
 	{% firstof registrant.lastname_firstname registrant.email %}
 	{% else %}
-		R-{{ registrant.registration.pk }} Guest (id: {{ registrant.pk }})
+		Guest#{{ registrant.pk }}
 	{% endif %}
 	</div>
 	{% endif %}
@@ -242,11 +241,25 @@
 {% with registrant.additional_registrants as additionals %}
 
 {% if registrant.registration.invoice.balance > 0 %}
-<tr class="{% cycle 'odd' 'even' %} {% if additionals %}non-paid-middle{% else %}non-paid-bottom{% endif %}">
+<tr class="{% cycle 'odd' 'even' %} non-paid-bottom">
 {% else %}
 <tr class="{% cycle 'odd' 'even' %}">
 {% endif %}
-    <td colspan="4"></td>
+    <td colspan="2"></td>
+    <td colspan="2">
+    {% if additionals %}
+        <a href="{{ registrant.registration.invoice.get_absolute_url }}">additional registrants:</a> 
+	    {% for reg in additionals %}
+	    	<a href="#roster{{ reg.pk }}">
+	    	{% if reg.lastname_firstname or reg.email%}
+	    	[{% firstof reg.lastname_firstname reg.email %}]
+	    	{% else %}
+	    	[Guest#{{ reg.pk }}]
+	    	{% endif %}
+	    	</a>
+	    {% endfor %}
+    {% endif %}
+    </td>
     <td colspan="5">
 
         {% if registrant.registration.invoice.tender_date %}
@@ -257,32 +270,9 @@
     </td>
 </tr>
 
-{% if additionals %}
-	{% if registrant.registration.invoice.balance > 0 %}
-	<tr class="{% cycle 'odd' 'even' %} non-paid-bottom">
-	{% else%}
-	<tr class="{% cycle 'odd' 'even' %}">
-	{% endif %}
-		<td colspan="2"></td>
-	    <td colspan="7">
-	    <a href="{{ registrant.registration.invoice.get_absolute_url }}">additional registrants on this invoice:</a> 
-	    {% for reg in additionals %}
-	    	<a href="#roster{{ reg.pk }}">
-	    	{% if reg.lastname_firstname or reg.email%}
-	    	[{% firstof reg.lastname_firstname reg.email %}]
-	    	{% else %}
-	    	[Guest (id: {{ reg.pk }})]
-	    	{% endif %}
-	    	</a>
-	    {% endfor %}
-	    </td>
-	</tr>
-
-{% endif %}
 
 {% endwith %}
 
-{% endwith %}
 {% endfor %}
 <tr class='row-spacer'><td colspan="9"></td></tr>
 <tr class="bottom-row">

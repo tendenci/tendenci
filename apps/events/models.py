@@ -146,7 +146,7 @@ class Registrant(models.Model):
     @property
     def additional_registrants(self):
         # additional registrants on the same invoice
-        return self.registration.registrant_set.filter(cancel_dt = None).exclude(id=self.id)
+        return self.registration.registrant_set.filter(cancel_dt = None).exclude(id=self.id).order_by('id')
 
     @property
     def hash(self):
