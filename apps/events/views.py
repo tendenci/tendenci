@@ -1120,6 +1120,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
 # http://127.0.0.1/events/4/registrants/roster/total
 @login_required
 def registrant_roster(request, event_id=0, roster_view='', template_name='events/registrants/roster.html'):
+    # roster_view in ['total', 'paid', 'non-paid']
     from django.db.models import Sum
     event = get_object_or_404(Event, pk=event_id)
     query = ''
@@ -1128,15 +1129,34 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         return HttpResponseRedirect(reverse('event.registrant.roster.total', args=[event.pk]))
 
     # is:paid or is:non-paid
-    if 'paid' in roster_view:
-        query = '"is:%s"' % roster_view
-
-    query = '%s "is:confirmed"' % query
-    registrants = Registrant.objects.search(
-            query, user=request.user, event=event)
-
+#    if 'paid' in roster_view:
+#        query = '"is:%s"' % roster_view
+#
+#    query = '%s "is:confirmed"' % query
+#    registrants = Registrant.objects.search(
+#            query, user=request.user, event=event).order_by('last_name')
+    # paid or non-paid or total
     registrations = Registration.objects.filter(event=event)
-
+    if roster_view == 'paid':
+        registrations = registrations.filter(invoice__balance=0)
+    elif roster_view == 'non-paid':
+        registrations = registrations.filter(invoice__balance__gt=0)
+    
+    # grab the primary registrants then the additional registrants 
+    # to group the registrants with the same registration together
+    primary_registrants = []
+    for registration in registrations:
+        regs = registration.registrant_set.filter(cancel_dt = None).order_by("pk")
+        if regs:
+            primary_registrants.append(regs[0])
+    primary_registrants = sorted(primary_registrants, key=lambda reg: reg.last_name)
+    
+    registrants = []
+    for primary_reg in primary_registrants:
+        registrants.append(primary_reg)
+        for reg in primary_reg.additional_registrants:
+            registrants.append(reg)
+            
     total_sum = 0
     if roster_view != 'paid':
         total_sum = Invoice.objects.filter(
