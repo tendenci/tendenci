@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 
 # local
 from base.cache import IMAGE_PREVIEW_CACHE
@@ -153,3 +153,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     response["Last-Modified"] = http_date(statobj[stat.ST_MTIME])
     response["Content-Length"] = len(contents)
     return response
+    
+def clear_cache(request):
+    cache.clear()
+    return redirect('dashboard')
