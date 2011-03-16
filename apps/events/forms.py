@@ -208,6 +208,7 @@ class Reg8nEditForm(BetterModelForm):
     early_dt = SplitDateTimeField(label=_('Early Date/Time'))
     regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
     late_dt = SplitDateTimeField(label=_('Late Date/Time'))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'))
 
     def clean(self):
 
@@ -236,6 +237,7 @@ class Reg8nEditForm(BetterModelForm):
                      'early_dt',
                      'regular_dt',
                      'late_dt',
+                     'end_dt',
                      'payment_required',
                      ],
           'legend': ''

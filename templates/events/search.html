@@ -171,7 +171,7 @@
 
 				{% if event.registration_configuration.enabled %}
 
-					{% if now > event.end_dt or now > event.registration_configuration.late_dt %}
+					{% if now > event.end_dt or now > event.registration_configuration.end_dt %}
 
 					<div class="attend-wrap closed">
 						<div class="attend"><a href="">Registration Closed</a></div>

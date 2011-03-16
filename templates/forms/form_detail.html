@@ -4,7 +4,11 @@
 {% block title %}{{ form.title }}{% endblock %}
 
 {% block body %}
-
+<style>
+.id_captcha input[type="text"]{
+	width: 160px !important;
+}
+</style>
 <div class="t">
     <h2>{{ form.title }}</h2>
     <p>{{ form.intro|safe }}</p>

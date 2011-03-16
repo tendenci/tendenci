@@ -381,9 +381,10 @@ class RegistrationConfiguration(models.Model):
     regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
     late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
 
-    early_dt = models.DateTimeField(_('Early Date'))
-    regular_dt = models.DateTimeField(_('Regular Date'))
-    late_dt = models.DateTimeField(_('Late Date'))
+    early_dt = models.DateTimeField(_('Early Registration Starts'))
+    regular_dt = models.DateTimeField(_('Regular Registration Starts'))
+    late_dt = models.DateTimeField(_('Late Registration Starts'))
+    end_dt = models.DateTimeField(_('Registration Ends'), default=0)
 
     payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
 
@@ -393,7 +394,6 @@ class RegistrationConfiguration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
-    
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -403,7 +403,7 @@ class RegistrationConfiguration(models.Model):
             self.PERIODS = {
                 'early': (self.early_dt, self.regular_dt),
                 'regular': (self.regular_dt, self.late_dt),
-                'late': (self.late_dt, self.event.start_dt),
+                'late': (self.late_dt, self.end_dt),
             }
         else:
             self.PERIODS = None
