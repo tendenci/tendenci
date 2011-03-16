@@ -94,7 +94,7 @@ def register_button(context):
     if reg8n_enabled:
         if reg8n_config.within_time:
 
-            msg2 = 'Registration ends %s' % naturalday(reg8n_config.late_dt)
+            msg2 = 'Registration ends %s' % naturalday(reg8n_config.end_dt)
             status_class = 'open'
             url1 = reverse('event.register', args=[event.pk])
 
@@ -118,7 +118,7 @@ def register_button(context):
             if reg8n_config.early_dt > datetime.now():
                 msg2 = 'Registration opens %s' % naturalday(reg8n_config.early_dt)
             else:
-                msg2 = 'Registration ended %s' % naturalday(reg8n_config.late_dt)
+                msg2 = 'Registration ended %s' % naturalday(reg8n_config.end_dt)
 
             status_class = 'closed'
 

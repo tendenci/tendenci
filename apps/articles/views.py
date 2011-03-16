@@ -175,7 +175,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
 
                 # set up user permission
                 article.allow_user_view, article.allow_user_edit = form.cleaned_data['user_perms']
-                
+
                 article.save() # get pk
 
                 # assign permissions for selected groups
@@ -184,7 +184,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 ObjectPermission.objects.assign(article.creator, article) 
 
                 article.save() # update search-index w/ permissions
- 
+
                 log_defaults = {
                     'event_id' : 431000,
                     'event_data': '%s (%d) added by %s' % (article._meta.object_name, article.pk, request.user),
