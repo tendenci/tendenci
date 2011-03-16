@@ -443,6 +443,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 'early_dt': datetime.now(),
                 'regular_dt': datetime.now(),
                 'late_dt': datetime.now(),
+                'end_dt': datetime.now(),
              }
 
             form_event = form_class(user=request.user)
@@ -547,7 +548,7 @@ def register(request, event_id=0, form_class=Reg8nForm):
 
         bad_scenarios = [
             event.end_dt < datetime.now(), # event has passed
-            event.registration_configuration.late_dt < datetime.now(), # registration period has passed
+            event.registration_configuration.end_dt < datetime.now(), # registration period has passed
             event.registration_configuration.early_dt > datetime.now(), # registration period has not started
             (event.registration_configuration.limit <= registrants.count()) and \
                 not infinite_limit, # registration limit exceeded
