@@ -14,7 +14,7 @@ from site_settings.utils import get_setting
 import haystack
 from haystack.query import SearchQuerySet
 
-INCLUDED_APPS = getattr(settings,'HAYSTACK_INCLUDED_APPS',[])
+#INCLUDED_APPS = getattr(settings,'HAYSTACK_INCLUDED_APPS',[])
 
 def model_choices(site=None):
     if site is None:
@@ -22,12 +22,12 @@ def model_choices(site=None):
         
     choices = []
     for m in site.get_indexed_models():
-        if m._meta.module_name in INCLUDED_APPS:
-            setting_args = ['module',m._meta.app_label,'enabled']
-            is_enabled = get_setting(*setting_args)
-            if is_enabled:
-                choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
-                                capfirst(unicode(m._meta.verbose_name_plural))))
+        #if m._meta.module_name in INCLUDED_APPS:
+        setting_args = ['module',m._meta.app_label,'enabled']
+        is_enabled = get_setting(*setting_args)
+        if is_enabled:
+            choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
+                            capfirst(unicode(m._meta.verbose_name_plural))))
             
     return sorted(choices, key=lambda x: x[1])
 
@@ -169,15 +169,15 @@ class ModelSearchForm(SearchForm):
         if indexed_models:
             search_models = []
             for model in indexed_models:
-                if model._meta.module_name in INCLUDED_APPS:
-                    search_models.append(model)
-#
+                #if model._meta.module_name in INCLUDED_APPS:
+                search_models.append(model)
+
         if self.cleaned_data['models']:
             search_models = []
             for model in self.cleaned_data['models']:
                 class_model = models.get_model(*model.split('.'))
-                if class_model._meta.module_name in INCLUDED_APPS:
-                    search_models.append(class_model)
+                #if class_model._meta.module_name in INCLUDED_APPS:
+                search_models.append(class_model)
 
         return search_models
     
