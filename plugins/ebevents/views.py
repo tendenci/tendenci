@@ -52,7 +52,8 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         try:
             xml_path = settings.EVENTBOOKING_XML_URL
         except:
-            xml_path = "http://xml.eventbooking.com/xml_public.asp?pwl=4E2.4AA4404E"
+            #xml_path = "http://xml.eventbooking.com/xml_public.asp?pwl=4E2.4AA4404E"
+            xml_path = 'http://go.eventbooking.com/xml_public.asp?pwl=4E1.5B2115DE'
             
         xml = urllib2.urlopen(xml_path)
         content = xml.read()
