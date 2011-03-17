@@ -17,6 +17,8 @@ from base.fields import SplitDateTimeField
 from emails.models import Email
 from form_utils.forms import BetterModelForm
 
+from fields import Reg8nDtField, reg8n_dt_choices
+
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
     def __iter__(self):
@@ -209,12 +211,14 @@ class Reg8nEditForm(BetterModelForm):
     regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
     late_dt = SplitDateTimeField(label=_('Late Date/Time'))
     end_dt = SplitDateTimeField(label=_('End Date/Time'))
+    
+    reg8n_dts = Reg8nDtField(label=_('Times and Pricing'), required=False)
 
     def clean(self):
 
-        early_price = self.cleaned_data["early_price"]
-        regular_price = self.cleaned_data["regular_price"]
-        late_price = self.cleaned_data["late_price"]
+        early_price = self.cleaned_data.get('early_price') or 0
+        regular_price = self.cleaned_data.get('regular_price') or 0
+        late_price = self.cleaned_data.get('late_price') or 0
 
         # if price is zero
         if sum([early_price, regular_price, late_price]) == 0:
@@ -230,19 +234,20 @@ class Reg8nEditForm(BetterModelForm):
         fieldsets = [('Registration Configuration', {
           'fields': ['enabled',
                      'limit',
+                     'reg8n_dts',
                      'payment_method',
-                     'early_price',
-                     'regular_price',
-                     'late_price',
-                     'early_dt',
-                     'regular_dt',
-                     'late_dt',
-                     'end_dt',
                      'payment_required',
                      ],
           'legend': ''
           })
         ]
+
+    def __init__(self, *args, **kwargs):
+        super(Reg8nEditForm, self).__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+
+        if instance:
+            self.fields['reg8n_dts'].choices = reg8n_dt_choices(instance)
 
 class Reg8nForm(forms.Form):
     """
