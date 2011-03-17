@@ -39,20 +39,20 @@ class EventLog(models.Model):
 
     class Meta:
         permissions = (("view_eventlog","Can view eventlog"),)
- 
+
     def color(self):
         return get_color(str(self.event_id))
-        
+
     def get_absolute_url(self):
         return ('event_log', [self.pk])
     get_absolute_url = models.permalink(get_absolute_url)
-    
+
     def save(self):
         if not self.id:
             self.guid = uuid.uuid1()
-            
+
         super(self.__class__, self).save()
-           
+
     def __unicode__(self):
         return str(self.event_id)
 

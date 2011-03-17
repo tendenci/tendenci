@@ -238,6 +238,15 @@ div.id_regconf-end_dt .field input#id_regconf-end_dt_1 {
 	width: 80px;
 }
 
+div.forms div.form-field .field input.datepicker,
+div.forms div.form-field .field input.timepicker {
+    width: 120px;
+}
+
+div.forms div.form-field .field input.reg8n_price {
+    width: 80px;
+}
+
 input#id_regconf-early_price {
 	width: 100px;	
 }

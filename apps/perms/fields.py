@@ -101,20 +101,20 @@ class UserPermissionWidget(CheckboxSelectMultiple):
         for i, (user_label, user_perm) in enumerate(groupby(self.choices,lambda x: x[1])):
             view_input_value = force_unicode(user_perm.next()[0])
             change_input_value = force_unicode(user_perm.next()[0])
-            
+
             if has_id:
                 final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'], i))
-                
+
             cb_view = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             cb_change = CheckboxInput(final_attrs, check_test=lambda value: value in str_values)
             rendered_cb_view = cb_view.render(name, view_input_value)
             rendered_cb_change = cb_change.render(name, change_input_value)
-            
+
             if (i % 2) == 0:
                 tr_class = ' class="alt" '
             else:
                 tr_class = ''
-                
+
             table_rows += """
                 <tr%(tr_class)s>
                     <td>%(user_label)s</td>
