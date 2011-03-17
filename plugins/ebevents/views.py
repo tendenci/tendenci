@@ -53,7 +53,6 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
     for node in nodes:
         event_name = strip_tags(node.event_name.string)
         event_type = strip_tags(node.event_type.string)
-        print event_name
         start_date = node.date_range.start_date.string
         if start_date:
             start_date = datetime(*(time.strptime(start_date, '%Y-%b-%d')[0:6]))
