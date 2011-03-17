@@ -1,33 +1,41 @@
 import urllib2
 from datetime import datetime
-from django.conf import settings
 from BeautifulSoup import BeautifulStoneSoup
 
+from django.conf import settings
+from django.core.cache import cache
 from django.utils.html import strip_tags
 
-def get_event_by_id(id, **kwargs):
-    try:
-        xml_url = settings.EVENTBOOKING_XML_URL
-    except:
-        xml_url = "http://xml.eventbooking.com/xml_public.asp?pwl=4E2.4AA4404E"
-        
-    xml_url = '%s&mode=detail&event_id=%s' % (xml_url.strip(), id)
+DEFAULT_URL = 'http://go.eventbooking.com/xml_public.asp?pwl=4E1.5B2115DE'
+EVENTBOOKING_XML_URL = getattr(settings, 'EVENTBOOKING_XML_URL', DEFAULT_URL)
 
-    xml = urllib2.urlopen(xml_url)
+
+def get_event_by_id(id, **kwargs):
+    event = {}
+    cache_key = 'event_booking_event_detail_%s' % id
+    xml_url = '%s&mode=detail&event_id=%s' % (EVENTBOOKING_XML_URL, id)
+
+    # pull from cache
+    xml = cache.get(cache_key)
+
+    # cache if not already cached
+    if not xml:
+        url_object = urllib2.urlopen(xml_url)
+        xml = url_object.read()
+
+        # cache the content for one hour
+        cache.set(cache_key, xml, 3600)
+    
     soup = BeautifulStoneSoup(xml)
     node = soup.find('public_event_detail')
-    
-    event = {}
     
     try:
         event['event_name'] = node.event_name.string
     except AttributeError:
         return None
         
-    event['event_name'] = event['event_name'].replace('&amp;', '&').replace('&apos;', "'")
-    event['event_name'] = sfr(event['event_name'])
-   
-    event['event_type'] = node.event_type.string
+    event['event_name'] = strip_tags(event['event_name'])
+    event['event_type'] = strip_tags(node.event_type.string)
     event['unique_event_id'] = node.unique_event_id.string
     
     # date time
@@ -111,21 +119,18 @@ def get_event_by_id(id, **kwargs):
     # location
     event['location'] = node.location.string
     event['venue_name'] = node.venue_name.string
-    event['venue_website'] = node.venue_website.string
+
+    # was commented out, needed for ICS generation, defaulted to false
+    event['venue_website'] = ''
     
     # additional info
     event['additional_info'] = node.additional_info.string
-    event['additional_info'] = sfr(event['additional_info'])
-    
-    # picture thumb
-    event['picture_thumb'] = node.picture_thumb.string
-    if event['picture_thumb']:
-        event['picture_thumb_height'] = int(node.picture_thumb['height'])
-        event['picture_thumb_width'] = int(node.picture_thumb['width'])
+    event['additional_info'] = strip_tags(event['additional_info'])
     
     # picture full
-    event['picture_full'] = node.picture_full.string
-    if event['picture_full']:
+    event['picture_full'] = ''
+    if node.picture_full:
+        event['picture_full'] = node.picture_full.string
         event['picture_full_height'] = int(node.picture_full['height'])
         event['picture_full_width'] = int(node.picture_full['width'])
     
@@ -153,15 +158,6 @@ def get_event_by_id(id, **kwargs):
             node_rm = node.rm.nextSibling
             
     return event
-
-def sfr(s):
-    if s:
-        s = s.replace('&amp;', '&').replace('&apos;', "'")
-        s = s.replace('&rsquo;', "'")
-        s = s.replace('&lt;', '<')
-        s = s.replace('&gt;', '>')
-        s = s.replace('&quot;', "'")
-    return s
 
 
 def build_ical_text(event, d):

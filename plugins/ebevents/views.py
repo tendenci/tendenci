@@ -1,13 +1,15 @@
+from datetime import datetime
 import os
 import urllib2
-from datetime import datetime
 import time
-#import cPickle
+
 from BeautifulSoup import BeautifulStoneSoup
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.conf import settings
 from django.http import Http404
+from django.core.cache import cache
+from django.utils.html import strip_tags
 
 from base.http import Http403
 from forms import EventSearchForm
@@ -15,68 +17,45 @@ from utils import get_event_by_id
 from site_settings.utils import get_setting
 from pages.models import Page
 
+DEFAULT_URL = 'http://go.eventbooking.com/xml_public.asp?pwl=4E1.5B2115DE'
+EVENTBOOKING_XML_URL = getattr(settings, 'EVENTBOOKING_XML_URL', DEFAULT_URL)
+
+
 def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"):
+    """
+    List all the events from eventbooking and cache them
+    """
+    events = []
     q_event_month = request.GET.get('event_month', '')
     q_event_year = request.GET.get('event_year', '')
     q_event_type = request.GET.get('event_type', '')
     
-    try:
-        q_event_month = int(q_event_month)
-    except:
+    # double check the month and year
+    if not q_event_month.isdigit():
         q_event_month = 0
-    try:
-        q_event_year = int(q_event_year)
-    except:
-        q_event_year = 0    
-    
-    # check the cache first
-    cache_file_name = 'events.txt'
-    cache_path = os.path.join(settings.MEDIA_ROOT, 'ebevents/')
-    
-    use_cache = False
-    
-    if not os.path.isdir(cache_path):
-        os.mkdir(cache_path)
-    cache_path = os.path.join(cache_path, cache_file_name)
-    
-    if os.path.isfile(cache_path):
-        if time.time() - os.path.getmtime(cache_path) < 3600: # 1 hour
-            use_cache = True
-       
-    if use_cache: 
-        fd = open(cache_path, 'r')
-        content = fd.read()
-        fd.close()
-    else:
-        # process all events and store in the cache
-        try:
-            xml_path = settings.EVENTBOOKING_XML_URL
-        except:
-            xml_path = "http://xml.eventbooking.com/xml_public.asp?pwl=4E2.4AA4404E"
-            
-        xml = urllib2.urlopen(xml_path)
-        content = xml.read()
+    if not q_event_year.isdigit():
+        q_event_year = 0  
+
+    # pull from cache
+    xml = cache.get('event_booking_xml')
+
+    # direct pull and cache
+    if not xml:
+        url_object = urllib2.urlopen(EVENTBOOKING_XML_URL)
+        xml = url_object.read()
+
+        # cache the content for one hour
+        cache.set('event_booking_xml', xml, 3600)
         
-        # store the xml content in the cache
-        fd = open(cache_path, 'w')
-        fd.write(content)
-        fd.close()
-        
-    soup = BeautifulStoneSoup(content)
-    
-    events = []
+    soup = BeautifulStoneSoup(xml)
     nodes = soup.findAll('event')
+
     for node in nodes:
-        event_name =node.event_name.string
-        event_name = event_name.replace('&amp;', '&').replace('&apos;', "'")
-        event_type = node.event_type.string
-        event_type = event_type.replace('&amp;', '&').replace('&apos;', "'")
-        #if event_type <> u'HPL Express Events':
+        event_name = strip_tags(node.event_name.string)
+        event_type = strip_tags(node.event_type.string)
+        print event_name
         start_date = node.date_range.start_date.string
         if start_date:
-            # start_date = (datetime.strptime(start_date, '%Y-%b-%d')).strftime('%m/%d/%Y')
-            # datetime(*(time.strptime('2010-Aug-12', '%Y-%b-%d')[0:6]))
-            # start_date = datetime.strptime(start_date, '%Y-%b-%d')
             start_date = datetime(*(time.strptime(start_date, '%Y-%b-%d')[0:6]))
         
         

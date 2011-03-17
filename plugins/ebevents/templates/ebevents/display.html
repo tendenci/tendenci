@@ -172,7 +172,7 @@ h1{
        <p id="event-description">{{ event.description|safe }}</p><br />
        
        {% if event.picture_full %}
-           <div id="event_image_block" {%  if event.picture_full_width < 200 %} style="float:right;margin:1em;" {% else %} style="overflow: auto; width:520px;"{% endif %}>
+           <div id="event_image_block" {%  if event.picture_full_width < 200 %} style="float:right;margin:1em;" {% else %} style="width:520px;"{% endif %}>
 	        <img src="{{ event.picture_full }}" width="{{ event.picture_full_width }}" height="{{ event.picture_full_height }}" /><br />
 	        </div>
 	    {% endif %}
