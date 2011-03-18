@@ -1,29 +1,52 @@
 from datetime import datetime, timedelta
-from django.template.defaultfilters import date as date_filter
+from django.http import QueryDict
 from django.forms import ChoiceField
 from django.forms.widgets import Widget, TextInput
 from django.utils.safestring import mark_safe
+from django.template.defaultfilters import date as date_filter
 from base.widgets import SplitDateTimeWidget
 
 
-def reg8n_dt_choices(instance):
+def reg8n_dt_choices(*args, **kwargs):
     """
-    Return a tuple of 2-tuples.
-    Registration datetimes (machine_name, human_name).
+    Use values from query_dict or instance.
+    Return 2-tuple of reg8n items.
     """
+    instance = kwargs.get('instance')
+    prefix = kwargs.get('prefix')
+    query_dict = None
 
-    if not instance:
+    if args and args[0]:
+        query_dict = args[0]
+
+    # save ourselves from looping
+    if not instance and not query_dict:
         return tuple()
 
-    return {
-        'early_price':instance.early_price,
-        'regular_price':instance.regular_price,
-        'late_price':instance.late_price,
-        'early_dt':instance.early_dt,
-        'regular_dt':instance.regular_dt,
-        'late_dt':instance.late_dt,
-        'end_dt':instance.end_dt,
-    }.items()
+    return_kwargs = {
+        'early_price': u'',
+        'regular_price': u'',
+        'late_price': u'',
+        'early_dt': u'',
+        'regular_dt': u'',
+        'late_dt': u'',
+        'end_dt': u'',
+    }
+
+    for k, v in return_kwargs.items():
+        if query_dict:
+
+            if k[-2:] == 'dt':  # if datetime variable
+                str_date = query_dict.get('%s-%s_0' % (prefix, k))
+                str_time = query_dict.get('%s-%s_1' % (prefix, k))
+                return_kwargs[k] = datetime.strptime('%s %s' % (str_date, str_time), '%Y-%m-%d %I:%M %p')
+            else:
+                return_kwargs[k] = query_dict.get('%s-%s' % (prefix, k))
+
+        elif instance and hasattr(instance, k):
+            return_kwargs[k] = getattr(instance, k)
+
+    return return_kwargs.items()
 
 class Reg8nDtWidget(Widget):
     def render(self, name, value, attrs=None, choices=()):
