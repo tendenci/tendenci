@@ -150,6 +150,10 @@ class Registrant(models.Model):
 
     @property
     def hash(self):
+        return md5(".".join([str(self.registration.event.pk), self.email, str(self.pk)])).hexdigest()
+    
+    @property
+    def old_hash(self):
         return md5(".".join([str(self.registration.event.pk), self.email])).hexdigest()
 
     @models.permalink
