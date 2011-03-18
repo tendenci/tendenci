@@ -244,10 +244,7 @@ class Reg8nEditForm(BetterModelForm):
 
     def __init__(self, *args, **kwargs):
         super(Reg8nEditForm, self).__init__(*args, **kwargs)
-        instance = kwargs.get('instance')
-
-        if instance:
-            self.fields['reg8n_dts'].choices = reg8n_dt_choices(instance)
+        self.fields['reg8n_dts'].choices = reg8n_dt_choices(*args, **kwargs)
 
 class Reg8nForm(forms.Form):
     """
