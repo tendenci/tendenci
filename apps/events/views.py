@@ -770,6 +770,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     else:
                         # offline payment:
                         # send email; add message; redirect to confirmation
+                        print reg8n.registrant.hash
                         notification.send_emails(
                             [reg8n.registrant.email],
                             'event_registration_confirmation',
@@ -948,6 +949,11 @@ def cancel_registration(request, event_id=0, registrant_id=0, hash='', template_
             registrant = sqs[0].object
         except:
             raise Http404
+        
+    user_is_registrant = False
+    if not request.user.is_anonymous() and registrant.user:
+        if request.user.id == registrant.user.id:
+            user_is_registrant = True
 
     if request.method == "POST":
         # check if already canceled. if so, do nothing
@@ -969,7 +975,6 @@ def cancel_registration(request, event_id=0, registrant_id=0, hash='', template_
                     invoice.balance -= registrant.amount
                     invoice.save(request.user)
             
-        
 
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
@@ -980,16 +985,19 @@ def cancel_registration(request, event_id=0, registrant_id=0, hash='', template_
                     'registrants_pending':event.registrants(with_balance=True),
                     'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
                     'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+                    'registrant':registrant,
+                    'user_is_registrant': user_is_registrant,
                 })
 
         # back to invoice
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
-
+        
     return render_to_response(template_name, {
         'event': event,
         'registrant':registrant,
-        'hash': hash
+        'hash': hash,
+        'user_is_registrant': user_is_registrant,
         }, 
         context_instance=RequestContext(request))
 
@@ -1200,7 +1208,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
     event = get_object_or_404(Event, pk=id)
     count_registrants = 1
-
+    
     if reg8n_id:
 
         # URL is obvious
