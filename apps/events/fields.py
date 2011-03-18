@@ -69,15 +69,19 @@ class Reg8nDtWidget(Widget):
         text_widget = TextInput({'class':'reg8n_price'})
         dt_widget = SplitDateTimeWidget()
 
+        # rip prefix from name
+        name_prefix = name.split('-')[0]
+        id_prefix = 'id_%s' % name_prefix
+
         # string format dict
         str_format_kwargs = {
-            'early_price': text_widget.render('regconf-early_price', early_price),
-            'regular_price': text_widget.render('regconf-regular_price', regular_price),
-            'late_price': text_widget.render('regconf-late_price', late_price),
-            'early_dt': dt_widget.render('regconf-early_dt', early_dt),
-            'regular_dt': dt_widget.render('regconf-regular_dt', regular_dt),
-            'late_dt': dt_widget.render('regconf-late_dt', late_dt),
-            'end_dt': dt_widget.render('regconf-end_dt', end_dt),
+            'early_price': text_widget.render('%s-%s' % (name_prefix, 'early_price'), early_price, {'id': '%s-%s' % (id_prefix, 'early_price')}),
+            'regular_price': text_widget.render('%s-%s' % (name_prefix, 'regular_price'), regular_price, {'id': '%s-%s' % (id_prefix, 'regular_price')}),
+            'late_price': text_widget.render('%s-%s' % (name_prefix, 'late_price'), late_price, {'id': '%s-%s' % (id_prefix, 'late_price')}),
+            'early_dt': dt_widget.render('%s-%s' % (name_prefix, 'early_dt'), early_dt, {'id': '%s-%s' % (id_prefix, 'early_price')}),
+            'regular_dt': dt_widget.render('%s-%s' % (name_prefix, 'regular_dt'), regular_dt, {'id': '%s-%s' % (id_prefix, 'early_price')}),
+            'late_dt': dt_widget.render('%s-%s' % (name_prefix, 'late_dt'), late_dt, {'id': '%s-%s' % (id_prefix, 'early_price')}),
+            'end_dt': dt_widget.render('%s-%s' % (name_prefix, 'end_dt'), end_dt, {'id': '%s-%s' % (id_prefix, 'early_price')}),
         }
 
         # string format template
