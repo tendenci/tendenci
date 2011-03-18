@@ -20,3 +20,4 @@ is:non-paid
 {% endif %}
 
 hash:{{ object.hash }}
+hash:{{ object.old_hash }}
