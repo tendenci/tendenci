@@ -11,8 +11,25 @@
 
 <div style="margin-bottom:20px;">
 
-<p style="margin:2px">{{ user.username }} just cancelled their registration on {{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
-<p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">View registration details</a></p>
+<p style="margin:2px">
+{% if user_is_registrant %}
+	{{ user.first_name }} {{ user.last_name }} just cancelled their registration on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+{% else %}
+	{% if user.is_anonymous %}
+		An anonymous user
+	{% else %}
+		{{ user.first_name }} {{ user.last_name }} 
+	{% endif %}
+	just cancelled the registration for 
+	{% if registrant.first_name or registrant.last_name %}
+		{{ registrant.first_name }} {{ registrant.last_name }}
+	{% else %}
+	 	guest #{{ registrant.pk }} 
+	{% endif %}
+{% endif %}
+on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+</p>
+<p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registration_confirmation event.pk registrant.registration.pk %}">View registration details</a></p>
 </div>
 
 <div style="margin-bottom:20px;">
