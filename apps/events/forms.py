@@ -17,7 +17,7 @@ from base.fields import SplitDateTimeField
 from emails.models import Email
 from form_utils.forms import BetterModelForm
 
-from fields import Reg8nDtField, reg8n_dt_choices
+from fields import Reg8nDtField
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -212,7 +212,7 @@ class Reg8nEditForm(BetterModelForm):
     late_dt = SplitDateTimeField(label=_('Late Date/Time'))
     end_dt = SplitDateTimeField(label=_('End Date/Time'))
     
-    reg8n_dts = Reg8nDtField(label=_('Times and Pricing'), required=False)
+    reg8n_dt_price = Reg8nDtField(label=_('Times and Pricing'), required=False)
 
     def clean(self):
 
@@ -234,7 +234,7 @@ class Reg8nEditForm(BetterModelForm):
         fieldsets = [('Registration Configuration', {
           'fields': ['enabled',
                      'limit',
-                     'reg8n_dts',
+                     'reg8n_dt_price',
                      'payment_method',
                      'payment_required',
                      ],
@@ -244,7 +244,7 @@ class Reg8nEditForm(BetterModelForm):
 
     def __init__(self, *args, **kwargs):
         super(Reg8nEditForm, self).__init__(*args, **kwargs)
-        self.fields['reg8n_dts'].choices = reg8n_dt_choices(*args, **kwargs)
+        self.fields['reg8n_dt_price'].build_widget_reg8n_dict(*args, **kwargs)
 
 class Reg8nForm(forms.Form):
     """
