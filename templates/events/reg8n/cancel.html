@@ -51,7 +51,13 @@
     <h1>Cancel Event Registration</h1>
 
 	<div class="action-wrap">
-	    <div class='event-title'>{{ event.title }} for {{ registrant.name }}</div>
+	    <div class='event-title'>{{ event.title }} for 
+	    {% if registrant.first_name or registrant.last_name %}
+			{{ registrant.first_name }} {{ registrant.last_name }}
+		{% else %}
+		 	guest #{{ registrant.pk }}
+		{% endif %}
+	    </div>
 		<div class="form-wrap">
             {% if hash %}
             <form action="{% url event.cancel_registration event.pk registrant.hash %}" method="post">
@@ -60,7 +66,7 @@
             {%  endif %}
 	    	<div class="forms">
 	    		<span>
-	    		<a href="{% url event.registration_confirmation event.pk registrant.pk %}">
+	    		<a href="{% url event.registration_confirmation event.pk registrant.registration.pk %}">
 	    		&laquo;View Registration</a></span> or
 				<input type="submit" value="Cancel Event Registration" />
 			</div>
