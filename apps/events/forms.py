@@ -4,16 +4,20 @@ from datetime import datetime
 from django import forms
 from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext_lazy as _
+from django.forms.formsets import BaseFormSet
+from django.forms.util import ErrorList
 
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
-    Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, TypeColorSet
+    Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, TypeColorSet, Registrant
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from emails.models import Email
 from form_utils.forms import BetterModelForm
+
+from fields import Reg8nDtField
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -206,12 +210,15 @@ class Reg8nEditForm(BetterModelForm):
     early_dt = SplitDateTimeField(label=_('Early Date/Time'))
     regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
     late_dt = SplitDateTimeField(label=_('Late Date/Time'))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'))
+    
+    reg8n_dt_price = Reg8nDtField(label=_('Times and Pricing'), required=False)
 
     def clean(self):
 
-        early_price = self.cleaned_data["early_price"]
-        regular_price = self.cleaned_data["regular_price"]
-        late_price = self.cleaned_data["late_price"]
+        early_price = self.cleaned_data.get('early_price') or 0
+        regular_price = self.cleaned_data.get('regular_price') or 0
+        late_price = self.cleaned_data.get('late_price') or 0
 
         # if price is zero
         if sum([early_price, regular_price, late_price]) == 0:
@@ -227,18 +234,17 @@ class Reg8nEditForm(BetterModelForm):
         fieldsets = [('Registration Configuration', {
           'fields': ['enabled',
                      'limit',
+                     'reg8n_dt_price',
                      'payment_method',
-                     'early_price',
-                     'regular_price',
-                     'late_price',
-                     'early_dt',
-                     'regular_dt',
-                     'late_dt',
                      'payment_required',
                      ],
           'legend': ''
           })
         ]
+
+    def __init__(self, *args, **kwargs):
+        super(Reg8nEditForm, self).__init__(*args, **kwargs)
+        self.fields['reg8n_dt_price'].build_widget_reg8n_dict(*args, **kwargs)
 
 class Reg8nForm(forms.Form):
     """
@@ -288,6 +294,130 @@ class Reg8nForm(forms.Form):
             raise forms.ValidationError("URL's and Emails are not allowed in the name field")
 
         return data
+    
+class RegistrationForm(forms.Form):
+    """
+    Registration form - not include the registrant.
+    """
+    captcha = CaptchaField(label=_('Type the code below'))
+
+    def __init__(self, event=None, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(self.__class__, self).__init__(*args, **kwargs)
+
+        free_event = event.registration_configuration.price <= 0
+        if not free_event:
+            payment_method = event.registration_configuration.payment_method.all()
+    
+            self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
+                queryset=payment_method, widget=forms.RadioSelect(), initial=1, required=False)
+
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name']
+
+        # detect markup
+        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup = markup_pattern.search(data)
+        if markup:
+            raise forms.ValidationError("Markup is not allowed in the name field")
+
+        # detect URL and Email
+        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
+        pattern = re.compile(pattern_string, re.I and re.M)
+        domain_extension = pattern.search(data)
+        if domain_extension or "://" in data:
+            raise forms.ValidationError("URL's and Emails are not allowed in the name field")
+
+        return data
+    
+class RegistrantForm(forms.Form):
+    """
+    Registrant form.
+    """
+    first_name = forms.CharField(max_length=50)
+    last_name = forms.CharField(max_length=50)
+    company_name = forms.CharField(max_length=100, required=False)
+    #username = forms.CharField(max_length=50, required=False)
+    phone = forms.CharField(max_length=20, required=False)
+    email = forms.EmailField()
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        self.event = kwargs.pop('event', None)
+        self.form_index = kwargs.pop('form_index', None)
+        
+        super(self.__class__, self).__init__(*args, **kwargs)
+        
+        # make the fields in the subsequent forms as not required
+        if self.form_index and self.form_index > 0:
+            for key in self.fields.keys():
+                self.fields[key].required = False
+        
+
+    def clean_first_name(self):
+        data = self.cleaned_data['first_name']
+
+        # detect markup
+        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup = markup_pattern.search(data)
+        if markup:
+            raise forms.ValidationError("Markup is not allowed in the name field")
+
+        # detect URL and Email
+        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
+        pattern = re.compile(pattern_string, re.I and re.M)
+        domain_extension = pattern.search(data)
+        if domain_extension or "://" in data:
+            raise forms.ValidationError("URL's and Emails are not allowed in the name field")
+
+        return data
+    
+    def clean_email(self):
+        # check if user by this email has already registered
+        data = self.cleaned_data['email']
+        if data.strip() <> '':
+            registrants = Registrant.objects.filter(email=data)
+            for registrant in registrants:
+                if registrant.registration.event.id == self.event.id:
+                    raise forms.ValidationError("User by this email address has already registered.")
+
+        return data
+  
+# extending the BaseFormSet because i want to pass the event obj 
+# but the BaseFormSet doesn't accept extra parameters 
+class RegistrantBaseFormSet(BaseFormSet):
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
+                 initial=None, error_class=ErrorList, **kwargs):
+        self.event = kwargs.pop('event', None)
+        super(RegistrantBaseFormSet, self).__init__(data, files, auto_id, prefix,
+                 initial, error_class)
+        
+    def _construct_form(self, i, **kwargs):
+        """
+        Instantiates and returns the i-th form instance in a formset.
+        """
+        defaults = {'auto_id': self.auto_id, 'prefix': self.add_prefix(i)}
+        
+        defaults['event'] = self.event
+        defaults['form_index'] = i
+        
+        if self.data or self.files:
+            defaults['data'] = self.data
+            defaults['files'] = self.files
+        if self.initial:
+            try:
+                defaults['initial'] = self.initial[i]
+            except IndexError:
+                pass
+        # Allow extra forms to be empty.
+        if i >= self.initial_form_count():
+            defaults['empty_permitted'] = True
+        defaults.update(kwargs)
+        form = self.form(**defaults)
+        self.add_fields(form, i)
+        return form
+        
+    
                 
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()

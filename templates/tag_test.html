@@ -16,6 +16,8 @@
 {% load photo_tags %}
 {% load story_tags %}
 
+{% load mobile_tags %}
+
 
 {# plugin apps #}
 {# list_staff as items #}
@@ -33,3 +35,5 @@
 {% list_news as items %}
 {% list_photos as items %}
 {% list_stories as items %}
+
+{% toggle_mobile_link 'tag_test' 'toggle' %}

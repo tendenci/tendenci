@@ -100,6 +100,7 @@ class Registrant(models.Model):
     """
     registration = models.ForeignKey('Registration')
     user = models.ForeignKey(User, blank=True, null=True)
+    amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     
     name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=50)
@@ -129,7 +130,10 @@ class Registrant(models.Model):
     def lastname_firstname(self):
         fn = self.first_name or None
         ln = self.last_name or None
-        return ', '.join([ln, fn])
+        
+        if fn and ln:
+            return ', '.join([ln, fn])
+        return fn or ln
 
     @classmethod
     def event_registrants(cls, event=None):
@@ -138,9 +142,18 @@ class Registrant(models.Model):
             registration__event = event,
             cancel_dt = None,
         )
+        
+    @property
+    def additional_registrants(self):
+        # additional registrants on the same invoice
+        return self.registration.registrant_set.filter(cancel_dt = None).exclude(id=self.id).order_by('id')
 
     @property
     def hash(self):
+        return md5(".".join([str(self.registration.event.pk), self.email, str(self.pk)])).hexdigest()
+    
+    @property
+    def old_hash(self):
         return md5(".".join([str(self.registration.event.pk), self.email])).hexdigest()
 
     @models.permalink
@@ -153,6 +166,27 @@ class Registrant(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('event.registration_confirmation', [self.registration.event.pk, self.pk])
+
+    def reg8n_status(self):
+        """
+        Returns string status.
+        """
+        config = self.registration.event.registration_configuration
+
+        balance = self.registration.invoice.balance
+        payment_required = config.payment_required
+
+        if self.cancel_dt:
+            return 'cancelled'
+
+        if balance > 0:
+            if payment_required:
+                return 'payment-required'
+            else:
+                return 'registered-with-balance'
+        else:
+            return 'registered'
+
 
 class Registration(models.Model):
 
@@ -248,6 +282,39 @@ class Registration(models.Model):
             )
 
     @property
+    def canceled(self):
+        """
+        Return True if all registrants are canceled. Otherwise False.
+        """
+        registrants = self.registrant_set.all()
+        for registrant in registrants:
+            if not registrant.cancel_dt:
+                return False
+        return True
+    
+    def status(self):
+        """
+        Returns registration status.
+        """
+        config = self.event.registration_configuration
+
+        balance = self.invoice.balance
+        payment_required = config.payment_required
+
+        if self.canceled:
+            return 'cancelled'
+
+        if balance > 0:
+            if payment_required:
+                return 'payment-required'
+            else:
+                return 'registered-with-balance'
+        else:
+            return 'registered'
+                
+        
+        
+    @property
     def registrant(self):
         """
         Gets primary registrant.
@@ -303,6 +370,7 @@ class Registration(models.Model):
 
         return invoice
 
+
 # TODO: use shorter name
 class RegistrationConfiguration(models.Model):
     """
@@ -317,9 +385,10 @@ class RegistrationConfiguration(models.Model):
     regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
     late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
 
-    early_dt = models.DateTimeField(_('Early Date'))
-    regular_dt = models.DateTimeField(_('Regular Date'))
-    late_dt = models.DateTimeField(_('Late Date'))
+    early_dt = models.DateTimeField(_('Early Registration Starts'))
+    regular_dt = models.DateTimeField(_('Regular Registration Starts'))
+    late_dt = models.DateTimeField(_('Late Registration Starts'))
+    end_dt = models.DateTimeField(_('Registration Ends'), default=0)
 
     payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
 
@@ -329,7 +398,6 @@ class RegistrationConfiguration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
-    
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -339,7 +407,7 @@ class RegistrationConfiguration(models.Model):
             self.PERIODS = {
                 'early': (self.early_dt, self.regular_dt),
                 'regular': (self.regular_dt, self.late_dt),
-                'late': (self.late_dt, self.event.start_dt),
+                'late': (self.late_dt, self.end_dt),
             }
         else:
             self.PERIODS = None
@@ -383,7 +451,12 @@ class RegistrationConfiguration(models.Model):
             if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
                 return True
         return False
-    
+
+    @property
+    def can_pay_online(self):
+        # TODO: Update event payment method; use global payment method
+        methods = [method.label.lower() for method in self.payment_method.all()]
+        return 'credit card' in methods
 
 
 class Payment(models.Model):

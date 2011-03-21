@@ -3,6 +3,7 @@ from haystack.query import SearchQuerySet
 
 from site_settings.utils import get_setting
 from quotes.models import Quote
+from sitemaps import TendenciSitemap
 
 class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Quotes' % get_setting('site','global','sitedisplayname')
@@ -21,3 +22,14 @@ class LatestEntriesFeed(SubFeed):
 
     def item_link(self, item):
         return item.get_absolute_url()
+
+class QuoteSitemap(TendenciSitemap):
+    changefreq = "monthly"
+    priority = 0.5
+
+    def items(self):
+        sqs = SearchQuerySet().models(Quote).order_by('-create_dt')
+        return [sq.object for sq in sqs]
+
+    def lastmod(self, obj):
+        return obj.create_dt

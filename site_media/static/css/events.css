@@ -227,6 +227,26 @@ div.id_regconf-late_dt .field input#id_regconf-late_dt_1 {
 	width: 80px;
 }
 
+/* id_regconf-late_dt */
+div.forms div.form-field
+div.id_regconf-end_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+div.forms div.form-field
+div.id_regconf-end_dt .field input#id_regconf-end_dt_1 {
+	width: 80px;
+}
+
+div.forms div.form-field .field input.datepicker,
+div.forms div.form-field .field input.timepicker {
+    width: 120px;
+}
+
+div.forms div.form-field .field input.reg8n_price {
+    width: 80px;
+}
+
 input#id_regconf-early_price {
 	width: 100px;	
 }
@@ -600,6 +620,11 @@ tr.non-paid-bottom {
     border: 1px solid #708090;
     border-top: none;
 }
+tr.non-paid-middle {
+    border: 1px solid #708090;
+    border-top: none;
+    border-bottom: none;
+}
 
 .count-box {
     border: 1px solid silver;
@@ -618,4 +643,35 @@ tr.non-paid-bottom {
 }
 .counts {
     margin-left:8px;
+}
+
+/*= Registration Confirmation
+ ----------------------------- */
+.regconf-section.payment a {
+    text-decoration: underline;
+}
+.regconf-section.payment .payment-accounting {
+    text-align: right;
+}
+
+.registration-status div {
+    color: white;
+    border: 1px solid;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.registration-status .registered {
+	background-color: #006018;
+	border-color: #005F18;
+}
+
+.registration-status .almost-registered {
+	background-color: orange;
+	border-color: orange;
+}
+
+.registration-status .not-registered {
+	background-color: darkred;
+	border-color: darkred;
 }

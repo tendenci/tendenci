@@ -2,6 +2,7 @@ from rss.feedsmanager import SubFeed
 from haystack.query import SearchQuerySet
 from site_settings.utils import get_setting
 from stories.models import Story
+from sitemaps import TendenciSitemap
 
 class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Stories' % get_setting('site','global','sitedisplayname')
@@ -20,3 +21,14 @@ class LatestEntriesFeed(SubFeed):
 
     def item_description(self, item):
         return item.content
+
+class StorySitemap(TendenciSitemap):
+    changefreq = "monthly"
+    priority = 0.5
+    
+    def items(self):
+        return SearchQuerySet().models(Story).order_by('-create_dt')
+    
+    def lastmod(self, obj):
+        return obj.create_dt
+

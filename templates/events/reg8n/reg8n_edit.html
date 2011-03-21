@@ -1,0 +1,95 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+
+{% block title %}{{ block.super }}Edit Registration{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<style type="text/css">
+	.t h1 {
+		margin-bottom: 0;
+	}
+	.t div.event-title {
+		font-size: 1.2em;
+		margin-bottom: 10px;
+	}
+	.hidden{
+		display: none;
+	}
+	.registrant-header{
+		border-bottom: 1px dotted #ccc;
+		margin: 2em 0 1em;
+		padding: 5px 8px;
+		font-weight: bold;
+	}
+	.even-registrant, .odd-registrant{
+		background-color: #f5f5f5;
+		padding: 10px;
+	}
+	.errors-box{
+		background-color: #FFEBE8;
+		border: 2px solid #FF8B78;
+		margin-bottom: 20px;
+		padding: 10px;
+		width: 80%;
+	}
+	
+	.clear{
+		clear: both;
+	}
+	.event-title{
+		margin-top: 1em;
+	}
+	
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% event_nav user reg8n.event %}
+
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} Registration Edit</h1>
+    <div class="event-title">Event: <a href="{% url event reg8n.event.id%}">{{ reg8n.event.title }}</a></div>
+
+    <div class="event-wrap">
+		<div class="options">
+             <div class="quick-options">
+				{% event_options user reg8n.event %} 	       
+             </div>
+		</div>
+	{% if formset_errors %}
+		<div class="errors-box">
+			<ul>
+				{% for form in formset.forms %}
+					{{ form.non_field_errors }}
+					{% for field in form %}
+						{% if field.errors %}
+							<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+						{% endif %}
+					{% endfor %}
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+	
+    	<form action="" method="post">
+    	<div class="forms">
+    		{{ formset.management_form }}
+    		{% for form in formset.forms %}
+    			<div class="registrant-header{% if total_regt_forms = 1 %} hidden{% endif %}">
+					Registrant #<span class="item-counter">{{ forloop.counter }}</span>:
+				</div>
+			
+				<div class="{% cycle 'odd-registrant' 'even-registrant'%}">
+            	{{ form|styled_form }}
+            	</div>
+			{% endfor %}
+
+        	<input type="submit" value="Save Changes" />
+		</div>
+        </form>
+    </div>
+</div>
+{% endblock %}

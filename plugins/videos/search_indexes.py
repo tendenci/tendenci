@@ -34,6 +34,9 @@ class VideoIndex(indexes.RealTimeSearchIndex):
     # for rss
     order = indexes.DateTimeField()
     
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
+    
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view \
                 and obj.status==1  and obj.status_detail=='active' \
