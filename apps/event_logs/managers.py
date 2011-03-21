@@ -126,16 +126,9 @@ class EventLogManager(Manager):
         if 'source' in kwargs:
             event_log.source = kwargs['source']   
             
+        event_log.entity = None
         if 'entity' in kwargs:
             event_log.entity = kwargs['entity']
-        else:
-            event_log.entity = None
-            
-        if request:
-            try:
-                event_log.entity = request.user.get_profile().entity
-            except:
-                pass
         
         if not event_log.category: event_log.category = 'application'
         if not event_log.event_name: event_log.event_name = 'application'

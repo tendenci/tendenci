@@ -107,6 +107,9 @@
 	.event-info {
 		margin: 10px;
 	}
+	.registrant-contact-info{
+		border-top: 1px dotted #ccc !important;
+	}
 
 </style>
 
@@ -153,7 +156,6 @@
 	.total .label {
 		display: inline;
 	}
-	
 </style>
 
 
@@ -185,19 +187,18 @@
 <center>
 <table id="registrant-table">
 <tr>
-	<th></th>
-	<th class='attended' title="Attendance Checkbox"></th>
-	<th title="Name and Phone Number">Name & Phone</th>
-	<th title="Title and Company">Title &amp; Company</th>
-	<th title="Invoice Number">Inv#</th>
-	<th title="Invoice Amount">Inv$</th>
-	<th title="Registration Number">Reg#</th>
-	<th title="Registration Amount">Reg$</th>
-	<th title="Balance">Balance</th>
+	<th width="2%"></th>
+	<th width="6%" class='attended' title="Attendance Checkbox"></th>
+	<th width="26%" title="Name and Phone Number">Name & Phone</th>
+	<th width="26%" title="Title and Company">Title &amp; Company</th>
+	<th width="8%" title="Invoice Number">Inv#</th>
+	<th width="8%" title="Invoice Amount">Inv$</th>
+	<th width="8%" title="Registration Number">Reg#</th>
+	<th width="8%" title="Registration Amount">Reg$</th>
+	<th width="8%" title="Balance">Balance</th>
 </tr>
 <tr class='row-spacer'><td colspan="9"></td></tr>
 {% for registrant in registrants %}
-{% with registrant.object as registrant %}
 
 {% if registrant.registration.invoice.balance > 0 %}
 <tr class="{% cycle 'odd' 'even' %} non-paid-top">
@@ -205,40 +206,60 @@
 <tr class="{% cycle 'odd' 'even' %}">
 {% endif %}
 
-	<td class="counter">{{ forloop.counter }}</td>
+	<td class="counter"><a name="roster{{ registrant.pk }}"></a>{{ forloop.counter }}</td>
 	<td class="attended-checkbox"><div></div></td>
 
 	<td> <!-- name & phone -->
-		{% if registrant.user %}
-		<div title="View {{ registrant.first_name}}'s profile"><a href="{{ registrant.user.get_absolute_url }}">
-			{% firstof registrant.lastname_firstname registrant.email %}
-		</a></div>
-		{% else %}
-		<div title="{{ registrant.name }} does not have a user-account">
-			{% firstof registrant.lastname_firstname registrant.email %}
-		</div>
-		{% endif %}
-		<div>{{ registrant.phone }}</div>
+	{% if registrant.user %}
+	<div title="View {{ registrant.first_name}}'s profile"><a href="{{ registrant.user.get_absolute_url }}">
+	{% firstof registrant.lastname_firstname registrant.email %}
+	</a></div>
+	{% else %}
+	<div title="{{ registrant.name }} does not have a user-account">
+	{% if registrant.lastname_firstname or registrant.email%}
+	{% firstof registrant.lastname_firstname registrant.email %}
+	{% else %}
+		Guest#{{ registrant.pk }}
+	{% endif %}
+	</div>
+	{% endif %}
+	<div>{{ registrant.phone }}</div>
 	</td>
 
 	<td> <!-- title & company -->
-		<div>{{ registrant.title }}</div>
-		<div>{{ registrant.company_name }}</div>
-	</td> 
+	<div>{{ registrant.title }}</div>
+	<div>{{ registrant.company_name }}</div>
+	</td>
 
 	<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">I-{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
 	<td>${{ registrant.registration.invoice.total }}</td> <!-- invoice amount -->
-	<td><a href="{{ registrant.get_absolute_url }}">R-{{ registrant.registration.pk }}</a></td> <!-- registration number -->
-	<td>${{ registrant.registration.invoice.total|floatformat:"2" }}</td> <!-- registration amount -->
+	<td><a href="{% url event.registration_confirmation event.pk registrant.registration.pk %}">R-{{ registrant.registration.pk }}</a></td> <!-- registration number -->
+	<td>${{ registrant.amount|floatformat:"2" }}</td> <!-- registration amount -->
 	<td>${{ registrant.registration.invoice.balance|floatformat:"2" }}</td> <!-- balance -->
 </tr>
 
+{% with registrant.additional_registrants as additionals %}
+
 {% if registrant.registration.invoice.balance > 0 %}
 <tr class="{% cycle 'odd' 'even' %} non-paid-bottom">
-{% else%}
+{% else %}
 <tr class="{% cycle 'odd' 'even' %}">
 {% endif %}
-    <td colspan="4"></td>
+    <td colspan="2"></td>
+    <td colspan="2">
+    {% if additionals %}
+        <a href="{{ registrant.registration.invoice.get_absolute_url }}">additional registrants:</a> 
+	    {% for reg in additionals %}
+	    	<a href="#roster{{ reg.pk }}">
+	    	{% if reg.lastname_firstname or reg.email%}
+	    	[{% firstof reg.lastname_firstname reg.email %}]
+	    	{% else %}
+	    	[Guest#{{ reg.pk }}]
+	    	{% endif %}
+	    	</a>
+	    {% endfor %}
+    {% endif %}
+    </td>
     <td colspan="5">
 
         {% if registrant.registration.invoice.tender_date %}
@@ -248,7 +269,10 @@
         {% endif %}
     </td>
 </tr>
+
+
 {% endwith %}
+
 {% endfor %}
 <tr class='row-spacer'><td colspan="9"></td></tr>
 <tr class="bottom-row">

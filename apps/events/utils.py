@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from profiles.models import Profile
 from site_settings.utils import get_setting
 from events.models import Registration
+from events.models import Registrant
 
 def get_vevents(request, d):
     from django.conf import settings
@@ -272,7 +273,6 @@ def save_registration(*args, **kwargs):
     Adds or Updates the Registration Record.
     Updates Registration, Registrant, and Invoice Table.
     """
-    from events.models import Registrant
 
     user = kwargs.get('user', None)
     event = kwargs.get('event', None)
@@ -296,7 +296,8 @@ def save_registration(*args, **kwargs):
         'country': '',
         'phone': kwargs.get('phone', ''),
         'company_name': kwargs.get('company_name', ''),
-        'position_title': ''
+        'position_title': '',
+        'amount': price
     }
 
     # standardize user_account & user_profile
@@ -353,6 +354,70 @@ def save_registration(*args, **kwargs):
 
     reg8n.save_invoice()
     return (reg8n, created)
+
+def add_registration(request, event, reg_form, registrant_formset, *args, **kwargs):
+    total_amount = 0
+    
+    reg8n_attrs = {
+            "event": event,
+            "payment_method": reg_form.cleaned_data.get('payment_method', None),
+            "amount_paid": str(total_amount),
+    }
+    if request.user.is_authenticated():
+        reg8n_attrs['creator'] = request.user
+        reg8n_attrs['owner'] = request.user
+        
+    # create registration
+    reg8n = Registration.objects.create(**reg8n_attrs)
+    
+    for form in registrant_formset.forms:
+        if not form in registrant_formset.deleted_forms:
+            registrant = create_registrant_from_form(form, event, reg8n)
+            total_amount += registrant.amount
+    # update reg8n with the real amount
+    reg8n.amount_paid = total_amount
+    
+    created = True
+    
+    # create invoice
+    reg8n.save_invoice()
+    return (reg8n, created)
+    
+            
+def create_registrant_from_form(form, event, reg8n, **kwargs):
+    registrant = Registrant()
+    registrant.registration = reg8n
+    registrant.amount = event.registration_configuration.price
+    
+    registrant.first_name = form.cleaned_data.get('first_name', '')
+    registrant.last_name = form.cleaned_data.get('last_name', '')
+    registrant.email = form.cleaned_data.get('email', '')
+    registrant.phone = form.cleaned_data.get('phone', '')
+    registrant.company_name = form.cleaned_data.get('company_name', '')
+
+    
+    users = User.objects.filter(email=registrant.email)
+    if users:
+        registrant.user = users[0]
+        try:
+            user_profile = registrant.user.get_profile()
+        except:
+             user_profile = None
+        if user_profile:
+            registrant.mail_name = user_profile.display_name
+            registrant.address = user_profile.address
+            registrant.city = user_profile.city
+            registrant.state = user_profile.state
+            registrant.zip = user_profile.zipcode
+            registrant.country = user_profile.country
+            registrant.company_name = user_profile.company
+            registrant.position_title = user_profile.position_title
+            
+    registrant.save()
+    return registrant
+    
+            
+    
 
 
 

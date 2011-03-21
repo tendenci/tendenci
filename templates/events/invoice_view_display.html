@@ -9,10 +9,23 @@
 		{% with obj.registrant_set.all as registrants %}
 		{% if registrants %}
 		<b>Registrants...({{registrants.count}})</b><br />
+			<ol>
 			{% for reg in registrants %}
-				
-				<div>{{ reg.name }}</div>
+				<li>
+				{% if reg.user %}
+					<a href="{% url profile reg.user.username %}">
+				{% endif %}
+				{% if reg.first_name or reg.last_name or reg.email %}
+					{{ reg.first_name }} {{ reg.last_name }} ({{ reg.email }})
+				{% else %}
+					Registrant {{ forloop.counter }} (name not available)
+				{% endif %}
+				{% if reg.user %}
+					</a>
+				{% endif %}
+				</li>
 			{% endfor %}
+			</ol>
 		{% endif %}
 		{% endwith %}
 	</div>

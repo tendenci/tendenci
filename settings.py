@@ -40,6 +40,7 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = 'DO-NOT-REPLY-TENDENCI@schipul.net'
+#DEFAULT_FROM_EMAIL = 'amazon-no-reply@schipul.net'
 
 
 # user agent for external retrieval of files/images
@@ -211,6 +212,7 @@ INSTALLED_APPS = (
     'resumes',
     'boxes',
     'legacy',
+    'mobile',
 
     # celery task system, must stay at the bottom
     # of installed apps
@@ -304,8 +306,8 @@ HAYSTACK_XAPIAN_PATH = os.path.join(PROJECT_ROOT, 'index')
 
 # custom haystack settings (not related to core haystack code)
 # HAYSTACK_INCLUDED_APPS - Tell the /search interface which apps to search in
-HAYSTACK_INCLUDED_APPS = ('article', 'directory', 'event',
-                          'photoset', 'job', 'page', 'news', 'resume', 'story')
+# HAYSTACK_INCLUDED_APPS = ('article', 'directory', 'event',
+#                          'photoset', 'job', 'page', 'news', 'resume', 'story')
 
 # HAYSTACK_INDEX_LIMITS - row amount to index per core application
 # Override for rebuild_index command exist in base core app
@@ -353,6 +355,12 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Fomrs upload path
 FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
+
+# --------------------------------------#
+# MOBILE SETTINGS
+# --------------------------------------#
+MOBILE_COOKIE_NAME = "tendenci_mobile"
+
 
 # Amazon SES 
 #----------------------------------------------#
