@@ -4,6 +4,7 @@ from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
 from django.conf import settings
+from site_settings.utils import get_setting
 
 STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'among','an','and','any','are','as','at','be','because',
@@ -64,9 +65,8 @@ def tcurrency(mymoney):
     """
     import locale
     locale.setlocale(locale.LC_ALL, '')
-    #currency_symbol = get_setting("site", "global", "currencysymbol")
-    # get_setting is slow, so i hard coded the currency symbol here until the slowness gets fixed
-    currency_symbol = "$"
+    currency_symbol = get_setting("site", "global", "currencysymbol")
+   
     if not currency_symbol: currency_symbol = "$"
 
     if not isinstance(mymoney, str):

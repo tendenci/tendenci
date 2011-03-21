@@ -27,6 +27,9 @@ class GroupIndex(indexes.RealTimeSearchIndex):
     
     who_can_view = indexes.CharField()
     
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
+    
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('user_groups.view_group', obj)
         user_list = []

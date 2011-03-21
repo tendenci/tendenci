@@ -1,3 +1,5 @@
+from django.conf import settings
+
 mobile_agents = [
     'iPad',
     'iPhone',
@@ -34,8 +36,19 @@ def user_agent(request):
     if 'HTTP_USER_AGENT' in request.META:
         return request.META['HTTP_USER_AGENT'].lower()
     return None
-    
+
+def is_mobile_cookie_on(request):
+    cookiename =  getattr(settings, 'MOBILE_COOKIE_NAME', "tendenci_mobile")
+    if cookiename in request.COOKIES:
+        if request.COOKIES[cookiename] == "1":  
+            return True
+    return False
+
 def is_mobile_browser(request):
+    if not is_mobile_cookie_on(request):
+        # no need to check any further, the user opt-out
+        return False
+
     if request.user_agent:
         for ma in mobile_agents:
             if ma.lower() in request.user_agent:

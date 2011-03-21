@@ -24,7 +24,7 @@ class FileAdmin(admin.StackedInline):
     extra = 0
 
 class StaffAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site','staff_photo', 'name', 'slug', 'department','position', 'start_date', 'years']
+    list_display = ['view_on_site', 'name', 'slug', 'department','position', 'start_date', 'years']
     list_display_links = ['name']
     list_filter = ['start_date']
     search_fields = ['name','biography']
@@ -77,14 +77,6 @@ class StaffAdmin(admin.ModelAdmin):
         return link
     view_on_site.allow_tags = True
     view_on_site.short_description = 'view'
-
-    def staff_photo(self, obj):
-        return '<img src="%s" title="%s" />' % (
-            reverse('staff.photo', args=[obj.pk, '48x48']),
-            obj.name
-        )
-    staff_photo.allow_tags = True
-    staff_photo.short_description = 'photo'
 
     def years(self, obj):
         return obj.years()

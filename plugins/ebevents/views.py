@@ -228,6 +228,4 @@ def ical(request, id):
         file_name = "event_%s.ics" % id
     response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
     return response
-    
-    
-    
+

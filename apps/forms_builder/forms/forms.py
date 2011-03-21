@@ -6,12 +6,14 @@ from uuid import uuid4
 from django import forms
 from django.core.files.storage import FileSystemStorage
 from django.utils.importlib import import_module
+from django.utils.translation import ugettext_lazy as _
 
 from forms_builder.forms.models import FormEntry
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from forms_builder.forms.models import Form
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
+from captcha.fields import CaptchaField
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -47,6 +49,7 @@ class FormForForm(forms.ModelForm):
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
             self.fields[field_key] = field_class(**field_args)
+        self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
 
     def save(self, **kwargs):
         """

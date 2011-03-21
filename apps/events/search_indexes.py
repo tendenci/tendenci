@@ -28,6 +28,9 @@ class EventIndex(indexes.RealTimeSearchIndex):
 
     who_can_view = indexes.CharField()
     can_syndicate = indexes.BooleanField()
+    
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
 
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('events.view_event', obj)
@@ -48,6 +51,8 @@ class EventTypeIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     name = indexes.CharField(model_attr='name')
     slug = indexes.CharField(model_attr='slug')
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
 
 
 class RegistrantIndex(indexes.RealTimeSearchIndex):
@@ -59,6 +64,9 @@ class RegistrantIndex(indexes.RealTimeSearchIndex):
 
     last_name = indexes.CharField(model_attr='last_name')
     who_can_view = indexes.CharField()
+    
+    #for primary key: needed for exclude list_tags
+    primary_key = indexes.CharField(model_attr='pk')
 
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('registrants.view_registrant', obj)

@@ -1,6 +1,6 @@
-Django>=1.2
+Django==1.2.5
 PIL==1.1.7
-South>=0.7.1
+South==0.7.3
 anyjson>=0.2.4
 django-authority>=0.4
 django-avatar>=1.0.4
@@ -31,3 +31,9 @@ git+http://github.com/toastdriven/django-haystack.git
 
 # timezones from master, fixes binding issue on sqlite
 git+http://github.com/brosner/django-timezones.git
+
+# boto
+git+git://github.com/hmarr/boto@ses#egg=boto
+
+# django ses
+git+git://github.com/hmarr/django-ses#egg=django_ses
