@@ -1150,7 +1150,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         registrations = registrations.filter(invoice__balance=0)
     elif roster_view == 'non-paid':
         registrations = registrations.filter(invoice__balance__gt=0)
-    
+
     # grab the primary registrants then the additional registrants 
     # to group the registrants with the same registration together
     primary_registrants = []
@@ -1165,18 +1165,16 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         registrants.append(primary_reg)
         for reg in primary_reg.additional_registrants:
             registrants.append(reg)
-            
-    total_sum = 0
-    if roster_view != 'paid':
-        total_sum = Invoice.objects.filter(
-            object_id__in=registrations,
-            object_type=ContentType.objects.get_for_model(
-                Registration)).distinct().aggregate(Sum('total'))['total__sum'] or float()
 
-    balance_sum = Invoice.objects.filter(
-        object_id__in=registrations,
-        object_type=ContentType.objects.get_for_model(Registration),
-        tender_date__isnull=False).distinct().aggregate(Sum('balance'))['balance__sum'] or float()
+    total_sum = float(0)
+    balance_sum = float(0)
+
+    # get total and balance (sum)
+    for reg8n in registrations:
+        if not reg8n.canceled:  # not cancelled
+            if roster_view != 'paid':
+                total_sum += float(reg8n.invoice.total)
+            balance_sum += float(reg8n.invoice.balance)
 
     num_registrants_who_payed = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
