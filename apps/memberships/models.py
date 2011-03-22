@@ -15,6 +15,7 @@ from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
 from memberships.managers import MemberAppManager, MemberAppEntryManager
+from tinymce import models as tinymce_models
 from memberships.managers import MembershipManager
 from base.utils import day_validate
 from payments.models import PaymentMethod
@@ -327,6 +328,50 @@ class MembershipArchive(models.Model):
     
     def __unicode__(self):
         return "%s (%s)" % (self.user.get_full_name(), self.member_number) 
+    
+class Notice(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice_name = models.CharField(_("Name"), max_length=250)
+    num_days = models.IntegerField(default=0)
+    notice_time = models.CharField(_("Notice Time"), max_length=20,
+                                   choices=(('before','Before'),
+                                            ('after','After'),
+                                            ('attimeof','At Time Of'))) 
+    notice_type = models.CharField(_("For Notice Type"), max_length=20,
+                                   choices=(('join','Join Date'),
+                                            ('renew','Renewal Date'),
+                                            ('expire','Expiration Date'))) 
+    system_generated = models.BooleanField(_("System Generated"), default=0)
+    membership_type = models.ForeignKey("MembershipType", blank=True, null=True,
+                                        help_text=_("Note that if you don't select a membership type, the notice will go out to all members."))
+    
+    subject =models.CharField(max_length=255)
+    content_type = models.CharField(_("Content Type"), 
+                                    choices=(('html','HTML'),
+                                            ('text','Plain Text')),
+                                    max_length=10)
+    sender = models.EmailField(max_length=255, blank=True, null=True)
+    sender_display = models.CharField(max_length=255, blank=True, null=True)
+    email_content = tinymce_models.HTMLField(_("Email Content"))
+    
+    
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(User, related_name="membership_notice_creator",  null=True)
+    creator_username = models.CharField(max_length=50, null=True)
+    owner = models.ForeignKey(User, related_name="membership_notice_owner", null=True)
+    owner_username = models.CharField(max_length=50, null=True)
+    status_detail = models.CharField(choices=(('active','Active'),('admin_hold','Admin Hold')), 
+                                     default='active', max_length=50)
+    status = models.BooleanField(default=True)
+    
+    def __unicode__(self):
+        return self.notice_name
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ('membership.notice_email_content', [self.id])
+    
 
 class App(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
