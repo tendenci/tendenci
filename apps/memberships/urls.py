@@ -10,6 +10,9 @@ urlpatterns = patterns("memberships.views",
     url(r"^entries/$", "application_entries", name="membership.application_entries"),
     url(r"^entries/(?P<id>\d+)/$", "application_entries", name="membership.application_entries"),
     url(r"^entries/search/$", "application_entries_search", name="membership.application_entries_search"),
+    
+    # notice
+    url(r"^notices/(?P<id>\d+)/email_content/$", "notice_email_content", name="membership.notice_email_content"),
 
     # application
     url(r"^confirmation/(?P<hash>[\w]+)/$", "application_confirmation", name="membership.application_confirmation"),
