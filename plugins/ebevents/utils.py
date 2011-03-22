@@ -87,13 +87,15 @@ def get_event_by_id(id, **kwargs):
     event['end_time'] = end_time
     
     # description
-    event['description'] = node.description.string
+    try:
+        event['description'] = node.description.string
+    except:
+        event['description'] = ''
     if event['description']:
         event['description'] = event['description'].replace('&amp;', '&').replace('&apos;', "'")
         event['description'] = event['description'].replace('&lt;', '<')
         event['description'] = event['description'].replace('&gt;', '>')
-    else:
-        event['description'] = ''
+    
     # caption
     try:
         event['caption'] = node.subevents.subevent['caption'] 
