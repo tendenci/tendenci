@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timedelta
 from django import forms
 from django.utils.importlib import import_module
 from django.db import models
@@ -232,6 +233,29 @@ class CorporateMembership(TendenciBaseModel):
                     if this_user.id == self.owner.id: return True
                 
         return False
+    
+    
+    def get_renewal_period_dt(self):
+        """
+        calculate and return a tuple of renewal period dt:
+         (renewal_period_start_dt, renewal_period_end_dt)
+        """
+        if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
+            return (None, None)
+        
+        start_dt = self.expiration_dt - timedelta(days=self.corporate_membership_type.membership_type.renewal_period_start)
+        end_dt = self.expiration_dt + timedelta(days=self.corporate_membership_type.membership_type.renewal_period_end)
+        
+        return (start_dt, end_dt)
+        
+    def can_renew(self):
+        if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
+            return False
+        
+        (renewal_period_start_dt, renewal_period_end_dt) = self.get_renewal_period_dt()
+        
+        now = datetime.now()
+        return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
 
         
         

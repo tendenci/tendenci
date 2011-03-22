@@ -110,9 +110,9 @@ class MembershipType(TendenciBaseModel):
     fixed_option2_rollover_days = models.IntegerField(default=0, 
             help_text=_("Membership signups after this date covers the following calendar year as well."))
     
-    renewal_period_start = models.IntegerField(_('Renewal Period Start'), default=0, 
+    renewal_period_start = models.IntegerField(_('Renewal Period Start'), default=30, 
             help_text="How long (in days) before the memberships expires can the member renew their membership.")
-    renewal_period_end = models.IntegerField(_('Renewal Period End'), default=0, 
+    renewal_period_end = models.IntegerField(_('Renewal Period End'), default=30, 
             help_text="How long (in days) after the memberships expires can the member renew their membership.")
     expiration_grace_period = models.IntegerField(_('Expiration Grace Period'), default=0, 
             help_text="The number of days after the membership expires their membership is still active.")
@@ -288,6 +288,29 @@ class Membership(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
+        
+    def get_renewal_period_dt(self):
+        """
+        calculate and return a tuple of renewal period dt:
+         (renewal_period_start_dt, renewal_period_end_dt)
+        """
+        if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
+            return (None, None)
+        
+        start_dt = self.expiration_dt - timedelta(days=self.membership_type.renewal_period_start)
+        end_dt = self.expiration_dt + timedelta(days=self.membership_type.renewal_period_end)
+        
+        return (start_dt, end_dt)
+        
+    def can_renew(self):
+        if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
+            return False
+        
+        (renewal_period_start_dt, renewal_period_end_dt) = self.get_renewal_period_dt()
+        
+        now = datetime.now()
+        return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
+        
     
 class MembershipArchive(models.Model):
     guid = models.CharField(max_length=50)
