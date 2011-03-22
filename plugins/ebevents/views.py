@@ -57,7 +57,6 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         if start_date:
             start_date = datetime(*(time.strptime(start_date, '%Y-%b-%d')[0:6]))
         
-        
         events.append({'event_name': event_name, 
                        'event_type': event_type,
                        'start_date': start_date,
@@ -67,6 +66,7 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
     # make event type list
     event_types = set([evnt['event_type'] for evnt in events])
     event_types = [t for t in event_types]
+
     event_types.sort()
    
     

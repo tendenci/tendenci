@@ -1,6 +1,6 @@
 import hashlib
 from django.contrib.contenttypes.models import ContentType, ContentTypeManager
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect
 from event_logs.models import EventLog
@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from perms.utils import is_admin
 from base.http import Http403
-from memberships.models import Membership, MembershipType
+from memberships.models import Membership, MembershipType, Notice
 from memberships.forms import MemberApproveForm
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, has_perm
@@ -387,3 +387,16 @@ def application_entries_search(request, template_name="memberships/entries/searc
         'apps':apps,
         'types':types,
         }, context_instance=RequestContext(request))
+    
+@login_required    
+def notice_email_content(request, id, template_name="memberships/notices/email_content.html"):
+    if not is_admin(request.user):
+        raise Http403
+    notice = get_object_or_404(Notice, pk=id)
+    
+    return render_to_response(template_name, {
+        'notice':notice,
+        }, context_instance=RequestContext(request))
+    
+    
+    
