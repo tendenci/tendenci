@@ -548,7 +548,7 @@ def register(request, event_id=0, form_class=Reg8nForm):
 
         bad_scenarios = [
             event.end_dt < datetime.now(), # event has passed
-            event.registration_configuration.end_dt < datetime.now(), # registration period has passed
+            event.registration_configuration.end_dt and event.registration_configuration.end_dt < datetime.now(), # registration period has passed
             event.registration_configuration.early_dt > datetime.now(), # registration period has not started
             (event.registration_configuration.limit <= registrants.count()) and \
                 not infinite_limit, # registration limit exceeded
@@ -587,59 +587,57 @@ def register(request, event_id=0, form_class=Reg8nForm):
                 is_credit_card_payment = reg8n.payment_method and \
                     (reg8n.payment_method.label).lower() == 'credit card'
 
-                if reg8n_created:
+                if is_credit_card_payment:
+                # online payment
 
-                    if is_credit_card_payment:
-                    # online payment
+                    # get invoice; redirect to online pay
+                    # ------------------------------------
 
-                        # get invoice; redirect to online pay
-                        # ------------------------------------
+                    invoice = Invoice.objects.get(
+                        object_type = ContentType.objects.get(
+                        app_label=reg8n._meta.app_label,
+                        model=reg8n._meta.module_name),
+                        object_id = reg8n.id,
+                    )
 
-                        invoice = Invoice.objects.get(
-                            object_type = ContentType.objects.get(
-                            app_label=reg8n._meta.app_label,
-                            model=reg8n._meta.module_name),
-                            object_id = reg8n.id,
+                    response = HttpResponseRedirect(reverse(
+                        'payments.views.pay_online',
+                        args=[invoice.id, invoice.guid]
+                    ))
+
+                else:
+                # offline payment
+
+                    # send email; add message; redirect to confirmation
+                    # --------------------------------------------------
+
+                    notification.send_emails(
+                        [reg_defaults['email']],
+                        'event_registration_confirmation',
+                        {   'site_label': site_label,
+                            'site_url': site_url,
+                            'self_reg8n': self_reg8n,
+                            'reg8n': reg8n,
+                            'event': event,
+                            'price': price,
+                            'is_paid': reg8n.invoice.balance == 0
+                         },
+                        True, # save notice in db
+                    )
+
+                    if reg8n.registrant.cancel_dt:
+                        messages.add_message(request, messages.INFO,
+                            'Your registration was canceled on %s' % date_filter(reg8n.cancel_dt)
+                        )
+                    elif not reg8n_created:
+                        messages.add_message(request, messages.INFO,
+                            'You were already registered on %s' % date_filter(reg8n.create_dt)
                         )
 
-                        response = HttpResponseRedirect(reverse(
-                            'payments.views.pay_online',
-                            args=[invoice.id, invoice.guid]
-                        ))
-
-                    else:
-                    # offline payment
-
-                        # send email; add message; redirect to confirmation
-                        # --------------------------------------------------
-
-                        notification.send_emails(
-                            [reg_defaults['email']],
-                            'event_registration_confirmation',
-                            {   'site_label': site_label,
-                                'site_url': site_url,
-                                'self_reg8n': self_reg8n,
-                                'reg8n': reg8n,
-                                'event': event,
-                                'price': price,
-                                'is_paid': reg8n.invoice.balance == 0
-                             },
-                            True, # save notice in db
-                        )
-
-                        if reg8n.registrant.cancel_dt:
-                            messages.add_message(request, messages.INFO,
-                                'Your registration was canceled on %s' % date_filter(reg8n.cancel_dt)
-                            )
-                        elif not reg8n_created:
-                            messages.add_message(request, messages.INFO,
-                                'You were already registered on %s' % date_filter(reg8n.create_dt)
-                            )
-
-                response = HttpResponseRedirect(reverse(
-                    'event.registration_confirmation',
-                    args=(event_id, reg8n.registrant.hash)
-                ))
+                    response = HttpResponseRedirect(reverse(
+                        'event.registration_confirmation',
+                        args=(event_id, reg8n.registrant.hash)
+                    ))
 
             else: # else form is invalid
                 response = render_to_response(template_name, {'event':event, 'form':form}, 
