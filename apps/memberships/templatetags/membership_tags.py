@@ -41,3 +41,7 @@ def entry_nav(context, user, entry=None):
 @register.inclusion_tag("memberships/entries/search-form.html", takes_context=True)
 def entry_search(context):
     return context
+
+@register.inclusion_tag('memberships/renew-button.html', takes_context=True)
+def renew_button(context):
+    return context

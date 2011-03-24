@@ -67,9 +67,8 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 @login_required
 def membership_renew(request, id=0):
     """
-    Create archive membership record.
-    Create new membership application.
-    Update current membership record.
+    Make new entry; prefill with old entry info.
+    Redirect to entry details page.
     """
     membership = get_object_or_404(Membership, pk=id)
 
@@ -81,15 +80,6 @@ def membership_renew(request, id=0):
     if not is_admin(user) and request.user != membership.user:
         raise Http403
 
-    # # create archive record
-    # archive = MembershipArchive()
-    # archive.copy_membership(membership)
-    # archive.save()
-
-    # TODO payment part
-    # this method only creates an archive 
-    # and updates the membership
-
     old_entry = membership.entries.order_by('pk')[0]
     new_entry = old_entry
 
@@ -100,17 +90,19 @@ def membership_renew(request, id=0):
 
     # make new fields
     for old_field in old_entry.fields:
+        """
+        Does not currently account for new fields
+        added to the membership application.
+        """
         new_field = old_field
         new_field.pk = None
         new_field.entry = new_entry
         new_field.save()
 
-    # # update current membership record
-    # membership.renew_dt  = datetime.today()
-    # membership.expiration_dt = membership.membership_type.get_expiration_dt(renew_dt=membership.renew_dt)
-    # # membership.invoice = f()
-    # # membership.payment_method = f()
-    # membeership.save()
+    # now we have a brand new entry
+    # associated with a membership
+    # associated with a person
+    # this tells us that the entry is a renewal
 
     return redirect(new_entry.confirmation_url)
 
