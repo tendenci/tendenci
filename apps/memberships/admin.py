@@ -464,7 +464,10 @@ class AppEntryAdmin(admin.ModelAdmin):
         super(AppEntryAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = (None, )
 
-admin.site.register(Membership, MembershipAdmin)
+
+# these get auto-created when the application gets filled out
+# admin.site.register(Membership, MembershipAdmin)
+
 admin.site.register(MembershipType, MembershipTypeAdmin)
 admin.site.register(Notice, NoticeAdmin)
 admin.site.register(App, AppAdmin)
