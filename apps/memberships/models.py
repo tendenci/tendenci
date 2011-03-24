@@ -258,7 +258,7 @@ class Membership(TendenciBaseModel):
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type")) 
     user = models.ForeignKey(User, related_name="memberships")
     directory = models.ForeignKey(Directory, blank=True, null=True) 
-    
+
     renewal = models.BooleanField(default=0)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time"), null=True)
@@ -266,24 +266,24 @@ class Membership(TendenciBaseModel):
     expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
-    
+
     # add membership application id - so we can support multiple applications
     ma = models.ForeignKey("App")
 
     objects = MembershipManager()
-    
+
     class Meta:
         verbose_name = _("Membership")
         verbose_name_plural = _("Memberships")
         permissions = (("view_membership","Can view membership"),)
-    
+
     def __unicode__(self):
         return "%s #%s" % (self.user.get_full_name(), self.member_number)
 
     @models.permalink
     def get_absolute_url(self):
         return ('membership.details', [self.pk])
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -310,45 +310,31 @@ class Membership(TendenciBaseModel):
         
         now = datetime.now()
         return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
-        
-    
+
 class MembershipArchive(models.Model):
-    guid = models.CharField(max_length=50)
-    member_number = models.CharField(max_length=50)
-    membership_type = models.ForeignKey("MembershipType")
-    user = models.ForeignKey(User, related_name="membership_archives")
-    
-    directory = models.ForeignKey(Directory, blank=True, null=True) 
-    
-    renewal = models.BooleanField(default=0)
-    invoice = models.ForeignKey(Invoice, blank=True, null=True) 
-    join_dt = models.DateTimeField() 
-    renew_dt = models.DateTimeField() 
-    expiration_dt = models.DateTimeField()
-    approved = models.BooleanField(default=0)
-    approved_denied_dt = models.DateTimeField()
-    approved_denied_user_id =  models.IntegerField(default=0)
-    # maybe change to foreign key to corporate_membership
-    corporate_membership_id = models.IntegerField(default=0)
-    payment_method = models.CharField(max_length=50)
-    
-    ma_id = models.IntegerField()
-    
-    # these fields should be copied from Membership table
-    create_dt = models.DateTimeField()
-    update_dt = models.DateTimeField()
-    #creator = models.ForeignKey(User, editable=False, related_name="memb_archives_creator")
-    creator_id = models.IntegerField(default=0)
-    creator_username = models.CharField(max_length=50)
-    owner_id = models.IntegerField(default=0)   
-    owner_username = models.CharField(max_length=50)
-    status = models.BooleanField()
-    status_detail = models.CharField(max_length=50)
-    
-    # the actual archive datetime and user
-    archive_dt = models.DateTimeField()
-    archive_user = models.ForeignKey(User, related_name="membership_archiver")
-    
+    """
+    Keep a record of the old memberships.
+    These records are created when a membership is renewed.
+    A reference to the newest (non-archived) membership is 
+    included via the 'membership' field.
+    """
+    membership = models.ForeignKey('Membership')
+    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type")) 
+    directory = models.ForeignKey(Directory, blank=True, null=True)
+    join_dt = models.DateTimeField(_("Join Date Time"))
+    renew_dt = models.DateTimeField(_("Renew Date Time"), null=True)
+    expire_dt = models.DateTimeField(_("Expire Date Time"), null=True)
+    corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
+    invoice = models.ForeignKey(Invoice, null=True)
+    payment_method = models.CharField(_("Payment Method"), max_length=50)
+    ma = models.ForeignKey("App")
+    objects = MembershipManager()
+
+    class Meta:
+        verbose_name = _("Archived Membership")
+        verbose_name_plural = _("Archived Memberships")
+        permissions = (("view_archived_membership","Can view archived membership"),)
+
     def __unicode__(self):
         return "%s (%s)" % (self.user.get_full_name(), self.member_number) 
     
@@ -394,7 +380,23 @@ class Notice(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('membership.notice_email_content', [self.id])
-    
+ 
+    def copy_membership(self, membership):
+        self.membership = membership
+        self.membership_type = membership.membership_type
+        self.directory = membership.directory
+        self.join_dt = membership.join_dt
+        self.renew_dt = membership.renew_dt
+        self.expire_dt = membership.expiration_dt
+        self.corporate_membership_id = membership.corporate_membership_id
+        self.invoice = membership.invoice
+        self.payment_method = membership.payment_method
+        self.ma = membership.ma
+
+    # is a guid required, if they're all the same?
+    # is the member number required if it never changes?
+    # is the user required, if the membership is always bound to the same user?
+    # what exactly is the directory field?
 
 class App(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
@@ -868,11 +870,11 @@ class AppFieldEntry(models.Model):
     entry = models.ForeignKey("AppEntry", related_name="fields")
     field = models.ForeignKey("AppField", related_name="field")
     value = models.CharField(max_length=200)
-    
+
     class Meta:
         verbose_name = _("Application Field Entry")
         verbose_name_plural = _("Application Field Entries")
-      
+
     def corporate_membership_name(self):
         if self.field.field_type == 'corporate_membership_id':
             try:
@@ -889,9 +891,6 @@ class AppFieldEntry(models.Model):
                 if rows: return rows[0][0]
             except:
                 pass
-            
+
         return None
-            
-            
-            
             

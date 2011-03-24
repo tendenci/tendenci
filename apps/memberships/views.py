@@ -1,4 +1,8 @@
 import hashlib
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType, ContentTypeManager
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
@@ -7,9 +11,6 @@ from event_logs.models import EventLog
 from memberships.models import App, AppEntry
 from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm
 from perms.models import ObjectPermission
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
 from perms.utils import is_admin
 from base.http import Http403
 from memberships.models import Membership, MembershipType, Notice
@@ -50,6 +51,56 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
 
+@login_required
+def membership_renew(request, id=0):
+    """
+    Create archive membership record.
+    Create new membership application.
+    Update current membership record.
+    """
+    membership = get_object_or_404(Membership, pk=id)
+
+    # eligible to renew
+    if not membership.can_renew():
+        raise Http403
+
+    # admins can renew everyone; users can renew themselves
+    if not is_admin(user) and request.user != membership.user:
+        raise Http403
+
+    # # create archive record
+    # archive = MembershipArchive()
+    # archive.copy_membership(membership)
+    # archive.save()
+
+    # TODO payment part
+    # this method only creates an archive 
+    # and updates the membership
+
+    old_entry = membership.entries.order_by('pk')[0]
+    new_entry = old_entry
+
+    # make new entry
+    new_entry.pk = None
+    new_entry.membership = membership
+    new_entry.save()
+
+    # make new fields
+    for old_field in old_entry.fields:
+        new_field = old_field
+        new_field.pk = None
+        new_field.entry = new_entry
+        new_field.save()
+
+    # # update current membership record
+    # membership.renew_dt  = datetime.today()
+    # membership.expiration_dt = membership.membership_type.get_expiration_dt(renew_dt=membership.renew_dt)
+    # # membership.invoice = f()
+    # # membership.payment_method = f()
+    # membeership.save()
+
+    return redirect(new_entry.confirmation_url)
+
 def application_details(request, slug=None, cmb_id=None, template_name="memberships/applications/details.html"):
     """
     Display a built membership application and handle submission.
@@ -57,7 +108,7 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
     # cmb_id - corporate_membership_id
     if not slug:
         raise Http404
-    
+
     query = '"slug:%s"' % slug
     sqs = App.objects.search(query, user=request.user)
 
@@ -77,7 +128,6 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
         
         if request.method <> "POST":
             http_referer = request.META.get('HTTP_REFERER', '')
-        
             corp_pre_url = reverse('membership.application_details_corp_pre', args=[slug])
             if not http_referer or not corp_pre_url in http_referer:
                 return redirect(corp_pre_url)
