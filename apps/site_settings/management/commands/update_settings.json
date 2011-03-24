@@ -1,0 +1,11 @@
+[
+    {
+        "name": "example",
+        "label": "Example",
+        "scope_category": "global",
+        "scope": "site"
+    },
+    {
+        "name": "example"
+    }
+]

@@ -1,0 +1,44 @@
+[
+    {
+        "name": "enabled",
+        "label": "enabled",
+        "description": "Module is enabled or not.",
+        "data_type": "boolean",
+        "input_value": "true, false",
+        "input_type": "select",
+        "value": "true",
+        "default_value": "true",
+        "scope": "module",
+        "scope_category": "memberships",
+        "store": "1",
+        "client_editable": "1"
+    },
+    {
+        "name": "membershiprecipients",
+        "label": "Membersip admin notice recipients",
+        "description": "A list of email addresses that receive admin notices from memberships module on the site. Comma delimited.",
+        "data_type": "string",
+        "input_value": "",
+        "input_type": "text",
+        "value": "",
+        "default_value": "",
+        "scope": "module",
+        "scope_category": "memberships",
+        "store": "1",
+        "client_editable": "1"
+    },
+    {
+        "name": "memberprotection",
+        "label": "Member Protection",
+        "description": "Default protection set on a member once they are approved. Members can be as public or private as you want. Changing this setting will only affect future members.<ul><li>Public - Everyone can see this member</li><li>Private - Only administrators can see this member</li><li>All-members - All members can see this member</li><li>Member-type - Only members of that membership type can see this member</li></ul>",
+        "data_type": "string",
+        "input_value": "public, private, all-members, member-type",
+        "input_type": "select",
+        "value": "private",
+        "default_value": "private",
+        "scope": "module",
+        "scope_category": "memberships",
+        "store": "1",
+        "client_editable": "1"
+    }
+]
