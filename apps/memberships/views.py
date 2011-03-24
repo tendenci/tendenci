@@ -25,6 +25,19 @@ try:
 except:
     notification = None
 
+
+def membership_index(request):
+    return HttpResponseRedirect(reverse('membership.search'))
+
+def membership_search(request, template_name="memberships/search.html"):
+    query = request.GET.get('q', None)
+    members = Membership.objects.search(query, user=request.user)
+    types = MembershipType.objects.all()
+
+    return render_to_response(template_name, {'members': members, 'types': types},
+        context_instance=RequestContext(request))    
+
+
 @login_required
 def membership_details(request, id=0, template_name="memberships/details.html"):
     """
@@ -298,6 +311,9 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     if not id:
         return HttpResponseRedirect(reverse('membership.application_entries_search'))
 
+
+    # TODO: Not use search but query the database
+    # TODO: Needs a manager to query database with permission checks
     query = '"id:%s"' % id
     sqs = AppEntry.objects.search(query, user=request.user)
 
