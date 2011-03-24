@@ -102,8 +102,8 @@ def index(request, username='', template_name="profiles/index.html"):
         'group_memberships': group_memberships,
         'memberships': memberships,
         }, context_instance=RequestContext(request))
-   
- 
+
+
 def search(request, template_name="profiles/search.html"):
     # check if allow anonymous user search
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')

@@ -1,0 +1,28 @@
+
+<style type="text/css">
+.membership-renew-button {
+    margin-top: 10px;
+    padding: 10px 5px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid;
+}
+.membership-renew-button.renew-now {
+    background-color: #92ff6c;
+    border-color: green;
+}
+.membership-renew-button.renew-soon {
+    background-color: #ffe44b;
+    border-color: #fcc500;
+}
+</style>
+
+{% if not membership.can_renew %}
+<div class="membership-renew-button renew-now">
+    <a href="">Renew from now until {{ membership.get_renewal_period_dt.1 }}</a>
+</div>
+{% else %}
+<div class="membership-renew-button renew-soon">
+    Renewal available in {{ membership.get_renewal_period_dt.0|timeuntil }}
+</div>
+{% endif %}
