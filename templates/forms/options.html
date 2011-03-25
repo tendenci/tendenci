@@ -14,6 +14,7 @@
 
 	{% if can_edit %}
 		<li><a class="option-link" href="{% url form_entries opt_object.pk %}">Entries</a></li>
+        <li><a class="option-link" href="{% url subscribers opt_object.pk %}">Subscribers</a></li>
 		<li><a class="option-link edit" href="{% url form_edit opt_object.pk %}">Edit</a></li>
 		<li><a class="option-link edit" href="{% url form_field_update opt_object.pk %}">Edit Fields</a></li>
 		{% if can_delete %}

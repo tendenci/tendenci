@@ -67,6 +67,7 @@ urlpatterns = patterns('',
     (r'^contact/', include('form_builder.urls')),
     (r'^sitemap.xml', include('sitemaps.urls')),
     (r'^help-files/', include('help_files.urls')),
+    (r'^subscribers/', include('subscribers.urls')),
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
