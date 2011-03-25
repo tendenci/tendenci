@@ -770,6 +770,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     else:
                         # offline payment:
                         # send email; add message; redirect to confirmation
+                        print reg8n.registrant.hash
                         notification.send_emails(
                             [reg8n.registrant.email],
                             'event_registration_confirmation',
@@ -948,6 +949,11 @@ def cancel_registration(request, event_id=0, registrant_id=0, hash='', template_
             registrant = sqs[0].object
         except:
             raise Http404
+        
+    user_is_registrant = False
+    if not request.user.is_anonymous() and registrant.user:
+        if request.user.id == registrant.user.id:
+            user_is_registrant = True
 
     if request.method == "POST":
         # check if already canceled. if so, do nothing
@@ -969,7 +975,6 @@ def cancel_registration(request, event_id=0, registrant_id=0, hash='', template_
                     invoice.balance -= registrant.amount
                     invoice.save(request.user)
             
-        
 
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
@@ -980,16 +985,19 @@ def cancel_registration(request, event_id=0, registrant_id=0, hash='', template_
                     'registrants_pending':event.registrants(with_balance=True),
                     'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
                     'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+                    'registrant':registrant,
+                    'user_is_registrant': user_is_registrant,
                 })
 
         # back to invoice
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
-
+        
     return render_to_response(template_name, {
         'event': event,
         'registrant':registrant,
-        'hash': hash
+        'hash': hash,
+        'user_is_registrant': user_is_registrant,
         }, 
         context_instance=RequestContext(request))
 
@@ -1142,7 +1150,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         registrations = registrations.filter(invoice__balance=0)
     elif roster_view == 'non-paid':
         registrations = registrations.filter(invoice__balance__gt=0)
-    
+
     # grab the primary registrants then the additional registrants 
     # to group the registrants with the same registration together
     primary_registrants = []
@@ -1157,18 +1165,16 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         registrants.append(primary_reg)
         for reg in primary_reg.additional_registrants:
             registrants.append(reg)
-            
-    total_sum = 0
-    if roster_view != 'paid':
-        total_sum = Invoice.objects.filter(
-            object_id__in=registrations,
-            object_type=ContentType.objects.get_for_model(
-                Registration)).distinct().aggregate(Sum('total'))['total__sum'] or float()
 
-    balance_sum = Invoice.objects.filter(
-        object_id__in=registrations,
-        object_type=ContentType.objects.get_for_model(Registration),
-        tender_date__isnull=False).distinct().aggregate(Sum('balance'))['balance__sum'] or float()
+    total_sum = float(0)
+    balance_sum = float(0)
+
+    # get total and balance (sum)
+    for reg8n in registrations:
+        if not reg8n.canceled:  # not cancelled
+            if roster_view != 'paid':
+                total_sum += float(reg8n.invoice.total)
+            balance_sum += float(reg8n.invoice.balance)
 
     num_registrants_who_payed = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
@@ -1200,7 +1206,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
     event = get_object_or_404(Event, pk=id)
     count_registrants = 1
-
+    
     if reg8n_id:
 
         # URL is obvious
