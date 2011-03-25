@@ -7,90 +7,34 @@ from django.template.defaultfilters import date as date_filter
 from base.widgets import SplitDateTimeWidget
 
 
-def reg8n_dt_choices(*args, **kwargs):
-    """
-    Use values from query_dict or instance.
-    Return 2-tuple of reg8n items.
-    """
-    instance = kwargs.get('instance')
-    prefix = kwargs.get('prefix')
-    query_dict = None
-
-    if args and args[0]:
-        query_dict = args[0]
-
-    # save ourselves from looping
-    if not instance and not query_dict:
-        return tuple()
-
-    return_kwargs = {
-        'early_price': u'',
-        'regular_price': u'',
-        'late_price': u'',
-        'early_dt': u'',
-        'regular_dt': u'',
-        'late_dt': u'',
-        'end_dt': u'',
-    }
-
-    for k, v in return_kwargs.items():
-        if query_dict:
-
-            if k[-2:] == 'dt':  # if datetime variable
-                str_date = query_dict.get('%s-%s_0' % (prefix, k))
-                str_time = query_dict.get('%s-%s_1' % (prefix, k))
-                return_kwargs[k] = datetime.strptime('%s %s' % (str_date, str_time), '%Y-%m-%d %I:%M %p')
-            else:
-                return_kwargs[k] = query_dict.get('%s-%s' % (prefix, k))
-
-        elif instance and hasattr(instance, k):
-            return_kwargs[k] = getattr(instance, k)
-
-    return return_kwargs.items()
-
 class Reg8nDtWidget(Widget):
+
+    reg8n_dict = {}
+
     def render(self, name, value, attrs=None, choices=()):
-        choices = dict(self.choices)
-
-        # prices
-        early_price = choices.get('early_price') or 0
-        regular_price = choices.get('regular_price') or 0
-        late_price = choices.get('late_price') or 0
-
-        today = datetime.today()
-
-        # # datetimes
-        early_dt = choices.get('early_dt') or today
-        regular_dt = choices.get('regular_dt') or today + timedelta(days=1)
-        late_dt = choices.get('late_dt') or today + timedelta(days=2)
-        end_dt = choices.get('end_dt') or today + timedelta(days=3)
-
-        # start widgets
-        text_widget = TextInput({'class':'reg8n_price'})
-        dt_widget = SplitDateTimeWidget()
 
         # rip prefix from name
         name_prefix = name.split('-')[0]
         id_prefix = 'id_%s' % name_prefix
 
-        # string format dict
-        str_format_kwargs = {
-            'early_price': text_widget.render('%s-%s' % (name_prefix, 'early_price'), early_price, {'id': '%s-%s' % (id_prefix, 'early_price')}),
-            'regular_price': text_widget.render('%s-%s' % (name_prefix, 'regular_price'), regular_price, {'id': '%s-%s' % (id_prefix, 'regular_price')}),
-            'late_price': text_widget.render('%s-%s' % (name_prefix, 'late_price'), late_price, {'id': '%s-%s' % (id_prefix, 'late_price')}),
-            'early_dt': dt_widget.render('%s-%s' % (name_prefix, 'early_dt'), early_dt, {'id': '%s-%s' % (id_prefix, 'early_price')}),
-            'regular_dt': dt_widget.render('%s-%s' % (name_prefix, 'regular_dt'), regular_dt, {'id': '%s-%s' % (id_prefix, 'early_price')}),
-            'late_dt': dt_widget.render('%s-%s' % (name_prefix, 'late_dt'), late_dt, {'id': '%s-%s' % (id_prefix, 'early_price')}),
-            'end_dt': dt_widget.render('%s-%s' % (name_prefix, 'end_dt'), end_dt, {'id': '%s-%s' % (id_prefix, 'early_price')}),
-        }
+        str_format_kwargs = {}
+        for k, v in self.reg8n_dict.items():
 
-        # string format template
-        # html  = u"""
-        #     <div>Registration opens on %(early_dt)s</div>
-        #     <div>Pay %(early_price)s until %(regular_dt)s</div>
-        #     <div>Pay %(regular_price)s until %(late_dt)s</div>
-        #     <div>Pay %(late_price)s until registration closes on %(end_dt)s</div>
-        # """ % str_format_kwargs
+            if k.split('_')[1] == 'price':
+                # text field
+                str_format_kwargs[k] = TextInput().render(
+                    '%s-%s' % (name_prefix, k),  # name
+                    self.reg8n_dict.get(k),  # value
+                    {'id': '%s-%s' % (id_prefix, k)}  # id attribute
+                )
+
+            elif k.split('_')[1] == 'dt':
+                # date field
+                str_format_kwargs[k] = SplitDateTimeWidget().render(
+                    '%s-%s' % (name_prefix, k),  # name
+                    self.reg8n_dict.get(k),  # value
+                    {'id': '%s-%s' % (id_prefix, k)}  # id attribute
+                )
 
         # string format template
         html  = u"""
@@ -107,6 +51,57 @@ class Reg8nDtField(ChoiceField):
     """
         Inherits from MultipleChoiceField and
         sets some default meta data
-    """    
+    """
     widget = Reg8nDtWidget
-    
+
+    def __init__(self, *args, **kwargs):
+        super(Reg8nDtField, self).__init__(*args, **kwargs)
+        self.build_widget_reg8n_dict()
+
+    def build_widget_reg8n_dict(self, *args, **kwargs):
+        """
+        Build widget reg8n dictionary.
+        Pass dictionary to widget.
+        Please call() within form-init method
+        """
+        instance = kwargs.get('instance')
+        prefix = kwargs.get('prefix')
+        query_dict = {}
+
+        if args and args[0]:
+            query_dict = args[0]
+
+        reg8n_dict = {
+            'early_price': 0,
+            'regular_price': 0,
+            'late_price': 0,
+            'early_dt': datetime.today(),
+            'regular_dt': datetime.today() + timedelta(days=1),
+            'late_dt': datetime.today() + timedelta(days=2),
+            'end_dt': datetime.today() + timedelta(days=3),
+        }
+
+        # save ourselves from looping; no need
+        if not query_dict and not instance:
+            self.widget.reg8n_dict = reg8n_dict
+            return reg8n_dict
+
+        for k, v in reg8n_dict.items():
+            if query_dict:  # edit page with querystring
+
+                if k.split('_')[1] == 'price':
+                    reg8n_dict[k] = query_dict.get('%s-%s' % (prefix, k))
+                elif k.split('_')[1] == 'dt':
+                    str_date = query_dict.get('%s-%s_0' % (prefix, k))
+                    str_time = query_dict.get('%s-%s_1' % (prefix, k))
+
+                    try:
+                        reg8n_dict[k] = datetime.strptime('%s %s' % (str_date, str_time), '%Y-%m-%d %I:%M %p')
+                    except ValueError:   # if incorrect dt format is passed
+                        reg8n_dict[k] = u''
+
+            elif instance and hasattr(instance, k):  # edit page without querystring
+                    reg8n_dict[k] = getattr(instance, k)
+
+        self.widget.reg8n_dict = reg8n_dict
+        return reg8n_dict
