@@ -157,6 +157,12 @@ class FormEntry(models.Model):
     class Meta:
         verbose_name = _("Form entry")
         verbose_name_plural = _("Form entries")
+        
+    def __unicode__(self):
+        u = ''
+        for f in self.fields.all()[0:5]:
+            u = u + str(f) + ' '
+        return u[0:len(u)-1]
 
     @models.permalink
     def get_absolute_url(self):
@@ -194,7 +200,10 @@ class FieldEntry(models.Model):
     class Meta:
         verbose_name = _("Form field entry")
         verbose_name_plural = _("Form field entries")
-
+    
+    def __unicode__(self):
+        return ('%s: %s' % (self.field.label, self.value))
+    
     def save(self, *args, **kwargs):
         super(FieldEntry, self).save(*args, **kwargs)
         self.field.execute_function(self.entry, self.value)
