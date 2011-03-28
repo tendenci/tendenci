@@ -13,7 +13,8 @@ from django.contrib.auth.decorators import login_required
 from perms.utils import is_admin
 from base.http import Http403
 from memberships.models import Membership, MembershipType
-from memberships.forms import MemberApproveForm
+from memberships.forms import MemberApproveForm, CSVForm
+from memberships.utils import new_mems_from_csv
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, has_perm
 from invoices.models import Invoice
@@ -386,4 +387,25 @@ def application_entries_search(request, template_name="memberships/entries/searc
         'entries':entries,
         'apps':apps,
         'types':types,
+        }, context_instance=RequestContext(request))
+        
+@login_required
+def import_membership_csv(request, template_name="memberships/csv_form.html"):
+    """
+    Displays a page for uploading a tendenci4 CSV file
+    """
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        form = CSVForm(request.POST, request.FILES)
+        if form.is_valid():
+            new_mems_from_csv(request.FILES['csv'], form.cleaned_data['app'], request.user.id)
+            return redirect(import_membership_csv)
+    else:
+        form = CSVForm()
+    
+    return render_to_response(template_name, {
+        'form':form,
         }, context_instance=RequestContext(request))
