@@ -2,10 +2,10 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns("memberships.views",
 
-
     # memberships
     url(r"^memberships/(?P<id>\d+)/$", "membership_details", name="membership.details"),
-
+    url(r"^memberships/import_csv/$", "import_membership_csv", name="import_membership_csv"),
+    
     # entries
     url(r"^entries/$", "application_entries", name="membership.application_entries"),
     url(r"^entries/(?P<id>\d+)/$", "application_entries", name="membership.application_entries"),
