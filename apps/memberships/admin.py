@@ -11,8 +11,8 @@ from memberships.forms import MembershipTypeForm
 from user_groups.models import Group
 from event_logs.models import EventLog
 from perms.models import ObjectPermission 
-from memberships.models import  Membership, MembershipType, App, AppField, AppEntry
-from memberships.forms import AppForm, AppFieldForm, AppEntryForm
+from memberships.models import  Membership, MembershipType, Notice, App, AppField, AppEntry
+from memberships.forms import AppForm, NoticeForm, AppFieldForm, AppEntryForm
 from memberships.utils import get_default_membership_fields, edit_app_update_corp_fields
 from payments.models import PaymentMethod
 
@@ -157,6 +157,84 @@ class MembershipTypeAdmin(admin.ModelAdmin):
         #form.save_m2m()
         
         return instance
+    
+class NoticeAdmin(admin.ModelAdmin):
+    list_display = ['notice_name', 'content_type', 
+                     'membership_type', 'status', 'status_detail', 'system_generated']
+    list_filter = ['notice_type', 'status_detail']
+    
+    fieldsets = (
+        (None, {'fields': ('notice_name', 'notice_time_type', 'membership_type')}),
+        ('Email Fields', {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
+        ('Other Options', {'fields': ('status', 'status_detail')}),
+    )
+    
+    form = NoticeForm
+    
+    class Media:
+        js = (
+            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+        )
+        
+    def log_deletion(self, request, object, object_repr):
+        super(NoticeAdmin, self).log_deletion(request, object, object_repr)
+        log_defaults = {
+            'event_id' : 903000,
+            'event_data': '%s %s(%d) deleted by %s' % (object._meta.object_name, 
+                                                    object.notice_name, object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)           
+
+    def log_change(self, request, object, message):
+        super(NoticeAdmin, self).log_change(request, object, message)
+        log_defaults = {
+            'event_id' : 902000,
+            'event_data': '%s %s(%d) edited by %s' % (object._meta.object_name, 
+                                                    object.notice_name, object.pk, request.user),
+            'description': '%s edited' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)               
+
+    def log_addition(self, request, object):
+        super(NoticeAdmin, self).log_addition(request, object)
+        log_defaults = {
+            'event_id' : 901000,
+            'event_data': '%s %s(%d) added by %s' % (object._meta.object_name, 
+                                                   object.notice_name, object.pk, request.user),
+            'description': '%s added' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
+        
+    def save_model(self, request, object, form, change):
+        instance = form.save(commit=False)
+        
+        # save the expiration method fields
+        notice_time_type = form.cleaned_data['notice_time_type']
+        notice_time_type_list = notice_time_type.split(",")
+        instance.num_days = notice_time_type_list[0]
+        instance.notice_time = notice_time_type_list[1]
+        instance.notice_type = notice_time_type_list[2]
+         
+        if not change:
+            instance.creator = request.user
+            instance.creator_username = request.user.username
+            instance.owner = request.user
+            instance.owner_username = request.user.username
+            
+        instance.save()
+        
+        return instance
+
 
 class AppFieldAdmin(admin.StackedInline):
     fieldsets = (
@@ -386,8 +464,12 @@ class AppEntryAdmin(admin.ModelAdmin):
         super(AppEntryAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = (None, )
 
-admin.site.register(Membership, MembershipAdmin)
+
+# these get auto-created when the application gets filled out
+# admin.site.register(Membership, MembershipAdmin)
+
 admin.site.register(MembershipType, MembershipTypeAdmin)
+admin.site.register(Notice, NoticeAdmin)
 admin.site.register(App, AppAdmin)
 admin.site.register(AppEntry, AppEntryAdmin)
 

@@ -1,19 +1,25 @@
 import hashlib
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType, ContentTypeManager
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect
 from event_logs.models import EventLog
 from memberships.models import App, AppEntry
 from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm
 from perms.models import ObjectPermission
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
-from django.contrib.auth.decorators import login_required
 from perms.utils import is_admin
 from base.http import Http403
-from memberships.models import Membership, MembershipType
+
+from memberships.models import Membership, MembershipType, Notice
 from memberships.forms import MemberApproveForm
+from memberships.models import Membership, MembershipType
+from memberships.forms import MemberApproveForm, CSVForm
+from memberships.utils import new_mems_from_csv
+
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, has_perm
 from invoices.models import Invoice
@@ -23,6 +29,19 @@ try:
     from notification import models as notification
 except:
     notification = None
+
+
+def membership_index(request):
+    return HttpResponseRedirect(reverse('membership.search'))
+
+def membership_search(request, template_name="memberships/search.html"):
+    query = request.GET.get('q', None)
+    members = Membership.objects.search(query, user=request.user)
+    types = MembershipType.objects.all()
+
+    return render_to_response(template_name, {'members': members, 'types': types},
+        context_instance=RequestContext(request))    
+
 
 @login_required
 def membership_details(request, id=0, template_name="memberships/details.html"):
@@ -50,6 +69,48 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
 
+@login_required
+def membership_renew(request, id=0):
+    """
+    Make new entry; prefill with old entry info.
+    Redirect to entry details page.
+    """
+    membership = get_object_or_404(Membership, pk=id)
+
+    # eligible to renew
+    if not membership.can_renew():
+        raise Http403
+
+    # admins can renew everyone; users can renew themselves
+    if not is_admin(user) and request.user != membership.user:
+        raise Http403
+
+    old_entry = membership.entries.order_by('pk')[0]
+    new_entry = old_entry
+
+    # make new entry
+    new_entry.pk = None
+    new_entry.membership = membership
+    new_entry.save()
+
+    # make new fields
+    for old_field in old_entry.fields:
+        """
+        Does not currently account for new fields
+        added to the membership application.
+        """
+        new_field = old_field
+        new_field.pk = None
+        new_field.entry = new_entry
+        new_field.save()
+
+    # now we have a brand new entry
+    # associated with a membership
+    # associated with a person
+    # this tells us that the entry is a renewal
+
+    return redirect(new_entry.confirmation_url)
+
 def application_details(request, slug=None, cmb_id=None, template_name="memberships/applications/details.html"):
     """
     Display a built membership application and handle submission.
@@ -57,7 +118,7 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
     # cmb_id - corporate_membership_id
     if not slug:
         raise Http404
-    
+
     query = '"slug:%s"' % slug
     sqs = App.objects.search(query, user=request.user)
 
@@ -77,7 +138,6 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
         
         if request.method <> "POST":
             http_referer = request.META.get('HTTP_REFERER', '')
-        
             corp_pre_url = reverse('membership.application_details_corp_pre', args=[slug])
             if not http_referer or not corp_pre_url in http_referer:
                 return redirect(corp_pre_url)
@@ -248,6 +308,9 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     if not id:
         return HttpResponseRedirect(reverse('membership.application_entries_search'))
 
+
+    # TODO: Not use search but query the database
+    # TODO: Needs a manager to query database with permission checks
     query = '"id:%s"' % id
     sqs = AppEntry.objects.search(query, user=request.user)
 
@@ -386,4 +449,35 @@ def application_entries_search(request, template_name="memberships/entries/searc
         'entries':entries,
         'apps':apps,
         'types':types,
+        }, context_instance=RequestContext(request))
+    
+@login_required    
+def notice_email_content(request, id, template_name="memberships/notices/email_content.html"):
+    if not is_admin(request.user):
+        raise Http403
+    notice = get_object_or_404(Notice, pk=id)
+    
+    return render_to_response(template_name, {
+        'notice':notice,
+        }, context_instance=RequestContext(request))
+
+@login_required
+def import_membership_csv(request, template_name="memberships/csv_form.html"):
+    """
+    Displays a page for uploading a tendenci4 CSV file
+    """
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        form = CSVForm(request.POST, request.FILES)
+        if form.is_valid():
+            new_mems_from_csv(request.FILES['csv'], form.cleaned_data['app'], request.user.id)
+            return redirect(import_membership_csv)
+    else:
+        form = CSVForm()
+    
+    return render_to_response(template_name, {
+        'form':form,
         }, context_instance=RequestContext(request))

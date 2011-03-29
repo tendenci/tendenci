@@ -37,7 +37,7 @@
 	<h1>{{ group.name }}</h1>
     <div class="group-section">
         <p>This group currently has {{ count_members }} members.</p>
-
+        <p>This group currently has {{ group.groupsubscription_set.all.count }} subscribers.</p>
         {% if can_edit %}
             <p><a href="{% url group.member_export group.slug %}">Export all members</a></p>
         {% endif %}
@@ -86,6 +86,26 @@
                 <input type="hidden" name="action" value="delete">
             </form>
         {% endif %}
+        </div>
+    {% endfor %}
+    </div>
+    {% paginate %}
+    {% endif %}
+    </div>
+    
+    <h2>Group Subscribers</h2>
+    {% if not group.groupsubscription_set.all %}
+    <p>This group has no subscribers</p>
+    {% else %}
+    {% autopaginate group.groupsubscription_set.all 150 %}
+    {% paginate %}
+    <div class="group-member-list">
+    {% for gs in group.groupsubscription_set.all %}
+        <div class="group-member {% cycle 'gray' '' %}">
+            <a href="{{ gs.subscriber.get_absolute_url }}">{{ gs.subscriber }}</a>
+            {% if can_delete %}
+            &nbsp;<span>- <a href="{% url delete_subscriber gs.id %}">Remove</a></span>
+            {% endif %}
         </div>
     {% endfor %}
     </div>
