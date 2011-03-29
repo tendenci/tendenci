@@ -25,7 +25,6 @@ class LatestEntriesFeed(SubFeed):
     def item_link(self, item):
         return item.get_absolute_url()
 
-
 class ArticleSitemap(TendenciSitemap):
     """ Sitemap information for articles """
     changefreq = "monthly"
@@ -37,5 +36,3 @@ class ArticleSitemap(TendenciSitemap):
                                         
     def lastmod(self, obj):
         return obj.create_dt
-    
-
