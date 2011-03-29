@@ -1,32 +1,12 @@
 {% extends "make_payments/base.html" %}
 {% load i18n %}
+{% load styled_forms %}
 
 {% block title %}Make a Payment{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="/site_media/static/css/make_payments.css">
-<style>
-	
-	.errorlist{
-		color: red;
-	}
-	.payment-method-list{
-		float: left;
-	}
-	.payment-method-list ul{
-		margin-left: 0;
-		padding-left: 0;
-	}
-	.payment-method-list ul li{
-		list-style: none;
-	}
-	.field-wrapper span{
-		color: #8A1F11;
-		font-size: 0.8em;
-	}
-	
-</style>
 {% endblock %}
 
 {% block body %}
@@ -34,147 +14,13 @@
 
 <h1>Make a Payment</h1>
 
-<form method="post" action=".">
-<div class="field-wrapper required">
-	{% if form.payment_amount.errors %}
-		{{ form.payment_amount.errors }}
-	{% endif %}
-	<label for="id_payment_amount" class="field-label">{% trans 'Payment Amount'%} ({{currency_symbol}}):</label>
-	{{ form.payment_amount }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{% if form.payment_method.errors %}
-		{{ form.payment_method.errors }}
-	{% endif %}
-	<label for="id_payment_method" class="field-label">{% trans 'Payment Method:'%}</label>
-	<div class="payment-method-list">{{ form.payment_method }}</div>
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper required">
-	{% if form.first_name.errors %}
-		{{ form.first_name.errors }}
-	{% endif %}
-	<label for="id_first_name" class="field-label">{% trans 'First Name:'%}</label>
-	{{ form.first_name }} 
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper required">
-	{% if form.last_name.errors %}
-		{{ form.last_name.errors }}
-	{% endif %}
-	<label for="id_last_name" class="field-label">{% trans 'Last Name:'%}</label>
-	{{ form.last_name }} 
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{% if form.company.errors %}
-		{{ form.company.errors }}
-	{% endif %}
-	<label for="id_company" class="field-label">{% trans 'Company:'%}</label>
-	{{ form.company }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{% if form.address.errors %}
-		{{ form.address.errors }}
-	{% endif %}
-	<label for="id_address" class="field-label">{% trans 'Address:'%}</label>
-	{{ form.address }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{% if form.address2.errors %}
-		{{ form.address2.errors }}
-	{% endif %}
-	<label for="id_address2" class="field-label">{% trans 'Address Line 2:'%}</label>
-	{{ form.address2 }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{% if form.city.errors %}
-		{{ form.city.errors }}
-	{% endif %}
-	{% if form.state.errors %}
-		{{ form.state.errors }}
-	{% endif %}
-	{% if form.zip_code %}
-		{{ form.zip_code.errors }}
-	{% endif %}
-	<div  class="field-label">
-	<label for="id_city">{% trans 'City'%}</label>
-	/<label for="id_state">{% trans 'State'%}</label>
-	/<label for="id_zip_code">{% trans 'Zip Code:'%}</label>
+<form method="post" action="{% url make_payment.add %}">
+	<div class="forms">
+	{{ form|styled_form }}
+	<div class="submitbutton">
+		<input type="submit" name="submit" value="Make a Payment" />
 	</div>
-	{{ form.city }} / {{ form.state }} / {{ form.zip_code }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{% if form.country.errors %}
-		{{ form.country.errors }}
-	{% endif %}
-	<label for="id_country" class="field-label">{% trans 'Country:'%}</label>
-	{{ form.country }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{% if form.phone.errors %}
-		{{ form.phone.errors }}
-	{% endif %}
-	<label for="id_phone" class="field-label">{% trans 'Phone:'%}</label>
-	{{ form.phone }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper required">
-	{% if form.email.errors %}
-		{{ form.email.errors }}
-	{% endif %}
-	<label for="id_email" class="field-label">{% trans 'Email:'%}</label>
-	{{ form.email }} 
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{% if form.email_receipt.errors %}
-		{{ form.email_receipt.errors }}
-	{% endif %}
-	<label for="id_email_receipt" class="field-label">{% trans 'Email Receipt?'%}</label>
-	{{ form.email_receipt }} 
-</div>
-<div class="clear-left"></div>
-
-
-<div class="field-wrapper">
-	{% if form.referral_source.errors %}
-		{{ form.referral_source.errors }}
-	{% endif %}
-	<label for="id_referral_source" class="field-label">{% trans 'Referred by:'%}</label>
-	{{ form.referral_source }}
-</div>
-<div class="clear-left"></div>
-
-<div class="field-wrapper">
-	{% if form.comments.errors %}
-		{{ form.comments.errors }}
-	{% endif %}
-	<label for="id_comments" class="field-label">{% trans 'Comments:'%}</label>
-	{{ form.comments }}
-</div>
-<div class="clear-left"></div>
-
-<div class="submitbutton">
-<input type="submit" name="submit" value="Submit" />
-</div>
+	</div>
 </form>
 
 </div>
