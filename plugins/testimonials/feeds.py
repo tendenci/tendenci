@@ -22,6 +22,7 @@ class LatestEntriesFeed(SubFeed):
     def item_link(self, item):
         return item.get_absolute_url()
 
+
 class TestimonialSitemap(TendenciSitemap):
     changefreq = "monthly"
     priority = 0.5

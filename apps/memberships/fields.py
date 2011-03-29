@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 
-from widgets import TypeExpMethodWidget
+from widgets import TypeExpMethodWidget, NoticeTimeTypeWidget
 from site_settings.utils import get_setting
 
         
@@ -26,6 +26,21 @@ class TypeExpMethodField(forms.MultiValueField):
             if data_list[i] == None:
                 data_list[i] = ''
         
+        if data_list:
+            return ','.join(data_list)
+        return None
+    
+class NoticeTimeTypeField(forms.MultiValueField):
+    def __init__(self, required=True, widget=NoticeTimeTypeWidget(attrs=None),
+                label=None, initial=None, help_text=None):
+        myfields = ()
+        super(NoticeTimeTypeField, self).__init__(myfields, required, widget,
+                                          label, initial, help_text)
+        
+    def clean(self, value):
+        return self.compress(value) 
+        
+    def compress(self, data_list):
         if data_list:
             return ','.join(data_list)
         return None
