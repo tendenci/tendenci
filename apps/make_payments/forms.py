@@ -1,13 +1,13 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
+
 from make_payments.models import MakePayment
+from captcha.fields import CaptchaField
 
 class MakePaymentForm(forms.ModelForm):
-    # get the payment_method choices from settings
-
+    captcha = CaptchaField(help_text=_("Please fill in the letters in the image"))
     # TODO: Make check-paid an admin only option
-    #payment_method = forms.CharField(widget=forms.RadioSelect(choices=(('check-paid', 'Paid by Check'),
-    #                                                          ('cc', 'Make Online Payment'),)), initial='cc', )
     payment_method = forms.CharField(widget=forms.RadioSelect(choices=(('cc', 'Make Online Payment'),)), initial='cc',)
     company = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'size':'30'}))
     address = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'size':'35'}))
@@ -35,12 +35,15 @@ class MakePaymentForm(forms.ModelForm):
                   'email_receipt',
                   'referral_source',
                   'comments',
+                  'captcha',
                   )
         
     def __init__(self, user, *args, **kwargs):
         super(MakePaymentForm, self).__init__(*args, **kwargs)
         # populate the user fields
         if user and user.id:
+            if 'captcha' in self.fields:
+                self.fields.pop('captcha')
             self.fields['first_name'].initial = user.first_name
             self.fields['last_name'].initial = user.last_name
             self.fields['email'].initial = user.email

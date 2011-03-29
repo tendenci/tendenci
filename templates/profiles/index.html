@@ -5,6 +5,7 @@
 {% load perm_tags %}
 {% load profile_tags %}
 {% load contribution_tags %}
+{% load membership_tags %}
 
 {% block title %}Profile View{% endblock %}
 
@@ -346,6 +347,8 @@
             {% else %}
                 <div>Never Expires</div>
             {% endif %}
+
+            {% renew_button %}
 
         </div>
         {% endfor %}
