@@ -1,14 +1,21 @@
 {% load styled_forms %}
 
 
-{% if form.errors %}
+{% if form_set.errors %}
 <div class="errors">
-There were some problems in the form. Please review. Thanks!
+There were some problems in the formset. Please review. Thanks!
 </div>
 {% endif %}
     
 {% for form in form_set.forms %}
 	<div class="form-grouping{% cycle ' alt' '' %}">
+    {% if form.non_field_errors %}
+        <div class ="errors">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
 	{% for field in form %}
 	{% if field.is_hidden %}
 	    {{ field }}

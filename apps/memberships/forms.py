@@ -15,11 +15,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
 from django.core.files.storage import FileSystemStorage
 
+from tinymce.widgets import TinyMCE
+
 from perms.forms import TendenciBaseForm
-from models import MembershipType, App, AppEntry, AppField
+from models import MembershipType, Notice, App, AppEntry, AppField
 from fields import TypeExpMethodField, PriceInput
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from widgets import CustomRadioSelect, TypeExpMethodWidget
+from widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
 from corporate_memberships.models import CorporateMembership, AuthorizedDomain
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -297,6 +299,53 @@ class MembershipTypeForm(forms.ModelForm):
     def save(self, *args, **kwargs):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
     
+    
+class NoticeForm(forms.ModelForm):
+    notice_time_type = TypeExpMethodField(label='When to Send',
+                                          widget=NoticeTimeTypeWidget)
+    email_content = forms.CharField(widget=TinyMCE(attrs={'style':'width:70%'}, 
+                                            mce_attrs={'storme_app_label':"email_content", 
+                                                       'storme_model':"email_content"}))
+    
+    class Meta:
+        model = Notice
+        fields = (
+                  'notice_name',
+                  'notice_time_type',
+                  'membership_type',
+                  'subject',
+                  'content_type',
+                  'sender',
+                  'sender_display',
+                  'email_content',
+                  'status',
+                  'status_detail',
+                  )
+
+    def __init__(self, *args, **kwargs): 
+        super(NoticeForm, self).__init__(*args, **kwargs)
+        
+        initial_list = []
+        if self.instance.pk:
+            initial_list.append(str(self.instance.num_days))
+            initial_list.append(str(self.instance.notice_time))
+            initial_list.append(str(self.instance.notice_type))
+        
+        self.fields['notice_time_type'].initial = initial_list
+        
+    def clean_notice_time_type(self):
+        value = self.cleaned_data['notice_time_type']
+        
+        data_list = value.split(',')
+        d = dict(zip(['num_days', 'notice_time', 'notice_type'], data_list))
+        
+        try:
+            d['num_days'] = int(d['num_days'])
+        except:
+            raise forms.ValidationError(_("Num days must be a numeric number."))
+        return value
+            
+    
 class AppCorpPreForm(forms.Form):
     corporate_membership_id = forms.ChoiceField(label=_('Join Under the Corporation:'))
     secret_code = forms.CharField(label=_('Enter the Secret Code'), max_length=50)
@@ -479,3 +528,8 @@ class AppEntryForm(forms.ModelForm):
             if field_class == "EmailField":
                 return self.cleaned_data["field_%s" % field.id]
         return None
+
+class CSVForm(forms.Form):
+    app = forms.ModelChoiceField(label='Application', queryset=App.objects.all())
+    csv = forms.FileField(label="CSV File")
+    
