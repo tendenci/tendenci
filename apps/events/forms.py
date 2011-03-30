@@ -231,6 +231,20 @@ class Reg8nEditForm(BetterModelForm):
     class Meta:
         model = RegistrationConfiguration
 
+        fields = (
+            'payment_method',
+            'early_price',
+            'regular_price',
+            'late_price',
+            'payment_required',
+            'early_dt',
+            'regular_dt',
+            'late_dt',
+            'end_dt',
+            'enabled',
+            'limit',
+        )
+
         fieldsets = [('Registration Configuration', {
           'fields': ['enabled',
                      'limit',
