@@ -82,8 +82,7 @@
 			</div>
         </div>
 
-        <div>{% url article article.pk as the_url %}</div>
-        <div class="fb-connect">{% fb_like_button_iframe the_url %}</div>
+        <div class="fb-connect">{% fb_like_button_iframe article.get_absolute_url %}</div>
 
     </div>
 
