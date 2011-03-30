@@ -112,9 +112,12 @@ class Field(models.Model):
     
     form = models.ForeignKey("Form", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
-    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=64)
-    field_function = models.CharField(_("Function"), choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
-    function_params = models.CharField(_("Function Params"), max_length=100, null=True, blank=True)
+    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES,
+        max_length=64)
+    field_function = models.CharField(_("Special Functionality"),
+        choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
+    function_params = models.CharField(_("Group Name or Names"),
+        max_length=100, null=True, blank=True, help_text="Comma separated if more than one")
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
