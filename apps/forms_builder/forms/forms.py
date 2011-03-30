@@ -8,9 +8,8 @@ from django.core.files.storage import FileSystemStorage
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 
-from forms_builder.forms.models import FormEntry
+from forms_builder.forms.models import FormEntry, Field, Form
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from forms_builder.forms.models import Form
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
 from captcha.fields import CaptchaField
@@ -134,6 +133,9 @@ class FormForm(TendenciBaseForm):
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
             
 class FormForField(forms.ModelForm):
+    class Meta:
+        model = Field
+    
     def clean_function_params(self):
         function_params = self.cleaned_data['function_params']
         clean_params = ''
