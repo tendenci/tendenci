@@ -458,6 +458,7 @@ class AppField(models.Model):
     vital = models.BooleanField(_("Vital"), default=False, blank=True)
     required = models.BooleanField(_("Required"), default=True, blank=True)
     visible = models.BooleanField(_("Visible"), default=True, blank=True)
+    show_on_site = models.BooleanField(_("Show on Site"), default=False, blank=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text="Comma separated options where applicable")
 
