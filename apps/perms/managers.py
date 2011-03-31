@@ -265,8 +265,26 @@ class TendenciBaseManager(models.Manager):
     Base manager for all TendenciBase models
     """
     user = None
-    
+
     # Private functions
+    def _member_sqs(self, sqs, **kwargs):
+        """
+        Filter the query set for members
+        """
+        user = kwargs.get('user', None)
+
+        anon_q = Q(allow_anonymous_view=True)
+        user_q = Q(allow_user_view=True)
+        member_q = Q(allow_member_view=True)
+        status_q = Q(status=1, status_detail='active')
+        perm_q = Q(who_can_view__exact=user.username)
+
+        q = reduce(operator.or_, [anon_q, user_q, member_q])
+        q = reduce(operator.and_, [status_q, q])
+        q = reduce(operator.or_, [q, perm_q])
+
+        return sqs.filter(q)
+
     def _anon_sqs(self, sqs):
         """
         Filter the query set for anonymous users
@@ -308,7 +326,7 @@ class TendenciBaseManager(models.Manager):
         Search the Django Haystack search index
         Returns a SearchQuerySet object
         """
-        from perms.utils import is_admin
+        from perms.utils import is_admin, is_member
         sqs = SearchQuerySet()
         user = kwargs.get('user') or AnonymousUser()
         user = self._impersonation(user)
@@ -322,6 +340,8 @@ class TendenciBaseManager(models.Manager):
         else:
             if user.is_anonymous():
                 sqs = self._anon_sqs(sqs) # anonymous
+            elif is_member(user):
+                sqs = self._member_sqs(sqs, user=user)
             else:
                 sqs = self._user_sqs(sqs, user=user) # user
         
