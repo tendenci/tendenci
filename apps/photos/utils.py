@@ -32,6 +32,8 @@ def build_image(photo, size, crop=False):
     """
 
     image = Image.open(photo.image.path) # get image
+    if image.mode != "RGB":
+        image = image.convert("RGB")
     if crop:
         # thumbnail does not return image
         # affects itself; weirdo
