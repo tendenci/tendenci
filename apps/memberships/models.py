@@ -729,9 +729,9 @@ class AppEntry(models.Model):
 
     def spawn_username(self, *args):
         """
-            Join arguments to create username [string].
-            Find similiar usernames; auto-increment newest username.
-            Return new username [string].
+        Join arguments to create username [string].
+        Find similiar usernames; auto-increment newest username.
+        Return new username [string].
         """
         if not args:
             raise Exception(
@@ -751,7 +751,7 @@ class AppEntry(models.Model):
         if others and 0 in others:
             un = '%s%d' % (un, max(others)+1)
 
-        return un
+        return un.lower()
 
     @property
     def status(self):
