@@ -44,6 +44,7 @@ class ArticleForm(TendenciBaseForm):
             'not_official_content',
             'user_perms',
             'group_perms',
+            'member_perms',
             'status',
             'status_detail',
         )
@@ -75,6 +76,7 @@ class ArticleForm(TendenciBaseForm):
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
+                                 'member_perms',
                                  'group_perms',
                                  ],
                       'classes': ['permissions'],

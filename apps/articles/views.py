@@ -9,7 +9,7 @@ from django.db.models import Count
 from base.http import Http403
 from articles.models import Article
 from articles.forms import ArticleForm
-from perms.models import ObjectPermission
+from perms.utils import update_perms_and_save
 from perms.utils import get_notice_recipients, has_perm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
@@ -30,7 +30,7 @@ def index(request, slug=None, template_name="articles/view.html"):
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (article.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+    if (article.status_detail).lower() != 'active' and (not is_admin(request.user)):
         raise Http403
     
     if has_perm(request.user, 'articles.view_article', article):
@@ -97,15 +97,8 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
             if form.is_valid():
                 article = form.save(commit=False)
 
-                # set up user permission
-                article.allow_user_view, article.allow_user_edit = form.cleaned_data['user_perms']
-                
-                # assign permissions
-                ObjectPermission.objects.remove_all(article)
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], article)
-                ObjectPermission.objects.assign(article.creator, article) 
-                
-                article.save()
+                # update all permissions and save the model
+                article = update_perms_and_save(request, form, article)
 
                 log_defaults = {
                     'event_id' : 432000,
@@ -167,23 +160,8 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
             if form.is_valid():           
                 article = form.save(commit=False)
 
-                # set up the user information
-                article.creator = request.user
-                article.creator_username = request.user.username
-                article.owner = request.user
-                article.owner_username = request.user.username
-
-                # set up user permission
-                article.allow_user_view, article.allow_user_edit = form.cleaned_data['user_perms']
-
-                article.save() # get pk
-
-                # assign permissions for selected groups
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], article)
-                # assign creator permissions
-                ObjectPermission.objects.assign(article.creator, article) 
-
-                article.save() # update search-index w/ permissions
+                # add all permissions and save the model
+                articles = update_perms_and_save(request, form, article)
 
                 log_defaults = {
                     'event_id' : 431000,
