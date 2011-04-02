@@ -183,16 +183,7 @@ def handle_uploaded_file(f, instance):
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
-
-    # tried get_or_create(); but get a keyword argument :(
-    try: # look for a speaker
-        speaker = event.speaker_set.all()[0]
-    except: # else: create a speaker
-        speaker = Speaker()
-        speaker.save()
-        speaker.event = [event]
-        speaker.save()
-
+    SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=2)
     # tried get_or_create(); but get a keyword argument :(
     try: # look for an organizer
         organizer = event.organizer_set.all()[0]
@@ -239,13 +230,13 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     event.save() # save event
 
                 # speaker validation
-                form_speaker = SpeakerForm(request.POST, request.FILES, instance=speaker, prefix='speaker')
+                form_speaker = SpeakerFormSet(request.POST, request.FILES, queryset=event.speaker_set.all())
                 if form_speaker.is_valid():
-                    speaker = form_speaker.save(commit=False)
-                    speaker.event = [event]
-                    speaker.save()
-
-                    File.objects.save_files_for_instance(request, speaker)
+                    speakers = form_speaker.save()
+                    for speaker in speakers:
+                        speaker.event = [event]
+                        speaker.save()
+                        File.objects.save_files_for_instance(request, speaker)
 
                 # organizer validation
                 form_organizer = OrganizerForm(request.POST, instance=organizer, prefix='organizer')
@@ -288,14 +279,14 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
             form_event = form_class(instance=event, user=request.user)
             form_place = PlaceForm(instance=event.place, prefix='place')
-            form_speaker = SpeakerForm(instance=speaker, prefix='speaker')
+            form_speaker = SpeakerFormSet(queryset=event.speaker_set.all())
             form_organizer = OrganizerForm(instance=organizer, prefix='organizer')
             form_regconf = Reg8nEditForm(instance=event.registration_configuration, prefix='regconf')
 
         # response
         return render_to_response(template_name, {
             'event': event,
-            'multi_event_forms':[form_event,form_place,form_speaker,form_organizer,form_regconf],
+            'multi_event_forms':[form_event,form_place,form_organizer,form_regconf],
             'form_event':form_event,
             'form_place':form_place,
             'form_speaker':form_speaker,
@@ -339,6 +330,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 
 @login_required
 def add(request, form_class=EventForm, template_name="events/add.html"):
+    SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=2)
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
 
@@ -350,12 +342,6 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 event.owner = request.user
                 event.owner_username = request.user.username
 
-                # tried get_or_create();
-                try: # look for a speaker
-                    speaker = event.speaker_set.all()[0]
-                except: # else: create a speaker
-                    speaker = Speaker()
-
                 try: # look for an organizer
                     organizer = event.organizer_set.all()[0]
                 except: # else: create an organizer
@@ -363,8 +349,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
 
                 form_place = PlaceForm(request.POST, 
                     instance=event.place, prefix='place')
-                form_speaker = SpeakerForm(request.POST, 
-                    instance=speaker, prefix='speaker')
+                form_speaker = SpeakerFormSet(request.POST, queryset=Speaker.objects.none())
                 form_organizer = OrganizerForm(request.POST, 
                     instance=organizer, prefix='organizer')
                 form_regconf = Reg8nEditForm(request.POST, 
@@ -383,15 +368,16 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     # pks have to exist; before making relationships
                     place = form_place.save()
                     regconf = form_regconf.save()
-                    speaker = form_speaker.save()
+                    speakers = form_speaker.save()
                     organizer = form_organizer.save()
                     event.save()
 
                     # update supplemental
-                    speaker.event = [event]
+                    for speaker in speakers:
+                        speaker.event = [event]
+                        speaker.save() # save again
+                        
                     organizer.event = [event]
-
-                    speaker.save() # save again
                     organizer.save() # save again
 
                     # update event
@@ -448,13 +434,13 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
 
             form_event = form_class(user=request.user)
             form_place = PlaceForm(prefix='place')
-            form_speaker = SpeakerForm(prefix='speaker')
+            form_speaker = SpeakerFormSet(queryset=Speaker.objects.none())
             form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_inits, prefix='regconf')
 
             # response
             return render_to_response(template_name, {
-                'multi_event_forms':[form_event,form_place,form_speaker,form_organizer,form_regconf],
+                'multi_event_forms':[form_event,form_place,form_organizer,form_regconf],
                 'form_event':form_event,
                 'form_place':form_place,
                 'form_speaker':form_speaker,
