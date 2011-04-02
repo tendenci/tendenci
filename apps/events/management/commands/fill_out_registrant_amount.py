@@ -10,6 +10,10 @@ class Command(BaseCommand):
     """
     
     def handle(self, *args, **options):
+        verbosity = 1
+        if 'verbosity' in options:
+            verbosity = options['verbosity']
+
         from events.models import Registration
         registrations = Registration.objects.filter(invoice__subtotal__gt=0)
         
@@ -21,8 +25,9 @@ class Command(BaseCommand):
                     if not registrant.amount:
                         registrant.amount = reg8n.invoice.subtotal
                         registrant.save()
-                        print '%d. %s %s (id=%d) - amount: %.2f' % (i+1, registrant.first_name, 
-                                    registrant.last_name, registrant.id, registrant.amount)
+                        if verbosity >= 2:
+                            print '%d. %s %s (id=%d) - amount: %.2f' % (i+1, registrant.first_name, 
+                                        registrant.last_name, registrant.id, registrant.amount)
             print "Done"
         else:
             print "No registrations or registrations with payment on the site."
