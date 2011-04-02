@@ -313,6 +313,7 @@ HAYSTACK_XAPIAN_PATH = os.path.join(PROJECT_ROOT, 'index')
 
 # HAYSTACK_INDEX_LIMITS - row amount to index per core application
 # Override for rebuild_index command exist in base core app
+HAYSTACK_SOLR_TIMEOUT = 20
 HAYSTACK_INDEX_LIMITS = {
     'event_logs': 3000,
 }
