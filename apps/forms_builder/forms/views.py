@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.utils.encoding import smart_str
 
 from base.http import Http403
-from forms_builder.forms.forms import FormForForm, FormForm
+from forms_builder.forms.forms import FormForForm, FormForm, FormForField
 from forms_builder.forms.models import Form, Field, FormEntry
 from forms_builder.forms.utils import generate_email_body
 from perms.models import ObjectPermission
@@ -106,7 +106,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
     if not has_perm(request.user,'forms.add_form',form_instance):
         raise Http403
 
-    form_class=inlineformset_factory(Form, Field, extra=3)
+    form_class=inlineformset_factory(Form, Field, form=FormForField, extra=3)
     
     if request.method == "POST":
         form = form_class(request.POST, instance=form_instance)

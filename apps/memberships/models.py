@@ -458,6 +458,7 @@ class AppField(models.Model):
     vital = models.BooleanField(_("Vital"), default=False, blank=True)
     required = models.BooleanField(_("Required"), default=True, blank=True)
     visible = models.BooleanField(_("Visible"), default=True, blank=True)
+    show_on_site = models.BooleanField(_("Show on Site"), default=False, blank=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text="Comma separated options where applicable")
 
@@ -729,9 +730,9 @@ class AppEntry(models.Model):
 
     def spawn_username(self, *args):
         """
-            Join arguments to create username [string].
-            Find similiar usernames; auto-increment newest username.
-            Return new username [string].
+        Join arguments to create username [string].
+        Find similiar usernames; auto-increment newest username.
+        Return new username [string].
         """
         if not args:
             raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
@@ -755,7 +756,7 @@ class AppEntry(models.Model):
             # to kill the database username max field length
             un = '%s%s' % (un, str(max(others)+1))
 
-        return un
+        return un.lower()
 
     @property
     def status(self):

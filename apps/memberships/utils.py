@@ -1,8 +1,11 @@
 import os
+import csv
+from datetime import datetime
 from django.conf import settings
 from django.utils import simplejson
-from memberships.models import AppField
-
+from django.contrib.auth.models import User
+from memberships.models import AppField, Membership, MembershipType
+from user_groups.models import GroupMembership
 
 def get_default_membership_fields(use_for_corp=False):
     json_file_path = os.path.join(settings.PROJECT_ROOT,
@@ -75,3 +78,54 @@ def get_corporate_membership_choices():
         cm_list.append((row[0], row[1]))
     
     return cm_list
+    
+def import_csv(file):
+    membership_csv = csv.reader(open(str(file), 'U'))
+    headers = membership_csv.next()
+    mems = list()
+    for row in membership_csv:
+        entry = dict()
+        for i in range(len(headers)):
+            entry[headers[i]] = row[i]
+        mems.append(entry)
+    return mems
+
+def new_mems_from_csv(file, app, creator_id):
+    """
+        Creates new memberships based on a Tendenci 4 CSV file
+    """
+    mems = import_csv(file)
+    creator = User.objects.get(id=creator_id)
+    for m in mems:
+        try:
+            mem_type = MembershipType.objects.get(name=m['membershiptype'])
+            user = User.objects.get(id=m['userid'])
+
+            group_membership = GroupMembership()
+            group_membership.group = mem_type.group
+            group_membership.member = user
+            group_membership.creator_id = creator.id
+            group_membership.creator_username = creator.username
+            group_membership.owner_id =  user.id
+            group_membership.owner_username = user.username
+            
+            group_membership.save()
+            
+            Membership.objects.create(
+                creator_id = creator_id,
+                owner_id = creator_id,
+                guid=m['guid'],
+                member_number=m['Member ID (member record)'],
+                membership_type = mem_type,
+                user = user,
+                renewal = m['renewal'],
+                join_dt = datetime.strptime(m['Join Date Time'], '%d-%b-%y'),
+                renew_dt = datetime.strptime(m['Renew Date Time'], '%d-%b-%y'),
+                expiration_dt = datetime.strptime(m["Expiration Date Time"], '%d-%b-%y'),
+                corporate_membership_id = m['Corporate Membership ID'],
+                payment_method = m["Payment Method"],
+                ma = app,
+            )
+        except:
+            pass
+            
