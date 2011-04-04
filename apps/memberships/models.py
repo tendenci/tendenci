@@ -734,14 +734,15 @@ class AppEntry(models.Model):
             Return new username [string].
         """
         if not args:
-            raise Exception(
-                'spawn_username() requires atleast 1 argument; 0 were given'
-            )
+            raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
+
+        max_length = 4
 
         un = ' '.join(args)             # concat args into one string
         un = re.sub('\s+','_',un)       # replace spaces w/ underscores
         un = re.sub('[^\w.-]+','',un)   # remove non-word-characters
-        un = un.strip('_.- ').lower()   # strip funny-characters from sides
+        un = un.strip('_.- ')           # strip funny-characters from sides
+        un = un[:max_length].lower()    # keep max length and lowercase username
 
         others = [] # find similiar usernames
         for u in User.objects.filter(username__startswith=un):
@@ -749,7 +750,10 @@ class AppEntry(models.Model):
                 others.append(int(u.username.replace(un,'0')))
 
         if others and 0 in others:
-            un = '%s%d' % (un, max(others)+1)
+            # the appended digit will compromise the username length
+            # there would have to be more than 99,999 duplicate usernames
+            # to kill the database username max field length
+            un = '%s%s' % (un, str(max(others)+1))
 
         return un
 
