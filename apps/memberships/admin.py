@@ -240,7 +240,12 @@ class AppFieldAdmin(admin.StackedInline):
     fieldsets = (
         (None, {'fields': (
             ('label','field_type',),
-            ('required', 'unique', 'admin_only',),
+            (
+                'required',
+                'unique',
+                'admin_only',
+                'show_on_site',
+            ),
             'choices',
             'help_text',
             'default_value',
