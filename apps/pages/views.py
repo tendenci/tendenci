@@ -9,13 +9,11 @@ from django.contrib import messages
 from base.http import Http403
 from pages.models import Page
 from pages.forms import PageForm
-from perms.models import ObjectPermission
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
-from perms.utils import get_notice_recipients
-from perms.utils import is_admin
-from perms.utils import has_perm
+from perms.utils import update_perms_and_save, get_notice_recipients
+from perms.utils import is_admin, has_perm
 
 try:
     from notification import models as notification
@@ -95,15 +93,8 @@ def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
             if form.is_valid():
                 page = form.save(commit=False)
 
-                # set up user permission
-                page.allow_user_view, page.allow_user_edit = form.cleaned_data['user_perms']
-                
-                # assign permissions
-                ObjectPermission.objects.remove_all(page)
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], page)
-                ObjectPermission.objects.assign(page.creator, page) 
-                
-                page.save()
+                # update all permissions and save the model
+                page = update_perms_and_save(request, form, page)
 
                 log_defaults = {
                     'event_id' : 582000,
@@ -177,23 +168,8 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
             if form.is_valid():           
                 page = form.save(commit=False)
                 
-                # set up the user information
-                page.creator = request.user
-                page.creator_username = request.user.username
-                page.owner = request.user
-                page.owner_username = request.user.username
-                
-                # set up user permission
-                page.allow_user_view, page.allow_user_edit = form.cleaned_data['user_perms']
-                
-                page.save() # get pk
-
-                # assign permissions for selected groups
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], page)
-                # assign creator permissions
-                ObjectPermission.objects.assign(page.creator, page) 
-
-                page.save() # update search-index w/ permissions
+                # add all permissions and save the model
+                page = update_perms_and_save(request, form, page)
  
                 log_defaults = {
                     'event_id' : 581000,

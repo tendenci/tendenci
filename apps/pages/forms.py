@@ -52,6 +52,9 @@ class PageForm(TendenciBaseForm):
         'tags',
         'allow_anonymous_view',
         'syndicate',
+        'user_perms',
+        'group_perms',
+        'member_perms',
         'status',
         'status_detail',
         )
@@ -67,6 +70,7 @@ class PageForm(TendenciBaseForm):
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
+                                 'member_perms',
                                  'group_perms',
                                  ],
                       'classes': ['permissions'],

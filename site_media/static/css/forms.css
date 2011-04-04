@@ -147,8 +147,8 @@ table#id_group_perms th.header-col-3 {
 }
 
 
-/* users */
-table#id_user_perms {
+/* users and members*/
+table#id_user_perms, table#id_member_perms {
 	text-align: left;
 	border: 1px solid #DDD;
 	-webkit-border-radius: 3px;
@@ -156,27 +156,27 @@ table#id_user_perms {
 	border-radius: 3px;
 }
 
-table#id_user_perms tr.alt {
+table#id_user_perms tr.alt, table#id_member_perms tr.alt {
 	background-color: #FFFFFF;
 }
 
-table#id_user_perms td {
+table#id_user_perms td, table#id_member_perms td {
 	padding: 5px;	
 }
 
-table#id_user_perms td input {
+table#id_user_perms td input, table#id_member_perms td input {
 	cursor: pointer;	
 }
 
-table#id_user_perms th.header-col-1 {
+table#id_user_perms th.header-col-1, table#id_member_perms th.header-col-1 {
 	width: 150px;
 }
 
-table#id_user_perms th.header-col-2 {
+table#id_user_perms th.header-col-2, table#id_member_perms th.header-col-2 {
 	width: 70px;
 }
 
-table#id_user_perms th.header-col-3 {
+table#id_user_perms th.header-col-3, table#id_member_perms th.header-col-3 {
 	width: 70px;
 }
 
@@ -217,7 +217,7 @@ div.id_group_perms {
 	border-top: 1px solid #CCC;	
 }
 
-div.id_user_perms {
+div.id_user_perms, div.id_member_perms {
 	padding-top: 10px;
 	border-top: 1px solid #CCC;	
 }

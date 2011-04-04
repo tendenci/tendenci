@@ -3,6 +3,7 @@ from django.contrib.auth.models import User, Permission
 from django.db.models.base import Model
 
 from perms.models import ObjectPermission
+from perms.utils import is_member
 
 class ObjectPermBackend(object):
     """
@@ -112,16 +113,27 @@ class ObjectPermBackend(object):
         
         # object anonymous and use bits
         if perm_type == 'view':
-            if hasattr(obj, "allow_anonymous_view") and hasattr(obj, "allow_user_view"):
+            has_attr_aov = hasattr(obj, "allow_anonymous_view")
+            has_attr_auv = hasattr(obj, "allow_user_view")
+            has_attr_amv = hasattr(obj, "allow_member_view")
+            if all([has_attr_aov, has_attr_auv, has_attr_amv]):
                 if obj.allow_anonymous_view:
                     return True
                 if user.is_authenticated() and obj.allow_user_view:
                     return True
+                if is_member(user) and obj.allow_member_view:
+                    return True
+
         if perm_type == 'change':
-            if hasattr(obj, "allow_anonymous_edit") and hasattr(obj, "allow_user_edit"):
+            has_attr_aoe = hasattr(obj, "allow_anonymous_edit")
+            has_attr_aue = hasattr(obj, "allow_user_edit")
+            has_attr_ame = hasattr(obj, "allow_member_edit")
+            if all([has_attr_aoe, has_attr_aue, has_attr_ame]):
                 if obj.allow_anonymous_edit:
                     return True
                 if user.is_authenticated() and obj.allow_user_edit:
+                    return True
+                if is_member(user) and obj.allow_member_edit:
                     return True
             
         # no anonymous user currently

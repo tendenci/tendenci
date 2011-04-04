@@ -9,7 +9,7 @@ from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from forms_builder.forms.managers import FormManager
 from perms.utils import is_admin
 from perms.models import TendenciBaseModel
-
+from user_groups.models import Group
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -28,6 +28,11 @@ FIELD_CHOICES = (
     ("FileField", _("File upload")),
     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
     ("DateTimeField", _("Date/time")),
+    #("ModelMultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi checkbox")),
+)
+
+FIELD_FUNCTIONS = (
+    ("GroupSubscription", _("Subscribe to Group")),
 )
 
 class Form(TendenciBaseModel):
@@ -48,7 +53,7 @@ class Form(TendenciBaseModel):
     email_copies = models.CharField(_("Send copies to"), blank=True, 
         help_text=_("One or more email addresses, separated by commas"), 
         max_length=200)
-
+    
     objects = FormManager()
 
     class Meta:
@@ -107,7 +112,12 @@ class Field(models.Model):
     
     form = models.ForeignKey("Form", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
-    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=50)
+    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES,
+        max_length=64)
+    field_function = models.CharField(_("Special Functionality"),
+        choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
+    function_params = models.CharField(_("Group Name or Names"),
+        max_length=100, null=True, blank=True, help_text="Comma separated if more than one")
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
@@ -122,6 +132,22 @@ class Field(models.Model):
     
     def __unicode__(self):
         return self.label
+        
+    #def queryset(self):
+    #    group_names = []
+    #    if self.field_type == "ModelMultipleChoiceField/django.forms.CheckboxSelectMultiple":
+    #        for val in self.choices.split(','):
+    #            group_name = val.strip()
+    #            group_names.append(group_name)
+    #    groups = Group.objects.filter(name__in=group_names)
+    #    return groups
+        
+    def execute_function(self, entry, value):
+        if self.field_function == "GroupSubscription":
+            if value:
+                for val in self.function_params.split(','):
+                    group = Group.objects.get(name=val)
+                    entry.subscribe(group)
 
 class FormEntry(models.Model):
     """
@@ -134,10 +160,36 @@ class FormEntry(models.Model):
     class Meta:
         verbose_name = _("Form entry")
         verbose_name_plural = _("Form entries")
+        
+    def __unicode__(self):
+        u = ''
+        for f in self.fields.all()[0:5]:
+            u = u + str(f) + ' '
+        return u[0:len(u)-1]
 
     @models.permalink
     def get_absolute_url(self):
         return ("form_entry_detail", (), {"id": self.pk})
+    
+    def subscribe(self, group):
+        """
+        Subscribe FormEntry to group specified.
+        """
+        # avoiding circular imports
+        from subscribers.models import GroupSubscription as GS
+        GS.objects.create(group=group, subscriber=self)
+
+    def unsubscribe(self, group):
+        """
+        Unsubscribe FormEntry from group specified
+        """
+        # avoiding circular imports
+        from subscribers.models import GroupSubscription as GS
+        try:
+            sub = GS.objects.get(group=group, subscriber=self)
+            sub.delete()
+        except GS.DoesNotExist:
+            pass
     
 class FieldEntry(models.Model):
     """
@@ -151,4 +203,11 @@ class FieldEntry(models.Model):
     class Meta:
         verbose_name = _("Form field entry")
         verbose_name_plural = _("Form field entries")
-
+    
+    def __unicode__(self):
+        return ('%s: %s' % (self.field.label, self.value))
+    
+    def save(self, *args, **kwargs):
+        super(FieldEntry, self).save(*args, **kwargs)
+        self.field.execute_function(self.entry, self.value)
+    

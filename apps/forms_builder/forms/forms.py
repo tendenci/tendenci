@@ -8,12 +8,12 @@ from django.core.files.storage import FileSystemStorage
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 
-from forms_builder.forms.models import FormEntry
+from forms_builder.forms.models import FormEntry, Field, Form
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from forms_builder.forms.models import Form
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
 from captcha.fields import CaptchaField
+from user_groups.models import Group
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -45,6 +45,8 @@ class FormForForm(forms.ModelForm):
             if "choices" in arg_names:
                 choices = field.choices.split(",")
                 field_args["choices"] = zip(choices, choices)
+            #if "queryset" in arg_names:
+            #    field_args["queryset"] = field.queryset()
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
@@ -82,6 +84,8 @@ class FormForForm(forms.ModelForm):
                 return self.cleaned_data["field_%s" % field.id]
         return None
         
+        
+        
 class FormForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('draft','Draft'),('published','Published'),))
@@ -100,31 +104,61 @@ class FormForm(TendenciBaseForm):
                   'status',
                   'status_detail',
                  )
-
         fieldsets = [('Form Information', {
-                      'fields': ['title',
-                                 'intro',
-                                 'response',
-                                 'email_from',
-                                 'email_copies',
-                                 ],
-                      'legend': ''
-                      }),
-                      ('Permissions', {
-                      'fields': ['allow_anonymous_view',
-                                 'user_perms',
-                                 'group_perms',
-                                 ],
-                      'classes': ['permissions'],
-                      }),
-                     ('Administrator Only', {
-                      'fields': ['status',
-                                 'status_detail'], 
-                      'classes': ['admin-only'],
+                        'fields': [ 'title',
+                                    'intro',
+                                    'response',
+                                    'email_from',
+                                    'email_copies',
+                                    ],
+                        'legend': ''
+                        }),
+                    ('Permissions', {
+                        'fields': [ 'allow_anonymous_view',
+                                    'user_perms',
+                                    'group_perms',
+                                    ],
+                        'classes': ['permissions'],
+                        }),
+                    ('Administrator Only', {
+                        'fields': ['status',
+                                    'status_detail'], 
+                        'classes': ['admin-only'],
                     })]
                 
     def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs) 
+        super(self.__class__, self).__init__(*args, **kwargs)
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+            
+class FormForField(forms.ModelForm):
+    class Meta:
+        model = Field
+    
+    def clean_function_params(self):
+        function_params = self.cleaned_data['function_params']
+        clean_params = ''
+        for val in function_params.split(','):
+            clean_params = val.strip() + ',' + clean_params
+        return clean_params[0:len(clean_params)-1]
+        
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        field_function = cleaned_data.get("field_function")
+        function_params = cleaned_data.get("function_params")
+        field_type = cleaned_data.get("field_type")
+        
+        if field_function == "GroupSubscription":
+            if field_type != "BooleanField":
+                raise forms.ValidationError("This field's function requires BooleanField as a field type")
+            if not function_params:
+                raise forms.ValidationError("This field's function requires at least 1 group specified.")
+            else:
+                for val in function_params.split(','):
+                    try:
+                        Group.objects.get(name=val)
+                    except Group.DoesNotExist:
+                        raise forms.ValidationError("The group %s does not exist" % (val))
+                
+        return cleaned_data

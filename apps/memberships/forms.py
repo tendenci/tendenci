@@ -528,3 +528,8 @@ class AppEntryForm(forms.ModelForm):
             if field_class == "EmailField":
                 return self.cleaned_data["field_%s" % field.id]
         return None
+
+class CSVForm(forms.Form):
+    app = forms.ModelChoiceField(label='Application', queryset=App.objects.all())
+    csv = forms.FileField(label="CSV File")
+    
