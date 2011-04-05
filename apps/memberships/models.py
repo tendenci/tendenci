@@ -291,8 +291,9 @@ class Membership(TendenciBaseModel):
         
     def get_renewal_period_dt(self):
         """
-        calculate and return a tuple of renewal period dt:
+        calculate and return a tuple of renewal period dt (the renewal window):
          (renewal_period_start_dt, renewal_period_end_dt)
+         
         """
         if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
             return (None, None)
