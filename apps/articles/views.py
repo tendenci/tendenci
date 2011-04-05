@@ -9,8 +9,7 @@ from django.db.models import Count
 from base.http import Http403
 from articles.models import Article
 from articles.forms import ArticleForm
-from perms.utils import update_perms_and_save
-from perms.utils import get_notice_recipients, has_perm
+from perms.utils import update_perms_and_save, get_notice_recipients, has_perm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
