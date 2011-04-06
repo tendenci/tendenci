@@ -12,8 +12,7 @@ from base.utils import now_localized
 from resumes.models import Resume
 from resumes.forms import ResumeForm
 from perms.models import ObjectPermission
-from perms.utils import get_notice_recipients, is_admin
-from perms.utils import has_perm
+from perms.utils import update_perms_and_save, get_notice_recipients, is_admin, has_perm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
@@ -84,7 +83,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
         form = form_class(request.POST, user=request.user)
         if form.is_valid():
             resume = form.save(commit=False)
-            
+
             # set it to pending if the user is anonymous
             if not request.user.is_authenticated():
                 resume.status = 0
@@ -94,30 +93,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
             now = now_localized()
             resume.expiration_dt = now + timedelta(days=resume.requested_duration)
 
-            # set up the user information
-            if request.user.is_authenticated():
-                resume.creator = request.user
-                resume.creator_username = request.user.username
-                resume.owner = request.user
-                resume.owner_username = request.user.username
-
-            # set up user permission
-            if request.user.is_authenticated():
-                resume.allow_user_view, resume.allow_user_edit = form.cleaned_data['user_perms']
-            else:
-                resume.allow_anonymous_view = False
-                resume.allow_user_view = False
-                resume.allow_user_edit = False
-
-            resume.save() # get pk
-
-            if request.user.is_authenticated():
-                # assign permissions for selected groups
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], resume)
-                # assign creator permissions
-                ObjectPermission.objects.assign(resume.creator, resume)
-
-            resume.save() # update search-index w/ permissions
+            resume = update_perms_and_save(request, form, resume)
 
             log_defaults = {
                 'event_id' : 351000,
@@ -161,16 +137,7 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
             form = form_class(request.POST, instance=resume, user=request.user)
             if form.is_valid():
                 resume = form.save(commit=False)
-
-                # set up user permission
-                resume.allow_user_view, resume.allow_user_edit = form.cleaned_data['user_perms']
-
-                # assign permissions
-                ObjectPermission.objects.remove_all(resume)
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], resume)
-                ObjectPermission.objects.assign(resume.creator, resume)
-
-                resume.save()
+                resume = update_perms_and_save(request, form, resume)
 
                 log_defaults = {
                     'event_id' : 352000,
