@@ -71,6 +71,9 @@ class DirectoryForm(TendenciBaseForm):
             'allow_user_view',
             'allow_user_edit',
             'syndicate',
+            'user_perms',
+            'member_perms',
+            'group_perms',
             'status',
             'status_detail',
         )
@@ -118,6 +121,7 @@ class DirectoryForm(TendenciBaseForm):
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
+                                 'member_perms',
                                  'group_perms',
                                  ],
                       'classes': ['permissions'],
