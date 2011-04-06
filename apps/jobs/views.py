@@ -19,9 +19,8 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from site_settings.utils import get_setting
 
-from perms.utils import get_notice_recipients, is_admin
-from perms.utils import has_perm
-from perms.models import ObjectPermission
+from perms.utils import get_notice_recipients, is_admin, update_perms_and_save, has_perm
+
 
 try:
     from notification import models as notification
@@ -120,21 +119,6 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                 job.status = 0
                 job.status_detail = 'pending'
 
-            # set up the user information
-            if user_is_authenticated:
-                job.creator = request.user
-                job.creator_username = request.user.username
-                job.owner = request.user
-                job.owner_username = request.user.username
-
-            # set up user permission
-            if user_is_admin:
-                job.allow_user_view, job.allow_user_edit = form.cleaned_data['user_perms']
-            else:
-                job.allow_anonymous_view = False
-                job.allow_user_view = False
-                job.allow_user_edit = False
-
             # list types and duration
             if not job.requested_duration:
                 job.requested_duration = 30
@@ -150,16 +134,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             # set the expiration date
             job.expiration_dt = job.activation_dt + timedelta(days=job.requested_duration)
 
-            # save the job to get the primary key
-            job.save()
-
-            if user_is_admin:
-                # assign permissions for selected groups
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], job)
-                # assign creator permissions
-                ObjectPermission.objects.assign(job.creator, job)
-
-            job.save()  # update search-index w/ permissions
+            job = update_perms_and_save(request, form, job)
 
             # create invoice
             job_set_inv_payment(request.user, job)
@@ -234,15 +209,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
             if form.is_valid():
                 job = form.save(commit=False)
 
-                # set up user permission
-                job.allow_user_view, job.allow_user_edit = form.cleaned_data['user_perms']
-
-                # assign permissions
-                ObjectPermission.objects.remove_all(job)
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], job)
-                ObjectPermission.objects.assign(job.creator, job)
-
-                job.save()
+                job = update_perms_and_save(request, form, job)
 
                 log_defaults = {
                     'event_id': 252000,
