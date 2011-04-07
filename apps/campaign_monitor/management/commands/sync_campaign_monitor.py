@@ -6,7 +6,7 @@ class Command(BaseCommand):
     """
     This script is to sync the groups and subscribers with the campaign monitor 
     
-    To run the command: python manage.py sync_campaign_monitor
+    To run the command: python manage.py sync_campaign_monitor --verbosity 2
     """
     
     def handle(self, *args, **options):
@@ -17,7 +17,6 @@ class Command(BaseCommand):
         verbosity = 1
         if 'verbosity' in options:
             verbosity = options['verbosity']
-        print verbosity
         
         api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
         client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
@@ -29,8 +28,7 @@ class Command(BaseCommand):
         list_names = [list.Name for list in lists]
         list_ids_d = dict(zip(list_names, list_ids))
 
-        #groups = Group.objects.filter(status=1, status_detail='active')
-        groups = Group.objects.filter(id=7)
+        groups = Group.objects.filter(status=1, status_detail='active')
         listmaps = ListMap.objects.all()
         syncd_groups = [listmap.group for listmap in listmaps]
         cm_list = List()
@@ -69,8 +67,8 @@ class Command(BaseCommand):
                 except BadRequest as br:
                     email_address = subscriber_obj.add(list_id, email, name, [], True)
                 
-                if verbosity >=2:
-                    print "%d. %s (%s)" % (i, name, email)
+                    if verbosity >=2:
+                        print "%d. %s (%s)" % (i, name, email)
             print 'Total subscribed: %d' % members.count()
             print
                     
