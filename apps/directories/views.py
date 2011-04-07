@@ -12,8 +12,7 @@ from base.http import Http403
 from directories.models import Directory, DirectoryPricing
 from directories.forms import DirectoryForm, DirectoryPricingForm
 from directories.utils import directory_set_inv_payment
-from perms.models import ObjectPermission
-from perms.utils import get_notice_recipients
+from perms.utils import get_notice_recipients, update_perms_and_save
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
@@ -108,15 +107,8 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
         if form.is_valid():
             directory = form.save(commit=False)
 
-            # set up user permission
-            directory.allow_user_view, directory.allow_user_edit = form.cleaned_data['user_perms']
-            
-            # assign permissions
-            ObjectPermission.objects.remove_all(directory)
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], directory)
-            ObjectPermission.objects.assign(directory.creator, directory) 
-            
-            directory.save()
+            # update all permissions and save the model
+            directory = update_perms_and_save(request, form, directory)
 
             # resize the image that has been uploaded
             try:
@@ -125,7 +117,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                 logo.save(directory.logo.path)
             except:
                 pass
-            
+
             log_defaults = {
                 'event_id' : 442000,
                 'event_data': '%s (%d) edited by %s' % (directory._meta.object_name, directory.pk, request.user),
@@ -195,7 +187,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
     if not has_perm(request.user,'directories.add_directory'): raise Http403
     
     require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
-    
+
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, user=request.user)
         del form.fields['expiration_dt']
@@ -209,17 +201,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             
         if form.is_valid():           
             directory = form.save(commit=False)
-            # set up the user information
-            directory.creator = request.user
-            directory.creator_username = request.user.username
-            directory.owner = request.user
-            directory.owner_username = request.user.username
 
-            # set up user permission
-            directory.allow_user_view, directory.allow_user_edit = form.cleaned_data['user_perms']
-                
-            directory.save() # get pk
-    
             # resize the image that has been uploaded
             try:
                 logo = Image.open(directory.logo.path)
@@ -240,17 +222,13 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
             
             if not directory.status_detail: directory.status_detail = 'pending'
-    
-            # assign permissions for selected groups
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], directory)
-            # assign creator permissions
-            ObjectPermission.objects.assign(directory.creator, directory) 
-    
-            directory.save() # update search-index w/ permissions
+
+            # update all permissions and save the model
+            directory = update_perms_and_save(request, form, directory)
             
             # create invoice
             directory_set_inv_payment(request.user, directory)
-    
+
             log_defaults = {
                 'event_id' : 441000,
                 'event_data': '%s (%d) added by %s' % (directory._meta.object_name, directory.pk, request.user),
@@ -290,7 +268,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
         if not require_payment:
             del form.fields['payment_method']
             del form.fields['list_type']
-       
+
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
 
@@ -327,12 +305,12 @@ def delete(request, id, template_name="directories/delete.html"):
             directory.delete()
                                     
             return HttpResponseRedirect(reverse('directory.search'))
-    
+
         return render_to_response(template_name, {'directory': directory}, 
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
 
 @login_required
 def pricing_add(request, form_class=DirectoryPricingForm, template_name="directories/pricing-add.html"):

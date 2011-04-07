@@ -291,8 +291,9 @@ class Membership(TendenciBaseModel):
         
     def get_renewal_period_dt(self):
         """
-        calculate and return a tuple of renewal period dt:
+        calculate and return a tuple of renewal period dt (the renewal window):
          (renewal_period_start_dt, renewal_period_end_dt)
+         
         """
         if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
             return (None, None)
@@ -458,6 +459,7 @@ class AppField(models.Model):
     vital = models.BooleanField(_("Vital"), default=False, blank=True)
     required = models.BooleanField(_("Required"), default=True, blank=True)
     visible = models.BooleanField(_("Visible"), default=True, blank=True)
+    show_on_site = models.BooleanField(_("Show on Site"), default=False, blank=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text="Comma separated options where applicable")
 
@@ -729,19 +731,20 @@ class AppEntry(models.Model):
 
     def spawn_username(self, *args):
         """
-            Join arguments to create username [string].
-            Find similiar usernames; auto-increment newest username.
-            Return new username [string].
+        Join arguments to create username [string].
+        Find similiar usernames; auto-increment newest username.
+        Return new username [string].
         """
         if not args:
-            raise Exception(
-                'spawn_username() requires atleast 1 argument; 0 were given'
-            )
+            raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
+
+        max_length = 4
 
         un = ' '.join(args)             # concat args into one string
         un = re.sub('\s+','_',un)       # replace spaces w/ underscores
         un = re.sub('[^\w.-]+','',un)   # remove non-word-characters
-        un = un.strip('_.- ').lower()   # strip funny-characters from sides
+        un = un.strip('_.- ')           # strip funny-characters from sides
+        un = un[:max_length].lower()    # keep max length and lowercase username
 
         others = [] # find similiar usernames
         for u in User.objects.filter(username__startswith=un):
@@ -749,9 +752,12 @@ class AppEntry(models.Model):
                 others.append(int(u.username.replace(un,'0')))
 
         if others and 0 in others:
-            un = '%s%d' % (un, max(others)+1)
+            # the appended digit will compromise the username length
+            # there would have to be more than 99,999 duplicate usernames
+            # to kill the database username max field length
+            un = '%s%s' % (un, str(max(others)+1))
 
-        return un
+        return un.lower()
 
     @property
     def status(self):

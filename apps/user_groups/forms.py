@@ -118,7 +118,7 @@ class GroupMembershipForm(forms.ModelForm):
         if group:
             # exclude those already joined
             exclude_userid = [user.id for user in group.members.all()]
-            self.fields['member'].queryset = User.objects.all().exclude(id__in=exclude_userid)
+            self.fields['member'].queryset = User.objects.filter(is_active=1).exclude(id__in=exclude_userid)
         else:
             self.fields['member'].queryset = User.objects.filter(is_active=1)
         if user_id:

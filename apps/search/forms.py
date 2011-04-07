@@ -23,10 +23,10 @@ def model_choices(site=None):
     choices = []
     for m in site.get_indexed_models():
         #if m._meta.module_name in INCLUDED_APPS:
-        setting_args = ['module',m._meta.app_label,'enabled']
-        is_enabled = get_setting(*setting_args)
-        if is_enabled:
-            choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
+        #setting_args = ['module',m._meta.app_label,'enabled']
+        #is_enabled = get_setting(*setting_args)
+        #if is_enabled:
+        choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
                             capfirst(unicode(m._meta.verbose_name_plural))))
             
     return sorted(choices, key=lambda x: x[1])

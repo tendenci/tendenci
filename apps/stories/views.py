@@ -10,8 +10,7 @@ from django.contrib import messages
 from base.http import Http403
 from stories.models import Story
 from stories.forms import StoryForm, UploadStoryImageForm
-from perms.models import ObjectPermission
-from perms.utils import has_perm
+from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 
 
@@ -63,23 +62,8 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
             form = form_class(request.POST, request.FILES, user=request.user)
             if form.is_valid():           
                 story = form.save(commit=False)
-                # set up the user information
-                story.creator = request.user
-                story.creator_username = request.user.username
-                story.owner = request.user
-                story.owner_username = request.user.username
-    
-                # set up user permission
-                story.allow_user_view, story.allow_user_edit = form.cleaned_data['user_perms']
-    
-                story.save() # get pk
-    
-                # assign permissions for selected groups
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], story)
-                # assign creator permissions
-                ObjectPermission.objects.assign(story.creator, story) 
-    
-                story.save() # update search-index w/ permissions
+
+                story = update_perms_and_save(request, form, story)
     
                 log_defaults = {
                     'event_id' : 1060100,
@@ -114,15 +98,7 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
             if form.is_valid():
                 story = form.save(commit=False)
 
-                # set up user permission
-                story.allow_user_view, story.allow_user_edit = form.cleaned_data['user_perms']
-        
-                # assign permissions
-                ObjectPermission.objects.remove_all(story)
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], story)
-                ObjectPermission.objects.assign(story.creator, story) 
-    
-                story.save()
+                story = update_perms_and_save(request, form, story)
                 
                 log_defaults = {
                     'event_id' : 1060200,
