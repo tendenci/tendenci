@@ -92,6 +92,7 @@ class EventForm(TendenciBaseForm):
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
+                                 'member_perms',
                                  'group_perms',
                                  ],
                       'classes': ['permissions'],

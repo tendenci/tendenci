@@ -24,6 +24,9 @@
     	<form action="{% url event.add %}" method="post">
     	<div class="forms">
     		{{ multi_event_forms|styled_multi_forms }}
+            <div class="form-label">Speakers</div> 
+            {{ form_speaker.management_form }}
+            {{ form_speaker|styled_form_set }}
 			<input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL 'Event' %}" />
 		</div>
         </form>

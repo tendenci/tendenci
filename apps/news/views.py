@@ -8,14 +8,14 @@ from django.contrib import messages
 from news.models import News
 from news.forms import NewsForm
 from base.http import Http403
-from perms.models import ObjectPermission
-from perms.utils import has_perm
+from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
 from perms.utils import get_notice_recipients
 from perms.utils import is_admin
+
 try:
     from notification import models as notification
 except:
@@ -100,15 +100,8 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
         if form.is_valid():
             news = form.save(commit=False)
 
-            # set up user permission
-            news.allow_user_view, news.allow_user_edit = form.cleaned_data['user_perms']
-            
-            # assign permissions
-            ObjectPermission.objects.remove_all(news)
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], news)
-            ObjectPermission.objects.assign(news.creator, news) 
-
-            news.save()
+            # update all permissions and save the model
+            news = update_perms_and_save(request, form, news)
 
             log_defaults = {
                 'event_id' : 305200,
@@ -169,24 +162,9 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
         form = form_class(request.POST, user=request.user)
         if form.is_valid():
             news = form.save(commit=False)
-            
-            # set up the user information
-            news.creator = request.user
-            news.creator_username = request.user.username
-            news.owner = request.user
-            news.owner_username = request.user.username
 
-            # set up user permission
-            news.allow_user_view, news.allow_user_edit = form.cleaned_data['user_perms']
-                            
-            news.save() # get pk
-
-            # assign permissions for selected groups
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], news)
-            # assign creator permissions
-            ObjectPermission.objects.assign(news.creator, news) 
-
-            news.save() # update search-index w/ permissions
+            # update all permissions and save the model
+            news = update_perms_and_save(request, form, news)
 
             log_defaults = {
                 'event_id' : 305100,
