@@ -10,6 +10,7 @@ from django.conf import settings
 from django.http import Http404
 from django.core.cache import cache
 from django.utils.html import strip_tags
+from django.core.exceptions import ImproperlyConfigured
 
 from base.http import Http403
 from forms import EventSearchForm
@@ -17,9 +18,12 @@ from utils import get_event_by_id
 from site_settings.utils import get_setting
 from pages.models import Page
 
-DEFAULT_URL = 'http://go.eventbooking.com/xml_public.asp?pwl=4E1.5B2115DE'
-EVENTBOOKING_XML_URL = getattr(settings, 'EVENTBOOKING_XML_URL', DEFAULT_URL)
+EVENTBOOKING_XML_URL = getattr(settings, 'EVENTBOOKING_XML_URL', '')
+if not EVENTBOOKING_XML_URL:
+    raise ImproperlyConfigured('Setting EVENTBOOKING_XML_URL does not exist')
 
+# Code when eventbooking goes down
+# EVENTBOOKING_XML_LIST = os.path.join(settings.MEDIA_ROOT, 'ebevents', 'events_list.xml')
 
 def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"):
     """
@@ -41,11 +45,14 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
 
     # direct pull and cache
     if not xml:
-        url_object = urllib2.urlopen(EVENTBOOKING_XML_URL)
+        # Code when eventbooking goes down
+        #with open(EVENTBOOKING_XML_LIST, 'r') as f:
+        #    xml = f.read()
+        url_object = urllib2.urlopen(EVENTBOOKING_XML_URL, timeout=120)
         xml = url_object.read()
 
         # cache the content for one hour
-        cache.set('event_booking_xml', xml, 3600)
+        cache.set('event_booking_xml', xml, 60*60*2) # 2 hours
         
     soup = BeautifulStoneSoup(xml)
     nodes = soup.findAll('event')
@@ -74,7 +81,7 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
     event_years = set([evnt['start_date'].year for evnt in events if evnt['start_date']])
      
     # filter type  
-    if q_event_type <> "":
+    if q_event_type != "":
         events = [event for event in events if event['event_type']==q_event_type]
     
     # filter date  
@@ -115,7 +122,10 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
 def display(request, id, template_name="ebevents/display.html"):
     if not id: raise Http403
         
-    event = get_event_by_id(id)
+    try:
+        event = get_event_by_id(id)
+    except:
+        event = None
     if not event: raise Http404
     
     # html meta title
@@ -140,7 +150,10 @@ def ical(request, id):
     from django.utils.html import strip_tags
     from utils import build_ical_text, build_ical_html
     
-    event = get_event_by_id(id)
+    try:
+        event = get_event_by_id(id)
+    except:
+        event = None
     if not event: raise Http404
     
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
@@ -228,4 +241,3 @@ def ical(request, id):
         file_name = "event_%s.ics" % id
     response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
     return response
-
