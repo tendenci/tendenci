@@ -10,7 +10,7 @@ from django.utils.html import escape
 from memberships.forms import MembershipTypeForm
 from user_groups.models import Group
 from event_logs.models import EventLog
-from perms.models import ObjectPermission 
+from perms.utils import update_perms_and_save 
 from memberships.models import  Membership, MembershipType, Notice, App, AppField, AppEntry
 from memberships.forms import AppForm, NoticeForm, AppFieldForm, AppEntryForm
 from memberships.utils import get_default_membership_fields, edit_app_update_corp_fields
@@ -268,7 +268,7 @@ class AppAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 
                            'membership_types', 'payment_methods', 'use_for_corp', 'use_captcha')},),
-        ('Administrative', {'fields': ('allow_anonymous_view','user_perms','group_perms',
+        ('Administrative', {'fields': ('allow_anonymous_view','user_perms', 'member_perms', 'group_perms',
                                        'status','status_detail')}),
     )
 
@@ -365,7 +365,7 @@ class AppAdmin(admin.ModelAdmin):
                     }),
 
                     ('Administrative', {
-                        'fields': ('allow_anonymous_view','user_perms','group_perms','status','status_detail'),
+                        'fields': ('allow_anonymous_view','user_perms', 'member_perms', 'group_perms','status','status_detail'),
                     }),
 
                     ('Form Fields', {
@@ -427,17 +427,8 @@ class AppAdmin(admin.ModelAdmin):
 
             field.save()
 
-        # permissions
-        if add:
-            # assign permissions for selected groups
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], app)
-            # assign creator permissions
-            ObjectPermission.objects.assign(app.creator, app)
-        else:
-            # assign permissions
-            ObjectPermission.objects.remove_all(app)
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], app)
-            ObjectPermission.objects.assign(app.creator, app)
+        # update all permissions and save the model
+        app = update_perms_and_save(request, form, app)
 
         return app
 
