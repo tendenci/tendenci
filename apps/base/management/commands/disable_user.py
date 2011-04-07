@@ -39,8 +39,7 @@ class Command(BaseCommand):
         try:
             u = User.objects.get(username=username)
         except ObjectDoesNotExist:
-            print 'User with username (%s) could not be found' % username
-            sys.exit(-1)
+            raise CommandError('User with username (%s) could not be found' % username)
 
         # Remove the user from all groups
         u.groups.clear()
