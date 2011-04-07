@@ -14,8 +14,6 @@ class ListMap(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     last_sync_dt = models.DateTimeField(null=True)
-    status_detail = models.CharField(max_length=50, default='active')
-    status = models.BooleanField(default=True)
     
 class GroupQueue(models.Model):
     group = models.ForeignKey(Group)
@@ -113,6 +111,8 @@ if cm_api_key and cm_client_id:
                 pass
             
     def sync_cm_subscriber(sender, instance=None, created=False, **kwargs):
+        """Subscribe the subscriber to the campaign monitor list
+        """
         (name, email) = get_name_email(instance)
             
         if email:
@@ -134,6 +134,8 @@ if cm_api_key and cm_client_id:
                 pass
     
     def delete_cm_subscriber(sender, instance=None, **kwargs):
+        """Delete the subscriber from the campaign monitor list
+        """
         (name, email) = get_name_email(instance)
         
         if email:
@@ -153,9 +155,7 @@ if cm_api_key and cm_client_id:
         """Add an entry to the listmap
         """
         list_map = ListMap(group=group,
-                           list_id=list_id,
-                           status=group.status,
-                           status_detail=group.status_detail)
+                           list_id=list_id)
         list_map.save()
         
     def get_or_create_cm_list(client_id, group):
