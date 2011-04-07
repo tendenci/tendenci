@@ -383,17 +383,8 @@ class AppAdmin(admin.ModelAdmin):
         app = form.save(commit=False)
         add = not change
 
-        # set up user permission
-        app.allow_user_view, app.allow_user_edit = form.cleaned_data['user_perms']
-
-        # set creator and owner
-        if add:
-            app.creator = request.user
-            app.creator_username = request.user.username
-            app.owner = request.user
-            app.owner_username = request.user.username
-
-        app.save()
+        # update all permissions and save the model
+        app = update_perms_and_save(request, form, app)
 
         if add:
             # default application fields
@@ -426,9 +417,6 @@ class AppAdmin(admin.ModelAdmin):
                 field.content_type = ContentType.objects.get_for_model(Membership)
 
             field.save()
-
-        # update all permissions and save the model
-        app = update_perms_and_save(request, form, app)
 
         return app
 
