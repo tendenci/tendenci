@@ -31,4 +31,4 @@ class StaffSitemap(TendenciSitemap):
         return [sq.object for sq in sqs]
     
     def lastmod(self, obj):
-        return obj.start_dt
+        return obj.start_date
