@@ -336,6 +336,7 @@ class MembershipArchive(models.Model):
         verbose_name_plural = _("Archived Memberships")
         permissions = (("view_archived_membership","Can view archived membership"),)
 
+<<<<<<< Updated upstream
     def __unicode__(self):
         return "%s (%s)" % (self.user.get_full_name(), self.member_number) 
     
@@ -381,7 +382,7 @@ class Notice(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('membership.notice_email_content', [self.id])
- 
+
     def copy_membership(self, membership):
         self.membership = membership
         self.membership_type = membership.membership_type
