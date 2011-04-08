@@ -336,7 +336,6 @@ class MembershipArchive(models.Model):
         verbose_name_plural = _("Archived Memberships")
         permissions = (("view_archived_membership","Can view archived membership"),)
 
-<<<<<<< Updated upstream
     def __unicode__(self):
         return "%s (%s)" % (self.user.get_full_name(), self.member_number) 
     
