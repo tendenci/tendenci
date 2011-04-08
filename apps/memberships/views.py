@@ -65,6 +65,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
 
+
 @login_required
 def membership_renew(request, id=0):
     """
@@ -106,6 +107,7 @@ def membership_renew(request, id=0):
     # this tells us that the entry is a renewal
 
     return redirect(new_entry.confirmation_url)
+
 
 def application_details(request, slug=None, cmb_id=None, template_name="memberships/applications/details.html"):
     """
