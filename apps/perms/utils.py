@@ -98,7 +98,7 @@ def is_member(user):
                 if all([status, active]):
                     setattr(user, 'is_member', True)
                     return True
-        except ObjectDoesNotExist, AttributeError:
+        except:
             setattr(user, 'is_member', False)
             return False
 
