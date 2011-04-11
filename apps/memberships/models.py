@@ -258,7 +258,7 @@ class Membership(TendenciBaseModel):
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type")) 
     user = models.ForeignKey(User, related_name="memberships")
     directory = models.ForeignKey(Directory, blank=True, null=True) 
-
+    
     renewal = models.BooleanField(default=0)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time"), null=True)

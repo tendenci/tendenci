@@ -2,11 +2,12 @@ import hashlib
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType, ContentTypeManager
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from event_logs.models import EventLog
 from memberships.models import App, AppEntry
 from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm
@@ -15,7 +16,7 @@ from perms.utils import is_admin
 from base.http import Http403
 
 from memberships.models import Membership, MembershipType, Notice
-from memberships.forms import MemberApproveForm
+from memberships.forms import MemberApproveForm, ReportForm
 from memberships.models import Membership, MembershipType
 from memberships.forms import MemberApproveForm, CSVForm
 from memberships.utils import new_mems_from_csv
@@ -25,11 +26,15 @@ from perms.utils import get_notice_recipients, has_perm
 from invoices.models import Invoice
 from corporate_memberships.models import CorporateMembership
 
+from geraldo.generators import PDFGenerator
+from reports import ReportNewMems
+
+from datetime import datetime, timedelta
+
 try:
     from notification import models as notification
 except:
     notification = None
-
 
 def membership_index(request):
     return HttpResponseRedirect(reverse('membership.search'))
@@ -481,3 +486,63 @@ def import_membership_csv(request, template_name="memberships/csv_form.html"):
     return render_to_response(template_name, {
         'form':form,
         }, context_instance=RequestContext(request))
+
+
+#REPORTS
+    
+def _membership_joins(from_date):
+    return Membership.objects.filter(join_dt__gte=from_date)
+
+@staff_member_required
+def membership_join_report(request):
+    now = datetime.now()
+    mems = Membership.objects.all()
+    mem_type = ''
+    mem_stat = ''
+    if request.method == 'POST':
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['membership_type']:
+                mem_type = form.cleaned_data['membership_type']
+                mems = mems.filter(membership_type = form.cleaned_data['membership_type'])
+            if form.cleaned_data['membership_status']:
+                mem_stat = form.cleaned_data['membership_status']
+                if form.cleaned_data['membership_status'] == 'ACTIVE':
+                    mems = mems.filter(expiration_dt__gte = now, join_dt__lte = now)
+                else:
+                    mems = mems.exclude(expiration_dt__gte = now, join_dt__lte = now)
+    else:
+        form = ReportForm()
+    mems30days = mems.filter(join_dt__gte = now-timedelta(days=30))
+    mems60days = mems.filter(join_dt__gte = now-timedelta(days=60))
+    mems90days = mems.filter(join_dt__gte = now-timedelta(days=90))
+    return render_to_response(
+                'reports/membership_joins.html', {
+                    'mems30days': mems30days,
+                    'mems60days': mems60days,
+                    'mems90days': mems90days,
+                    'form': form,
+                    'mem_type': mem_type,
+                    'mem_stat': mem_stat,
+                },
+                context_instance=RequestContext(request))
+
+@staff_member_required
+def membership_join_report_pdf(request):
+    now = datetime.now()
+    days = request.GET.get('days', 30)
+    mem_type = request.GET.get('mem_type', None)
+    mem_stat = request.GET.get('mem_stat', None)
+    mems = Membership.objects.all()
+    if mem_type:
+        mems = mems.filter(membership_type=mem_type)
+    if mem_stat:
+        if mem_stat == 'ACTIVE':
+            mems = mems.filter(expiration_dt__gte = now, join_dt__lte = now)
+        else:
+            mems = mems.exclude(expiration_dt__gte = now, join_dt__lte = now)
+    mems = mems.filter(join_dt__gte = now-timedelta(days=int(days)))
+    report = ReportNewMems(queryset = mems)
+    resp = HttpResponse(mimetype='application/pdf')
+    report.generate_by(PDFGenerator, filename=resp)
+    return resp
