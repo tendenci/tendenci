@@ -27,9 +27,7 @@ from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
-from perms.models import ObjectPermission
-from perms.utils import get_administrators
-from perms.utils import has_perm, get_notice_recipients
+from perms.utils import has_perm, get_notice_recipients, update_perms_and_save, get_administrators
 from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
@@ -199,19 +197,9 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             form_event = form_class(request.POST, instance=event, user=request.user)
             if form_event.is_valid():
                 event = form_event.save(commit=False)
-                event.creator_username = request.user.username
-                event.owner_username = request.user.username
-                event.owner = request.user
 
-                # set up user permission
-                event.allow_user_view, event.allow_user_edit = form_event.cleaned_data['user_perms']
-                
-                # assign permissions
-                ObjectPermission.objects.remove_all(event)
-                ObjectPermission.objects.assign_group(form_event.cleaned_data['group_perms'], event)
-                ObjectPermission.objects.assign(event.creator, event) 
-                
-                event.save()
+                # update all permissions and save the model
+                event = update_perms_and_save(request, form, event)
 
                 EventLog.objects.log(
                     event_id =  172000, # edit event
@@ -337,10 +325,6 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
             form_event = form_class(request.POST, user=request.user)
             if form_event.is_valid():           
                 event = form_event.save(commit=False)
-                event.creator = request.user
-                event.creator_username = request.user.username
-                event.owner = request.user
-                event.owner_username = request.user.username
 
                 try: # look for an organizer
                     organizer = event.organizer_set.all()[0]
@@ -384,12 +368,9 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     event.place = place
                     event.registration_configuration = regconf
                     
-                    event.save() # save again
 
-                    # event security
-                    event.allow_user_view, event.allow_user_edit = form_event.cleaned_data['user_perms']
-                    ObjectPermission.objects.assign_group(form_event.cleaned_data['group_perms'], event)
-                    ObjectPermission.objects.assign(event.creator, event) 
+                    # update all permissions and save the model
+                    event = update_perms_and_save(request, form, event)
 
                     EventLog.objects.log(
                         event_id =  171000, # add event

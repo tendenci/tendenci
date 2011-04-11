@@ -99,6 +99,7 @@ class FormForm(TendenciBaseForm):
                   'email_from',
                   'email_copies',
                   'user_perms',
+                  'member_perms',
                   'group_perms',
                   'allow_anonymous_view',
                   'status',
@@ -116,6 +117,7 @@ class FormForm(TendenciBaseForm):
                     ('Permissions', {
                         'fields': [ 'allow_anonymous_view',
                                     'user_perms',
+                                    'member_perms',
                                     'group_perms',
                                     ],
                         'classes': ['permissions'],
