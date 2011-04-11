@@ -73,25 +73,24 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
     # make event type list
     event_types = set([evnt['event_type'] for evnt in events])
     event_types = [t for t in event_types]
-
     event_types.sort()
-   
-    
+
     # make year list
     event_years = set([evnt['start_date'].year for evnt in events if evnt['start_date']])
      
     # filter type  
-    if q_event_type != "":
+    if q_event_type:
         events = [event for event in events if event['event_type']==q_event_type]
     
     # filter date  
     if q_event_month and q_event_year:
-        events = [event for event in events if event['start_date'].year==q_event_year and \
-                  event['start_date'].month==q_event_month]
+        events = [event for event in events if event['start_date'].year==int(q_event_year) and \
+                  event['start_date'].month==int(q_event_month)]
+        print events
     elif q_event_month:
-        events = [event for event in events if event['start_date'].month==q_event_month]
+        events = [event for event in events if event['start_date'].month==int(q_event_month)]
     elif q_event_year:
-        events = [event for event in events if event['start_date'].year==q_event_year]
+        events = [event for event in events if event['start_date'].year==int(q_event_year)]
         
 
     # set form initials and choices    
