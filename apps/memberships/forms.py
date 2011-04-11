@@ -533,3 +533,12 @@ class CSVForm(forms.Form):
     app = forms.ModelChoiceField(label='Application', queryset=App.objects.all())
     csv = forms.FileField(label="CSV File")
     
+class ReportForm(forms.Form):
+    STATUS_CHOICES = (
+        ('', '----------'),
+        ('ACTIVE', 'ACTIVE'),
+        ('EXPIRED', 'EXPIRED'),
+    )
+    
+    membership_type = forms.ModelChoiceField(queryset = MembershipType.objects.all(), required = False)
+    membership_status = forms.ChoiceField(choices = STATUS_CHOICES, required = False)
