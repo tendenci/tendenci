@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group as Auth_Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 from profiles.models import Profile
 from perms.models import ObjectPermission

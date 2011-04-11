@@ -122,4 +122,3 @@ class FormAdmin(admin.ModelAdmin):
         return response
 
 admin.site.register(Form, FormAdmin)
-

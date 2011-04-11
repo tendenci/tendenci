@@ -13,9 +13,9 @@ from base.http import Http403
 from forms_builder.forms.forms import FormForForm, FormForm, FormForField
 from forms_builder.forms.models import Form, Field, FormEntry
 from forms_builder.forms.utils import generate_email_body
-from perms.models import ObjectPermission
-from perms.utils import has_perm
+from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
+
 
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
@@ -26,21 +26,8 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
         form = form_class(request.POST, user=request.user)
         if form.is_valid():           
             form_instance = form.save(commit=False)
-            # set up the user information
-            form_instance.creator = request.user
-            form_instance.creator_username = request.user.username
-            form_instance.owner = request.user
-            form_instance.owner_username = request.user.username
-
-            # set up user permission
-            form_instance.allow_user_view, form_instance.allow_user_edit = form.cleaned_data['user_perms']
-                
-            form_instance.save()
-
-            # assign permissions for selected groups
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], form_instance)
-            # assign creator permissions
-            ObjectPermission.objects.assign(form_instance.creator, form_instance) 
+            
+            form_instance = update_perms_and_save(request, form, form_instance)
 
             log_defaults = {
                 'event_id' : 587100,
@@ -60,6 +47,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
 
+
 def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
     form_instance = get_object_or_404(Form, pk=id)
     
@@ -71,15 +59,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         if form.is_valid():           
             form_instance = form.save(commit=False)
             
-            # set up user permission
-            form_instance.allow_user_view, form_instance.allow_user_edit = form.cleaned_data['user_perms']
-            
-            # assign permissions
-            ObjectPermission.objects.remove_all(form_instance)
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], form_instance)
-            ObjectPermission.objects.assign(form_instance.creator, form_instance) 
-                
-            form_instance.save()
+            form_instance = update_perms_and_save(request, form, form_instance)
 
             log_defaults = {
                 'event_id' : 587200,
@@ -98,6 +78,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
        
     return render_to_response(template_name, {'form':form, 'form_instance':form_instance}, 
         context_instance=RequestContext(request))
+
 
 @login_required
 def update_fields(request, id, template_name="forms/update_fields.html"):
@@ -120,7 +101,8 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
        
     return render_to_response(template_name, {'form':form, 'form_instance':form_instance}, 
         context_instance=RequestContext(request))
-                
+
+            
 @login_required
 def delete(request, id, template_name="forms/delete.html"):
     form_instance = get_object_or_404(Form, pk=id)
@@ -147,7 +129,8 @@ def delete(request, id, template_name="forms/delete.html"):
 
     return render_to_response(template_name, {'form': form_instance},
         context_instance=RequestContext(request))
-    
+
+ 
 @login_required
 def entries(request, id, template_name="forms/entries.html"):
     form = get_object_or_404(Form, pk=id)
@@ -159,6 +142,7 @@ def entries(request, id, template_name="forms/entries.html"):
     
     return render_to_response(template_name, {'form':form,'entries': entries},
         context_instance=RequestContext(request))
+
     
 @login_required
 def entry_delete(request, id, template_name="forms/entry_delete.html"):
@@ -175,6 +159,7 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
 
     return render_to_response(template_name, {'entry': entry},
         context_instance=RequestContext(request))
+
     
 def entry_detail(request, id, template_name="forms/entry_detail.html"):
     entry = get_object_or_404(FormEntry, pk=id)
@@ -185,6 +170,7 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
 
     return render_to_response(template_name, {'entry':entry}, 
         context_instance=RequestContext(request))
+
 
 def entries_export(request, id):
     form_instance = get_object_or_404(Form, pk=id)
@@ -274,6 +260,7 @@ def entries_export(request, id):
         writer = csv.writer(response, delimiter=',')
     
     return response
+
 
 def search(request, template_name="forms/search.html"):
     query = request.GET.get('q', None)

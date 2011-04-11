@@ -1,3 +1,4 @@
+from os.path import join
 import urllib2
 from datetime import datetime
 from BeautifulSoup import BeautifulStoneSoup
@@ -9,6 +10,8 @@ from django.utils.html import strip_tags
 DEFAULT_URL = 'http://go.eventbooking.com/xml_public.asp?pwl=4E1.5B2115DE'
 EVENTBOOKING_XML_URL = getattr(settings, 'EVENTBOOKING_XML_URL', DEFAULT_URL)
 
+# Code when eventbooking goes down
+# EVENTBOOKING_XML_PATH =  join(settings.MEDIA_ROOT, 'ebevents')
 
 def get_event_by_id(id, **kwargs):
     event = {}
@@ -20,11 +23,14 @@ def get_event_by_id(id, **kwargs):
 
     # cache if not already cached
     if not xml:
-        url_object = urllib2.urlopen(xml_url)
+        #event_xml_path = join(EVENTBOOKING_XML_PATH, 'event_%s.xml' % id)
+        #with open(event_xml_path, 'r') as f:
+        #    xml = f.read()
+        url_object = urllib2.urlopen(xml_url, timeout=120)
         xml = url_object.read()
 
         # cache the content for one hour
-        cache.set(cache_key, xml, 3600)
+        cache.set(cache_key, xml, 60*60*2)
     
     soup = BeautifulStoneSoup(xml)
     node = soup.find('public_event_detail')
