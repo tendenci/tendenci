@@ -28,6 +28,10 @@ class LocationForm(TendenciBaseForm):
         'longitude',
         'hq',
         'entity',
+        'allow_anonymous_view',
+        'user_perms',
+        'member_perms',
+        'group_perms',
         'status',
         'status_detail',
         )
@@ -60,6 +64,7 @@ class LocationForm(TendenciBaseForm):
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
+                                 'member_perms',
                                  'group_perms',
                                  ],
                       'classes': ['permissions'],
