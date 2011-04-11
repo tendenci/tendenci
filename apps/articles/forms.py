@@ -43,8 +43,8 @@ class ArticleForm(TendenciBaseForm):
             'featured',
             'not_official_content',
             'user_perms',
-            'group_perms',
             'member_perms',
+            'group_perms',
             'status',
             'status_detail',
         )

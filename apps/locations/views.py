@@ -9,9 +9,8 @@ from base.http import Http403
 from locations.models import Location
 from locations.forms import LocationForm
 from perms.utils import is_admin
-from perms.models import ObjectPermission
 from event_logs.models import EventLog
-from perms.utils import has_perm
+from perms.utils import has_perm, update_perms_and_save
 
 def index(request, id=None, template_name="locations/view.html"):
     if not id: return HttpResponseRedirect(reverse('location.search'))
@@ -77,18 +76,10 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
         if request.method == "POST":
             form = form_class(request.POST, instance=location, user=request.user)
             if form.is_valid():
-
                 location = form.save(commit=False)
 
-                # set up user permission
-                location.allow_user_view, location.allow_user_edit = form.cleaned_data['user_perms']
-                
-                # assign permissions
-                ObjectPermission.objects.remove_all(location)
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], location)
-                ObjectPermission.objects.assign(location.creator, location) 
-
-                location.save()
+                # update all permissions and save the model
+                location = update_perms_and_save(request, form, location)
 
                 log_defaults = {
                     'event_id' : 832000,
@@ -99,9 +90,6 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                     'instance': location,
                 }
                 EventLog.objects.log(**log_defaults)               
- 
-                # assign creator permissions
-                ObjectPermission.objects.assign(location.creator, location) 
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % location)
                                                               
@@ -121,23 +109,9 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
             form = form_class(request.POST, user=request.user)
             if form.is_valid():           
                 location = form.save(commit=False)
-                # set up the user information
-                location.creator = request.user
-                location.creator_username = request.user.username
-                location.owner = request.user
-                location.owner_username = request.user.username
 
-                # set up user permission
-                location.allow_user_view, location.allow_user_edit = form.cleaned_data['user_perms']
-                
-                location.save() # get pk
-
-                # assign permissions for selected groups
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], location)
-                # assign creator permissions
-                ObjectPermission.objects.assign(location.creator, location) 
-
-                location.save() # update search-index w/ permissions
+                # update all permissions and save the model
+                location = update_perms_and_save(request, form, location)
  
                 log_defaults = {
                     'event_id' : 831000,
