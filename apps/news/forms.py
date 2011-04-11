@@ -42,6 +42,7 @@ class NewsForm(TendenciBaseForm):
         'allow_anonymous_view',
         'syndicate',
         'user_perms',
+        'member_perms',
         'group_perms',
         'status',
         'status_detail',
@@ -72,6 +73,7 @@ class NewsForm(TendenciBaseForm):
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
+                                 'member_perms',
                                  'group_perms',
                                  ],
                       'classes': ['permissions'],

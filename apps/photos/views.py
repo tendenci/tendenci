@@ -14,8 +14,7 @@ from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
 
 from base.http import Http403
-from perms.models import ObjectPermission
-from perms.utils import has_perm
+from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 
 #from photologue.models import *
@@ -204,20 +203,10 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
         if request.POST["action"] == "update":
             form = form_class(request.POST, instance=photo, user=request.user)
             if form.is_valid():
-
                 photo = form.save(commit=False)
 
-                # user permission
-                photo.allow_user_view, photo.allow_user_edit = form.cleaned_data['user_perms']
-                # remove permissions
-                ObjectPermission.objects.remove_all(photo)
-                # group permissions
-                ObjectPermission.objects.assign(form.cleaned_data['group_perms'], photo)
-                # group permissions
-                ObjectPermission.objects.assign(photo.creator, photo)
-                
-                photo.save() 
-
+                # update all permissions and save the model
+                photo = update_perms_and_save(request, form, photo)
 
                 log_defaults = {
                     'event_id' : 990200,
@@ -289,23 +278,10 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
             if form.is_valid():
                 photo_set = form.save(commit=False)
 
-                photo_set.creator = request.user
-                photo_set.creator_username = request.user.username
-                photo_set.owner = request.user
-                photo_set.owner_username = request.user.username
                 photo_set.author = request.user
 
-                # set up user permission
-                photo_set.allow_user_view, photo_set.allow_user_edit = form.cleaned_data['user_perms']
-                            
-                photo_set.save() # get pk
-
-                # assign permissions for selected groups
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], photo_set)
-                # assign creator permissions
-                ObjectPermission.objects.assign(photo_set.creator, photo_set) 
-
-                photo_set.save() # update search-index w/ permissions
+                # update all permissions and save the model
+                photo_set = update_perms_and_save(request, form, photo_set)
 
                 log_defaults = {
                     'event_id' : 991100,
@@ -334,22 +310,15 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
     # if no permission; permission exception
     if not has_perm(request.user,'photos.change_photoset',photo_set):
         raise Http403
-    
+
     if request.method == "POST":
         if request.POST["action"] == "edit":
             form = form_class(request.POST, instance=photo_set, user=request.user)
             if form.is_valid():
                 photo_set = form.save(commit=False)
 
-                # set up user permission
-                photo_set.allow_user_view, photo_set.allow_user_edit = form.cleaned_data['user_perms']
-                
-                # assign permissions
-                ObjectPermission.objects.remove_all(photo_set)
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], photo_set)
-                ObjectPermission.objects.assign(photo_set.creator, photo_set) 
-                
-                photo_set.save()
+                # update all permissions and save the model
+                photo_set = update_perms_and_save(request, form, photo_set)
 
                 request.user.message_set.create(message=_("Successfully updated photo set! ") + '')
 
@@ -361,10 +330,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
                     'request': request,
                     'instance': photo_set,
                 }
-                EventLog.objects.log(**log_defaults)               
- 
-                # assign creator permissions
-                ObjectPermission.objects.assign(photo_set.creator, photo_set) 
+                EventLog.objects.log(**log_defaults)
 
                 return HttpResponseRedirect(reverse('photoset_details', args=[photo_set.id]))
     else:
@@ -431,12 +397,12 @@ def photos_batch_add(request, photoset_id=0):
 
     on flash request:
         photoset_id is passed via request.POST
-        and received as type unicode and i convert to type integer
+        and received as type unicode; i convert to type integer
     on http request:
         photoset_id is passed via url
     """
 
-    # if no permission; permission exception
+    # photoset permission required to add photos
     if not has_perm(request.user,'photos.add_photoset'):
         raise Http403
 
@@ -449,8 +415,7 @@ def photos_batch_add(request, photoset_id=0):
             filename, extension = os.path.splitext(uploaded_file.name)
             request.POST.update({'title': filename, })
 
-            # get photo-set-id through post parameters
-            # get unicode and convert to type integer
+            # photoset_id set in swfupload
             photoset_id = int(request.POST["photoset_id"])
 
             request.POST.update({
@@ -470,12 +435,8 @@ def photos_batch_add(request, photoset_id=0):
                 photo.safetylevel = 3
                 photo.allow_anonymous_view = True
 
-                photo.save() # get pk
-
-                # assign creator permissions
-                ObjectPermission.objects.assign(photo.creator, photo)
-
-                photo.save()
+                # update all permissions and save the model
+                photo = update_perms_and_save(request, photo_form, photo)
 
                 EventLog.objects.log(**{
                     'event_id' : 990100,
@@ -596,7 +557,3 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
         "photos": photos,
         "photo_set": photo_set,
     }, context_instance=RequestContext(request))
-    
-    
-    
-    

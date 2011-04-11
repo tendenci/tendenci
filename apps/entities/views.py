@@ -10,8 +10,7 @@ from entities.models import Entity
 from entities.forms import EntityForm
 from perms.models import ObjectPermission
 from event_logs.models import EventLog
-from perms.utils import is_admin
-from perms.utils import has_perm
+from perms.utils import is_admin, has_perm, update_perms_and_save
 
 def index(request, id=None, template_name="entities/view.html"):
     if not id: return HttpResponseRedirect(reverse('entity.search'))
@@ -77,23 +76,8 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
             if form.is_valid():
                 entity = form.save(commit=False)
                 
-                # set up the user information
-                entity.creator = request.user
-                entity.creator_username = request.user.username
-                entity.owner = request.user
-                entity.owner_username = request.user.username          
-
-                # set up user permission
-                entity.allow_user_view, entity.allow_user_edit = form.cleaned_data['user_perms']
-                     
-                entity.save() # get pk
-
-                # assign permissions for selected groups
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], entity)
-                # assign creator permissions
-                ObjectPermission.objects.assign(entity.creator, entity) 
-
-                entity.save() # update search-index w/ permissions
+                # update all permissions and save the model
+                entity = update_perms_and_save(request, form, entity)
 
                 log_defaults = {
                     'event_id' : 291000,
@@ -126,15 +110,8 @@ def edit(request, id, form_class=EntityForm, template_name="entities/edit.html")
             if form.is_valid():               
                 entity = form.save(commit=False)
 
-                # set up user permission
-                entity.allow_user_view, entity.allow_user_edit = form.cleaned_data['user_perms']
-                
-                # assign permissions
-                ObjectPermission.objects.remove_all(entity)
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], entity)
-                ObjectPermission.objects.assign(entity.creator, entity) 
-
-                entity.save()
+                # update all permissions and save the model
+                entity = update_perms_and_save(request, form, entity)
 
                 log_defaults = {
                     'event_id' : 292000,

@@ -381,7 +381,7 @@ class Notice(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('membership.notice_email_content', [self.id])
- 
+
     def copy_membership(self, membership):
         self.membership = membership
         self.membership_type = membership.membership_type
