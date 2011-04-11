@@ -39,6 +39,7 @@ class StoryForm(TendenciBaseForm):
             'syndicate',
             'allow_anonymous_view',
             'user_perms',
+            'member_perms',
             'group_perms',
             'status',
             'status_detail',
@@ -58,6 +59,7 @@ class StoryForm(TendenciBaseForm):
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
+                                 'member_perms',
                                  'group_perms',
                                  ],
                       'classes': ['permissions'],
