@@ -305,15 +305,10 @@ HAYSTACK_SITECONF = 'search'
 HAYSTACK_SEARCH_ENGINE = 'xapian'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
 HAYSTACK_XAPIAN_PATH = os.path.join(PROJECT_ROOT, 'index')
-
-# custom haystack settings (not related to core haystack code)
-# HAYSTACK_INCLUDED_APPS - Tell the /search interface which apps to search in
-# HAYSTACK_INCLUDED_APPS = ('article', 'directory', 'event',
-#                          'photoset', 'job', 'page', 'news', 'resume', 'story')
+HAYSTACK_SOLR_TIMEOUT = 20
 
 # HAYSTACK_INDEX_LIMITS - row amount to index per core application
-# Override for rebuild_index command exist in base core app
-HAYSTACK_SOLR_TIMEOUT = 20
+# Override for rebuild_index command exists in base core app
 HAYSTACK_INDEX_LIMITS = {
     'event_logs': 3000,
 }

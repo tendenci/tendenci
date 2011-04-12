@@ -42,165 +42,19 @@
     
     {# /*  SEARCH RESULTS  */ #}
     <div class="search-results">
-        
         {% if page.object_list %}
             <ul id="uniform-ul">
-            {% for result in page.object_list %}
+            {% for result in page.object_list %}             
                 <li>
-                {# /*  PAGES  */ #}
-                {% ifequal result.model_name "page" %}    
-                	{% reset result.object as page %}
-                    <div class="page-info">
-                        <h3 style="margin-bottom:0;"><a title="{{ page.get_absolute_url }}" href="{{ page.get_absolute_url }}">{% firstof page.title "Untitled" %}</a></h3>
-                        <div> <!-- meta; priviledged options -->
-                            <a title="Published by {{ page.author }}" href="{% url profile page.creator %}">
-                            {% firstof page.creator.get_profile.name page.creator %}</a> on 
-                            {{ page.update_dt }} 
-                        </div>
-                        <div class="uniform-li-meta"> <!-- teaser -->
-                            {{ page.content|striptags|truncatewords:50|safe }}
-                            &nbsp;[{{ result.model_name }}]
-                        </div>
+                    <h3 style="margin-bottom:0;"><a title="{{ result.object }}" href="{{ result.object.get_absolute_url }}">{% firstof result.object "Untitled" %}</a></h3>
+                    <div class="uniform-li-meta">
+                        {% filter striptags|truncatewords:50 %}
+                            {% autoescape on %}
+                                {% firstof result.object.content result.object.description result.object.body %}
+                            {% endautoescape %}
+                        {% endfilter %}
+                        &nbsp;[{{ result.model_name }}]
                     </div>
-                {% endifequal %}
-                
-                {# /*  ARTICLES  */ #}
-			    {% ifequal result.model_name "article" %}    
-						{% reset result.object as article %}
-                        <div class="article-info">
-                            <h3 style="margin-bottom:0;"><a title="{{ article.get_absolute_url }}" href="{{ article.get_absolute_url }}">{% firstof article.headline "Untitled" %}</a></h3>
-                            <div> <!-- meta; priviledged options -->
-                                <a title="{{ article.creator }}" href="{% url profile article.creator %}">
-                                {% firstof article.creator.get_profile.name article.creator %}</a>
-                                {% if article.release_dt %} on {{ article.release_dt }} {% endif %}
-                            </div>
-                            <div class="uniform-li-meta"> <!-- teaser -->
-                                {{ article.body|striptags|truncatewords:50|safe }}
-                                &nbsp;[{{ result.model_name }}]
-                            </div>
-                        </div>
-                {% endifequal %}                
-
-                {# /*  DIRECTORIES  */ #}
-			    {% ifequal result.model_name "directory" %}    
-						{% reset result.object as directory %}
-                        <div class="directory-info">
-                            <h3 style="margin-bottom:0;"><a title="{{ directory.get_absolute_url }}" href="{{ directory.get_absolute_url }}">{% firstof directory.headline "Untitled" %}</a></h3>
-                            <div> <!-- meta; priviledged options -->
-                                <a title="{{ directory.creator }}" href="{% url profile directory.creator %}">
-                                {% firstof directory.creator.get_profile.name directory.creator %}</a>
-                                {% if directory.activation_dt %} on {{ directory.activation_dt }} {% endif %}
-                            </div>
-                            <div class="uniform-li-meta"> <!-- teaser -->
-                                {{ directory.body|striptags|truncatewords:50|safe }}
-                                &nbsp;[{{ result.model_name }}]
-                            </div>
-                        </div>
-                {% endifequal %} 
-
-                {# /*  EVENTS  */ #}
-			    {% ifequal result.model_name "event" %}    
-						{% reset result.object as event %}
-                        <div class="directory-info">
-                            <h3 style="margin-bottom:0;"><a title="{{ event.get_absolute_url }}" href="{{ event.get_absolute_url }}">{% firstof event.title "Untitled" %}</a></h3>
-                            <div> <!-- meta; priviledged options -->
-                                <a title="{{ event.creator }}" href="{% url profile event.creator %}">
-                                {% firstof event.creator.get_profile.name event.creator %}</a>
-                            </div>
-                            <div class="uniform-li-meta"> <!-- teaser -->
-                                {{ event.description|striptags|truncatewords:50|safe }}
-                                &nbsp;[{{ result.model_name }}]
-                            </div>
-                        </div>
-                {% endifequal %} 
-
-                {# /*  JOBS  */ #}
-			    {% ifequal result.model_name "job" %}    
-						{% reset result.object as job %}
-                        <div class="directory-info">
-                            <h3 style="margin-bottom:0;"><a title="{{ job.get_absolute_url }}" href="{{ job.get_absolute_url }}">{% firstof job.title "Untitled" %}</a></h3>
-                            <div> <!-- meta; priviledged options -->
-                                <a title="{{ job.creator }}" href="{% url profile job.creator %}">
-                                {% firstof job.creator.get_profile.name job.creator %}</a>
-                                {% if job.activation_dt %} posted on {{ job.activation_dt }} {% endif %}
-                            </div>
-                            <div class="uniform-li-meta"> <!-- teaser -->
-                                {{ job.description|striptags|truncatewords:50|safe }}
-                                &nbsp;[{{ result.model_name }}]
-                            </div>
-                        </div>
-                {% endifequal %} 
-                                                 
- 				{# /*  NEWS  */ #}
-			    {% ifequal result.model_name "news" %}    
-						{% reset result.object as n %}
-                        <div class="news-info">
-                            <h3 style="margin-bottom:0;"><a title="{{ n.get_absolute_url }}" href="{{ n.get_absolute_url }}">{% firstof n.headline "Untitled" %}</a></h3>
-                            <div> <!-- meta; priviledged options -->
-                                <a title="{{ n.creator }}" href="{% url profile n.creator %}">
-                                {% firstof n.creator.get_profile.name n.creator %}</a> on 
-                                {% if n.release_dt %}{{ n.release_dt }}{% endif %}
-                            </div>
-                            <div class="uniform-li-meta"> <!-- teaser -->
-                                {{ n.body|striptags|truncatewords:50|safe }}
-                                &nbsp;[{{ result.model_name }}]
-                            </div>
-                        </div>
-                {% endifequal %}           
-
-                {# /*  RESUMES  */ #}
-			    {% ifequal result.model_name "resume" %}    
-						{% reset result.object as resume %}
-                        <div class="directory-info">
-                            <h3 style="margin-bottom:0;"><a title="{{ resume.get_absolute_url }}" href="{{ resume.get_absolute_url }}">{% firstof resume.title "Untitled" %}</a></h3>
-                            <div> <!-- meta; priviledged options -->
-                                <a title="{{ resume.creator }}" href="{% url profile resume.creator %}">
-                                {% firstof resume.creator.get_profile.name resume.creator %}</a>
-                                {% if resume.post_dt %} posted on {{ resume.post_dt }} {% endif %}
-                            </div>
-                            <div class="uniform-li-meta"> <!-- teaser -->
-                                {{ resume.description|striptags|truncatewords:50|safe }}
-                                &nbsp;[{{ result.model_name }}]
-                            </div>
-                        </div>
-                {% endifequal %} 
-                
- 				{# /*  STORY  */ #}
-			    {% ifequal result.model_name "story" %}    
-						{% reset result.object as story %}
-                        <div class="story-info">
-                            <h3 style="margin-bottom:0;"><a title="{{ story.get_absolute_url }}" href="{{ story.get_absolute_url }}">{% firstof story.title "Untitled" %}</a></h3>
-                            <div> <!-- meta; priviledged options -->
-                                <a title="{{ story.creator }}" href="{% url profile story.creator %}">
-                                {% firstof story.creator.get_profile.name story.creator %}</a> on 
-                                {% if story.start_dt %}{{ story.start_dt }}{% endif %}
-                            </div>
-                            <div class="uniform-li-meta"> <!-- teaser -->
-                                {{ story.content|striptags|truncatewords:50 }}
-                                &nbsp;[{{ result.model_name }}]
-                            </div>
-                        </div>
-                {% endifequal %} 
-          
- 
- 				{# /*  PHOTOSETS  */ #}
-			    {% ifequal result.model_name "photoset" %}    
-						{% reset result.object as photoset %}
-                        <div class="event-info">
-                            <h3 style="margin-bottom:0;"><a title="{{ photoset.get_absolute_url }}" href="{{ photoset.get_absolute_url }}">{% firstof photoset.name "Untitled" %}</a></h3>
-                            <div> <!-- meta; priviledged options -->
-                                <a title="{{ photoset.author }}" href="{% url profile photoset.author %}">
-                            </div>
-                        	<div class="uniform-li-meta">
-                            {% for photo in photoset.image_set.all|slice:":5" %}
-                           	 <a href="{{ photo.get_absolute_url }}"><img border="0" src="{{ photo.get_thumbnail_url }}" alt="{{ photo.title }}" title="{{ photo.title }}" /></a>
-                            {% endfor %}
-                            <p>{{ photoset.description|truncatewords:50 }}</p>
-                            </div> 
-                        </div>
-                {% endifequal %}
-                                                           
-                <div style="clear:both;"></div>
                 </li>
             {% endfor %}
              </ul>

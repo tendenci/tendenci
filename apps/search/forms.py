@@ -10,24 +10,36 @@ from django.contrib.auth.models import User
 
 from perms.utils import is_admin
 from site_settings.utils import get_setting
+from registry import site as registry_site
 
 import haystack
 from haystack.query import SearchQuerySet
 
-#INCLUDED_APPS = getattr(settings,'HAYSTACK_INCLUDED_APPS',[])
+apps_not_to_search = [
+    'donation',
+    'file',
+    'form',
+    'box',
+    'event_log',
+    'invoice',
+    'redirect',
+]
+registered_apps = registry_site.get_registered_apps()
+registered_apps_names = [app['model']._meta.module_name for app in registered_apps \
+                        if app['verbose_name'].lower() not in apps_not_to_search]
+registered_apps_models = [app['model'] for app in registered_apps \
+                         if app['verbose_name'].lower() not in apps_not_to_search]
+
 
 def model_choices(site=None):
     if site is None:
         site = haystack.sites.site
-        
+
     choices = []
     for m in site.get_indexed_models():
-        #if m._meta.module_name in INCLUDED_APPS:
-        #setting_args = ['module',m._meta.app_label,'enabled']
-        #is_enabled = get_setting(*setting_args)
-        #if is_enabled:
-        choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
-                            capfirst(unicode(m._meta.verbose_name_plural))))
+        if m._meta.module_name.lower() in registered_apps_names:
+            choices.append(("%s.%s" % (m._meta.app_label, m._meta.module_name), 
+                                capfirst(unicode(m._meta.verbose_name_plural))))
             
     return sorted(choices, key=lambda x: x[1])
 
@@ -158,27 +170,18 @@ class FacetedSearchForm(SearchForm):
 class ModelSearchForm(SearchForm):
     def __init__(self, *args, **kwargs):
         super(ModelSearchForm, self).__init__(*args, **kwargs)
+        self.models = registered_apps_models
         self.fields['models'] = forms.MultipleChoiceField(choices=model_choices(), required=False, label=_('Search In'), widget=forms.CheckboxSelectMultiple)
 
     def get_models(self):
         """Return an alphabetical list of model classes in the index."""
-        search_models = []
-        site = haystack.sites.site
-        indexed_models = site.get_indexed_models()
-
-        if indexed_models:
-            search_models = []
-            for model in indexed_models:
-                #if model._meta.module_name in INCLUDED_APPS:
-                search_models.append(model)
-
+        search_models = self.models
         if self.cleaned_data['models']:
             search_models = []
             for model in self.cleaned_data['models']:
                 class_model = models.get_model(*model.split('.'))
                 #if class_model._meta.module_name in INCLUDED_APPS:
                 search_models.append(class_model)
-
         return search_models
     
     def search(self):
