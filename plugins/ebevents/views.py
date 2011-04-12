@@ -86,7 +86,7 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
     if q_event_month and q_event_year:
         events = [event for event in events if event['start_date'].year==int(q_event_year) and \
                   event['start_date'].month==int(q_event_month)]
-        print events
+
     elif q_event_month:
         events = [event for event in events if event['start_date'].month==int(q_event_month)]
     elif q_event_year:
