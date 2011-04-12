@@ -1,6 +1,6 @@
 import copy
 from registry.exceptions import AlreadyRegistered, NotRegistered
-from utils import RegisteredApps
+from registry.utils import RegisteredApps
 
 
 class RegistrySite(object):
