@@ -1,7 +1,9 @@
 from datetime import datetime
+from operator import or_, and_
 
 from django.template import Library, TemplateSyntaxError, Variable
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser
 
 from base.template_tags import ListNode, parse_tag_kwargs
@@ -111,10 +113,11 @@ class ListStoriesNode(ListNode):
 
         # get the list of staff
         items = self.model.objects.search(user=user, query=query)
-        
+
         # Custom filter for stories
-        items = items.filter(start_dt__lte = datetime.now())
-        items = items.filter(end_dt__gte = datetime.now())
+        date_query = reduce(or_, [Q(end_dt__gte = datetime.now()), Q(expires=False)])
+        date_query = reduce(and_, [Q(start_dt__lte = datetime.now()), date_query])
+        items = items.filter(date_query)
 
         # if order is not specified it sorts by relevance
         if order:

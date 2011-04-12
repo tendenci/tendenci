@@ -4,6 +4,7 @@ by {{ object.creator }}
 by {{ object.object.creator.get_profile.name }}
 {{ object.content }}
 is:{{ object.status_detail }}
+expires:{{ object.expires }}
 
 {% tags_for_object object as tags %}
 {% for tag in tags %}
