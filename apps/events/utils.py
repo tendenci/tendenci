@@ -258,15 +258,22 @@ def email_registrants(event, email, **kwargs):
             'Acceptable payment_status field value not found'
         )
 
+    # i had these two lines initially to temporarily hold the original email body
+    # please DO NOT remove them. Otherwise, all recipients would have the same names.
+    # as the first registrant in the email body.              - GJQ  4/13/2011
+    tmp_body = email.body
+        
     for registrant in registrants:
         first_name = registrant.first_name
         last_name = registrant.last_name
 
         email.recipient = registrant.email
-
+        
         email.body = email.body.replace('[firstname]', first_name)
         email.body = email.body.replace('[lastname]', last_name)
         email.send()
+        
+        email.body = tmp_body  # restore to the original
 
 def save_registration(*args, **kwargs):
     """
