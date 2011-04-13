@@ -14,16 +14,23 @@ def set_perm_bits(request, form, instance):
     """
     # owners and creators
     if not instance.pk:
-        instance.creator = request.user
-        instance.creator_username = request.user.username
-        instance.owner = request.user
-        instance.owner_username = request.user.username
+        if request.user.is_authenticated():
+            instance.creator = request.user
+            instance.creator_username = request.user.username
+            instance.owner = request.user
+            instance.owner_username = request.user.username
 
     # set up user permissions
-    instance.allow_user_view, instance.allow_user_edit = form.cleaned_data['user_perms']
+    if 'user_perms' in form.cleaned_data:
+        instance.allow_user_view, instance.allow_user_edit = form.cleaned_data['user_perms']
+    else:
+        instance.allow_user_view, instance.allow_user_edit = False, False
 
     # set up member permissions
-    instance.allow_member_view, instance.allow_member_edit = form.cleaned_data['member_perms']
+    if 'member_perms' in form.cleaned_data:
+        instance.allow_member_view, instance.allow_member_edit = form.cleaned_data['member_perms']
+    else:
+        instance.allow_member_view, instance.allow_member_edit = False, False
 
     return instance
 
@@ -42,10 +49,12 @@ def update_perms_and_save(request, form, instance):
         instance.save()
 
     # assign permissions for selected groups
-    ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
+    if 'group_perms' in form.cleaned_data:
+        ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
 
     # assign creator permissions
-    ObjectPermission.objects.assign(instance.creator, instance)
+    if request.user.is_authenticated():
+        ObjectPermission.objects.assign(instance.creator, instance)
 
     # save again for indexing purposes
     # TODO: find a better solution, saving twice kinda sux
