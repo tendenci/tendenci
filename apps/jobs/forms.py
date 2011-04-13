@@ -206,6 +206,7 @@ class JobForm(TendenciBaseForm):
                 'allow_anonymous_view',
                 'user_perms',
                 'group_perms',
+                'member_perms',
                 'post_dt',
                 'activation_dt',
                 'expiration_dt',
