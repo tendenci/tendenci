@@ -199,7 +199,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 event = form_event.save(commit=False)
 
                 # update all permissions and save the model
-                event = update_perms_and_save(request, form, event)
+                event = update_perms_and_save(request, form_event, event)
 
                 EventLog.objects.log(
                     event_id =  172000, # edit event
@@ -367,10 +367,9 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     # update event
                     event.place = place
                     event.registration_configuration = regconf
-                    
 
                     # update all permissions and save the model
-                    event = update_perms_and_save(request, form, event)
+                    event = update_perms_and_save(request, form_event, event)
 
                     EventLog.objects.log(
                         event_id =  171000, # add event
