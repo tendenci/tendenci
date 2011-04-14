@@ -27,8 +27,8 @@ class StorySitemap(TendenciSitemap):
     priority = 0.5
     
     def items(self):
-        return SearchQuerySet().models(Story).order_by('-create_dt')
+        sqs = SearchQuerySet().models(Story).order_by('-create_dt')
+        return [sq.object for sq in sqs]
     
     def lastmod(self, obj):
         return obj.create_dt
-
