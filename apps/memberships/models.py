@@ -22,7 +22,7 @@ from payments.models import PaymentMethod
 from user_groups.models import GroupMembership
 from haystack.query import SearchQuerySet
 from event_logs.models import EventLog
-from perms.utils import get_notice_recipients
+from perms.utils import get_notice_recipients, is_member
 
 
 FIELD_CHOICES = (
@@ -258,7 +258,6 @@ class Membership(TendenciBaseModel):
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type")) 
     user = models.ForeignKey(User, related_name="memberships")
     directory = models.ForeignKey(Directory, blank=True, null=True) 
-    
     renewal = models.BooleanField(default=0)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time"), null=True)
@@ -266,10 +265,7 @@ class Membership(TendenciBaseModel):
     expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
-
-    # add membership application id - so we can support multiple applications
     ma = models.ForeignKey("App")
-
     objects = MembershipManager()
 
     class Meta:
@@ -304,15 +300,27 @@ class Membership(TendenciBaseModel):
         return (start_dt, end_dt)
         
     def can_renew(self):
-        if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
-            return False
-        
-        (renewal_period_start_dt, renewal_period_end_dt) = self.get_renewal_period_dt()
-        
-        now = datetime.now()
-        return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
 
-class MembershipArchive(models.Model):
+        if self.expiration_dt is None:  # expiration_dt == NULL
+            return False
+
+        start_dt, end_dt = self.get_renewal_period_dt()
+
+        # assert that we're within the renewal period
+        return (datetime.now() >= start_dt and datetime.now() <= end_dt)
+
+    def get_app_initial(self):
+        """
+        Get a dictionary of membership application
+        initial values.  Used for prefilling out membership
+        application forms. Useful for renewals.
+        """
+        entry = self.ma.entries.order_by('-pk')[0]
+        init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
+        return dict(init_kwargs)
+
+
+class MembershipArchive(TendenciBaseModel):
     """
     Keep a record of the old memberships.
     These records are created when a membership is renewed.
@@ -320,7 +328,8 @@ class MembershipArchive(models.Model):
     included via the 'membership' field.
     """
     membership = models.ForeignKey('Membership')
-    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type")) 
+    member_number = models.CharField(_("Member Number"), max_length=50)
+    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
     directory = models.ForeignKey(Directory, blank=True, null=True)
     join_dt = models.DateTimeField(_("Join Date Time"))
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True)
@@ -429,11 +438,22 @@ class App(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ('membership.application_details', [self.slug])
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
+
+    def get_prefill_kwargs(self, membership=None):
+        """
+        Prefill this application.
+        Possible Parameters: user, membership, entry
+        """
+        entry = membership.ma.entries.order_by('-pk')[0]
+        init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
+
+        return dict(init_kwargs)
+
 
 class AppFieldManager(models.Manager):
     """
@@ -498,6 +518,7 @@ class AppEntry(models.Model):
     membership = models.ForeignKey("Membership", related_name="entries", null=True, editable=False)
     entry_time = models.DateTimeField(_("Date/Time"))
 
+    is_renewal = models.BooleanField(editable=False)
     is_approved = models.NullBooleanField(_('Status'), null=True, editable=False)
     decision_dt = models.DateTimeField(null=True, editable=False)
     judge = models.ForeignKey(User, null=True, related_name='entries', editable=False)
@@ -604,6 +625,7 @@ class AppEntry(models.Model):
             new user creation
         """
 
+        # get user -------------
         if self.user and self.user.is_authenticated():
             user = self.user
         elif self.suggested_users():
@@ -616,10 +638,32 @@ class AppEntry(models.Model):
                 'password': hashlib.sha1(self.email).hexdigest()[:6]
             })
 
+        # get judge --------------
         if self.judge and self.judge.is_authenticated():
             judge, judge_pk, judge_username = self.judge, self.judge.pk, self.judge.username
         else:
             judge, judge_pk, judge_username = None, 0, ''
+
+        # if veteran; create archive
+        membership = user.memberships.get_membership()
+        if membership:
+            archive = MembershipArchive.objects.create(**{
+                'membership':membership,
+                'member_number': membership.member_number,
+                'membership_type': membership.membership_type,
+                'directory':membership.directory,
+                'join_dt':membership.join_dt,
+                'renew_dt':membership.renew_dt,
+                'expire_dt':membership.expiration_dt,
+                'corporate_membership_id':membership.corporate_membership_id,
+                'invoice':membership.invoice,
+                'payment_method':membership.payment_method,
+                'ma':membership.ma,
+                'creator_id':membership.creator_id,
+                'creator_username':membership.creator_username,
+                'owner_id':membership.owner_id,
+                'owner_username':membership.owner_username,
+            })
 
         try: # get membership
             membership = Membership.objects.get(**{
@@ -716,7 +760,6 @@ class AppEntry(models.Model):
             ])
 
         query_list = [Q(content=' '.join([getattr(self, item) for item in group])) for group in grouping]
-        # added .models(User) - should only search User, not anything else - GJQ
         sqs = SearchQuerySet().models(User)
         sqs = sqs.filter(reduce(operator.or_, query_list))
         sqs_users = [sq.object.user for sq in sqs]
@@ -836,6 +879,9 @@ class AppEntry(models.Model):
 
     def save_invoice(self, **kwargs):
         status_detail = kwargs.get('status_detail', 'estimate')
+
+        print 'app_label', self._meta.app_label
+        print 'module_name', self._meta.module_name
 
         content_type = ContentType.objects.get(app_label=self._meta.app_label,
               model=self._meta.module_name)

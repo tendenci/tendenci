@@ -18,7 +18,13 @@
 
     <div class="application-entry-wrap">
 
+        {% if entry.is_renewal %}
+        <h1>{{ entry.app.name }} Renewal</h1>
+        {% else %}
         <h1>{{ entry.app.name }} Submission</h1>
+        {% endif %}
+        
+        
         <div class="entry_dt">Submitted {{ entry.entry_time|date_short }}</div>
 
         <div class="approval-status {{ entry.status|lower }}">
@@ -52,18 +58,24 @@
     		{% endif %}
     	{% endfor %}
 
-            {% if user.is_admin %}
-            {% if entry.is_approved == 0 or entry.is_approved == 1 %}
-            {% else %}
-                {% if form %}
-                <form action="" method="post" class="connect-with">
-                    <div>{{ form }}</div>
-                    <input type="submit" name="status" value="Disapprove">
-                    <input type="submit" name="status" value="Approve">
-                </form>
+        {% if user.is_admin %}
+        {% if entry.is_approved == 0 or entry.is_approved == 1 %}
+        {% else %}
+            {% if form %}
+            <form action="" method="post" class="connect-with">
+                <div>{{ form }}</div>
+                
+                {% if entry.is_renewal %}
+                <input type="submit" name="status" value="Disapprove Renewal">
+                <input type="submit" name="status" value="Approve Renewal">
+                {% else %}
+                <input type="submit" name="status" value="Disapprove">
+                <input type="submit" name="status" value="Approve">
                 {% endif %}
+            </form>
             {% endif %}
-            {% endif %}
+        {% endif %}
+        {% endif %}
     </div>
 
     {% if entry.membership %}

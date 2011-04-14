@@ -18,7 +18,9 @@ from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm, MemberAppro
 from memberships.utils import new_mems_from_csv
 
 from user_groups.models import GroupMembership
-from perms.utils import get_notice_recipients, is_admin, has_perm, update_perms_and_save
+from perms.utils import get_notice_recipients, \
+    has_perm, update_perms_and_save, is_admin, is_member, is_developer
+
 from invoices.models import Invoice
 from corporate_memberships.models import CorporateMembership
 
@@ -114,23 +116,19 @@ def membership_renew(request, id=0):
     return redirect(new_entry.confirmation_url)
 
 
-def application_details(request, slug=None, cmb_id=None, template_name="memberships/applications/details.html"):
+def application_details(request, slug=None, cmb_id=None, membership_id=0, template_name="memberships/applications/details.html"):
     """
     Display a built membership application and handle submission.
     """
-    # cmb_id - corporate_membership_id
     if not slug:
         raise Http404
 
     query = '"slug:%s"' % slug
-    sqs = App.objects.search(query, user=request.user)
+    apps = App.objects.search(query, user=request.user)
 
-    if sqs:
-        app = sqs.best_match().object
+    if apps:
+        app = apps.best_match().object
     else:
-        raise Http404
-
-    if not app:
         raise Http404
     
     # if this app is for corporation individuals, redirect them to corp-pre page first.
@@ -159,18 +157,46 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
         corporate_membership = CorporateMembership.objects.get(id=cmb_id)
     else:
         corporate_membership = None
-    app_entry_form = AppEntryForm(app, request.POST or None, request.FILES or None, 
-                              user=request.user, corporate_membership=corporate_membership)
-    
-    
+
+    user = request.user
+    membership = user.memberships.get_membership()
+    user_member_requirements = [
+        is_developer(request.user) == False,
+        is_admin(request.user) == False,
+        is_member(request.user) == True,
+    ]
+
+    initial_dict = {}
+
+    # deny access to renew memberships
+    if all(user_member_requirements):
+        initial_dict = membership.get_app_initial()
+        if not membership.can_renew():
+            return render_to_response("memberships/applications/no-renew.html", {
+                "app": app, "user":user, "membership": membership}, 
+                context_instance=RequestContext(request))
+
+    app_entry_form = AppEntryForm(
+            app, 
+            request.POST or None, 
+            request.FILES or None, 
+            user=request.user, 
+            corporate_membership=corporate_membership,
+            initial=initial_dict,
+        )
+
     if request.method == "POST":
         if app_entry_form.is_valid():
 
             entry = app_entry_form.save(commit=False)
             entry_invoice = entry.save_invoice()
 
+            # bind to user; assert renewal
             if request.user.is_authenticated():
                 entry.user = request.user
+                if all(user_member_requirements):
+                    entry.is_renewal = True
+
                 entry.save()
 
             # administrators go to approve/disapprove page
@@ -233,12 +259,12 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
         context_instance=RequestContext(request))
     
 def application_details_corp_pre(request, slug, cmb_id=None, template_name="memberships/applications/details_corp_pre.html"):
-    
+
     try:
         app = App.objects.get(slug=slug)
     except App.DoesNotExist:
         raise Http404
-    
+
     if not hasattr(app, 'corp_app'):
         raise Http404
     
@@ -339,7 +365,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
             membership_total = Membership.objects.filter(status=True, status_detail='active').count()
 
             status = request.POST.get('status', '')
-            approve = (status.lower() == 'approve')
+            approve = (status.lower() == 'approve') or (status.lower() == 'approve renewal')
 
             entry.judge = request.user
 
@@ -356,6 +382,8 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                     })
 
                 entry.approve()
+
+                # 
 
                 # send email to approved membership applicant
                 notification.send_emails([entry.email],'membership_approved_to_member', {
