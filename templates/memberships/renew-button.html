@@ -17,7 +17,7 @@
 }
 </style>
 
-{% if not membership.can_renew %}
+{% if membership.can_renew %}
 <div class="membership-renew-button renew-now">
     <a href="">Renew from now until {{ membership.get_renewal_period_dt.1 }}</a>
 </div>

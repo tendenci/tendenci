@@ -182,6 +182,8 @@ INSTALLED_APPS = (
     'pages',
     'events',
     'photos',
+    'corporate_memberships',
+    'memberships',
     'entities',
     'locations',
     'site_settings',
@@ -194,7 +196,6 @@ INSTALLED_APPS = (
     'email_blocks',
     'actions',
     'subscribers',
-    
     #'donations',
     'files',
     'contacts',
