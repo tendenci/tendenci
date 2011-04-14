@@ -5,7 +5,7 @@
 {% load perm_tags %}
 {% load profile_tags %}
 {% load contribution_tags %}
-{# load membership_tags #}
+{% load membership_tags %}
 
 {% block title %}Profile View{% endblock %}
 
@@ -37,7 +37,7 @@
 	           {%endif %}
 	            <li><a href="#userview-groups" id="groups"><span>Groups</span></a></li>
                 {% if memberships %}
-                <!-- <li><a href="#userview-memberships" id="memberships"><span>Memberships</span></a></li> -->
+                <li><a href="#userview-memberships" id="memberships"><span>Memberships</span></a></li>
                 {% endif %}
 	       </ul>
 	   </div>
@@ -335,25 +335,25 @@
 			Not in any group. 
 		{% endif %}
 	</div>
-<!--
+
     <div id="userview-memberships">
-        {# for membership in memberships #}
+        {% for membership in memberships %}
         <div class="membership-wrap">
-            <div>Membership Type: <strong>{# membership.membership_type #}</strong></div>
-            <div>Joined: <strong>{# membership.join_dt|date #} ({# membership.join_dt|timesince #})</strong></div>
+            <div>Membership Type: <strong>{{ membership.membership_type }}</strong></div>
+            <div>Joined: <strong>{{ membership.join_dt|date }} ({{ membership.join_dt|timesince }})</strong></div>
 
-            {# if membership.expiration_dt #}
-            <div>Expires: <strong>{# membership.expiration_dt|date #}</strong></div>
-            {# else #}
+            {% if membership.expiration_dt %}
+            <div>Expires: <strong>{{ membership.expiration_dt|date }}</strong></div>
+            {% else %}
                 <div>Never Expires</div>
-            {# endif #}
+            {% endif %}
 
-            {# renew_button #}
+            {% renew_button %}
 
         </div>
-        {# endfor #}
+        {% endfor %}
     </div>
--->
+
 </div>
 
 </div></div>

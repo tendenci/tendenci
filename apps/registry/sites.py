@@ -1,5 +1,6 @@
 import copy
 from registry.exceptions import AlreadyRegistered, NotRegistered
+from registry.utils import RegisteredApps
 
 
 class RegistrySite(object):
@@ -40,6 +41,6 @@ class RegistrySite(object):
         del(self._registry[model])
 
     def get_registered_apps(self):
-        return self._registry
+        return RegisteredApps(self._registry)
 
 site = RegistrySite()
