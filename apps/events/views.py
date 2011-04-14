@@ -199,7 +199,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
-                
+
                 EventLog.objects.log(
                     event_id =  172000, # edit event
                     event_data = '%s (%d) edited by %s' % (event._meta.object_name, event.pk, request.user),

@@ -485,7 +485,7 @@ class RegistrantBaseFormSet(BaseFormSet):
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':'Message',
+        mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.module_name.lower()}),
         label=_('Email Content'))
 

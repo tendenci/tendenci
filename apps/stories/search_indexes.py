@@ -14,6 +14,7 @@ class StoryIndex(indexes.RealTimeSearchIndex):
     create_dt = indexes.DateTimeField(model_attr='create_dt', null=True)
     start_dt = indexes.DateTimeField(model_attr='start_dt', null=True)
     end_dt = indexes.DateTimeField(model_attr='end_dt', null=True)
+    expires = indexes.BooleanField(model_attr='expires')
     
     # authority fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
