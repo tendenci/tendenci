@@ -447,13 +447,13 @@ def delete(request, id, template_name="events/delete.html"):
             )
 
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % event)
-            if notification: notification.send_emails(get_administrators(),'event_deleted', {'object': event, 'request': request})
 
             # send email to admins
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
                 notification.send_emails(recipients,'event_deleted', {
                     'event':event,
+                    'request':request,
                     'user':request.user,
                     'registrants_paid':event.registrants(with_balance=False),
                     'registrants_pending':event.registrants(with_balance=True),
