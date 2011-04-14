@@ -1,6 +1,7 @@
 import imghdr
 from os.path import splitext
 from datetime import datetime
+from datetime import timedelta
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -17,11 +18,18 @@ ALLOWED_LOGO_EXT = (
     '.png' 
 )   
 
+END_DT_INITIAL = datetime.now() + timedelta(weeks=2)
+
+
 class StoryForm(TendenciBaseForm):
     fullstorylink = forms.CharField(label=_("Full Story Link"), required=False, max_length=300)
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now())
-
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
+    expires = forms.BooleanField(
+        label=_('Expires'),
+        required=False,
+        help_text=_('Uncheck if you want this story to never expire'),
+    )
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
@@ -36,6 +44,7 @@ class StoryForm(TendenciBaseForm):
             'tags',
             'start_dt',
             'end_dt',
+            'expires',
             'syndicate',
             'allow_anonymous_view',
             'user_perms',
@@ -53,6 +62,7 @@ class StoryForm(TendenciBaseForm):
                                  'tags',
                                  'start_dt',
                                  'end_dt',
+                                 'expires'
                                  ],
                       'legend': ''
                       }),
