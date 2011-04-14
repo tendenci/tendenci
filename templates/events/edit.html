@@ -34,6 +34,115 @@
             <div class="form-label">Speakers</div> 
             {{ form_speaker.management_form }}
             {{ form_speaker|styled_form_set }}
+            <div class="form-label">Group Pricing</div>
+            {{ form_grpregconf.management_form }}
+            {% if form_grpregconf.errors %}
+            <div class="errors">
+            There were some problems in the formset. Please review. Thanks!
+            </div>
+            {% endif %}
+                
+            {% for form in form_grpregconf.forms %}
+                <div class="form-grouping{% cycle ' alt' '' %}">
+                    {% if form.non_field_errors %}
+                        <div class ="errors">
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="form-field">
+                        <div class="{{ form.group.auto_id }}">
+                            <div class="label{% if form.group.field.required %} required{% endif %}">
+                                {{ form.group.label_tag }}
+                            </div>
+                            {% if form.group.errors %}
+                            <div class="error">
+                                {% for error in form.group.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}   
+                            <div class="field">
+                                {{ form.group }}
+                            </div>  
+                            {% if form.group.help_text %}
+                            <div class="help-text">{{ form.group.help_text }}</div>   
+                            {% endif %}
+                            </div>
+                        </div>
+                    <div class="form-field"> 
+                        <div class="id_regconf-reg8n_dt_price">
+                            <div class="label"> 
+                                <label for="id_regconf-reg8n_dt_price">Times and Pricing</label> 
+                            </div>
+                            {% if form.early_price.errors %}
+                            <div class="error">
+                                {% for error in form.early_price.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.early_dt.errors %}
+                            <div class="error">
+                                {% for error in form.early_dt.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %} 
+                            {% if form.regular_price.errors %}
+                            <div class="error">
+                                {% for error in form.regular_price.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %} 
+                            {% if form.regular_dt.errors %}
+                            <div class="error">
+                                {% for error in form.regular_dt.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %} 
+                            {% if form.late_price.errors %}
+                            <div class="error">
+                                {% for error in form.late_price.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %} 
+                            {% if form.late_dt.errors %}
+                            <div class="error">
+                                {% for error in form.late_dt.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if form.end_dt.errors %}
+                            <div class="error">
+                                {% for error in form.end_dt.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %} 
+                            <div class="field">
+                                <div>{{ form.early_price }}
+                                    after {{ form.early_dt }}
+                                </div> 
+                                <div>{{ form.regular_price }}
+                                    after {{ form.regular_dt }}
+                                </div> 
+                                <div>{{ form.late_price }}
+                                    after {{ form.late_dt }}
+                                </div> 
+                                <div>registration ends 
+                                    {{ form.end_dt }}
+                                </div> 
+                                </div>
+                         </div> 
+                    </div>
+                </div>
+            {% endfor %}
 			<input type="submit" value="Save Changes" />
 		</div>
         </form>

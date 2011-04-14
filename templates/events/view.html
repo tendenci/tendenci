@@ -46,19 +46,23 @@
 			</div>
 			
 			<div class="hr"></div>
+            
+            {% for speaker in speakers %}
 
-			{% if speaker.name %}
-			<div class="speaker-wrap">
-				<div class="speaker"><strong>Speaker</strong> {{ speaker.name }}</div>
-				<div>
-				{% for img in speaker.files %}
-                    <div class="event-speaker">
-                      <img alt="Speaker: {{ speaker.name }}" src="{% url file img.pk %}"  width="260" />
-                    </div>
-                    {% endfor %}
-				{{ speaker.description|safe|urlize|linebreaks }}</div>
-			</div>
-			{% endif %}
+                {% if speaker.name %}
+                <div class="speaker-wrap">
+                    <div class="speaker"><strong>Speaker</strong> {{ speaker.name }}</div>
+                    <div>
+                    {% for img in speaker.files %}
+                        <div class="event-speaker">
+                          <img alt="Speaker: {{ speaker.name }}" src="{% url file img.pk %}"  width="260" />
+                        </div>
+                        {% endfor %}
+                    {{ speaker.description|safe|urlize|linebreaks }}</div>
+                </div>
+                {% endif %}
+            
+            {% endfor %}
 
 			{% if organizer.name %}
 			<div class="organizer-wrap">

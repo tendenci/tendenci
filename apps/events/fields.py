@@ -9,7 +9,15 @@ from base.widgets import SplitDateTimeWidget
 
 class Reg8nDtWidget(Widget):
 
-    reg8n_dict = {}
+    reg8n_dict = {
+        'early_price': '',
+        'regular_price': '',
+        'late_price': '',
+        'early_dt': '',
+        'regular_dt': '',
+        'late_dt': '',
+        'end_dt': '',
+    }
 
     def render(self, name, value, attrs=None, choices=()):
 
@@ -25,7 +33,9 @@ class Reg8nDtWidget(Widget):
                 str_format_kwargs[k] = TextInput().render(
                     '%s-%s' % (name_prefix, k),  # name
                     self.reg8n_dict.get(k),  # value
-                    {'id': '%s-%s' % (id_prefix, k)}  # id attribute
+                    {
+                        'id': '%s-%s' % (id_prefix, k),
+                    }  # id attribute
                 )
 
             elif k.split('_')[1] == 'dt':
@@ -51,6 +61,9 @@ class Reg8nDtField(ChoiceField):
     """
         Inherits from MultipleChoiceField and
         sets some default meta data
+        note: This field injects 'data' into other form fields and
+        causes formsets to consider new instances as 'modified' even 
+        if a user introduces no changes to the form.
     """
     widget = Reg8nDtWidget
 
@@ -70,7 +83,7 @@ class Reg8nDtField(ChoiceField):
 
         if args and args[0]:
             query_dict = args[0]
-
+            
         reg8n_dict = {
             'early_price': 0,
             'regular_price': 0,
@@ -105,3 +118,4 @@ class Reg8nDtField(ChoiceField):
 
         self.widget.reg8n_dict = reg8n_dict
         return reg8n_dict
+
