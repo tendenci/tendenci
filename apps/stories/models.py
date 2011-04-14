@@ -21,6 +21,7 @@ class Story(TendenciBaseModel):
     full_story_link = models.CharField(_('Full Story Link'), max_length=300, blank=True)
     start_dt = models.DateTimeField(_('Start Date/Time'), null=True, blank=True)
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
+    expires = models.BooleanField(_('Expires'))
     ncsortorder = models.IntegerField(null=True, blank=True)
     entity = models.ForeignKey(Entity,null=True)
     photo = models.FileField(max_length=260, upload_to=file_directory, 
