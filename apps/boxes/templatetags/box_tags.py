@@ -18,7 +18,8 @@ class GetBoxNode(Node):
             box = Box.objects.search(query=query).best_match()
             context['box'] = box.object
             template = get_template('boxes/edit-link.html')
-            output = '<div class="boxes">%s %s</div>' % (
+            output = '<div id="box-%s" class="boxes">%s %s</div>' % (
+                box.object.pk,
                 box.object.content,
                 template.render(context),
             )
