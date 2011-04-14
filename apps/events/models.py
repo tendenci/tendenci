@@ -15,6 +15,7 @@ from events.managers import EventManager, RegistrantManager, EventTypeManager
 from perms.models import TendenciBaseModel
 from meta.models import Meta as MetaTags
 from events.module_meta import EventMeta
+from user_groups.models import Group
 
 from invoices.models import Invoice
 from files.models import File
@@ -370,7 +371,6 @@ class Registration(models.Model):
 
         return invoice
 
-
 # TODO: use shorter name
 class RegistrationConfiguration(models.Model):
     """
@@ -384,20 +384,19 @@ class RegistrationConfiguration(models.Model):
     early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
     regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
     late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
-
+    
     early_dt = models.DateTimeField(_('Early Registration Starts'))
     regular_dt = models.DateTimeField(_('Regular Registration Starts'))
     late_dt = models.DateTimeField(_('Late Registration Starts'))
     end_dt = models.DateTimeField(_('Registration Ends'), default=0)
-
+    
     payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
-
+    
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'),default=False)
-
+    
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-
 
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
@@ -458,6 +457,26 @@ class RegistrationConfiguration(models.Model):
         methods = [method.label.lower() for method in self.payment_method.all()]
         return 'credit card' in methods
 
+class GroupRegistrationConfiguration(models.Model):
+    """
+    Event registration for specific groups
+    """
+    
+    config = models.ForeignKey(RegistrationConfiguration, null=True)
+    
+    group = models.ForeignKey(Group)
+    
+    early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
+    regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
+    late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
+
+    early_dt = models.DateTimeField(_('Early Registration Starts'))
+    regular_dt = models.DateTimeField(_('Regular Registration Starts'))
+    late_dt = models.DateTimeField(_('Late Registration Starts'))
+    end_dt = models.DateTimeField(_('Registration Ends'), default=0)
+    
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
 
 class Payment(models.Model):
     """
