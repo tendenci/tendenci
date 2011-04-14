@@ -1,0 +1,34 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+	<h1>Membership Joins Report Summary</h1>
+    <form action="" method="post">
+        Filter By: {{ form.membership_type.label }} {{ form.membership_type }} 
+        {{ form.membership_status.label }} {{ form.membership_status }}
+        <input type="submit" value="submit">
+    </form>
+
+	<h2>New Members - Last 30 days</h2>
+    <a href="{% url reports-memberships-joins-pdf %}?days=30&mem_type={{ mem_type }}&mem_stat={{ mem_stat }}">Generate PDF</a>
+	
+	{% with mems30days as mems %}
+		{% include "reports/mem_join_table.html" %}
+	{% endwith %}
+	
+	
+	<h2>New Members - Last 60 days</h2> 
+    <a href="{% url reports-memberships-joins-pdf %}?days=60&mem_type={{ mem_type }}&mem_stat={{ mem_stat }}">Generate PDF</a>
+	
+	{% with mems60days as mems %}
+		{% include "reports/mem_join_table.html" %}
+	{% endwith %}
+	
+	
+	<h2>New Members - Last 90 days</h2> 
+	<a href="{% url reports-memberships-joins-pdf %}?days=90&mem_type={{ mem_type }}&mem_stat={{ mem_stat }}">Generate PDF</a>
+    
+	{% with mems90days as mems %}
+		{% include "reports/mem_join_table.html" %}
+	{% endwith %}
+{% endblock content %}
+

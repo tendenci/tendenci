@@ -45,17 +45,24 @@ def is_mobile_cookie_on(request):
     return False
 
 def is_mobile_browser(request):
-    if not is_mobile_cookie_on(request):
-        # no need to check any further, the user opt-out
-        return False
-
     if request.user_agent:
         for ma in mobile_agents:
             if ma.lower() in request.user_agent:
                 return True
     return False
+    
+def show_mobile(request):
+    if not is_mobile_cookie_on(request):
+        # no need to check any further, the user opt-out
+        return False
+    
+    if is_mobile_browser(request):
+        return True
+    return False
+    
 
 class MobileMiddleware(object):
     def process_request(self, request):
         request.user_agent = user_agent(request)
-        request.mobile = is_mobile_browser(request)
+        request.mobile_browser = is_mobile_browser(request)
+        request.mobile = show_mobile(request)

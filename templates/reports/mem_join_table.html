@@ -1,0 +1,28 @@
+<table style="width: 80%;">
+<tr>
+	<th>#</th>
+	<th>First name</th>
+	<th>Last name</th>
+    <th>Email</th>
+	<th>Membership Type</th>
+    <th>Application</th>
+    <th>Price Paid</th>
+    <th>Payment Method</th>
+    <th>Start Date</th>
+    <th>Expiration Date</th>
+</tr>
+{% for mem in mems %}
+<tr class="{% cycle 'odd' '' %}">
+	<td>{{ forloop.counter }}</td>
+    <td>{{ mem.user.first_name }}</td>
+	<td>{{ mem.user.last_name }}</td>
+	<td>{{ mem.user.email }}</td>
+    <td>{{ mem.membership_type }}</td>
+    <td>{{ mem.ma }}</td>
+    <td><a href="{{ mem.get_absolute_url }}">{{ mem.invoice.total }}</a></td>
+    <td>{{ mem.payment_method }}</td>
+    <td>{{ mem.join_dt }}</td>
+    <td>{{ mem.expiration_dt }}</td>
+</tr>
+{% endfor %}
+</table>
