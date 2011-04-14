@@ -263,6 +263,10 @@ input#id_regconf-limit {
 	width: 100px;	
 }
 
+input.short_text_input{
+    width: 100px !important;
+}
+
 /*= Print View
  ------------------------- */
 .t-print .event-wrap {
