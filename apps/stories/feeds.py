@@ -32,4 +32,3 @@ class StorySitemap(TendenciSitemap):
     
     def lastmod(self, obj):
         return obj.create_dt
-
