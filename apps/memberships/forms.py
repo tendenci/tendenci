@@ -126,9 +126,7 @@ class MemberApproveForm(forms.Form):
 
         sqs = SearchQuerySet()
 
-    #    full_name_q = Q(content='%s %s' % (mentioned_fn, mentioned_ln))
         email_q = Q(content=mentioned_em)
-    #    q = reduce(operator.or_, [full_name_q, email_q])
         sqs = sqs.filter(email_q)
 
         sqs_users = [sq.object.user for sq in sqs]
@@ -143,14 +141,26 @@ class MemberApproveForm(forms.Form):
 
     def __init__(self, entry, *args, **kwargs):
         super(MemberApproveForm, self).__init__(*args, **kwargs)
-
+        suggested_users = []
         self.entry = entry
+
         suggested_users = entry.suggested_users(grouping=[('email',)])
         suggested_users.append((0, 'Create new user'))
         self.fields['users'].choices = suggested_users
         self.fields['users'].initial = 0
 
-#        self.fields['users'].choices = self.get_suggestions(entry)
+        if self.entry.is_renewal:
+            # only one choice in choices; selected by default
+            # self.fields['users'].choices = [(entry.user.pk, entry.user)]
+            # self.fields['users'].initial = entry.user.pk
+            # self.fields['users'].widget = forms.MultipleHiddenInput
+            
+            self.fields['users'] = CharField(
+                label='',
+                initial=entry.user.pk, 
+                widget=HiddenInput
+            )
+
 
 class MembershipTypeForm(forms.ModelForm):
     type_exp_method = TypeExpMethodField(label='Period Type')
@@ -474,12 +484,23 @@ class AppEntryForm(forms.ModelForm):
                     choices = field.choices.split(",")
                     choices = [c.strip() for c in choices]
                     field_args["choices"] = zip(choices, choices)
-            
+
             if field.field_type == 'corporate_membership_id' and self.corporate_membership:
                 pass
             else:
                 field_args['initial'] = field.default_value
             field_args['help_text'] = field.help_text
+
+            print 'kwargs initial', field.pk, kwargs['initial']
+            if field.pk in kwargs['initial']:
+                print 'app entry form!'
+                
+                field_args['initial'] = kwargs['initial'][field.pk]
+                
+                print 'initial dict', field_args['initial']
+                print kwargs['initial'][field.pk]
+                
+                # field_args['initial'][field_key] = kwargs['initial'][field.pk]
 
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)

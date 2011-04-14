@@ -455,7 +455,7 @@ class AppEntryAdmin(admin.ModelAdmin):
 admin.site.register(MembershipType, MembershipTypeAdmin)
 admin.site.register(Notice, NoticeAdmin)
 admin.site.register(App, AppAdmin)
-admin.site.register(AppEntry, AppEntryAdmin)
+# admin.site.register(AppEntry, AppEntryAdmin)
 
 
 

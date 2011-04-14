@@ -155,7 +155,7 @@ class MembershipManager(Manager):
                 sqs = user_sqs(sqs, user=user) # user
 
         return sqs.models(self.model)
-    
+
     def corp_roster_search(self, query=None, *args, **kwargs):
         """
         Use Django Haystack search index
@@ -167,3 +167,12 @@ class MembershipManager(Manager):
             sqs = sqs.auto_query(sqs.query.clean(query))
 
         return sqs.models(self.model)
+
+    def get_membership(self):
+        """
+            Get membership object
+        """
+        try:
+            return self.order_by('-pk')[0]
+        except:
+            return None
