@@ -154,7 +154,8 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.messages',
 
-    # third party applications
+    # applications
+    'registry',
     'notification',
     'pagination',
     'photologue',
@@ -163,14 +164,10 @@ INSTALLED_APPS = (
     'avatar',
     'tinymce',
     'haystack',
-    'registry',
     'captcha',
     'south',
     'forms_builder.forms',
-
     'pluginmanager',
-
-    # tendenci applications
     'base',
     'accounts',
     'perms',
