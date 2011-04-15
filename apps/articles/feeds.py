@@ -12,7 +12,6 @@ class LatestEntriesFeed(SubFeed):
     description =  "Latest Articles by %s" % get_setting('site','global','sitedisplayname')
 
     def items(self):
-        print "Calling items on LatestEntiesFeed"
         sqs = SearchQuerySet().filter(can_syndicate=True).models(Article).order_by('-create_dt')[:20]
         return [sq.object for sq in sqs]
 
