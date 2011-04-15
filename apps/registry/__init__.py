@@ -24,3 +24,5 @@ def autodiscover():
 
         # Step 3: import the app's registry file. Bubble up errors
         importlib.import_module("%s.app_registry" % app)
+
+autodiscover()
