@@ -26,7 +26,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
         form = form_class(request.POST, user=request.user)
         if form.is_valid():           
             form_instance = form.save(commit=False)
-            
+           
             form_instance = update_perms_and_save(request, form, form_instance)
 
             log_defaults = {
