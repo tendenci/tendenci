@@ -8,7 +8,6 @@ class RegisteredApps(object):
     categorized by core/plugins.
 
     apps = site.get_registered_apps()
-    registered_apps = RegisteredApps(apps)
 
     core_apps = registered_apps.core
     plugin_apps = registered_apps.plugin
