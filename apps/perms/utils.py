@@ -41,12 +41,25 @@ def update_perms_and_save(request, form, instance):
     """
     # permissions bits
     instance = set_perm_bits(request, form, instance)
+    
+    if not request.user.is_anonymous():
+        if not instance.pk:
+            if hasattr(instance, 'creator'):
+                instance.creator = request.user
+            if hasattr(instance, 'creator_username'):
+                instance.creator_username = request.user.username
+                
+        if hasattr(instance, 'owner'):
+            instance.owner = request.user
+        if hasattr(instance, 'owner_username'):
+            instance.owner_username = request.user.username            
 
     # save the instance because we need the primary key
     if instance.pk:
         ObjectPermission.objects.remove_all(instance)
     else:
         instance.save()
+        
 
     # assign permissions for selected groups
     if 'group_perms' in form.cleaned_data:
