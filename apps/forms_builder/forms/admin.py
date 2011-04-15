@@ -120,5 +120,21 @@ class FormAdmin(admin.ModelAdmin):
         response.write(f.read())
         f.close()
         return response
+    
+    def save_model(self, request, object, form, change):
+        instance = form.save(commit=False)
+        
+        if not change:
+            instance.creator = request.user
+            instance.creator_username = request.user.username
+        instance.owner = request.user
+        instance.owner_username = request.user.username
+           
+        # save the object
+        instance.save()
+                                    
+        form.save_m2m()
+        
+        return instance
 
 admin.site.register(Form, FormAdmin)
