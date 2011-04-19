@@ -179,8 +179,8 @@ def handle_uploaded_file(f, instance):
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
-    SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=2)
-    GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=2)
+    SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
+    GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
     # tried get_or_create(); but get a keyword argument :(
     try: # look for an organizer
         organizer = event.organizer_set.all()[0]
@@ -338,8 +338,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 
 @login_required
 def add(request, form_class=EventForm, template_name="events/add.html"):
-    SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=2)
-    GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=2)
+    SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
+    GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
             
