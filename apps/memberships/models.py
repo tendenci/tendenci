@@ -358,8 +358,8 @@ class Notice(models.Model):
                                             ('attimeof','At Time Of'))) 
     notice_type = models.CharField(_("For Notice Type"), max_length=20,
                                    choices=(('join','Join Date'),
-                                            ('renew','Renewal Date'),
-                                            ('expire','Expiration Date'))) 
+                                            ('renewal','Renewal Date'),
+                                            ('expiration','Expiration Date'))) 
     system_generated = models.BooleanField(_("System Generated"), default=0)
     membership_type = models.ForeignKey("MembershipType", blank=True, null=True,
                                         help_text=_("Note that if you don't select a membership type, the notice will go out to all members."))
@@ -390,23 +390,26 @@ class Notice(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('membership.notice_email_content', [self.id])
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+        super(self.__class__, self).save(*args, **kwargs)
+        
 
-    def copy_membership(self, membership):
-        self.membership = membership
-        self.membership_type = membership.membership_type
-        self.directory = membership.directory
-        self.join_dt = membership.join_dt
-        self.renew_dt = membership.renew_dt
-        self.expire_dt = membership.expiration_dt
-        self.corporate_membership_id = membership.corporate_membership_id
-        self.invoice = membership.invoice
-        self.payment_method = membership.payment_method
-        self.ma = membership.ma
-
-    # is a guid required, if they're all the same?
-    # is the member number required if it never changes?
-    # is the user required, if the membership is always bound to the same user?
-    # what exactly is the directory field?
+class NoticeLog(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice = models.ForeignKey(Notice, related_name="logs")
+    notice_sent_dt = models.DateTimeField(auto_now_add=True)
+    num_sent = models.IntegerField()
+    
+class NoticeLogRecord(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice_log = models.ForeignKey(NoticeLog, related_name="log_records")
+    membership = models.ForeignKey(Membership, related_name="log_records")
+    action_taken = models.BooleanField(default=0)
+    action_taken_dt = models.DateTimeField(blank=True, null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
 
 class App(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
@@ -880,8 +883,8 @@ class AppEntry(models.Model):
     def save_invoice(self, **kwargs):
         status_detail = kwargs.get('status_detail', 'estimate')
 
-        print 'app_label', self._meta.app_label
-        print 'module_name', self._meta.module_name
+        #print 'app_label', self._meta.app_label
+        #print 'module_name', self._meta.module_name
 
         content_type = ContentType.objects.get(app_label=self._meta.app_label,
               model=self._meta.module_name)
@@ -945,3 +948,14 @@ class AppFieldEntry(models.Model):
                 pass
 
         return None
+    
+
+# Moved from management/__init__.py to here because it breaks 
+# the management commands due to the ImportError.
+# assign models permissions to the admin auth group
+def assign_permissions(app, created_models, verbosity, **kwargs):
+    from perms.utils import update_admin_group_perms
+    update_admin_group_perms()
+from django.db.models.signals import post_syncdb
+#from memberships import models as membership_models
+post_syncdb.connect(assign_permissions, sender=__file__)
