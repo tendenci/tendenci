@@ -1,7 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
 
-
-
 class Command(BaseCommand):
     """
     This is a one-time script to fill out the amount field in the event registrant table. 

@@ -1,12 +1,15 @@
 import uuid
 import re
+from parse_uri import ParseUri
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from site_settings.utils import get_setting
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from stories.managers import StoryManager
 from entities.models import Entity
+
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
@@ -40,9 +43,14 @@ class Story(TendenciBaseModel):
             
         super(self.__class__, self).save(*args, **kwargs)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("story", [self.pk])
+        url = self.full_story_link
+        parsed_url = ParseUri().parse(url)
+
+        if not parsed_url.protocol:  # if relative URL
+            url = '%s%s' % (get_setting('site','global','siteurl'), url)
+
+        return url
 
     def __unicode__(self):
         return self.title
