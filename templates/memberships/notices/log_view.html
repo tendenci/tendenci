@@ -1,0 +1,53 @@
+{% extends "memberships/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+
+{% block title %}Membership Notice Log View{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+<style>
+.notice-log-view {
+    background-color: white;
+    margin-bottom: 20px;
+    padding: 10px;
+    line-height: 20px;
+    }
+#log-records-wrap{
+	border-top: 1px dashed #ccc;
+	margin-top: 2em;
+	padding-top: 1em;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+   
+    <h1>Membership Notice Log View</h1>
+       
+    <div class="notice-log-view">
+    
+	    <div><b>Log ID: {{ log.id }}</b></div>
+	    <div>Notice Name: <a href="{% url admin:memberships_notice_change log.notice.id %}">{{ log.notice.notice_name }}</a></div>
+	        
+		<div><b>Sent Date</b>: {{ log.notice_sent_dt|date }}</div>
+		<div>Number emails sent: <b>{{ log.num_sent }}</b></div>
+       
+       <div id="log-records-wrap">
+       <h2>Sent to the following member(s):</h2>
+       <ol>
+       {% for record in log_records %}
+       		<li><a href="{% url profile record.membership.user.username %}">{{ record.membership.user.get_full_name }}</a></li>
+       {% endfor %}
+       </ol>
+       </div>
+
+    </div>
+       
+</div>
+{% endblock %}

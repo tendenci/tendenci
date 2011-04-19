@@ -4,6 +4,8 @@ urlpatterns = patterns("memberships.views",
     url(r"^$", "membership_index", name="membership.index"),
     url(r"^search/$", "membership_search", name="membership.search"),
     
+    (r'^notices/', include('memberships.notices.urls')),
+    
     # memberships
     url(r"^memberships/(?P<id>\d+)/$", "membership_details", name="membership.details"),
     url(r'^memberships/renew/(?P<id>\d)+/$', 'membership_renew', name='membership.renew'),
