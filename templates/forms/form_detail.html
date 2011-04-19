@@ -2,24 +2,38 @@
 {% load styled_forms %}
 
 {% block title %}{{ form.title }}{% endblock %}
+{% block meta_description %}{{ form.intro }}{% endblock %}
 
-{% block body %}
+{% block extra_head %}
+{{ block.super }}
 <style>
 .id_captcha input[type="text"]{
 	width: 160px !important;
 }
+.t .form-wrap {
+    padding: 10px;
+    margin-bottom: 10px;
+    position: relative;
+}
 </style>
-<div class="t">
-    <h2>{{ form.title }}</h2>
-    <p>{{ form.intro|safe }}</p>
 
-	<div class="form-builder-wrap">
-    	<form method="post" enctype="multipart/form-data">
-    	<div class="forms">
-            {{ form_for_form|styled_form }}
-        	<input type="submit" value="Submit" />
-		</div>
-        </form>
+{% endblock extra_head %}
+
+{% block body %}
+
+<div class="t">
+    <div class="form-wrap">
+        <h1>{{ form.title }}</h1>
+        <p>{{ form.intro|safe }}</p>
+    
+    	<div class="form-builder-wrap">
+        	<form method="post" enctype="multipart/form-data">
+        	<div class="forms">
+                {{ form_for_form|styled_form }}
+            	<input type="submit" value="Submit" />
+    		</div>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}
