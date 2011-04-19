@@ -33,7 +33,10 @@
 			{{ multi_event_forms|styled_multi_forms }}
             <div class="form-label">Speakers</div> 
             {{ form_speaker.management_form }}
-            {{ form_speaker|styled_form_set }}
+            <div id="form-speaker">
+                {{ form_speaker|styled_form_set }}
+                <input type="button" value="Add More" id="add_more">
+            </div>
             <div class="form-label">Group Pricing</div>
             {{ form_grpregconf.management_form }}
             {% if form_grpregconf.errors %}
@@ -42,8 +45,9 @@
             </div>
             {% endif %}
                 
-            {% for form in form_grpregconf.forms %}
-                <div class="form-grouping{% cycle ' alt' '' %}">
+            <div id="form-grpregconf">
+                {% for form in form_grpregconf.forms %}
+                    <div class="form-grouping{% cycle ' alt' '' %}">
                     {% if form.non_field_errors %}
                         <div class ="errors">
                             {% for error in form.non_field_errors %}
@@ -143,7 +147,10 @@
                          </div> 
                     </div>
                 </div>
-            {% endfor %}
+                {% endfor %}
+                <input type="button" value="Add More" id="add_more2">
+            </div>
+            
 			<input type="submit" value="Save Changes" />
 		</div>
         </form>
@@ -156,6 +163,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
 	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
 	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/formset.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation
@@ -181,4 +189,14 @@
 		  step: 15
 		});
 	</script>
+    <script>
+        $(document).ready(function(){
+            $('#add_more').click(function() {
+                cloneForm('#form-speaker div.form-grouping:last', '{{ form_speaker.prefix }}');
+            });
+            $('#add_more2').click(function() {
+                cloneForm('#form-grpregconf div.form-grouping:last', '{{ form_grpregconf.prefix }}');
+            });
+        });
+    </script>
 {% endblock %}
