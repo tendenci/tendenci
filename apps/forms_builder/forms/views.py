@@ -15,6 +15,7 @@ from forms_builder.forms.models import Form, Field, FormEntry
 from forms_builder.forms.utils import generate_email_body
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
+from site_settings.utils import get_setting
 
 
 @login_required
@@ -290,22 +291,25 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         if form_for_form.is_valid():
             entry = form_for_form.save()
             email_headers = {'Content-Type': 'text/html'}
+            if form.email_from:
+                email_headers.update({'Reply-To':form.email_from})
 #            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k]) 
 #                for (k, v) in form_for_form.fields.items()]
             subject = "%s - %s" % (form.title, entry.entry_time.strftime('%m-%d-%Y %H:%M'))
             # body = "\n".join(fields)
             body = generate_email_body(entry)
             email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
+            sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
             email_to = form_for_form.email_to()
             if email_to and form.send_email:
-                msg = EmailMessage(subject, body, email_from, [email_to], headers=email_headers)
+                msg = EmailMessage(subject, body, sender, [email_to], headers=email_headers)
                 msg.content_subtype = 'html'
                 msg.send()
             email_from = email_to or email_from # Send from the email entered.
             email_copies = [e.strip() for e in form.email_copies.split(",") 
                 if e.strip()]
             if email_copies:
-                msg = EmailMessage(subject, body, email_from, email_copies, headers=email_headers)
+                msg = EmailMessage(subject, body, sender, email_copies, headers=email_headers)
                 msg.content_subtype = 'html'
                 for f in form_for_form.files.values():
                     f.seek(0)
