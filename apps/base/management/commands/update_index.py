@@ -1,5 +1,7 @@
 import datetime
 from optparse import make_option
+from pysolr import Solr
+
 from django.conf import settings
 from django.core.management.base import AppCommand, CommandError
 from django.db import reset_queries
@@ -27,6 +29,9 @@ class Command(AppCommand):
         make_option('-s', '--site', action='store', dest='site',
             type='string', help='The site object to use when reindexing (like `search_sites.mysite`).'
         ),
+        make_option('--scratch', action='store', dest='scratch',
+                    type='string', help='Use the scratch index specified'
+                ),
     )
     option_list = AppCommand.option_list + base_options
     
@@ -51,6 +56,7 @@ class Command(AppCommand):
         self.age = options.get('age', DEFAULT_AGE)
         self.site = options.get('site')
         self.index_limits = getattr(settings, 'HAYSTACK_INDEX_LIMITS', None)
+        self.scratch = options.get('scratch', None)
         
         if not apps:
             from django.db.models import get_app
@@ -92,6 +98,11 @@ class Command(AppCommand):
                 if self.verbosity >= 2:
                     print "Skipping '%s' - no index." % model
                 continue
+
+            # if an alternate index is set use it
+            if self.scratch:
+                timeout = getattr(settings, 'HAYSTACK_SOLR_TIMEOUT', 10)
+                index.backend.conn = Solr(self.scratch, timeout=timeout)
                 
             extra_lookup_kwargs = {}
             updated_field = index.get_updated_field()
