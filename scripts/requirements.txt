@@ -22,6 +22,8 @@ xlwt>=0.7.2
 pyparseuri>=0.1
 whoosh>=1.1.1
 BeautifulSoup==3.1.0.1
+Geraldo==0.4.12-stable
+reportlab==2.5
 
 # git repositories
 git+http://github.com/notanumber/xapian-haystack.git
