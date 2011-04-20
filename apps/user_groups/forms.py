@@ -123,6 +123,21 @@ class GroupMembershipForm(forms.ModelForm):
         model = GroupMembership
         exclude = ('group',)
         
+class GroupMembershipAddForm(forms.Form):
+    def __init__(self, group=None, *args, **kwargs):
+        super(GroupMembershipAddForm, self).__init__(*args, **kwargs)
+        if group:
+            # exclude those already joined
+            exclude_userid = [user.id for user in group.members.all()]
+            self.fields['members'].queryset = User.objects.filter(is_active=1).exclude(id__in=exclude_userid)
+        else:
+            self.fields['members'].queryset = User.objects.filter(is_active=1)
+    
+    members = forms.ModelMultipleChoiceField(queryset = User.objects.filter(is_active=1))
+    role = forms.CharField(required=False, max_length=255)
+    status = forms.BooleanField(required=False, initial=True)
+    status_detail = forms.ChoiceField(choices=(('active','Active'), ('inactive','Inactive'),), initial='active')
+        
 class GroupPermissionForm(forms.ModelForm):
     class Meta:
         model = Group
