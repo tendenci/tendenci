@@ -3,6 +3,10 @@ from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from django import forms
 from tinymce.widgets import TinyMCE
+from base.utils import get_template_list
+
+template_choices = [('default.html','Default')]
+template_choices += get_template_list()
 
 class PageAdminForm(TendenciBaseForm):
     content = forms.CharField(required=False,
@@ -12,6 +16,8 @@ class PageAdminForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+    
+    template = forms.ChoiceField(choices=template_choices)
 
     class Meta:
         model = Page
@@ -20,6 +26,7 @@ class PageAdminForm(TendenciBaseForm):
         'slug',
         'content',
         'tags',
+        'template',
         'allow_anonymous_view',
         'syndicate',
         'status',
@@ -32,6 +39,10 @@ class PageAdminForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
+        
+        template_choices = [('default.html','Default')]
+        template_choices += get_template_list()
+        self.fields['template'].choices = template_choices
 
 class PageForm(TendenciBaseForm):
 
@@ -42,7 +53,9 @@ class PageForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
-        
+
+    template = forms.ChoiceField(choices=template_choices)
+    
     class Meta:
         model = Page
         fields = (
@@ -50,6 +63,7 @@ class PageForm(TendenciBaseForm):
         'slug',
         'content',
         'tags',
+        'template',
         'allow_anonymous_view',
         'syndicate',
         'user_perms',
@@ -64,6 +78,7 @@ class PageForm(TendenciBaseForm):
                                  'slug',
                                  'content',
                                  'tags',
+                                 'template',
                                  ],
                       'legend': ''
                       }),
@@ -88,7 +103,11 @@ class PageForm(TendenciBaseForm):
             self.fields['content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['content'].widget.mce_attrs['app_instance_id'] = 0
-
+        
+        template_choices = [('default.html','Default')]
+        template_choices += get_template_list()
+        self.fields['template'].choices = template_choices
+        
         if not is_admin(self.user):
             if 'syndicate' in self.fields: self.fields.pop('syndicate')
             if 'status' in self.fields: self.fields.pop('status')
