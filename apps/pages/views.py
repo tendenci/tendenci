@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
+from base.utils import check_template
 from pages.models import Page
 from pages.forms import PageForm
 from event_logs.models import EventLog
@@ -28,6 +29,9 @@ def index(request, slug=None, template_name="pages/view.html"):
     # status=0 has been taken care of in the has_perm function
     if (page.status_detail).lower() <> 'active' and (not is_admin(request.user)):
         raise Http403
+
+    if not page.template or not check_template(page.template):
+        page.template = "pages/base.html"
 
     if has_perm(request.user,'pages.view_page',page):
         log_defaults = {
