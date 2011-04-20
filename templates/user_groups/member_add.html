@@ -1,0 +1,82 @@
+{% extends "user_groups/base.html" %}
+{% load user_group_tags %}
+
+{% block title %}Groups{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+    <link rel="stylesheet" href="/site_media/static/css/usergroups.css">
+    <link rel="stylesheet" href="/site_media/static/css/admin/django-admin-widgets.css">
+    <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="/site_media/static/js/admin/django-admin.multiselect.js"></script>
+    <script type="text/javascript">
+		$(document).ready(function(){
+			jQuery.each($("select[multiple]"), function () {  
+			// "Locations" can be any label you want  
+			 SelectFilter.init(this.id, "Members", 0, "/media/");  
+			});
+
+		});
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="t">
+
+    {% user_group_nav request.user %}
+    <div class="quick-options">
+        {% user_group_options request.user group %} 
+    </div>
+
+    <h1>Add Members to Group</h1>
+    <div class="clear-right"></div>
+     <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+
+    <form method="post" action=".">
+        {% if form.non_field_errors %}
+            <div class="errors">
+            {{ form.non_field_errors|striptags }}
+            </div>
+        {% endif %}
+        
+        <div class="profile-wrap" style="margin-top:1em;">
+            <div class="field-wrapper">
+                {% if form.members.errors %}
+                    <div class="errors">{{ form.members.errors|striptags }}</div>
+                {% endif %}
+                <label for="id_members" style="float:left; padding-right: 1em;"><b>{{ form.members.label }}:</b></label>
+                <br>
+                {{ form.members }}
+            </div>
+            <div style="clear:left;"></div>
+        </div>
+        <div class="field-wrapper">
+            {% if form.role.errors %}
+                <div class="errors">{{ form.role.errors|striptags }}</div>
+            {% endif %}
+            <label for="id_role">{{ form.role.label }}:</label>
+            {{ form.role }}
+        </div>
+        <div class="field-wrapper">
+            {% if form.status.errors %}
+                <div class="errors">{{ form.status.errors|striptags }}</div>
+            {% endif %}
+            <label for="id_status">{{ form.status.label }}:</label>
+            {{ form.status }}
+        </div>
+        <div class="field-wrapper">
+            {% if form.status_detail.errors %}
+                <div class="errors">{{ form.status_detail.errors|striptags }}</div>
+            {% endif %}
+            <label for="id_status_detail">{{ form.status_detail.label }}</label>
+            {{ form.status_detail }}
+        </div>
+
+        <div class="submit-row">
+            <input type="submit" value="Save" class="default" />
+        </div>
+    </form>
+
+    </div>
+{% endblock %}
