@@ -95,7 +95,7 @@ class Command(AppCommand):
                 
             extra_lookup_kwargs = {}
             updated_field = index.get_updated_field()
-            
+
             if self.age:
                 if updated_field:
                     extra_lookup_kwargs['%s__gte' % updated_field] = datetime.datetime.now() - datetime.timedelta(hours=self.age)
