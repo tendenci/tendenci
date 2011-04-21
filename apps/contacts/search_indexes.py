@@ -27,7 +27,10 @@ class ContactIndex(indexes.RealTimeSearchIndex):
     
     #for primary key: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
-    
+
+    def get_updated_field(self):
+        return 'update_dt'
+  
     def prepare_who_can_view(self, obj):
         users = ObjectPermission.objects.who_has_perm('contacts.view_contact', obj)
         user_list = []
