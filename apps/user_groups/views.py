@@ -15,7 +15,7 @@ from django.http import HttpResponse
 
 from user_groups.models import Group, GroupMembership
 from user_groups.forms import GroupForm, GroupMembershipForm, \
-                            GroupPermissionForm, GroupMembershipAddForm
+                            GroupPermissionForm, GroupMembershipBulkForm
 from base.http import Http403
 from perms.utils import is_admin
 from event_logs.models import EventLog
@@ -262,8 +262,8 @@ def group_membership_self_remove(request, slug, user_id):
                     
     return HttpResponseRedirect(reverse('group.search'))
 
-def groupmembership_add(request, group_slug, 
-                        form_class=GroupMembershipAddForm,
+def groupmembership_bulk_add(request, group_slug, 
+                        form_class=GroupMembershipBulkForm,
                         template_name="user_groups/member_add.html"):
     group = get_object_or_404(Group, slug=group_slug)
     
@@ -272,16 +272,20 @@ def groupmembership_add(request, group_slug,
         if form.is_valid():
             members = form.cleaned_data['members']
             for m in members:
-                group_membership = GroupMembership.objects.create(
-                    group=group, 
-                    member=m,
-                    role=form.cleaned_data['role'],
-                    status=form.cleaned_data['status'],
-                    status_detail=form.cleaned_data['status_detail'],
-                    creator_id = request.user.id,
-                    creator_username = request.user.username,
-                    owner_id =  request.user.id,
-                    owner_username = request.user.username)
+                try:
+                    group_membership = GroupMembership.objects.get(group=group, member=m)
+                except GroupMembership.DoesNotExist:
+                    group_membership = GroupMembership(group=group, member=m)
+                    group_membership.creator_id = request.user.id
+                    group_membership.creator_username = request.user.username
+                
+                group_membership.role=form.cleaned_data['role']
+                group_membership.status=form.cleaned_data['status']
+                group_membership.status_detail=form.cleaned_data['status_detail']
+                group_membership.owner_id =  request.user.id
+                group_membership.owner_username = request.user.username
+                
+                group_membership.save()
 
                 log_defaults = {
                     'event_id' : 221000,
