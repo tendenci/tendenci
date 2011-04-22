@@ -491,7 +491,6 @@ class AppEntryForm(forms.ModelForm):
                 field_args['initial'] = field.default_value
             field_args['help_text'] = field.help_text
 
-            print 'kwargs initial', field.pk, kwargs['initial']
             if field.pk in kwargs['initial']:
                 print 'app entry form!'
                 
