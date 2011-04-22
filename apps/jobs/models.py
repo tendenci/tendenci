@@ -190,6 +190,9 @@ class JobPricing(models.Model):
     owner_username = models.CharField(max_length=50, null=True)
     status = models.BooleanField(default=True)
 
+    class Meta:
+        permissions = (("view_job_pricing", "Can view job pricing"),)
+
     def save(self, user=None, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
