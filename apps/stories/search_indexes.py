@@ -38,6 +38,9 @@ class StoryIndex(indexes.RealTimeSearchIndex):
     #for primary key: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
+    def get_updated_field(self):
+        return 'update_dt'
+
     def prepare_category(self, obj):
         category = Category.objects.get_for_object(obj, 'category')
         if category: return category.name
