@@ -14,7 +14,8 @@ from django.contrib import messages
 from django.http import HttpResponse
 
 from user_groups.models import Group, GroupMembership
-from user_groups.forms import GroupForm, GroupMembershipForm, GroupPermissionForm
+from user_groups.forms import GroupForm, GroupMembershipForm, \
+                            GroupPermissionForm, GroupMembershipBulkForm
 from base.http import Http403
 from perms.utils import is_admin
 from event_logs.models import EventLog
@@ -261,6 +262,46 @@ def group_membership_self_remove(request, slug, user_id):
                     
     return HttpResponseRedirect(reverse('group.search'))
 
+def groupmembership_bulk_add(request, group_slug, 
+                        form_class=GroupMembershipBulkForm,
+                        template_name="user_groups/member_add.html"):
+    group = get_object_or_404(Group, slug=group_slug)
+    
+    if request.method == 'POST':
+        form = form_class(group, request.POST)
+        if form.is_valid():
+            members = form.cleaned_data['members']
+            for m in members:
+                try:
+                    group_membership = GroupMembership.objects.get(group=group, member=m)
+                except GroupMembership.DoesNotExist:
+                    group_membership = GroupMembership(group=group, member=m)
+                    group_membership.creator_id = request.user.id
+                    group_membership.creator_username = request.user.username
+                
+                group_membership.role=form.cleaned_data['role']
+                group_membership.status=form.cleaned_data['status']
+                group_membership.status_detail=form.cleaned_data['status_detail']
+                group_membership.owner_id =  request.user.id
+                group_membership.owner_username = request.user.username
+                
+                group_membership.save()
+
+                log_defaults = {
+                    'event_id' : 221000,
+                    'event_data': '%s (%d) added by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
+                    'description': '%s added' % group_membership._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': group_membership,
+                }
+                EventLog.objects.log(**log_defaults)
+            return HttpResponseRedirect(group.get_absolute_url())
+    else:
+        form = form_class(group)
+
+    return render_to_response(template_name, locals(), context_instance=RequestContext(request))
+    
 def groupmembership_add_edit(request, group_slug, user_id=None, 
                              form_class=GroupMembershipForm, 
                              template_name="user_groups/member_add_edit.html"):

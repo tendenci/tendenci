@@ -123,6 +123,16 @@ class GroupMembershipForm(forms.ModelForm):
         model = GroupMembership
         exclude = ('group',)
         
+class GroupMembershipBulkForm(forms.Form):
+    def __init__(self, group, *args, **kwargs):
+        super(GroupMembershipBulkForm, self).__init__(*args, **kwargs)
+        self.fields['members'].initial = group.members.all()
+    
+    members = forms.ModelMultipleChoiceField(queryset = User.objects.filter(is_active=1))
+    role = forms.CharField(required=False, max_length=255)
+    status = forms.BooleanField(required=False, initial=True)
+    status_detail = forms.ChoiceField(choices=(('active','Active'), ('inactive','Inactive'),), initial='active')
+        
 class GroupPermissionForm(forms.ModelForm):
     class Meta:
         model = Group
