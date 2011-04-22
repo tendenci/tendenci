@@ -376,5 +376,59 @@
             "border_color": "871111", 
             "fg_color": "FFF"
         }
+    },
+    {
+        "pk": 43, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "E37C23", 
+            "border_color": "272727", 
+            "fg_color": "FFF"
+        }
+    },
+    {
+        "pk": 44, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "08766D", 
+            "border_color": "272727", 
+            "fg_color": "FFF"
+        }
+    },
+    {
+        "pk": 45, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "78002E", 
+            "border_color": "272727", 
+            "fg_color": "FFF"
+        }
+    },
+    {
+        "pk": 46, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "E6BE19", 
+            "border_color": "272727", 
+            "fg_color": "FFF"
+        }
+    },
+    {
+        "pk": 47, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "73B532", 
+            "border_color": "272727", 
+            "fg_color": "FFF"
+        }
+    },
+    {
+        "pk": 48, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "D53F20", 
+            "border_color": "272727", 
+            "fg_color": "FFF"
+        }
     }
 ]

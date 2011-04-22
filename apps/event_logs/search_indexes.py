@@ -29,8 +29,11 @@ class EventLogIndex(indexes.RealTimeSearchIndex):
     query_string = indexes.CharField(model_attr='query_string', null=True)
     robot = indexes.CharField(model_attr='robot', null=True) 
     create_dt = indexes.DateTimeField(model_attr='create_dt')
-    
+  
     #for primary key: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
+
+    def get_updated_field(self):
+        return 'create_dt'
     
 site.register(EventLog, EventLogIndex)

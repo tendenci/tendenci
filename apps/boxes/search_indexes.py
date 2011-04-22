@@ -27,13 +27,15 @@ class BoxIndex(indexes.RealTimeSearchIndex):
     status_detail = indexes.CharField(model_attr='status_detail')
 
     who_can_view = indexes.CharField()
-
     
     # for rss
     order = indexes.DateTimeField()
     
     #for primary key: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
+
+    def get_updated_field(self):
+        return 'update_dt'
         
     def prepare_order(self, obj):
         return obj.update_dt
