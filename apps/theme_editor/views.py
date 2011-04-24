@@ -72,10 +72,9 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 
     # get the file list
     files = get_file_list(pwd)
-
+    
     # get a list of revisions
     archives = ThemeFileVersion.objects.filter(relative_file_path=default_file).order_by("-create_dt")
-
 
     if request.method == "POST":
         file_form = form_class(request.POST)
@@ -103,3 +102,44 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 def get_version(request, id):
     version = ThemeFileVersion.objects.get(pk=id)
     return HttpResponse(version.content)
+    
+
+@permission_required('theme_editor.change_themefileversion')
+def original_templates(request, template_name="theme_editor/original_templates.html"):
+    # if no permission; raise 403 exception
+    if not has_perm(request.user,'theme_editor.view_themefileversion'):
+        raise Http403
+        
+    # get the default file and clean up any input
+    current_dir = request.GET.get("dir", '')
+    if current_dir:
+        current_dir = current_dir.replace('\\','/')
+        current_dir = current_dir.strip('/')
+        current_dir = current_dir.replace('////', '/')
+        current_dir = current_dir.replace('///', '/')
+        current_dir = current_dir.replace('//', '/')
+
+    
+    # if current_dir is a directory then append the
+    # trailing slash so we can get the dirname below
+    
+    
+    # get the previous directory name and path
+    prev_dir = '/'
+    prev_dir_name = 'original templates'
+    current_dir_split = current_dir.split('/')
+    if len(current_dir_split) > 1:
+        prev_dir_name = current_dir_split[-2]
+        current_dir_split.pop()
+        prev_dir = '/'.join(current_dir_split)
+    elif not current_dir_split[0]:
+        prev_dir = ''
+    
+    dirs = get_dir_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"))
+    files = get_file_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"))
+    return render_to_response(template_name, {
+                                                'prev_dir_name': prev_dir_name,
+                                                'prev_dir':prev_dir,
+                                                'dirs': dirs,
+                                                'files': files},
+                              context_instance=RequestContext(request))

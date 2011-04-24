@@ -1,5 +1,7 @@
 import os
 
+import shutil
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
@@ -16,28 +18,28 @@ ALLOWED_EXTENSIONS = (
     '.js'
 )
 
-def qstr_is_dir(query_string):
+def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
     """
     Check to see if the query string is a directory or not
     """
-    current_dir = os.path.join(THEME_ROOT, query_string)
+    current_dir = os.path.join(ROOT_DIR, query_string)
     return os.path.isdir(current_dir)
 
-def qstr_is_file(query_string):
+def qstr_is_file(query_string, ROOT_DIR=THEME_ROOT):
     """
     Check to see if the query string is a directory or not
     """
-    current_file = os.path.join(THEME_ROOT, query_string)
+    current_file = os.path.join(ROOT_DIR, query_string)
     return os.path.isfile(current_file)
 
-def get_dir_list(pwd):
+def get_dir_list(pwd, ROOT_DIR=THEME_ROOT):
     """
     Get a list of directories from within
     the theme folder based on the present
     working directory
     """
     dir_list = []
-    current_dir = os.path.join(THEME_ROOT, pwd)
+    current_dir = os.path.join(ROOT_DIR, pwd)
     if os.path.isdir(current_dir):
         item_list = os.listdir(current_dir)
         for item in item_list:
@@ -47,14 +49,14 @@ def get_dir_list(pwd):
         return sorted(dir_list)
     return dir_list
 
-def get_file_list(pwd):
+def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
     """
     Get a list of files from within
     the theme folder based on the present
     working directory
     """
     file_list = []
-    current_dir = os.path.join(THEME_ROOT, pwd)
+    current_dir = os.path.join(ROOT_DIR, pwd)
     if os.path.isdir(current_dir):
         item_list = os.listdir(current_dir)
         for item in item_list:
@@ -65,13 +67,13 @@ def get_file_list(pwd):
         return sorted(file_list)
     return file_list
 
-def get_file_content(file):
+def get_file_content(file, ROOT_DIR=THEME_ROOT):
     """
     Get the content from the file that selected from
     the navigation
     """
     content = ''
-    current_file = os.path.join(THEME_ROOT, file)
+    current_file = os.path.join(ROOT_DIR, file)
     if os.path.isfile(current_file):
         fd = open(current_file, 'r')
         content = fd.read()
