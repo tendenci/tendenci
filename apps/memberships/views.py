@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from event_logs.models import EventLog
-from memberships.models import App, AppEntry
+from memberships.models import App, AppEntry, Notice
 from perms.models import ObjectPermission
 from base.http import Http403
 
@@ -73,49 +73,6 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         context_instance=RequestContext(request))
 
 
-@login_required
-def membership_renew(request, id=0):
-    """
-    Make new entry; prefill with old entry info.
-    Redirect to entry details page.
-    """
-    membership = get_object_or_404(Membership, pk=id)
-
-    # eligible to renew
-    if not membership.can_renew():
-        raise Http403
-
-    # admins can renew everyone; users can renew themselves
-    if not is_admin(user) and request.user != membership.user:
-        raise Http403
-
-    old_entry = membership.entries.order_by('pk')[0]
-    new_entry = old_entry
-
-    # make new entry
-    new_entry.pk = None
-    new_entry.membership = membership
-    new_entry.save()
-
-    # make new fields
-    for old_field in old_entry.fields:
-        """
-        Does not currently account for new fields
-        added to the membership application.
-        """
-        new_field = old_field
-        new_field.pk = None
-        new_field.entry = new_entry
-        new_field.save()
-
-    # now we have a brand new entry
-    # associated with a membership
-    # associated with a person
-    # this tells us that the entry is a renewal
-
-    return redirect(new_entry.confirmation_url)
-
-
 def application_details(request, slug=None, cmb_id=None, membership_id=0, template_name="memberships/applications/details.html"):
     """
     Display a built membership application and handle submission.
@@ -136,8 +93,8 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
     is_corp_ind = False
     if hasattr(app, 'corp_app') and app.corp_app:
         is_corp_ind = True
-        
-        if request.method <> "POST":
+
+        if request.method != "POST":
             http_referer = request.META.get('HTTP_REFERER', '')
             corp_pre_url = reverse('membership.application_details_corp_pre', args=[slug])
             if not http_referer or not corp_pre_url in http_referer:
@@ -216,12 +173,29 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
 
                     membership_total = Membership.objects.filter(status=True, status_detail='active').count()
 
-                    # send email to approved members
-                    notification.send_emails([entry.email],'membership_approved_to_member', {
-                        'object':entry,
-                        'request':request,
-                        'membership_total':membership_total,
-                    })
+                    notice_dict = {
+                        'notice_time':'attimeof',
+                        'notice_type':'join',
+                        'status':True,
+                        'status_detail':'active',
+                    }
+
+                    if entry.is_renewal:
+                        notice_dict['notice_type'] = 'renewal'
+
+                    # send email to member
+                    for notice in Notice.objects.filter(**notice_dict):
+
+                        notice_requirements = [
+                           notice.membership_type == entry.membership_type,
+                           notice.membership_type == None, 
+                        ]
+
+                        if any(notice_requirements):
+                            notification.send_emails([entry.email],'membership_approved_to_member', {
+                                'subject': notice.get_subject(entry.membership),
+                                'content': notice.get_content(entry.membership),
+                            })
 
                     # send email to admins
                     recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
@@ -232,7 +206,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
                             'membership_total':membership_total,
                         })
 
-                    # log entry approval
+                    # log - entry approval
                     EventLog.objects.log(**{
                         'event_id' : 1082101,
                         'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, entry.judge),
@@ -242,7 +216,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
                         'instance': entry,
                     })
 
-            # log entry submission
+            # log - entry submission
             EventLog.objects.log(**{
                 'event_id' : 1081000,
                 'event_data': '%s (%d) submitted by %s' % (entry._meta.object_name, entry.pk, request.user),
@@ -383,14 +357,29 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
                 entry.approve()
 
-                # 
+                notice_dict = {
+                    'notice_time':'attimeof',
+                    'notice_type':'join',
+                    'status':True,
+                    'status_detail':'active',
+                }
 
-                # send email to approved membership applicant
-                notification.send_emails([entry.email],'membership_approved_to_member', {
-                    'object':entry,
-                    'request':request,
-                    'membership_total':membership_total,
-                })
+                if entry.is_renewal:
+                    notice_dict['notice_type'] = 'renewal'
+
+                # send email to member
+                for notice in Notice.objects.filter(**notice_dict):
+
+                    notice_requirements = [
+                       notice.membership_type == entry.membership_type,
+                       notice.membership_type == None, 
+                    ]
+
+                    if any(notice_requirements):
+                        notification.send_emails([entry.email],'membership_approved_to_member', {
+                            'subject': notice.get_subject(entry.membership),
+                            'content': notice.get_content(entry.membership),
+                        })
 
                 # send email to admins
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')

@@ -8,7 +8,6 @@ urlpatterns = patterns("memberships.views",
     
     # memberships
     url(r"^memberships/(?P<id>\d+)/$", "membership_details", name="membership.details"),
-    url(r'^memberships/renew/(?P<id>\d)+/$', 'membership_renew', name='membership.renew'),
     url(r"^memberships/import_csv/$", "import_membership_csv", name="import_membership_csv"),
     
     # reports
