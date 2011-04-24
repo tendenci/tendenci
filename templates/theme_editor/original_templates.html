@@ -14,6 +14,7 @@
         
 {% block body %}
     <div id="right_files_list">
+    <a href="{% url theme_editor %}" style="float:right">Back to Theme-Editor</a>
    <h2>Choose a folder or file:</h2>
    {% if prev_dir %}
        <p class="prev_dir">
@@ -31,7 +32,7 @@
        <ul class="files_list">
             {% for file in files %}
                 <li>
-                    {{ file|safe }}<a href="{% url copy_to_theme %}?dir={{ current_dir }}&file={{ file }}">&laquo;&nbsp;copy to theme templates</a>
+                    {{ file|safe }}<a class="copy" href="{% url copy_to_theme %}?dir={{ current_dir }}&file={{ file }}">&laquo;&nbsp;copy to theme templates</a>
                 </li>
             {% endfor %}
        </ul>
@@ -40,4 +41,19 @@
         <p>No editable files</p>
    {% endif %}
    </div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        //bind the modified one
+        $('.copy').click(function(){
+            if(window.confirm("Do you want to override this template file?")){
+                return true;
+            } else {
+                return false;
+            }
+        });
+    });
+</script>
 {% endblock %}
