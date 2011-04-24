@@ -31,7 +31,7 @@
        <ul class="files_list">
             {% for file in files %}
                 <li>
-                    {{ file|safe }}
+                    {{ file|safe }}<a href="{% url copy_to_theme %}?dir={{ current_dir }}&file={{ file }}">&laquo;&nbsp;copy to theme templates</a>
                 </li>
             {% endfor %}
        </ul>
