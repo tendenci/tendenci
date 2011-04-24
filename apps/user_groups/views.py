@@ -271,6 +271,23 @@ def groupmembership_bulk_add(request, group_slug,
         form = form_class(group, request.POST)
         if form.is_valid():
             members = form.cleaned_data['members']
+            
+            old_members = GroupMembership.objects.filter(group=group)
+            for old_m in old_members:
+                try:
+                    members.get(pk=old_m.member.pk)
+                except User.DoesNotExist:
+                    log_defaults = {
+                        'event_id' : 223000,
+                        'event_data': '%s (%d) deleted by %s' % (old_m._meta.object_name, old_m.pk, request.user),
+                        'description': '%s deleted' % old_m._meta.object_name,
+                        'user': request.user,
+                        'request': request,
+                        'instance': old_m,
+                    }
+                    EventLog.objects.log(**log_defaults)
+                    old_m.delete()
+            
             for m in members:
                 try:
                     group_membership = GroupMembership.objects.get(group=group, member=m)
