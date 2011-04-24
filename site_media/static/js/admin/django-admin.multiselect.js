@@ -624,8 +624,8 @@ var SelectFilter2 = {
         // Set up the JavaScript event handlers for the select box filter interface
         addEvent(filter_input, 'keyup', function(e) { SelectFilter.filter_key_up(e, field_id); });
         addEvent(filter_input, 'keydown', function(e) { SelectFilter.filter_key_down(e, field_id); });
-        addEvent(filter_input2, 'keyup', function(e) { SelectFilter.filter_key_up(e, field_id); });
-        addEvent(filter_input2, 'keydown', function(e) { SelectFilter.filter_key_down(e, field_id); });
+        addEvent(filter_input2, 'keyup', function(e) { SelectFilter.filter_key_up2(e, field_id); });
+        addEvent(filter_input2, 'keydown', function(e) { SelectFilter.filter_key_down2(e, field_id); });
         addEvent(from_box, 'dblclick', function() { SelectBox.move(field_id + '_from', field_id + '_to'); });
         addEvent(to_box, 'dblclick', function() { SelectBox.move(field_id + '_to', field_id + '_from'); });
         addEvent(findForm(from_box), 'submit', function() { SelectBox.select_all(field_id + '_to'); });
@@ -664,6 +664,39 @@ var SelectFilter2 = {
         // up arrow -- wrap around
         if ((event.which && event.which == 38) || (event.keyCode && event.keyCode == 38)) {
             from.selectedIndex = (from.selectedIndex == 0) ? from.length - 1 : from.selectedIndex - 1;
+        }
+        return true;
+    },
+    filter_key_up2: function(event, field_id) {
+        to = document.getElementById(field_id + '_to');
+        // don't submit form if user pressed Enter
+        if ((event.which && event.which == 13) || (event.keyCode && event.keyCode == 13)) {
+            to.selectedIndex = 0;
+            SelectBox.move(field_id + '_to', field_id + '_from');
+            to.selectedIndex = 0;
+            return false;
+        }
+        var temp = to.selectedIndex;
+        SelectBox.filter(field_id + '_to', document.getElementById(field_id + '_input').value);
+        to.selectedIndex = temp;
+        return true;
+    },
+    filter_key_down2: function(event, field_id) {
+        to = document.getElementById(field_id + '_to');
+        // right arrow -- move across
+        if ((event.which && event.which == 39) || (event.keyCode && event.keyCode == 39)) {
+            var old_index = to.selectedIndex;
+            SelectBox.move(field_id + '_to', field_id + '_from');
+            to.selectedIndex = (old_index == to.length) ? to.length - 1 : old_index;
+            return false;
+        }
+        // down arrow -- wrap around
+        if ((event.which && event.which == 40) || (event.keyCode && event.keyCode == 40)) {
+            to.selectedIndex = (to.length == to.selectedIndex + 1) ? 0 : to.selectedIndex + 1;
+        }
+        // up arrow -- wrap around
+        if ((event.which && event.which == 38) || (event.keyCode && event.keyCode == 38)) {
+            to.selectedIndex = (to.selectedIndex == 0) ? to.length - 1 : to.selectedIndex - 1;
         }
         return true;
     }
