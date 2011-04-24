@@ -7,6 +7,7 @@ from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
 # local 
@@ -167,5 +168,7 @@ def copy_to_theme(request):
             raise Http404
             
     copy(current_dir, chosen_file)
+    
+    messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
     
     return redirect('original_templates')
