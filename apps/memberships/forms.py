@@ -221,7 +221,6 @@ class MembershipTypeForm(forms.ModelForm):
                         field_value = ''
                 initial_list.append(str(field_value))
             self.fields['type_exp_method'].initial = ','.join(initial_list)
-            #print self.fields['type_exp_method'].initial
   
         else:
             self.fields['type_exp_method'].initial = "rolling,1,years,0,1,0,1,1,0,1,1,,1,1,,1"
@@ -418,21 +417,15 @@ class AppEntryForm(forms.ModelForm):
         model = AppEntry
         exclude = (
             'entry_time',
-
             'allow_anonymous_view',
             'allow_anonymous_edit',
-
             'allow_user_view',
             'allow_user_edit',
-
             'allow_member_view',
             'allow_member_edit',
-
             'creator_username',
-
             'owner',
             'owner_username',
-
             'status',
             'status_detail'
         )
@@ -449,6 +442,7 @@ class AppEntryForm(forms.ModelForm):
         self.form_fields = app.fields.visible()
         self.types_field = app.membership_types
         user = kwargs.pop('user') or AnonymousUser
+        self.user = user
 
         # corporate_membership_id for corp. individuals
         self.corporate_membership = kwargs.pop('corporate_membership')
@@ -514,14 +508,7 @@ class AppEntryForm(forms.ModelForm):
             field_args['help_text'] = field.help_text
 
             if field.pk in kwargs['initial']:
-                print 'app entry form!'
-                
                 field_args['initial'] = kwargs['initial'][field.pk]
-                
-                print 'initial dict', field_args['initial']
-                print kwargs['initial'][field.pk]
-                
-                # field_args['initial'][field_key] = kwargs['initial'][field.pk]
 
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
@@ -550,12 +537,14 @@ class AppEntryForm(forms.ModelForm):
         # TODO: We're assuming that an administrator exists
         # We're assuming this administrator is actively used
         admin = User.objects.order_by('pk')[0]
+        user = self.user
 
+        app_entry.user = user
         app_entry.entry_time = datetime.now()
-        app_entry.creator = app_entry.user or admin
-        app_entry.creator_username = app_entry.user or admin
-        app_entry.owner = app_entry.user or admin
-        app_entry.owner_username = app_entry.user or admin
+        app_entry.creator = user or admin
+        app_entry.creator_username = user.username or admin.username
+        app_entry.owner = user or admin
+        app_entry.owner_username = user.username or admin.username
         app_entry.status = True
         app_entry.status_detail = 'active'
 
