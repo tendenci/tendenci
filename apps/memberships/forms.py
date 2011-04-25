@@ -416,20 +416,42 @@ class AppEntryForm(forms.ModelForm):
 
     class Meta:
         model = AppEntry
-        exclude = ("entry_time",)
+        exclude = (
+            'entry_time',
+
+            'allow_anonymous_view',
+            'allow_anonymous_edit',
+
+            'allow_user_view',
+            'allow_user_edit',
+
+            'allow_member_view',
+            'allow_member_edit',
+
+            'creator_username',
+
+            'owner',
+            'owner_username',
+
+            'status',
+            'status_detail'
+        )
 
     def __init__(self, app=None, *args, **kwargs):
         """
         Dynamically add each of the form fields for the given form model 
         instance and its related field model instances.
         """
+
+        self._meta.model()
+
         self.app = app
         self.form_fields = app.fields.visible()
         self.types_field = app.membership_types
-        
-        user = kwargs.pop('user', AnonymousUser)
+        user = kwargs.pop('user') or AnonymousUser
+
         # corporate_membership_id for corp. individuals
-        self.corporate_membership = kwargs.pop('corporate_membership', None)
+        self.corporate_membership = kwargs.pop('corporate_membership')
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
@@ -520,9 +542,23 @@ class AppEntryForm(forms.ModelForm):
         Create a FormEntry instance and related FieldEntry instances for each 
         form field.
         """
+        from django.contrib.auth.models import User
+
         app_entry = super(AppEntryForm, self).save(commit=False)
         app_entry.app = self.app
+
+        # TODO: We're assuming that an administrator exists
+        # We're assuming this administrator is actively used
+        admin = User.objects.order_by('pk')[0]
+
         app_entry.entry_time = datetime.now()
+        app_entry.creator = app_entry.user or admin
+        app_entry.creator_username = app_entry.user or admin
+        app_entry.owner = app_entry.user or admin
+        app_entry.owner_username = app_entry.user or admin
+        app_entry.status = True
+        app_entry.status_detail = 'active'
+
         app_entry.save()
 
         for field in self.form_fields:
