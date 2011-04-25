@@ -21,11 +21,11 @@ ALLOWED_EXTENSIONS = (
 
 def copy(path_to_file, file, FROM_ROOT=TEMPLATES_ROOT, TO_ROOT=THEME_ROOT):
     try:
-        os.makedirs(os.path.join(TO_ROOT, path_to_file))
+        os.makedirs(os.path.join(TO_ROOT, "templates", path_to_file))
     except OSError:
         pass
     full_filename = os.path.join(path_to_file, file)
-    shutil.copy(os.path.join(FROM_ROOT, full_filename), os.path.join(TO_ROOT, full_filename))
+    shutil.copy(os.path.join(FROM_ROOT, full_filename), os.path.join(TO_ROOT, "templates", full_filename))
 
 def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
     """
