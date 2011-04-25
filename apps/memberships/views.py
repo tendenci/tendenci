@@ -133,6 +133,15 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
                 "app": app, "user":user, "membership": membership}, 
                 context_instance=RequestContext(request))
 
+    pending_entries = request.user.appentry_set.filter(
+        is_approved__isnull = True,  # pending   
+    )
+
+    if request.user.memberships.get_membership():
+        pending_entries.filter(
+            entry_time__gte = request.user.memberships.get_membership().join_dt
+        )
+
     app_entry_form = AppEntryForm(
             app, 
             request.POST or None, 
@@ -148,13 +157,14 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
             entry = app_entry_form.save(commit=False)
             entry_invoice = entry.save_invoice()
 
-            # bind to user; assert renewal
-            if request.user.is_authenticated():
+
+            if request.user.is_authenticated():  # bind to user
                 entry.user = request.user
-                if all(user_member_requirements):
+                if all(user_member_requirements):  # save as renewal
                     entry.is_renewal = True
 
-                entry.save()
+            # add all permissions and save the model
+            entry = update_perms_and_save(request, app_entry_form, entry)
 
             # administrators go to approve/disapprove page
             if is_admin(request.user):
@@ -229,7 +239,10 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
             return redirect(entry.confirmation_url)
 
     return render_to_response(template_name, {
-        'app': app, "app_entry_form": app_entry_form}, 
+        'app': app, 
+        'app_entry_form': app_entry_form, 
+        'pending_entries': pending_entries,
+        }, 
         context_instance=RequestContext(request))
     
 def application_details_corp_pre(request, slug, cmb_id=None, template_name="memberships/applications/details_corp_pre.html"):
@@ -304,9 +317,6 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     """
     Displays the details of a membership application entry.
     """
-
-    if not is_admin(request.user):
-        raise Http403
 
     if not id:
         return HttpResponseRedirect(reverse('membership.application_entries_search'))
@@ -400,7 +410,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                     'instance': entry,
                 })
 
-            else:
+            else:  # if not approved
                 entry.disapprove()
 
                 # send email to disapproved membership applicant
@@ -445,10 +455,7 @@ def application_entries_search(request, template_name="memberships/entries/searc
     Displays a page for searching membership application entries.
     """
 
-    if not is_admin(request.user):
-        raise Http403
-
-    query = request.GET.get('q', None)
+    query = request.GET.get('q')
     entries = AppEntry.objects.search(query, user=request.user)
     entries = entries.order_by('-entry_time')
 
