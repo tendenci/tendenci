@@ -408,18 +408,8 @@ class Notice(models.Model):
         """
         Return self.email_content with self.footer appended
         """
-        content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
-        return self.build_notice(membership, content)
-
-    def build_notice(self, membership, content):
-        """
-        Replace values in a string and return the updated content
-        Values are pulled from membership, user, profile, and site_settings
-        In the future, maybe we can pull from the membership application entry
-        TODO: Add option to pass context in
-        """
         global_setting = partial(get_setting, 'site', 'global')
-        user = membership.user  # assumed
+        user = membership.user
         corporate_msg = ''
         expiration_dt = ''
 
@@ -427,10 +417,6 @@ class Notice(models.Model):
             profile = user.get_profile()
         except Profile.DoesNotExist as e:
             profile = Profile.objects.create_profile(user=user)
-
-        content = content.replace('[','{{')
-        content = content.replace(']','}}')
-        template = Template(content)
 
         if membership.expiration_dt:
             expiration_dt = time.strftime(
@@ -447,13 +433,7 @@ class Notice(models.Model):
             </font>
             """
 
-        context = Context({
-            'firstname': user.first_name,
-            'lastname': user.last_name,
-            'name': user.get_full_name(),
-            'username': user.username,
-            'email': user.email,
-
+        context = {
             'title': profile.position_title,
             'address': profile.address,
             'city': profile.city,
@@ -474,10 +454,36 @@ class Notice(models.Model):
             'sitedisplayname': global_setting('site_displayname'),
             'timesubmitted': time.strftime("%d-%b-%y %I:%M %p", datetime.now().timetuple()),
             'corporatemembernotice': corporate_msg,
-        })
+        }
+
+        content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
+
+        return self.build_notice(membership, content, context=context)
+
+    def build_notice(self, membership, content, *args, **kwargs):
+        """
+        Replace values in a string and return the updated content
+        Values are pulled from membership, user, profile, and site_settings
+        In the future, maybe we can pull from the membership application entry
+        """
+        user = membership.user
+        extra_context = kwargs.get('context') or {}
+        content = content.replace('[','{{')
+        content = content.replace(']','}}')
+
+        template = Template(content)
+
+        context = {
+            'firstname': user.first_name,
+            'lastname': user.last_name,
+            'name': user.get_full_name(),
+            'username': user.username,
+            'email': user.email,
+        }
+        context.update(extra_context)
+        context = Context(context)
 
         return template.render(context)
-
 
     @models.permalink
     def get_absolute_url(self):
