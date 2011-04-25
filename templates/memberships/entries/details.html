@@ -27,8 +27,8 @@
         
         <div class="entry_dt">Submitted {{ entry.entry_time|date_short }}</div>
 
-        <div class="approval-status {{ entry.status|lower }}">
-            {{ entry.status }}
+        <div class="approval-status {{ entry.status_msg|lower }}">
+            {{ entry.status_msg }}
             {% if entry.decision_dt %}
                 {{ entry.decision_dt|date_long }}
             {% endif %}
