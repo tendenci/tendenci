@@ -610,7 +610,7 @@ class AppField(models.Model):
     def __unicode__(self):
         return self.label
 
-class AppEntry(models.Model):
+class AppEntry(TendenciBaseModel):
     """
     An entry submitted via a membership application.
     """
@@ -904,7 +904,7 @@ class AppEntry(models.Model):
         return un.lower()
 
     @property
-    def status(self):
+    def status_msg(self):
         status = 'Pending'
 
         if self.is_approved == True:
