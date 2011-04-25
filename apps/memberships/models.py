@@ -981,9 +981,6 @@ class AppEntry(TendenciBaseModel):
     def save_invoice(self, **kwargs):
         status_detail = kwargs.get('status_detail', 'estimate')
 
-        #print 'app_label', self._meta.app_label
-        #print 'module_name', self._meta.module_name
-
         content_type = ContentType.objects.get(app_label=self._meta.app_label,
               model=self._meta.module_name)
 
