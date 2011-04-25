@@ -10,7 +10,8 @@ from models import Video, Category
 def index(request, cat_slug=None, template_name="videos/list.html"):
     query = cat_slug
     videos = Video.objects.search(query, user=request.user)
- 
+    videos = videos.order_by('-create_dt')
+
     categories = Category.objects.all()
     if cat_slug:
         category = get_object_or_404(Category, slug=cat_slug)
