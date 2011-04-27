@@ -15,4 +15,4 @@ class SettingAdmin(admin.ModelAdmin):
             return qs
         return qs.filter(client_editable=True)
     
-#admin.site.register(Setting, SettingAdmin)
+admin.site.register(Setting)
