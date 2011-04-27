@@ -6,7 +6,7 @@ from datetime import date
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
@@ -1416,5 +1416,35 @@ def registrant_export(request, event_id, roster_view=''):
     book.save(response)
     return response
 
-
-
+@login_required
+def delete_speaker(request, id):
+    """
+        This delete is designed based on the add and edit view where
+        a speaker is considered to only be a speaker for a single event.
+    """
+    
+    if not has_perm(request.user,'events.delete_speaker'):
+        raise Http403
+        
+    speaker = get_object_or_404(Speaker, id = id)
+    event = speaker.event.all()[0]
+    
+    messages.add_message(request, messages.INFO, 'Successfully deleted %s' % speaker)
+    
+    speaker.delete()
+    
+    return redirect('event', id=event.id)
+    
+@login_required
+def delete_group_pricing(request, id):
+    if not has_perm(request.user,'events.delete_registrationconfiguration'): 
+        raise Http403
+        
+    gp = get_object_or_404(GroupRegistrationConfiguration, id = id)
+    event = Event.objects.get(registration_configuration=gp.config)
+    
+    messages.add_message(request, messages.INFO, 'Successfully deleted Group Pricing for %s' % gp)
+    
+    gp.delete()
+    
+    return redirect('event', id=event.id)
