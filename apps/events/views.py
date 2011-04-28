@@ -180,7 +180,7 @@ def handle_uploaded_file(f, instance):
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
     SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
-    GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
+    # GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
     # tried get_or_create(); but get a keyword argument :(
     try: # look for an organizer
         organizer = event.organizer_set.all()[0]
@@ -242,21 +242,21 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     event.registration_configuration = regconf
                     event.save() # save event
                     
-                form_grpregconf = GrpRegFormSet(request.POST,
-                    queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
-                    prefix='grpregconf')
+                # form_grpregconf = GrpRegFormSet(request.POST,
+                #     queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
+                #     prefix='grpregconf')
                     
-                if form_grpregconf.is_valid():
-                    grpregconfs = form_grpregconf.save()
-                    for conf in grpregconfs:
-                        conf.config = event.registration_configuration
-                        conf.save()
+                # if form_grpregconf.is_valid():
+                #     grpregconfs = form_grpregconf.save()
+                #     for conf in grpregconfs:
+                #         conf.config = event.registration_configuration
+                #         conf.save()
                 
                 forms = [
                     form_event,
                     form_place,
                     form_speaker,
-                    form_grpregconf,
+                    # form_grpregconf,
                     form_organizer,
                     form_regconf,
                 ]
@@ -286,9 +286,9 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 prefix='organizer')
             form_regconf = Reg8nEditForm(instance=event.registration_configuration, 
                 prefix='regconf')
-            form_grpregconf = GrpRegFormSet(
-                    queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
-                    prefix='grpregconf')
+            # form_grpregconf = GrpRegFormSet(
+            #         queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
+            #         prefix='grpregconf')
 
         # response
         return render_to_response(template_name, {
@@ -299,7 +299,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             'form_speaker':form_speaker,
             'form_organizer':form_organizer,
             'form_regconf':form_regconf,
-            'form_grpregconf':form_grpregconf,
+            # 'form_grpregconf':form_grpregconf,
             }, 
             context_instance=RequestContext(request))
     else:
@@ -339,7 +339,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 @login_required
 def add(request, form_class=EventForm, template_name="events/add.html"):
     SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
-    GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
+    # GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
+
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
             
@@ -347,12 +348,11 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
             form_place = PlaceForm(request.POST, prefix='place')
             form_speaker = SpeakerFormSet(request.POST, request.FILES,
                 queryset=Speaker.objects.none(), prefix='speaker')
-            form_organizer = OrganizerForm(request.POST, 
-                prefix='organizer')
+            form_organizer = OrganizerForm(request.POST, prefix='organizer')
             form_regconf = Reg8nEditForm(request.POST, prefix='regconf')
-            form_grpregconf = GrpRegFormSet(request.POST,
-                queryset=GroupRegistrationConfiguration.objects.none(),
-                prefix='grpregconf')
+            # form_grpregconf = GrpRegFormSet(request.POST,
+            #     queryset=GroupRegistrationConfiguration.objects.none(),
+            #     prefix='grpregconf')
                 
             forms = [
                 form_event,
@@ -360,7 +360,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 form_speaker,
                 form_organizer,
                 form_regconf,
-                form_grpregconf,
+                # form_grpregconf,
             ]
 
             if all([form.is_valid() for form in forms]):
@@ -370,7 +370,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 regconf = form_regconf.save()
                 speakers = form_speaker.save()
                 organizer = form_organizer.save()
-                grpregconfs = form_grpregconf.save()
+                # grpregconfs = form_grpregconf.save()
                 event = form_event.save(commit=False)
                 
                 # update all permissions and save the model
@@ -380,10 +380,10 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     speaker.event = [event]
                     speaker.save()
                     File.objects.save_files_for_instance(request, speaker)
-                    
-                for grpconf in grpregconfs:
-                    grpconf.config = regconf
-                    grpconf.save()
+
+                # for grpconf in grpregconfs:
+                #     grpconf.config = regconf
+                #     grpconf.save()
                     
                 organizer.event = [event]
                 organizer.save() # save again
@@ -431,9 +431,9 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 prefix='speaker')
             form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_inits, prefix='regconf')
-            form_grpregconf = GrpRegFormSet(queryset=GroupRegistrationConfiguration.objects.none(),
-                prefix='grpregconf',
-                )
+            # form_grpregconf = GrpRegFormSet(queryset=GroupRegistrationConfiguration.objects.none(),
+            #     prefix='grpregconf',
+            #     )
             
         # response
         return render_to_response(template_name, {
@@ -443,7 +443,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
             'form_speaker':form_speaker,
             'form_organizer':form_organizer,
             'form_regconf':form_regconf,
-            'form_grpregconf':form_grpregconf,
+            # 'form_grpregconf':form_grpregconf,
             },
             context_instance=RequestContext(request))
     else:
