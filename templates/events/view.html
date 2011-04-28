@@ -1,9 +1,11 @@
 {% extends "events/base-wide.html" %}
+{% load perm_tags %}
 {% load event_tags %}
 {% load tagging_tags %}
 {% load base_tags %}
 {% load category_tags %}
 {% load humanize %}
+
 
 {% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
 {% block meta_description %}{{ event.get_description }}{% endblock %}
@@ -17,6 +19,8 @@
 {% endblock %}
 
 {% block body %}
+
+{% has_perm user events.change_event as can_edit %}
 
 <div class="t">
 
@@ -68,8 +72,10 @@
                         </div>
                         {% endfor %}
                         {{ speaker.description|safe|urlize|linebreaks }}
-                        <br>
+                        <br />
+                        {% if can_edit %}
                         <a href="{% url event.delete_speaker speaker.id %}">Remove</a>
+                        {% endif %}
                     </div>
                 </div>
                 {% endif %}
