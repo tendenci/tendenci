@@ -4,19 +4,29 @@ from django.conf import settings
 
 class Command(BaseCommand):
     """
-    This script is to sync the groups and subscribers with the campaign monitor 
+    This script is to sync the groups and group subscribers with the campaign monitor 
     
     To run the command: python manage.py sync_campaign_monitor --verbosity 2
     """
     
     def handle(self, *args, **options):
         from user_groups.models import Group
+        from subscribers.models import GroupSubscription as GS
         from campaign_monitor.models import ListMap
         from createsend import CreateSend, Client, List, Subscriber, BadRequest
         
         verbosity = 1
         if 'verbosity' in options:
             verbosity = options['verbosity']
+            
+        def subscribe_to_list(subscriber_obj, list_id, name, email):
+            try:
+                subscriber = subscriber_obj.get(list_id, email)
+            except BadRequest as br:
+                email_address = subscriber_obj.add(list_id, email, name, [], True)
+                if verbosity >=2:
+                        print "%s (%s)" % (name, email)
+        
         
         api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
         client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
@@ -62,15 +72,15 @@ class Command(BaseCommand):
             for i, member in enumerate(members, 1):
                 email = member.email
                 name = member.get_full_name()
-                try:
-                    subscriber = subscriber_obj.get(list_id, email)
-                except BadRequest as br:
-                    email_address = subscriber_obj.add(list_id, email, name, [], True)
                 
-                    if verbosity >=2:
-                        print "%d. %s (%s)" % (i, name, email)
-            print 'Total subscribed: %d' % members.count()
-            print
+                subscribe_to_list(subscriber_obj, list_id, name, email)
+            
+            # sync subscribers in this group's subscription
+            gss = GS.objects.filter(group=group)
+            for gs in gss:
+                form_entry = gs.subscriber
+                (name, email) = form_entry.get_name_email()
+                subscribe_to_list(subscriber_obj, list_id, name, email)
                     
         print 'Done'
                     

@@ -190,6 +190,34 @@ class FormEntry(models.Model):
             sub.delete()
         except GS.DoesNotExist:
             pass
+        
+    def get_name_email(self):
+        """Try to figure out the name and email from this entry
+            Assume: 1) email field type is EmailField
+                    2) use the labels to identify the name.
+            We might need a better solution because this will not work 
+            if the form is not in English, or labels for names are not 
+            'first name', 'last name' or 'name'. 
+        """
+        field_entries = self.fields.all()
+        first_name = ""
+        last_name = ""
+        name = ""
+        email = ""
+        for entry in field_entries:
+            field = entry.field
+            if field.field_type.lower() == 'emailfield':
+                email = entry.value
+            if field.label.lower() in ['name']:
+                name = entry.value
+            if field.label.lower() in ['first name']:
+                first_name = entry.value
+            if field.label.lower() in ['last name']:
+                last_name = entry.value
+        if not name:
+            if first_name or last_name:
+                name = '%s %s' % (first_name, last_name)
+        return (name, email)
     
 class FieldEntry(models.Model):
     """
