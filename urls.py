@@ -8,9 +8,6 @@ from django.conf import settings
 from django.contrib import admin
 admin.autodiscover()
 
-# App Registry
-import registry
-registry.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html", }, name="home"),

@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User, AnonymousUser
 
 from haystack.query import SearchQuerySet
+from perms.managers import TendenciBaseManager
 from perms.utils import is_admin
 
 
@@ -83,24 +84,12 @@ class MemberAppManager(Manager):
     
         return sqs.models(self.model)
 
-class MemberAppEntryManager(Manager):
-    def search(self, query=None, *args, **kwargs):
-        """
-        Uses haystack to query articles. 
-        Returns a SearchQuerySet
-        """
-        sqs = SearchQuerySet()
-        user = kwargs.get('user', None)
+class MemberAppEntryManager(TendenciBaseManager):
+    """
+    Model Manager
+    """
+    pass
 
-        # check to see if there is impersonation
-        if hasattr(user,'impersonated_user'):
-            if isinstance(user.impersonated_user, User):
-                user = user.impersonated_user
-
-        if query:
-            sqs = sqs.auto_query(sqs.query.clean(query))
-
-        return sqs.models(self.model)
 
 def anon_sqs(sqs):
     sqs = sqs.filter(status=1).filter(status_detail='active')
@@ -155,7 +144,7 @@ class MembershipManager(Manager):
                 sqs = user_sqs(sqs, user=user) # user
 
         return sqs.models(self.model)
-    
+
     def corp_roster_search(self, query=None, *args, **kwargs):
         """
         Use Django Haystack search index
@@ -167,3 +156,12 @@ class MembershipManager(Manager):
             sqs = sqs.auto_query(sqs.query.clean(query))
 
         return sqs.models(self.model)
+
+    def get_membership(self):
+        """
+            Get membership object
+        """
+        try:
+            return self.order_by('-pk')[0]
+        except:
+            return None

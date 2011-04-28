@@ -1,9 +1,11 @@
 {% extends "events/base-wide.html" %}
+{% load perm_tags %}
 {% load event_tags %}
 {% load tagging_tags %}
 {% load base_tags %}
 {% load category_tags %}
 {% load humanize %}
+
 
 {% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
 {% block meta_description %}{{ event.get_description }}{% endblock %}
@@ -18,6 +20,8 @@
 
 {% block body %}
 
+{% has_perm user events.change_event as can_edit %}
+
 <div class="t">
 
     {% event_nav user event %}
@@ -26,7 +30,14 @@
 
 		<div class="info">
 	        <h1>{{ event.title }}</h1>
-	        <div class="content">{{ event.description|safe }}</div>
+	        <div class="content">
+                <p>{{ event.description|safe }}</p>
+<!--                 <h3>Group Pricings</h3>
+                {% for gp in event.registration_configuration.groupregistrationconfiguration_set.all %}
+                    {{ gp }} - early:{{ gp.early_price }} - regular:{{ gp.regular_price }} - late:{{ gp.late_price }}
+                    <a href="{% url event.delete_group_pricing gp.id %}">Remove</a>
+                {% endfor %} -->
+            </div>
 		</div>
 
 		<div class="vitals">
@@ -46,19 +57,30 @@
 			</div>
 			
 			<div class="hr"></div>
+            
+            {% for speaker in speakers %}
 
-			{% if speaker.name %}
-			<div class="speaker-wrap">
-				<div class="speaker"><strong>Speaker</strong> {{ speaker.name }}</div>
-				<div>
-				{% for img in speaker.files %}
-                    <div class="event-speaker">
-                      <img alt="Speaker: {{ speaker.name }}" src="{% url file img.pk %}"  width="260" />
+                {% if speaker.name %}
+                <div class="speaker-wrap">
+                    <div class="speaker">
+                        <strong>Speaker</strong> {{ speaker.name }}
                     </div>
-                    {% endfor %}
-				{{ speaker.description|safe|urlize|linebreaks }}</div>
-			</div>
-			{% endif %}
+                    <div>
+                        {% for img in speaker.files %}
+                        <div class="event-speaker">
+                          <img alt="Speaker: {{ speaker.name }}" src="{% url file img.pk %}"  width="260" />
+                        </div>
+                        {% endfor %}
+                        {{ speaker.description|safe|urlize|linebreaks }}
+                        <br />
+                        {% if can_edit %}
+                        <a href="{% url event.delete_speaker speaker.id %}">Remove</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            
+            {% endfor %}
 
 			{% if organizer.name %}
 			<div class="organizer-wrap">

@@ -2,18 +2,19 @@
 import os
 
 # django
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
 # local 
 from theme_editor.models import ThemeFileVersion
 from theme_editor.forms import FileForm
 from theme_editor.utils import get_dir_list, get_file_list, get_file_content, qstr_is_dir
-from theme_editor.utils import qstr_is_file
+from theme_editor.utils import qstr_is_file, copy
 
 from base.http import Http403
 from perms.utils import has_perm
@@ -72,10 +73,9 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 
     # get the file list
     files = get_file_list(pwd)
-
+    
     # get a list of revisions
     archives = ThemeFileVersion.objects.filter(relative_file_path=default_file).order_by("-create_dt")
-
 
     if request.method == "POST":
         file_form = form_class(request.POST)
@@ -103,3 +103,72 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 def get_version(request, id):
     version = ThemeFileVersion.objects.get(pk=id)
     return HttpResponse(version.content)
+    
+
+@permission_required('theme_editor.change_themefileversion')
+def original_templates(request, template_name="theme_editor/original_templates.html"):
+    
+    current_dir = request.GET.get("dir", '')
+    if current_dir:
+        current_dir = current_dir.replace('\\','/')
+        current_dir = current_dir.strip('/')
+        current_dir = current_dir.replace('////', '/')
+        current_dir = current_dir.replace('///', '/')
+        current_dir = current_dir.replace('//', '/')
+
+    # if current_dir is a directory then append the
+    # trailing slash so we can get the dirname below
+    
+    # get the previous directory name and path
+    prev_dir = '/'
+    prev_dir_name = 'original templates'
+    current_dir_split = current_dir.split('/')
+    if len(current_dir_split) > 1:
+        prev_dir_name = current_dir_split[-2]
+        current_dir_split.pop()
+        prev_dir = '/'.join(current_dir_split)
+    elif not current_dir_split[0]:
+        prev_dir = ''
+    
+    dirs = get_dir_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"))
+    files = get_file_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"))
+    return render_to_response(template_name, {
+                                                'current_dir': current_dir,
+                                                'prev_dir_name': prev_dir_name,
+                                                'prev_dir':prev_dir,
+                                                'dirs': dirs,
+                                                'files': files},
+                              context_instance=RequestContext(request))
+
+@permission_required('theme_editor.change_themefileversion')
+def copy_to_theme(request):
+    
+    current_dir = request.GET.get("dir", '')
+    if current_dir:
+        current_dir = current_dir.replace('\\','/')
+        current_dir = current_dir.strip('/')
+        current_dir = current_dir.replace('////', '/')
+        current_dir = current_dir.replace('///', '/')
+        current_dir = current_dir.replace('//', '/')
+        
+    if not qstr_is_dir(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates")):
+        raise Http404   
+    
+    chosen_file = request.GET.get("file", '')
+    if chosen_file:
+        chosen_file = chosen_file.replace('\\','/')
+        chosen_file = chosen_file.strip('/')
+        chosen_file = chosen_file.replace('////', '/')
+        chosen_file = chosen_file.replace('///', '/')
+        chosen_file = chosen_file.replace('//', '/')
+
+    full_filename = os.path.join(current_dir, chosen_file)
+    if not qstr_is_file(full_filename, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates")) \
+        and not qstr_is_dir(full_filename, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates")):
+            raise Http404
+            
+    copy(current_dir, chosen_file)
+    
+    messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
+    
+    return redirect('original_templates')

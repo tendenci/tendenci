@@ -9,7 +9,7 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from event_logs.models import EventLog
-from memberships.models import App, AppEntry
+from memberships.models import App, AppEntry, Notice
 from perms.models import ObjectPermission
 from base.http import Http403
 
@@ -18,7 +18,9 @@ from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm, MemberAppro
 from memberships.utils import new_mems_from_csv
 
 from user_groups.models import GroupMembership
-from perms.utils import get_notice_recipients, is_admin, has_perm, update_perms_and_save
+from perms.utils import get_notice_recipients, \
+    has_perm, update_perms_and_save, is_admin, is_member, is_developer
+
 from invoices.models import Invoice
 from corporate_memberships.models import CorporateMembership
 
@@ -71,66 +73,19 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         context_instance=RequestContext(request))
 
 
-@login_required
-def membership_renew(request, id=0):
-    """
-    Make new entry; prefill with old entry info.
-    Redirect to entry details page.
-    """
-    membership = get_object_or_404(Membership, pk=id)
-
-    # eligible to renew
-    if not membership.can_renew():
-        raise Http403
-
-    # admins can renew everyone; users can renew themselves
-    if not is_admin(user) and request.user != membership.user:
-        raise Http403
-
-    old_entry = membership.entries.order_by('pk')[0]
-    new_entry = old_entry
-
-    # make new entry
-    new_entry.pk = None
-    new_entry.membership = membership
-    new_entry.save()
-
-    # make new fields
-    for old_field in old_entry.fields:
-        """
-        Does not currently account for new fields
-        added to the membership application.
-        """
-        new_field = old_field
-        new_field.pk = None
-        new_field.entry = new_entry
-        new_field.save()
-
-    # now we have a brand new entry
-    # associated with a membership
-    # associated with a person
-    # this tells us that the entry is a renewal
-
-    return redirect(new_entry.confirmation_url)
-
-
-def application_details(request, slug=None, cmb_id=None, template_name="memberships/applications/details.html"):
+def application_details(request, slug=None, cmb_id=None, membership_id=0, template_name="memberships/applications/details.html"):
     """
     Display a built membership application and handle submission.
     """
-    # cmb_id - corporate_membership_id
     if not slug:
         raise Http404
 
     query = '"slug:%s"' % slug
-    sqs = App.objects.search(query, user=request.user)
+    apps = App.objects.search(query, user=request.user)
 
-    if sqs:
-        app = sqs.best_match().object
+    if apps:
+        app = apps.best_match().object
     else:
-        raise Http404
-
-    if not app:
         raise Http404
     
     # if this app is for corporation individuals, redirect them to corp-pre page first.
@@ -138,8 +93,8 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
     is_corp_ind = False
     if hasattr(app, 'corp_app') and app.corp_app:
         is_corp_ind = True
-        
-        if request.method <> "POST":
+
+        if request.method != "POST":
             http_referer = request.META.get('HTTP_REFERER', '')
             corp_pre_url = reverse('membership.application_details_corp_pre', args=[slug])
             if not http_referer or not corp_pre_url in http_referer:
@@ -159,19 +114,57 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
         corporate_membership = CorporateMembership.objects.get(id=cmb_id)
     else:
         corporate_membership = None
-    app_entry_form = AppEntryForm(app, request.POST or None, request.FILES or None, 
-                              user=request.user, corporate_membership=corporate_membership)
-    
-    
+
+    user = request.user
+    membership = user.memberships.get_membership()
+    user_member_requirements = [
+        is_developer(request.user) == False,
+        is_admin(request.user) == False,
+        is_member(request.user) == True,
+    ]
+
+    initial_dict = {}
+
+    # deny access to renew memberships
+    if all(user_member_requirements):
+        initial_dict = membership.get_app_initial()
+        if not membership.can_renew():
+            return render_to_response("memberships/applications/no-renew.html", {
+                "app": app, "user":user, "membership": membership}, 
+                context_instance=RequestContext(request))
+
+    pending_entries = request.user.appentry_set.filter(
+        is_approved__isnull = True,  # pending   
+    )
+
+    if request.user.memberships.get_membership():
+        pending_entries.filter(
+            entry_time__gte = request.user.memberships.get_membership().join_dt
+        )
+
+    app_entry_form = AppEntryForm(
+            app, 
+            request.POST or None, 
+            request.FILES or None, 
+            user=request.user, 
+            corporate_membership=corporate_membership,
+            initial=initial_dict,
+        )
+
     if request.method == "POST":
         if app_entry_form.is_valid():
 
             entry = app_entry_form.save(commit=False)
             entry_invoice = entry.save_invoice()
 
-            if request.user.is_authenticated():
+
+            if request.user.is_authenticated():  # bind to user
                 entry.user = request.user
-                entry.save()
+                if all(user_member_requirements):  # save as renewal
+                    entry.is_renewal = True
+
+            # add all permissions and save the model
+            entry = update_perms_and_save(request, app_entry_form, entry)
 
             # administrators go to approve/disapprove page
             if is_admin(request.user):
@@ -190,12 +183,29 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
 
                     membership_total = Membership.objects.filter(status=True, status_detail='active').count()
 
-                    # send email to approved members
-                    notification.send_emails([entry.email],'membership_approved_to_member', {
-                        'object':entry,
-                        'request':request,
-                        'membership_total':membership_total,
-                    })
+                    notice_dict = {
+                        'notice_time':'attimeof',
+                        'notice_type':'join',
+                        'status':True,
+                        'status_detail':'active',
+                    }
+
+                    if entry.is_renewal:
+                        notice_dict['notice_type'] = 'renewal'
+
+                    # send email to member
+                    for notice in Notice.objects.filter(**notice_dict):
+
+                        notice_requirements = [
+                           notice.membership_type == entry.membership_type,
+                           notice.membership_type == None, 
+                        ]
+
+                        if any(notice_requirements):
+                            notification.send_emails([entry.email],'membership_approved_to_member', {
+                                'subject': notice.get_subject(entry.membership),
+                                'content': notice.get_content(entry.membership),
+                            })
 
                     # send email to admins
                     recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
@@ -206,7 +216,7 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
                             'membership_total':membership_total,
                         })
 
-                    # log entry approval
+                    # log - entry approval
                     EventLog.objects.log(**{
                         'event_id' : 1082101,
                         'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, entry.judge),
@@ -216,7 +226,7 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
                         'instance': entry,
                     })
 
-            # log entry submission
+            # log - entry submission
             EventLog.objects.log(**{
                 'event_id' : 1081000,
                 'event_data': '%s (%d) submitted by %s' % (entry._meta.object_name, entry.pk, request.user),
@@ -229,16 +239,19 @@ def application_details(request, slug=None, cmb_id=None, template_name="membersh
             return redirect(entry.confirmation_url)
 
     return render_to_response(template_name, {
-        'app': app, "app_entry_form": app_entry_form}, 
+        'app': app, 
+        'app_entry_form': app_entry_form, 
+        'pending_entries': pending_entries,
+        }, 
         context_instance=RequestContext(request))
     
 def application_details_corp_pre(request, slug, cmb_id=None, template_name="memberships/applications/details_corp_pre.html"):
-    
+
     try:
         app = App.objects.get(slug=slug)
     except App.DoesNotExist:
         raise Http404
-    
+
     if not hasattr(app, 'corp_app'):
         raise Http404
     
@@ -305,9 +318,6 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     Displays the details of a membership application entry.
     """
 
-    if not is_admin(request.user):
-        raise Http403
-
     if not id:
         return HttpResponseRedirect(reverse('membership.application_entries_search'))
 
@@ -339,7 +349,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
             membership_total = Membership.objects.filter(status=True, status_detail='active').count()
 
             status = request.POST.get('status', '')
-            approve = (status.lower() == 'approve')
+            approve = (status.lower() == 'approve') or (status.lower() == 'approve renewal')
 
             entry.judge = request.user
 
@@ -357,12 +367,29 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
                 entry.approve()
 
-                # send email to approved membership applicant
-                notification.send_emails([entry.email],'membership_approved_to_member', {
-                    'object':entry,
-                    'request':request,
-                    'membership_total':membership_total,
-                })
+                notice_dict = {
+                    'notice_time':'attimeof',
+                    'notice_type':'join',
+                    'status':True,
+                    'status_detail':'active',
+                }
+
+                if entry.is_renewal:
+                    notice_dict['notice_type'] = 'renewal'
+
+                # send email to member
+                for notice in Notice.objects.filter(**notice_dict):
+
+                    notice_requirements = [
+                       notice.membership_type == entry.membership_type,
+                       notice.membership_type == None, 
+                    ]
+
+                    if any(notice_requirements):
+                        notification.send_emails([entry.email],'membership_approved_to_member', {
+                            'subject': notice.get_subject(entry.membership),
+                            'content': notice.get_content(entry.membership),
+                        })
 
                 # send email to admins
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
@@ -383,7 +410,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                     'instance': entry,
                 })
 
-            else:
+            else:  # if not approved
                 entry.disapprove()
 
                 # send email to disapproved membership applicant
@@ -428,10 +455,7 @@ def application_entries_search(request, template_name="memberships/entries/searc
     Displays a page for searching membership application entries.
     """
 
-    if not is_admin(request.user):
-        raise Http403
-
-    query = request.GET.get('q', None)
+    query = request.GET.get('q')
     entries = AppEntry.objects.search(query, user=request.user)
     entries = entries.order_by('-entry_time')
 

@@ -16,6 +16,12 @@
     <h2>{{ app.name }}</h2>
     <p>{{ app.description|urlize }}</p>
 
+    {% if pending_entries %}
+        <div class="pending-entries">
+            <a href="{% url membership.application_entries_search %}?q=status:pending">
+            You have {{ pending_entries|length }} pending submission.</a></div>
+    {% endif %}
+
 	<div class="form-builder-wrap">
     	<form method="post" enctype="multipart/form-data">
     	<div class="forms">

@@ -38,6 +38,9 @@
         	</div>
         	{% if help_file.topics.exists %}
         	<div class="topics">
+                {% if not help_file.allow_anonymous_view %}
+                    <p><strong>Private Helpfile</strong></p>
+                {% endif %}                
         		Help Topics: 
         		{% for topic in help_file.topics.all %}
         			<a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>{% if not forloop.last %}, {% endif %}	

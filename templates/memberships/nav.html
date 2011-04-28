@@ -3,6 +3,8 @@
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 
+{% has_perm user memberships.change_notice as can_edit_notice %}
+
 <div id="showh">
     <ul id="primary">
 
@@ -21,6 +23,10 @@
 
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "memberships" %}">Settings</a></li>
+            {% endif %}
+            
+            {% if can_edit_notice %}
+                <li><a href="{% url admin:memberships_notice_changelist %}">Notices</a></li>
             {% endif %}
 
             {% if user.is_authenticated %}

@@ -126,9 +126,7 @@ class MemberApproveForm(forms.Form):
 
         sqs = SearchQuerySet()
 
-    #    full_name_q = Q(content='%s %s' % (mentioned_fn, mentioned_ln))
         email_q = Q(content=mentioned_em)
-    #    q = reduce(operator.or_, [full_name_q, email_q])
         sqs = sqs.filter(email_q)
 
         sqs_users = [sq.object.user for sq in sqs]
@@ -143,14 +141,26 @@ class MemberApproveForm(forms.Form):
 
     def __init__(self, entry, *args, **kwargs):
         super(MemberApproveForm, self).__init__(*args, **kwargs)
-
+        suggested_users = []
         self.entry = entry
+
         suggested_users = entry.suggested_users(grouping=[('email',)])
         suggested_users.append((0, 'Create new user'))
         self.fields['users'].choices = suggested_users
         self.fields['users'].initial = 0
 
-#        self.fields['users'].choices = self.get_suggestions(entry)
+        if self.entry.is_renewal:
+            # only one choice in choices; selected by default
+            # self.fields['users'].choices = [(entry.user.pk, entry.user)]
+            # self.fields['users'].initial = entry.user.pk
+            # self.fields['users'].widget = forms.MultipleHiddenInput
+            
+            self.fields['users'] = CharField(
+                label='',
+                initial=entry.user.pk, 
+                widget=HiddenInput
+            )
+
 
 class MembershipTypeForm(forms.ModelForm):
     type_exp_method = TypeExpMethodField(label='Period Type')
@@ -211,7 +221,6 @@ class MembershipTypeForm(forms.ModelForm):
                         field_value = ''
                 initial_list.append(str(field_value))
             self.fields['type_exp_method'].initial = ','.join(initial_list)
-            #print self.fields['type_exp_method'].initial
   
         else:
             self.fields['type_exp_method'].initial = "rolling,1,years,0,1,0,1,1,0,1,1,,1,1,,1"
@@ -406,20 +415,37 @@ class AppEntryForm(forms.ModelForm):
 
     class Meta:
         model = AppEntry
-        exclude = ("entry_time",)
+        exclude = (
+            'entry_time',
+            'allow_anonymous_view',
+            'allow_anonymous_edit',
+            'allow_user_view',
+            'allow_user_edit',
+            'allow_member_view',
+            'allow_member_edit',
+            'creator_username',
+            'owner',
+            'owner_username',
+            'status',
+            'status_detail'
+        )
 
     def __init__(self, app=None, *args, **kwargs):
         """
         Dynamically add each of the form fields for the given form model 
         instance and its related field model instances.
         """
+
+        self._meta.model()
+
         self.app = app
         self.form_fields = app.fields.visible()
         self.types_field = app.membership_types
-        
-        user = kwargs.pop('user', AnonymousUser)
+        user = kwargs.pop('user') or AnonymousUser
+        self.user = user
+
         # corporate_membership_id for corp. individuals
-        self.corporate_membership = kwargs.pop('corporate_membership', None)
+        self.corporate_membership = kwargs.pop('corporate_membership')
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
@@ -474,12 +500,15 @@ class AppEntryForm(forms.ModelForm):
                     choices = field.choices.split(",")
                     choices = [c.strip() for c in choices]
                     field_args["choices"] = zip(choices, choices)
-            
+
             if field.field_type == 'corporate_membership_id' and self.corporate_membership:
                 pass
             else:
                 field_args['initial'] = field.default_value
             field_args['help_text'] = field.help_text
+
+            if field.pk in kwargs['initial']:
+                field_args['initial'] = kwargs['initial'][field.pk]
 
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
@@ -500,9 +529,25 @@ class AppEntryForm(forms.ModelForm):
         Create a FormEntry instance and related FieldEntry instances for each 
         form field.
         """
+        from django.contrib.auth.models import User
+
         app_entry = super(AppEntryForm, self).save(commit=False)
         app_entry.app = self.app
+
+        # TODO: We're assuming that an administrator exists
+        # We're assuming this administrator is actively used
+        admin = User.objects.order_by('pk')[0]
+        user = self.user
+
+        app_entry.user = user
         app_entry.entry_time = datetime.now()
+        app_entry.creator = user or admin
+        app_entry.creator_username = user.username or admin.username
+        app_entry.owner = user or admin
+        app_entry.owner_username = user.username or admin.username
+        app_entry.status = True
+        app_entry.status_detail = 'active'
+
         app_entry.save()
 
         for field in self.form_fields:

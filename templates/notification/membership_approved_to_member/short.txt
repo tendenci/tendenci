@@ -1,1 +1,1 @@
-{{ SITE_GLOBAL_SITEDISPLAYNAME }} - Congratulations Membership application approved {{ object.first_name }} {{ object.last_name }}
+{{ subject }}
