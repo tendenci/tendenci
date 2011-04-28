@@ -161,6 +161,9 @@ class DirectoryPricing(models.Model):
     owner = models.ForeignKey(User, related_name="directory_pricing_owner", null=True)
     owner_username = models.CharField(max_length=50, null=True)
     status = models.BooleanField(default=True)
+
+    class Meta:
+        permissions = (("view_directory_pricing", "Can view directory pricing"),)
     
     def save(self, user=None, *args, **kwargs):
         if not self.id:

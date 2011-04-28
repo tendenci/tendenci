@@ -7,12 +7,6 @@ from user_groups.models import Group, GroupMembership
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
 
-# this is the list of apps whose permissions will be displayed on the permission edit page
-APPS = ['profiles', 'user_groups', 'articles', 
-        'news', 'pages', 'jobs', 'locations', 
-        'stories', 'actions', 'photos', 'entities',
-        'locations', 'files', 'directories', 'resumes',
-        'help_files']
 
 class GroupAdminForm(TendenciBaseForm):
     email_recipient = forms.CharField(label="Recipient Email", required=False, max_length=100, 
@@ -129,6 +123,16 @@ class GroupMembershipForm(forms.ModelForm):
         model = GroupMembership
         exclude = ('group',)
         
+class GroupMembershipBulkForm(forms.Form):
+    def __init__(self, group, *args, **kwargs):
+        super(GroupMembershipBulkForm, self).__init__(*args, **kwargs)
+        self.fields['members'].initial = group.members.all()
+    
+    members = forms.ModelMultipleChoiceField(queryset = User.objects.filter(is_active=1))
+    role = forms.CharField(required=False, max_length=255)
+    status = forms.BooleanField(required=False, initial=True)
+    status_detail = forms.ChoiceField(choices=(('active','Active'), ('inactive','Inactive'),), initial='active')
+        
 class GroupPermissionForm(forms.ModelForm):
     class Meta:
         model = Group
@@ -138,7 +142,7 @@ class GroupPermissionForm(forms.ModelForm):
         super(GroupPermissionForm, self).__init__(*args, **kwargs)
         # filter out the unwanted permissions,
         # only display the permissions for the apps in APPS
-        content_types = ContentType.objects.filter(app_label__in=APPS)
+        content_types = ContentType.objects.exclude(app_label='auth')
         
         self.fields['permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
         

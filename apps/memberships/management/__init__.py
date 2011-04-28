@@ -1,14 +1,7 @@
 from django.db.models.signals import post_syncdb
 from django.utils.translation import ugettext_noop as _
-from perms.utils import update_admin_group_perms
-from memberships import models as membership
+
 from notification import models as notification
-
-# assign permissions to the admin auth group
-def assign_permissions(app, created_models, verbosity, **kwargs):
-    update_admin_group_perms()
-
-post_syncdb.connect(assign_permissions, sender=membership)
 
 def create_notice_types(app, created_models, verbosity, **kwargs):
 

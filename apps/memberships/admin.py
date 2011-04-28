@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import slugify
 from django.http import HttpResponse
 from django.utils.html import escape
+from django.core.urlresolvers import reverse
 
 from memberships.forms import MembershipTypeForm
 from user_groups.models import Group
@@ -15,6 +16,7 @@ from memberships.models import  Membership, MembershipType, Notice, App, AppFiel
 from memberships.forms import AppForm, NoticeForm, AppFieldForm, AppEntryForm
 from memberships.utils import get_default_membership_fields, edit_app_update_corp_fields
 from payments.models import PaymentMethod
+from site_settings.utils import get_setting
 
 
 class MembershipAdmin(admin.ModelAdmin):
@@ -159,8 +161,15 @@ class MembershipTypeAdmin(admin.ModelAdmin):
         return instance
     
 class NoticeAdmin(admin.ModelAdmin):
-    list_display = ['notice_name', 'content_type', 
-                     'membership_type', 'status', 'status_detail', 'system_generated']
+    def notice_log(self):
+        if self.notice_time == 'attimeof':
+            return '--'
+        return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'), 
+                         reverse('membership.notice.log.search'), self.id)
+    notice_log.allow_tags = True
+    
+    list_display = ['notice_name', notice_log, 'content_type', 
+                     'membership_type', 'status', 'status_detail']
     list_filter = ['notice_type', 'status_detail']
     
     fieldsets = (
@@ -455,7 +464,7 @@ class AppEntryAdmin(admin.ModelAdmin):
 admin.site.register(MembershipType, MembershipTypeAdmin)
 admin.site.register(Notice, NoticeAdmin)
 admin.site.register(App, AppAdmin)
-admin.site.register(AppEntry, AppEntryAdmin)
+# admin.site.register(AppEntry, AppEntryAdmin)
 
 
 
