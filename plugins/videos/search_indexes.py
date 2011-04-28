@@ -14,6 +14,7 @@ class VideoIndex(indexes.RealTimeSearchIndex):
     title = indexes.CharField(model_attr='title')
     description = indexes.CharField(model_attr='description')
     category = indexes.CharField()
+    create_dt = indexes.DateTimeField(model_attr='create_dt')
     
     # authority fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')

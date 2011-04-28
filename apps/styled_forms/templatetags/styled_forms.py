@@ -49,3 +49,9 @@ def styled_form_set(form_set):
     template = get_template('styled_forms/form_set.html')
     c = Context({'form_set':form_set})
     return template.render(c)
+
+@register.filter
+def styled_dynamic_form_set(form_set):
+    template = get_template('styled_forms/dynamic_form_set.html')
+    c = Context({'form_set':form_set})
+    return template.render(c)

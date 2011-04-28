@@ -6,7 +6,7 @@ from datetime import date
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
@@ -21,10 +21,12 @@ from haystack.query import SearchQuerySet
 from base.http import Http403
 from site_settings.utils import get_setting
 from events.models import Event, RegistrationConfiguration, \
-    Registration, Registrant, Speaker, Organizer, Type, PaymentMethod
+    Registration, Registrant, Speaker, Organizer, Type, PaymentMethod, \
+    Group, GroupRegistrationConfiguration
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
-    RegistrationForm, RegistrantForm, RegistrantBaseFormSet
+    RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
+    GroupReg8nEditForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from perms.utils import has_perm, get_notice_recipients, update_perms_and_save, get_administrators
@@ -60,11 +62,7 @@ def index(request, id=None, template_name="events/view.html"):
             instance=event
         )
 
-        try:
-            speaker = event.speaker_set.all().order_by('pk')[0]
-        except:
-            speaker = None
-
+        speakers = event.speaker_set.all().order_by('pk')
         try:
             organizer = event.organizer_set.all().order_by('pk')[0]
         except:
@@ -72,7 +70,7 @@ def index(request, id=None, template_name="events/view.html"):
 
         return render_to_response(template_name, {
             'event': event,
-            'speaker': speaker,
+            'speakers': speakers,
             'organizer': organizer,
             'now': datetime.now(),
             },
@@ -181,7 +179,8 @@ def handle_uploaded_file(f, instance):
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
-    SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=2)
+    SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
+    # GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
     # tried get_or_create(); but get a keyword argument :(
     try: # look for an organizer
         organizer = event.organizer_set.all()[0]
@@ -197,7 +196,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             form_event = form_class(request.POST, instance=event, user=request.user)
             if form_event.is_valid():
                 event = form_event.save(commit=False)
-
+                
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
 
@@ -211,14 +210,17 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 )
 
                 # location validation
-                form_place = PlaceForm(request.POST, instance=event.place, prefix='place')
+                form_place = PlaceForm(request.POST, instance=event.place, 
+                    prefix='place')
                 if form_place.is_valid():
                     place = form_place.save() # save place
                     event.place = place
                     event.save() # save event
 
                 # speaker validation
-                form_speaker = SpeakerFormSet(request.POST, request.FILES, queryset=event.speaker_set.all())
+                form_speaker = SpeakerFormSet(request.POST, 
+                    request.FILES, queryset=event.speaker_set.all(), 
+                    prefix = 'speaker')
                 if form_speaker.is_valid():
                     speakers = form_speaker.save()
                     for speaker in speakers:
@@ -239,11 +241,22 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     regconf = form_regconf.save() # save registration configuration
                     event.registration_configuration = regconf
                     event.save() # save event
-
+                    
+                # form_grpregconf = GrpRegFormSet(request.POST,
+                #     queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
+                #     prefix='grpregconf')
+                    
+                # if form_grpregconf.is_valid():
+                #     grpregconfs = form_grpregconf.save()
+                #     for conf in grpregconfs:
+                #         conf.config = event.registration_configuration
+                #         conf.save()
+                
                 forms = [
                     form_event,
                     form_place,
                     form_speaker,
+                    # form_grpregconf,
                     form_organizer,
                     form_regconf,
                 ]
@@ -267,9 +280,15 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
             form_event = form_class(instance=event, user=request.user)
             form_place = PlaceForm(instance=event.place, prefix='place')
-            form_speaker = SpeakerFormSet(queryset=event.speaker_set.all())
-            form_organizer = OrganizerForm(instance=organizer, prefix='organizer')
-            form_regconf = Reg8nEditForm(instance=event.registration_configuration, prefix='regconf')
+            form_speaker = SpeakerFormSet(queryset=event.speaker_set.all(), 
+                prefix='speaker')
+            form_organizer = OrganizerForm(instance=organizer, 
+                prefix='organizer')
+            form_regconf = Reg8nEditForm(instance=event.registration_configuration, 
+                prefix='regconf')
+            # form_grpregconf = GrpRegFormSet(
+            #         queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
+            #         prefix='grpregconf')
 
         # response
         return render_to_response(template_name, {
@@ -280,6 +299,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             'form_speaker':form_speaker,
             'form_organizer':form_organizer,
             'form_regconf':form_regconf,
+            # 'form_grpregconf':form_grpregconf,
             }, 
             context_instance=RequestContext(request))
     else:
@@ -318,91 +338,85 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 
 @login_required
 def add(request, form_class=EventForm, template_name="events/add.html"):
-    SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=2)
+    SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
+    # GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
+
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
-
+            
             form_event = form_class(request.POST, user=request.user)
-            if form_event.is_valid():           
+            form_place = PlaceForm(request.POST, prefix='place')
+            form_speaker = SpeakerFormSet(request.POST, request.FILES,
+                queryset=Speaker.objects.none(), prefix='speaker')
+            form_organizer = OrganizerForm(request.POST, prefix='organizer')
+            form_regconf = Reg8nEditForm(request.POST, prefix='regconf')
+            # form_grpregconf = GrpRegFormSet(request.POST,
+            #     queryset=GroupRegistrationConfiguration.objects.none(),
+            #     prefix='grpregconf')
+                
+            forms = [
+                form_event,
+                form_place,
+                form_speaker,
+                form_organizer,
+                form_regconf,
+                # form_grpregconf,
+            ]
+
+            if all([form.is_valid() for form in forms]):
+
+                # pks have to exist; before making relationships
+                place = form_place.save()
+                regconf = form_regconf.save()
+                speakers = form_speaker.save()
+                organizer = form_organizer.save()
+                # grpregconfs = form_grpregconf.save()
                 event = form_event.save(commit=False)
+                
+                # update all permissions and save the model
+                event = update_perms_and_save(request, form_event, event)
+                
+                for speaker in speakers:
+                    speaker.event = [event]
+                    speaker.save()
+                    File.objects.save_files_for_instance(request, speaker)
 
-                try: # look for an organizer
-                    organizer = event.organizer_set.all()[0]
-                except: # else: create an organizer
-                    organizer = Organizer()
+                # for grpconf in grpregconfs:
+                #     grpconf.config = regconf
+                #     grpconf.save()
+                    
+                organizer.event = [event]
+                organizer.save() # save again
 
-                form_place = PlaceForm(request.POST, 
-                    instance=event.place, prefix='place')
-                form_speaker = SpeakerFormSet(request.POST, queryset=Speaker.objects.none())
-                form_organizer = OrganizerForm(request.POST, 
-                    instance=organizer, prefix='organizer')
-                form_regconf = Reg8nEditForm(request.POST, 
-                    instance=event.registration_configuration, prefix='regconf')
+                # update event
+                event.place = place
+                event.registration_configuration = regconf
+                event.save()
 
-                forms = [
-                    form_event,
-                    form_place,
-                    form_speaker,
-                    form_organizer,
-                    form_regconf,
-                ]
 
-                if all([form.is_valid() for form in forms]):
+                EventLog.objects.log(
+                    event_id =  171000, # add event
+                    event_data = '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
+                    description = '%s added' % event._meta.object_name,
+                    user = request.user,
+                    request = request,
+                    instance = event
+                )
 
-                    # pks have to exist; before making relationships
-                    place = form_place.save()
-                    regconf = form_regconf.save()
-                    speakers = form_speaker.save()
-                    organizer = form_organizer.save()
-                    # update all permissions and save the model
-                    event = update_perms_and_save(request, form_event, event)
+                messages.add_message(request, messages.INFO, 'Successfully added %s' % event)
+                # notification to administrator(s) and module recipient(s)
+                recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+                if recipients and notification:
+                    notification.send_emails(recipients, 'event_added', {
+                        'event':event,
+                        'user':request.user,
+                        'registrants_paid':event.registrants(with_balance=False),
+                        'registrants_pending':event.registrants(with_balance=True),
+                        'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                        'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+                    })
 
-                    # update supplemental
-                    for speaker in speakers:
-                        speaker.event = [event]
-                        speaker.save() # save again
-                        
-                    organizer.event = [event]
-                    organizer.save() # save again
-
-                    # update event
-                    event.place = place
-                    event.registration_configuration = regconf
-                    event.save()
-
-                    EventLog.objects.log(
-                        event_id =  171000, # add event
-                        event_data = '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                        description = '%s added' % event._meta.object_name,
-                        user = request.user,
-                        request = request,
-                        instance = event
-                    )
-
-                    messages.add_message(request, messages.INFO, 'Successfully added %s' % event)
-                    # notification to administrator(s) and module recipient(s)
-                    recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-                    if recipients and notification:
-                        notification.send_emails(recipients, 'event_added', {
-                            'event':event,
-                            'user':request.user,
-                            'registrants_paid':event.registrants(with_balance=False),
-                            'registrants_pending':event.registrants(with_balance=True),
-                            'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
-                            'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
-                        })
-
-                    return HttpResponseRedirect(reverse('event', args=[event.pk]))
-
-                return render_to_response(template_name, {
-                    'multi_event_forms':[form_event,form_place,form_speaker,form_organizer,form_regconf],
-                    'form_event':form_event,
-                    'form_place':form_place,
-                    'form_speaker':form_speaker,
-                    'form_organizer':form_organizer,
-                    'form_regconf':form_regconf,
-                    }, 
-                    context_instance=RequestContext(request))
+                return HttpResponseRedirect(reverse('event', args=[event.pk]))
         else:
             reg_inits = {
                 'early_dt': datetime.now(),
@@ -413,20 +427,25 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
 
             form_event = form_class(user=request.user)
             form_place = PlaceForm(prefix='place')
-            form_speaker = SpeakerFormSet(queryset=Speaker.objects.none())
+            form_speaker = SpeakerFormSet(queryset=Speaker.objects.none(),
+                prefix='speaker')
             form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_inits, prefix='regconf')
-
-            # response
-            return render_to_response(template_name, {
-                'multi_event_forms':[form_event,form_place,form_organizer,form_regconf],
-                'form_event':form_event,
-                'form_place':form_place,
-                'form_speaker':form_speaker,
-                'form_organizer':form_organizer,
-                'form_regconf':form_regconf,
-                }, 
-                context_instance=RequestContext(request))
+            # form_grpregconf = GrpRegFormSet(queryset=GroupRegistrationConfiguration.objects.none(),
+            #     prefix='grpregconf',
+            #     )
+            
+        # response
+        return render_to_response(template_name, {
+            'multi_event_forms':[form_event,form_place,form_organizer,form_regconf],
+            'form_event':form_event,
+            'form_place':form_place,
+            'form_speaker':form_speaker,
+            'form_organizer':form_organizer,
+            'form_regconf':form_regconf,
+            # 'form_grpregconf':form_grpregconf,
+            },
+            context_instance=RequestContext(request))
     else:
         raise Http403
     
@@ -1397,5 +1416,35 @@ def registrant_export(request, event_id, roster_view=''):
     book.save(response)
     return response
 
-
-
+@login_required
+def delete_speaker(request, id):
+    """
+        This delete is designed based on the add and edit view where
+        a speaker is considered to only be a speaker for a single event.
+    """
+    
+    if not has_perm(request.user,'events.delete_speaker'):
+        raise Http403
+        
+    speaker = get_object_or_404(Speaker, id = id)
+    event = speaker.event.all()[0]
+    
+    messages.add_message(request, messages.INFO, 'Successfully deleted %s' % speaker)
+    
+    speaker.delete()
+    
+    return redirect('event', id=event.id)
+    
+@login_required
+def delete_group_pricing(request, id):
+    if not has_perm(request.user,'events.delete_registrationconfiguration'): 
+        raise Http403
+        
+    gp = get_object_or_404(GroupRegistrationConfiguration, id = id)
+    event = Event.objects.get(registration_configuration=gp.config)
+    
+    messages.add_message(request, messages.INFO, 'Successfully deleted Group Pricing for %s' % gp)
+    
+    gp.delete()
+    
+    return redirect('event', id=event.id)

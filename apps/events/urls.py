@@ -13,6 +13,10 @@ urlpatterns = patterns('events',
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="event.delete"),
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
     url(r'^(?P<id>\d+)/$', 'views.index', name="event"),
+    
+    #delete
+    url(r'^speaker/(?P<id>\d+)/delete/$', 'views.delete_speaker', name='event.delete_speaker'),
+    url(r'^group_pricing/(?P<id>\d+)/delete/$', 'views.delete_group_pricing', name='event.delete_group_pricing'),
 
     # registration confirmation
     url(r'^(?P<id>\d+)/registrations/(?P<reg8n_id>\d+)/$', 

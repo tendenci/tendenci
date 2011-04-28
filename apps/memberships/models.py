@@ -2,27 +2,35 @@ import re
 import operator
 import hashlib
 import uuid
+import time
 from hashlib import md5
+from functools import partial
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+
 from django.db import models
-from django.contrib.auth.models import User, AnonymousUser
 from django.db.models.query_utils import Q
+from django.template import Context, Template
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
+
+from base.utils import day_validate
+from site_settings.utils import get_setting
 from perms.models import TendenciBaseModel
+from perms.utils import get_notice_recipients, is_member
 from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
-from memberships.managers import MemberAppManager, MemberAppEntryManager
+from memberships.managers import MembershipManager, \
+    MemberAppManager, MemberAppEntryManager
 from tinymce import models as tinymce_models
-from memberships.managers import MembershipManager
-from base.utils import day_validate
 from payments.models import PaymentMethod
 from user_groups.models import GroupMembership
 from haystack.query import SearchQuerySet
 from event_logs.models import EventLog
-from perms.utils import get_notice_recipients
+from profiles.models import Profile
+
 
 
 FIELD_CHOICES = (
@@ -250,7 +258,6 @@ class MembershipType(TendenciBaseModel):
                         expiration_dt = expiration_dt + relativedelta(years=1)
                         
                 return expiration_dt
-        
 
 class Membership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -258,7 +265,6 @@ class Membership(TendenciBaseModel):
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type")) 
     user = models.ForeignKey(User, related_name="memberships")
     directory = models.ForeignKey(Directory, blank=True, null=True) 
-    
     renewal = models.BooleanField(default=0)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time"), null=True)
@@ -266,10 +272,7 @@ class Membership(TendenciBaseModel):
     expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
-
-    # add membership application id - so we can support multiple applications
     ma = models.ForeignKey("App")
-
     objects = MembershipManager()
 
     class Meta:
@@ -304,15 +307,27 @@ class Membership(TendenciBaseModel):
         return (start_dt, end_dt)
         
     def can_renew(self):
-        if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
-            return False
-        
-        (renewal_period_start_dt, renewal_period_end_dt) = self.get_renewal_period_dt()
-        
-        now = datetime.now()
-        return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
 
-class MembershipArchive(models.Model):
+        if self.expiration_dt is None:  # expiration_dt == NULL
+            return False
+
+        start_dt, end_dt = self.get_renewal_period_dt()
+
+        # assert that we're within the renewal period
+        return (datetime.now() >= start_dt and datetime.now() <= end_dt)
+
+    def get_app_initial(self):
+        """
+        Get a dictionary of membership application
+        initial values.  Used for prefilling out membership
+        application forms. Useful for renewals.
+        """
+        entry = self.ma.entries.order_by('-pk')[0]
+        init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
+        return dict(init_kwargs)
+
+
+class MembershipArchive(TendenciBaseModel):
     """
     Keep a record of the old memberships.
     These records are created when a membership is renewed.
@@ -320,7 +335,8 @@ class MembershipArchive(models.Model):
     included via the 'membership' field.
     """
     membership = models.ForeignKey('Membership')
-    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type")) 
+    member_number = models.CharField(_("Member Number"), max_length=50)
+    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
     directory = models.ForeignKey(Directory, blank=True, null=True)
     join_dt = models.DateTimeField(_("Join Date Time"))
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True)
@@ -349,8 +365,8 @@ class Notice(models.Model):
                                             ('attimeof','At Time Of'))) 
     notice_type = models.CharField(_("For Notice Type"), max_length=20,
                                    choices=(('join','Join Date'),
-                                            ('renew','Renewal Date'),
-                                            ('expire','Expiration Date'))) 
+                                            ('renewal','Renewal Date'),
+                                            ('expiration','Expiration Date'))) 
     system_generated = models.BooleanField(_("System Generated"), default=0)
     membership_type = models.ForeignKey("MembershipType", blank=True, null=True,
                                         help_text=_("Note that if you don't select a membership type, the notice will go out to all members."))
@@ -364,7 +380,6 @@ class Notice(models.Model):
     sender_display = models.CharField(max_length=255, blank=True, null=True)
     email_content = tinymce_models.HTMLField(_("Email Content"))
     
-    
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="membership_notice_creator",  null=True)
@@ -377,27 +392,122 @@ class Notice(models.Model):
     
     def __unicode__(self):
         return self.notice_name
-    
+
+    @property
+    def footer(self):
+        return """
+        This e-mail was generated by Tendenci&reg; Software - a 
+        web based membership management software solution 
+        www.tendenci.com developed by Schipul - The Web Marketing Company
+        """
+
+    def get_subject(self, membership):
+        return self.build_notice(membership, self.subject)
+
+    def get_content(self, membership):
+        """
+        Return self.email_content with self.footer appended
+        """
+        global_setting = partial(get_setting, 'site', 'global')
+        user = membership.user
+        corporate_msg = ''
+        expiration_dt = ''
+
+        try:
+            profile = user.get_profile()
+        except Profile.DoesNotExist as e:
+            profile = Profile.objects.create_profile(user=user)
+
+        if membership.expiration_dt:
+            expiration_dt = time.strftime(
+                "%d-%b-%y %I:%M %p",
+                membership.expiration_dt.timetuple()
+            )
+
+        if membership.corporate_membership_id:
+            corporate_msg = """
+            <br /><br />
+            <font color="#FF0000">
+            Organizational Members, please contact your company Membership coordinator
+            to ensure that your membership is being renewed.
+            </font>
+            """
+
+        context = {
+            'title': profile.position_title,
+            'address': profile.address,
+            'city': profile.city,
+            'state': profile.state,
+            'zipcode': profile.zipcode,
+            'phone': profile.phone,
+            'workphone': profile.work_phone,
+            'homephone': profile.home_phone,
+            'fax': profile.fax,
+
+            'membernumber': membership.member_number,
+            'membershiptype': membership.membership_type.name,
+            'membershiplink': '%s%s'.format(global_setting('siteurl'), membership.get_absolute_url()),
+            'renewlink': '%s%s'.format(global_setting('siteurl'), membership.get_absolute_url()),
+            'expirationdatetime': expiration_dt,
+            'sitecontactname': global_setting('sitecontactname'),
+            'sitecontactemail': global_setting('sitecontactemail'),
+            'sitedisplayname': global_setting('site_displayname'),
+            'timesubmitted': time.strftime("%d-%b-%y %I:%M %p", datetime.now().timetuple()),
+            'corporatemembernotice': corporate_msg,
+        }
+
+        content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
+
+        return self.build_notice(membership, content, context=context)
+
+    def build_notice(self, membership, content, *args, **kwargs):
+        """
+        Replace values in a string and return the updated content
+        Values are pulled from membership, user, profile, and site_settings
+        In the future, maybe we can pull from the membership application entry
+        """
+        user = membership.user
+        extra_context = kwargs.get('context') or {}
+        content = content.replace('[','{{')
+        content = content.replace(']','}}')
+
+        template = Template(content)
+
+        context = {
+            'firstname': user.first_name,
+            'lastname': user.last_name,
+            'name': user.get_full_name(),
+            'username': user.username,
+            'email': user.email,
+        }
+        context.update(extra_context)
+        context = Context(context)
+
+        return template.render(context)
+
     @models.permalink
     def get_absolute_url(self):
         return ('membership.notice_email_content', [self.id])
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+        super(self.__class__, self).save(*args, **kwargs)
+        
 
-    def copy_membership(self, membership):
-        self.membership = membership
-        self.membership_type = membership.membership_type
-        self.directory = membership.directory
-        self.join_dt = membership.join_dt
-        self.renew_dt = membership.renew_dt
-        self.expire_dt = membership.expiration_dt
-        self.corporate_membership_id = membership.corporate_membership_id
-        self.invoice = membership.invoice
-        self.payment_method = membership.payment_method
-        self.ma = membership.ma
-
-    # is a guid required, if they're all the same?
-    # is the member number required if it never changes?
-    # is the user required, if the membership is always bound to the same user?
-    # what exactly is the directory field?
+class NoticeLog(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice = models.ForeignKey(Notice, related_name="logs")
+    notice_sent_dt = models.DateTimeField(auto_now_add=True)
+    num_sent = models.IntegerField()
+    
+class NoticeLogRecord(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice_log = models.ForeignKey(NoticeLog, related_name="log_records")
+    membership = models.ForeignKey(Membership, related_name="log_records")
+    action_taken = models.BooleanField(default=0)
+    action_taken_dt = models.DateTimeField(blank=True, null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
 
 class App(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
@@ -429,11 +539,22 @@ class App(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ('membership.application_details', [self.slug])
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
+
+    def get_prefill_kwargs(self, membership=None):
+        """
+        Prefill this application.
+        Possible Parameters: user, membership, entry
+        """
+        entry = membership.ma.entries.order_by('-pk')[0]
+        init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
+
+        return dict(init_kwargs)
+
 
 class AppFieldManager(models.Manager):
     """
@@ -489,7 +610,7 @@ class AppField(models.Model):
     def __unicode__(self):
         return self.label
 
-class AppEntry(models.Model):
+class AppEntry(TendenciBaseModel):
     """
     An entry submitted via a membership application.
     """
@@ -498,6 +619,7 @@ class AppEntry(models.Model):
     membership = models.ForeignKey("Membership", related_name="entries", null=True, editable=False)
     entry_time = models.DateTimeField(_("Date/Time"))
 
+    is_renewal = models.BooleanField(editable=False)
     is_approved = models.NullBooleanField(_('Status'), null=True, editable=False)
     decision_dt = models.DateTimeField(null=True, editable=False)
     judge = models.ForeignKey(User, null=True, related_name='entries', editable=False)
@@ -604,6 +726,7 @@ class AppEntry(models.Model):
             new user creation
         """
 
+        # get user -------------
         if self.user and self.user.is_authenticated():
             user = self.user
         elif self.suggested_users():
@@ -616,10 +739,32 @@ class AppEntry(models.Model):
                 'password': hashlib.sha1(self.email).hexdigest()[:6]
             })
 
+        # get judge --------------
         if self.judge and self.judge.is_authenticated():
             judge, judge_pk, judge_username = self.judge, self.judge.pk, self.judge.username
         else:
             judge, judge_pk, judge_username = None, 0, ''
+
+        # if veteran; create archive
+        membership = user.memberships.get_membership()
+        if membership:
+            archive = MembershipArchive.objects.create(**{
+                'membership':membership,
+                'member_number': membership.member_number,
+                'membership_type': membership.membership_type,
+                'directory':membership.directory,
+                'join_dt':membership.join_dt,
+                'renew_dt':membership.renew_dt,
+                'expire_dt':membership.expiration_dt,
+                'corporate_membership_id':membership.corporate_membership_id,
+                'invoice':membership.invoice,
+                'payment_method':membership.payment_method,
+                'ma':membership.ma,
+                'creator_id':membership.creator_id,
+                'creator_username':membership.creator_username,
+                'owner_id':membership.owner_id,
+                'owner_username':membership.owner_username,
+            })
 
         try: # get membership
             membership = Membership.objects.get(**{
@@ -716,7 +861,6 @@ class AppEntry(models.Model):
             ])
 
         query_list = [Q(content=' '.join([getattr(self, item) for item in group])) for group in grouping]
-        # added .models(User) - should only search User, not anything else - GJQ
         sqs = SearchQuerySet().models(User)
         sqs = sqs.filter(reduce(operator.or_, query_list))
         sqs_users = [sq.object.user for sq in sqs]
@@ -760,7 +904,7 @@ class AppEntry(models.Model):
         return un.lower()
 
     @property
-    def status(self):
+    def status_msg(self):
         status = 'Pending'
 
         if self.is_approved == True:
@@ -899,3 +1043,14 @@ class AppFieldEntry(models.Model):
                 pass
 
         return None
+    
+
+# Moved from management/__init__.py to here because it breaks 
+# the management commands due to the ImportError.
+# assign models permissions to the admin auth group
+def assign_permissions(app, created_models, verbosity, **kwargs):
+    from perms.utils import update_admin_group_perms
+    update_admin_group_perms()
+from django.db.models.signals import post_syncdb
+#from memberships import models as membership_models
+post_syncdb.connect(assign_permissions, sender=__file__)

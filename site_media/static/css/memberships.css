@@ -176,6 +176,14 @@ div.forms div.form-field div.id_release_dt .field input#id_release_dt_1 {
 	width: 80px;
 }
 
+div.pending-entries {
+	border: 1px solid silver;
+	background-color: #EEE;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+
 /* Membership Details (print)
  ------------------------- */
 .t-print .membership-wrap {
