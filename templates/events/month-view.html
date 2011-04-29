@@ -45,7 +45,7 @@
 		{% for week in cal %}
 			{% for day in week %}
 
-				<div class="day" {% if today.date == day %}style="background-color:#FFD;"{% endif %}>
+				<div class="day{% if today.date == day %} today{% endif %}">
 					<div class="date-numeral"><a href="{% url event.day day.year day.month day.day %}">{{ day.day }}</a></div>
 
 					{% event_list day type as events %}
