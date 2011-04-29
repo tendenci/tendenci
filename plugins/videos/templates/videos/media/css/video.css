@@ -49,3 +49,9 @@
 }
 
 #videos-sidebar { width: 220px; float: right;}
+
+.video-wrap {
+	width: 200px; 
+	height: 300px; 
+	float: left;
+}
