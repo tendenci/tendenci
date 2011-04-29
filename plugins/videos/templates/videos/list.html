@@ -7,7 +7,8 @@
 <h1>{% if category %}{{category|title}} {% endif %}Videos</h1>
 {% for video in videos %}
     {% with video.object as video %}
-    <div style="width: 200px; height: 300px; float: left;">
+
+    <div class="video-wrap">
         <a href="{{ video.get_absolute_url }}">
         <h3>{{ video.title }}</h3>
         {% if video.image %}
@@ -23,6 +24,7 @@
         <br>
         {{ video.description|safe|truncatewords_html:"20" }}
     </div>
+
     {% endwith %}
 {% endfor %}
 </div>
