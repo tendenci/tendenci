@@ -82,7 +82,7 @@
 
 		<div class="header">Types of Events</div>
 		<div class="types">
-			<div class="type"><a href="{% url event.month year month %}">All Event Types</a></div>
+			<div class="type all-types"><a href="{% url event.month year month %}">All Event Types</a></div>
 			{% with type as curr_type %}
 			{% for type in types %}
 
