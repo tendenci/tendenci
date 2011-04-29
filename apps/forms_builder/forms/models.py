@@ -217,6 +217,11 @@ class FormEntry(models.Model):
         if not name:
             if first_name or last_name:
                 name = '%s %s' % (first_name, last_name)
+        if not name:
+            # pick the name from email
+            if email:
+                [name, domain] = email.split('@')
+            
         return (name, email)
     
 class FieldEntry(models.Model):
