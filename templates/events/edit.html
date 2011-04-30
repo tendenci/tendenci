@@ -36,6 +36,7 @@
             <div id="form-speaker">
                 {{ form_speaker|styled_form_set }}
                 <input type="button" value="Add More" id="add_more">
+                <input type="button" value="Add More" id="show_add">
             </div>
             <div class="form-label">Group Pricing</div>
             {{ form_grpregconf.management_form }}
@@ -149,6 +150,7 @@
                 </div>
                 {% endfor %}
                 <input type="button" value="Add More" id="add_more2">
+                <input type="button" value="Add More" id="show_add2">
             </div>
             
             <div class="form-label">Special Pricing</div>
@@ -308,6 +310,7 @@
                 </div>
                 {% endfor %}
                 <input type="button" value="Add More" id="add_more3">
+                <input type="button" value="Add More" id="show_add3">
             </div>
             
 			<input type="submit" value="Save Changes" />
@@ -350,6 +353,27 @@
 	</script>
     <script>
         $(document).ready(function(){
+            $('#form-speaker div.form-grouping:last').hide();
+            $('#form-grpregconf div.form-grouping:last').hide();
+            $('#form-special div.form-grouping:last').hide();
+            $('#add_more').hide();
+            $('#add_more2').hide();
+            $('#add_more3').hide();
+            $('#show_add').click(function() {
+                $('#form-speaker div.form-grouping:last').show();
+                $('#add_more').show();
+                $('#show_add').hide();
+            });
+            $('#show_add2').click(function() {
+                $('#form-grpregconf div.form-grouping:last').show();
+                $('#add_more2').show();
+                $('#show_add2').hide();
+            });
+            $('#show_add3').click(function() {
+                $('#form-special div.form-grouping:last').show();
+                $('#add_more3').show();
+                $('#show_add3').hide();
+            });
             $('#add_more').click(function() {
                 cloneForm('#form-speaker div.form-grouping:last', '{{ form_speaker.prefix }}');
             });
