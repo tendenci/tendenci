@@ -10,7 +10,8 @@ from django.forms.util import ErrorList
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, \
-    TypeColorSet, Registrant, GroupRegistrationConfiguration
+    TypeColorSet, Registrant, GroupRegistrationConfiguration, \
+    SpecialPricing
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
@@ -294,6 +295,53 @@ class GroupReg8nEditForm(BetterModelForm):
         
         fields = (
             'group',
+            'early_price',
+            'regular_price',
+            'late_price',
+            'early_dt',
+            'regular_dt',
+            'late_dt',
+            'end_dt',
+        )
+        
+        widgets = {
+            'early_price': forms.TextInput(attrs={'class':'short_text_input'}),
+            'regular_price': forms.TextInput(attrs={'class':'short_text_input'}),
+            'late_price': forms.TextInput(attrs={'class':'short_text_input'}),
+        }
+        
+class SpecialPricingForm(BetterModelForm):
+    label = 'Special Registration'
+    
+    early_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
+    regular_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
+    late_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
+    early_dt = SplitDateTimeField(label=_('Early Date/Time'))
+    regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
+    late_dt = SplitDateTimeField(label=_('Late Date/Time'))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'))
+    
+    def clean(self):
+        
+        early_price = self.cleaned_data.get('early_price') or 0
+        regular_price = self.cleaned_data.get('regular_price') or 0
+        late_price = self.cleaned_data.get('late_price') or 0
+        
+        # if price is zero
+        if sum([early_price, regular_price, late_price]) == 0:
+            # remove payment_method error
+            if "payment_method" in self._errors:
+                self._errors.pop("payment_method")
+        
+        return self.cleaned_data
+        
+    class Meta:
+        model = SpecialPricing
+        
+        fields = (
+            'title',
+            'group',
+            'quantity',
             'early_price',
             'regular_price',
             'late_price',
