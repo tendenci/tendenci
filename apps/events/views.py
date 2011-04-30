@@ -182,6 +182,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
     GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
     SpecialPricingFormSet = modelformset_factory(SpecialPricing, form=SpecialPricingForm, extra=1)
+
     # tried get_or_create(); but get a keyword argument :(
     try: # look for an organizer
         organizer = event.organizer_set.all()[0]
@@ -364,8 +365,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
             form_place = PlaceForm(request.POST, prefix='place')
             form_speaker = SpeakerFormSet(request.POST, request.FILES,
                 queryset=Speaker.objects.none(), prefix='speaker')
-            form_organizer = OrganizerForm(request.POST, 
-                prefix='organizer')
+            form_organizer = OrganizerForm(request.POST, prefix='organizer')
             form_regconf = Reg8nEditForm(request.POST, prefix='regconf')
             form_grpregconf = GrpRegFormSet(request.POST,
                 queryset=GroupRegistrationConfiguration.objects.none(),
