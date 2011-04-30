@@ -28,10 +28,24 @@
 	        <h1>{{ event.title }}</h1>
 	        <div class="content">
                 <p>{{ event.description|safe }}</p>
-                <h3>Group Pricings</h3>
+                {% if event.registration_configuration.groupregistrationconfiguration_set.all %}
+                    <h3>Group Pricings</h3>
+                {% endif %}
                 {% for gp in event.registration_configuration.groupregistrationconfiguration_set.all %}
                     {{ gp }} - early:{{ gp.early_price }} - regular:{{ gp.regular_price }} - late:{{ gp.late_price }}
-                    <a href="{% url event.delete_group_pricing gp.id %}">Remove</a>
+                    <a href="{% url event.delete_group_pricing gp.id %}">Remove</a> <br>
+                {% endfor %}
+                {% if event.registration_configuration.specialpricing_set.all %}
+                <h3>Special Pricings</h3>
+                {% endif %}
+                {% for gp in event.registration_configuration.specialpricing_set.all %}
+                    <p>{{ gp.title }}</p>
+                    <p>
+                    Group: {{ gp.group.name }}<br>
+                    Quantity: {{ gp.quantity }}<br>
+                    early:{{ gp.early_price }} - regular:{{ gp.regular_price }} - late:{{ gp.late_price }}<br>
+                    </p>
+                    <p><a href="{% url event.delete_special_pricing gp.id %}">Remove</a> </p>
                 {% endfor %}
             </div>
 		</div>

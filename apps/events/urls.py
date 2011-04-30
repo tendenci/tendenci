@@ -17,6 +17,7 @@ urlpatterns = patterns('events',
     #delete
     url(r'^speaker/(?P<id>\d+)/delete/$', 'views.delete_speaker', name='event.delete_speaker'),
     url(r'^group_pricing/(?P<id>\d+)/delete/$', 'views.delete_group_pricing', name='event.delete_group_pricing'),
+    url(r'^special_pricing/(?P<id>\d+)/delete/$', 'views.delete_special_pricing', name='event.delete_special_pricing'),
 
     # registration confirmation
     url(r'^(?P<id>\d+)/registrations/(?P<reg8n_id>\d+)/$', 

@@ -22,11 +22,11 @@ from base.http import Http403
 from site_settings.utils import get_setting
 from events.models import Event, RegistrationConfiguration, \
     Registration, Registrant, Speaker, Organizer, Type, PaymentMethod, \
-    Group, GroupRegistrationConfiguration
+    Group, GroupRegistrationConfiguration, SpecialPricing
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
-    GroupReg8nEditForm
+    GroupReg8nEditForm, SpecialPricingForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from perms.utils import has_perm, get_notice_recipients, update_perms_and_save, get_administrators
@@ -181,6 +181,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
     SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
     GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
+    SpecialPricingFormSet = modelformset_factory(SpecialPricing, form=SpecialPricingForm, extra=1)
     # tried get_or_create(); but get a keyword argument :(
     try: # look for an organizer
         organizer = event.organizer_set.all()[0]
@@ -251,6 +252,16 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     for conf in grpregconfs:
                         conf.config = event.registration_configuration
                         conf.save()
+                        
+                form_special = SpecialPricingFormSet(request.POST,
+                    queryset=event.registration_configuration.specialpricing_set.all(),
+                    prefix='special')
+                    
+                if form_special.is_valid():
+                    specials = form_special.save()
+                    for s in specials:
+                        s.config = event.registration_configuration
+                        s.save()
                 
                 forms = [
                     form_event,
@@ -259,6 +270,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     form_grpregconf,
                     form_organizer,
                     form_regconf,
+                    form_special,
                 ]
 
                 if all([form.is_valid() for form in forms]):
@@ -289,6 +301,9 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             form_grpregconf = GrpRegFormSet(
                     queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
                     prefix='grpregconf')
+            form_special = SpecialPricingFormSet(
+                    queryset=event.registration_configuration.specialpricing_set.all(),
+                    prefix='special')
 
         # response
         return render_to_response(template_name, {
@@ -300,6 +315,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             'form_organizer':form_organizer,
             'form_regconf':form_regconf,
             'form_grpregconf':form_grpregconf,
+            'form_special':form_special,
             }, 
             context_instance=RequestContext(request))
     else:
@@ -340,6 +356,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 def add(request, form_class=EventForm, template_name="events/add.html"):
     SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
     GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
+    SpecialPricingFormSet = modelformset_factory(SpecialPricing, form=SpecialPricingForm, extra=1)
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
             
@@ -353,6 +370,9 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
             form_grpregconf = GrpRegFormSet(request.POST,
                 queryset=GroupRegistrationConfiguration.objects.none(),
                 prefix='grpregconf')
+            form_special = SpecialPricingFormSet(request.POST,
+                queryset=SpecialPricing.objects.none(),
+                prefix='special')
                 
             forms = [
                 form_event,
@@ -361,6 +381,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 form_organizer,
                 form_regconf,
                 form_grpregconf,
+                form_special,
             ]
 
             if all([form.is_valid() for form in forms]):
@@ -372,7 +393,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 organizer = form_organizer.save()
                 grpregconfs = form_grpregconf.save()
                 event = form_event.save(commit=False)
-                
+                special = form_special.save()
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
                 
@@ -384,6 +405,10 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 for grpconf in grpregconfs:
                     grpconf.config = regconf
                     grpconf.save()
+                                    
+                for s in special:
+                    s.config = regconf
+                    s.save()
                     
                 organizer.event = [event]
                 organizer.save() # save again
@@ -434,6 +459,9 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
             form_grpregconf = GrpRegFormSet(queryset=GroupRegistrationConfiguration.objects.none(),
                 prefix='grpregconf',
                 )
+            form_special = SpecialPricingFormSet(queryset=SpecialPricing.objects.none(),
+                prefix='special',
+                )
             
         # response
         return render_to_response(template_name, {
@@ -444,6 +472,7 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
             'form_organizer':form_organizer,
             'form_regconf':form_regconf,
             'form_grpregconf':form_grpregconf,
+            'form_special' : form_special,
             },
             context_instance=RequestContext(request))
     else:
@@ -1446,5 +1475,19 @@ def delete_group_pricing(request, id):
     messages.add_message(request, messages.INFO, 'Successfully deleted Group Pricing for %s' % gp)
     
     gp.delete()
+    
+    return redirect('event', id=event.id)
+    
+@login_required
+def delete_special_pricing(request, id):
+    if not has_perm(request.user,'events.delete_registrationconfiguration'): 
+        raise Http403
+        
+    s = get_object_or_404(SpecialPricing, id = id)
+    event = Event.objects.get(registration_configuration=s.config)
+    
+    messages.add_message(request, messages.INFO, 'Successfully deleted Special Pricing for %s' % s)
+    
+    s.delete()
     
     return redirect('event', id=event.id)
