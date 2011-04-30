@@ -64,10 +64,12 @@
 	<a href="{{ SITE_GLOBAL_SITEURL }}{% url donation.view donation.id %}">{{ SITE_GLOBAL_SITEURL }}{% url donation.view donation.id %}</a>			
 	</font></b></font></p>
 	
+	{% if donation.user %}
 	<p><font face="Arial, Helvetica, sans-serif" size="2">To view the user details, 
 	go to: <b><font face="Arial, Helvetica, sans-serif" size="2">
 	<a href="{{ SITE_GLOBAL_SITEURL }}{% url profile donation.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url profile donation.user.username %}</a>			
 	</font></b></font></p>
+	{% endif %}
 	
 
 	
