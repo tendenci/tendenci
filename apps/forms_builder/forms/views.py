@@ -290,7 +290,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     if request.method == "POST":
         if form_for_form.is_valid():
             entry = form_for_form.save()
-            email_headers = {'Content-Type': 'text/html'}
+            #email_headers = {'Content-Type': 'text/html'}
+            email_headers = {}  # content type specified below
             if form.email_from:
                 email_headers.update({'Reply-To':form.email_from})
 #            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k]) 

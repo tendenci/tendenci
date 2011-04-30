@@ -507,6 +507,10 @@ input.short_text_input{
 
 	float: left;
 }
+.month-view div.today {
+	background-color: #FFD;
+}
+
 .month-view div.day div.date-numeral {
 	text-align: right;
 	background-color: #EEE;

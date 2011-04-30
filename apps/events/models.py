@@ -1,6 +1,7 @@
 import uuid
 from hashlib import md5
 from datetime import datetime
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.aggregates import Sum
@@ -20,6 +21,8 @@ from user_groups.models import Group
 from invoices.models import Invoice
 from files.models import File
 from site_settings.utils import get_setting
+from payments.models import PaymentMethod as GlobalPaymentMethod
+
 
 class TypeColorSet(models.Model):
     """
@@ -453,9 +456,15 @@ class RegistrationConfiguration(models.Model):
 
     @property
     def can_pay_online(self):
-        # TODO: Update event payment method; use global payment method
-        methods = [method.label.lower() for method in self.payment_method.all()]
-        return 'credit card' in methods
+        """
+        Check online payment dependencies.
+        Return boolean.
+        """
+        has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
+        has_account = get_setting('site', 'global', 'merchantaccount') is not ''
+        has_api = settings.MERCHANT_LOGIN is not ''
+
+        return all([has_method, has_account, has_api])
 
 class GroupRegistrationConfiguration(models.Model):
     """

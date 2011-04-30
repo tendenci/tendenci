@@ -21,7 +21,7 @@
 	</div>
 
     <h1>{{ photo_set.name }}</h1>
-
+    <div class="description">{{ photo_set.description|striptags|safe }}</div>
 	<div id="photos-wrap">
         {% if photos %}
         {% autopaginate photos 30 %}

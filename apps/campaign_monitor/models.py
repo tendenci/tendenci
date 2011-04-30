@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
 from user_groups.models import Group, GroupMembership
 from forms_builder.forms.models import FormEntry
+from subscribers.models import GroupSubscription
 
 class ListMap(models.Model):
     group = models.ForeignKey(Group)
@@ -175,12 +176,15 @@ if cm_api_key and cm_client_id:
         return list_id
             
     def get_name_email(instance):
+        email = ""
+        name = ""
         if isinstance(instance, GroupMembership):
             email = instance.member.email
             name = instance.member.get_full_name()
-        else:
-            email = ""
-            name = ""
+        elif isinstance(instance, GroupSubscription):
+            form_entry = instance.subscriber
+            (name, email) = form_entry.get_name_email()
+                    
         return (name, email)
             
         
@@ -190,6 +194,9 @@ if cm_api_key and cm_client_id:
     
     post_save.connect(sync_cm_subscriber, sender=GroupMembership)   
     pre_delete.connect(delete_cm_subscriber, sender=GroupMembership)
+    
+    post_save.connect(sync_cm_subscriber, sender=GroupSubscription)   
+    pre_delete.connect(delete_cm_subscriber, sender=GroupSubscription)
     
     
     
