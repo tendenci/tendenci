@@ -147,9 +147,6 @@ class Directory(TendenciBaseModel):
     def age(self):
         return datetime.now() - self.create_dt
 
-    def get_category(self):
-        pass
-
 class DirectoryPricing(models.Model):
     guid = models.CharField(max_length=40)
     duration = models.IntegerField(blank=True)
