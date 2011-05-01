@@ -57,18 +57,15 @@ class CategoryManager(Manager):
 
     def get_for_model(self, model, category=None):
         """
-        Returns a list of categories associated with
-        the model (or object) passed.
+        Returns a 2-tuple with lists inside. The tuple
+        contains a list of categories and sub_categories.
         """
         ct = ContentType.objects.get_for_model(model)
-
-        # category = CategoryItem.objects.get(pk=category)
-
         filters = {'content_type':ct}
-        
+
         cat_items = CategoryItem.objects.filter(**filters)
-        categories = [c.category for c in cat_items if c.category]
-        sub_categories = [self.get(pk=c.parent.pk) for c in cat_items if c.parent]
+        categories = set([c.category for c in cat_items if c.category])
+        sub_categories = set([self.get(pk=c.parent.pk) for c in cat_items if c.parent])
 
         # find all cat_items using category (ct & object_id)
         # find all cat_items using objects found within cat_items
@@ -79,13 +76,17 @@ class CategoryManager(Manager):
             filters['category'] = category
 
             cat_items = CategoryItem.objects.filter(**filters)
+
+            cat_items2 = []
             for cat_item in cat_items:
-                cat_items = CategoryItem.objects.filter(
+                cat_items3 = CategoryItem.objects.filter(
                     content_type=cat_item.content_type,
                     object_id=cat_item.object_id,
                 )
+                for i in cat_items3:
+                    cat_items2.append(i)
 
-            sub_categories = [self.get(pk=c.parent.pk) for c in cat_items if c.parent]
+            sub_categories = set([self.get(pk=c.parent.pk) for c in cat_items2 if c.parent])
 
         return (categories, sub_categories)
 
