@@ -8,16 +8,16 @@ from categories.utils import prep_category
 class CategoryManager(Manager):
     def update(self, object, value, type):
         ct = ContentType.objects.get_for_model(object)
-        object_id = object.pk     
-                
+        object_id = object.pk
+
         # get the category
         category = self.get_or_create(name=prep_category(value))[0]
 
         cat_item_filters = {
             'content_type': ct,
             'object_id': object_id
-        }   
-    
+        }
+
         # they can only be in one sub category or category
         if type == 'category':
             cat_item_filters.update({'parent__exact':None})
@@ -29,8 +29,8 @@ class CategoryManager(Manager):
             cat_item = CategoryItem._default_manager.get_or_create(**cat_item_filters)[0]
             cat_item.parent = category
             cat_item.save()
-             
-    
+
+
     def remove(self, object, type):
         ct = ContentType.objects.get_for_model(object)
         object_id = object.pk     
@@ -39,19 +39,17 @@ class CategoryManager(Manager):
             'content_type': ct,
             'object_id': object_id
         }
-                           
+
         if type == 'category':
             cat_item_filters.update({'parent__exact':None})
         else:
             cat_item_filters.update({'category__exact':None})  
-        
+
         try:
             cat_item = CategoryItem._default_manager.get(**cat_item_filters)
         except:
-            print 'error'
             cat_item = None
-        
-        print cat_item
+
         if cat_item:
             cat_item.delete()
 
@@ -64,6 +62,7 @@ class CategoryManager(Manager):
         filters = {'content_type':ct}
 
         cat_items = CategoryItem.objects.filter(**filters)
+
         categories = set([c.category for c in cat_items if c.category])
         sub_categories = set([self.get(pk=c.parent.pk) for c in cat_items if c.parent])
 
@@ -88,6 +87,9 @@ class CategoryManager(Manager):
 
             sub_categories = set([self.get(pk=c.parent.pk) for c in cat_items2 if c.parent])
 
+        categories = sorted(categories, key=lambda category: category.name)
+        sub_categories = sorted(sub_categories, key=lambda sub_categories: sub_categories.name)
+
         return (categories, sub_categories)
 
 
@@ -103,7 +105,7 @@ class CategoryManager(Manager):
         categories = CategoryItem._default_manager.filter(**cat_item_filters)
 
         if not categories: return None
-        
+
         if type == 'category':
             for cat in categories:
                 if cat.category:
@@ -113,12 +115,12 @@ class CategoryManager(Manager):
                 if cat.parent_id > 0:
                     return self.get(pk=cat.parent_id)
         return None
-        
+
 class Category(models.Model):
     name = models.CharField(max_length=255, db_index=True, unique=True)
 
     objects = CategoryManager()
-    
+
     def __unicode__(self):
         return self.name
 
@@ -128,5 +130,3 @@ class CategoryItem(models.Model):
     category = models.ForeignKey(Category, related_name='%(class)s_category',null=True)
     parent = models.ForeignKey(Category, related_name='%(class)s_parent', null=True)
     object = generic.GenericForeignKey('content_type', 'object_id')
-    
-    
