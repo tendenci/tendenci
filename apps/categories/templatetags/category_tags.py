@@ -43,7 +43,7 @@ class GetSubCategoryForObjectNode(Node):
             return '' 
         object = self.object.resolve(context)  
         category = Category.objects.get_for_object(object, 'sub_category')
-        if category: context[self.context] = category.name
+        if category: context[self.context] = category
         return ''
 
 @register.tag
