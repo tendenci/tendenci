@@ -50,9 +50,14 @@ def index(request, slug=None, template_name="directories/view.html"):
         raise Http403
 
 def search(request, template_name="directories/search.html"):
-    query = request.GET.get('q', None)
-    directories = Directory.objects.search(query, user=request.user)
-    directories = directories.order_by('headline_exact')
+    get = dict(request.GET)
+
+    query = get.pop('q', [''])
+    query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
+    query = '%s %s' % (''.join(query), ' '.join(query_extra))
+
+    directories = Directory.objects.search(
+        query, user=request.user).order_by('headline_exact')
 
     log_defaults = {
         'event_id' : 444000,
@@ -63,8 +68,14 @@ def search(request, template_name="directories/search.html"):
         'source': 'directories'
     }
     EventLog.objects.log(**log_defaults)
-    
-    return render_to_response(template_name, {'directories':directories}, 
+
+    categories, sub_categories = Directory.objects.get_categories(category=request.GET.get('category'))
+
+    return render_to_response(template_name, {
+        'directories':directories,
+        'categories':categories,
+        'sub_categories':sub_categories,
+        }, 
         context_instance=RequestContext(request))
 
 def print_view(request, slug, template_name="directories/print-view.html"):
