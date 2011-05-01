@@ -54,7 +54,42 @@ class CategoryManager(Manager):
         print cat_item
         if cat_item:
             cat_item.delete()
-          
+
+    def get_for_model(self, model, category=None):
+        """
+        Returns a list of categories associated with
+        the model (or object) passed.
+        """
+        ct = ContentType.objects.get_for_model(model)
+
+        # category = CategoryItem.objects.get(pk=category)
+
+        filters = {'content_type':ct}
+        
+        cat_items = CategoryItem.objects.filter(**filters)
+        categories = [c.category for c in cat_items if c.category]
+        sub_categories = [self.get(pk=c.parent.pk) for c in cat_items if c.parent]
+
+        # find all cat_items using category (ct & object_id)
+        # find all cat_items using objects found within cat_items
+        # find all subcategories associated with that object
+        # return category from list of cat_items returned
+
+        if category: 
+            filters['category'] = category
+
+            cat_items = CategoryItem.objects.filter(**filters)
+            for cat_item in cat_items:
+                cat_items = CategoryItem.objects.filter(
+                    content_type=cat_item.content_type,
+                    object_id=cat_item.object_id,
+                )
+
+            sub_categories = [self.get(pk=c.parent.pk) for c in cat_items if c.parent]
+
+        return (categories, sub_categories)
+
+
     def get_for_object(self, object, type):
         ct = ContentType.objects.get_for_model(object)
         object_id = object.pk
@@ -63,7 +98,7 @@ class CategoryManager(Manager):
             'content_type': ct,
             'object_id': object_id 
         }
-        
+
         categories = CategoryItem._default_manager.filter(**cat_item_filters)
 
         if not categories: return None
@@ -82,6 +117,9 @@ class Category(models.Model):
     name = models.CharField(max_length=255, db_index=True, unique=True)
 
     objects = CategoryManager()
+    
+    def __unicode__(self):
+        return self.name
 
 class CategoryItem(models.Model):
     content_type = models.ForeignKey(ContentType, db_index=True)
