@@ -74,6 +74,9 @@
 			});
 		};
     </script>
+    <style type="text/css">
+    	#imageedit_panel { height: auto; }
+    </style>
 </head>
 <body id="stormeimage" style="display: none">
     <form onsubmit="ImageDialog.insert();return false;" action="#"> 
@@ -109,6 +112,7 @@
 										<input type="hidden" name="file_url" value="{{ file.get_absolute_url }}" />
 										<input type="hidden" name="file_download_url" value="{{ file.get_absolute_download_url }}" />
 										<input type="hidden" name="file_width" value="{{ file.image_dimensions|first }}" />
+							 			<input type="hidden" name="file_height" value="{{ file.image_dimensions|last }}" />
 
 										<div class="badge">
 											<div class="icon"><img src="{{ file.icon }}" /></div>
@@ -151,38 +155,97 @@
                     <input type="hidden" name="image-id" value="{{ file.id }}" />
 					<input type="hidden" name="orig_width" value="{{ file.image_dimensions|first }}" />
 					<input type="hidden" name="orig_height" value="{{ file.image_dimensions|last }}" />
-                    <div class="photo">
+<!--                     <div class="photo">
                         <img class="edit_src" style="width:75px; height:75px;" src="{{ file.file.url }}" />
-                    </div>
+                    </div> -->
                     <div class="info">
                         <div style="width:100%;" class="title">{{ file.name }}</div>
                     </div>
                     <div style="clear:both;"></div>
                     <div class="options">
-                        <table cellpadding=5 style="width:100%;">
+                        <table cellpadding=5 style="width:100%;" border="0">
+                        	<tr>
+                        		<td>Title Text &amp; Alt Text:</td>
+                        	</tr>
                             <tr>
-                                <td>Title: </td>
                                 <td><input style="width:100%;" type="text" name="edit_title" value="{{ file.name }}" /></td>
                             </tr>
 							<tr>
-								<td>&nbsp;</td>
 								<td>
-									Width: <input style="width:40px;" type="text" name="edit_width" />
-									Height: <input style="width:40px;" type="text" name="edit_height" />
+									<table cellpadding=5 style="width:100%" border="0">
+										<tr>
+											<td>
+												<table cellpadding=5 style="width:120px;" border="0">
+													<tr>
+														<td colspan="3" style="text-align: center;"><input style="width:30px;" type="text" size="3" name="edit_top_margin" value="" /></td>
+													<tr>
+													<tr>
+														<td><input style="width:30px;" type="text" size="3" name="edit_left_margin" value="" /></td>
+														<td>
+										                    <div class="photo">
+										                        <img class="edit_src" style="width:75px; height:75px;" src="{{ file.file.url }}" />
+										                    </div>
+														</td>
+														<td><input style="width:30px;" type="text" size="3" name="edit_right_margin" value="" /></td>
+													</tr>
+													<tr>
+														<td colspan="3" style="text-align: center;"><input style="width:30px;" type="text" size="3" name="edit_bottom_margin" value="" /></td>
+													</tr>		
+												</table>
+											</td>
+											<td>
+												<table cellpadding=5 style="width:120px;" border="0">
+													<tr>
+														<td>Width: <input style="width:40px;" type="text" name="edit_width" /></td>
+													</tr>
+													<tr>
+														<td>Height: <input style="width:40px;" type="text" name="edit_height" /></td>
+													</tr>
+													<tr>
+														<td>
+						                                    <select name="edit_float">
+						                                        <option value="">-- Alignment (Float) --</option>
+						                                        <option value="left">Left</option>
+						                                        <option value="right">Right</option>
+						                                    </select>&nbsp;
+														</td>
+													</tr>
+												</table>									
+											</td>
+										</tr>
+									</table>
 								</td>
 							</tr>
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td>Align: 
-                                    <select name="edit_align">
-                                        <option value="">-- Not set --</option>
-                                        <option value="left">Left</option>
-                                        <option value="right">Right</option>
-                                    </select>&nbsp;
-                                    V-Space: <input style="width:30px" type="text" name="edit_vspace" value="" />&nbsp;
-                                    H-Space: <input style="width:30px" type="text" name="edit_hspace" value="" />
-                                </td>
-                            </tr>
+							<input style="width:30px" type="hidden" name="edit_vspace" value="0" />
+							<input style="width:30px" type="hidden" name="edit_hspace" value="0" />
+							<input style="width:30px" type="hidden" name="edit_align" value="-- not set --" />
+<!-- 							<tr>
+								<td style="border-top: 1px solid #CCC;">
+									<p>Deprecated Attributes:</p>
+									<table cellpadding=5 style="width:100%;" border="0"> 
+										<tr>
+											<td>
+												V-Space: <input style="width:30px" type="text" name="edit_vspace" value="0" />
+											</td>
+										</tr>
+										<tr>
+											<td>
+												H-Space:<input style="width:30px" type="text" name="edit_hspace" value="0" />
+											</td>
+										</td>
+										<tr>
+											<td>
+												Align: 
+						                        <select name="edit_align">
+						                            <option value="">-- Alignment --</option>
+						                            <option value="left">Left</option>
+						                            <option value="right">Right</option>
+						                        </select>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>			 -->				
                         </table>
                         <div class="actions">
                             <a class="update-btn" onclick="ImageDialog.update();" href="javascript:;">Update Image</a>  
@@ -396,13 +459,10 @@
 		</div>
 
 		<div class="mceActionPanel">
-			<div style="float: right">
+			<div style="float: right;">
 				<input type="button" id="cancel" name="cancel" value="Done" onclick="tinyMCEPopup.close();" />
 			</div>
 		</div>
-
-		
-
     </form>
 </body> 
 </html> 

@@ -20,15 +20,24 @@ var ImageDialog = {
 		TinyMCE_EditableSelects.init();
 
 		if (n.nodeName == 'IMG') {
-
 			mcTabs.displayTab('imageedit_tab','imageedit_panel');
 			$(".edit_src").attr({src:dom.getAttrib(n, 'src')});
+
 			nl.edit_title.value = dom.getAttrib(n, 'title');
 			nl.edit_align.value = this.getAttrib(n, 'align')
+
 			nl.edit_vspace.value = this.getAttrib(n, 'vspace');
 			nl.edit_hspace.value = this.getAttrib(n, 'hspace');
 			nl.edit_width.value = this.getAttrib(n, 'width');
 			nl.edit_height.value = this.getAttrib(n, 'height');
+
+			// margin attributes
+			nl.edit_float.value = dom.getStyle(n, 'float');
+			nl.edit_top_margin.value = dom.getStyle(n, 'margin-top');
+			nl.edit_right_margin.value = dom.getStyle(n, 'margin-right');
+			nl.edit_bottom_margin.value = dom.getStyle(n, 'margin-bottom');
+			nl.edit_left_margin.value = dom.getStyle(n, 'margin-left');
+
 			nl.style.value = dom.getAttrib(n, 'style');
 
 			if (ed.settings.inline_styles) {
@@ -105,6 +114,13 @@ var ImageDialog = {
 		var img_width = nl.edit_width.value;
 		var img_height = nl.edit_height.value;
 
+		// set the styles
+		ed.dom.setStyle(n, 'float', nl.edit_float.value);
+		ed.dom.setStyle(n, 'margin-top', nl.edit_top_margin.value + 'px');
+		ed.dom.setStyle(n, 'margin-right', nl.edit_right_margin.value + 'px');
+		ed.dom.setStyle(n, 'margin-bottom', nl.edit_bottom_margin.value + 'px');
+		ed.dom.setStyle(n, 'margin-left', nl.edit_left_margin.value + 'px');
+
 		tinymce.extend(args, {
 			src : img_src,
 			title : img_title,
@@ -156,16 +172,22 @@ var ImageDialog = {
 		var filename = $(item_wrap).find("input[name='filename']").val();
 		var file_url = $(item_wrap).find("input[name='file_url']").val();
 		var file_width = $(item_wrap).find("input[name='file_width']").val();
+		var file_height = $(item_wrap).find("input[name='file_height']").val();
 
 		var width = file_width;
-		if(width > 400) width = 400
+		var height = file_height;
+		if(width > 400) {
+			width = 400
+			height = ((width*file_height) / file_width);
+		}
 
 		// default img attributes
 		tinymce.extend(args, {
 			src : file_url,
 			title : filename,
 			alt : filename,
-			width: width
+			width: width,
+			height: height
 		});
 
 		ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {skip_undo : true});
