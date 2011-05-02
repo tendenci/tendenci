@@ -41,7 +41,6 @@ def list_news(parser, token):
         {% for news_item in news %}
             {{ news_item.headline }}
         {% endfor %}
-
     """
     args, kwargs = [], {}
     bits = token.split_contents()
