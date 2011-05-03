@@ -124,11 +124,17 @@ if cm_api_key and cm_client_id:
                 
                 if list:
                     subscriber_obj = Subscriber(list_id)
+                    add_subscriber = True
                     
                     # check if this user has already subscribed, if not, subscribe it
                     try:
                         subscriber = subscriber_obj.get(list_id, email)
+                        if str(subscriber.State).lower == 'active':
+                            add_subscriber = False
                     except BadRequest as br:
+                        pass
+                        
+                    if add_subscriber:
                         email_address = subscriber_obj.add(list_id, email, name, [], True)
                 
             except ListMap.DoesNotExist:
