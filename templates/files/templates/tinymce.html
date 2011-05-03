@@ -21,59 +21,6 @@
 	<script src="{{ STATIC_URL }}swfupload/swfupload.cookies.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}tinymce/plugins/stormeimage/js/swfupload.handlers.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}swfupload/swfupload.swfobject.js" type="text/javascript"></script>
-	<script type="text/javascript">
-		var swfupload;
-
-		window.onload = function() {
-			swfupload = new SWFUpload({
-			debug: false,
-			
-			upload_url: "/files/swfupload/",
-			flash_url: "/site_media/static/swfupload/swfupload.swf",
-			post_params: {
-				"storme_app_label" : ImageDialog.storme_app_label,
-				"storme_model" : ImageDialog.storme_model,
-				"storme_instance_id" : ImageDialog.storme_instance_id
-			},
-
-			// File upload settings
-			file_size_limit : "20480",	// 20 MB
-//			file_types : "*.jpg;*.jpeg;*.gif;*.tif;*.tiff;*.png",
-//			file_types_description : "All Files",
-			file_post_name: "file",
-			
-			// Button settings (opens file-browse dialogue)
-			button_placeholder_id: "spanButtonPlaceholder",
-			button_width: 175,
-			button_height: 24,
-			button_cursor: SWFUpload.CURSOR.HAND,
-			button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
-
-			// Action handlers
-			file_queued_handler : fileQueued,
-			file_queue_error_handler : fileQueueError,
-			file_dialog_complete_handler : fileDialogComplete,
-			upload_start_handler : uploadStart,
-			upload_progress_handler : uploadProgress,
-			upload_error_handler : uploadError,
-			upload_success_handler : uploadSuccess,
-			upload_complete_handler : uploadComplete,
-			swfupload_loaded_handler : swfUploadLoaded,
-			swfupload_pre_load_handler : swfUploadPreLoad,
-			swfupload_load_failed_handler : swfUploadLoadFailed,
-
-			custom_settings : {
-				progressTarget : "fsUploadProgress",
-				cancelButtonId : "btnCancel1"
-			},
-			
-			// SWFObject settings
-			minimum_flash_version : "9.0.28",
-			debug: false
-
-			});
-		};
-    </script>
     <style type="text/css">
     	#imageedit_panel { height: auto; }
     </style>
@@ -265,7 +212,7 @@
 								<td class="column1"><label id="srclabel" for="src">{#stormeimage_dlg.src}</label></td>
 								<td colspan="2"><table border="0" cellspacing="0" cellpadding="0">
 									<tr> 
-									  <td><input name="src" type="text" id="src" value="" class="mceFocus" onchange="ImageDialog.showPreviewImage(this.value);" /></td> 
+									  <td><input name="src" type="text" id="src" value="" onchange="ImageDialog.showPreviewImage(this.value);" /></td> 
 									  <td id="srcbrowsercontainer">&nbsp;</td>
 									</tr>
 								  </table></td>
@@ -464,5 +411,56 @@
 			</div>
 		</div>
     </form>
+	<script type="text/javascript">
+		var swfupload;
+
+		window.onload = function() {
+			swfupload = new SWFUpload({
+			debug: false,
+			
+			upload_url: "/files/swfupload/",
+			flash_url: "/site_media/static/swfupload/swfupload.swf",
+			post_params: {
+				"storme_app_label" : ImageDialog.storme_app_label,
+				"storme_model" : ImageDialog.storme_model,
+				"storme_instance_id" : ImageDialog.storme_instance_id
+			},
+
+			// File upload settings
+			file_size_limit : "20480",	// 20 MB
+//			file_types : "*.jpg;*.jpeg;*.gif;*.tif;*.tiff;*.png",
+//			file_types_description : "All Files",
+			file_post_name: "file",
+			
+			// Button settings (opens file-browse dialogue)
+			button_placeholder_id: "spanButtonPlaceholder",
+			button_width: 175,
+			button_height: 24,
+			button_cursor: SWFUpload.CURSOR.HAND,
+			button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+
+			// Action handlers
+			file_queued_handler : fileQueued,
+			file_queue_error_handler : fileQueueError,
+			file_dialog_complete_handler : fileDialogComplete,
+			upload_start_handler : uploadStart,
+			upload_progress_handler : uploadProgress,
+			upload_error_handler : uploadError,
+			upload_success_handler : uploadSuccess,
+			upload_complete_handler : uploadComplete,
+			swfupload_loaded_handler : swfUploadLoaded,
+			swfupload_pre_load_handler : swfUploadPreLoad,
+			swfupload_load_failed_handler : swfUploadLoadFailed,
+
+			custom_settings : {
+				progressTarget : "fsUploadProgress",
+				cancelButtonId : "btnCancel1"
+			},
+			
+			// SWFObject settings
+			minimum_flash_version : "9.0.28",
+			});
+		};
+    </script>
 </body> 
 </html> 
