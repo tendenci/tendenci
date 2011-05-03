@@ -80,8 +80,6 @@ class Command(BaseCommand):
                 #    unsubscribed_names = [res.Name for res in unsubscribed_obj.Results]
                 #   unsubscribed_list = zip(unsubscribed_emails, unsubscribed_names)
             except Unauthorized as e:
-                print e
-                print group.name
                 if 'Invalid ListID' in e:
                     # this list might be deleted on campaign monitor, add it back
                     list_id = cm_list.create(client_id, group.name, "", False, "")
