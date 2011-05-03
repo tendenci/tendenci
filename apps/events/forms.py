@@ -145,29 +145,36 @@ class TypeChoiceField(forms.ModelChoiceField):
 
 
 class TypeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TypeForm, self).__init__(*args, **kwargs)
+        
+        colorsets = TypeColorSet.objects.all()
 
-    color_set_choices = [(color_set.pk, 
-        '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s" />'
-        % color_set.bg_color) for color_set in TypeColorSet.objects.all()]
-
-    color_set = TypeChoiceField(
-        choices=color_set_choices,
-        queryset=TypeColorSet.objects.all(),
-        widget=forms.RadioSelect(renderer=RadioImageFieldRenderer),
-    )
+        color_set_choices = [(color_set.pk, 
+            '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s" />'
+            % color_set.bg_color) for color_set in colorsets]
+        
+        self.fields['color_set'] = TypeChoiceField(
+            choices=color_set_choices,
+            queryset=colorsets,
+            widget=forms.RadioSelect(renderer=RadioImageFieldRenderer),
+        )
 
     class Meta:
         model = Type
+
 
 class PlaceForm(forms.ModelForm):
     label = 'Location Information'
     class Meta:
         model = Place
 
+
 class SponsorForm(forms.ModelForm):
     label = 'Sponsor'
     class Meta:
         model = Sponsor 
+
 
 class SpeakerForm(forms.ModelForm):
     label = 'Speaker'
