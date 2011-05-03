@@ -33,7 +33,7 @@ class SubscriberQueue(models.Model):
 cm_api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
 cm_client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 if cm_api_key and cm_client_id:
-    from createsend import CreateSend, List, Client, Subscriber, BadRequest
+    from createsend import CreateSend, List, Client, Subscriber, BadRequest, Unauthorized
     CreateSend.api_key = cm_api_key
     
     def sync_cm_list(sender, instance=None, created=False, **kwargs):
@@ -105,7 +105,10 @@ if cm_api_key and cm_client_id:
                 list = List(list_id)
                 
                 if list:
-                    list.delete()
+                    try:
+                        list.delete()
+                    except:
+                        pass
                 list_map.delete()
                 
             except ListMap.DoesNotExist:
@@ -117,6 +120,10 @@ if cm_api_key and cm_client_id:
         (name, email) = get_name_email(instance)
             
         if email:
+            add_list = True
+            add_subscriber = True
+            list_map = None
+                
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id
@@ -124,21 +131,38 @@ if cm_api_key and cm_client_id:
                 
                 if list:
                     subscriber_obj = Subscriber(list_id)
-                    add_subscriber = True
                     
-                    # check if this user has already subscribed, if not, subscribe it
                     try:
-                        subscriber = subscriber_obj.get(list_id, email)
-                        if str(subscriber.State).lower == 'active':
-                            add_subscriber = False
-                    except BadRequest as br:
-                        pass
-                        
-                    if add_subscriber:
-                        email_address = subscriber_obj.add(list_id, email, name, [], True)
-                
+                        list_stats = list.stats()
+                        #print 'number active:',  list_stats.TotalActiveSubscribers
+                        add_list = False            # at this stage, we're sure the list is ON the C. M.
+                    
+                        # check if this user has already subscribed, if not, subscribe it
+                        try:
+                            subscriber = subscriber_obj.get(list_id, email)
+                            if str(subscriber.State).lower == 'active':
+                                add_subscriber = False
+                        except BadRequest as br:
+                            pass
+                    except Unauthorized as e:
+                        list = List()
             except ListMap.DoesNotExist:
-                pass
+                list = List()
+                    
+            if add_list:
+                # this list might be deleted on campaign monitor, add it back
+                list_id = list.create(cm_client_id, instance.group.name, "", False, "")
+                subscriber_obj = Subscriber(list_id)
+                if not list_map:
+                    list_map = ListMap()
+                    list_map.group = instance.group
+                list_map.list_id = list_id
+                list_map.save()
+                    
+            if add_subscriber:
+                email_address = subscriber_obj.add(list_id, email, name, [], True)
+                
+            
     
     def delete_cm_subscriber(sender, instance=None, **kwargs):
         """Delete the subscriber from the campaign monitor list
@@ -153,7 +177,10 @@ if cm_api_key and cm_client_id:
                 
                 if list:
                     subscriber_obj = Subscriber(list_id, email)
-                    subscriber_obj.unsubscribe()
+                    try:
+                        subscriber_obj.unsubscribe()
+                    except:
+                        pass
                    
             except ListMap.DoesNotExist:
                 pass
