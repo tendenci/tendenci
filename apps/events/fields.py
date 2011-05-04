@@ -79,19 +79,23 @@ class Reg8nDtField(ChoiceField):
         """
         instance = kwargs.get('instance')
         prefix = kwargs.get('prefix')
+        initial = kwargs.get('initial') or {}
         query_dict = {}
 
         if args and args[0]:
             query_dict = args[0]
-            
+
+        today = datetime.today()
+        one_hour = timedelta(hours=1)
+
         reg8n_dict = {
             'early_price': 0,
             'regular_price': 0,
             'late_price': 0,
-            'early_dt': datetime.today(),
-            'regular_dt': datetime.today() + timedelta(days=1),
-            'late_dt': datetime.today() + timedelta(days=2),
-            'end_dt': datetime.today() + timedelta(days=3),
+            'early_dt': initial.get('early_dt') or today,
+            'regular_dt': initial.get('regular_dt') or (today+one_hour),  # 1 hr
+            'late_dt': initial.get('late_dt') or (today+(one_hour*2)),  # 2 hrs
+            'end_dt': initial.get('end_dt') or (today+(one_hour*3)),  # 3 hrs
         }
 
         # save ourselves from looping; no need
