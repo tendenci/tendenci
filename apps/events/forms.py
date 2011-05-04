@@ -281,8 +281,6 @@ class GroupReg8nEditForm(BetterModelForm):
     late_dt = SplitDateTimeField(label=_('Late Date/Time'))
     end_dt = SplitDateTimeField(label=_('End Date/Time'))
     
-    #reg8n_dt_price = Reg8nDtField(label=_('Times and Pricing'), required=False)
-    
     def clean(self):
         
         early_price = self.cleaned_data.get('early_price') or 0
