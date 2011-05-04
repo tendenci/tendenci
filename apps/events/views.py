@@ -448,23 +448,34 @@ def add(request, year=None, month=None, day=None, \
 
                 return HttpResponseRedirect(reverse('event', args=[event.pk]))
         else:  # if not post request
-
             event_init = {}
+
+            today = datetime.today()
+            four_hours = timedelta(hours=4)
+
+            start_dt = today
+            end_dt = today + four_hours
+
+            event_init['start_dt'] = today
+            event_init['end_dt'] = today + four_hours
+
             if all((year, month, day)):
                 date_str = '-'.join([year,month,day])
                 time_str = '10:00 AM'
                 dt_str = "%s %s" % (date_str, time_str)
                 dt_fmt = '%Y-%m-%d %H:%M %p'
-                four_hours = timedelta(hours=4)
 
-                event_init['start_dt'] = datetime.strptime(dt_str, dt_fmt)
-                event_init['end_dt'] = datetime.strptime(dt_str, dt_fmt) + four_hours
+                start_dt = datetime.strptime(dt_str, dt_fmt)
+                end_dt = datetime.strptime(dt_str, dt_fmt) + four_hours
+
+                event_init['start_dt'] = start_dt
+                event_init['end_dt'] = end_dt
 
             reg_init = {
-                'early_dt': datetime.now(),
-                'regular_dt': datetime.now(),
-                'late_dt': datetime.now(),
-                'end_dt': datetime.now(),
+                'early_dt': start_dt,
+                'regular_dt': start_dt,
+                'late_dt': start_dt,
+                'end_dt': end_dt,
              }
 
             form_event = form_class(user=request.user, initial=event_init)
