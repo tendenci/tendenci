@@ -246,6 +246,7 @@ class Reg8nEditForm(BetterModelForm):
             'early_price',
             'regular_price',
             'late_price',
+            'is_guest_price',
             'payment_required',
             'early_dt',
             'regular_dt',
@@ -257,11 +258,12 @@ class Reg8nEditForm(BetterModelForm):
 
         fieldsets = [('Registration Configuration', {
           'fields': ['enabled',
-                     'limit',
-                     'reg8n_dt_price',
-                     'payment_method',
-                     'payment_required',
-                     ],
+                    'limit',
+                    'reg8n_dt_price',
+                    'is_guest_price',
+                    'payment_method',
+                    'payment_required',
+                    ],
           'legend': ''
           })
         ]
