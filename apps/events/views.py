@@ -749,7 +749,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     # REGISTRANT formset
     post_data = request.POST or None
      
-    if request.method <> 'POST':
+    if request.method != 'POST':
         # set the initial data if logged in
         initial = {}
         if request.user.is_authenticated():
@@ -770,7 +770,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
             post_data = request.POST.copy()
             post_data['registrant-TOTAL_FORMS'] = int(post_data['registrant-TOTAL_FORMS'])+ 1  
         registrant = RegistrantFormSet(post_data, prefix='registrant', event=event)
-    
+
     # REGISTRATION form
     if request.method == 'POST' and 'submit' in request.POST:
         reg_form = RegistrationForm(event, request.POST, user=request.user)
