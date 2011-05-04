@@ -1,7 +1,7 @@
 import re
 import calendar
 from datetime import datetime
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
@@ -354,7 +354,12 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
         context_instance=RequestContext(request))
 
 @login_required
-def add(request, form_class=EventForm, template_name="events/add.html"):
+def add(request, year=None, month=None, day=None, \
+    form_class=EventForm, template_name="events/add.html"):
+    """
+    Add event page.  You can preset the start date of
+    the event by traveling to the appropriate URL.
+    """
     SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
     GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
     SpecialPricingFormSet = modelformset_factory(SpecialPricing, form=SpecialPricingForm, extra=1)
@@ -442,20 +447,31 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     })
 
                 return HttpResponseRedirect(reverse('event', args=[event.pk]))
-        else:
-            reg_inits = {
+        else:  # if not post request
+
+            event_init = {}
+            if all((year, month, day)):
+                date_str = '-'.join([year,month,day])
+                time_str = '10:00 AM'
+                dt_str = "%s %s" % (date_str, time_str)
+                dt_fmt = '%Y-%m-%d %H:%M %p'
+                four_hours = timedelta(hours=4)
+
+                event_init['start_dt'] = datetime.strptime(dt_str, dt_fmt)
+                event_init['end_dt'] = datetime.strptime(dt_str, dt_fmt) + four_hours
+
+            reg_init = {
                 'early_dt': datetime.now(),
                 'regular_dt': datetime.now(),
                 'late_dt': datetime.now(),
                 'end_dt': datetime.now(),
              }
 
-            form_event = form_class(user=request.user)
+            form_event = form_class(user=request.user, initial=event_init)
             form_place = PlaceForm(prefix='place')
-            form_speaker = SpeakerFormSet(queryset=Speaker.objects.none(),
-                prefix='speaker')
+            form_speaker = SpeakerFormSet(queryset=Speaker.objects.none(),prefix='speaker')
             form_organizer = OrganizerForm(prefix='organizer')
-            form_regconf = Reg8nEditForm(initial=reg_inits, prefix='regconf')
+            form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf')
             form_grpregconf = GrpRegFormSet(queryset=GroupRegistrationConfiguration.objects.none(),
                 prefix='grpregconf',
                 )
