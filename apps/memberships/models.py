@@ -268,7 +268,7 @@ class Membership(TendenciBaseModel):
     renewal = models.BooleanField(default=False)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
 
-    subscribe_dt = models.DateTimeField(_("Subscribe Date"))
+    subscribe_dt = models.DateTimeField(_("Subscribe Date"), null=True)
     join_dt = models.DateTimeField(_("Join Date"), null=True)
     renew_dt = models.DateTimeField(_("Renew Date"), blank=True, null=True)
 
