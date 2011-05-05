@@ -15,7 +15,6 @@ SITE_THEME = "default"
 ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
     ('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
-    ('Jennifer Ulmer', 'julmer@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
     ('JMO', 'jmoswalt@schipul.com'),
 )
@@ -272,6 +271,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'handle_event_callback': "event_handler",
 
     # Additions - JMO
+    'inline_styles' : True,
     'height': 400,
     'extended_valid_elements': "iframe[align<bottom?left?middle?\
                                 right?top|class|\
