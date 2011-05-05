@@ -8,6 +8,11 @@ urlpatterns = patterns('events',
     url(r'^ics/$', 'views.icalendar', name="event.ics"),
     url(r'^print-view/(?P<id>\d+)/$', 'views.print_view', name="event.print_view"),
     url(r'^add/$', 'views.add', name="event.add"),
+
+    url(r'^add/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', 'views.add', name="event.add"),
+
+
+
     url(r'^edit/(?P<id>\d+)/$', 'views.edit', name="event.edit"),
     url(r'^edit/meta/(?P<id>\d+)/$', 'views.edit_meta', name="event.edit.meta"),
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="event.delete"),
@@ -17,6 +22,7 @@ urlpatterns = patterns('events',
     #delete
     url(r'^speaker/(?P<id>\d+)/delete/$', 'views.delete_speaker', name='event.delete_speaker'),
     url(r'^group_pricing/(?P<id>\d+)/delete/$', 'views.delete_group_pricing', name='event.delete_group_pricing'),
+    url(r'^special_pricing/(?P<id>\d+)/delete/$', 'views.delete_special_pricing', name='event.delete_special_pricing'),
 
     # registration confirmation
     url(r'^(?P<id>\d+)/registrations/(?P<reg8n_id>\d+)/$', 

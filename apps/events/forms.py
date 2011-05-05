@@ -10,7 +10,8 @@ from django.forms.util import ErrorList
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, \
-    TypeColorSet, Registrant, GroupRegistrationConfiguration
+    TypeColorSet, Registrant, GroupRegistrationConfiguration, \
+    SpecialPricing
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
@@ -144,29 +145,36 @@ class TypeChoiceField(forms.ModelChoiceField):
 
 
 class TypeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TypeForm, self).__init__(*args, **kwargs)
+        
+        colorsets = TypeColorSet.objects.all()
 
-    color_set_choices = [(color_set.pk, 
-        '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s" />'
-        % color_set.bg_color) for color_set in TypeColorSet.objects.all()]
-
-    color_set = TypeChoiceField(
-        choices=color_set_choices,
-        queryset=TypeColorSet.objects.all(),
-        widget=forms.RadioSelect(renderer=RadioImageFieldRenderer),
-    )
+        color_set_choices = [(color_set.pk, 
+            '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s" />'
+            % color_set.bg_color) for color_set in colorsets]
+        
+        self.fields['color_set'] = TypeChoiceField(
+            choices=color_set_choices,
+            queryset=colorsets,
+            widget=forms.RadioSelect(renderer=RadioImageFieldRenderer),
+        )
 
     class Meta:
         model = Type
+
 
 class PlaceForm(forms.ModelForm):
     label = 'Location Information'
     class Meta:
         model = Place
 
+
 class SponsorForm(forms.ModelForm):
     label = 'Sponsor'
     class Meta:
         model = Sponsor 
+
 
 class SpeakerForm(forms.ModelForm):
     label = 'Speaker'
@@ -238,6 +246,7 @@ class Reg8nEditForm(BetterModelForm):
             'early_price',
             'regular_price',
             'late_price',
+            'is_guest_price',
             'payment_required',
             'early_dt',
             'regular_dt',
@@ -249,11 +258,12 @@ class Reg8nEditForm(BetterModelForm):
 
         fieldsets = [('Registration Configuration', {
           'fields': ['enabled',
-                     'limit',
-                     'reg8n_dt_price',
-                     'payment_method',
-                     'payment_required',
-                     ],
+                    'limit',
+                    'reg8n_dt_price',
+                    'is_guest_price',
+                    'payment_method',
+                    'payment_required',
+                    ],
           'legend': ''
           })
         ]
@@ -272,8 +282,6 @@ class GroupReg8nEditForm(BetterModelForm):
     regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
     late_dt = SplitDateTimeField(label=_('Late Date/Time'))
     end_dt = SplitDateTimeField(label=_('End Date/Time'))
-    
-    #reg8n_dt_price = Reg8nDtField(label=_('Times and Pricing'), required=False)
     
     def clean(self):
         
@@ -294,6 +302,53 @@ class GroupReg8nEditForm(BetterModelForm):
         
         fields = (
             'group',
+            'early_price',
+            'regular_price',
+            'late_price',
+            'early_dt',
+            'regular_dt',
+            'late_dt',
+            'end_dt',
+        )
+        
+        widgets = {
+            'early_price': forms.TextInput(attrs={'class':'short_text_input'}),
+            'regular_price': forms.TextInput(attrs={'class':'short_text_input'}),
+            'late_price': forms.TextInput(attrs={'class':'short_text_input'}),
+        }
+        
+class SpecialPricingForm(BetterModelForm):
+    label = 'Special Registration'
+    
+    early_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
+    regular_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
+    late_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
+    early_dt = SplitDateTimeField(label=_('Early Date/Time'))
+    regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
+    late_dt = SplitDateTimeField(label=_('Late Date/Time'))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'))
+    
+    def clean(self):
+        
+        early_price = self.cleaned_data.get('early_price') or 0
+        regular_price = self.cleaned_data.get('regular_price') or 0
+        late_price = self.cleaned_data.get('late_price') or 0
+        
+        # if price is zero
+        if sum([early_price, regular_price, late_price]) == 0:
+            # remove payment_method error
+            if "payment_method" in self._errors:
+                self._errors.pop("payment_method")
+        
+        return self.cleaned_data
+        
+    class Meta:
+        model = SpecialPricing
+        
+        fields = (
+            'title',
+            'group',
+            'quantity',
             'early_price',
             'regular_price',
             'late_price',

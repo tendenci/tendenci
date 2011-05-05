@@ -1,8 +1,9 @@
+import sys
 import operator
 from uuid import uuid4
 from captcha.fields import CaptchaField
-from django.contrib.auth.models import AnonymousUser
-from django.forms.fields import CharField
+from django.contrib.auth.models import User, AnonymousUser
+from django.forms.fields import CharField, ChoiceField
 from django.forms.widgets import HiddenInput
 from haystack.query import SearchQuerySet
 from os.path import join
@@ -20,9 +21,12 @@ from tinymce.widgets import TinyMCE
 from perms.forms import TendenciBaseForm
 from models import MembershipType, Notice, App, AppEntry, AppField
 from fields import TypeExpMethodField, PriceInput
+from memberships.utils import new_mems_from_csv
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
+from memberships.models import AppFieldEntry
 from widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
 from corporate_memberships.models import CorporateMembership, AuthorizedDomain
+
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -529,8 +533,6 @@ class AppEntryForm(forms.ModelForm):
         Create a FormEntry instance and related FieldEntry instances for each 
         form field.
         """
-        from django.contrib.auth.models import User
-
         app_entry = super(AppEntryForm, self).save(commit=False)
         app_entry.app = self.app
 
@@ -574,10 +576,142 @@ class AppEntryForm(forms.ModelForm):
                 return self.cleaned_data["field_%s" % field.id]
         return None
 
+from memberships.utils import import_csv
+from django.template.defaultfilters import slugify
+
+
+IMPORT_PREKEY = 'membership.import'
 class CSVForm(forms.Form):
-    app = forms.ModelChoiceField(label='Application', queryset=App.objects.all())
-    csv = forms.FileField(label="CSV File")
-    
+    """
+    Map CSV import to Membership Application.
+    Create Membership Entry on save() method.
+    """
+    def __init__(self, *args, **kwargs):
+        """
+        Dynamically create fields using the membership
+        application chosen.  The choices provided to these
+        dynamic fields are the csv import columns.
+        """
+        step_numeral, step_name = kwargs.pop('step', (None, None))
+
+        super(CSVForm, self).__init__(*args, **kwargs)
+
+        if step_numeral == 1:
+            """
+            Basic Form: Application & File Uploader
+            """
+            
+            self.fields['app'] = forms.ModelChoiceField(
+                label='Application', queryset=App.objects.all())
+
+            self.fields['csv'] = forms.FileField(label="CSV File")
+        
+        if step_numeral == 2:
+            """
+            Basic Form + Mapping Fields
+            """
+
+            csv = import_csv('memberships_export.csv')
+
+            choices = {}
+            for column_name in csv[0].keys():
+                choices[column_name] = column_name
+
+            app_fields = AppField.objects.filter(app=2)
+
+            for app_field in app_fields:
+                for csv_row in csv:
+
+                    self.fields[app_field.label] = ChoiceField(**{
+                        'label':app_field.label,
+                        'choices': choices.items(),
+                        'required': False,
+                    })
+
+                    # compare label with choices
+                    # if label matches choice; set initial
+                    if app_field.label in choices:
+                        self.fields[app_field.label].initial = app_field.label
+   
+
+
+    def save(self, *args, **kwargs):
+        """
+        Loop through the dynamic fields and create an 
+        entry and membership record. Map application, 
+        entry, and membership record.
+
+        Checking app.pk, user.pk and entry_time to 
+        recognize duplicates.
+        """
+        step_numeral, step_name = kwargs.pop('step', (None, None))
+
+        if step_numeral == 1:
+            """
+            Basic Form: Application & File Uploader
+            """
+            app = self.cleaned_data['app']
+            csv = self.cleaned_data['csv']
+
+            return self.cleaned_data
+
+        if step_numeral == 2:
+            """
+            Basic Form + Mapping Fields
+            """
+            pass  # mapping of fields
+            return self.cleaned_data
+
+        if step_numeral == 3:
+            pass  # end-user is previewing
+
+        if step_numeral == 4:
+            memberships = request.session.get('membership.import.memberships')
+
+            for membership in memberships:
+
+                # entry = AppEntry.objects.filter(
+                #     app = app,
+                #     user = user,
+                #     entry_time = datetime.now(),
+                #     membership = membership,
+                # ).exists()
+
+                # if not entry:  # create if does not exist
+
+                entry = AppEntry.objects.create(
+                    app = app,
+                    user = user,
+                    entry_time = datetime.now(),
+                    membership = membership,
+                    is_renewal = membership.renewal,
+                    is_approved = True,
+                    decision_dt = membership.create_dt,
+                    judge = membership.creator,
+                    creator=membership.creator,
+                    creator_username=membership.creator_username,
+                    owner=membership.owner,
+                    owner_username=membership.owner_username,
+                )
+
+                for key, value in self.cleaned_data.items():
+
+                    app_fields = AppField.objects.filter(app=app, label=key)
+                    if app_fields:
+                        app_field = app_fields[0]
+                    else:
+                        app_field = None
+
+                    try:
+                        AppFieldEntry.objects.create(
+                            entry=entry,
+                            field=app_field,
+                            value=value,
+                        )
+                    except:
+                        print sys.exc_info()[1]
+
+
 class ReportForm(forms.Form):
     STATUS_CHOICES = (
         ('', '----------'),

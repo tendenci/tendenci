@@ -397,7 +397,9 @@ class RegistrationConfiguration(models.Model):
     
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'),default=False)
-    
+
+    is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'))
+
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
@@ -472,8 +474,34 @@ class GroupRegistrationConfiguration(models.Model):
     """
     
     config = models.ForeignKey(RegistrationConfiguration, null=True)
-    
+
     group = models.ForeignKey(Group)
+    
+    early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
+    regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
+    late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
+
+    early_dt = models.DateTimeField(_('Early Registration Starts'))
+    regular_dt = models.DateTimeField(_('Regular Registration Starts'))
+    late_dt = models.DateTimeField(_('Late Registration Starts'))
+    end_dt = models.DateTimeField(_('Registration Ends'), default=0)
+    
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    
+    def __unicode__(self):
+        return self.group.name
+        
+class SpecialPricing(models.Model):
+    """
+    Event registration for special cases
+    """
+    
+    config = models.ForeignKey(RegistrationConfiguration, null=True)
+    
+    group = models.ForeignKey(Group, blank=True, null=True)
+    quantity = models.IntegerField()
+    title = models.CharField(max_length=50)
     
     early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
     regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)

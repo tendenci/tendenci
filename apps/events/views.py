@@ -1,7 +1,7 @@
 import re
 import calendar
 from datetime import datetime
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
@@ -22,11 +22,11 @@ from base.http import Http403
 from site_settings.utils import get_setting
 from events.models import Event, RegistrationConfiguration, \
     Registration, Registrant, Speaker, Organizer, Type, PaymentMethod, \
-    Group, GroupRegistrationConfiguration
+    Group, GroupRegistrationConfiguration, SpecialPricing
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
-    GroupReg8nEditForm
+    GroupReg8nEditForm, SpecialPricingForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from perms.utils import has_perm, get_notice_recipients, update_perms_and_save, get_administrators
@@ -180,7 +180,9 @@ def handle_uploaded_file(f, instance):
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
     SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
-    # GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
+    GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
+    SpecialPricingFormSet = modelformset_factory(SpecialPricing, form=SpecialPricingForm, extra=1)
+
     # tried get_or_create(); but get a keyword argument :(
     try: # look for an organizer
         organizer = event.organizer_set.all()[0]
@@ -242,23 +244,34 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     event.registration_configuration = regconf
                     event.save() # save event
                     
-                # form_grpregconf = GrpRegFormSet(request.POST,
-                #     queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
-                #     prefix='grpregconf')
+                form_grpregconf = GrpRegFormSet(request.POST,
+                    queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
+                    prefix='grpregconf')
                     
-                # if form_grpregconf.is_valid():
-                #     grpregconfs = form_grpregconf.save()
-                #     for conf in grpregconfs:
-                #         conf.config = event.registration_configuration
-                #         conf.save()
+                if form_grpregconf.is_valid():
+                    grpregconfs = form_grpregconf.save()
+                    for conf in grpregconfs:
+                        conf.config = event.registration_configuration
+                        conf.save()
+                        
+                form_special = SpecialPricingFormSet(request.POST,
+                    queryset=event.registration_configuration.specialpricing_set.all(),
+                    prefix='special')
+                    
+                if form_special.is_valid():
+                    specials = form_special.save()
+                    for s in specials:
+                        s.config = event.registration_configuration
+                        s.save()
                 
                 forms = [
                     form_event,
                     form_place,
                     form_speaker,
-                    # form_grpregconf,
+                    form_grpregconf,
                     form_organizer,
                     form_regconf,
+                    form_special,
                 ]
 
                 if all([form.is_valid() for form in forms]):
@@ -286,9 +299,12 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 prefix='organizer')
             form_regconf = Reg8nEditForm(instance=event.registration_configuration, 
                 prefix='regconf')
-            # form_grpregconf = GrpRegFormSet(
-            #         queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
-            #         prefix='grpregconf')
+            form_grpregconf = GrpRegFormSet(
+                    queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
+                    prefix='grpregconf')
+            form_special = SpecialPricingFormSet(
+                    queryset=event.registration_configuration.specialpricing_set.all(),
+                    prefix='special')
 
         # response
         return render_to_response(template_name, {
@@ -299,7 +315,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             'form_speaker':form_speaker,
             'form_organizer':form_organizer,
             'form_regconf':form_regconf,
-            # 'form_grpregconf':form_grpregconf,
+            'form_grpregconf':form_grpregconf,
+            'form_special':form_special,
             }, 
             context_instance=RequestContext(request))
     else:
@@ -337,10 +354,15 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
         context_instance=RequestContext(request))
 
 @login_required
-def add(request, form_class=EventForm, template_name="events/add.html"):
+def add(request, year=None, month=None, day=None, \
+    form_class=EventForm, template_name="events/add.html"):
+    """
+    Add event page.  You can preset the start date of
+    the event by traveling to the appropriate URL.
+    """
     SpeakerFormSet = modelformset_factory(Speaker, form=SpeakerForm, extra=1)
-    # GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
-
+    GrpRegFormSet = modelformset_factory(GroupRegistrationConfiguration, form=GroupReg8nEditForm, extra=1)
+    SpecialPricingFormSet = modelformset_factory(SpecialPricing, form=SpecialPricingForm, extra=1)
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
             
@@ -350,9 +372,12 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 queryset=Speaker.objects.none(), prefix='speaker')
             form_organizer = OrganizerForm(request.POST, prefix='organizer')
             form_regconf = Reg8nEditForm(request.POST, prefix='regconf')
-            # form_grpregconf = GrpRegFormSet(request.POST,
-            #     queryset=GroupRegistrationConfiguration.objects.none(),
-            #     prefix='grpregconf')
+            form_grpregconf = GrpRegFormSet(request.POST,
+                queryset=GroupRegistrationConfiguration.objects.none(),
+                prefix='grpregconf')
+            form_special = SpecialPricingFormSet(request.POST,
+                queryset=SpecialPricing.objects.none(),
+                prefix='special')
                 
             forms = [
                 form_event,
@@ -360,7 +385,8 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 form_speaker,
                 form_organizer,
                 form_regconf,
-                # form_grpregconf,
+                form_grpregconf,
+                form_special,
             ]
 
             if all([form.is_valid() for form in forms]):
@@ -370,9 +396,9 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                 regconf = form_regconf.save()
                 speakers = form_speaker.save()
                 organizer = form_organizer.save()
-                # grpregconfs = form_grpregconf.save()
+                grpregconfs = form_grpregconf.save()
                 event = form_event.save(commit=False)
-                
+                special = form_special.save()
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
                 
@@ -380,10 +406,14 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     speaker.event = [event]
                     speaker.save()
                     File.objects.save_files_for_instance(request, speaker)
-
-                # for grpconf in grpregconfs:
-                #     grpconf.config = regconf
-                #     grpconf.save()
+                    
+                for grpconf in grpregconfs:
+                    grpconf.config = regconf
+                    grpconf.save()
+                                    
+                for s in special:
+                    s.config = regconf
+                    s.save()
                     
                 organizer.event = [event]
                 organizer.save() # save again
@@ -417,23 +447,48 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
                     })
 
                 return HttpResponseRedirect(reverse('event', args=[event.pk]))
-        else:
-            reg_inits = {
-                'early_dt': datetime.now(),
-                'regular_dt': datetime.now(),
-                'late_dt': datetime.now(),
-                'end_dt': datetime.now(),
+        else:  # if not post request
+            event_init = {}
+
+            today = datetime.today()
+            four_hours = timedelta(hours=4)
+
+            start_dt = today
+            end_dt = today + four_hours
+
+            event_init['start_dt'] = today
+            event_init['end_dt'] = today + four_hours
+
+            if all((year, month, day)):
+                date_str = '-'.join([year,month,day])
+                time_str = '10:00 AM'
+                dt_str = "%s %s" % (date_str, time_str)
+                dt_fmt = '%Y-%m-%d %H:%M %p'
+
+                start_dt = datetime.strptime(dt_str, dt_fmt)
+                end_dt = datetime.strptime(dt_str, dt_fmt) + four_hours
+
+                event_init['start_dt'] = start_dt
+                event_init['end_dt'] = end_dt
+
+            reg_init = {
+                'early_dt': start_dt,
+                'regular_dt': start_dt,
+                'late_dt': start_dt,
+                'end_dt': end_dt,
              }
 
-            form_event = form_class(user=request.user)
+            form_event = form_class(user=request.user, initial=event_init)
             form_place = PlaceForm(prefix='place')
-            form_speaker = SpeakerFormSet(queryset=Speaker.objects.none(),
-                prefix='speaker')
+            form_speaker = SpeakerFormSet(queryset=Speaker.objects.none(),prefix='speaker')
             form_organizer = OrganizerForm(prefix='organizer')
-            form_regconf = Reg8nEditForm(initial=reg_inits, prefix='regconf')
-            # form_grpregconf = GrpRegFormSet(queryset=GroupRegistrationConfiguration.objects.none(),
-            #     prefix='grpregconf',
-            #     )
+            form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf')
+            form_grpregconf = GrpRegFormSet(queryset=GroupRegistrationConfiguration.objects.none(),
+                prefix='grpregconf',
+                )
+            form_special = SpecialPricingFormSet(queryset=SpecialPricing.objects.none(),
+                prefix='special',
+                )
             
         # response
         return render_to_response(template_name, {
@@ -443,7 +498,8 @@ def add(request, form_class=EventForm, template_name="events/add.html"):
             'form_speaker':form_speaker,
             'form_organizer':form_organizer,
             'form_regconf':form_regconf,
-            # 'form_grpregconf':form_grpregconf,
+            'form_grpregconf':form_grpregconf,
+            'form_special' : form_special,
             },
             context_instance=RequestContext(request))
     else:
@@ -693,7 +749,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     # REGISTRANT formset
     post_data = request.POST or None
      
-    if request.method <> 'POST':
+    if request.method != 'POST':
         # set the initial data if logged in
         initial = {}
         if request.user.is_authenticated():
@@ -714,7 +770,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
             post_data = request.POST.copy()
             post_data['registrant-TOTAL_FORMS'] = int(post_data['registrant-TOTAL_FORMS'])+ 1  
         registrant = RegistrantFormSet(post_data, prefix='registrant', event=event)
-    
+
     # REGISTRATION form
     if request.method == 'POST' and 'submit' in request.POST:
         reg_form = RegistrationForm(event, request.POST, user=request.user)
@@ -1446,5 +1502,19 @@ def delete_group_pricing(request, id):
     messages.add_message(request, messages.INFO, 'Successfully deleted Group Pricing for %s' % gp)
     
     gp.delete()
+    
+    return redirect('event', id=event.id)
+    
+@login_required
+def delete_special_pricing(request, id):
+    if not has_perm(request.user,'events.delete_registrationconfiguration'): 
+        raise Http403
+        
+    s = get_object_or_404(SpecialPricing, id = id)
+    event = Event.objects.get(registration_configuration=s.config)
+    
+    messages.add_message(request, messages.INFO, 'Successfully deleted Special Pricing for %s' % s)
+    
+    s.delete()
     
     return redirect('event', id=event.id)

@@ -45,6 +45,7 @@
 		font-size: 1.4em;
 		background-color: #FFC;
 		padding: 10px;
+		margin-top: 10px;
 	}
 	
 	.day-view .event-info .attend-wrap {
@@ -136,7 +137,9 @@
             </form>
 		</div>
 	{% empty %}
-		<div class="no-events">No events happening on this date. <a href="javascript:;">Add event on this date.</a></div>
+		<div class="no-events">No events here, yet. 
+			<a href="{% url event.add date.year date.month date.day %}">
+			I would like to add one.</a></div>
 	{% endfor %}
 
 </div>
