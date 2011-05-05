@@ -5,7 +5,7 @@ from haystack import site
 from django.utils.html import strip_tags, strip_entities
 
 from models import HelpFile
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 
 class HelpFileIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

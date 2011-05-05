@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from event_logs.models import EventLog
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from models import CaseStudy, Service, Technology, Image
 from forms import CaseStudyForm, FileForm
 

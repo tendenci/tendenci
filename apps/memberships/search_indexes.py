@@ -2,7 +2,7 @@ from django.utils.html import strip_tags, strip_entities
 
 from haystack import indexes, site
 from memberships.models import App, AppEntry, Membership, MembershipArchive
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 
 class MembershipIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

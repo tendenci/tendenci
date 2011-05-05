@@ -5,7 +5,7 @@ from haystack import site
 from django.utils.html import strip_tags, strip_entities
 
 from models import Video
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 
 class VideoIndex(indexes.RealTimeSearchIndex):
 

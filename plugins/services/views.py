@@ -11,7 +11,7 @@ from base.http import Http403
 from base.utils import now_localized
 from models import Service
 from forms import ServiceForm
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from perms.utils import get_notice_recipients, is_admin
 from perms.utils import has_perm
 from event_logs.models import EventLog
