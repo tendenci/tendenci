@@ -96,7 +96,7 @@ def register_button(context):
 
             msg2 = 'Registration ends %s' % naturalday(reg8n_config.end_dt)
             status_class = 'open'
-            url1 = reverse('event.register', args=[event.pk])
+            url1 = reverse('event.multi_register', args=[event.pk])
 
             if registrant:
                 msg1 = 'You are registered'

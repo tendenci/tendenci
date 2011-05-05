@@ -389,13 +389,13 @@ def add_registration(request, event, reg_form, registrant_formset, *args, **kwar
     # create invoice
     reg8n.save_invoice()
     return (reg8n, created)
-    
-            
+
+
 def create_registrant_from_form(form, event, reg8n, **kwargs):
     registrant = Registrant()
     registrant.registration = reg8n
     registrant.amount = event.registration_configuration.price
-    
+
     registrant.first_name = form.cleaned_data.get('first_name', '')
     registrant.last_name = form.cleaned_data.get('last_name', '')
     registrant.email = form.cleaned_data.get('email', '')
