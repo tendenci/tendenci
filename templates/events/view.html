@@ -32,11 +32,34 @@
 	        <h1>{{ event.title }}</h1>
 	        <div class="content">
                 <p>{{ event.description|safe }}</p>
-<!--                 <h3>Group Pricings</h3>
+                {% if event.registration_configuration.groupregistrationconfiguration_set.all %}
+                    <h3>Group Pricings</h3>
+                {% endif %}
                 {% for gp in event.registration_configuration.groupregistrationconfiguration_set.all %}
-                    {{ gp }} - early:{{ gp.early_price }} - regular:{{ gp.regular_price }} - late:{{ gp.late_price }}
-                    <a href="{% url event.delete_group_pricing gp.id %}">Remove</a>
-                {% endfor %} -->
+                    <p>
+                    Group: {{ gp.group.name }}<br>
+                    Early Price: {{ gp.early_price }} (Starts On: {{ gp.early_dt }})<br>
+                    Regular Price: {{ gp.regular_price }} (Starts On: {{ gp.regular_dt }})<br>
+                    Late Price: {{ gp.late_price }} (Starts On: {{ gp.late_dt }})<br>
+                    Registration Ends On: {{ gp.end_dt }}
+                    </p>
+                    <p></p><a href="{% url event.delete_group_pricing gp.id %}">Remove</a> </p>
+                {% endfor %}
+                {% if event.registration_configuration.specialpricing_set.all %}
+                <h3>Special Pricings</h3>
+                {% endif %}
+                {% for gp in event.registration_configuration.specialpricing_set.all %}
+                    <p>
+                    Title: {{ gp.title }}<br>
+                    Group: {{ gp.group.name }}<br>
+                    Quantity: {{ gp.quantity }}<br>
+                    Early Price: {{ gp.early_price }} (Starts On: {{ gp.early_dt }})<br>
+                    Regular Price: {{ gp.regular_price }} (Starts On: {{ gp.regular_dt }})<br>
+                    Late Price: {{ gp.late_price }} (Starts On: {{ gp.late_dt }})<br>
+                    Registration Ends On: {{ gp.end_dt }}
+                    </p>
+                    <p><a href="{% url event.delete_special_pricing gp.id %}">Remove</a> </p>
+                {% endfor %}
             </div>
 		</div>
 

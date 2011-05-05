@@ -347,7 +347,6 @@ class AppAdmin(admin.ModelAdmin):
         extra_context.update({
             'excluded_fields':['field_type', 'no_duplicates', 'admin_only'],
             'excluded_lines':[2, 3],
-#            'fields_to_check':['membership-type','payment-method'],
         })
         extra_context.update(extra_context)
 

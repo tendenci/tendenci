@@ -92,11 +92,10 @@ class File(TendenciBaseModel):
 
     def image_dimensions(self):
         try:
-            im = Image.open(self.file.file)
-            return im.size;
+            im = Image.open(self.file.path)
+            return im.size
         except Exception, e:
             return (0,0)
-        
 
     class Meta:
         permissions = (("view_file","Can view file"),)
