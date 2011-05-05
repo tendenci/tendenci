@@ -9,7 +9,7 @@ from site_settings.utils import get_setting
 
 def get_duration_choices():
     dps = DirectoryPricing.objects.filter(status=1).order_by('duration')
-    
+
     return [(dp.duration, '%d days after the activation date' % dp.duration) for dp in dps]
 
 def get_payment_method_choices(user):

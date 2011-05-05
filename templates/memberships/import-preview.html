@@ -1,0 +1,82 @@
+{% extends "memberships/base.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}Import Memberships from CSV file{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+
+	<style type="text/css">
+		.preview-wrap {
+			border: 1px solid silver;
+			width: 450px;
+			margin-top: 10px;
+		}
+
+		table {
+			width: 450px;
+		}
+
+		tr.header {
+			background-color: #EEE;
+			text-align: left;
+		}
+		tr td {
+			padding: 10px;
+			border-bottom: 1px solid #EEE;
+		}
+
+		.import-now-link a {
+			display: block;
+			background-color: #FAFAFA;
+			margin-top: 10px;
+			padding: 10px;
+			width: 429px;
+			border: 1px solid #CCC;
+			border-right: 2px solid #CCC;
+			border-bottom: 2px solid #CCC;
+			font-size: 20px;
+			text-decoration: underline;
+		}
+		.import-now-link a:active,
+		.import-now-link a:hover {
+			background-color: #F7F7F7;
+		}
+
+	</style>
+
+{% endblock %}
+
+{% block body %}
+
+<h1>Membership Import Preview</h1>
+
+<div class="preview-wrap">
+<table>
+	<tr class="header">
+		<td></td>
+		<td>Name</td>
+		<td>Number</td>
+		<td>Join Date</td>
+		<td>Expire Date</td>
+	</tr>
+
+{% for membership in memberships|slice:":10" %}
+	<tr>
+		<td>{{ forloop.counter }}</td>
+		<td><div>{% firstof membership.user.get_full_name "No Name" %}</div></td>
+		<td><div>{{ membership.member_number }}</div></td>
+		<td><div>{{ membership.renew_dt|date:"M d, Y" }}</div></td>
+		<td><div>{{ membership.expiration_dt|date:"M d, Y" }}</div></td>
+	</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="import-now-link"><a href="{% url membership_import_confirm %}">
+	Yeah, this looks right.  Import now! &gt;&gt;</a></div>
+
+{% endblock %}
