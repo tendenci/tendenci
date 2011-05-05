@@ -4,6 +4,7 @@ from datetime import datetime
 from mimetypes import guess_type
 from os.path import join
 
+from django.conf import settings
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
@@ -20,7 +21,6 @@ from perms.utils import is_admin, update_perms_and_save
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
 from forms_builder.forms.settings import UPLOAD_ROOT
 from forms_builder.forms.forms import FormAdminForm, FormForField
-from Tendenci50 import settings
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
