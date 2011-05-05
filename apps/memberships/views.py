@@ -489,25 +489,131 @@ def notice_email_content(request, id, template_name="memberships/notices/email_c
         }, context_instance=RequestContext(request))
 
 @login_required
-def import_membership_csv(request, template_name="memberships/csv_form.html"):
+def membership_import(request, step=None):
     """
-    Displays a page for uploading a tendenci4 CSV file
+    Membership Import Wizard: Walks you through a series of steps to upload memberships.
     """
-    
+
     if not is_admin(request.user):
         raise Http403
-    
-    if request.method == 'POST':
-        form = CSVForm(request.POST, request.FILES)
-        if form.is_valid():
-            new_mems_from_csv(request.FILES['csv'], form.cleaned_data['app'], request.user.id)
-            return redirect(import_membership_csv)
-    else:
-        form = CSVForm()
-    
-    return render_to_response(template_name, {
-        'form':form,
+
+    if not step:  # start from beginning
+        return redirect('membership_import_upload_file')
+
+    step_numeral, step_name = step
+
+    if step_numeral == 1:  # upload-file
+        template_name = 'memberships/import-upload-file.html'
+        if request.method == 'POST':
+
+            print 'step1', step
+            form = CSVForm(request.POST, request.FILES, step=step)
+            if form.is_valid():
+                cleaned_data = form.save(step=step)
+
+                app = cleaned_data['app']
+                csv = cleaned_data['csv']
+
+                # store app
+                request.session['membership.import.app'] = app
+
+                # store memberships
+                memberships = new_mems_from_csv(csv, app, request.user.pk)
+                request.session['membership.import.memberships'] = memberships
+
+                return redirect('membership_import_map_fields')
+
+        else:  # if not POST
+            form = CSVForm(step=step)
+            return render_to_response(template_name, {
+                'form':form,
+                }, context_instance=RequestContext(request))
+
+    if step_numeral == 2:  # map-fields
+        template_name = 'memberships/import-map-fields.html'
+        if request.method == 'POST':
+            form = CSVForm(request.POST, request.FILES, step=step)
+            if form.is_valid():
+                cleaned_data = form.save(step=step)
+                request.session['membership.import.fields'] = cleaned_data
+                return redirect('membership_import_preview')
+        else:  # if not POST
+            print 'step2', step
+            form = CSVForm(step=step)
+            return render_to_response(template_name, {'form':form,}, 
+                context_instance=RequestContext(request))
+
+    if step_numeral == 3:  # preview
+        template_name = 'memberships/import-preview.html'
+        memberships = request.session.get('membership.import.memberships')
+        return render_to_response(template_name, {
+        'memberships':memberships,
         }, context_instance=RequestContext(request))
+
+    if step_numeral == 4:  # confirm
+        template_name = 'memberships/import-confirm.html'
+        import sys
+        from memberships.models import AppField, AppFieldEntry
+
+        app = request.session.get('membership.import.app')
+        memberships = request.session.get('membership.import.memberships')
+        fields = request.session.get('membership.import.fields')
+        user = request.user
+
+        if not all([app, memberships, fields, user]):
+            return redirect('membership_import_upload_file')
+
+        for membership in memberships:
+
+            membership.save()
+
+            # entry = AppEntry.objects.filter(
+            #     app = app,
+            #     user = user,
+            #     entry_time = datetime.now(),
+            #     membership = membership,
+            # ).exists()
+
+            # if not entry:  # create if does not exist
+
+            entry = AppEntry.objects.create(
+                app = app,
+                user = user,
+                entry_time = datetime.now(),
+                membership = membership,
+                is_renewal = membership.renewal,
+                is_approved = True,
+                decision_dt = membership.create_dt,
+                judge = membership.creator,
+                creator=membership.creator,
+                creator_username=membership.creator_username,
+                owner=membership.owner,
+                owner_username=membership.owner_username,
+            )
+
+            for key, value in fields.items():
+
+                app_fields = AppField.objects.filter(app=app, label=key)
+                if app_fields:
+                    app_field = app_fields[0]
+                else:
+                    app_field = None
+
+                try:
+                    AppFieldEntry.objects.create(
+                        entry=entry,
+                        field=app_field,
+                        value=value,
+                    )
+                except:
+                    print sys.exc_info()[1]
+
+        # Release session information
+        del request.session['membership.import.app']
+        del request.session['membership.import.memberships']
+        del request.session['membership.import.fields']
+
+        return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
 
 #REPORTS

@@ -141,7 +141,7 @@ class DirectoryForm(TendenciBaseForm):
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
-            
+
             # check the image header
             image_type = '.%s' % imghdr.what('', logo.read())
             if image_type not in ALLOWED_LOGO_EXT:
