@@ -11,7 +11,7 @@ from base.http import Http403
 from files.models import File
 from files.utils import get_image
 from files.forms import FileForm
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from perms.utils import has_perm
 from event_logs.models import EventLog
 

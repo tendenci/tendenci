@@ -3,7 +3,7 @@ from django.utils.html import strip_tags, strip_entities
 from haystack import indexes
 from haystack import site
 from events.models import Event, Registrant
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from events.models import Type as EventType
 
 class EventIndex(indexes.RealTimeSearchIndex):
