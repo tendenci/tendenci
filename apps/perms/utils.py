@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 from profiles.models import Profile
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 
 
 def set_perm_bits(request, form, instance):

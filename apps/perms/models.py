@@ -1,10 +1,6 @@
 from django.db import models
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
-
-from user_groups.models import Group
-from perms.managers import ObjectPermissionManager
 
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):    
@@ -34,15 +30,4 @@ class TendenciBaseModel(models.Model):
         return self._meta.module_name
                 
     class Meta:
-        abstract = True 
-
-
-class ObjectPermission(models.Model):
-    user = models.ForeignKey(User, null=True)
-    group = models.ForeignKey('Group', null=True)
-    content_type = models.ForeignKey(ContentType)
-    codename = models.CharField(max_length=255)
-    object_id = models.IntegerField()
-    create_dt = models.DateTimeField(auto_now_add=True)
-    
-    objects = ObjectPermissionManager()
+        abstract = True
