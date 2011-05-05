@@ -2,7 +2,7 @@ from haystack import indexes
 from haystack import site
 
 from models import Testimonial
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 
 class TestimonialIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

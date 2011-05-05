@@ -4,7 +4,7 @@ from haystack import indexes
 from haystack import site
 
 from quotes.models import Quote
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 
 class QuoteIndex(indexes.RealTimeSearchIndex):
 
