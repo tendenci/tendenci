@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from base.http import Http403
 from contacts.models import Contact
 from contacts.forms import ContactForm
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from perms.utils import has_perm
 
 def index(request, id=None, template_name="contacts/view.html"):

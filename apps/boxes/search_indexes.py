@@ -3,7 +3,7 @@ from django.utils.html import strip_tags, strip_entities
 from haystack import indexes
 from haystack import site
 from boxes.models import Box
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 
 class BoxIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

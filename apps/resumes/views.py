@@ -11,7 +11,7 @@ from base.http import Http403
 from base.utils import now_localized
 from resumes.models import Resume
 from resumes.forms import ResumeForm
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from perms.utils import update_perms_and_save, get_notice_recipients, is_admin, has_perm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags

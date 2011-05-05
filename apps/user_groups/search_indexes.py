@@ -1,7 +1,7 @@
 from haystack import indexes
 from haystack import site
 from user_groups.models import Group
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 
 class GroupIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

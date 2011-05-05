@@ -58,7 +58,7 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
                 # add an article
                 from articles.models import Article
                 from categories.models import Category
-                from perms.models import ObjectPermission
+                from perms.object_perms import ObjectPermission
                 from django.template.defaultfilters import slugify
                 
                 # article slug is a unique field, if the slug already exists,

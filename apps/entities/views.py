@@ -8,7 +8,7 @@ from django.contrib import messages
 from base.http import Http403
 from entities.models import Entity
 from entities.forms import EntityForm
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from event_logs.models import EventLog
 from perms.utils import is_admin, has_perm, update_perms_and_save
 

@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, Permission
 from django.db.models.base import Model
 
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from perms.utils import is_member
 
 class ObjectPermBackend(object):
