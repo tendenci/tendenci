@@ -85,6 +85,25 @@ class FormForForm(forms.ModelForm):
         return None
         
         
+class FormAdminForm(TendenciBaseForm):
+    status_detail = forms.ChoiceField(
+        choices=(('draft','Draft'),('published','Published'),))
+
+    class Meta:
+        model = Form
+        fields = ('title',
+                  'intro',
+                  'response',
+                  # 'send_email', removed per ed's request
+                  'email_from',
+                  'email_copies',
+                  'user_perms',
+                  'member_perms',
+                  'group_perms',
+                  'allow_anonymous_view',
+                  'status',
+                  'status_detail',
+                 )
         
 class FormForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
@@ -136,7 +155,7 @@ class FormForm(TendenciBaseForm):
             
 class FormForField(forms.ModelForm):
     class Meta:
-        model = Field
+        model = Field        
     
     def clean_function_params(self):
         function_params = self.cleaned_data['function_params']
@@ -153,7 +172,7 @@ class FormForField(forms.ModelForm):
         
         if field_function == "GroupSubscription":
             if field_type != "BooleanField":
-                raise forms.ValidationError("This field's function requires BooleanField as a field type")
+                raise forms.ValidationError("This field's function requires Checkbox as a field type")
             if not function_params:
                 raise forms.ValidationError("This field's function requires at least 1 group specified.")
             else:
@@ -161,6 +180,6 @@ class FormForField(forms.ModelForm):
                     try:
                         Group.objects.get(name=val)
                     except Group.DoesNotExist:
-                        raise forms.ValidationError("The group %s does not exist" % (val))
+                        raise forms.ValidationError("The group \"%s\" does not exist" % (val))
                 
         return cleaned_data

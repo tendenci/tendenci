@@ -191,6 +191,11 @@ def get_notice_recipients(scope, scope_category, setting_name):
     for recipient in list(set(g_recipients + m_recipients)):
         if email_re.match(recipient):
             recipients.append(recipient)
+    
+    # if the settings for notice recipients are not set up, return admin contact email  
+    if not recipients:
+        admin_contact_email = (get_setting('site', 'global', 'admincontactemail')).strip()
+        recipients = admin_contact_email.split(',')
 
     return recipients
 
