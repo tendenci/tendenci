@@ -3,7 +3,7 @@ from django.utils.html import strip_tags, strip_entities
 from haystack import indexes
 from haystack import site
 from jobs.models import Job
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from categories.models import Category
 
 

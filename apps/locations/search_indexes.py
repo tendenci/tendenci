@@ -3,7 +3,7 @@ from django.utils.html import strip_tags, strip_entities
 from haystack import indexes
 from haystack import site
 from locations.models import Location
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 
 class LocationIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

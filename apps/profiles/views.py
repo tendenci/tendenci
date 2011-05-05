@@ -41,7 +41,7 @@ from base.http import Http403
 from perms.utils import is_admin
 
 from event_logs.models import EventLog
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from site_settings.utils import get_setting
 from perms.utils import get_notice_recipients
 

@@ -2,7 +2,7 @@ from haystack import indexes
 from haystack import site
 
 from models import Staff
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 
 class StaffIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
