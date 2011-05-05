@@ -145,29 +145,36 @@ class TypeChoiceField(forms.ModelChoiceField):
 
 
 class TypeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TypeForm, self).__init__(*args, **kwargs)
+        
+        colorsets = TypeColorSet.objects.all()
 
-    color_set_choices = [(color_set.pk, 
-        '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s" />'
-        % color_set.bg_color) for color_set in TypeColorSet.objects.all()]
-
-    color_set = TypeChoiceField(
-        choices=color_set_choices,
-        queryset=TypeColorSet.objects.all(),
-        widget=forms.RadioSelect(renderer=RadioImageFieldRenderer),
-    )
+        color_set_choices = [(color_set.pk, 
+            '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s" />'
+            % color_set.bg_color) for color_set in colorsets]
+        
+        self.fields['color_set'] = TypeChoiceField(
+            choices=color_set_choices,
+            queryset=colorsets,
+            widget=forms.RadioSelect(renderer=RadioImageFieldRenderer),
+        )
 
     class Meta:
         model = Type
+
 
 class PlaceForm(forms.ModelForm):
     label = 'Location Information'
     class Meta:
         model = Place
 
+
 class SponsorForm(forms.ModelForm):
     label = 'Sponsor'
     class Meta:
         model = Sponsor 
+
 
 class SpeakerForm(forms.ModelForm):
     label = 'Speaker'
@@ -239,6 +246,7 @@ class Reg8nEditForm(BetterModelForm):
             'early_price',
             'regular_price',
             'late_price',
+            'is_guest_price',
             'payment_required',
             'early_dt',
             'regular_dt',
@@ -250,11 +258,12 @@ class Reg8nEditForm(BetterModelForm):
 
         fieldsets = [('Registration Configuration', {
           'fields': ['enabled',
-                     'limit',
-                     'reg8n_dt_price',
-                     'payment_method',
-                     'payment_required',
-                     ],
+                    'limit',
+                    'reg8n_dt_price',
+                    'is_guest_price',
+                    'payment_method',
+                    'payment_required',
+                    ],
           'legend': ''
           })
         ]
@@ -273,8 +282,6 @@ class GroupReg8nEditForm(BetterModelForm):
     regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
     late_dt = SplitDateTimeField(label=_('Late Date/Time'))
     end_dt = SplitDateTimeField(label=_('End Date/Time'))
-    
-    #reg8n_dt_price = Reg8nDtField(label=_('Times and Pricing'), required=False)
     
     def clean(self):
         
