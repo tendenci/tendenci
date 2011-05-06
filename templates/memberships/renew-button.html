@@ -19,7 +19,7 @@
 
 {% if membership.can_renew %}
 <div class="membership-renew-button renew-now">
-    <a href="{% url membership.ma.get_absolute_url membership.pk %}">Renew from now until {{ membership.get_renewal_period_dt.1 }}</a>
+    <a href="{{ membership.ma.get_absolute_url }}">Renew from now until {{ membership.get_renewal_period_dt.1 }}</a>
 </div>
 {% else %}
 <div class="membership-renew-button renew-soon">
