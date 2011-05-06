@@ -80,6 +80,10 @@ def get_corporate_membership_choices():
     return cm_list
     
 def import_csv(file):
+    """
+    Returns a list of dicts. Each dict represents
+    a foreign membership record.
+    """
     membership_csv = csv.reader(open(str(file), 'U'))
     headers = membership_csv.next()
     mems = list()
@@ -92,7 +96,7 @@ def import_csv(file):
 
 def new_mems_from_csv(file, app, creator_id):
     """
-        Creates new memberships based on a Tendenci 4 CSV file
+    Creates new memberships based on a Tendenci 4 CSV file
     """
     from django.db import IntegrityError
     from haystack.query import SearchQuerySet
