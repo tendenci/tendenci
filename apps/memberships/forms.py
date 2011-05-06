@@ -610,9 +610,7 @@ class CSVForm(forms.Form):
             Basic Form + Mapping Fields
             """
 
-            
-
-            # need file to make field-mapping form
+            # file to make field-mapping form
             csv = import_csv(file_path)
 
             choices = {}
@@ -652,9 +650,6 @@ class CSVForm(forms.Form):
             """
             Basic Form: Application & File Uploader
             """
-            app = self.cleaned_data['app']
-            csv = self.cleaned_data['csv']
-
             return self.cleaned_data
 
         if step_numeral == 2:

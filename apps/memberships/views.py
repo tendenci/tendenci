@@ -16,7 +16,7 @@ from base.http import Http403
 
 from memberships.models import Membership, MembershipType, Notice
 from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm
-from memberships.utils import new_mems_from_csv
+from memberships.utils import new_mems_from_csv, is_import_valid
 
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
@@ -510,22 +510,23 @@ def membership_import(request, step=None):
 
             form = CSVForm(request.POST, request.FILES, step=step)
             if form.is_valid():
-
-                saved_files = File.objects.save_files_for_instance(request, Membership)
-
                 cleaned_data = form.save(step=step)
-
-                # store app
                 app = cleaned_data['app']
-                request.session['membership.import.app'] = app
 
-                # store memberships
+                # check import requirements
+                saved_files = File.objects.save_files_for_instance(request, Membership)
                 file_path = os.path.join('site_media/media', str(saved_files[0].file))
-                request.session['membership.import.file_path'] = file_path
+                valid_import = is_import_valid(file_path)
 
+                # build memberships
                 memberships = new_mems_from_csv(file_path, app, request.user.pk)
+
+                # store session info
+                request.session['membership.import.app'] = app
+                request.session['membership.import.file_path'] = file_path
                 request.session['membership.import.memberships'] = memberships
 
+                # move to next wizard page
                 return redirect('membership_import_map_fields')
 
         else:  # if not POST
