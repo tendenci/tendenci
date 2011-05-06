@@ -51,7 +51,7 @@ class FacebookAuth(BaseOAuth):
     
     def __init__(self, request, redirect):
         self.FACEBOOK_APP_ID = Setting.objects.get(name='facebook_app_id').value
-        self.FACEBOOK_API_SECRET = Setting.objects.get(name='facebook_app_secret').value
+        self.FACEBOOK_API_SECRET = Setting.objects.get(name='facebook_api_secret').value
         super(FacebookAuth, self).__init__(request, redirect)
     
     def auth_url(self):
