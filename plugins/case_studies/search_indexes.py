@@ -4,14 +4,14 @@ from haystack import site
 from models import CaseStudy, Image
 from perms.object_perms import ObjectPermission
 
+
 class CaseStudyIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-
     client = indexes.CharField(model_attr='client')
     service = indexes.CharField(model_attr='services')
     technology = indexes.CharField(model_attr='technologies')
 
-    # base fields
+    # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
@@ -27,23 +27,21 @@ class CaseStudyIndex(indexes.RealTimeSearchIndex):
     create_dt = indexes.DateTimeField(model_attr='create_dt', null=True)
     update_dt = indexes.DateTimeField(model_attr='update_dt', null=True)
 
-    who_can_view = indexes.CharField()
-    
-    #for primary key: needed for exclude list_tags
+    # permission fields
+    users_can_view = indexes.MultiValueField()
+    groups_can_view = indexes.MultiValueField()
+
+    # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
     def get_updated_field(self):
         return 'update_dt'
 
-    def prepare_who_can_view(self, obj):
-        users = ObjectPermission.objects.who_has_perm('case_study.view_case_study', obj)
-        user_list = []
-        if users:
-            for user in users:
-                user_list.append(user.username)
-            return ','.join(user_list)
-        else:
-            return ''
+    def prepare_users_can_view(self, obj):
+        return ObjectPermission.objects.users_with_perms('case_study.view_case_study', obj)
+
+    def prepare_groups_can_view(self, obj):
+        return ObjectPermission.objects.groups_with_perms('case_study.view_case_study', obj)
 
 site.register(CaseStudy, CaseStudyIndex)
 site.register(Image)

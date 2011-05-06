@@ -11,10 +11,46 @@ from haystack.query import SearchQuerySet
 
 
 class ObjectPermissionManager(models.Manager):
-    def who_has_perm(self, perm, instance):
+    def users_with_perms(self, perm, instance):
         """
         Checks a permission against an model instance
         and returns a list of users that have that
+        permission
+        """
+        # check codename, return false if its a malformed codename
+        try:
+            codename = perm.split('.')[1]
+        except IndexError:
+            return []
+
+        # TODO: create an interface that will allow users
+        # to be added to the object permission table
+        # this line should be uncommented after that
+        return []
+
+        # check the permissions on the object level
+        content_type = ContentType.objects.get_for_model(instance)
+        filters = {
+            "content_type": content_type,
+            "object_id": instance.pk,
+            "codename": codename,
+        }
+
+        permissions = self.select_related().filter(**filters)
+        users = []
+        if permissions:
+            # setup up list of permissions
+            for perm in permissions:
+                if perm.user:
+                    users.append(perm.user.pk)
+            return users
+        else:
+            return None
+
+    def groups_with_perms(self, perm, instance):
+        """
+        Checks a permission against an model instance
+        and returns a list of groups that have that
         permission
         """
         # check codename, return false if its a malformed codename
@@ -32,17 +68,13 @@ class ObjectPermissionManager(models.Manager):
         }
 
         permissions = self.select_related().filter(**filters)
-        users = []
+        groups = []
         if permissions:
             # setup up list of permissions
             for perm in permissions:
-                if perm.user:
-                    users.append(perm.user)
-
                 if perm.group:
-                    for user in perm.group.members.all():
-                        users.append(user)
-            return list(set(users))
+                    groups.append(perm.group.pk)
+            return groups
         else:
             return None
 
@@ -270,24 +302,29 @@ class TendenciBaseManager(models.Manager):
         Filter the query set for members
         """
         user = kwargs.get('user', None)
+        groups = [g.pk for g in user.group_set.all()]
+        status_detail = kwargs.get('status_detail', 'active')
 
         anon_q = Q(allow_anonymous_view=True)
         user_q = Q(allow_user_view=True)
         member_q = Q(allow_member_view=True)
-        status_q = Q(status=1, status_detail='active')
-        perm_q = Q(who_can_view__exact=user.username)
+        status_q = Q(status=1, status_detail=status_detail)
+        user_perm_q = Q(users_can_view__in=user.pk)
+        group_perm_q = Q(groups_can_view__in=groups)
 
         q = reduce(operator.or_, [anon_q, user_q, member_q])
         q = reduce(operator.and_, [status_q, q])
-        q = reduce(operator.or_, [q, perm_q])
+        q = reduce(operator.or_, [q, user_perm_q, group_perm_q])
 
         return sqs.filter(q)
 
-    def _anon_sqs(self, sqs):
+    def _anon_sqs(self, sqs, **kwargs):
         """
         Filter the query set for anonymous users
         """
-        sqs = sqs.filter(status=1).filter(status_detail='active')
+        status_detail = kwargs.get('status_detail', 'active')
+
+        sqs = sqs.filter(status=1).filter(status_detail=status_detail)
         sqs = sqs.filter(allow_anonymous_view=True)
         return sqs
 
@@ -297,15 +334,18 @@ class TendenciBaseManager(models.Manager):
         (status+status_detail+(anon OR user)) OR (who_can_view__exact)
         """
         user = kwargs.get('user', None)
+        groups = [g.pk for g in user.group_set.all()]
+        status_detail = kwargs.get('status_detail', 'active')
 
         anon_q = Q(allow_anonymous_view=True)
         user_q = Q(allow_user_view=True)
-        status_q = Q(status=1, status_detail='active')
-        perm_q = Q(who_can_view__exact=user.username)
+        status_q = Q(status=1, status_detail=status_detail)
+        user_perm_q = Q(users_can_view__in=user.pk)
+        group_perm_q = Q(groups_can_view__in=groups)
 
         q = reduce(operator.or_, [anon_q, user_q])
         q = reduce(operator.and_, [status_q, q])
-        q = reduce(operator.or_, [q, perm_q])
+        q = reduce(operator.or_, [q, user_perm_q, group_perm_q])
 
         return sqs.filter(q)
 
@@ -325,10 +365,20 @@ class TendenciBaseManager(models.Manager):
         Returns a SearchQuerySet object
         """
         from perms.utils import is_admin, is_member
-        sqs = SearchQuerySet()
+
+        # form the seach queryset
+        child_sqs = kwargs.get('sqs', None)
+        if not child_sqs:
+            sqs = SearchQuerySet()
+
+        # user information
         user = kwargs.get('user') or AnonymousUser()
         user = self._impersonation(user)
         self.user = user
+
+        # if the status_detail is something like "published"
+        # then you can specify the kwargs to override
+        status_detail = kwargs.get('status_detail', 'active')
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
@@ -337,10 +387,12 @@ class TendenciBaseManager(models.Manager):
             sqs = sqs.all()  # admin
         else:
             if user.is_anonymous():
-                sqs = self._anon_sqs(sqs)  # anonymous
+                sqs = self._anon_sqs(sqs, status_detail=status_detail)  # anonymous
             elif is_member(user):
-                sqs = self._member_sqs(sqs, user=user)
+                sqs = self._member_sqs(sqs, user=user,
+                status_detail=status_detail)
             else:
-                sqs = self._user_sqs(sqs, user=user)  # user
+                sqs = self._user_sqs(sqs, user=user,
+                status_detail=status_detail)
 
         return sqs.models(self.model)

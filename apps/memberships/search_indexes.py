@@ -4,11 +4,12 @@ from haystack import indexes, site
 from memberships.models import App, AppEntry, Membership, MembershipArchive
 from perms.object_perms import ObjectPermission
 
+
 class MembershipIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     corporate_membership_id = indexes.BooleanField(model_attr='corporate_membership_id')
 
-    # tendenci_base fields
+    # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
@@ -24,24 +25,28 @@ class MembershipIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
 
-    # permission
-    who_can_view = indexes.CharField()
-    
-    #for primary key: needed for exclude list_tags
+    # permission fields
+    users_can_view = indexes.MultiValueField()
+    groups_can_view = indexes.MultiValueField()
+
+    # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
     def get_updated_field(self):
         return 'update_dt'
 
-    def prepare_who_can_view(self, obj):
-        users = ObjectPermission.objects.who_has_perm('memberships.view_membership', obj) or []
-        return ','.join(u.username for u in users)
+    def prepare_users_can_view(self, obj):
+        return ObjectPermission.objects.users_with_perms('memberships.view_membership', obj)
+
+    def prepare_groups_can_view(self, obj):
+        return ObjectPermission.objects.groups_with_perms('memberships.view_membership', obj)
+
 
 class MembershipArchiveIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     corporate_membership_id = indexes.BooleanField(model_attr='corporate_membership_id')
 
-    # tendenci_base fields
+    # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
@@ -57,18 +62,21 @@ class MembershipArchiveIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
 
-    # permission
-    who_can_view = indexes.CharField()
-    
-    #for primary key: needed for exclude list_tags
+    # permission fields
+    users_can_view = indexes.MultiValueField()
+    groups_can_view = indexes.MultiValueField()
+
+    # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
     def get_updated_field(self):
         return 'update_dt'
 
-    def prepare_who_can_view(self, obj):
-        users = ObjectPermission.objects.who_has_perm('memberships.view_archived_membership', obj) or []
-        return ','.join(u.username for u in users)
+    def prepare_users_can_view(self, obj):
+        return ObjectPermission.objects.users_with_perms('memberships.view_archived_membership', obj)
+
+    def prepare_groups_can_view(self, obj):
+        return ObjectPermission.objects.groups_with_perms('memberships.view_archived_membership', obj)
 
 
 class MemberAppIndex(indexes.RealTimeSearchIndex):
@@ -76,7 +84,7 @@ class MemberAppIndex(indexes.RealTimeSearchIndex):
     name = indexes.CharField(model_attr='name')
     description = indexes.CharField(model_attr='description')
 
-    # authority fields
+    # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
@@ -90,18 +98,15 @@ class MemberAppIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
 
-    # permission
-    who_can_view = indexes.CharField()
-    
-    #for primary key: needed for exclude list_tags
+    # permission fields
+    users_can_view = indexes.MultiValueField()
+    groups_can_view = indexes.MultiValueField()
+
+    # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
     def get_updated_field(self):
         return 'update_dt'
-
-    def prepare_who_can_view(self, obj):
-        users = ObjectPermission.objects.who_has_perm('articles.view_article', obj) or []
-        return ','.join(u.username for u in users)
 
     def prepare_description(self, obj):
         description = obj.description
@@ -109,11 +114,18 @@ class MemberAppIndex(indexes.RealTimeSearchIndex):
         description = strip_entities(description)
         return description
 
+    def prepare_users_can_view(self, obj):
+        return ObjectPermission.objects.users_with_perms('memberships.view_app', obj)
+
+    def prepare_groups_can_view(self, obj):
+        return ObjectPermission.objects.groups_with_perms('memberships.view_app', obj)
+
+
 class MemberAppEntryIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     entry_time = indexes.DateTimeField(model_attr='entry_time')
 
-    # authority fields
+    # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
@@ -127,21 +139,24 @@ class MemberAppEntryIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
 
-    # permission
-    who_can_view = indexes.CharField()
+    # permission fields
+    users_can_view = indexes.MultiValueField()
+    groups_can_view = indexes.MultiValueField()
 
-    #for primary key: needed for exclude list_tags
+    # PK: needed for exclude list_tag
     primary_key = indexes.CharField(model_attr='pk')
 
     def get_updated_field(self):
         return 'entry_time'
 
-    def prepare_who_can_view(self, obj):
-        users = ObjectPermission.objects.who_has_perm('memberships.view_appentry', obj) or []
-        return ','.join(u.username for u in users)
+    def prepare_users_can_view(self, obj):
+        return ObjectPermission.objects.users_with_perms('memberships.view_appentry', obj)
+
+    def prepare_groups_can_view(self, obj):
+        return ObjectPermission.objects.groups_with_perms('memberships.view_appentry', obj)
+
 
 site.register(Membership, MembershipIndex)
 site.register(MembershipArchive, MembershipArchiveIndex)
-
 site.register(App, MemberAppIndex)
 site.register(AppEntry, MemberAppEntryIndex)
