@@ -31,7 +31,9 @@ class EventManager(TendenciBaseManager):
     def search_filter(self, filters=None, *args, **kwargs):
         sqs = SearchQuerySet()
         user = kwargs.get('user', None)
-        groups = [g.pk for g in user.group_set.all()]
+        groups = []
+        if user and user.is_authenticated():
+            groups = [g.pk for g in user.group_set.all()]
         admin = is_admin(user)
 
         # permission filters
