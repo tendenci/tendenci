@@ -212,7 +212,7 @@ INSTALLED_APPS = (
     'boxes',
     'legacy',
     'mobile',
-
+    'social_auth',
     # celery task system, must stay at the bottom
     # of installed apps
     #'djcelery',
@@ -229,6 +229,7 @@ LOGIN_REDIRECT_URL = '/dashboard'
 AUTH_PROFILE_MODULE = 'profiles.Profile'
 AUTHENTICATION_BACKENDS = (
     'perms.backend.ObjectPermBackend',
+    'social_auth.backends.facebook.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -357,6 +358,16 @@ FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
 # --------------------------------------#
 MOBILE_COOKIE_NAME = "tendenci_mobile"
 
+# ------------------------------------ #
+# SOCIAL AUTH SETTINGS
+# ------------------------------------ #
+LOGIN_ERROR_URL = "/accounts/login_error"
+SOCIAL_AUTH_ERROR_KEY = 'social_errors'
+SOCIAL_AUTH_COMPLETE_URL_NAME  = 'social_complete'
+SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'social_associate_complete'
+SOCIAL_AUTH_DEFAULT_USERNAME = 'social_auth_user'
+SOCIAL_AUTH_CREATE_USERS = True
+SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
 
 # Amazon SES 
 #----------------------------------------------#
