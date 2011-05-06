@@ -302,7 +302,9 @@ class TendenciBaseManager(models.Manager):
         Filter the query set for members
         """
         user = kwargs.get('user', None)
-        groups = [g.pk for g in user.group_set.all()]
+        groups = []
+        if user and user.is_authenticated():
+            groups = [g.pk for g in user.group_set.all()]
         status_detail = kwargs.get('status_detail', 'active')
 
         anon_q = Q(allow_anonymous_view=True)
@@ -334,7 +336,9 @@ class TendenciBaseManager(models.Manager):
         (status+status_detail+(anon OR user)) OR (who_can_view__exact)
         """
         user = kwargs.get('user', None)
-        groups = [g.pk for g in user.group_set.all()]
+        groups = []
+        if user and user.is_authenticated():
+            groups = [g.pk for g in user.group_set.all()]
         status_detail = kwargs.get('status_detail', 'active')
 
         anon_q = Q(allow_anonymous_view=True)
