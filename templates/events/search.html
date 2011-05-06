@@ -167,7 +167,13 @@
 					{{ event.start_dt|date:"M j, Y P" }} - {{ event.end_dt|date:"M j, Y P" }}
 				</div> 
 
-				<div class="description">{{ event.description|striptags|truncatewords:"80"|safe }}</div>
+				<div class="description">
+				{% if event.meta.description %}
+                    {{ event.meta.description }}
+                {% else %}
+                    {{ event.get_description }}
+                {% endif %}
+                </div>
 
 				{% if event.registration_configuration.enabled %}
 

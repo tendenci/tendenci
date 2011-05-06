@@ -245,10 +245,9 @@ class ObjectPermissionManager(models.Manager):
                         "object_id":object.pk,
                         "content_type":content_type,
                         "user":user_or_users,
-                                
                     }
                     self.get_or_create(**defaults)                                    
-    
+
     def remove_all(self, object):
         """
             Remove all permissions on object (instance)

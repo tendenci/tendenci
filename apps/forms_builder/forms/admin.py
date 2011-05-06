@@ -4,6 +4,7 @@ from datetime import datetime
 from mimetypes import guess_type
 from os.path import join
 
+from django.conf import settings
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
@@ -14,31 +15,53 @@ from django.template import loader, Context
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
+from event_logs.models import EventLog
+from perms.utils import is_admin, update_perms_and_save
+
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
 from forms_builder.forms.settings import UPLOAD_ROOT
-
+from forms_builder.forms.forms import FormAdminForm, FormForField
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
     
 class FieldAdmin(admin.TabularInline):
-    model = Field
+    model = Field    
+    form = FormForField
+    extra = 0
 
 class FormAdmin(admin.ModelAdmin):
 
     inlines = (FieldAdmin,)
-    list_display = ("title", "email_from", "email_copies", 
+    list_display = ("title", "id", "intro", "email_from", "email_copies", 
         "admin_link_export", "admin_link_view")
     list_display_links = ("title",)
-    list_editable = ("email_from", "email_copies")
 #    list_filter = ("status",)
     search_fields = ("title", "intro", "response", "email_from", 
         "email_copies")
 #    radio_fields = {"status": admin.HORIZONTAL}
     fieldsets = (
         (None, {"fields": ("title", "intro", "response")}),
-        (_("Email"), {"fields": ("send_email", "email_from", "email_copies")}),
+        (_("Email"), {"fields": ("email_from", "email_copies")}),
+        ('Administrative', {'fields': (
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail'
+        )}),
     )
+    
+    form = FormAdminForm
+    
+    class Media:
+        js = (
+            '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/form-fields-inline-ordering.js' % settings.STATIC_URL,
+        )
+        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
     def get_urls(self):
         """
@@ -121,19 +144,49 @@ class FormAdmin(admin.ModelAdmin):
         f.close()
         return response
     
+    def log_deletion(self, request, object, object_repr):
+        super(FormAdmin, self).log_deletion(request, object, object_repr)
+        log_defaults = {
+            'event_id' : 587300,
+            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, 
+                                                    object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
+    
+    def log_change(self, request, object, message):
+        super(FormAdmin, self).log_change(request, object, message)
+        log_defaults = {
+            'event_id' : 587200,
+            'event_data': '%s (%d) edited by %s' % (object._meta.object_name, 
+                                                    object.pk, request.user),
+            'description': '%s edited' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
+    
+    def log_addition(self, request, object):
+        super(FormAdmin, self).log_addition(request, object)
+        log_defaults = {
+            'event_id' : 587100,
+            'event_data': '%s (%d) added by %s' % (object._meta.object_name, 
+                                                   object.pk, request.user),
+            'description': '%s added' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
+    
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         
-        if not change:
-            instance.creator = request.user
-            instance.creator_username = request.user.username
-        instance.owner = request.user
-        instance.owner_username = request.user.username
-           
-        # save the object
-        instance.save()
-                                    
-        form.save_m2m()
+        instance = update_perms_and_save(request, form, instance)
         
         return instance
 

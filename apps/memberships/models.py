@@ -265,10 +265,13 @@ class Membership(TendenciBaseModel):
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type")) 
     user = models.ForeignKey(User, related_name="memberships")
     directory = models.ForeignKey(Directory, blank=True, null=True) 
-    renewal = models.BooleanField(default=0)
+    renewal = models.BooleanField(default=False)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
-    join_dt = models.DateTimeField(_("Join Date Time"), null=True)
-    renew_dt = models.DateTimeField(_("Renew Date Time"), blank=True, null=True)
+
+    subscribe_dt = models.DateTimeField(_("Subscribe Date"), null=True)
+    join_dt = models.DateTimeField(_("Join Date"), null=True)
+    renew_dt = models.DateTimeField(_("Renew Date"), blank=True, null=True)
+
     expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
@@ -337,9 +340,14 @@ class MembershipArchive(TendenciBaseModel):
     membership = models.ForeignKey('Membership')
     member_number = models.CharField(_("Member Number"), max_length=50)
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
+    user = models.ForeignKey(User)
     directory = models.ForeignKey(Directory, blank=True, null=True)
+    renewal = models.BooleanField(default=False)
+
+    subscribe_dt = models.DateTimeField(_("Subscribe Date"))
     join_dt = models.DateTimeField(_("Join Date Time"))
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True)
+
     expire_dt = models.DateTimeField(_("Expire Date Time"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     invoice = models.ForeignKey(Invoice, null=True)
@@ -353,7 +361,7 @@ class MembershipArchive(TendenciBaseModel):
         permissions = (("view_archived_membership","Can view archived membership"),)
 
     def __unicode__(self):
-        return "%s (%s)" % (self.user.get_full_name(), self.member_number) 
+        return "%s #%s" % (self.user.get_full_name(), self.member_number)
     
 class Notice(models.Model):
     guid = models.CharField(max_length=50, editable=False)

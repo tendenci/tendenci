@@ -28,10 +28,7 @@
 	<li>
 		<span>{% firstof MODULE_EVENTS_LABEL 'Event' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url events %}">{% firstof MODULE_EVENTS_LABEL 'Event' %}:</a></li> 
-			{% if can_edit_setting %}
-				<li><a href="{% url settings.index "module" "events" %}">Settings</a></li>
-			{% endif %}
+			<li><a href="{% url events %}">{% firstof MODULE_EVENTS_LABEL 'Event' %}:</a></li>
 			{% if nav_object %}
 				{% if can_view_event %}
 				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
@@ -39,10 +36,9 @@
 				{% if can_edit_event %}
 				<li><a href="{% url event.edit nav_object.pk %}">Edit</a></li>
 				<li><a href="{% url event.edit.meta nav_object.pk %}">Edit Meta</a></li>
-
 				<li><a href="{% url event.registrant.search nav_object.pk %}">Registrants</a></li>
-				<li><a href="{% url event.registrant.roster nav_object.pk %}">Registrant Roster</a></li>
-				<li><a href="{% url event.message nav_object.pk %}">E-mail Registrants</a></li>
+				<li><a href="{% url event.registrant.roster nav_object.pk %}">Roster</a></li>
+				<li><a href="{% url event.message nav_object.pk %}">E-mail</a></li>
 				{% endif %}
 
 				{% if can_delete_event %}
