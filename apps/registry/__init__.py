@@ -1,10 +1,5 @@
 from django.utils import importlib
 from registry.sites import site
-from django.contrib.admin import autodiscover as ad
-
-
-# load the apps that are in Django Admin
-ad()
 
 
 def autodiscover():
@@ -29,5 +24,3 @@ def autodiscover():
 
         # Step 3: import the app's registry file. Bubble up errors
         importlib.import_module("%s.app_registry" % app)
-
-autodiscover()
