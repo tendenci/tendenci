@@ -1,5 +1,10 @@
 from django.utils import importlib
 from registry.sites import site
+from django.contrib.admin import autodiscover as ad
+
+
+# load the apps that are in Django Admin
+ad()
 
 
 def autodiscover():
