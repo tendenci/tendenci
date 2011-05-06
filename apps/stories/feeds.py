@@ -34,4 +34,7 @@ class StorySitemap(TendenciSitemap):
         return [sq.object for sq in sqs]
     
     def lastmod(self, obj):
-        return obj.create_dt
+        return obj.update_dt
+        
+    def location(self, obj):
+        return obj.full_story_link
