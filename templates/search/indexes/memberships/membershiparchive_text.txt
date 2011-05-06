@@ -6,4 +6,5 @@ first_name:{{ object.user.first_name }}
 last_name:{{ object.user.last_name }}
 email:{{ object.user.email }}
 is:{{ object.status }}
+create_dt:{{ object.create_dt }}
 subscribe_dt:{{ object.subscribe_dt|date:"%Y-%m-%d %H:%M:%S" }}
