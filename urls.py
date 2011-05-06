@@ -5,6 +5,14 @@ from django.views.generic.simple import direct_to_template, redirect_to
 from django.conf import settings
 from django.contrib import admin
 
+from registry import autodiscover as reg_autodiscover
+
+# load the apps that are in Django Admin
+admin.autodiscover()
+
+# load the app_registry
+reg_autodiscover()
+
 
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html", }, name="home"),
