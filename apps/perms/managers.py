@@ -9,27 +9,28 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from haystack.query import SearchQuerySet
 
+
 class ObjectPermissionManager(models.Manager):
     def who_has_perm(self, perm, instance):
         """
-            Checks a permission against an model instance
-            and returns a list of users that have that
-            permission
+        Checks a permission against an model instance
+        and returns a list of users that have that
+        permission
         """
         # check codename, return false if its a malformed codename
         try:
             codename = perm.split('.')[1]
         except IndexError:
             return []
-        
+
         # check the permissions on the object level
-        content_type = ContentType.objects.get_for_model(instance) 
+        content_type = ContentType.objects.get_for_model(instance)
         filters = {
             "content_type": content_type,
             "object_id": instance.pk,
             "codename": codename,
         }
-        
+
         permissions = self.select_related().filter(**filters)
         users = []
         if permissions:
@@ -37,7 +38,7 @@ class ObjectPermissionManager(models.Manager):
             for perm in permissions:
                 if perm.user:
                     users.append(perm.user)
-            
+
                 if perm.group:
                     for user in perm.group.members.all():
                         users.append(user)
@@ -47,39 +48,39 @@ class ObjectPermissionManager(models.Manager):
 
     def assign_group(self, group_or_groups, object, perms=None):
         """
-            Assigns permissions to group or multiple groups
-            assign_group(self, group_or_groups, object, perms=None)
-            
-            -- group_or_groups: can be a single group object, list, queryset
-            or tuple. Although tuples may work differently: 
-            You can pass permissions individual permissions along with the tuple
-            like so: ((instance,'view',),(instance,'change',))
-            
-            -- object: is the instance of a model class
-            
-            -- perms: a list of individual permissions to assign to each group
-               leave blank for all permissions.
-               Note: If you are using the tuple/perm approach this does nothing.
-        """    
-        multi_group = False  
+        Assigns permissions to group or multiple groups
+        assign_group(self, group_or_groups, object, perms=None)
+
+        -- group_or_groups: can be a single group object, list, queryset
+        or tuple. Although tuples may work differently:
+        You can pass permissions individual permissions along with the tuple
+        like so: ((instance,'view',),(instance,'change',))
+
+        -- object: is the instance of a model class
+
+        -- perms: a list of individual permissions to assign to each group
+           leave blank for all permissions.
+           Note: If you are using the tuple/perm approach this does nothing.
+        """
+        multi_group = False
         group_with_perms = False
-        
+
         # nobody to give permissions too
         if not group_or_groups:
-            return 
+            return
         # check perms
-        if not isinstance(perms,list):
+        if not isinstance(perms, list):
             perms = None
         # check for multi_groups
-        if isinstance(group_or_groups,list):
+        if isinstance(group_or_groups, list):
             multi_group = True
-        if isinstance(group_or_groups,QuerySet):
+        if isinstance(group_or_groups, QuerySet):
             multi_group = True
-        if isinstance(group_or_groups,tuple):
+        if isinstance(group_or_groups, tuple):
             multi_group = True
             if len(group_or_groups[0]) == 2:
                 group_with_perms = True
-            
+
         # treat the tuples differently. They are passed in as
         # ((group,perm,),(group,perm,) ..... (group,perm.))
         if group_with_perms:
@@ -91,105 +92,104 @@ class ObjectPermissionManager(models.Manager):
                             group = Group.objects.get(pk=group)
                         except:
                             group = None
-  
+
                 codename = '%s_%s' % (perm, object._meta.object_name.lower())
-                content_type = ContentType.objects.get_for_model(object)          
+                content_type = ContentType.objects.get_for_model(object)
 
                 perm = Permission.objects.get(codename=codename,
                                               content_type=content_type)
-                
+
                 defaults = {
-                    "codename":codename,
-                    "object_id":object.pk,
-                    "content_type":perm.content_type,
-                    "group": group,    
+                    "codename": codename,
+                    "object_id": object.pk,
+                    "content_type": perm.content_type,
+                    "group": group,
                 }
-                self.get_or_create(**defaults)  
-            return # get out
-                                        
+                self.get_or_create(**defaults)
+            return  # get out
+
         if multi_group:
             for group in group_or_groups:
                 if perms:
                     for perm in perms:
                         codename = '%s_%s' % (perm, object._meta.object_name.lower())
                         content_type = ContentType.objects.get_for_model(object)
-                        
+
                         perm = Permission.objects.get(codename=codename,
                                                       content_type=content_type)
-                        
+
                         defaults = {
-                            "codename":codename,
-                            "object_id":object.pk,
-                            "content_type":perm.content_type,
-                            "group": group,    
+                            "codename": codename,
+                            "object_id": object.pk,
+                            "content_type": perm.content_type,
+                            "group": group,
                         }
-                        self.get_or_create(**defaults)     
+                        self.get_or_create(**defaults)
                 else:  # all default permissions
                     content_type = ContentType.objects.get_for_model(object)
                     perms = Permission.objects.filter(content_type=content_type)
                     for perm in perms:
                         defaults = {
-                            "codename":perm.codename,
-                            "object_id":object.pk,
-                            "content_type":content_type,
-                            "group":group,    
+                            "codename": perm.codename,
+                            "object_id": object.pk,
+                            "content_type": content_type,
+                            "group": group,
                         }
-                        self.get_or_create(**defaults)                                      
-        else: # not multi_group
+                        self.get_or_create(**defaults)
+        else:  # not multi_group
             if perms:
                 for perm in perms:
                     codename = '%s_%s' % (perm, object._meta.object_name.lower())
                     content_type = ContentType.objects.get_for_model(object)
-                    
+
                     perm = Permission.objects.get(codename=codename,
                                                   content_type=content_type)
                     defaults = {
-                        "codename":codename,
-                        "object_id":object.pk,
-                        "content_type":perm.content_type,
-                        "group": group_or_groups,    
+                        "codename": codename,
+                        "object_id": object.pk,
+                        "content_type": perm.content_type,
+                        "group": group_or_groups,
                     }
-                    self.get_or_create(**defaults) 
+                    self.get_or_create(**defaults)
             else:  # all default permissions
                 content_type = ContentType.objects.get_for_model(object)
                 perms = Permission.objects.filter(content_type=content_type)
                 for perm in perms:
                     defaults = {
-                        "codename":perm.codename,
-                        "object_id":object.pk,
-                        "content_type":content_type,
-                        "group":group_or_groups,
-                                
+                        "codename": perm.codename,
+                        "object_id": object.pk,
+                        "content_type": content_type,
+                        "group": group_or_groups,
                     }
-                    self.get_or_create(**defaults) 
-                   
+                    self.get_or_create(**defaults)
+
     def assign(self, user_or_users, object, perms=None):
         """
-            Assigns permissions to user or multiple users
-            assign_group(self, user_or_users, object, perms=None)
-            
-            -- user_or_users: can be a single user object, list, queryset
-            or tuple.
-            
-            -- object: is the instance of a model class
-            
-            -- perms: a list of individual permissions to assign to each user
-               leave blank for all permissions.
-        """  
+        Assigns permissions to user or multiple users
+        assign_group(self, user_or_users, object, perms=None)
+
+        -- user_or_users: can be a single user object, list, queryset
+        or tuple.
+
+        -- object: is the instance of a model class
+
+        -- perms: a list of individual permissions to assign to each user
+           leave blank for all permissions.
+        """
         multi_user = False
 
         # nobody to give permissions too
         if not user_or_users:
-            return 
+            return
         # check perms
-        if not isinstance(perms,list):
-            perms = None        
+        if not isinstance(perms, list):
+            perms = None
         # check for multi_users
-        if isinstance(user_or_users,list):
+        if isinstance(user_or_users, list):
             multi_user = True
-        if isinstance(user_or_users,QuerySet):
+        if isinstance(user_or_users, QuerySet):
             multi_user = True
-        if isinstance(user_or_users,tuple):
+        if isinstance(user_or_users, tuple):
             multi_user = True
 
         if multi_user:
@@ -198,15 +198,15 @@ class ObjectPermissionManager(models.Manager):
                     for perm in perms:
                         codename = '%s_%s' % (perm, object._meta.object_name.lower())
                         content_type = ContentType.objects.get_for_model(object)
-                        
+
                         perm = Permission.objects.get(codename=codename,
                                                       content_type=content_type)
-                        
+
                         defaults = {
-                            "codename":codename,
-                            "object_id":object.pk,
-                            "content_type":perm.content_type,
-                            "user":user,    
+                            "codename": codename,
+                            "object_id": object.pk,
+                            "content_type": perm.content_type,
+                            "user": user,
                         }
                         self.get_or_create(**defaults)
                 else:  # all default permissions
@@ -214,39 +214,38 @@ class ObjectPermissionManager(models.Manager):
                     perms = Permission.objects.filter(content_type=content_type)
                     for perm in perms:
                         defaults = {
-                            "codename":perm.codename,
-                            "object_id":object.pk,
-                            "content_type":content_type,
-                            "user":user,
-                                    
+                            "codename": perm.codename,
+                            "object_id": object.pk,
+                            "content_type": content_type,
+                            "user": user,
                         }
-                        self.get_or_create(**defaults)                       
-        else: # not muli_user
+                        self.get_or_create(**defaults)
+        else:  # not muli_user
             if perms:
                 for perm in perms:
                     codename = '%s_%s' % (perm, object._meta.object_name.lower())
                     content_type = ContentType.objects.get_for_model(object)
-                    
+
                     perm = Permission.objects.get(codename=codename,
                                                   content_type=content_type)
                     defaults = {
-                        "codename":codename,
-                        "object_id":object.pk,
-                        "content_type":perm.content_type,
-                        "user":user_or_users,    
+                        "codename": codename,
+                        "object_id": object.pk,
+                        "content_type": perm.content_type,
+                        "user": user_or_users,
                     }
-                    self.get_or_create(**defaults) 
-            else: # all default permissions
+                    self.get_or_create(**defaults)
+            else:  # all default permissions
                 content_type = ContentType.objects.get_for_model(object)
                 perms = Permission.objects.filter(content_type=content_type)
                 for perm in perms:
                     defaults = {
-                        "codename":perm.codename,
-                        "object_id":object.pk,
-                        "content_type":content_type,
-                        "user":user_or_users,
+                        "codename": perm.codename,
+                        "object_id": object.pk,
+                        "content_type": content_type,
+                        "user": user_or_users,
                     }
-                    self.get_or_create(**defaults)                                    
+                    self.get_or_create(**defaults)
 
     def remove_all(self, object):
         """
@@ -314,10 +313,10 @@ class TendenciBaseManager(models.Manager):
         """
         Test for impersonation and return the impersonee
         """
-        if hasattr(user,'impersonated_user'):
+        if hasattr(user, 'impersonated_user'):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
-        return user    
+        return user
 
     # Public functions
     def search(self, query=None, *args, **kwargs):
@@ -335,13 +334,13 @@ class TendenciBaseManager(models.Manager):
             sqs = sqs.auto_query(sqs.query.clean(query))
 
         if is_admin(user):
-            sqs = sqs.all() # admin
+            sqs = sqs.all()  # admin
         else:
             if user.is_anonymous():
-                sqs = self._anon_sqs(sqs) # anonymous
+                sqs = self._anon_sqs(sqs)  # anonymous
             elif is_member(user):
                 sqs = self._member_sqs(sqs, user=user)
             else:
-                sqs = self._user_sqs(sqs, user=user) # user
-        
+                sqs = self._user_sqs(sqs, user=user)  # user
+
         return sqs.models(self.model)
