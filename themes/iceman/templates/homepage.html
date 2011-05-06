@@ -48,7 +48,8 @@
 						<li><a href="{% url registration_register %}">Register</a></li>
 						{% endif %}
 						<li><a href="{% url auth_login %}">Log in</a></li>
-					{% endif %}					
+                        <li><a href="{% url social_begin 'facebook' %}">Log in with Facebook</a></li>
+                    {% endif %}
 				</ul>
 			</li>
 					
@@ -70,4 +71,6 @@
 </div><!-- /container -->
 {% endblock %}
 
-{% block extra_body %}<script type="text/javascript" src="{{ THEME_URL }}media/js/menu.js"></script>{% endblock %}
+{% block extra_body %}
+<script type="text/javascript" src="{{ THEME_URL }}media/js/menu.js"></script>
+{% endblock %}
