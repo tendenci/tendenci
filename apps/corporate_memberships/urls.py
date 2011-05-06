@@ -1,4 +1,6 @@
 from django.conf.urls.defaults import patterns, url, include
+from corporate_memberships.preview import CorpMembRenewFormPreview
+from corporate_memberships.forms import CorpMembRenewForm
 
 urlpatterns = patterns('corporate_memberships.views',                  
     url(r"^(?P<slug>.*)/add/$", "add", name="corp_memb.add"),
@@ -10,5 +12,7 @@ urlpatterns = patterns('corporate_memberships.views',
     url(r'^roster/$', 'roster_search', name="corp_memb.roster_search"),
     url(r'^delete/(?P<id>\d+)/$', 'delete', name="corp_memb.delete"),
     url(r'^delete_rep/(?P<id>\d+)/$', 'delete_rep', name="corp_memb.delete_rep"),
+    #(r'^renew/(?P<id>\d+)/$', CorpMembRenewFormPreview(CorpMembRenewForm)),
+    #url(r"^renew_conf/(?P<id>\d+)/$", "renew_conf", name="corp_memb.renew_conf"),
     url(r"^(?P<id>\d+)/$", "view", name="corp_memb.view"),
 )
