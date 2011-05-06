@@ -2,6 +2,7 @@ from haystack import indexes
 from haystack import site
 from invoices.models import Invoice
 
+
 class InvoiceIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     object_type = indexes.CharField(model_attr='object_type', null=True)
@@ -19,8 +20,8 @@ class InvoiceIndex(indexes.RealTimeSearchIndex):
     bill_to_email = indexes.CharField(model_attr='bill_to_email', default='')
     total = indexes.FloatField(model_attr='total')
     balance = indexes.FloatField(model_attr='balance')
-    
-    # authority fields
+
+    # TendenciBaseModel Fields
     create_dt = indexes.DateTimeField(model_attr='create_dt')
     creator = indexes.CharField(model_attr='creator', null=True)
     creator_username = indexes.CharField(model_attr='creator_username', default='')
@@ -28,14 +29,13 @@ class InvoiceIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username', default='')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
-    #tender_date = indexes.DateTimeField(model_attr='tender_date')
-    
-    #for primary key: needed for exclude list_tags
+
+    # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
     def get_updated_field(self):
         return 'update_dt'
-   
+
     def prepare_object_type(self, obj):
         myobj = obj.get_object()
         if myobj:

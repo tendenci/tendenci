@@ -12,5 +12,5 @@ class ObjectPermission(models.Model):
     codename = models.CharField(max_length=255)
     object_id = models.IntegerField()
     create_dt = models.DateTimeField(auto_now_add=True)
-    
+
     objects = ObjectPermissionManager()
