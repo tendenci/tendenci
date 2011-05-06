@@ -4,14 +4,14 @@ from haystack import indexes
 from haystack import site
 from forms_builder.forms.models import Form
 
+
 class FormsIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-    
     title = indexes.CharField(model_attr='title')
     intro = indexes.CharField(model_attr='intro')
     response = indexes.CharField(model_attr='response')
 
-    # authority fields
+    # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
@@ -24,8 +24,8 @@ class FormsIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
-    
-    #for primary key: needed for exclude list_tags
+
+    # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
     def get_updated_field(self):
@@ -42,5 +42,5 @@ class FormsIndex(indexes.RealTimeSearchIndex):
         response = strip_tags(response)
         response = strip_entities(response)
         return response
-        
+
 site.register(Form, FormsIndex)
