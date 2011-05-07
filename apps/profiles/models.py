@@ -77,9 +77,6 @@ class Profile(TendenciBaseModel):
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=False)
     original_username = models.CharField(max_length=50)
     
-    #facebook fields
-    facebook_id = models.IntegerField(blank=True, null=True)
-    
     objects = ProfileManager()
     
     def __unicode__(self):
