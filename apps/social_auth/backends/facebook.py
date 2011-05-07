@@ -102,7 +102,7 @@ class FacebookAuth(BaseOAuth):
         """Return backend enabled status by checking Setting Model"""
         try:
             FACEBOOK_APP_ID = Setting.objects.get(name='facebook_app_id')
-            FACEBOOK_API_SECRET = Setting.objects.get(name='facebook_app_secret')
+            FACEBOOK_API_SECRET = Setting.objects.get(name='facebook_api_secret')
         except Setting.DoesNotExist:
             return False
         return True
