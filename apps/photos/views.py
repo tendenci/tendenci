@@ -20,7 +20,7 @@ from event_logs.models import EventLog
 #from photologue.models import *
 from photos.utils import dynamic_image
 from photos.search_indexes import PhotoSetIndex
-from photos.models import Image, Pool, PhotoSet
+from photos.models import Image, Pool, PhotoSet, AlbumCover
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 
 
@@ -479,7 +479,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
     """ change multiple photos with one "save button" click """
     photo_set = get_object_or_404(PhotoSet, id=photoset_id)
     if not photo_set.check_perm(request.user, 'photos.change_photoset'):
-        raise Http404
+        raise Http403
 
     PhotoFormSet = modelformset_factory(
         Image,
@@ -515,7 +515,25 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
                     'request': request,
                     'instance': photo,
                 })
-
+            
+            #set album cover if specified
+            chosen_cover_id = request.POST.get('album_cover', None)
+            print "chosen", chosen_cover_id
+            if chosen_cover_id:
+                #validate chosen cover
+                valid_cover = True
+                try:
+                    chosen_cover = photo_set.image_set.get(id=chosen_cover_id)
+                except Image.DoesNotExist:
+                    valid_cover = False
+                if valid_cover:
+                    try:
+                        cover = AlbumCover.objects.get(photoset=photo_set)
+                    except AlbumCover.DoesNotExist:
+                        cover = AlbumCover(photoset=photo_set)
+                    cover.photo = chosen_cover
+                    cover.save()
+            
             messages.add_message(request, messages.INFO, 'Photo changes saved')
             return HttpResponseRedirect(reverse('photoset_details', args=(photoset_id,)))  
 
@@ -537,12 +555,20 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     """ View photos in photo set """
 
     # check photo-set permissions
+    # ---> why use search? wouldn't a direct query be faster?
+    # ---> this also does not take into account the actual user permissions.
     photo_sets = PhotoSet.objects.search('id:%s' % id, user=request.user)
     if not photo_sets:
         raise Http404
-
     photo_set = photo_sets.best_match().object
     photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by("-update_dt")
+    
+    # code for non search dependent detail view
+    # --> currently incompatible with the template used
+    # photo_set = get_object_or_404(PhotoSet, id=id)
+    # if not has_perm(request.user,'photos.change_photoset',photo_set):
+    #     raise Http403
+    # photos = photo_set.image_set.all()
 
     EventLog.objects.log(**{
         'event_id' : 991500,
