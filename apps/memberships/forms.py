@@ -4,7 +4,9 @@ from uuid import uuid4
 from captcha.fields import CaptchaField
 from django.contrib.auth.models import User, AnonymousUser
 from django.forms.fields import CharField, ChoiceField
+from django.template.defaultfilters import slugify
 from django.forms.widgets import HiddenInput
+
 from haystack.query import SearchQuerySet
 from os.path import join
 from datetime import datetime
@@ -21,9 +23,10 @@ from tinymce.widgets import TinyMCE
 from perms.forms import TendenciBaseForm
 from models import MembershipType, Notice, App, AppEntry, AppField
 from fields import TypeExpMethodField, PriceInput
-from memberships.utils import new_mems_from_csv
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from memberships.models import AppFieldEntry
+from memberships.utils import import_csv
+
 from widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
 from corporate_memberships.models import CorporateMembership, AuthorizedDomain
 
@@ -576,11 +579,6 @@ class AppEntryForm(forms.ModelForm):
                 return self.cleaned_data["field_%s" % field.id]
         return None
 
-from memberships.utils import import_csv
-from django.template.defaultfilters import slugify
-
-
-IMPORT_PREKEY = 'membership.import'
 class CSVForm(forms.Form):
     """
     Map CSV import to Membership Application.
@@ -593,6 +591,7 @@ class CSVForm(forms.Form):
         dynamic fields are the csv import columns.
         """
         step_numeral, step_name = kwargs.pop('step', (None, None))
+        file_path = kwargs.pop('file_path', '')
 
         super(CSVForm, self).__init__(*args, **kwargs)
 
@@ -611,7 +610,8 @@ class CSVForm(forms.Form):
             Basic Form + Mapping Fields
             """
 
-            csv = import_csv('memberships_export.csv')
+            # file to make field-mapping form
+            csv = import_csv(file_path)
 
             choices = {}
             for column_name in csv[0].keys():
@@ -650,9 +650,6 @@ class CSVForm(forms.Form):
             """
             Basic Form: Application & File Uploader
             """
-            app = self.cleaned_data['app']
-            csv = self.cleaned_data['csv']
-
             return self.cleaned_data
 
         if step_numeral == 2:

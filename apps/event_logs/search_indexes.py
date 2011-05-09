@@ -2,6 +2,7 @@ from haystack import indexes
 from haystack import site
 from event_logs.models import EventLog
 
+
 class EventLogIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     create_dt = indexes.DateTimeField(model_attr='create_dt')
@@ -27,13 +28,13 @@ class EventLogIndex(indexes.RealTimeSearchIndex):
     http_user_agent = indexes.CharField(model_attr='http_user_agent', null=True)
     request_method = indexes.CharField(model_attr='request_method', null=True)
     query_string = indexes.CharField(model_attr='query_string', null=True)
-    robot = indexes.CharField(model_attr='robot', null=True) 
+    robot = indexes.CharField(model_attr='robot', null=True)
     create_dt = indexes.DateTimeField(model_attr='create_dt')
-  
-    #for primary key: needed for exclude list_tags
+
+    # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
     def get_updated_field(self):
         return 'create_dt'
-    
+
 site.register(EventLog, EventLogIndex)

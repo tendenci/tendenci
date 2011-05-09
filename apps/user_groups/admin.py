@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Add your admin site registrations here, eg.
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from user_groups.models import Group, GroupMembership
 from user_groups.forms import GroupAdminForm
 
