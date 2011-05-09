@@ -5,7 +5,7 @@ from django.utils.encoding import iri_to_uri
 from django.conf import settings
 
 from event_logs.models import EventLog
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from models import Staff, Position, Department, StaffFile
 from forms import StaffForm, FileForm
 

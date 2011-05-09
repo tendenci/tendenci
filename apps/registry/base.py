@@ -1,15 +1,12 @@
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 from django.contrib.admin import site as admin_site
-from django.contrib.admin import autodiscover
 from django.utils.translation import ugettext_lazy as _
 
 from registry.exceptions import *
 
 lazy_reverse = lazy(reverse, str)
 
-# load the apps that are in Django Admin
-autodiscover()
 
 class FieldDict(dict):
     """

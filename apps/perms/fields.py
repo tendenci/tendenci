@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape
 
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from user_groups.models import Group
 
 user_perm_options = {

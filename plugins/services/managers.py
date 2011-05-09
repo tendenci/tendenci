@@ -1,11 +1,12 @@
 from perms.managers import TendenciBaseManager
 from base.utils import now_localized
 
+
 class ServiceManager(TendenciBaseManager):
     def search(self, query=None, *args, **kwargs):
         """
-            Uses haystack to query resumes. 
-            Returns a SearchQuerySet
+        Uses haystack to query resumes.
+        Returns a SearchQuerySet
         """
         sqs = super(ServiceManager, self).search(query=None, *args, **kwargs)
         if self.user.is_anonymous():

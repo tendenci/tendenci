@@ -4,8 +4,10 @@ from datetime import datetime
 from django.conf import settings
 from django.utils import simplejson
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 from memberships.models import AppField, Membership, MembershipType
 from user_groups.models import GroupMembership
+
 
 def get_default_membership_fields(use_for_corp=False):
     json_file_path = os.path.join(settings.PROJECT_ROOT,
@@ -80,6 +82,10 @@ def get_corporate_membership_choices():
     return cm_list
     
 def import_csv(file):
+    """
+    Returns a list of dicts. Each dict represents
+    a foreign membership record.
+    """
     membership_csv = csv.reader(open(str(file), 'U'))
     headers = membership_csv.next()
     mems = list()
@@ -92,7 +98,7 @@ def import_csv(file):
 
 def new_mems_from_csv(file, app, creator_id):
     """
-        Creates new memberships based on a Tendenci 4 CSV file
+    Creates new memberships based on a Tendenci 4 CSV file
     """
     from django.db import IntegrityError
     from haystack.query import SearchQuerySet
@@ -144,44 +150,15 @@ def new_mems_from_csv(file, app, creator_id):
 
     return membership_set
 
-        # entry, is_created = AppEntry.objects.get_or_create(
-        #     app=app,
-        #     user=membership.user,
-        #     membership=membership,
-        #     entry_time=create_dt,
-        #     is_renewal=membership.renewal,
-        #     is_approved=True,
-        #     decision_dt=create_dt,
-        #     judge=membership.creator,
-        #     creator=membership.creator,
-        #     creator_username=membership.creator_username,
-        #     owner=membership.owner,
-        #     owner_username=membership.owner_username,
-        # )
+def is_import_valid(file_path):
+    """
+    Run import file against required files
+    'username' and 'membership-type' are required fields
+    """
+    memberships = import_csv(file_path)  # list of membership dicts
+    membership_keys = [slugify(m) for m in memberships[0].keys()]
+    required = ('username','membership_type')
+    requirements = [r in membership_keys for r in required]
 
-        # print membership,
-        # if membership_sqs: print '(existed)', 
-        # else: print '(created)',
-        # print membership.subscribe_dt
+    return all(requirements)
 
-
-
-        # try:
-        #     mem_type = MembershipType.objects.get(name=m['membershiptype'])
-        #     user = User.objects.get(id=m['userid'])
-
-        #     # group_membership = GroupMembership()
-        #     # group_membership.group = mem_type.group
-        #     # group_membership.member = user
-        #     # group_membership.creator_id = creator.id
-        #     # group_membership.creator_username = creator.username
-        #     # group_membership.owner_id =  user.id
-        #     # group_membership.owner_username = user.username
-        #     # group_membership.save()
-
-        #     print "membership", membership
-
-        # except:
-        #     import sys
-        #     print "error", sys.exc_info()[1]
-            
