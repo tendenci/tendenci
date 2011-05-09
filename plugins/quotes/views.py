@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from base.http import Http403
 from quotes.models import Quote
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from perms.utils import get_notice_recipients, has_perm
 from event_logs.models import EventLog
 

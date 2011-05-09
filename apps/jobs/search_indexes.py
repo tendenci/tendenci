@@ -3,7 +3,7 @@ from django.utils.html import strip_tags, strip_entities
 from haystack import indexes
 from haystack import site
 from jobs.models import Job
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from categories.models import Category
 
 
@@ -13,10 +13,9 @@ class JobIndex(indexes.RealTimeSearchIndex):
     description = indexes.CharField(model_attr='description')
     post_dt = indexes.DateTimeField(model_attr='post_dt', null=True)
     create_dt = indexes.DateTimeField(model_attr='create_dt')
-
     syndicate = indexes.BooleanField(model_attr='syndicate')
 
-    # authority fields
+    # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
@@ -30,17 +29,34 @@ class JobIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
 
-    who_can_view = indexes.CharField()
+    # permission fields
+    users_can_view = indexes.MultiValueField()
+    groups_can_view = indexes.MultiValueField()
 
+    # categories
     category = indexes.CharField()
     sub_category = indexes.CharField()
+
+    # RSS fields
     can_syndicate = indexes.BooleanField()
-    
-    #for primary key: needed for exclude list_tags
+
+    # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
     def get_updated_field(self):
         return 'update_dt'
+
+    def prepare_description(self, obj):
+        description = obj.description
+        description = strip_tags(description)
+        description = strip_entities(description)
+        return description
+
+    def prepare_users_can_view(self, obj):
+        return ObjectPermission.objects.users_with_perms('jobs.view_job', obj)
+
+    def prepare_groups_can_view(self, obj):
+        return ObjectPermission.objects.groups_with_perms('jobs.view_job', obj)
 
     def prepare_category(self, obj):
         category = Category.objects.get_for_object(obj, 'category')
@@ -57,21 +73,5 @@ class JobIndex(indexes.RealTimeSearchIndex):
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view and obj.syndicate \
                 and obj.status == 1 and obj.status_detail == 'active'
-
-    def prepare_who_can_view(self, obj):
-        users = ObjectPermission.objects.who_has_perm('jobs.view_job', obj)
-        user_list = []
-        if users:
-            for user in users:
-                user_list.append(user.username)
-            return ','.join(user_list)
-        else:
-            return ''
-
-    def prepare_description(self, obj):
-        description = obj.description
-        description = strip_tags(description)
-        description = strip_entities(description)
-        return description
 
 site.register(Job, JobIndex)

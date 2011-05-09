@@ -246,6 +246,25 @@ def edit(request, id, template="corporate_memberships/edit.html"):
 
 
 
+@login_required
+def renew_conf(request, id, template="corporate_memberships/renew_conf.html"):
+    corporate_membership = get_object_or_404(CorporateMembership, id=id)
+    
+    if not has_perm(request.user,'corporate_memberships.change_corporatemembership',corporate_membership):
+        if not corporate_membership.allow_edit_by(request.user):
+            raise Http403
+        
+    user_is_admin = is_admin(request.user)
+    
+    corp_app = corporate_membership.corp_app
+    
+    context = {"corporate_membership": corporate_membership, 
+               'corp_app': corp_app,
+               }
+    return render_to_response(template, context, RequestContext(request))
+    
+    
+
 def view(request, id, template="corporate_memberships/view.html"):
     """
         view a corporate membership

@@ -1,4 +1,6 @@
+import os
 import hashlib
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -10,12 +12,11 @@ from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from event_logs.models import EventLog
 from memberships.models import App, AppEntry, Notice
-from perms.models import ObjectPermission
 from base.http import Http403
 
 from memberships.models import Membership, MembershipType, Notice
 from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm
-from memberships.utils import new_mems_from_csv
+from memberships.utils import new_mems_from_csv, is_import_valid
 
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
@@ -493,6 +494,7 @@ def membership_import(request, step=None):
     """
     Membership Import Wizard: Walks you through a series of steps to upload memberships.
     """
+    from files.models import File
 
     if not is_admin(request.user):
         raise Http403
@@ -506,21 +508,25 @@ def membership_import(request, step=None):
         template_name = 'memberships/import-upload-file.html'
         if request.method == 'POST':
 
-            print 'step1', step
             form = CSVForm(request.POST, request.FILES, step=step)
             if form.is_valid():
                 cleaned_data = form.save(step=step)
-
                 app = cleaned_data['app']
-                csv = cleaned_data['csv']
 
-                # store app
+                # check import requirements
+                saved_files = File.objects.save_files_for_instance(request, Membership)
+                file_path = os.path.join('site_media/media', str(saved_files[0].file))
+                valid_import = is_import_valid(file_path)
+
+                # build memberships
+                memberships = new_mems_from_csv(file_path, app, request.user.pk)
+
+                # store session info
                 request.session['membership.import.app'] = app
-
-                # store memberships
-                memberships = new_mems_from_csv(csv, app, request.user.pk)
+                request.session['membership.import.file_path'] = file_path
                 request.session['membership.import.memberships'] = memberships
 
+                # move to next wizard page
                 return redirect('membership_import_map_fields')
 
         else:  # if not POST
@@ -531,15 +537,16 @@ def membership_import(request, step=None):
 
     if step_numeral == 2:  # map-fields
         template_name = 'memberships/import-map-fields.html'
+        file_path = request.session.get('membership.import.file_path')
+
         if request.method == 'POST':
-            form = CSVForm(request.POST, request.FILES, step=step)
+            form = CSVForm(request.POST, request.FILES, step=step, file_path=file_path)
             if form.is_valid():
                 cleaned_data = form.save(step=step)
                 request.session['membership.import.fields'] = cleaned_data
                 return redirect('membership_import_preview')
         else:  # if not POST
-            print 'step2', step
-            form = CSVForm(step=step)
+            form = CSVForm(step=step, file_path=file_path)
             return render_to_response(template_name, {'form':form,}, 
                 context_instance=RequestContext(request))
 

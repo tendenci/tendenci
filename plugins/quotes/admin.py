@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from event_logs.models import EventLog
-from perms.models import ObjectPermission
+from perms.object_perms import ObjectPermission
 from quotes.models import Quote
 from quotes.forms import QuoteForm
 
