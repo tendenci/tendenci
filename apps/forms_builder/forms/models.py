@@ -33,6 +33,10 @@ FIELD_CHOICES = (
 
 FIELD_FUNCTIONS = (
     ("GroupSubscription", _("Subscribe to Group")),
+    ("FirstNameEmail", _("Recipient First Name")),
+    ("LastNameEmail", _("Recipient Last Name")),
+    ("FullNameEmail", _("Recipient Full Name")),
+    ("PhoneEmail", _("Recipient Phone")),
 )
 
 class Form(TendenciBaseModel):
@@ -122,6 +126,7 @@ class Field(models.Model):
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
+    position = models.PositiveIntegerField(_('position'), default=0)
         
     objects = FieldManager()
 

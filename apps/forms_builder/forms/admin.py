@@ -29,6 +29,7 @@ class FieldAdmin(admin.TabularInline):
     model = Field    
     form = FormForField
     extra = 0
+    ordering = ("position",)
 
 class FormAdmin(admin.ModelAdmin):
 
