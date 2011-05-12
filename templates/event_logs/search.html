@@ -53,14 +53,14 @@
                     		<td class="el-sh-user">
                             	User: <a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
                                 <a href="{% url event_log.search %}?q={{ event_log.username|urlencode }}">
-                                	<img border="0" src="{{ STATIC_URL }}tresources/en/images/icons/crosscheck12x12.gif" />
+                                	<img border="0" src="{{ STATIC_URL }}images/icons/crosscheck12x12.gif" />
                                 </a>
                             </td>
                         {% else %}
                         	<td class="el-sh-user">
                             	User: {{ event_log.username }}
                                 <a href="{% url event_log.search %}?q={{ event_log.username }}">
-                                    <img border="0" src="{{ STATIC_URL }}tresources/en/images/icons/crosscheck12x12.gif" />
+                                    <img border="0" src="{{ STATIC_URL }}images/icons/crosscheck12x12.gif" />
                                 </a>
                             </td>
                        	{% endif %}
@@ -113,7 +113,7 @@
                         </tr>
                     	<tr>
                      	  <td>
-                     	  	<img height="12" width="12" alt="Cookie" src="{{ STATIC_URL }}/tresources/en/images/icons/cookie12x12.gif">
+                     	  	<img height="12" width="12" alt="Cookie" src="{{ STATIC_URL }}images/icons/cookie12x12.gif">
                             {% if event_log.session_id %}
                           	<a href="{% url event_log.search %}?q={{ event_log.session_id }}">
                             	{{ event_log.session_id }}

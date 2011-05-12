@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from haystack.query import SearchQuerySet
 from perms.utils import is_admin
 
+
 class FormManager(Manager):
     """
     Only show published forms for non-staff users.
@@ -22,7 +23,7 @@ class FormManager(Manager):
         user = kwargs.get('user', None)
 
         # check to see if there is impersonation
-        if hasattr(user,'impersonated_user'):
+        if hasattr(user, 'impersonated_user'):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
 

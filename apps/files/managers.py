@@ -1,20 +1,31 @@
+import os
+import re
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
 from haystack.query import SearchQuerySet
-import re
+from settings import MEDIA_ROOT
 
 def save_to_disk(f, instance):
-    import os
-    from settings import MEDIA_ROOT
+    """
+    Takes file object and instance (or model).
+    Returns back relative path of file.
+    """
 
     file_name = re.sub(r'[^a-zA-Z0-9._]+', '-', f.name)
 
+    # make dir with app and module name
     relative_directory = os.path.join(
         'files',
         instance._meta.app_label,
         instance._meta.module_name,
-        unicode(instance.pk),
     )
+
+    # make directory w/ pk
+    if isinstance(instance.pk, long):
+        relative_directory = os.path.join(
+            relative_directory, 
+            unicode(instance.pk),
+        )
 
     absolute_directory = os.path.join(MEDIA_ROOT, relative_directory)
 
@@ -74,6 +85,10 @@ class FileManager(Manager):
             # update file record; or create new file record
             # ----------------------------------------------
 
+            instance_pk = None
+            if isinstance(instance.pk, long):
+                instance_pk = instance.pk
+
             try:
                 file = self.get(file=file_path)
                 file.name = file.name
@@ -84,7 +99,7 @@ class FileManager(Manager):
                     'file':file_path,
                     'name':file.name,
                     'content_type':ContentType.objects.get_for_model(instance),
-                    'object_id':instance.pk,
+                    'object_id':instance_pk,
                     'creator':request.user,
                     'creator_username':request.user.username,
                     'owner':request.user,

@@ -1,1 +1,11 @@
-{% extends "base-wide.html" %}
+{% extends "base.html" %}
+
+{% block body_ids %}editor{% endblock body_ids %}
+
+{% block html_body %}
+<div id="container">
+    <div id="body">
+    {% block body %}{% endblock %}
+    </div>
+</div>
+{% endblock %}
