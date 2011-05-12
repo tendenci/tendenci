@@ -10,8 +10,7 @@ from django.forms.util import ErrorList
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, \
-    TypeColorSet, Registrant, GroupRegistrationConfiguration, \
-    SpecialPricing
+    TypeColorSet, Registrant, RegConfPricing
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
@@ -20,6 +19,7 @@ from emails.models import Email
 from form_utils.forms import BetterModelForm
 
 from fields import Reg8nDtField, Reg8nDtWidget
+
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -30,6 +30,7 @@ class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
     def __getitem__(self, idx):
         choice = self.choices[idx] # Let the IndexError propogate
         return RadioImageInput(self.name, self.value, self.attrs.copy(), choice, idx)
+
 
 class RadioImageInput(forms.widgets.RadioInput):
 
@@ -119,8 +120,6 @@ class EventForm(TendenciBaseForm):
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
 
-
-
 class TypeChoiceField(forms.ModelChoiceField):
 
     def __init__(self, queryset, empty_label=u"---------", cache_choices=False,
@@ -176,7 +175,7 @@ class SponsorForm(forms.ModelForm):
         model = Sponsor 
 
 
-class SpeakerForm(forms.ModelForm):
+class SpeakerForm(BetterModelForm):
     label = 'Speaker'
     file = forms.FileField(required=False)
 
@@ -188,6 +187,16 @@ class SpeakerForm(forms.ModelForm):
             'file',
             'description',
         )
+
+        fieldsets = [('Speaker', {
+          'fields': ['name',
+                    'file',
+                    'description'
+                    ],
+          'legend': '',
+          'classes': ['boxy-grey'],
+          })
+        ]
 
 
 class OrganizerForm(forms.ModelForm):
@@ -201,9 +210,59 @@ class OrganizerForm(forms.ModelForm):
             'description',
         )
 
+
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
+
+
+class Reg8nConfPricingEditForm(BetterModelForm):
+    label = 'Pricing'
+    early_dt = SplitDateTimeField(label=_('Early Date/Time'))
+    regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
+    late_dt = SplitDateTimeField(label=_('Late Date/Time'))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'))
+
+    reg8n_dt_price = Reg8nDtField(label=_('Pricing and Times'), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(Reg8nConfPricingEditForm, self).__init__(*args, **kwargs)
+        self.fields['reg8n_dt_price'].build_widget_reg8n_dict(*args, **kwargs)
+
+    def clean(self):
+        early_price = self.cleaned_data.get('early_price') or 0
+        regular_price = self.cleaned_data.get('regular_price') or 0
+        late_price = self.cleaned_data.get('late_price') or 0
+
+        return self.cleaned_data
+
+    class Meta:
+        model = RegistrationConfiguration
+
+        field = [
+            'title',
+            'quantity',
+            'group',
+            'early_price',
+            'regular_price',
+            'late_price',
+            'early_dt',
+            'regular_dt',
+            'late_dt',
+            'end_dt'           
+         ]
+
+        fieldsets = [('Registration Pricing', {
+          'fields': ['title',
+                    'quantity',
+                    'group',
+                    'reg8n_dt_price'
+                    ],
+          'legend': '',
+          'classes': ['boxy-grey'],
+          })
+        ]         
+
 
 class Reg8nEditForm(BetterModelForm):
     label = 'Registration'
@@ -217,49 +276,20 @@ class Reg8nEditForm(BetterModelForm):
         widget=forms.CheckboxSelectMultiple(),
         initial=[1,2,3]) # first three items (inserted via fixture)
 
-    early_dt = SplitDateTimeField(label=_('Early Date/Time'))
-    regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
-    late_dt = SplitDateTimeField(label=_('Late Date/Time'))
-    end_dt = SplitDateTimeField(label=_('End Date/Time'))
-    
-    reg8n_dt_price = Reg8nDtField(label=_('Pricing and Times'), required=False)
-
-    def clean(self):
-
-        early_price = self.cleaned_data.get('early_price') or 0
-        regular_price = self.cleaned_data.get('regular_price') or 0
-        late_price = self.cleaned_data.get('late_price') or 0
-
-        # if price is zero
-        if sum([early_price, regular_price, late_price]) == 0:
-            # remove payment_method error
-            if "payment_method" in self._errors:
-                self._errors.pop("payment_method")
-
-        return self.cleaned_data
-
     class Meta:
         model = RegistrationConfiguration
 
         fields = (
-            'payment_method',
-            'early_price',
-            'regular_price',
-            'late_price',
-            'is_guest_price',
-            'payment_required',
-            'early_dt',
-            'regular_dt',
-            'late_dt',
-            'end_dt',
             'enabled',
             'limit',
+            'is_guest_price',
+            'payment_method',
+            'payment_required',
         )
 
         fieldsets = [('Registration Configuration', {
           'fields': ['enabled',
                     'limit',
-                    'reg8n_dt_price',
                     'is_guest_price',
                     'payment_method',
                     'payment_required',
@@ -268,101 +298,6 @@ class Reg8nEditForm(BetterModelForm):
           })
         ]
 
-    def __init__(self, *args, **kwargs):
-        super(Reg8nEditForm, self).__init__(*args, **kwargs)
-        self.fields['reg8n_dt_price'].build_widget_reg8n_dict(*args, **kwargs)
-        
-class GroupReg8nEditForm(BetterModelForm):
-    label = 'Group Registration'
-    
-    early_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
-    regular_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
-    late_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
-    early_dt = SplitDateTimeField(label=_('Early Date/Time'))
-    regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
-    late_dt = SplitDateTimeField(label=_('Late Date/Time'))
-    end_dt = SplitDateTimeField(label=_('End Date/Time'))
-    
-    def clean(self):
-        
-        early_price = self.cleaned_data.get('early_price') or 0
-        regular_price = self.cleaned_data.get('regular_price') or 0
-        late_price = self.cleaned_data.get('late_price') or 0
-        
-        # if price is zero
-        if sum([early_price, regular_price, late_price]) == 0:
-            # remove payment_method error
-            if "payment_method" in self._errors:
-                self._errors.pop("payment_method")
-        
-        return self.cleaned_data
-        
-    class Meta:
-        model = GroupRegistrationConfiguration
-        
-        fields = (
-            'group',
-            'early_price',
-            'regular_price',
-            'late_price',
-            'early_dt',
-            'regular_dt',
-            'late_dt',
-            'end_dt',
-        )
-        
-        widgets = {
-            'early_price': forms.TextInput(attrs={'class':'short_text_input'}),
-            'regular_price': forms.TextInput(attrs={'class':'short_text_input'}),
-            'late_price': forms.TextInput(attrs={'class':'short_text_input'}),
-        }
-        
-class SpecialPricingForm(BetterModelForm):
-    label = 'Special Registration'
-    
-    early_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
-    regular_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
-    late_price = forms.DecimalField(widget=forms.TextInput(attrs={'class':'short_text_input'}))
-    early_dt = SplitDateTimeField(label=_('Early Date/Time'))
-    regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
-    late_dt = SplitDateTimeField(label=_('Late Date/Time'))
-    end_dt = SplitDateTimeField(label=_('End Date/Time'))
-    
-    def clean(self):
-        
-        early_price = self.cleaned_data.get('early_price') or 0
-        regular_price = self.cleaned_data.get('regular_price') or 0
-        late_price = self.cleaned_data.get('late_price') or 0
-        
-        # if price is zero
-        if sum([early_price, regular_price, late_price]) == 0:
-            # remove payment_method error
-            if "payment_method" in self._errors:
-                self._errors.pop("payment_method")
-        
-        return self.cleaned_data
-        
-    class Meta:
-        model = SpecialPricing
-        
-        fields = (
-            'title',
-            'group',
-            'quantity',
-            'early_price',
-            'regular_price',
-            'late_price',
-            'early_dt',
-            'regular_dt',
-            'late_dt',
-            'end_dt',
-        )
-        
-        widgets = {
-            'early_price': forms.TextInput(attrs={'class':'short_text_input'}),
-            'regular_price': forms.TextInput(attrs={'class':'short_text_input'}),
-            'late_price': forms.TextInput(attrs={'class':'short_text_input'}),
-        }
 
 class Reg8nForm(forms.Form):
     """
@@ -412,7 +347,8 @@ class Reg8nForm(forms.Form):
             raise forms.ValidationError("URL's and Emails are not allowed in the name field")
 
         return data
-    
+
+
 class RegistrationForm(forms.Form):
     """
     Registration form - not include the registrant.
@@ -447,7 +383,8 @@ class RegistrationForm(forms.Form):
             raise forms.ValidationError("URL's and Emails are not allowed in the name field")
 
         return data
-    
+
+
 class RegistrantForm(forms.Form):
     """
     Registrant form.
@@ -493,14 +430,15 @@ class RegistrantForm(forms.Form):
     def clean_email(self):
         # check if user by this email has already registered
         data = self.cleaned_data['email']
-        if data.strip() <> '':
+        if data.strip() != '':
             registrants = Registrant.objects.filter(email=data)
             for registrant in registrants:
                 if registrant.registration.event.id == self.event.id:
                     raise forms.ValidationError("User by this email address has already registered.")
 
         return data
-  
+
+
 # extending the BaseFormSet because i want to pass the event obj 
 # but the BaseFormSet doesn't accept extra parameters 
 class RegistrantBaseFormSet(BaseFormSet):
@@ -534,9 +472,8 @@ class RegistrantBaseFormSet(BaseFormSet):
         form = self.form(**defaults)
         self.add_fields(form, i)
         return form
-        
+
     
-                
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'}, 
