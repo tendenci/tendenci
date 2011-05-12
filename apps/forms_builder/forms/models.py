@@ -33,10 +33,10 @@ FIELD_CHOICES = (
 
 FIELD_FUNCTIONS = (
     ("GroupSubscription", _("Subscribe to Group")),
-    ("FirstNameEmail", _("Recipient First Name")),
-    ("LastNameEmail", _("Recipient Last Name")),
-    ("FullNameEmail", _("Recipient Full Name")),
-    ("PhoneEmail", _("Recipient Phone")),
+    ("EmailFirstName", _("Email First Name")),
+    ("EmailLastName", _("Email Last Name")),
+    ("EmailFullName", _("Email Full Name")),
+    ("EmailPhoneNumber", _("Email Phone Number")),
 )
 
 class Form(TendenciBaseModel):
@@ -112,6 +112,14 @@ class FieldManager(models.Manager):
 class Field(models.Model):
     """
     A field for a user-built form.
+    'field_function' has the following options:
+    "GroupSubscription" 
+    - Subscribes form entries to the group specified
+    - Required to be a BooleanField
+    "EmailFirstName", "EmailLastName", "EmailPhoneNumber", "EmailFullName"
+    - Markers for specific fields that need to be referenced in emails
+    - Required to be a CharField
+    - Includes their respective values to the email's subject
     """
     
     form = models.ForeignKey("Form", related_name="fields")
@@ -202,7 +210,10 @@ class FormEntry(models.Model):
                     2) use the labels to identify the name.
             We might need a better solution because this will not work 
             if the form is not in English, or labels for names are not 
-            'first name', 'last name' or 'name'. 
+            'first name', 'last name' or 'name'.
+            Update: You can now use the special functions that start with
+            "Email" to mark fields you need for this method 
+            instead of relying on the label as a marker.
         """
         field_entries = self.fields.all()
         first_name = ""
@@ -228,6 +239,28 @@ class FormEntry(models.Model):
                 [name, domain] = email.split('@')
             
         return (name, email)
+        
+    def get_value_of(self, field_function):
+        """
+        Returns the value of the a field entry based 
+        on the field_function specified
+        """
+        for entry in self.fields.all():
+            if entry.field.field_function == field_function:
+                return entry.value
+        return ''
+        
+    def get_first_name(self):
+        return self.get_value_of("EmailFirstName")
+        
+    def get_last_name(self):
+        return self.get_value_of("EmailLastName")
+        
+    def get_full_name(self):
+        return self.get_value_of("EmailFullName")
+        
+    def get_phone_number(self):
+        return self.get_value_of("EmailPhoneNumber")
     
 class FieldEntry(models.Model):
     """
