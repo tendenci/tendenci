@@ -203,6 +203,7 @@ $(document).ready(function(){
     // hide the delete link if it's an add page
     var href = window.location.href;
     if (href.indexOf('events/add') > -1) {
+        form_set_funcs.find('div.formset-add').show();
         form_set_funcs.find('div.formset-delete').hide();
     }
 
