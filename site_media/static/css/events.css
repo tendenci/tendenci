@@ -194,68 +194,25 @@ div.id_end_dt .field input#id_end_dt_1 {
 	width: 80px;
 }
 
-/* id_regconf-early_dt */
-div.forms div.form-field 
-div.id_regconf-early_dt .field input {
-	margin: 0 5px 0 0;
-	width: 18%;
-}
-div.forms div.form-field 
-div.id_regconf-early_dt .field input#id_regconf-early_dt_1 {
-	width: 80px;
-}
-
-/* id_regconf-regular_dt */
-div.forms div.form-field 
-div.id_regconf-regular_dt .field input {
-	margin: 0 5px 0 0;
-	width: 18%;
-}
-div.forms div.form-field 
-div.id_regconf-regular_dt .field input#id_regconf-regular_dt_1 {
-	width: 80px;
-}
-
-/* id_regconf-late_dt */
-div.forms div.form-field 
-div.id_regconf-late_dt .field input {
-	margin: 0 5px 0 0;
-	width: 18%;
-}
-div.forms div.form-field 
-div.id_regconf-late_dt .field input#id_regconf-late_dt_1 {
-	width: 80px;
-}
-
-/* id_regconf-late_dt */
-div.forms div.form-field
-div.id_regconf-end_dt .field input {
-	margin: 0 5px 0 0;
-	width: 18%;
-}
-div.forms div.form-field
-div.id_regconf-end_dt .field input#id_regconf-end_dt_1 {
-	width: 80px;
-}
-
 div.forms div.form-field .field input.datepicker,
 div.forms div.form-field .field input.timepicker {
-    width: 120px;
+	margin: 0 5px 0 0;
+    width: 90px;
 }
 
 div.forms div.form-field .field input.reg8n_price {
     width: 80px;
 }
 
-input#id_regconf-early_price {
+div.forms div.form-field .field input[name*='early_price'] {
 	width: 100px;	
 }
 
-input#id_regconf-regular_price {
+div.forms div.form-field .field input[name*='regular_price'] {
 	width: 100px;	
 }
 
-input#id_regconf-late_price {
+div.forms div.form-field .field input[name*='late_price'] {
 	width: 100px;	
 }
 

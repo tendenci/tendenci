@@ -36,6 +36,7 @@ class TypeColorSet(models.Model):
     def __unicode__(self):
         return '%s #%s' % (self.pk, self.bg_color)
 
+
 class Type(models.Model):
     
     """
@@ -92,6 +93,7 @@ class Place(models.Model):
 
     def city_state(self):
         return [s for s in (self.city, self.state) if s]
+
 
 class Registrant(models.Model):
     """
@@ -382,17 +384,7 @@ class RegistrationConfiguration(models.Model):
     """
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
-    payment_method = models.ManyToManyField('PaymentMethod')
-    
-    early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
-    regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
-    late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
-    
-    early_dt = models.DateTimeField(_('Early Registration Starts'))
-    regular_dt = models.DateTimeField(_('Regular Registration Starts'))
-    late_dt = models.DateTimeField(_('Late Registration Starts'))
-    end_dt = models.DateTimeField(_('Registration Ends'), default=0)
-    
+    payment_method = models.ManyToManyField('PaymentMethod')    
     payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
     
     limit = models.IntegerField(_('Registration Limit'), default=0)
@@ -403,120 +395,91 @@ class RegistrationConfiguration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
-    def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs):
+    #     super(self.__class__, self).__init__(*args, **kwargs)
 
-        if hasattr(self,'event'):
-        # registration_configuration might not be attached to an event yet
-            self.PERIODS = {
-                'early': (self.early_dt, self.regular_dt),
-                'regular': (self.regular_dt, self.late_dt),
-                'late': (self.late_dt, self.end_dt),
-            }
-        else:
-            self.PERIODS = None
+    #     if hasattr(self,'event'):
+    #     # registration_configuration might not be attached to an event yet
+    #         self.PERIODS = {
+    #             'early': (self.early_dt, self.regular_dt),
+    #             'regular': (self.regular_dt, self.late_dt),
+    #             'late': (self.late_dt, self.end_dt),
+    #         }
+    #     else:
+    #         self.PERIODS = None
 
-    def available(self):
-        if not self.enabled:
-            return False
+    # def available(self):
+    #     if not self.enabled:
+    #         return False
 
-        if hasattr(self, 'event'):
-            if datetime.now() > self.event.end_dt:
-                return False
+    #     if hasattr(self, 'event'):
+    #         if datetime.now() > self.event.end_dt:
+    #             return False
 
-        return True
+    #     return True
 
-    @property
-    def price(self):
-        price = 0.00
-        for period in self.PERIODS:
-            if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
-                price = self.price_from_period(period)
+    # @property
+    # def price(self):
+    #     price = 0.00
+    #     for period in self.PERIODS:
+    #         if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
+    #             price = self.price_from_period(period)
 
-        return price
+    #     return price
 
-    def price_from_period(self, period):
+    # def price_from_period(self, period):
 
-        if period in self.PERIODS:
-            return getattr(self, '%s_price' % period)
-        else: return None
+    #     if period in self.PERIODS:
+    #         return getattr(self, '%s_price' % period)
+    #     else: return None
 
-    @property
-    def is_open(self):
-        status = [
-            self.enabled,
-            self.within_time,
-        ]
-        return all(status)
+    # @property
+    # def is_open(self):
+    #     status = [
+    #         self.enabled,
+    #         self.within_time,
+    #     ]
+    #     return all(status)
 
-    @property
-    def within_time(self):
-        for period in self.PERIODS:
-            if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
-                return True
-        return False
+    # @property
+    # def within_time(self):
+    #     for period in self.PERIODS:
+    #         if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
+    #             return True
+    #     return False
 
-    @property
-    def can_pay_online(self):
-        """
-        Check online payment dependencies.
-        Return boolean.
-        """
-        has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
-        has_account = get_setting('site', 'global', 'merchantaccount') is not ''
-        has_api = settings.MERCHANT_LOGIN is not ''
+    # @property
+    # def can_pay_online(self):
+    #     """
+    #     Check online payment dependencies.
+    #     Return boolean.
+    #     """
+    #     has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
+    #     has_account = get_setting('site', 'global', 'merchantaccount') is not ''
+    #     has_api = settings.MERCHANT_LOGIN is not ''
 
-        return all([has_method, has_account, has_api])
+    #     return all([has_method, has_account, has_api])
 
-class GroupRegistrationConfiguration(models.Model):
+
+class RegConfPricing(models.Model):
     """
-    Event registration for specific groups
+    Registration configuration pricing
     """
-    
-    config = models.ForeignKey(RegistrationConfiguration, null=True)
+    reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
 
-    group = models.ForeignKey(Group)
-    
-    early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
-    regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
-    late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
-
-    early_dt = models.DateTimeField(_('Early Registration Starts'))
-    regular_dt = models.DateTimeField(_('Regular Registration Starts'))
-    late_dt = models.DateTimeField(_('Late Registration Starts'))
-    end_dt = models.DateTimeField(_('Registration Ends'), default=0)
-    
-    create_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
-    
-    def __unicode__(self):
-        return self.group.name
-        
-class SpecialPricing(models.Model):
-    """
-    Event registration for special cases
-    """
-    
-    config = models.ForeignKey(RegistrationConfiguration, null=True)
-    
+    title = models.CharField(max_length=50, blank=True)
+    quantity = models.IntegerField(default=0, blank=True)
     group = models.ForeignKey(Group, blank=True, null=True)
-    quantity = models.IntegerField()
-    title = models.CharField(max_length=50)
-    
+
     early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
     regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
     late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
-
+    
     early_dt = models.DateTimeField(_('Early Registration Starts'))
     regular_dt = models.DateTimeField(_('Regular Registration Starts'))
     late_dt = models.DateTimeField(_('Late Registration Starts'))
     end_dt = models.DateTimeField(_('Registration Ends'), default=0)
-    
-    create_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
-    
-    def __unicode__(self):
-        return self.group.name
+
 
 class Payment(models.Model):
     """
@@ -524,6 +487,7 @@ class Payment(models.Model):
     Extends the registration model
     """
     registration = models.OneToOneField('Registration')
+
 
 class PaymentMethod(models.Model):
     """
@@ -537,27 +501,6 @@ class PaymentMethod(models.Model):
     def __unicode__(self):
         return self.label
 
-#class PaymentPeriod(models.Model):
-#    """
-#    Defines the time-range and price a registrant must pay.
-#    e.g. (early price, regular price, late price)
-#    """
-#    label = models.CharField(max_length=50)
-#    start_dt = models.DateTimeField()
-#    end_dt = models.DateTimeField()
-#    price = models.DecimalField(max_digits=21, decimal_places=2)
-#    registration_confirmation = models.ForeignKey('RegistrationConfiguration', related_name='payment_period')
-
-    # TODO: price per group
-    # anonymous (is not a group or is a dynamic group)
-    # registered (is not a group or is a dynamic group)
-#    anon_price = models.DecimalField(max_digits=21, decimal_places=2)
-#    auth_price = models.DecimalField(max_digits=21, decimal_places=2)
-#    group_price = models.ForeignKey('GroupPrice') # not the same as group-pricing
-
-#    def __unicode__(self):
-#        return self.label
-
 
 class Sponsor(models.Model):
     """
@@ -566,6 +509,7 @@ class Sponsor(models.Model):
     Sponsor can contribute to multiple events
     """
     event = models.ManyToManyField('Event')
+
 
 class Discount(models.Model):
     """
@@ -576,6 +520,7 @@ class Discount(models.Model):
     event = models.ForeignKey('Event')
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=50)
+
 
 class Organizer(models.Model):
     """
@@ -590,6 +535,7 @@ class Organizer(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class Speaker(models.Model):
     """
@@ -607,6 +553,7 @@ class Speaker(models.Model):
 
     def files(self):
         return File.objects.get_for_model(self)
+
 
 class Event(TendenciBaseModel):
     """
