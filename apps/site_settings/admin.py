@@ -5,6 +5,7 @@ class SettingAdmin(admin.ModelAdmin):
     list_display = ['name','label','value','scope','scope_category']
     search_fields = ['name','label']
     list_filter = ['scope_category']
+    
     fieldsets = (
         (None, {'fields': ('value',)}),
     )    
@@ -15,4 +16,9 @@ class SettingAdmin(admin.ModelAdmin):
             return qs
         return qs.filter(client_editable=True)
     
-admin.site.register(Setting)
+class SettingAdminDev(admin.ModelAdmin):
+    list_display = ['name','label','value','scope','scope_category']
+    search_fields = ['name','label']
+    list_filter = ['scope_category']
+    
+admin.site.register(Setting, SettingAdminDev)
