@@ -19,3 +19,8 @@
 #registration_form .required {
 	font-weight: bold;
 }
+
+#login-form { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+#login-form label { display: inline-block; width: 120px; }
+#login-form input[type="text"], #login-form input[type="password"] { padding: 4px; }
+#login-form #id_username { width: 200px; }
