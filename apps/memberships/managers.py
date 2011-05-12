@@ -9,7 +9,7 @@ from perms.managers import TendenciBaseManager
 from perms.utils import is_admin
 
 
-class MemberAppManager(Manager):
+class MemberAppManager(TendenciBaseManager):
     def search(self, query=None, *args, **kwargs):
         """
         Uses haystack to query articles.
@@ -17,7 +17,7 @@ class MemberAppManager(Manager):
         """
         # update what the status detail should be instead of active
         kwargs.update({'status_detail': 'published'})
-        return super(EventManager, self).search(query=query, *args, **kwargs)
+        return super(MemberAppManager, self).search(query=query, *args, **kwargs)
 
 
 class MemberAppEntryManager(TendenciBaseManager):
