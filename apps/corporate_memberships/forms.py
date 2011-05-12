@@ -299,6 +299,19 @@ class RosterSearchForm(forms.Form):
     q = forms.CharField(max_length=100, required=False)
     
     
+class CorpMembRenewForm(forms.ModelForm):
+    members = forms.ChoiceField()
+    
+    class Meta:
+        model = CorporateMembership
+        fields = ('corporate_membership_type',
+                  'members',
+                  'payment_method')
+        
+    def __init__(self, *args, **kwargs):
+        super(CorpMembRenewForm, self).__init__(*args, **kwargs)
+    
+    
         
     
         

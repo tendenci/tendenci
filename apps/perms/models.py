@@ -30,4 +30,5 @@ class TendenciBaseModel(models.Model):
         return self._meta.module_name
                 
     class Meta:
-        abstract = True
+        abstract = True 
+
