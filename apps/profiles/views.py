@@ -70,7 +70,14 @@ def index(request, username='', template_name="profiles/index.html"):
     content_counts['total'] += inv_count
     
     # owners
-    additional_owners = ObjectPermission.objects.who_has_perm('profiles.change_profile', profile)
+    additional_owner_ids = ObjectPermission.objects.users_with_perms('profiles.change_profile', profile)
+    additional_owners = []
+    for id in additional_owner_ids:
+        try:
+            tmp_user = User.objects.get(pk=id)
+            additional_owners.append(tmp_user)
+        except User.DoesNotExist:
+            pass
     if additional_owners:
         if profile.owner in additional_owners:
             additional_owners.remove(profile.owner)

@@ -20,44 +20,44 @@
     background-repeat: no-repeat;
 }
 
-.t-iconrow a.add {background-image: url('/site_media/static/tresources/en/images/icons/add12x12.gif');}
-.t-iconrow a.breadcrumb {background-image: url('/site_media/static/tresources/en/tresources/en/images/icons/breadcrumb-12x12.gif');}
-.t-iconrow a.cart{background-image: url('/site_media/static/tresources/en/images/icons/cart12x12.gif');}
-.t-iconrow a.cctadmin{background-image: url('/site_media/static/tresources/en/images/icons/CCT_add12x12.gif');}
-.t-iconrow a.close{background-image: url('/site_media/static/tresources/en/images/icons/tickets/close12x12.gif');}
-.t-iconrow a.committees{background-image: url('/site_media/static/tresources/en/images/icons/joincommittees12x12.gif');}
-.t-iconrow a.compare {background-image: url('/site_media/static/tresources/en/images/icons/diff.gif');}
-.t-iconrow a.console {background-image: url('/site_media/static/tresources/en/images/icons/rygb12x12.gif');}
-.t-iconrow a.copy {background-image: url('/site_media/static/tresources/en/images/icons/clone12x12.gif');}
-.t-iconrow a.courses{background-image: url('/site_media/static/tresources/en/images/icons/course_attempt_add12x12.gif');}
-.t-iconrow a.delete {background-image: url('/site_media/static/tresources/en/images/icons/trash12x12.gif');}
-.t-iconrow a.designnotes {background-image: url('/site_media/static/tresources/en/images/icons/designnotes12x12.gif');}
-.t-iconrow a.directories{background-image: url('/site_media/static/tresources/en/images/icons/directory_add12x12.gif');}
-.t-iconrow a.donations{background-image: url('/site_media/static/tresources/en/images/icons/donation_add12x12.gif');}
-.t-iconrow a.edit {background-image: url('/site_media/static/tresources/en/images/icons/edit12x12.gif');}
-.t-iconrow a.emailfriend {background-image: url('/site_media/static/tresources/en/images/icons/email12x12.gif');}
-.t-iconrow a.fax{background-image: url('/site_media/static/tresources/en/images/icons/fax12x12.gif');}
-.t-iconrow a.firstresponder {background-image: url('/site_media/static/tresources/en/images/icons/firstresponder12x12-red.gif');}
-.t-iconrow a.history {background-image: url('/site_media/static/tresources/en/images/icons/history12x12.gif');}
-.t-iconrow a.icalendar{background-image: url('/site_media/static/tresources/en/images/icons/vcalendar12x12.gif');}
-.t-iconrow a.images{background-image: url('/site_media/static/tresources/en/images/icons/imageassign12x12.gif');}
-.t-iconrow a.interests{background-image: url('/site_media/static/tresources/en/images/icons/myinterests12x12.gif');}
-.t-iconrow a.invoices{background-image: url('/site_media/static/tresources/en/images/icons/cepricing12x12.gif');}
-.t-iconrow a.memberships{background-image: url('/site_media/static/tresources/en/images/icons/membership_add12x12.gif');}
-.t-iconrow a.metatags {background-image: url('/site_media/static/tresources/en/images/icons/meta12x12.gif');}
-.t-iconrow a.myevents{background-image: url('/site_media/static/tresources/en/images/icons/myevents12x12.gif');}
-.t-iconrow a.permissions{background-image: url('/site_media/static/tresources/en/images/icons/permissions12x12.gif');}
-.t-iconrow a.podcast {background-image: url('/site_media/static/tresources/en/images/icons/filetypes/mp3.gif');}
-.t-iconrow a.print {background-image: url('/site_media/static/tresources/en/images/icons/printer12x12.gif');}
+.t-iconrow a.add {background-image: url('/site_media/static/images/icons/add12x12.gif');}
+.t-iconrow a.breadcrumb {background-image: url('/site_media/static/images/icons/breadcrumb-12x12.gif');}
+.t-iconrow a.cart{background-image: url('/site_media/static/images/icons/cart12x12.gif');}
+.t-iconrow a.cctadmin{background-image: url('/site_media/static/images/icons/CCT_add12x12.gif');}
+.t-iconrow a.close{background-image: url('/site_media/static/images/icons/tickets/close12x12.gif');}
+.t-iconrow a.committees{background-image: url('/site_media/static/images/icons/joincommittees12x12.gif');}
+.t-iconrow a.compare {background-image: url('/site_media/static/images/icons/diff.gif');}
+.t-iconrow a.console {background-image: url('/site_media/static/images/icons/rygb12x12.gif');}
+.t-iconrow a.copy {background-image: url('/site_media/static/images/icons/clone12x12.gif');}
+.t-iconrow a.courses{background-image: url('/site_media/static/images/icons/course_attempt_add12x12.gif');}
+.t-iconrow a.delete {background-image: url('/site_media/static/images/icons/trash12x12.gif');}
+.t-iconrow a.designnotes {background-image: url('/site_media/static/images/icons/designnotes12x12.gif');}
+.t-iconrow a.directories{background-image: url('/site_media/static/images/icons/directory_add12x12.gif');}
+.t-iconrow a.donations{background-image: url('/site_media/static/images/icons/donation_add12x12.gif');}
+.t-iconrow a.edit {background-image: url('/site_media/static/images/icons/edit12x12.gif');}
+.t-iconrow a.emailfriend {background-image: url('/site_media/static/images/icons/email12x12.gif');}
+.t-iconrow a.fax{background-image: url('/site_media/static/images/icons/fax12x12.gif');}
+.t-iconrow a.firstresponder {background-image: url('/site_media/static/images/icons/firstresponder12x12-red.gif');}
+.t-iconrow a.history {background-image: url('/site_media/static/images/icons/history12x12.gif');}
+.t-iconrow a.icalendar{background-image: url('/site_media/static/images/icons/vcalendar12x12.gif');}
+.t-iconrow a.images{background-image: url('/site_media/static/images/icons/imageassign12x12.gif');}
+.t-iconrow a.interests{background-image: url('/site_media/static/images/icons/myinterests12x12.gif');}
+.t-iconrow a.invoices{background-image: url('/site_media/static/images/icons/cepricing12x12.gif');}
+.t-iconrow a.memberships{background-image: url('/site_media/static/images/icons/membership_add12x12.gif');}
+.t-iconrow a.metatags {background-image: url('/site_media/static/images/icons/meta12x12.gif');}
+.t-iconrow a.myevents{background-image: url('/site_media/static/images/icons/myevents12x12.gif');}
+.t-iconrow a.permissions{background-image: url('/site_media/static/images/icons/permissions12x12.gif');}
+.t-iconrow a.podcast {background-image: url('/site_media/static/images/icons/filetypes/mp3.gif');}
+.t-iconrow a.print {background-image: url('/site_media/static/images/icons/printer12x12.gif');}
 .t-iconrow a.recurring{background-image: url('/en/calendarevents/images/icons/recurring.gif');}
-.t-iconrow a.reporting{background-image: url('/site_media/static/tresources/en/images/icons/reports12x12.gif');}
-.t-iconrow a.rss {background-image: url('/site_media/static/tresources/en/images/icons/feed-icon-12x12.gif');}
-.t-iconrow a.shipping{background-image: url('/site_media/static/tresources/en/images/icons/shipping12x12.gif');}
-.t-iconrow a.trends {background-image: url('/site_media/static/tresources/en/images/icons/trendreport12x12.gif');}
-.t-iconrow a.upload {background-image: url('/site_media/static/tresources/en/images/icons/upload12x12.gif');}
-.t-iconrow a.usergroups{background-image: url('/site_media/static/tresources/en/images/icons/usergroups12x12.gif');}
-.t-iconrow a.vcard{background-image: url('/site_media/static/tresources/en/images/icons/vcard12x12.gif');}
-.t-iconrow a.xml{background-image: url('/site_media/static/tresources/en/images/icons/xml12x12.gif');}
+.t-iconrow a.reporting{background-image: url('/site_media/static/images/icons/reports12x12.gif');}
+.t-iconrow a.rss {background-image: url('/site_media/static/images/icons/feed-icon-12x12.gif');}
+.t-iconrow a.shipping{background-image: url('/site_media/static/images/icons/shipping12x12.gif');}
+.t-iconrow a.trends {background-image: url('/site_media/static/images/icons/trendreport12x12.gif');}
+.t-iconrow a.upload {background-image: url('/site_media/static/images/icons/upload12x12.gif');}
+.t-iconrow a.usergroups{background-image: url('/site_media/static/images/icons/usergroups12x12.gif');}
+.t-iconrow a.vcard{background-image: url('/site_media/static/images/icons/vcard12x12.gif');}
+.t-iconrow a.xml{background-image: url('/site_media/static/images/icons/xml12x12.gif');}
 .t-iconrow a.changepassword {background-image: url('/site_media/static/images/icons/password.png');}
 .t-iconrow a.addmember {background-image: url('/site_media/static/images/icons/add.png');}
 

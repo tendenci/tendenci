@@ -4,13 +4,14 @@ from haystack import indexes
 from haystack import site
 from photos.models import PhotoSet, Image
 
+
 class PhotoSetIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     name = indexes.CharField(model_attr='name')
     description = indexes.CharField(model_attr='description')
     update_dt = indexes.DateTimeField(model_attr='update_dt', null=True)
-    
-    # authority fields
+
+    # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
@@ -23,30 +24,30 @@ class PhotoSetIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
-    
-    # for rss
+
+    # RSS fields
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
-    
-    #for primary key: needed for exclude list_tags
+
+    # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
     def get_updated_field(self):
         return 'update_dt'
-    
-    def prepare_can_syndicate(self, obj):
-        return obj.allow_anonymous_view and obj.status==1 and obj.status_detail=='active'
-        
-    def prepare_syndicate_order(self, obj):
-        return obj.update_dt
-    
+
     def prepare_description(self, obj):
         description = obj.description
         description = strip_tags(description)
         description = strip_entities(description)
         return description
-    
-site.register(PhotoSet, PhotoSetIndex)
+
+    def prepare_can_syndicate(self, obj):
+        return obj.allow_anonymous_view and obj.status == 1 \
+        and obj.status_detail == 'active'
+
+    def prepare_syndicate_order(self, obj):
+        return obj.update_dt
+
 
 class PhotoIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
@@ -54,8 +55,8 @@ class PhotoIndex(indexes.RealTimeSearchIndex):
     caption = indexes.CharField(model_attr='caption')
     create_dt = indexes.DateTimeField(model_attr='create_dt')
     update_dt = indexes.DateTimeField(model_attr='update_dt')
-    
-    # authority fields
+
+    # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
@@ -69,26 +70,29 @@ class PhotoIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
 
-    # for rss
+    # RSS fields
     can_syndicate = indexes.BooleanField()
     order = indexes.DateTimeField()
-    
-    #for primary key: needed for exclude list_tags
+
+    # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
 
-    def get_updated_field(self):
-        return 'update_dt'
-
-    def prepare_can_syndicate(self, obj):
-        return obj.allow_anonymous_view and obj.status==1 and obj.status_detail=='active'
-        
-    def prepare_syndicate_order(self, obj):
-        return obj.update_dt
-    
     def prepare_caption(self, obj):
         caption = obj.caption
         caption = strip_tags(caption)
         caption = strip_entities(caption)
         return caption
-    
+
+    def get_updated_field(self):
+        return 'update_dt'
+
+    def prepare_can_syndicate(self, obj):
+        return obj.allow_anonymous_view and obj.status == 1 \
+         and obj.status_detail == 'active'
+
+    def prepare_syndicate_order(self, obj):
+        return obj.update_dt
+
+
+site.register(PhotoSet, PhotoSetIndex)
 site.register(Image, PhotoIndex)

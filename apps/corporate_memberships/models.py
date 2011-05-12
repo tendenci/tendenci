@@ -12,7 +12,7 @@ from tinymce import models as tinymce_models
 
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
-from memberships.models import MembershipType, App
+from memberships.models import MembershipType, App, Membership
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from corporate_memberships.managers import CorporateMembershipManager
 from perms.utils import is_admin
@@ -325,6 +325,19 @@ class CorporateMembershipArchive(models.Model):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
+        
+class CorpMembRenewEntry(models.Model):
+    corporate_membership = models.ForeignKey("CorporateMembership")
+    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    
+    create_dt = models.DateTimeField(auto_now_add=True)
+    creator = models.ForeignKey(User, null=True)
+    status_detail = models.CharField(max_length=50)
+    
+class IndivMembRenewEntry(models.Model):
+    corp_memb_renew_entry = models.ForeignKey("CorpMembRenewEntry")
+    membership = models.ForeignKey(Membership)
+    
     
 class CorpFieldEntry(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership", related_name="fields")

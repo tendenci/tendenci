@@ -42,8 +42,13 @@ class PhotoSet(TendenciBaseModel):
     def get_cover_photo(self, *args, **kwargs):
         """ get latest thumbnail url """
         default_cover = settings.STATIC_URL + "/images/default-photo.jpg"
-        try: cover_photo = self.image_set.latest('id').get_thumbnail_url()
-        except: cover_photo = default_cover
+        try:
+            cover_photo = AlbumCover.objects.get(photoset = self).photo.get_thumbnail_url()
+        except AlbumCover.DoesNotExist:
+            try:
+                cover_photo = self.image_set.latest('id').get_thumbnail_url()
+            except:
+                cover_photo = default_cover
         return cover_photo
 
     def check_perm(self, user, permission, *args, **kwargs):
@@ -178,3 +183,13 @@ class Pool(models.Model):
         unique_together = (('photo', 'content_type', 'object_id'),)
         verbose_name = _('pool')
         verbose_name_plural = _('pools')
+        
+class AlbumCover(models.Model):
+    """
+    model to mark a photo set's album cover
+    """
+    photoset = models.OneToOneField(PhotoSet)
+    photo = models.ForeignKey(Image)
+    
+    def __unicode__(self):
+        return self.photo.title
