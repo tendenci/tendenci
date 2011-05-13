@@ -40,5 +40,47 @@
         "scope_category": "memberships",
         "store": "1",
         "client_editable": "1"
+    },
+    {
+        "name": "profile_redirect",
+        "label": "Profile Redirect",
+        "description": "A global site setting for a url for users to redirect to when they first login. Site setting to redirect non-admin users to a specific page. Can be /dashboard, /profile, or a custom instruction page",
+        "data_type": "string",
+        "input_value": "",
+        "input_type": "text",
+        "value": "/dashboard",
+        "default_value": "/dashboard",
+        "scope": "site",
+        "scope_category": "global",
+        "store": "1",
+        "client_editable": "1"
+    },
+    {
+        "name": "facebook_api_secret",
+        "label": "Facebook API Secret",
+        "description": "Secret code for Facebook features.",
+        "data_type": "string",
+        "input_value": "",
+        "input_type": "text",
+        "value": "",
+        "default_value": "",
+        "scope": "module",
+        "scope_category": "users",
+        "store": "1",
+        "client_editable": "1"
+    },
+    {
+        "name": "facebook_app_id",
+        "label": "Facebook APP ID",
+        "description": "API ID for Facebook features.",
+        "data_type": "string",
+        "input_value": "",
+        "input_type": "text",
+        "value": "",
+        "default_value": "",
+        "scope": "module",
+        "scope_category": "users",
+        "store": "1",
+        "client_editable": "1"
     }
 ]
