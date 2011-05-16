@@ -524,6 +524,10 @@ class AppEntryForm(forms.ModelForm):
             self.fields[field_key] = field_class(**field_args)
             self.fields[field_key].css_classes = ' %s' % field.css_class
 
+            if field.field_type == 'date':
+                year = datetime.today().year
+                self.fields[field_key].widget.years = range(year-120, year+120)
+
         if app.use_captcha and not user.is_authenticated():
             self.fields['field_captcha'] = CaptchaField(**{
                 'label':'',
