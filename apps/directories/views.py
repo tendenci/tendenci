@@ -50,9 +50,10 @@ def index(request, slug=None, template_name="directories/view.html"):
         raise Http403
 
 def search(request, template_name="directories/search.html"):
-    get = dict(request.GET)
 
+    get = dict(request.GET)
     query = get.pop('q', [''])
+    get.pop('page', None)  # pop page query string out; page ruins pagination
     query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
     query = '%s %s' % (''.join(query), ' '.join(query_extra))
 
