@@ -89,6 +89,11 @@ class MembershipType(TendenciBaseModel):
     require_approval = models.BooleanField(_('Require Approval'), default=1)
     allow_renewal = models.BooleanField(_('Allow Renewal'), default=1)
     renewal = models.BooleanField(_('Renewal Only'), default=0)
+    renewal_require_approval = models.BooleanField(_('Renewal Requires Approval'), default=1)
+
+    # renew_approval_required
+    # join_approval_required
+
     order = models.IntegerField(_('Order'), default=0, 
         help_text='Types will be displayed in ascending order based on this field')
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
@@ -143,7 +148,9 @@ class MembershipType(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
     
-     
+
+
+
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
         """
         Calculate the expiration date - for join or renew (renewal=True)
@@ -666,6 +673,16 @@ class AppEntry(TendenciBaseModel):
     def email(self):
         """Get email string"""
         return self.get_field_value('email')
+
+    def approval_required(self):
+        join_approval_required = self.membership_type.require_approval
+        renew_approval_required = self.membership_type.renewal_require_approval
+
+        if self.user:
+            return renew_approval_required
+        else:
+            return join_approval_required
+
     
     @property
     def corporate_membership_id(self):
