@@ -11,7 +11,6 @@ urlpatterns = patterns("memberships.views",
 
     # import
     url(r"^import/$", "membership_import", name="membership_import"),
-
     url(r"^import/upload-file/$", "membership_import", kwargs={'step':(1,'upload-file')}, name="membership_import_upload_file"),
     url(r"^import/map-fields/$", "membership_import", kwargs={'step':(2,'map-fields')}, name="membership_import_map_fields"),
     url(r"^import/preview/$", "membership_import", kwargs={'step':(3,'preview')}, name="membership_import_preview"),
