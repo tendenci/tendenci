@@ -87,7 +87,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
         app = apps.best_match().object
     else:
         raise Http404
-    
+
     # if this app is for corporation individuals, redirect them to corp-pre page first.
     # from there, we can decide which corp they'll be in.
     is_corp_ind = False
@@ -116,31 +116,35 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
         corporate_membership = None
 
     user = request.user
-    membership = user.memberships.get_membership()
-    user_member_requirements = [
-        is_developer(request.user) == False,
-        is_admin(request.user) == False,
-        is_member(request.user) == True,
-    ]
 
     initial_dict = {}
+    if hasattr(user, 'memberships'):
+        membership = user.memberships.get_membership()
+        user_member_requirements = [
+            is_developer(request.user) == False,
+            is_admin(request.user) == False,
+            is_member(request.user) == True,
+        ]
 
-    # deny access to renew memberships
-    if all(user_member_requirements):
-        initial_dict = membership.get_app_initial()
-        if not membership.can_renew():
-            return render_to_response("memberships/applications/no-renew.html", {
-                "app": app, "user":user, "membership": membership}, 
-                context_instance=RequestContext(request))
+        # # deny access to renew memberships
+        # if all(user_member_requirements):
+        #     initial_dict = membership.get_app_initial()
+        #     if not membership.can_renew():
+        #         return render_to_response("memberships/applications/no-renew.html", {
+        #             "app": app, "user":user, "membership": membership}, 
+        #             context_instance=RequestContext(request))
 
-    pending_entries = request.user.appentry_set.filter(
-        is_approved__isnull = True,  # pending   
-    )
+    pending_entries = []
 
-    if request.user.memberships.get_membership():
-        pending_entries.filter(
-            entry_time__gte = request.user.memberships.get_membership().join_dt
+    if hasattr(user, 'appentry_set'):
+        pending_entries = request.user.appentry_set.filter(
+            is_approved__isnull = True,  # pending   
         )
+
+        if request.user.memberships.get_membership():
+            pending_entries.filter(
+                entry_time__gte = request.user.memberships.get_membership().join_dt
+            )
 
     app_entry_form = AppEntryForm(
             app, 
@@ -177,7 +181,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
                     args=[entry_invoice.pk, entry_invoice.guid]
                 ))
 
-            if not entry.membership_type.require_approval:
+            if not entry.approval_required:
 
                     entry.approve()
 
