@@ -122,6 +122,8 @@ div.id_expiration_dt .field input#id_expiration_dt_1 {
 	margin-top: 10px;
 }
 
+.t .directory-image img {max-width: 500px;}
+
 /* form */
 div.forms div.form-field div.id_first_name .field input {
 	width: 30%;
