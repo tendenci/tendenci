@@ -6,7 +6,6 @@ from django.utils import simplejson
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from memberships.models import AppField, Membership, MembershipType
-from user_groups.models import GroupMembership
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -80,73 +79,77 @@ def get_corporate_membership_choices():
         cm_list.append((row[0], row[1]))
     
     return cm_list
-    
-def import_csv(file):
-    """
-    Returns a list of dicts. Each dict represents
-    a foreign membership record.
-    """
-    membership_csv = csv.reader(open(str(file), 'U'))
-    headers = membership_csv.next()
-    mems = list()
-    for row in membership_csv:
-        entry = dict()
-        for i in range(len(headers)):
-            entry[headers[i]] = row[i]
-        mems.append(entry)
-    return mems
 
-def new_mems_from_csv(file, app, creator_id):
+def csv_to_dict(file_path):
     """
-    Creates new memberships based on a Tendenci 4 CSV file
+    Returns a list of dicts. Each dict represents record.
     """
-    from django.db import IntegrityError
-    from haystack.query import SearchQuerySet
-    from memberships.models import AppEntry, AppField, AppFieldEntry
+    csv_file = csv.reader(open(file_path))
+    col = csv_file.next()
+    lst = []
 
-    archive = False
-    memberships_dicts = import_csv(file)
-    creator = User.objects.get(id=creator_id)
+    for row in csv_file:
+        entry = {}
+        for i in xrange(len(col)):
+            entry[col[i]] = row[i]
+        lst.append(entry)
+
+    return lst  # list of dictionaries
+
+def new_mems_from_csv(file_path, app, columns):
+    """
+    Create membership objects (not in database)
+    Membership objects are based off of file (typically import)
+    An extra field called columns can be passed in for field mapping
+    A membership application is required
+    """
+
+    for membership in csv_to_dict(file_path):  # field mapping
+        for native_column, foreign_column in columns.items():
+            # membership['username'] = 'charliesheen'
+            membership[native_column] = membership[foreign_column]
 
     membership_set = []
-    for csv in memberships_dicts:
+    for m in membership_dicts:
 
-        try: membership_type = MembershipType.objects.get(name = csv['membershiptype'])
+        now = datetime.now()
+
+        # get/create objects from strings
+        try: user = User.objects.get(username = m['username'])
         except: continue  # on to the next one
+        try: membership_type = MembershipType.objects.get(name = m['membership-type'])
+        except: continue  # on to the next one
+        try: join_dt = datetime.strptime(slugify(m['join-dt']), '%b-%d-%Y')
+        except: join_dt = now
+        try: renew_dt = datetime.strptime(slugify(m['renew-dt']), '%b-%d-%Y')
+        except: renew_dt = now
+        try: expire_dt = datetime.strptime(slugify(m['expire-dt']), '%b-%d-%Y')
+        except: expire_dt = membership_type.expire_dt(join_dt=join_dt)
 
-        user = User.objects.get(id=csv['userid'])
-
-        create_dt = datetime.strptime(csv['createdatetime'], '%b %d %Y')
         memberships = Membership.objects.filter(
-            member_number=csv['Member ID (member record)'],
-            subscribe_dt=create_dt.strftime('%Y-%m-%d'),
+            user=user,
+            membership_type=membership_type,
         )
 
-        # get or create membership
-        if memberships:
+        if memberships:  # get membership record
             membership = memberships[0]
-        else:
-            membership = Membership(**{
-                'user':user,
-                'member_number': csv['Member ID (member record)'],
-                'creator_id': creator_id,
-                'owner_id': creator_id,
-                'membership_type': membership_type,
-                'join_dt': datetime.strptime(csv['Join Date Time'], '%b %d %Y'),
-                'renew_dt': datetime.strptime(csv['Renew Date Time'], '%b %d %Y'),
-                'subscribe_dt': datetime.strptime(csv['createdatetime'], '%b %d %Y'),
-                'corporate_membership_id': csv['Corporate Membership ID'],
-                'payment_method': csv["Payment Method"],
-                'ma': app,
-                'renewal': csv['renewal'],
-                'status': csv['Status'],
-                'status_detail': csv['Status Detail'],
-                'guid':csv['guid'],
-                'expiration_dt': datetime.strptime(csv["Expiration Date Time"], '%b %d %Y'),
-            })
+        else:  # create membership record
+            membership = Membership()
+            membership.ma = app
+            membership.user = user
+            membership.membership_type = membership_type
+            membership.member_number = m.get('member-number') or 0
+            membership.owner = user
+            membership.creator = user
+            membership.join_dt = join_dt
+            membership.renew_dt = renew_dt
+            membership.payment_method = m.get('payment-method') or ''
+            membership.renewal = m.get('renewal') or False
+            membership.status = m.get('status') or True
+            membership.status_detail = m.get('status-detail') or 'Active'
+            membership.expiration_dt = expire_dt
 
         membership_set.append(membership)
-
 
     return membership_set
 

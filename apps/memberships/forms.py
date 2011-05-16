@@ -25,7 +25,7 @@ from models import MembershipType, Notice, App, AppEntry, AppField
 from fields import TypeExpMethodField, PriceInput
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from memberships.models import AppFieldEntry
-from memberships.utils import import_csv
+from memberships.utils import csv_to_dict
 
 from widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
 from corporate_memberships.models import CorporateMembership, AuthorizedDomain
@@ -622,6 +622,33 @@ class CSVForm(forms.Form):
                 choices[column_name] = column_name
 
             app_fields = AppField.objects.filter(app=2)
+
+            req_fields = [
+                'User Name',
+                'Member Number',
+                'Owner',
+                'Creator',
+                'Membership Type',
+                'Join DT',
+                'Renew DT',
+                'Payment Method',
+                'Renewal',
+                'Status',
+                'Status Detail',
+                'Expire Dt',
+            ]
+
+            for req_field in req_fields:
+                self.fields[slugify(req_field)] = ChoiceField(**{
+                    'label': req_field,
+                    'choices': choices.items(),
+                    'required': False,
+                })
+
+                # compare required field with choices
+                # if they match; set initial
+                if req_field in choices:
+                    self.fields[slugify(req_field)].initial = req_field
 
             for app_field in app_fields:
                 for csv_row in csv:
