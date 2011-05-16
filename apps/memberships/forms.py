@@ -204,6 +204,7 @@ class MembershipTypeForm(forms.ModelForm):
                   #'corporate_membership_type_id',
                   'require_approval',
                   'admin_only',
+                  'renewal_require_approval',
                   'renewal_period_start',
                   'renewal_period_end',
                   'expiration_grace_period',
