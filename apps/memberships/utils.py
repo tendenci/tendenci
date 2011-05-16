@@ -104,10 +104,12 @@ def new_mems_from_csv(file_path, app, columns):
     A membership application is required
     """
 
+    membership_dicts = []
     for membership in csv_to_dict(file_path):  # field mapping
         for native_column, foreign_column in columns.items():
             # membership['username'] = 'charliesheen'
             membership[native_column] = membership[foreign_column]
+        membership_dicts.append(membership)
 
     membership_set = []
     for m in membership_dicts:
@@ -124,7 +126,7 @@ def new_mems_from_csv(file_path, app, columns):
         try: renew_dt = datetime.strptime(slugify(m['renew-dt']), '%b-%d-%Y')
         except: renew_dt = now
         try: expire_dt = datetime.strptime(slugify(m['expire-dt']), '%b-%d-%Y')
-        except: expire_dt = membership_type.expire_dt(join_dt=join_dt)
+        except: expire_dt = membership_type.get_expiration_dt(join_dt=join_dt)
 
         memberships = Membership.objects.filter(
             user=user,
@@ -158,7 +160,7 @@ def is_import_valid(file_path):
     Run import file against required files
     'username' and 'membership-type' are required fields
     """
-    memberships = import_csv(file_path)  # list of membership dicts
+    memberships = csv_to_dict(file_path)  # list of membership dicts
     membership_keys = [slugify(m) for m in memberships[0].keys()]
     required = ('username','membership_type')
     requirements = [r in membership_keys for r in required]

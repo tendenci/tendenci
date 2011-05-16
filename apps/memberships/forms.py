@@ -615,7 +615,7 @@ class CSVForm(forms.Form):
             """
 
             # file to make field-mapping form
-            csv = import_csv(file_path)
+            csv = csv_to_dict(file_path)
 
             choices = {}
             for column_name in csv[0].keys():

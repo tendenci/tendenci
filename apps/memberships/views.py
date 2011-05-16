@@ -1,4 +1,5 @@
 import os
+import sys
 import hashlib
 
 from datetime import datetime, timedelta
@@ -14,7 +15,8 @@ from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from event_logs.models import EventLog
 from base.http import Http403
-from memberships.models import App, AppEntry, Membership, MembershipType, Notice
+from memberships.models import App, AppEntry, Membership, \
+    MembershipType, Notice, AppField, AppFieldEntry
 from memberships.forms import AppForm, AppEntryForm, \
     AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm
 from memberships.utils import new_mems_from_csv, is_import_valid
@@ -536,7 +538,7 @@ def membership_import(request, step=None):
                 app = request.session.get('membership.import.app')
                 file_path = request.session.get('membership.import.file_path')
 
-                memberships = new_mems_from_csv(file_path, app, request.user, cleaned_data)
+                memberships = new_mems_from_csv(file_path, app, cleaned_data)
 
                 request.session['membership.import.memberships'] = memberships
                 request.session['membership.import.fields'] = cleaned_data
@@ -556,8 +558,6 @@ def membership_import(request, step=None):
 
     if step_numeral == 4:  # confirm
         template_name = 'memberships/import-confirm.html'
-        import sys
-        from memberships.models import AppField, AppFieldEntry
 
         app = request.session.get('membership.import.app')
         memberships = request.session.get('membership.import.memberships')
@@ -569,48 +569,43 @@ def membership_import(request, step=None):
 
         for membership in memberships:
 
-            membership.save()
+            if not membership.pk:  # new membership
 
-            # entry = AppEntry.objects.filter(
-            #     app = app,
-            #     user = user,
-            #     entry_time = datetime.now(),
-            #     membership = membership,
-            # ).exists()
+                # create entry
+                entry = AppEntry.objects.create(
+                    app = app,
+                    user = user,
+                    entry_time = datetime.now(),
+                    membership = membership,
+                    is_renewal = membership.renewal,
+                    is_approved = True,
+                    decision_dt = membership.create_dt,
+                    judge = membership.creator,
+                    creator=membership.creator,
+                    creator_username=membership.creator_username,
+                    owner=membership.owner,
+                    owner_username=membership.owner_username,
+                )
 
-            # if not entry:  # create if does not exist
+                # create entry fields
+                for key, value in fields.items():
 
-            entry = AppEntry.objects.create(
-                app = app,
-                user = user,
-                entry_time = datetime.now(),
-                membership = membership,
-                is_renewal = membership.renewal,
-                is_approved = True,
-                decision_dt = membership.create_dt,
-                judge = membership.creator,
-                creator=membership.creator,
-                creator_username=membership.creator_username,
-                owner=membership.owner,
-                owner_username=membership.owner_username,
-            )
+                    app_fields = AppField.objects.filter(app=app, label=key)
+                    if app_fields:
+                        app_field = app_fields[0]
+                    else:
+                        app_field = None
 
-            for key, value in fields.items():
+                    try:
+                        AppFieldEntry.objects.create(
+                            entry=entry,
+                            field=app_field,
+                            value=value,
+                        )
+                    except:
+                        print sys.exc_info()[1]
 
-                app_fields = AppField.objects.filter(app=app, label=key)
-                if app_fields:
-                    app_field = app_fields[0]
-                else:
-                    app_field = None
-
-                try:
-                    AppFieldEntry.objects.create(
-                        entry=entry,
-                        field=app_field,
-                        value=value,
-                    )
-                except:
-                    print sys.exc_info()[1]
+                membership.save()
 
         # Release session information
         del request.session['membership.import.app']
