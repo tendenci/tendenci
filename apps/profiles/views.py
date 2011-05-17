@@ -122,6 +122,7 @@ def search(request, template_name="profiles/search.html"):
     
     query = request.GET.get('q', None)
     profiles = Profile.objects.search(query, user=request.user)
+    profiles = profiles.order_by('last_name')
 
     log_defaults = {
         'event_id' : 124000,
