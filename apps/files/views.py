@@ -12,7 +12,9 @@ from files.models import File
 from files.utils import get_image
 from files.forms import FileForm
 from perms.object_perms import ObjectPermission
-from perms.utils import has_perm
+
+from perms.utils import update_perms_and_save, has_perm
+
 from event_logs.models import EventLog
 
 def index(request, id=None, size=None, download=False, template_name="files/view.html"):
@@ -57,6 +59,9 @@ def search(request, template_name="files/search.html"):
     query = request.GET.get('q', None)
     files = File.objects.search(query)
 
+    if not query:
+        files = files.order_by('-update_dt')
+
     return render_to_response(template_name, {'files':files}, 
         context_instance=RequestContext(request))
 
@@ -85,12 +90,8 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
         if form.is_valid():
             file = form.save(commit=False)
 
-            # remove all permissions on the object
-            ObjectPermission.objects.remove_all(file)            
-            # assign creator permissions
-            ObjectPermission.objects.assign(file.creator, file) 
-
-            file.save()
+            # update all permissions and save the model
+            file = update_perms_and_save(request, form, file)
 
             log_defaults = {
                 'event_id' : 182000,
@@ -101,11 +102,11 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
                 'instance': file,
             }
             EventLog.objects.log(**log_defaults)
-                                                          
-            return HttpResponseRedirect(reverse('file', args=[file.pk]))             
+
+            return HttpResponseRedirect(reverse('file.search'))
     else:
         form = form_class(instance=file, user=request.user)
-    
+
     return render_to_response(template_name, {'file': file, 'form':form}, 
         context_instance=RequestContext(request))
 
@@ -191,9 +192,11 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
     files = File.objects.none() # EmptyQuerySet
 
     # if all required parameters are in the GET.keys() list
-    # difference of 0, negated = True;
     if not set(params.keys()) - set(request.GET.keys()):        
-        for item in params: params[item] = request.GET[item]
+
+        for item in params:
+            params[item] = request.GET[item]
+
         try: # get content type
             contenttype = ContentType.objects.get(app_label=params['app_label'], model=params['model'])
 
@@ -237,6 +240,7 @@ def swfupload(request):
             file.owner = request.user
             file.creator = request.user
             file.is_public = True
+            file.allow_anonymous_view = True
             file.save()
         except Exception, e:
             print e
