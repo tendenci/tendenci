@@ -13,6 +13,7 @@ from directories.models import Directory
 from help_files.models import HelpFile
 from stories.models import Story
 
+
 def bind_files(sender, **kwargs):
     # get content type and instance
     content_type = ContentType.objects.get_for_model(sender)
