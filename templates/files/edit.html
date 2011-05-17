@@ -1,5 +1,7 @@
 {% extends "files/base.html" %}
+
 {% load file_tags %}
+{% load styled_forms %}
 
 {% block title %}{{ block.super }}Edit{% endblock %}
 
@@ -14,15 +16,15 @@
 
     {% file_nav request.user %}
 
-    <h1>Files Edit</h1>
+    <h1>File Edit</h1>
 
-    <div class="file-wrap">
-    <form action="{% url file.edit file.pk %}" method="post" enctype="multipart/form-data">
-        {{ form.as_p }}
-        <input type="submit" value="Save changes" />
-    </form>
-
+    <div class="forms">
+	    <form action="{% url file.edit file.pk %}" method="post" enctype="multipart/form-data">
+	        {{ form|styled_form }}
+	        <input type="submit" value="Save changes" />
+	    </form>
     </div>
+
 </div>
 
 {% endblock %}
