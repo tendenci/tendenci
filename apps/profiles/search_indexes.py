@@ -14,6 +14,7 @@ class ProfileIndex(indexes.RealTimeSearchIndex):
     zipcode = indexes.CharField(model_attr='zipcode')
     country = indexes.CharField(model_attr='country')
     user_object = indexes.CharField(model_attr='user', faceted=True)
+    last_name = indexes.CharField(faceted=True)
 
     # TendenciBaseModel Fields
     hide_in_search = indexes.BooleanField(model_attr='hide_in_search')
@@ -32,6 +33,9 @@ class ProfileIndex(indexes.RealTimeSearchIndex):
 
     def get_updated_field(self):
         return 'update_dt'
+
+    def prepare_last_name(self, obj):
+        return obj.user.last_name
 
     def prepare_user_object(self, obj):
         return obj.user.username
