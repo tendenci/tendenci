@@ -120,11 +120,11 @@ class ListStoriesNode(ListNode):
         date_query = reduce(and_, [Q(start_dt__lte = datetime.now()), date_query])
         items = items.filter(date_query)
 
+        if order:
+            items = items.order_by(order)
+
         # if order is not specified it sorts by relevance
         if items:
-            if order:
-                items = items.order_by(order)
-
             if randomize:
                 objects = [item.object for item in random.sample(items, items.count())][:limit]
             else:
