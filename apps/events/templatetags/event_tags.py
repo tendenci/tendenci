@@ -321,19 +321,21 @@ class ListEventsNode(ListNode):
 
         # get the list of staff
         items = self.model.objects.search(user=user, query=query)
-
+        objects = []
         # if order is not specified it sorts by relevance
-        if order:
-            if order == "next_upcoming":
-                items = items.filter(start_dt__gt = datetime.now())
-                items = items.order_by("start_dt")
-            else:
-                items = items.order_by(order)
 
-        if randomize:
-            objects = [item.object for item in random.sample(items, items.count())][:limit]
-        else:
-            objects = [item.object for item in items[:limit]]
+        if items:
+            if order:
+                if order == "next_upcoming":
+                    items = items.filter(start_dt__gt = datetime.now())
+                    items = items.order_by("start_dt")
+                else:
+                    items = items.order_by(order)
+
+            if randomize:
+                objects = [item.object for item in random.sample(items, items.count())][:limit]
+            else:
+                objects = [item.object for item in items[:limit]]
 
         context[self.context_var] = objects
         return ""
