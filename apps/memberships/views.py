@@ -548,10 +548,12 @@ def membership_import(request, step=None):
                 request.session['membership.import.fields'] = cleaned_data
 
                 return redirect('membership_import_preview')
+
         else:  # if not POST
             form = CSVForm(step=step, file_path=file_path)
-            return render_to_response(template_name, {'form':form,}, 
-                context_instance=RequestContext(request))
+
+        return render_to_response(template_name, {'form':form,}, 
+            context_instance=RequestContext(request))
 
     if step_numeral == 3:  # preview
         template_name = 'memberships/import-preview.html'

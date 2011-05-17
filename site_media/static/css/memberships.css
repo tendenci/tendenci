@@ -424,36 +424,50 @@ form.connect-with li {
 /* Membership Import
 ------------------------------------- */
 
-.form-field {
+#import-wrap .form-field {
 	width: 425px;
 	height: 25px;
 	background-color: #F7F7F7;
 }
 
-.form-field .label,
-.form-field .field {
+#import-wrap .form-field .label,
+#import-wrap .form-field .field {
 	width: 200px;
 	float: left;
 }
 
-.form-field .label {
+#import-wrap .form-field .label {
 	text-align: right;
 	border-bottom: 1px solid #EEE;
 	padding: 5px 10px 5px 0;
 }
 
-.form-field .field {
+#import-wrap .form-field .field {
 	padding: 3px 5px 0 0;
 }
 
-.form-field .field select {
+#import-wrap .form-field .field select {
 	width: 200px;
 }
 
-form {
+#import-wrap form {
 	margin-top: 10px;
 }
 
-form input[type="submit"]{
+#import-wrap form .errors {
+	margin: 0 0 5px 0;
+	width: 402px;
+}
+
+#import-wrap form .errors p {
+	margin: 5px 0 0 0;
+	line-height: 1em;
+}
+
+#import-wrap form input[type="submit"]{
 	margin-top: 10px;
+}
+
+#import-wrap .form-field .error {
+	display: none;
 }

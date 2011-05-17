@@ -626,17 +626,17 @@ class CSVForm(forms.Form):
 
             req_fields = [
                 'User Name',
+                'Membership Type',
                 'Member Number',
+                'Payment Method',
+                'Join Date',
+                'Renew Date',
+                'Expire Date',
+                'Renewal',
                 'Owner',
                 'Creator',
-                'Membership Type',
-                'Join DT',
-                'Renew DT',
-                'Payment Method',
-                'Renewal',
                 'Status',
                 'Status Detail',
-                'Expire Dt',
             ]
 
             for req_field in req_fields:
@@ -650,6 +650,9 @@ class CSVForm(forms.Form):
                 # if they match; set initial
                 if req_field in choices:
                     self.fields[slugify(req_field)].initial = req_field
+
+            self.fields['user-name'].required = True
+            self.fields['membership-type'].required = True
 
             for app_field in app_fields:
                 for csv_row in csv:
