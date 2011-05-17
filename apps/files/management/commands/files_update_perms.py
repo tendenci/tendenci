@@ -2,12 +2,11 @@
 
 # class Command(BaseCommand):
 #     """
-#     example: python manage.py 
+#     example: python manage.py files_update_perms.py
 #     """
 #     def handle(self, *args, **kwargs):
-#     	from files.models import File
+#     	from django.db import connection, transaction
+#     	cursor = connection.cursor()
 
-#     	for f in File.objects.all():
-#     		if f.is_public:
-#     			f.allow_anonymous_view = True
-#     			f.save()
+#     	cursor.execute("UPDATE files_file SET allow_anonymous_view = 1 WHERE is_public = 1")
+#     	transaction.commit_unless_managed()
