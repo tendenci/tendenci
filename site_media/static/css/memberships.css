@@ -420,3 +420,40 @@ form.connect-with li {
     border: 1px solid red;
     padding: 10px 5px;
 }
+
+/* Membership Import
+------------------------------------- */
+
+.form-field {
+	width: 425px;
+	height: 25px;
+	background-color: #F7F7F7;
+}
+
+.form-field .label,
+.form-field .field {
+	width: 200px;
+	float: left;
+}
+
+.form-field .label {
+	text-align: right;
+	border-bottom: 1px solid #EEE;
+	padding: 5px 10px 5px 0;
+}
+
+.form-field .field {
+	padding: 3px 5px 0 0;
+}
+
+.form-field .field select {
+	width: 200px;
+}
+
+form {
+	margin-top: 10px;
+}
+
+form input[type="submit"]{
+	margin-top: 10px;
+}
