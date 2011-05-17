@@ -126,13 +126,13 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
             is_member(request.user) == True,
         ]
 
-        # # deny access to renew memberships
-        # if all(user_member_requirements):
-        #     initial_dict = membership.get_app_initial()
-        #     if not membership.can_renew():
-        #         return render_to_response("memberships/applications/no-renew.html", {
-        #             "app": app, "user":user, "membership": membership}, 
-        #             context_instance=RequestContext(request))
+        # deny access to renew memberships
+        if all(user_member_requirements):
+            initial_dict = membership.get_app_initial()
+            if not membership.can_renew():
+                return render_to_response("memberships/applications/no-renew.html", {
+                    "app": app, "user":user, "membership": membership}, 
+                    context_instance=RequestContext(request))
 
     pending_entries = []
 
