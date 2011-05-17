@@ -274,12 +274,10 @@ class Membership(TendenciBaseModel):
     directory = models.ForeignKey(Directory, blank=True, null=True) 
     renewal = models.BooleanField(default=False)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
-
     subscribe_dt = models.DateTimeField(_("Subscribe Date"), null=True)
     join_dt = models.DateTimeField(_("Join Date"), null=True)
     renew_dt = models.DateTimeField(_("Renew Date"), blank=True, null=True)
-
-    expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
+    expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     ma = models.ForeignKey("App")
@@ -317,8 +315,13 @@ class Membership(TendenciBaseModel):
         return (start_dt, end_dt)
         
     def can_renew(self):
+        """
+        Checks memberships that are never ending. No expire dt.
+        Checks if membership is within renewal period.
+        Returns boolean.
+        """
 
-        if self.expiration_dt is None:  # expiration_dt == NULL
+        if self.expiration_dt is None:  # neverending expirations
             return False
 
         start_dt, end_dt = self.get_renewal_period_dt()
