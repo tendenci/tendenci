@@ -324,14 +324,14 @@ class ListEventsNode(ListNode):
         objects = []
         # if order is not specified it sorts by relevance
 
-        if items:
-            if order:
-                if order == "next_upcoming":
-                    items = items.filter(start_dt__gt = datetime.now())
-                    items = items.order_by("start_dt")
-                else:
-                    items = items.order_by(order)
+        if order:
+            if order == "next_upcoming":
+                items = items.filter(start_dt__gt = datetime.now())
+                items = items.order_by("start_dt")
+            else:
+                items = items.order_by(order)
 
+        if items:
             if randomize:
                 objects = [item.object for item in random.sample(items, items.count())][:limit]
             else:
