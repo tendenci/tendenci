@@ -52,31 +52,39 @@
 
 {% block body %}
 
-<h1>Membership Import Preview</h1>
+<div id="import-wrap" class="preview">
 
-<div class="preview-wrap">
-<table>
-	<tr class="header">
-		<td></td>
-		<td>Name</td>
-		<td>Number</td>
-		<td>Join Date</td>
-		<td>Expire Date</td>
-	</tr>
+	<h1>Membership Import Preview</h1>
 
-{% for membership in memberships|slice:":10" %}
-	<tr>
-		<td>{{ forloop.counter }}</td>
-		<td><div>{% firstof membership.user.get_full_name "No Name" %}</div></td>
-		<td><div>{{ membership.member_number }}</div></td>
-		<td><div>{{ membership.renew_dt|date:"M d, Y" }}</div></td>
-		<td><div>{{ membership.expiration_dt|date:"M d, Y" }}</div></td>
-	</tr>
-{% endfor %}
-</table>
+	<p class="timestamp">{{ datetime.now }}</p>
+
+	<p class="msg"><em>{{ memberships|length}}</em> import{{ memberships|length|pluralize }}; 
+	<em>{{ added|length }}</em> will be added, and <em>{{ skipped|length }}</em> will be skipped.</p>
+
+	<div class="preview-wrap">
+	<table>
+		<tr class="header">
+			<td></td>
+			<td>Name</td>
+			<td>Number</td>
+			<td>Join Date</td>
+			<td>Expire Date</td>
+		</tr>
+
+	{% for membership in memberships|slice:":10" %}
+		<tr>
+			<td>{{ forloop.counter }}</td>
+			<td><div>{% firstof membership.user.get_full_name "No Name" %}</div></td>
+			<td><div>{{ membership.member_number }}</div></td>
+			<td><div>{{ membership.renew_dt|date:"M d, Y" }}</div></td>
+			<td><div>{{ membership.expiration_dt|date:"M d, Y" }}</div></td>
+		</tr>
+	{% endfor %}
+	</table>
+	</div>
+
+	<div class="import-now-link"><a href="{% url membership_import_confirm %}">
+		Yeah, this looks right.  Import now! &gt;&gt;</a></div>
+
 </div>
-
-<div class="import-now-link"><a href="{% url membership_import_confirm %}">
-	Yeah, this looks right.  Import now! &gt;&gt;</a></div>
-
 {% endblock %}
