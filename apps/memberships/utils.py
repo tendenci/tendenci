@@ -117,7 +117,7 @@ def new_mems_from_csv(file_path, app, columns):
         now = datetime.now()
 
         # get/create objects from strings
-        try: user = User.objects.get(username = m['username'])
+        try: user = User.objects.get(username = m['user-name'])
         except: continue  # on to the next one
         try: membership_type = MembershipType.objects.get(name = m['membership-type'])
         except: continue  # on to the next one
