@@ -473,21 +473,21 @@ form.connect-with li {
 }
 
 /* Step 4 */
-#import-wrap.finished h1 {
+#import-wrap h1 {
 	margin-bottom: 0;
 }
-#import-wrap.finished .timestamp {
+#import-wrap .timestamp {
 	margin-top: 0;
 	font-size: 13px;
 }
 
-#import-wrap.finished em {
+#import-wrap em {
 	font-size: 1.2em;
 	font-style: normal;
 	font-weight: bold;
 }
 
-#import-wrap.finished .msg {
+#import-wrap .msg {
 	margin-bottom: 0;
 }
 

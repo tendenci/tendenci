@@ -559,8 +559,17 @@ def membership_import(request, step=None):
     if step_numeral == 3:  # preview
         template_name = 'memberships/import-preview.html'
         memberships = request.session.get('membership.import.memberships')
+
+        added, skipped = [], []
+        for membership in memberships:
+            if membership.pk: skipped.append(membership)
+            else: added.append(membership)
+
         return render_to_response(template_name, {
         'memberships':memberships,
+        'added': added,
+        'skipped': skipped,
+        'datetime': datetime,
         }, context_instance=RequestContext(request))
 
     if step_numeral == 4:  # confirm
