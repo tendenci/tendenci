@@ -503,6 +503,7 @@ def membership_import(request, step=None):
     if not step:  # start from beginning
         return redirect('membership_import_upload_file')
 
+    request.session.set_expiry(0)  # expire when browser is closed
     step_numeral, step_name = step
 
     if step_numeral == 1:  # upload-file
@@ -573,6 +574,8 @@ def membership_import(request, step=None):
         if not all([app, memberships, fields, user]):
             return redirect('membership_import_upload_file')
 
+        added = []
+        skipped = []
         for membership in memberships:
 
             if not membership.pk:  # new membership
@@ -613,12 +616,16 @@ def membership_import(request, step=None):
 
                 membership.save()
 
-        # Release session information
-        del request.session['membership.import.app']
-        del request.session['membership.import.memberships']
-        del request.session['membership.import.fields']
+                added.append(membership)
+            else:
+                skipped.append(membership)
 
-        return render_to_response(template_name, {}, context_instance=RequestContext(request))
+        return render_to_response(template_name, {
+            'memberships': memberships,
+            'added': added,
+            'skipped': skipped,
+            'datetime': datetime,
+        }, context_instance=RequestContext(request))
 
 
 #REPORTS
