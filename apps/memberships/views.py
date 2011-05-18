@@ -578,9 +578,8 @@ def membership_import(request, step=None):
         app = request.session.get('membership.import.app')
         memberships = request.session.get('membership.import.memberships')
         fields = request.session.get('membership.import.fields')
-        user = request.user
 
-        if not all([app, memberships, fields, user]):
+        if not all([app, memberships, fields]):
             return redirect('membership_import_upload_file')
 
         added = []
@@ -592,7 +591,7 @@ def membership_import(request, step=None):
                 # create entry
                 entry = AppEntry.objects.create(
                     app = app,
-                    user = user,
+                    user = membership.user,
                     entry_time = datetime.now(),
                     membership = membership,
                     is_renewal = membership.renewal,
