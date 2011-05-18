@@ -471,3 +471,26 @@ form.connect-with li {
 #import-wrap .form-field .error {
 	display: none;
 }
+
+/* Step 4 */
+#import-wrap.finished h1 {
+	margin-bottom: 0;
+}
+#import-wrap.finished .timestamp {
+	margin-top: 0;
+	font-size: 13px;
+}
+
+#import-wrap.finished em {
+	font-size: 1.2em;
+	font-style: normal;
+	font-weight: bold;
+}
+
+#import-wrap.finished .msg {
+	margin-bottom: 0;
+}
+
+#import-wrap.finished .link {
+	margin-top: 0;
+}
