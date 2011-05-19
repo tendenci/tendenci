@@ -468,7 +468,7 @@ class RegConfPricing(models.Model):
     reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
 
     title = models.CharField(max_length=50, blank=True)
-    quantity = models.IntegerField(default=0, blank=True)
+    quantity = models.IntegerField(default=1, blank=True)
     group = models.ForeignKey(Group, blank=True, null=True)
 
     early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
@@ -615,6 +615,10 @@ class Event(TendenciBaseModel):
     def dt_display(self, format_date='%a, %b %d, %Y', format_time='%I:%M %p'):
         from base.utils import format_datetime_range
         return format_datetime_range(self.start_dt, self.end_dt, format_date, format_time)
+
+    @property
+    def is_over(self):
+        return self.end_dt <= datetime.now()
 
     @property
     def money_collected(self):

@@ -221,9 +221,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             form_speaker = SpeakerFormSet(
                 request.POST, 
                 request.FILES,
-                queryset=Speaker.objects.filter(
-                    event=event
-                ), 
+                queryset=event.speaker_set.all(),
                 prefix='speaker'
             )
 
@@ -316,13 +314,15 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
             # form sets
             form_speaker = SpeakerFormSet(
-                queryset=Speaker.objects.all(),
+                queryset=event.speaker_set.all(),
                 prefix='speaker',
                 auto_id='speaker_formset'
             )
 
             form_regconfpricing = RegConfPricingSet(
-                queryset=RegConfPricing.objects.all(),
+                queryset=RegConfPricing.objects.filter(
+                    reg_conf=event.registration_configuration
+                ),
                 prefix='regconfpricing',
                 auto_id='regconfpricing_formset'
             )
@@ -860,7 +860,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     else:
                         # offline payment:
                         # send email; add message; redirect to confirmation
-                        print reg8n.registrant.hash
                         notification.send_emails(
                             [reg8n.registrant.email],
                             'event_registration_confirmation',
