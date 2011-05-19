@@ -8,7 +8,8 @@ from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser
 
-from events.models import Event, Registrant, Type
+from events.models import Event, Registrant, Type, RegConfPricing
+from events.utils import get_pricing
 from base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
@@ -57,85 +58,105 @@ def registrant_search(context, event=None):
     return context
 
 
+@register.inclusion_tag('events/reg8n/registration_pricing.html', takes_context=True)
+def registration_pricing_and_button(context, event, user):
+    pricing_context = []
+    registration = event.registration_configuration
+    pricing = get_pricing(user, event)
+
+    context.update({
+        'now': datetime.now(),
+        'event': event,
+        'registration': registration,
+        'pricing': pricing,
+        'user': user
+    })
+
+    return context
+
+
 @register.inclusion_tag('events/reg8n/register-button.html', takes_context=True)
 def register_button(context):
-    event = context['event']
-    user = context['user']
-    reg8n_config = event.registration_configuration
+    # event = context['event']
+    # user = context['user']
+    # reg8n_config = event.registration_configuration
 
-    # Set the variables ------------------
+    # # Set the variables ------------------
 
-    reg8n_enabled = reg8n_config and reg8n_config.enabled
+    # reg8n_enabled = reg8n_config and reg8n_config.enabled
 
-    if reg8n_enabled:
-        reg8n_price = reg8n_config.price or float(0)
+    # if reg8n_enabled:
+    #     reg8n_pricing = RegConfPricing.objects.filter(
+    #         reg_conf = reg8n_config
+    #     )
 
-    if user.is_anonymous():
-        registrant = None
-    else:
-        try:
-            registrant = Registrant.objects.get(
-                registration__event=event,
-                email= ser.email,
-                cancel_dt=None,
-            )
-        except:
-            registrant = None
+    # if user.is_anonymous():
+    #     registrant = None
+    # else:
+    #     try:
+    #         registrant = Registrant.objects.get(
+    #             registration__event=event,
+    #             email= ser.email,
+    #             cancel_dt=None,
+    #         )
+    #     except:
+    #         registrant = None
 
-    registrants = Registrant.objects.filter(registration__event=event)
-    if reg8n_config.payment_required:
-        registrants = registrants.filter(registration__invoice__balance__lte=0)
+    # registrants = Registrant.objects.filter(registration__event=event)
+    # if reg8n_config.payment_required:
+    #     registrants = registrants.filter(registration__invoice__balance__lte=0)
 
-    infinite_limit = reg8n_config.limit <= 0
-    reg8n_full = (registrants.count() >= reg8n_config.limit) and not infinite_limit
+    # infinite_limit = reg8n_config.limit <= 0
+    # reg8n_full = (registrants.count() >= reg8n_config.limit) and not infinite_limit
 
-    url1, msg1, msg2, status_class = '', '', '', ''
+    # url1, msg1, msg2, status_class = '', '', '', ''
 
-    if reg8n_enabled:
-        if reg8n_config.within_time:
+    # if reg8n_enabled:
+    #     if reg8n_config.within_time:
 
-            msg2 = 'Registration ends %s' % naturalday(reg8n_config.end_dt)
-            status_class = 'open'
-            url1 = reverse('event.multi_register', args=[event.pk])
+    #         msg2 = 'Registration ends %s' % naturalday(reg8n_config.end_dt)
+    #         status_class = 'open'
+    #         url1 = reverse('event.multi_register', args=[event.pk])
 
-            if registrant:
-                msg1 = 'You are registered'
-                status_class = 'registered'
-                url1 = registrant.hash_url()
-            else:
+    #         if registrant:
+    #             msg1 = 'You are registered'
+    #             status_class = 'registered'
+    #             url1 = registrant.hash_url()
+    #         else:
 
-                if reg8n_price:
-                    msg1 = '$%s to Register' % floatformat(reg8n_price)
-                else:
-                    msg1 = 'Register for Free'
+    #             if reg8n_price:
+    #                 msg1 = '$%s to Register' % floatformat(reg8n_price)
+    #             else:
+    #                 msg1 = 'Register for Free'
 
-                if reg8n_full:
-                    msg1 = 'Registration Full'
-                    status_class = 'closed'
-                    url1 = ''
-        else:
+    #             if reg8n_full:
+    #                 msg1 = 'Registration Full'
+    #                 status_class = 'closed'
+    #                 url1 = ''
+    #     else:
 
-            if reg8n_config.early_dt > datetime.now():
-                msg2 = 'Registration opens %s' % naturalday(reg8n_config.early_dt)
-            else:
-                msg2 = 'Registration ended %s' % naturalday(reg8n_config.end_dt)
+    #         if reg8n_config.early_dt > datetime.now():
+    #             msg2 = 'Registration opens %s' % naturalday(reg8n_config.early_dt)
+    #         else:
+    #             msg2 = 'Registration ended %s' % naturalday(reg8n_config.end_dt)
 
-            status_class = 'closed'
+    #         status_class = 'closed'
 
-            if registrant:
-                msg1 = 'You are registered'
-                status_class = 'registered'
-                url1 = registrant.hash_url()
-            else:
-                msg1 = 'Registration Closed'
+    #         if registrant:
+    #             msg1 = 'You are registered'
+    #             status_class = 'registered'
+    #             url1 = registrant.hash_url()
+    #         else:
+    #             msg1 = 'Registration Closed'
 
-    return {
-        'reg8n_enabled': reg8n_enabled,
-        'url1': url1,
-        'msg1': msg1,
-        'msg2': msg2,
-        'status_class': status_class
-    }
+    # return {
+    #     'reg8n_enabled': reg8n_enabled,
+    #     'url1': url1,
+    #     'msg1': msg1,
+    #     'msg2': msg2,
+    #     'status_class': status_class
+    # }
+    return ''
 
 
 class EventListNode(Node):

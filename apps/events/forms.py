@@ -230,16 +230,17 @@ class Reg8nConfPricingEditForm(BetterModelForm):
         self.fields['reg8n_dt_price'].build_widget_reg8n_dict(*args, **kwargs)
 
     def clean(self):
-        early_price = self.cleaned_data.get('early_price') or 0
-        regular_price = self.cleaned_data.get('regular_price') or 0
-        late_price = self.cleaned_data.get('late_price') or 0
+        # make sure that quantity is always a positive number
+        quantity = self.cleaned_data.get('quantity')
+        if quantity <= 0:
+            self.cleaned_data['quantity'] = 1
 
         return self.cleaned_data
 
     class Meta:
         model = RegistrationConfiguration
 
-        field = [
+        fields = [
             'title',
             'quantity',
             'group',
