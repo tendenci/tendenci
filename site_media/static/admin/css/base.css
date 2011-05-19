@@ -445,6 +445,14 @@ ul.messagelist li {
     background: #ffc url(../img/admin/icon_success.gif) 5px .3em no-repeat;
 }
 
+ul.messagelist li.warning{
+    background-image: url(../img/admin/icon_alert.gif);
+}
+
+ul.messagelist li.error{
+    background-image: url(../img/admin/icon_error.gif);
+}
+
 .errornote {
     font-size: 12px !important;
     display: block;
@@ -470,6 +478,11 @@ ul.errorlist {
     background: red url(../img/admin/icon_alert.gif) 5px .3em no-repeat;
 }
 
+.errorlist li a {
+ 	color: white;
+    text-decoration: underline;
+}
+
 td ul.errorlist {
     margin: 0 !important;
     padding: 0 !important;
@@ -483,7 +496,7 @@ td ul.errorlist li {
     background: #ffc;
 }
 
-.errors input, .errors select {
+.errors input, .errors select, .errors textarea {
     border: 1px solid red;
 }
 
