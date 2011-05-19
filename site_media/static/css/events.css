@@ -94,19 +94,63 @@
 /*= Details View
  ------------------------- */
  
- /* speaker and organizer */
-.t .speaker-wrap,
-.t .organizer-wrap {
-	border: 1px solid silver;
-	margin: 0 15px 10px;
-	text-align: left;
-	padding: 10px 10px 0;
-	background-color: white;
+ .t div.event-desc {
+	margin-bottom: 10px;
+	border-bottom: 1px solid #CCC;
 }
+
+ /* speaker and organizer */
+.t .speaker-wrap {
+	margin: 15px 0 15px 0;
+	text-align: left;
+	padding: 10px 10px 10px 10px;
+	background-color: #EBEBEB;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.t .speaker-photo {
+	float: left;
+	margin: 0 10px 10px 0;
+}
+
+.t .organizer-wrap {
+	text-align: left;
+}
+
 .t .speaker,
 .t .organizer {
 	margin-bottom: 5px;
 }
+
+.t div.speaker-wrap div.speaker-desc-long {
+	display: none;
+}
+
+.t div.speaker-wrap a.speaker-desc-toggle {
+	margin: 10px 0 0 0;
+	display: block;
+}
+
+.t div.organizer-wrap div.organizer-desc-long {
+	display: none;
+}
+
+.t div.organizer-wrap a.organizer-desc-toggle {
+	margin: 10px 0 0 0;
+	display: block;
+}
+
+.t div.place div.event-place-desc-long {
+	display: none;
+}
+
+.t div.place a.event-place-desc-toggle {
+	margin: 10px 0 0 0;
+	display: block;
+}
+
 
 /* registered and closed btn */
 .t .event-wrap .vitals .registered a {
@@ -376,18 +420,21 @@ input.short_text_input{
 	padding: 0;
 }
 .event-wrap .info {
-	border: 1px solid silver;
 	padding: 10px;
 	background-color: white;
-	width: 66%;
+	width: 64%;
 	float: left;
 }
 .event-wrap .vitals {
 	float: right;
-	margin: 10px 0;
-	width: 31.5%;
+	margin: 60px 15px 0 0;
+	width: 30.5%;
 	text-align: center;
-	xbackground-color: #CFF;
+}
+
+.event-wrap .vitals h4.vital-header {
+	padding-bottom: 10px;
+	color: #000;
 }
 
 .event-wrap .vitals .register-wrap {			
@@ -408,21 +455,34 @@ input.short_text_input{
 	background-color: #007F20;
 }
 
-.event-wrap .vitals .price {
-	font-size: 1.4em;
+.event-wrap .vitals .pricing {
 	margin-bottom: 10px;
-}		
+}
+
 .event-wrap .vitals .place {
 	margin-bottom: 15px;
+	color: #555;
 }
+
 .event-wrap .vitals .place .line {
-	margin: 0;
+	margin: 5px 0 0 0;
 	line-height: 1em;
 }
 .event-wrap .vitals .time-period .line {
 	margin: 0;
 	line-height: 1em;
 }
+
+.event-wrap .vitals .time-period {
+	margin-bottom: 15px;
+	color: #555;
+}
+
+.event-wrap .vitals .map {
+	background-color: #EBEBEB;
+	padding: 5px;
+}
+
 .event-wrap .hr {
 	background-color: silver;
 	height: 1px;
@@ -619,6 +679,25 @@ tr.non-paid-middle {
     text-align: right;
 }
 
+
+.registration-green {
+	background-color: green;	
+	color: white;
+	padding: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.registration-red {
+	background-color: darkred;	
+	color: white;
+	padding: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
 .registration-status div {
     color: white;
     border: 1px solid;
@@ -639,4 +718,51 @@ tr.non-paid-middle {
 .registration-status .not-registered {
 	background-color: darkred;
 	border-color: darkred;
+}
+
+/* pricing list */
+
+div.pricing-list-wrap {
+	margin: 15px 0 15px 0;
+	text-align: left;
+	padding: 10px 10px 10px 10px;
+	background-color: #EBEBEB;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	text-align: center;	
+}
+
+input.registration-green-button {
+	background-color: green;	
+	color: white;
+	padding: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	border: 0;
+	cursor: pointer;
+	width: 75%;
+}
+
+table.pricing-list {
+	list-style-type: none;
+	padding: 0;
+	text-align: left;
+}
+
+table.pricing-list label {
+	cursor: pointer;
+}
+
+table.pricing-list td {
+	padding: 5px;
+}
+
+table.pricing-list .price-disabled {
+	color: #999;
+}
+
+table.pricing-list .price-disabled label {
+	cursor: default;
 }

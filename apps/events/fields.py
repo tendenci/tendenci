@@ -109,21 +109,21 @@ class Reg8nDtField(ChoiceField):
 
         if prefix:
             reg8n_dict = OrderedDict([
-                ('%s-early_price' % prefix, 0),
+                ('%s-early_price' % prefix, initial.get('early_price') or 0),
                 ('%s-early_dt' % prefix, initial.get('early_dt') or today),
-                ('%s-regular_price' % prefix, 0),
+                ('%s-regular_price' % prefix, initial.get('regular_price') or 0),
                 ('%s-regular_dt' % prefix, initial.get('regular_dt') or (today+one_hour)),  # 1 hr
-                ('%s-late_price' % prefix, 0),      
+                ('%s-late_price' % prefix, initial.get('late_price') or 0),      
                 ('%s-late_dt' % prefix, initial.get('late_dt') or (today+(one_hour*2))),  # 2 hrs
                 ('%s-end_dt' % prefix, initial.get('end_dt') or (today+(one_hour*3))),  # 3 hrs
             ])
         else:
              reg8n_dict = OrderedDict([
-                ('early_price', 0),
+                ('early_price', initial.get('early_price') or 0),
                 ('early_dt', initial.get('early_dt') or today),
-                ('regular_price', 0),
+                ('regular_price', initial.get('regular_price') or 0),
                 ('regular_dt', initial.get('regular_dt') or (today+one_hour)),  # 1 hr
-                ('late_price', 0),
+                ('late_price', initial.get('late_price') or 0),
                 ('late_dt', initial.get('late_dt') or (today+(one_hour*2))),  # 2 hrs
                 ('end_dt', initial.get('end_dt') or (today+(one_hour*3))),  # 3 hrs
             ])
@@ -133,9 +133,13 @@ class Reg8nDtField(ChoiceField):
             self.widget.reg8n_dict = reg8n_dict
             return reg8n_dict
 
+        # edit page pre-population of the form fields
         for k, v in reg8n_dict.items():
+            original_key = k
+            # for formsets
+            if prefix:
+                k = k.replace('%s-' % prefix, '')
             if query_dict:  # edit page with querystring
-
                 if k.split('_')[1] == 'price':
                     reg8n_dict[k] = query_dict.get('%s-%s' % (prefix, k))
                 elif k.split('_')[1] == 'dt':
@@ -148,7 +152,10 @@ class Reg8nDtField(ChoiceField):
                         reg8n_dict[k] = u''
 
             elif instance and hasattr(instance, k):  # edit page without querystring
-                    reg8n_dict[k] = getattr(instance, k)
+                    if prefix:
+                        reg8n_dict[original_key] = getattr(instance, k)
+                    else:
+                        reg8n_dict[k] = getattr(instance, k)
 
         self.widget.reg8n_dict = reg8n_dict
         return reg8n_dict

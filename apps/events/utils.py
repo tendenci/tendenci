@@ -2,11 +2,13 @@ import re
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
 from django.contrib.auth.models import User
+from datetime import datetime
 
 from profiles.models import Profile
 from site_settings.utils import get_setting
 from events.models import Registration
-from events.models import Registrant
+from events.models import Registrant, RegConfPricing
+from user_groups.models import Group
 
 def get_vevents(request, d):
     from django.conf import settings
@@ -422,11 +424,83 @@ def create_registrant_from_form(form, event, reg8n, **kwargs):
             
     registrant.save()
     return registrant
-    
-            
-    
 
 
+def get_pricing_dict(price, qualifies):
+    now = datetime.now()
+    pricing = {}
+
+    if price.end_dt >= now:
+        if now <= price.early_dt:
+            pricing.update({
+                'price': price,
+                'amount': price.early_price,
+                'qualifies': qualifies,
+                'type': 'early_price'
+            })
+        if now >= price.early_dt and now <= price.regular_dt:
+            pricing.update({
+                'price': price,
+                'amount': price.regular_price,
+                'qualifies': qualifies,
+                'type': 'regular_price'
+            })
+        if now >= price.regular_dt and now <= price.late_dt:
+            pricing.update({
+                'price': price,
+                'amount': price.late_price,
+                'qualifies': qualifies,
+                'type': 'late_price'
+            })
+
+    return pricing
 
 
+def get_pricing(user, event, pricing=None):
+    """
+    Get a list of qualified pricing in a dictionary
+    form with keys as helpers:
 
+    qualified: boolean that tells you if they qualify
+               to use this price
+
+    price: instance of the RegConfPricing model
+
+    type: string that holds what price type (early,
+          regular or late)
+    """
+    pricing_list = []
+    if not pricing:
+        pricing = RegConfPricing.objects.filter(
+            reg_conf=event.registration_configuration
+        )
+
+    # iterate the pricing based on date
+    # and group
+    for price in pricing:
+        if price.group:
+            if not price.group.is_member(user):
+                pricing_dict = get_pricing_dict(price, False)
+                if pricing_dict:
+                    pricing_list.append(pricing_dict)
+                continue
+        pricing_dict = get_pricing_dict(price, True)
+        if pricing_dict:
+            pricing_list.append(pricing_dict)
+
+    # sort the pricing from smallest to largest
+    # by amount
+    sorted_pricing_list = sorted(
+        pricing_list, 
+        key=lambda k: k['amount']
+    )
+
+    # set a default pricing
+    for price in sorted_pricing_list:
+        if price['qualifies']:
+            price.update({
+                'default': True,
+            })
+            break
+
+    return sorted_pricing_list

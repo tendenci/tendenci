@@ -1,0 +1,50 @@
+{% load i18n %} 
+{% if registration.enabled %}
+    {% if event.is_over %}
+        <div class="registration-red">
+            {% trans "Event has ended" %}
+        </div>
+    {% else %}
+        {% if pricing %}
+        <div class="pricing-list-wrap">
+            <form action="{% url event.multi_register event.pk %}" method="post">
+            <table class="pricing-list" border="0" cellspacing="0" cellpadding="0">
+            {% for price in pricing %}
+                {% if price.qualifies %}
+                    <tr>
+                        <td>
+                            <input id="label-{{ price.price.pk }}" type="radio" name="price" value="{{ price.price.pk }}-{{ price.type}}-{{ price.price.amount }}" 
+                            {% if price.default %}checked{% endif %} />
+                        </td>
+                        <td>
+                            <label for="label-{{ price.price.pk }}"><strong>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ price.amount }}</strong>&nbsp;{{ price.price.title }}</label>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>
+                            <input id="label-{{ price.price.pk }}" type="radio" name="price" value="{{ price.price.pk }}-{{ price.type}}-{{ price.price.amount }}" disabled="disabled" />
+                        </td>
+                        <td class="price-disabled" title="
+                            {% if user.is_authenticated and price.price.group %}
+                                You must be in the group '{{ price.price.group.label }}' to qualify.
+                            {% endif %}
+                            {% if not user.is_authenticated %}
+                                You must be logged in for this price.
+                            {% endif %}">
+                            <label for="label-{{ price.price.pk }}"><strong>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ price.amount }}</strong>&nbsp;{{ price.price.title }}</label>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </table>
+            <input class="registration-green-button" type="submit" name="submit" value="{% trans "Register" %}" />
+            </form>
+        </div>
+        {% else %}
+            <div class="registration-red">
+                {% trans "Registration has ended" %}
+            </div>       
+        {% endif %}
+    {% endif %}
+{% endif %}
