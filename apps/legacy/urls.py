@@ -5,6 +5,8 @@ from django.views.generic.simple import redirect_to
 urlpatterns = patterns('legacy.views',
     # static redirects
     url(r'^$', redirect_to, {'url': '/accounts/login/'}),
+    url(r'^users/$', redirect_to, {'url': '/accounts/login/'}),
+    url(r'^google/$', redirect_to, {'url': '/search'}),
     url(r'^rss/$', redirect_to, {'url': '/rss'}),
 
     # module redirects
