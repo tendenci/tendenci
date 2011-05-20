@@ -420,3 +420,77 @@ form.connect-with li {
     border: 1px solid red;
     padding: 10px 5px;
 }
+
+/* Membership Import
+------------------------------------- */
+
+#import-wrap .form-field {
+	width: 425px;
+	height: 25px;
+	background-color: #F7F7F7;
+}
+
+#import-wrap .form-field .label,
+#import-wrap .form-field .field {
+	width: 200px;
+	float: left;
+}
+
+#import-wrap .form-field .label {
+	text-align: right;
+	border-bottom: 1px solid #EEE;
+	padding: 5px 10px 5px 0;
+}
+
+#import-wrap .form-field .field {
+	padding: 3px 5px 0 0;
+}
+
+#import-wrap .form-field .field select {
+	width: 200px;
+}
+
+#import-wrap form {
+	margin-top: 10px;
+}
+
+#import-wrap form .errors {
+	margin: 0 0 5px 0;
+	width: 402px;
+}
+
+#import-wrap form .errors p {
+	margin: 5px 0 0 0;
+	line-height: 1em;
+}
+
+#import-wrap form input[type="submit"]{
+	margin-top: 10px;
+}
+
+#import-wrap .form-field .error {
+	display: none;
+}
+
+/* Step 4 */
+#import-wrap h1 {
+	margin-bottom: 0;
+}
+#import-wrap .timestamp {
+	margin-top: 0;
+	font-size: 13px;
+}
+
+#import-wrap em {
+	font-size: 1.2em;
+	font-style: normal;
+	font-weight: bold;
+}
+
+#import-wrap .msg {
+	margin-bottom: 0;
+}
+
+#import-wrap.finished .link {
+	margin-top: 0;
+}

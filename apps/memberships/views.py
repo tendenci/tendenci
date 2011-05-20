@@ -1,6 +1,8 @@
 import os
+import sys
 import hashlib
 
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -12,24 +14,20 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from event_logs.models import EventLog
-from memberships.models import App, AppEntry, Notice
 from base.http import Http403
-
-from memberships.models import Membership, MembershipType, Notice
-from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm
+from memberships.models import App, AppEntry, Membership, \
+    MembershipType, Notice, AppField, AppFieldEntry
+from memberships.forms import AppForm, AppEntryForm, \
+    AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm
 from memberships.utils import new_mems_from_csv, is_import_valid
-
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
     has_perm, update_perms_and_save, is_admin, is_member, is_developer
-
 from invoices.models import Invoice
 from corporate_memberships.models import CorporateMembership
-
 from geraldo.generators import PDFGenerator
 from reports import ReportNewMems
-
-from datetime import datetime, timedelta
+from files.models import File
 
 try:
     from notification import models as notification
@@ -89,7 +87,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
         app = apps.best_match().object
     else:
         raise Http404
-    
+
     # if this app is for corporation individuals, redirect them to corp-pre page first.
     # from there, we can decide which corp they'll be in.
     is_corp_ind = False
@@ -118,31 +116,35 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
         corporate_membership = None
 
     user = request.user
-    membership = user.memberships.get_membership()
-    user_member_requirements = [
-        is_developer(request.user) == False,
-        is_admin(request.user) == False,
-        is_member(request.user) == True,
-    ]
 
     initial_dict = {}
+    if hasattr(user, 'memberships'):
+        membership = user.memberships.get_membership()
+        user_member_requirements = [
+            is_developer(request.user) == False,
+            is_admin(request.user) == False,
+            is_member(request.user) == True,
+        ]
 
-    # deny access to renew memberships
-    if all(user_member_requirements):
-        initial_dict = membership.get_app_initial()
-        if not membership.can_renew():
-            return render_to_response("memberships/applications/no-renew.html", {
-                "app": app, "user":user, "membership": membership}, 
-                context_instance=RequestContext(request))
+        # deny access to renew memberships
+        if all(user_member_requirements):
+            initial_dict = membership.get_app_initial()
+            if not membership.can_renew():
+                return render_to_response("memberships/applications/no-renew.html", {
+                    "app": app, "user":user, "membership": membership}, 
+                    context_instance=RequestContext(request))
 
-    pending_entries = request.user.appentry_set.filter(
-        is_approved__isnull = True,  # pending   
-    )
+    pending_entries = []
 
-    if request.user.memberships.get_membership():
-        pending_entries.filter(
-            entry_time__gte = request.user.memberships.get_membership().join_dt
+    if hasattr(user, 'appentry_set'):
+        pending_entries = request.user.appentry_set.filter(
+            is_approved__isnull = True,  # pending   
         )
+
+        if request.user.memberships.get_membership():
+            pending_entries.filter(
+                entry_time__gte = request.user.memberships.get_membership().join_dt
+            )
 
     app_entry_form = AppEntryForm(
             app, 
@@ -179,7 +181,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
                     args=[entry_invoice.pk, entry_invoice.guid]
                 ))
 
-            if not entry.membership_type.require_approval:
+            if not entry.approval_required:
 
                     entry.approve()
 
@@ -495,14 +497,13 @@ def membership_import(request, step=None):
     """
     Membership Import Wizard: Walks you through a series of steps to upload memberships.
     """
-    from files.models import File
-
     if not is_admin(request.user):
         raise Http403
 
     if not step:  # start from beginning
         return redirect('membership_import_upload_file')
 
+    request.session.set_expiry(0)  # expire when browser is closed
     step_numeral, step_name = step
 
     if step_numeral == 1:  # upload-file
@@ -518,13 +519,9 @@ def membership_import(request, step=None):
                 file_path = os.path.join('site_media/media', str(saved_files[0].file))
                 valid_import = is_import_valid(file_path)
 
-                # build memberships
-                memberships = new_mems_from_csv(file_path, app, request.user.pk)
-
                 # store session info
                 request.session['membership.import.app'] = app
                 request.session['membership.import.file_path'] = file_path
-                request.session['membership.import.memberships'] = memberships
 
                 # move to next wizard page
                 return redirect('membership_import_map_fields')
@@ -533,6 +530,7 @@ def membership_import(request, step=None):
             form = CSVForm(step=step)
             return render_to_response(template_name, {
                 'form':form,
+                'datetime':datetime,
                 }, context_instance=RequestContext(request))
 
     if step_numeral == 2:  # map-fields
@@ -543,84 +541,102 @@ def membership_import(request, step=None):
             form = CSVForm(request.POST, request.FILES, step=step, file_path=file_path)
             if form.is_valid():
                 cleaned_data = form.save(step=step)
+                app = request.session.get('membership.import.app')
+                file_path = request.session.get('membership.import.file_path')
+
+                memberships = new_mems_from_csv(file_path, app, cleaned_data)
+
+                request.session['membership.import.memberships'] = memberships
                 request.session['membership.import.fields'] = cleaned_data
+
                 return redirect('membership_import_preview')
+
         else:  # if not POST
             form = CSVForm(step=step, file_path=file_path)
-            return render_to_response(template_name, {'form':form,}, 
-                context_instance=RequestContext(request))
+
+        return render_to_response(template_name, {
+            'form':form,
+            'datetime':datetime,
+            }, context_instance=RequestContext(request))
 
     if step_numeral == 3:  # preview
         template_name = 'memberships/import-preview.html'
         memberships = request.session.get('membership.import.memberships')
+
+        added, skipped = [], []
+        for membership in memberships:
+            if membership.pk: skipped.append(membership)
+            else: added.append(membership)
+
         return render_to_response(template_name, {
         'memberships':memberships,
+        'added': added,
+        'skipped': skipped,
+        'datetime': datetime,
         }, context_instance=RequestContext(request))
 
     if step_numeral == 4:  # confirm
         template_name = 'memberships/import-confirm.html'
-        import sys
-        from memberships.models import AppField, AppFieldEntry
 
         app = request.session.get('membership.import.app')
         memberships = request.session.get('membership.import.memberships')
         fields = request.session.get('membership.import.fields')
-        user = request.user
 
-        if not all([app, memberships, fields, user]):
+        if not all([app, memberships, fields]):
             return redirect('membership_import_upload_file')
 
+        added = []
+        skipped = []
         for membership in memberships:
 
-            membership.save()
+            if not membership.pk:  # new membership
 
-            # entry = AppEntry.objects.filter(
-            #     app = app,
-            #     user = user,
-            #     entry_time = datetime.now(),
-            #     membership = membership,
-            # ).exists()
+                # create entry
+                entry = AppEntry.objects.create(
+                    app = app,
+                    user = membership.user,
+                    entry_time = datetime.now(),
+                    membership = membership,
+                    is_renewal = membership.renewal,
+                    is_approved = True,
+                    decision_dt = membership.create_dt,
+                    judge = membership.creator,
+                    creator=membership.creator,
+                    creator_username=membership.creator_username,
+                    owner=membership.owner,
+                    owner_username=membership.owner_username,
+                )
 
-            # if not entry:  # create if does not exist
+                # create entry fields
+                for key, value in fields.items():
 
-            entry = AppEntry.objects.create(
-                app = app,
-                user = user,
-                entry_time = datetime.now(),
-                membership = membership,
-                is_renewal = membership.renewal,
-                is_approved = True,
-                decision_dt = membership.create_dt,
-                judge = membership.creator,
-                creator=membership.creator,
-                creator_username=membership.creator_username,
-                owner=membership.owner,
-                owner_username=membership.owner_username,
-            )
+                    app_fields = AppField.objects.filter(app=app, label=key)
+                    if app_fields:
+                        app_field = app_fields[0]
+                    else:
+                        app_field = None
 
-            for key, value in fields.items():
+                    try:
+                        AppFieldEntry.objects.create(
+                            entry=entry,
+                            field=app_field,
+                            value=value,
+                        )
+                    except:
+                        print sys.exc_info()[1]
 
-                app_fields = AppField.objects.filter(app=app, label=key)
-                if app_fields:
-                    app_field = app_fields[0]
-                else:
-                    app_field = None
+                membership.save()
 
-                try:
-                    AppFieldEntry.objects.create(
-                        entry=entry,
-                        field=app_field,
-                        value=value,
-                    )
-                except:
-                    print sys.exc_info()[1]
+                added.append(membership)
+            else:
+                skipped.append(membership)
 
-        # Release session information
-        del request.session['membership.import.app']
-        del request.session['membership.import.memberships']
-        del request.session['membership.import.fields']
-
-        return render_to_response(template_name, {}, context_instance=RequestContext(request))
+        return render_to_response(template_name, {
+            'memberships': memberships,
+            'added': added,
+            'skipped': skipped,
+            'datetime': datetime,
+        }, context_instance=RequestContext(request))
 
 
 #REPORTS

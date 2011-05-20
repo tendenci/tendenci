@@ -5,13 +5,14 @@ from perms.models import TendenciBaseModel
 from django.contrib.contenttypes.models import ContentType
 from files.managers import FileManager
 
+
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
     return 'files/%s/%s' % (instance.content_type, filename)
     
 
 class File(TendenciBaseModel):
-    file = models.FileField(max_length=260, upload_to=file_directory)
+    file = models.FileField("", max_length=260, upload_to=file_directory)
     guid = models.CharField(max_length=40)
     name = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True)

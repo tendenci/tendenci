@@ -1,4 +1,8 @@
 from django.conf.urls.defaults import patterns, url
+from files.signals import init_signals
+
+
+init_signals()
 
 urlpatterns = patterns('files',                  
     url(r'^$', 'views.index', name="files"),

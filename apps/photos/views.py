@@ -27,17 +27,19 @@ from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoS
 def details(request, id, set_id=0, template_name="photos/details.html"):
     """ show the photo details """
     photo = get_object_or_404(Image, id=id)
-    set_id = int(set_id)
 
-    # permissions
-    if not has_perm(request.user,'photologue.view_photo',photo):
-        raise Http403
+    if not photo.check_perm(request.user,'photos.view_image'):
+        raise Http404
 
-    # if not public
-    if not photo.is_public:
-        # if no permission; raise 404 exception
-        if not photo.check_perm(request.user,'photos.view_image'):
-            raise Http404
+    # # permissions
+    # if not has_perm(request.user,'photologue.view_photo',photo):
+    #     raise Http403
+
+    # # if not public
+    # if not photo.is_public:
+    #     # if no permission; raise 404 exception
+    #     if not photo.check_perm(request.user,'photos.view_image'):
+    #         raise Http404
     
     photo_url = photo.get_large_url()
 
@@ -79,7 +81,7 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
     })
 
     # default prev/next URL
-    photo_prev_url = photo_next_url = ''
+    photo_prev_url, photo_next_url = '', ''
 
     if set_id:
         photo_set = get_object_or_404(PhotoSet, id=set_id)
@@ -377,7 +379,7 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
         'source': 'photos'
     }
     EventLog.objects.log(**log_defaults)
-        
+
     return render_to_response(template_name, {"photo_sets": photo_sets}, 
         context_instance=RequestContext(request))
 
@@ -555,20 +557,12 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     """ View photos in photo set """
 
     # check photo-set permissions
-    # ---> why use search? wouldn't a direct query be faster?
-    # ---> this also does not take into account the actual user permissions.
     photo_sets = PhotoSet.objects.search('id:%s' % id, user=request.user)
-    if not photo_sets:
-        raise Http404
+    if not photo_sets: raise Http404
     photo_set = photo_sets.best_match().object
-    photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by("-update_dt")
-    
-    # code for non search dependent detail view
-    # --> currently incompatible with the template used
-    # photo_set = get_object_or_404(PhotoSet, id=id)
-    # if not has_perm(request.user,'photos.change_photoset',photo_set):
-    #     raise Http403
-    # photos = photo_set.image_set.all()
+
+    # get photos within photoset; newest ones first
+    photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by('-photo_pk')
 
     EventLog.objects.log(**{
         'event_id' : 991500,

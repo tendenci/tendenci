@@ -40,8 +40,6 @@
 	<div class="files-wrap">
     {% for file in files %}
     {% with file.object as file %}
-    	{% has_perm user files.view_file file as can_view %}
-    	{% if can_view %}
 		<div class="file-wrap">
 			<div class="options">
                 <div class="quick-options">
@@ -77,7 +75,6 @@
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>
-		{% endif %}
 	{% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>
