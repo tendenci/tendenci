@@ -12,6 +12,7 @@ django-picklefield>=0.1.6
 django-simple-captcha>=0.1.7
 django-tagging>=0.3.1
 django-tinymce==1.5.1.dev100
+django-haystack==1.2.1
 feedparser>=4.1
 httplib2>=0.4.0
 pytz>=2010h
@@ -29,9 +30,6 @@ python_openid>=2.2
 
 # git repositories
 git+http://github.com/notanumber/xapian-haystack.git
-
-# haystack from master to allow for faceted charfields
-git+http://github.com/toastdriven/django-haystack.git
 
 # timezones from master, fixes binding issue on sqlite
 git+http://github.com/brosner/django-timezones.git

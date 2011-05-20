@@ -2,6 +2,7 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load styled_forms %}
 
 {% block title %}Import Memberships from CSV file{% endblock %}
 
@@ -11,12 +12,14 @@
 {% endblock %}
 
 {% block body %}
-<div class="membership-wrap">
+<div id="import-wrap">
     
-    <h1>Import Memberships from CSV file</h1>
-    
+    <h1>Membership Import Map Fields</h1>
+	<p class="timestamp">Step 2/4 &middot; {{ datetime.now }}</p>
+
+
     <form method='post' action='{% url membership_import_map_fields %}' enctype="multipart/form-data">
-    {{ form.as_p }}
+    {{ form|styled_form }}
     <input type='submit' value='Submit'>
     </form>
 </div>

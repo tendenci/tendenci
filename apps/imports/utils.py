@@ -351,12 +351,14 @@ def do_user_import(request, user, user_object_dict, setting_dict):
         
     for field in profile_field_names:
         if user_object_dict.has_key(field):
+
             if override:
                 setattr(profile, field, user_object_dict[field])
             else:
                 # fill out the blank field only
                 if getattr(profile, field) == '':
                     setattr(profile, field, user_object_dict[field])
+
     profile.save()
     
     # add to group
