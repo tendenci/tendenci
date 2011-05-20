@@ -20,7 +20,7 @@ class UserImportForm(forms.Form):
                                                                  status_detail='active').order_by('name'),
                                                                  empty_label='Select One', required=False)
     clear_group_membership = forms.BooleanField(initial=0, required=False)
-    
+
     def clean(self):
         # test if the file is missing any key
         if self.cleaned_data.has_key('key') and self.cleaned_data.has_key('file'):
@@ -28,7 +28,9 @@ class UserImportForm(forms.Form):
             file = self.cleaned_data['file']
             file_content = file.read()
             fields = get_header_list_from_content(file_content, file.name)
-            
+
+            fields = [f.strip('"') for f in fields]
+
             missing_keys = []
             for key in key_list:
                 if key not in fields:
@@ -38,11 +40,10 @@ class UserImportForm(forms.Form):
                 missing_keys = ','.join(missing_keys)
                 raise forms.ValidationError(_("The uploaded file lacks the required field(s) as the identity for duplicates: %s." % missing_keys))
         return self.cleaned_data
-    
+
 class UserImportPreviewForm(forms.Form):
     interactive = forms.CharField(widget=forms.HiddenInput(), required=False)
     override = forms.CharField(widget=forms.HiddenInput(), required=False)
     key = forms.CharField(widget=forms.HiddenInput())
     group = forms.CharField(widget=forms.HiddenInput(), required=False)
     clear_group_membership = forms.CharField(widget=forms.HiddenInput(), required=False)
-    

@@ -51,6 +51,7 @@ class PhotoSetIndex(indexes.RealTimeSearchIndex):
 
 class PhotoIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
+    photo_pk = indexes.IntegerField(model_attr='pk')
     title = indexes.CharField(model_attr='title')
     caption = indexes.CharField(model_attr='caption')
     create_dt = indexes.DateTimeField(model_attr='create_dt')

@@ -3,6 +3,7 @@ import re
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
 from haystack.query import SearchQuerySet
+from perms.managers import TendenciBaseManager
 from settings import MEDIA_ROOT
 
 def save_to_disk(f, instance):
@@ -40,22 +41,10 @@ def save_to_disk(f, instance):
     # relative path
     return os.path.join(relative_directory, file_name)
 
-class FileManager(Manager):
-    def search(self, query=None, *args, **kwargs):
-        """
-            Uses Haystack to query. 
-            Returns a SearchQuerySet
-        """
-        sqs = SearchQuerySet()
-        
-        if query: 
-            sqs = sqs.auto_query(sqs.query.clean(query))
-        else:
-            sqs = sqs.all()
-
-        sqs = sqs.order_by('-update_dt')
-        
-        return sqs.models(self.model)
+class FileManager(TendenciBaseManager):
+    """
+    Model Manager
+    """
 
     def get_for_model(self, instance):
         return self.model.objects.filter(
