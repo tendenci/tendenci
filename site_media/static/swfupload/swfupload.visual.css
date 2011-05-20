@@ -282,6 +282,7 @@ div.simple-upload h2 {
 #swf-progress-wrap #swf-progress-init div.even {
 	background-color: #EEE;
 	height: 30px;
+	border-radius: 0;
 }
 #swf-progress-wrap #swf-progress-init div.odd {
 	background-color: white;
@@ -297,7 +298,7 @@ div.simple-upload h2 {
 	position: absolute;
 }
 #swf-msg-mask div {
-	font-size: 5em;
+	font-size: 4em;
 	text-align: center;
 	margin: 100px 0;
 	text-decoration: underline;

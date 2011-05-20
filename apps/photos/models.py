@@ -145,20 +145,20 @@ class Image(ImageModel, TendenciBaseModel):
 
     def get_next(self, set=None):
         # decide which set to pull from
-        if set: images = Image.objects.filter(photoset=set, id__gt=self.id)
-        else: images = Image.objects.filter(id__gt=self.id)
+        if set: images = Image.objects.filter(photoset=set, id__lt=self.id)
+        else: images = Image.objects.filter(id__lt=self.id)
         images = images.values_list("id", flat=True)
-        images = images.order_by('date_added')
-        try: return Image.objects.get(id=min(images))
+        images = images.order_by('-id')
+        try: return Image.objects.get(id=max(images))
         except ValueError: return None
 
     def get_prev(self, set=None):
         # decide which set to pull from
-        if set: images = Image.objects.filter(photoset=set, id__lt=self.id)
-        else: images = Image.objects.filter(id__lt=self.id)
+        if set: images = Image.objects.filter(photoset=set, id__gt=self.id)
+        else: images = Image.objects.filter(id__gt=self.id)
         images = images.values_list("id", flat=True)
-        images = images.order_by('date_added')
-        try: return Image.objects.get(id=max(images))
+        images = images.order_by('-id')
+        try: return Image.objects.get(id=min(images))
         except ValueError: return None
 
     objects = PhotoManager()
