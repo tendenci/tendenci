@@ -5,6 +5,7 @@ from perms.models import TendenciBaseModel
 from django.contrib.contenttypes.models import ContentType
 from files.managers import FileManager
 
+
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
     return 'files/%s/%s' % (instance.content_type, filename)
