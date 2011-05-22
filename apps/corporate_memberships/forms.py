@@ -10,7 +10,10 @@ from tinymce.widgets import TinyMCE
 
 from memberships.fields import PriceInput
 from models import CorporateMembershipType, CorpApp, CorpField, CorporateMembership, CorporateMembershipRep
-from corporate_memberships.utils import get_corpapp_default_fields_list, update_auth_domains
+from corporate_memberships.utils import (get_corpapp_default_fields_list, 
+                                         update_auth_domains, 
+                                         get_payment_method_choices,
+                                         get_indiv_membs_choices)
 from corporate_memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from base.fields import SplitDateTimeField
 from perms.utils import is_admin
@@ -300,7 +303,7 @@ class RosterSearchForm(forms.Form):
     
     
 class CorpMembRenewForm(forms.ModelForm):
-    members = forms.ChoiceField()
+    members = forms.ChoiceField(required=False)
     
     class Meta:
         model = CorporateMembership
@@ -309,7 +312,22 @@ class CorpMembRenewForm(forms.ModelForm):
                   'payment_method')
         
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        corporate_membership = kwargs.pop('corporate_membership', None)
+        
         super(CorpMembRenewForm, self).__init__(*args, **kwargs)
+        
+        self.fields['corporate_membership_type'].widget=forms.RadioSelect()
+        self.fields['corporate_membership_type'].empty_label=None
+        self.fields['corporate_membership_type'].queryset = CorporateMembershipType.objects.filter(status=1, status_detail='active')
+        self.fields['corporate_membership_type'].initial = corporate_membership.corporate_membership_type.id
+        
+        self.fields['members'].widget=forms.CheckboxSelectMultiple(choices=get_indiv_membs_choices(corporate_membership))
+        
+        self.fields['payment_method'].widget=forms.RadioSelect(choices=get_payment_method_choices(user))
+        self.fields['payment_method'].empty_label=None
+        self.fields['payment_method'].initial = corporate_membership.payment_method
+        #self.fields['payment_method'].choices = get_payment_method_choices(user)
     
     
         
