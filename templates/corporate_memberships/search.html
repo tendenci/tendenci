@@ -97,7 +97,7 @@
 			    							{% endif %}
 			    		</div>
 			    		{% if corp_memb.can_renew %}
-			    			<a href="{# link to corp memb renewal #}">Renew</a>
+			    			<a href="{% url corp_memb.renew corp_memb.id %}">Renew</a>
 			    		{% endif %}
 			    	</div>
 			    	<div class="clear-left"></div>
