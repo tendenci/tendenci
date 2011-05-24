@@ -278,6 +278,7 @@
 							
 							
 							{% if form.DELETE %}
+							{% if price.quantity == 1 %}
 							<div class="form-field delete{% if forloop.first %} hidden{% endif %}">
 								<div class="delete-button-wrap">
 									<button class="delete-button">&nbsp;&nbsp;Delete</button>
@@ -288,6 +289,7 @@
 								</noscript>
 							
 							</div>
+							{% endif %}
 							{% endif %}	
 							
 						</div>	
