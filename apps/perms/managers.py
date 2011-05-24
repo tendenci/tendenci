@@ -370,10 +370,7 @@ class TendenciBaseManager(models.Manager):
         """
         from perms.utils import is_admin, is_member
 
-        # form the seach queryset
-        child_sqs = kwargs.get('sqs', None)
-        if not child_sqs:
-            sqs = SearchQuerySet()
+        sqs = kwargs.get('sqs') or SearchQuerySet()
 
         # user information
         user = kwargs.get('user') or AnonymousUser()
