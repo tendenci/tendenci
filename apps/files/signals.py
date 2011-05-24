@@ -14,7 +14,7 @@ def save_files(sender, **kwargs):
     files = orphaned_files + coupled_files
 
     perm_attrs = []
-    if 'tendencibasemodel' in [s._meta.module_name for s in sender.__bases__]:
+    if 'tendencibasemodel' in [s._meta.module_name for s in sender.__bases__ if hasattr(s,'_meta')]:
         # if model (aka sender) inherits from TendenciBaseModel
         perm_attrs = [
             'allow_anonymous_view',
