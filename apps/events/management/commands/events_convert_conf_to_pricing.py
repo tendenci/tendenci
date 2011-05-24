@@ -1,5 +1,6 @@
+import re
 from django.core.management.base import BaseCommand
-
+from datetime import datetime
 
 class Command(BaseCommand):
     """
@@ -8,24 +9,46 @@ class Command(BaseCommand):
     def handle(self, *event_ids, **options):
         from events.models import RegistrationConfiguration
         from events.models import RegConfPricing
+        from django.db import connection, transaction
 
         reg8n_configs = RegistrationConfiguration.objects.all()
+        cursor = connection.cursor()
 
-        for config in reg8n_configs:
-            rcp = RegConfPricing()
+        for config in reg8n_configs:            
+            insert_sql = """
+            INSERT INTO events_regconfpricing (
+                title, 
+                quantity, 
+                group_id, 
+                reg_conf_id, 
+                early_price, 
+                regular_price,
+                late_price,
+                early_dt,
+                regular_dt,
+                late_dt,
+                end_dt
+            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """
 
-            rcp.title = ''
-            rcp.quantity = 0
-            rcp.group = None
-            rcp.reg_conf = config
+            # clean up the pretty sql to a 
+            # usable statements
+            pattern = re.compile(r'[\s\t]+')
+            insert_sql = insert_sql.replace('\n',' ')
+            insert_sql = re.sub(pattern, ' ', insert_sql)
 
-            rcp.early_price = config.early_price
-            rcp.regular_price = config.regular_price
-            rcp.late_price = config.late_price
+            cursor.execute(insert_sql, [
+                '',
+                1,
+                None,
+                config.pk,
+                config.early_price,
+                config.regular_price,
+                config.late_price,
+                config.early_dt,
+                config.regular_dt,
+                config.late_dt,
+                config.end_dt
+            ])
 
-            rcp.early_dt = config.early_dt
-            rcp.regular_dt = config.regular_dt
-            rcp.late_dt = config.late_dt
-            rcp.end_dt = config.end_dt
-
-            rcp.save()
+            transaction.commit_unless_managed()
