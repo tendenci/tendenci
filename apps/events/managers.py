@@ -89,7 +89,7 @@ class RegistrantManager(TendenciBaseManager):
         Returns a SearchQuerySet
         """
         sqs = SearchQuerySet()
-        event = kwargs.get('event', None)
+        event = kwargs.get('event')
 
         if event:
             sqs = sqs.filter(event_pk=event.pk)
