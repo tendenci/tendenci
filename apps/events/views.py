@@ -1210,9 +1210,10 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     # get total and balance (sum)
     for reg8n in registrations:
         if not reg8n.canceled:  # not cancelled
-            if roster_view != 'paid':
-                total_sum += float(reg8n.invoice.total)
-            balance_sum += float(reg8n.invoice.balance)
+            if reg8n.invoice != None:
+                if roster_view != 'paid':
+                    total_sum += float(reg8n.invoice.total)
+                balance_sum += float(reg8n.invoice.balance)
 
     num_registrants_who_payed = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
