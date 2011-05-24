@@ -395,6 +395,18 @@ class RegistrationConfiguration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    @property
+    def can_pay_online(self):
+        """
+        Check online payment dependencies.
+        Return boolean.
+        """
+        has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
+        has_account = get_setting('site', 'global', 'merchantaccount') is not ''
+        has_api = settings.MERCHANT_LOGIN is not ''
+
+        return all([has_method, has_account, has_api])
+
 
 class RegConfPricing(models.Model):
     """
@@ -468,18 +480,6 @@ class RegConfPricing(models.Model):
             if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
                 return True
         return False
-
-    @property
-    def can_pay_online(self):
-        """
-        Check online payment dependencies.
-        Return boolean.
-        """
-        has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
-        has_account = get_setting('site', 'global', 'merchantaccount') is not ''
-        has_api = settings.MERCHANT_LOGIN is not ''
-
-        return all([has_method, has_account, has_api])
 
 
 class Payment(models.Model):
