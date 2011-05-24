@@ -356,11 +356,16 @@ class RegistrationForm(forms.Form):
     """
     captcha = CaptchaField(label=_('Type the code below'))
 
-    def __init__(self, event=None, *args, **kwargs):
+    def __init__(self, event, price, event_price, *args, **kwargs):
+        """
+        event: instance of Event model
+        price: instance of RegConfPricing model
+        event_price: integer of the event amount
+        """
         user = kwargs.pop('user', None)
         super(self.__class__, self).__init__(*args, **kwargs)
 
-        free_event = event.registration_configuration.price <= 0
+        free_event = event_price <= 0
         if not free_event:
             payment_method = event.registration_configuration.payment_method.all()
     
