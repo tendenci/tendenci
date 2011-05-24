@@ -738,7 +738,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if not event.registration_configuration.within_time:
             messages.add_message(request, messages.INFO,
                                 'Registration has been closed.')
-            return HttpResponseRedirect(reverse('event', args=(event_id),))
+            return HttpResponseRedirect(reverse('event', args=(event_id,),))
     
     event_price = event.registration_configuration.price 
     
