@@ -97,7 +97,7 @@ class RegistrantManager(TendenciBaseManager):
         # let the parent search know that we have started a SQS
         kwargs.update({'sqs': sqs})
 
-        sqs = super(EventManager, self).search(
+        sqs = super(RegistrantManager, self).search(
             query=query, *args, **kwargs)
 
         return sqs
