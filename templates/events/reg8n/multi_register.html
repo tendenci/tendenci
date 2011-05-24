@@ -122,9 +122,9 @@
 		clear: both;
 	}
 	.delete-button{
-		padding: 3px;
+		padding: 3px 3px 3px 10px;
 		color: #cc3434;
-		background: url("/site_media/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 0 50%;
+		background: url("/site_media/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 5px 50%;
 	}
 	
 
@@ -135,7 +135,7 @@
     <h1>Register for Event - <a href="{% url event event.id %}">{{ event.title }}</a></h1>
 		<div class="event-price-display">
 		Price:
-		{{ event.registration_configuration.price|format_currency }}</div>
+		{{ event_price|format_currency }}</div>
 		
 	{% if reg_form.errors.values or has_registrant_form_errors %}
 		<div class="errors-box">
@@ -143,7 +143,9 @@
 				{{ reg_form.non_field_errors }}
 				{% for field in reg_form %}
 					{% if field.errors %}
-						<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+						{% for error in field.errors %}
+						<li><a href="javascript:;">{{ field.label_tag }}  &ndash; {{ error }}</a></li>
+						{% endfor %}	
 					{% endif %}
 				{% endfor %}
 				
@@ -151,7 +153,9 @@
 					{{ form.non_field_errors }}
 					{% for field in form %}
 						{% if field.errors %}
-							<li><a href="javascript:;">{{ field.label_tag }}</a></li>	
+							{% for error in field.errors %}
+							<li><a href="javascript:;">{{ field.label_tag }}  &ndash; {{ error }}</a></li>
+							{% endfor %}	
 						{% endif %}
 					{% endfor %}
 				{% endfor %}
@@ -161,6 +165,7 @@
 
 	<div class="form-wrap">
     	<form action="" method="post">
+    	<input type="hidden" name="price" value="{{ price.pk }}-{{ price_type }}-{{ event_price }}">
     	<div class="forms">
     	
     		<div id="reg-form-wrap">
@@ -177,7 +182,7 @@
 	    					<td width="50%">Reg#<span class="item-counter">{{ forloop.counter }}</span></td>
 	    					<td width="50%" align="right">
 		    					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-		    					<span class="reg-price">{{ price_entry.price}}</span>
+		    					<span class="reg-price">{{ price_entry.price|floatformat:2 }}</span>
 	    					</td>
     					</tr>
     					{% endfor %}
@@ -187,7 +192,7 @@
     						<td><div id="total-label">Total</div></td>
     						<td align="right">
     							<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-    							<span id="total-amount">{{ total_price }}</span>
+    							<span id="total-amount">{{ total_price|floatformat:2 }}</span>
     						</td>
     					</tr>
     				</table>
@@ -292,11 +297,13 @@
 				
 			</div>
 			
+			{% if price.quantity == 1 %}
 			<div class="add-registrant-box">
 				 <input title='Add a registrant' type='submit' name='add_registrant' 
 				 onClick="addRegistrant(this, 'registrant');return false;"
 			 value='Add another registrant' />
 			</div>
+			{% endif %}
 			
 			<div class="clear"></div>
 			

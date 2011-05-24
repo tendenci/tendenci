@@ -3,12 +3,14 @@ import calendar
 from datetime import datetime
 from datetime import date, timedelta
 
+from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import QueryDict
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.loader import render_to_string
@@ -29,6 +31,7 @@ from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     Reg8nConfPricingEditForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
+from events.utils import registration_has_started
 from perms.utils import has_perm, get_notice_recipients, update_perms_and_save, get_administrators
 from event_logs.models import EventLog
 from invoices.models import Invoice
@@ -182,7 +185,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     SpeakerFormSet = modelformset_factory(
         Speaker, 
         form=SpeakerForm,
-        extra=0,
+        extra=1,
         can_delete=True
     )
     RegConfPricingSet = modelformset_factory(
@@ -598,186 +601,6 @@ def delete(request, id, template_name="events/delete.html"):
     else:
         raise Http403# Create your views here.
 
-def register(request, event_id=0, form_class=Reg8nForm):
-        event = get_object_or_404(Event, pk=event_id)
-
-        # check if event allows registration
-        if not event.registration_configuration and \
-           event.registration_configuration.enabled:
-            raise Http404
-
-        # choose template
-        free_reg8n = event.registration_configuration.price <= 0
-        if free_reg8n:
-            template_name = "events/reg8n/register-free.html"
-        else:
-            template_name = "events/reg8n/register-priced.html"
-
-        # if logged in; use their info to register
-        if request.user.is_authenticated():
-            user, email = request.user, request.user.email
-        else:
-            user, email = None, ''
-
-        # get registrants for this event
-        registrants = Registrant.objects.filter(
-            registration__event = event,
-        )
-
-        # if person is registered; show them their confirmation
-        if email:
-            if registrants.filter(email=email).exists():
-                return HttpResponseRedirect(
-                    reverse('event.registration_confirmation',
-                    args=(event_id, registrants.filter(email=email)[0].hash)),
-                )
-
-        infinite_limit = event.registration_configuration.limit <= 0
-
-        # pull registrants based off "payment required"
-        if event.registration_configuration.payment_required:
-            registrants = registrants.filter(registration__invoice__balance__lte = 0)
-
-        bad_scenarios = [
-            event.end_dt < datetime.now(), # event has passed
-            event.registration_configuration.end_dt and event.registration_configuration.end_dt < datetime.now(), # registration period has passed
-            event.registration_configuration.early_dt > datetime.now(), # registration period has not started
-            (event.registration_configuration.limit <= registrants.count()) and \
-                not infinite_limit, # registration limit exceeded
-        ]
-
-        if any(bad_scenarios):
-            return HttpResponseRedirect(reverse('event', args=(event_id,)))
-
-        if request.method == "POST":
-            form = form_class(event_id, request.POST, user=user)
-            if form.is_valid():
-                price = form.cleaned_data['price']
-                payment_method = form.cleaned_data['payment_method']
-
-                reg_defaults = {
-                    'user': user,
-                    'phone': form.cleaned_data.get('phone', ''),
-                    'email': form.cleaned_data.get('email', email),
-                    'first_name': form.cleaned_data.get('first_name', ''),
-                    'last_name': form.cleaned_data.get('last_name', ''),
-                    'company_name': form.cleaned_data.get('company_name', ''),
-                    'event': event,
-                    'payment_method': payment_method,
-                    'price': price,
-                }
-
-                # create registration record; then take payment
-                # this allows someone to be registered with an outstanding balance
-                # gets or creates records
-                reg8n, reg8n_created = save_registration(**reg_defaults)
-
-                site_label = get_setting('site', 'global', 'sitedisplayname')
-                site_url = get_setting('site', 'global', 'siteurl')
-                self_reg8n = get_setting('module', 'users', 'selfregistration')
-
-                is_credit_card_payment = reg8n.payment_method and \
-                    (reg8n.payment_method.label).lower() == 'credit card'
-
-                if is_credit_card_payment:
-                # online payment
-
-                    # get invoice; redirect to online pay
-                    # ------------------------------------
-
-                    invoice = Invoice.objects.get(
-                        object_type = ContentType.objects.get(
-                        app_label=reg8n._meta.app_label,
-                        model=reg8n._meta.module_name),
-                        object_id = reg8n.id,
-                    )
-
-                    response = HttpResponseRedirect(reverse(
-                        'payments.views.pay_online',
-                        args=[invoice.id, invoice.guid]
-                    ))
-
-                else:
-                # offline payment
-
-                    # send email; add message; redirect to confirmation
-                    # --------------------------------------------------
-
-                    notification.send_emails(
-                        [reg_defaults['email']],
-                        'event_registration_confirmation',
-                        {   'site_label': site_label,
-                            'site_url': site_url,
-                            'self_reg8n': self_reg8n,
-                            'reg8n': reg8n,
-                            'event': event,
-                            'price': price,
-                            'is_paid': reg8n.invoice.balance == 0
-                         },
-                        True, # save notice in db
-                    )
-
-                    if reg8n.registrant.cancel_dt:
-                        messages.add_message(request, messages.INFO,
-                            'Your registration was canceled on %s' % date_filter(reg8n.cancel_dt)
-                        )
-                    elif not reg8n_created:
-                        messages.add_message(request, messages.INFO,
-                            'You were already registered on %s' % date_filter(reg8n.create_dt)
-                        )
-
-                    response = HttpResponseRedirect(reverse(
-                        'event.registration_confirmation',
-                        args=(event_id, reg8n.registrant.hash)
-                    ))
-
-            else: # else form is invalid
-                response = render_to_response(template_name, {'event':event, 'form':form}, 
-                context_instance=RequestContext(request))
-
-                log_defaults = {
-                    'event_id' : 431000,
-                    'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                    'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
-                    'user': request.user,
-                    'request': request,
-                    'instance': event,
-                }
-                EventLog.objects.log(**log_defaults)
-
-        else: # else request.method != "POST"
-            if request.user.is_authenticated():
-                payment_method = PaymentMethod.objects.get(pk=3)
-
-                if free_reg8n:
-                    reg_defaults = {
-                       'user': user,
-                       'email': user.email,
-                       'first_name': user.first_name,
-                       'last_name': user.last_name,
-                       'company_name': '',
-                       'event': event,
-                       'payment_method': payment_method,
-                       'price': '0.00',
-                    }
-                     # if free event; then register w/o payment method
-                    reg8n, created = save_registration(**reg_defaults)
-                    response = HttpResponseRedirect(reverse(
-                        'event.registration_confirmation', 
-                        args=(event_id, reg8n.registrant.hash)
-                    ))
-                else:
-                # else prompt registrant w/ registration-form
-                    form = form_class(event_id, user=request.user)
-                    response = render_to_response(template_name, {'event':event, 'form':form}, 
-                        context_instance=RequestContext(request))
-            else: # not authenticated
-                
-                form = form_class(event_id, user=request.user)
-                response = render_to_response(template_name, {'event':event, 'form':form}, 
-                    context_instance=RequestContext(request))
-
-        return response
     
 def multi_register(request, event_id=0, template_name="events/reg8n/multi_register.html"):
     event = get_object_or_404(Event, pk=event_id)
@@ -786,18 +609,68 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if not event.registration_configuration and \
        event.registration_configuration.enabled:
         raise Http404
-    
-    if not event.registration_configuration.within_time:
-            messages.add_message(request, messages.INFO,
-                                'Registration has been closed.')
+
+    # set up pricing
+    price_pk, price_type, amount = None, None, None
+    if 'price' in request.POST:
+        try:
+            price_pk, price_type, amount = request.POST['price'].split('-')
+        except:
+            messages.add_message(request, messages.INFO, _('Please choose a price.'))
             return HttpResponseRedirect(reverse('event', args=(event_id),))
+    else:
+        messages.add_message(request, messages.INFO, _('Please choose a price.'))
+        return HttpResponseRedirect(reverse('event', args=(event_id),)) 
+        
+    try:
+        amount = float(amount)
+    except ValueError:
+        messages.add_message(request, messages.INFO, _('Please choose a price.'))
+        return HttpResponseRedirect(reverse('event', args=(event_id),))
+
+    # check if this post came from the pricing form
+    # and modify the request method
+    # we want it to fake a get here so that
+    # the client can't actually see the pricing
+    # var
+    if 'from_price_form' in request.POST:
+        request.method = 'GET'
+        request.POST = QueryDict({})
+
+    # get price
+    if price_pk.isdigit():
+        price = RegConfPricing.objects.get(pk=price_pk)
+    else:
+        messages.add_message(request, messages.INFO, _('Please choose a price.'))
+        return HttpResponseRedirect(reverse('event', args=(event_id),))             
+
+    # get all pricing
+    pricing = RegConfPricing.objects.filter(
+        reg_conf=event.registration_configuration
+    )
     
-    event_price = event.registration_configuration.price 
-    
-    RegistrantFormSet = formset_factory(RegistrantForm, formset=RegistrantBaseFormSet,
-                                         can_delete=True, max_num=1)
-    total_regt_forms = 1
-    
+    # check if it is still open based on dates
+    reg_started = registration_has_started(event, pricing=pricing)
+    if not reg_started:
+        messages.add_message(request, messages.INFO,
+                            'Registration has been closed.')
+        return HttpResponseRedirect(reverse('event', args=(event_id),))        
+
+    # set the price that will be used throughout the view
+    event_price = amount
+
+    # start the form set factory    
+    RegistrantFormSet = formset_factory(
+        RegistrantForm, 
+        formset=RegistrantBaseFormSet,
+        can_delete=True,
+        max_num=price.quantity,
+        extra=(price.quantity - 1)
+    )
+
+    # update the amount of forms based on quantity
+    total_regt_forms = price.quantity
+
     # REGISTRANT formset
     post_data = request.POST or None
      
@@ -825,9 +698,20 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
 
     # REGISTRATION form
     if request.method == 'POST' and 'submit' in request.POST:
-        reg_form = RegistrationForm(event, request.POST, user=request.user)
+        reg_form = RegistrationForm(
+            event,
+            price,
+            event_price,
+            request.POST, 
+            user=request.user
+        )
     else:
-        reg_form = RegistrationForm(event, user=request.user)
+        reg_form = RegistrationForm(
+            event,
+            price,
+            event_price,
+            user=request.user
+        )
     if request.user.is_authenticated():
         del reg_form.fields['captcha']
     
@@ -838,7 +722,14 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if request.method == 'POST':
         if 'submit' in request.POST:
             if reg_form.is_valid() and registrant.is_valid():
-                reg8n, reg8n_created = add_registration(request, event, reg_form, registrant)
+                reg8n, reg8n_created = add_registration(
+                    request, 
+                    event, 
+                    reg_form, 
+                    registrant,
+                    price,
+                    event_price
+                )
                 
                 site_label = get_setting('site', 'global', 'sitedisplayname')
                 site_url = get_setting('site', 'global', 'siteurl')
@@ -894,23 +785,27 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                                 'event.registration_confirmation',
                                                 args=(event_id, reg8n.registrant.hash)
                                                 ))         
-
     
-    total_price = 0
-    free_event = event_price <= 0
-        
     # if not free event, store price in the list for each registrant
-    #if not free_event:
     price_list = []
-    i = 0
+    count = 0
+    total_price = 0.00
+    free_event = event_price <= 0
+
     for form in registrant.forms:
         deleted = False
-        if form.data.get('registrant-%d-DELETE' % i, False):
+        if form.data.get('registrant-%d-DELETE' % count, False):
             deleted = True
-        price_list.append({'price':event_price, 'deleted':deleted})
+        if price.quantity > 1 and count >= 1:
+            price_list.append({'price': 0.00, 'deleted':deleted})
+        else:
+            price_list.append({'price':event_price, 'deleted':deleted})
         if not deleted:
-            total_price += event_price
-        i = i+1
+            if price.quantity > 1:
+                total_price = event_price
+            else:
+                total_price += event_price
+        count += 1
         
     # check if we have any error on registrant formset
     has_registrant_form_errors = False
@@ -922,14 +817,17 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         if has_registrant_form_errors:
             break
 
-    return render_to_response(template_name, {'event':event, 
+    return render_to_response(template_name, {'event':event,
+                                              'event_price': event_price,
+                                              'price_type':  price_type,
+                                              'free_event': free_event,
+                                              'price_list':price_list,
+                                              'total_price':total_price,
+                                              'price': price,
                                               'reg_form':reg_form,
-                                               'registrant': registrant,
-                                               'total_regt_forms': total_regt_forms,
-                                               'free_event': free_event,
-                                               'price_list':price_list,
-                                               'total_price':total_price,
-                                               'has_registrant_form_errors': has_registrant_form_errors,
+                                              'registrant': registrant,
+                                              'total_regt_forms': total_regt_forms,
+                                              'has_registrant_form_errors': has_registrant_form_errors,
                                                }, 
                     context_instance=RequestContext(request))
     
