@@ -197,16 +197,13 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
         try: # get content type
             contenttype = ContentType.objects.get(app_label=params['app_label'], model=params['model'])
 
-            if params['instance_id'] == '0':
-                # orphaned files
-                files = File.objects.filter(
-                    content_type=contenttype, 
-                    object_id=0)
-            else:
-                # coupled files
-                files = File.objects.filter(
-                    content_type=contenttype, 
-                    object_id=params['instance_id'])
+            instance_id = params['instance_id']
+            if instance_id == 'undefined':
+                instance_id = 0
+
+            files = File.objects.filter(
+                content_type=contenttype, 
+                object_id=instance_id)
 
             for media_file in files:
                 file, ext = os.path.splitext(media_file.file.url)
