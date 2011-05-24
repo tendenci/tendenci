@@ -33,10 +33,10 @@ FIELD_CHOICES = (
 
 FIELD_FUNCTIONS = (
     ("GroupSubscription", _("Subscribe to Group")),
-    ("EmailFirstName", _("Email First Name")),
-    ("EmailLastName", _("Email Last Name")),
-    ("EmailFullName", _("Email Full Name")),
-    ("EmailPhoneNumber", _("Email Phone Number")),
+    ("EmailFirstName", _("First Name")),
+    ("EmailLastName", _("Last Name")),
+    ("EmailFullName", _("Full Name")),
+    ("EmailPhoneNumber", _("Phone Number")),
 )
 
 class Form(TendenciBaseModel):
