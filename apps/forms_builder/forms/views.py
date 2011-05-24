@@ -89,16 +89,17 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
         raise Http403
 
     form_class=inlineformset_factory(Form, Field, form=FormForField, extra=3)
+    form_class._orderings = 'position'
     
     if request.method == "POST":
-        form = form_class(request.POST, instance=form_instance)
+        form = form_class(request.POST, instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
         if form.is_valid():           
             form.save()
         
             messages.add_message(request, messages.INFO, 'Successfully updated %s' % form_instance)
             return HttpResponseRedirect(reverse('forms'))
     else:
-        form = form_class(instance=form_instance)
+        form = form_class(instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
        
     return render_to_response(template_name, {'form':form, 'form_instance':form_instance}, 
         context_instance=RequestContext(request))
