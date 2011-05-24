@@ -395,71 +395,6 @@ class RegistrationConfiguration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
-    # def __init__(self, *args, **kwargs):
-    #     super(self.__class__, self).__init__(*args, **kwargs)
-
-    #     if hasattr(self,'event'):
-    #     # registration_configuration might not be attached to an event yet
-    #         self.PERIODS = {
-    #             'early': (self.early_dt, self.regular_dt),
-    #             'regular': (self.regular_dt, self.late_dt),
-    #             'late': (self.late_dt, self.end_dt),
-    #         }
-    #     else:
-    #         self.PERIODS = None
-
-    # def available(self):
-    #     if not self.enabled:
-    #         return False
-
-    #     if hasattr(self, 'event'):
-    #         if datetime.now() > self.event.end_dt:
-    #             return False
-
-    #     return True
-
-    # @property
-    # def price(self):
-    #     price = 0.00
-    #     for period in self.PERIODS:
-    #         if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
-    #             price = self.price_from_period(period)
-
-    #     return price
-
-    # def price_from_period(self, period):
-
-    #     if period in self.PERIODS:
-    #         return getattr(self, '%s_price' % period)
-    #     else: return None
-
-    # @property
-    # def is_open(self):
-    #     status = [
-    #         self.enabled,
-    #         self.within_time,
-    #     ]
-    #     return all(status)
-
-    # @property
-    # def within_time(self):
-    #     for period in self.PERIODS:
-    #         if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
-    #             return True
-    #     return False
-
-    # @property
-    # def can_pay_online(self):
-    #     """
-    #     Check online payment dependencies.
-    #     Return boolean.
-    #     """
-    #     has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
-    #     has_account = get_setting('site', 'global', 'merchantaccount') is not ''
-    #     has_api = settings.MERCHANT_LOGIN is not ''
-
-    #     return all([has_method, has_account, has_api])
-
 
 class RegConfPricing(models.Model):
     """
@@ -479,6 +414,72 @@ class RegConfPricing(models.Model):
     regular_dt = models.DateTimeField(_('Regular Registration Starts'))
     late_dt = models.DateTimeField(_('Late Registration Starts'))
     end_dt = models.DateTimeField(_('Registration Ends'), default=0)
+
+    def __init__(self, *args, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
+        self.PERIODS = {
+            'early': (self.early_dt, self.regular_dt),
+            'regular': (self.regular_dt, self.late_dt),
+            'late': (self.late_dt, self.end_dt),
+        }
+
+    def available(self):
+        if not self.reg_conf.enabled:
+            return False
+        if hasattr(self, 'event'):
+            if datetime.now() > self.event.end_dt:
+                return False
+        return True
+
+    @property
+    def price(self):
+        price = 0.00
+        for period in self.PERIODS:
+            if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
+                price = self.price_from_period(period)
+        return price
+
+    def price_from_period(self, period):
+        if period in self.PERIODS:
+            return getattr(self, '%s_price' % period)
+        else: 
+            return None
+
+    @property
+    def registration_has_started(self):
+        has_started = []
+        for period in self.PERIODS:
+            if datetime.now() >= self.PERIODS[period][0]:
+                has_started.append(True)
+            has_started.append(False)
+        return any(has_started)
+
+    @property
+    def is_open(self):
+        status = [
+            self.reg_conf.enabled,
+            self.within_time,
+        ]
+        return all(status)
+
+    @property
+    def within_time(self):
+        for period in self.PERIODS:
+            if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
+                return True
+        return False
+
+    @property
+    def can_pay_online(self):
+        """
+        Check online payment dependencies.
+        Return boolean.
+        """
+        has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
+        has_account = get_setting('site', 'global', 'merchantaccount') is not ''
+        has_api = settings.MERCHANT_LOGIN is not ''
+
+        return all([has_method, has_account, has_api])
 
 
 class Payment(models.Model):

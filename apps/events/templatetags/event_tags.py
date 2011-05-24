@@ -9,7 +9,8 @@ from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser
 
 from events.models import Event, Registrant, Type, RegConfPricing
-from events.utils import get_pricing
+from events.utils import get_pricing, registration_earliest_time
+from events.utils import registration_has_started
 from base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
@@ -62,13 +63,24 @@ def registrant_search(context, event=None):
 def registration_pricing_and_button(context, event, user):
     pricing_context = []
     registration = event.registration_configuration
-    pricing = get_pricing(user, event)
 
+    pricing = RegConfPricing.objects.filter(
+        reg_conf=event.registration_configuration
+    )
+    reg_started = registration_has_started(event, pricing=pricing)
+    earliest_time = registration_earliest_time(event, pricing=pricing)
+
+    # dictionary with helpers, not a queryset
+    # see get_pricing
+    q_pricing = get_pricing(user, event, pricing=pricing)
+  
     context.update({
         'now': datetime.now(),
         'event': event,
         'registration': registration,
-        'pricing': pricing,
+        'reg_started': reg_started,
+        'earliest_time': earliest_time,
+        'pricing': q_pricing,
         'user': user
     })
 

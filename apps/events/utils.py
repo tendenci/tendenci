@@ -364,8 +364,19 @@ def save_registration(*args, **kwargs):
     reg8n.save_invoice()
     return (reg8n, created)
 
-def add_registration(request, event, reg_form, registrant_formset, *args, **kwargs):
+def add_registration(*args, **kwargs):
+    """
+    Add the registration
+    Args are split up below into the appropriate attributes
+    """
     total_amount = 0
+    count = 0
+
+    # arguments were getting kinda long
+    # moved them to an unpacked version
+    request, event, reg_form, \
+    registrant_formset, price, \
+    event_price = args
     
     reg8n_attrs = {
             "event": event,
@@ -380,9 +391,22 @@ def add_registration(request, event, reg_form, registrant_formset, *args, **kwar
     reg8n = Registration.objects.create(**reg8n_attrs)
     
     for form in registrant_formset.forms:
+        amount = event_price
+        if price.quantity > 1 and count >= 1:
+            amount = 0.00
         if not form in registrant_formset.deleted_forms:
-            registrant = create_registrant_from_form(form, event, reg8n)
-            total_amount += registrant.amount
+            registrant_args = [
+                form,
+                event,
+                reg8n,
+                price,
+                amount
+            ]
+            registrant = create_registrant_from_form(*registrant_args)
+            total_amount += registrant.amount 
+            
+            count += 1
+    
     # update reg8n with the real amount
     reg8n.amount_paid = total_amount
     
@@ -393,10 +417,19 @@ def add_registration(request, event, reg_form, registrant_formset, *args, **kwar
     return (reg8n, created)
 
 
-def create_registrant_from_form(form, event, reg8n, **kwargs):
+def create_registrant_from_form(*args, **kwargs):
+    """
+    Create the registrant
+    Args are split up below into the appropriate attributes
+    """
+    # arguments were getting kinda long
+    # moved them to an unpacked version
+    form, event, reg8n, \
+    price, amount = args
+
     registrant = Registrant()
     registrant.registration = reg8n
-    registrant.amount = event.registration_configuration.price
+    registrant.amount = amount
 
     registrant.first_name = form.cleaned_data.get('first_name', '')
     registrant.last_name = form.cleaned_data.get('last_name', '')
@@ -431,21 +464,21 @@ def get_pricing_dict(price, qualifies):
     pricing = {}
 
     if price.end_dt >= now:
-        if now <= price.early_dt:
+        if now >= price.early_dt and now <= price.regular_dt:
             pricing.update({
                 'price': price,
                 'amount': price.early_price,
                 'qualifies': qualifies,
                 'type': 'early_price'
             })
-        if now >= price.early_dt and now <= price.regular_dt:
+        if now >= price.regular_dt and now <= price.late_dt:
             pricing.update({
                 'price': price,
                 'amount': price.regular_price,
                 'qualifies': qualifies,
                 'type': 'regular_price'
             })
-        if now >= price.regular_dt and now <= price.late_dt:
+        if now >= price.late_dt and now <= price.end_dt:
             pricing.update({
                 'price': price,
                 'amount': price.late_price,
@@ -504,3 +537,44 @@ def get_pricing(user, event, pricing=None):
             break
 
     return sorted_pricing_list
+
+
+def registration_earliest_time(event, pricing=None):
+    """
+    Get the earlist time out of all the pricing
+    """
+    earliest_time = []
+    if not pricing:
+        pricing = RegConfPricing.objects.filter(
+            reg_conf=event.registration_configuration
+        )
+
+    for price in pricing:
+        earliest_time.append(price.early_dt)    
+
+    try:
+        earliest_time = sorted(earliest_time)[0]
+    except IndexError:
+        earliest_time = None
+
+    return earliest_time
+
+
+def registration_has_started(event, pricing=None):
+    """
+    Check all times and make sure the registration has
+    started
+    """
+    reg_started = []
+
+    if not pricing:
+        pricing = RegConfPricing.objects.filter(
+            reg_conf=event.registration_configuration
+        )
+
+    for price in pricing:
+        reg_started.append(
+            price.registration_has_started
+        )
+
+    return any(reg_started)
