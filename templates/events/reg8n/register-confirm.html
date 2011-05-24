@@ -158,7 +158,7 @@
 	                    {{ registrant.last_name }}
 	                {% endif %}
 	            {% else %}
-	            	Guest #{{ registrant.pk }}
+	            	Guest #{{ forloop.counter0 }}
 	            {% endif %}
 	            </div>
 	            
