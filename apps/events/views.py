@@ -1159,7 +1159,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
 
     event = get_object_or_404(Event, pk=event_id)
     registrants = Registrant.objects.search(
-        query, user=request.user, event=event,).order_by("-update_dt")
+        query, user=request.user, event=event).order_by("-update_dt")
 
     return render_to_response(template_name, {'event':event, 'registrants':registrants}, 
         context_instance=RequestContext(request))
