@@ -370,7 +370,7 @@ class TendenciBaseManager(models.Manager):
         """
         from perms.utils import is_admin, is_member
 
-        sqs = kwargs.get('sqs') or SearchQuerySet()
+        sqs = kwargs.get('sqs', SearchQuerySet())
 
         # user information
         user = kwargs.get('user') or AnonymousUser()
