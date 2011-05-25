@@ -434,14 +434,9 @@ class RegistrantForm(forms.Form):
         return data
     
     def clean_email(self):
-        # check if user by this email has already registered
+        # Removed the email check to allow for multiple
+        # registrations
         data = self.cleaned_data['email']
-        if data.strip() != '':
-            registrants = Registrant.objects.filter(email=data)
-            for registrant in registrants:
-                if registrant.registration.event.id == self.event.id:
-                    raise forms.ValidationError("User by this email address has already registered.")
-
         return data
 
 

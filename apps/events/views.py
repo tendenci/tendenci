@@ -32,6 +32,7 @@ from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing
+from events.utils import get_event_spots_taken, update_event_spots_taken
 from perms.utils import has_perm, get_notice_recipients, update_perms_and_save, get_administrators
 from event_logs.models import EventLog
 from invoices.models import Invoice
@@ -665,6 +666,14 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if not reg_started:
         return multi_register_redirect(request, event, _('Registration has been closed.'))     
 
+    # update the spots left
+    limit = event.registration_configuration.limit
+    spots_taken = 0
+    if limit > 0:
+        spots_taken = get_event_spots_taken(event)
+        if spots_taken > limit:
+            return multi_register_redirect(request, event, _('Registration is full.'))
+
     # set the event price that will be used throughout the view
     event_price = amount
 
@@ -749,6 +758,9 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 
                 
                 if reg8n_created:
+                    # update the spots taken on this event
+                    update_event_spots_taken(event)
+
                     if is_credit_card_payment:
                         # online payment
                         # get invoice; redirect to online pay

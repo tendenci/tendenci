@@ -40,33 +40,65 @@
 
 {% block extra_body %}
     {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
 	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/formset.min.js"></script>
-    <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_object = confirm("Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?");	// confirm
-				if(delete_object) $('form[name="event-delete"]').submit()
-				return false;	// cancel
-			});
-		});
-    </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
+        var geocoder = null;
+
+        // googl maps address functionality
+        function initialize() {
+            geocoder = new google.maps.Geocoder();
+        }
+
+        $('input#id_place-address').bind('keyup', 'Ctrl+v', function() {
+            var input = $(this)[0];
+            var address = input.value;
+            geocoder.geocode({
+                address: address
+            }, function(results, status) {
+                if (status == "OK") {
+                    var pre_input = 'input#id_place-';
+                    var components = results[0].address_components;
+                    var address = {};
+                    for (var i in components) {
+                        var c = components[i];
+                        address[c.types[0]] = c.long_name;
+                    }
+
+                    // setup new address
+                    if (address.subpremise) {
+                        $(pre_input + 'address').val(
+                            address.street_number + ' ' + address.route + ' ' + address.subpremise
+                        );
+                    } else {
+                         $(pre_input + 'address').val(
+                            address.street_number + ' ' + address.route
+                        );                       
+                    }
+                    $(pre_input + 'city').val(address.locality);
+                    $(pre_input + 'state').val(address.administrative_area_level_1);
+                    $(pre_input + 'zip').val(address.postal_code);
+                    $(pre_input + 'country').val(address.country);
+                }
+            });         
+        });
+
+    	var iconrow = new dropdown({
+    		container:	'more-options-wrap',
+    		trigger:	'more-options-trigger',
+    		target:		'more-options-target'
+    	});
+
+        $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+        $('.timepicker').timePicker({
+          show24Hours: false,
+          step: 15
+        });
 	</script>
 	<script type="text/javascript">
-		$(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
-		$('.timepicker').timePicker({
-		  show24Hours: false,
-		  step: 15
-		});
+
 	</script>
 {% endblock %}
