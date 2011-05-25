@@ -31,7 +31,7 @@ from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     Reg8nConfPricingEditForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
-from events.utils import registration_has_started
+from events.utils import registration_has_started, get_pricing
 from perms.utils import has_perm, get_notice_recipients, update_perms_and_save, get_administrators
 from event_logs.models import EventLog
 from invoices.models import Invoice
@@ -601,7 +601,12 @@ def delete(request, id, template_name="events/delete.html"):
     else:
         raise Http403# Create your views here.
 
-    
+
+def multi_register_redirect(request, event, msg):
+    messages.add_message(request, messages.INFO, msg)
+    return HttpResponseRedirect(reverse('event', args=(event.pk,),))    
+
+
 def multi_register(request, event_id=0, template_name="events/reg8n/multi_register.html"):
     event = get_object_or_404(Event, pk=event_id)
 
@@ -616,17 +621,35 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         try:
             price_pk, price_type, amount = request.POST['price'].split('-')
         except:
-            messages.add_message(request, messages.INFO, _('Please choose a price.'))
-            return HttpResponseRedirect(reverse('event', args=(event_id),))
+            return multi_register_redirect(request, event, _('Please choose a price.'))
     else:
-        messages.add_message(request, messages.INFO, _('Please choose a price.'))
-        return HttpResponseRedirect(reverse('event', args=(event_id),)) 
+        return multi_register_redirect(request, event, _('Please choose a price.')) 
         
+    # test for an float amount
     try:
         amount = float(amount)
     except ValueError:
-        messages.add_message(request, messages.INFO, _('Please choose a price.'))
-        return HttpResponseRedirect(reverse('event', args=(event_id),))
+        return multi_register_redirect(request, event, _('Please choose a price.'))
+
+    # get price instance
+    if price_pk.isdigit():
+        price = RegConfPricing.objects.get(pk=price_pk)
+    else:
+        return multi_register_redirect(request, event, _('Please choose a price.'))           
+
+    # get all pricing
+    pricing = RegConfPricing.objects.filter(
+        reg_conf=event.registration_configuration
+    )
+
+    # check is this person is qualified to see this pricing
+    qualified_pricing = get_pricing(request.user, event, pricing=pricing)
+    qualifies = False
+    for q_price in qualified_pricing:
+        if price.pk == q_price['price'].pk:
+            qualifies = True
+    if not qualifies:
+        return multi_register_redirect(request, event, _('Please choose a price.'))
 
     # check if this post came from the pricing form
     # and modify the request method
@@ -636,27 +659,13 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if 'from_price_form' in request.POST:
         request.method = 'GET'
         request.POST = QueryDict({})
-
-    # get price
-    if price_pk.isdigit():
-        price = RegConfPricing.objects.get(pk=price_pk)
-    else:
-        messages.add_message(request, messages.INFO, _('Please choose a price.'))
-        return HttpResponseRedirect(reverse('event', args=(event_id),))             
-
-    # get all pricing
-    pricing = RegConfPricing.objects.filter(
-        reg_conf=event.registration_configuration
-    )
     
     # check if it is still open based on dates
     reg_started = registration_has_started(event, pricing=pricing)
     if not reg_started:
-        messages.add_message(request, messages.INFO,
-                            'Registration has been closed.')
-        return HttpResponseRedirect(reverse('event', args=(event_id),))        
+        return multi_register_redirect(request, event, _('Registration has been closed.'))     
 
-    # set the price that will be used throughout the view
+    # set the event price that will be used throughout the view
     event_price = amount
 
     # start the form set factory    
