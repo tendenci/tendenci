@@ -1,27 +1,161 @@
 {% extends "corporate_memberships/base.html" %}
 {% load corporate_memberships_tags %}
+{% load styled_forms %}
 
 {% block title %}Corporate Membership Edit{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
-<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+<style>
+div.id_members .field ul li {
+	float: left;
+	width: 45%;
+	margin: 0;
+	padding: 0;
+}
+</style>
 {% endblock %}
 
 {% block body %}
 <div class="t">
+{% corpmemb_nav request.user corporate_membership %} 
 
-     <h1>Renew Corporate Membership</h1>
+     <h1>Corporate Membership Renewal for</h1>
+     <p>
+     <a href="{% url corp_memb.view corporate_membership.id %}" target="_blank">{{ corporate_membership.name }}</a><br />
+     	{% if corporate_membership.address %}
+  			{{ corporate_membership.address }} 
+  		{% endif %}
+  		{% if corporate_membership.address2 %}
+  			{{ corporate_membership.address2 }} 
+  		{% endif %}
+  		<br />
+  		{% if corporate_membership.city %}
+  			{{ corporate_membership.city }} 
+  		{% endif %}
+  		{% if corporate_membership.state %}
+  			{{ corporate_membership.state }}
+  		{% endif %}
+  		{% if corporate_membership.zip %}
+  			{{ corporate_membership.zip }} 
+  		{% endif %}
+  		<br />
+  		{% if corporate_membership.phone %}
+  			{{ corporate_membership.phone }} <br />
+  		{% endif %}
+     	{% if corporate_membership.email %}
+     		{{ corporate_membership.email }} <br />
+     	{% endif %}
+     	<b>Join Date</b>: {{ corporate_membership.join_dt }}<br />
+     	<b>Expiration Date</b>: {{ corporate_membership.expiration_dt }}
+     	{% if corporate_membership.is_expired %}
+     		{% if corporate_membership.is_in_grace_period %}
+     			<span style="color:#F79D3D">(in grace period)</span>
+     		{% else %}
+     			<span style="color:red">(expired)</span>
+     		{% endif %}
+     	{% endif %}
+     	<br />
+     </p>
      
+   <div style="height:1px;width:60%;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
+        
   {% if form.errors %}<h1>Please correct the following errors</h1>{% endif %}
 
 <form action="" method="post">{% csrf_token %}
-<table>
-{{ form }}
-</table>
-<p><input type="submit" value="Submit" /></p>
+	<div class="forms">
+	{% if form.errors.values %}
+		<div class="errors">
+			{% for field in form %}
+				{% if field.errors %}
+			          {% for error in field.errors %}
+			          	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+			          {% endfor %}
+				{% endif %}
+			{% endfor %}
+		</div>
+	{% endif %}
+	
+	<div class="form-field">
+	    <div class="{{ form.corporate_membership_type.auto_id }}{{ form.corporate_membership_type.field.css_classes }}">
+			<div class="label{% if form.corporate_membership_type.field.required %} required{% endif %}">
+	              {{ form.corporate_membership_type.label_tag }}
+	          </div>
+	          {% if form.corporate_membership_type.errors %}
+	          <div class="error">
+	              {% for error in form.corporate_membership_type.errors %}
+	              <p>{{ error }}</p>
+	              {% endfor %}
+	          </div>
+	          {% endif %}
+	          <div class="field">
+	              {{ form.corporate_membership_type }}
+	          </div>
+	          {% if form.corporate_membership_type.help_text %}
+	          <div class="help-text">{{ form.corporate_membership_type.help_text }}</div>
+	          {% endif %}
+	       </div>
+	    </div>
+	    
+	 <div class="form-field">
+   		<div class="{{ form.payment_method.auto_id }}{{ form.payment_method.field.css_classes }}">
+		  <div class="label{% if form.payment_method.field.required %} required{% endif %}">
+              {{ form.payment_method.label_tag }}
+          </div>
+          {% if form.payment_method.errors %}
+          <div class="error">
+              {% for error in form.payment_method.errors %}
+              <p>{{ error }}</p>
+              {% endfor %}
+          </div>
+          {% endif %}
+          <div class="field">
+              {{ form.payment_method }}
+          </div>
+          {% if form.payment_method.help_text %}
+          <div class="help-text">{{ form.payment_method.help_text }}</div>
+          {% endif %}
+       </div>
+    </div>
+	    
+	 <div class="form-field">
+	    <div class="{{ form.members.auto_id }}{{ form.members.field.css_classes }}">
+			<div class="label{% if form.members.field.required %} required{% endif %}">
+	              {{ form.members.label_tag }}
+	          </div>
+	          {% if form.members.errors %}
+	          <div class="error">
+	              {% for error in form.members.errors %}
+	              <p>{{ error }}</p>
+	              {% endfor %}
+	          </div>
+	          {% endif %}
+	          <div class="field_members_all">
+	          	<ul>
+	          	<li>
+	          	<label for="id_members_all">
+	          	<input id="id_members_all" type="checkbox" value="1" name="members_all" /> 
+	          	<span style="background:yellow">Renew all individuals</span>
+	          	</label>
+	          	</li>
+	          	</ul>
+	          </div>
+	          <div class="field">
+	              {{ form.members }}
+	          </div>
+	          {% if form.members.help_text %}
+	          <div class="help-text">{{ form.members.help_text }}</div>
+	          {% endif %}
+	       </div>
+	    <div style="clear: both"></div>
+	 </div>
+	 
+	    
+   
+                        
+       	<input type="submit" value="Renew" />
+	</div>
 </form> 
     
 </div>
@@ -29,5 +163,21 @@
 
 {% block extra_body %}
     {{ block.super }}
+    <script type="text/javascript">
+		$(document).ready(function()
+		{
+			$("#id_members_all").click(function()				
+			{
+				var checked_status = this.checked;
+				$("input[name=members]").each(function()
+				{
+					this.checked = checked_status;
+				});
+			});					
+		});
+		
+		</script>
+    
+    
 
 {% endblock %}

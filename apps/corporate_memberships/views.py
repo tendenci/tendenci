@@ -258,6 +258,19 @@ def renew(request, id, template="corporate_memberships/renew.html"):
     
     form = CorpMembRenewForm(request.POST or None, user=request.user, corporate_membership=corporate_membership)
     
+    if request.method == "POST":
+        if form.is_valid():
+            corp_renew_entry = form.save(commit=False)
+            corp_renew_entry.corporate_membership = corporate_membership
+            corp_renew_entry.creator = request.user
+            corp_renew_entry.status_detail = 'pending'
+            corp_renew_entry.save()
+            # create an invoice - invoice.object_type - renew_entry or corporate_membership?
+            
+            # individual members
+            
+            # redirect to online payment or confirmation page
+    
     context = {"corporate_membership": corporate_membership, 
                'corp_app': corp_app,
                'form': form,
