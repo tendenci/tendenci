@@ -1,6 +1,31 @@
 import re
 from django.core.management.base import BaseCommand
+from django.db import models
 from datetime import datetime
+
+
+class DummyRegistrationConfiguration(models.Model):
+    payment_method_id = models.IntegerField()
+
+    early_price = models.DecimalField(max_digits=21, decimal_places=2, default=0)
+    regular_price = models.DecimalField(max_digits=21, decimal_places=2, default=0)
+    late_price = models.DecimalField(max_digits=21, decimal_places=2, default=0)
+
+    early_dt = models.DateTimeField()
+    regular_dt = models.DateTimeField()
+    late_dt = models.DateTimeField()
+    end_dt = models.DateTimeField(default=0)
+
+    payment_required = models.BooleanField()
+
+    limit = models.IntegerField(default=0)
+    enabled = models.BooleanField(default=False)
+
+    is_guest_price = models.BooleanField()
+
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+
 
 class Command(BaseCommand):
     """
@@ -11,10 +36,11 @@ class Command(BaseCommand):
         from events.models import RegConfPricing
         from django.db import connection, transaction
 
-        reg8n_configs = RegistrationConfiguration.objects.all()
+        select_sql = "SELECT * FROM events_registrationconfiguration"
+        reg8n_configs = DummyRegistrationConfiguration.objects.raw(select_sql)
         cursor = connection.cursor()
 
-        for config in reg8n_configs:            
+        for config in reg8n_configs:
             insert_sql = """
             INSERT INTO events_regconfpricing (
                 title, 
