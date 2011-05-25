@@ -531,7 +531,7 @@ def get_event_spots_taken(event):
     try:
         spots_taken = sqs[0].spots_taken
         if not spots_taken:
-            spots_taken = get_event_spots_taken(event)
+            spots_taken = update_event_spots_taken(event)
         return spots_taken
     except IndexError:
         return update_event_spots_taken(event)
