@@ -8,17 +8,6 @@
     <link rel="stylesheet" href="/site_media/static/css/iconrow.css">
     <link rel="stylesheet" href="/site_media/static/css/usergroups.css">
     <link rel="stylesheet" href="/site_media/static/css/admin/django-admin-widgets.css">
-    <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="/site_media/static/js/admin/django-admin.multiselect.js"></script>
-    <script type="text/javascript">
-		$(document).ready(function(){
-			jQuery.each($("select[multiple]"), function () {  
-			// "Locations" can be any label you want  
-			 SelectFilter2.init(this.id, "Members", 0, "/media/");  
-			});
-
-		});
-    </script>
 {% endblock %}
 
 {% block body %}
@@ -74,9 +63,25 @@
         </div>
 
         <div class="submit-row">
-            <input type="submit" value="Save" class="default" />
+            <input id='add_members_submit' type="submit" value="Save" class="default" />
         </div>
     </form>
 
     </div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="/site_media/static/js/admin/django-admin.multiselect.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        jQuery.each($("select[multiple]"), function () {
+         SelectFilter2.init(this.id, "Members", 0, "/media/");  
+        });
+        $("#add_members_submit").click(function(){
+            SelectBox.filter('id_members_to', '');
+            $("#id_members_input2").val('');
+        });
+    });
+</script>
 {% endblock %}
