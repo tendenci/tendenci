@@ -9,11 +9,17 @@ from django.core.files.storage import FileSystemStorage
 from tinymce.widgets import TinyMCE
 
 from memberships.fields import PriceInput
-from models import CorporateMembershipType, CorpApp, CorpField, CorporateMembership, CorporateMembershipRep
+from models import (CorporateMembershipType, 
+                    CorpApp, 
+                    CorpField, 
+                    CorporateMembership, 
+                    CorporateMembershipRep, 
+                    CorpMembRenewEntry)
 from corporate_memberships.utils import (get_corpapp_default_fields_list, 
                                          update_auth_domains, 
                                          get_payment_method_choices,
-                                         get_indiv_membs_choices)
+                                         get_indiv_membs_choices,
+                                         get_corporate_membership_type_choices)
 from corporate_memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from base.fields import SplitDateTimeField
 from perms.utils import is_admin
@@ -306,7 +312,7 @@ class CorpMembRenewForm(forms.ModelForm):
     members = forms.ChoiceField(required=False)
     
     class Meta:
-        model = CorporateMembership
+        model = CorpMembRenewEntry
         fields = ('corporate_membership_type',
                   'members',
                   'payment_method')
@@ -317,12 +323,14 @@ class CorpMembRenewForm(forms.ModelForm):
         
         super(CorpMembRenewForm, self).__init__(*args, **kwargs)
         
-        self.fields['corporate_membership_type'].widget=forms.RadioSelect()
+        self.fields['corporate_membership_type'].widget=forms.RadioSelect(choices=get_corporate_membership_type_choices(user, 
+                                                                                                                        corporate_membership.corp_app, 
+                                                                                                                        renew=True))
         self.fields['corporate_membership_type'].empty_label=None
-        self.fields['corporate_membership_type'].queryset = CorporateMembershipType.objects.filter(status=1, status_detail='active')
         self.fields['corporate_membership_type'].initial = corporate_membership.corporate_membership_type.id
         
         self.fields['members'].widget=forms.CheckboxSelectMultiple(choices=get_indiv_membs_choices(corporate_membership))
+        self.fields['members'].label = "Select the individual members you want to renew"
         
         self.fields['payment_method'].widget=forms.RadioSelect(choices=get_payment_method_choices(user))
         self.fields['payment_method'].empty_label=None

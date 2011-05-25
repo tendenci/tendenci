@@ -3,6 +3,8 @@ from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.utils import simplejson
+from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
 from site_settings.utils import get_setting
 from perms.utils import is_admin
 from corporate_memberships.models import CorpField, AuthorizedDomain
@@ -22,14 +24,30 @@ def get_corpapp_default_fields_list():
         return simplejson.loads(data)
     return None
 
-def get_corporate_membership_type_choices(user, corpapp):
+def get_corporate_membership_type_choices(user, corpapp, renew=False):
     cmt_list = []
     corporate_membership_types = corpapp.corp_memb_type.all()
+    if not is_admin(user):
+        corporate_membership_types = corporate_membership_types.filter(admin_only=False)
     currency_symbol = get_setting("site", "global", "currencysymbol")
     
     for cmt in corporate_membership_types:
-        cmt_list.append((cmt.id, '%s - %s%0.2f' % (cmt.name, currency_symbol, cmt.price)))
-        
+        if not renew:
+            price_display = '%s - %s%0.2f' % (cmt.name, currency_symbol, cmt.price)
+            cmt_list.append((cmt.id, '%s - %s%0.2f' % (cmt.name, currency_symbol, cmt.price)))
+        else:
+            indiv_renewal_price = cmt.membership_type.renewal_price
+            if not indiv_renewal_price:
+                indiv_renewal_price = 'Free'
+            else:
+                indiv_renewal_price = '%s%0.2f' % (currency_symbol, indiv_renewal_price)
+            price_display = '%s - <b>%s%0.2f</b> (individual members renewal: <b>%s</b>)' % (cmt.name, 
+                                                                                currency_symbol, 
+                                                                                cmt.renewal_price,
+                                                                                indiv_renewal_price)
+        price_display = mark_safe(price_display)
+        cmt_list.append((cmt.id, price_display))
+            
     return cmt_list 
 
 def get_indiv_membs_choices(corp):
@@ -37,7 +55,10 @@ def get_indiv_membs_choices(corp):
     indiv_memberships = Membership.objects.filter(corporate_membership_id=corp.id)
     
     for membership in indiv_memberships:
-        im_list.append((membership.id, '%s' % (membership.user.get_full_name())))
+        indiv_memb_display = '<a href="%s" target="_blank">%s</a>' % (reverse('profile', args=[membership.user.username]), 
+                                                                      membership.user.get_full_name())
+        indiv_memb_display = mark_safe(indiv_memb_display)
+        im_list.append((membership.id, indiv_memb_display))
         
     return im_list        
    
