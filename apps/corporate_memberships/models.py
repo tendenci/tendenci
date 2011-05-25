@@ -103,6 +103,7 @@ class CorporateMembership(TendenciBaseModel):
     secret_code = models.CharField(max_length=50, blank=True, null=True)
     
     renewal = models.BooleanField(default=0)
+    pending_renew_entry_id = models.IntegerField(default=0, null=True) 
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time")) 
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True) 
@@ -256,6 +257,19 @@ class CorporateMembership(TendenciBaseModel):
         
         now = datetime.now()
         return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
+    
+    @property
+    def is_expired(self):
+        if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
+            return False
+        return datetime.now() >= self.expiration_dt
+    
+    @property
+    def is_in_grace_period(self):
+        if self.is_expired:
+            grace_period_end_dt = self.expiration_dt + timedelta(days=self.corporate_membership_type.membership_type.expiration_grace_period)
+            return datetime.now() < grace_period_end_dt
+        return False
 
         
         
@@ -328,11 +342,14 @@ class CorporateMembershipArchive(models.Model):
         
 class CorpMembRenewEntry(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership")
+    corporate_membership_type = models.ForeignKey("CorporateMembershipType")
+    payment_method = models.CharField(_("Payment Method"), max_length=50)
+    
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True)
-    status_detail = models.CharField(max_length=50)
+    status_detail = models.CharField(max_length=50)   # pending, approved and disapproved
     
 class IndivMembRenewEntry(models.Model):
     corp_memb_renew_entry = models.ForeignKey("CorpMembRenewEntry")
