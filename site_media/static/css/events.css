@@ -698,6 +698,17 @@ tr.non-paid-middle {
 	border-radius: 5px;
 }
 
+.registration-orange {
+	background-color: orange;	
+	color: white;
+	padding: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	font-weight: bold;
+}
+
+
 .registration-status div {
     color: white;
     border: 1px solid;
