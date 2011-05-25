@@ -367,10 +367,17 @@ class RegistrationForm(forms.Form):
 
         free_event = event_price <= 0
         if not free_event:
-            payment_method = event.registration_configuration.payment_method.all()
-    
+            reg_conf =  event.registration_configuration
+            if reg_conf.can_pay_online:
+                payment_methods = reg_conf.payment_method.all()
+            else:
+                filters = {
+                    'label': 'Credit Card'
+                }
+                payment_methods = reg_conf.payment_method.exclude(**filters)
+
             self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
-                queryset=payment_method, widget=forms.RadioSelect(), initial=1, required=False)
+                queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=False)
 
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
