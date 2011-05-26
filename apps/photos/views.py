@@ -78,8 +78,8 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
     except:
         # can't tell if they're denied
         # or the image does not exist
-        # i assume does not exist
-        raise Http404
+        # i assume protected
+        raise Http403
 
     EventLog.objects.log(**{
         'event_id' : 990500,

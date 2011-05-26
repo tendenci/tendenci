@@ -117,6 +117,7 @@ div.gallery-photo-thumb img {
 }
 .photo-options ul li {
 	display: inline;
+	margin-right: 3px;
 }
 .photo-instance {
 	float: left;
@@ -588,6 +589,7 @@ div.gallery-photo-thumb img {
 	font-size: 12px;
 	padding: 10px 0;
 }
+
 #photo-sizes #sizes-wrap .label {
 	float: left;
 	width: 100px;
@@ -597,12 +599,20 @@ div.gallery-photo-thumb img {
 }
 #photo-sizes #sizes-wrap .size-wrap {
 	float: left;
-	margin-right: 35px;
+	margin-right: 25px;
 }
 #photo-sizes #sizes-wrap .size-wrap .size-numerals {
 	color: gray;
 	font-size: 12px;
 	margin-top: 3px;
+}
+
+#photo-sizes .size-wrap {
+	padding: 5px;
+}
+
+#photo-sizes .size-wrap.highlight {
+	background-color: #EEE;
 }
 
 #photo-sizes #back-link {
@@ -621,12 +631,4 @@ div.gallery-photo-thumb img {
 	margin-top: 3px;
 	width: 400px;
 	height: 50px;
-}
-
-#photo-sizes #copy-photo-url {
-	margin-top: 10px;
-}
-
-#photo-sizes #copy-photo-url input {
-	width: 400px;
 }
