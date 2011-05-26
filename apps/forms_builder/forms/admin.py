@@ -24,11 +24,16 @@ from forms_builder.forms.forms import FormAdminForm, FormForField
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
+class FieldAdminForm(FormForField):
+    class Meta:
+        model = Field
+
     
 class FieldAdmin(admin.TabularInline):
     model = Field    
-    form = FormForField
+    form = FieldAdminForm
     extra = 0
+    ordering = ("position",)
 
 class FormAdmin(admin.ModelAdmin):
 

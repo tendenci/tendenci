@@ -12,4 +12,6 @@ robot:{{ object.robot }}
 description:{{ object.description }}
 event_name:{{ object.event_name }}
 user_agent:{{ object.http_user_agent }}
-
+id:{{ object.object_id }}
+app:{{ object.source }}
+app-id:{{ object.source }}-{{ object.object_id }}

@@ -89,16 +89,17 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
         raise Http403
 
     form_class=inlineformset_factory(Form, Field, form=FormForField, extra=3)
+    form_class._orderings = 'position'
     
     if request.method == "POST":
-        form = form_class(request.POST, instance=form_instance)
+        form = form_class(request.POST, instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
         if form.is_valid():           
             form.save()
         
             messages.add_message(request, messages.INFO, 'Successfully updated %s' % form_instance)
             return HttpResponseRedirect(reverse('forms'))
     else:
-        form = form_class(instance=form_instance)
+        form = form_class(instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
        
     return render_to_response(template_name, {'form':form, 'form_instance':form_instance}, 
         context_instance=RequestContext(request))
@@ -296,7 +297,17 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 email_headers.update({'Reply-To':form.email_from})
 #            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k]) 
 #                for (k, v) in form_for_form.fields.items()]
+            
             subject = "%s - %s" % (form.title, entry.entry_time.strftime('%m-%d-%Y %H:%M'))
+            if entry.get_first_name():
+                subject = "%s %s" % (subject, entry.get_first_name())
+            if entry.get_last_name():
+                subject = "%s %s" % (subject, entry.get_last_name())
+            if entry.get_full_name():
+                subject = "%s %s" % (subject, entry.get_full_name())
+            if entry.get_phone_number():
+                subject = "%s %s" % (subject, entry.get_phone_number())
+                
             # body = "\n".join(fields)
             body = generate_email_body(entry)
             email_from = form.email_from or settings.DEFAULT_FROM_EMAIL

@@ -120,19 +120,21 @@ class ListNode(Node):
 
         # get the list of staff
         items = self.model.objects.search(user=user, query=query)
+        objects = []
         
-        #exclude certain primary keys
-        if exclude:
-            items = items.exclude(primary_key__in=exclude)
+        if items:
+            #exclude certain primary keys
+            if exclude:
+                items = items.exclude(primary_key__in=exclude)
 
-        # if order is not specified it sorts by relevance
-        if order:
-            items = items.order_by(order)
+            # if order is not specified it sorts by relevance
+            if order:
+                items = items.order_by(order)
 
-        if randomize:
-            objects = [item.object for item in random.sample(items, items.count())][:limit]
-        else:
-            objects = [item.object for item in items[:limit]]
+            if randomize:
+                objects = [item.object for item in random.sample(items, items.count())][:limit]
+            else:
+                objects = [item.object for item in items[:limit]]
 
         context[self.context_var] = objects
         return ""

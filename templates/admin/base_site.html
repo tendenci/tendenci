@@ -10,7 +10,7 @@
 #header, #footer{ background-color: #861100; border-bottom: solid 3px #999; }
  
 #branding h1{ color: #fff; }
-.module h2, .module caption, .inline-group h2 { background:#ccc url(/admin_media/img/admin/nav-bg.gif) bottom left repeat-x; color: #333940; }
+.module h2, .module caption, .inline-group h2 { background:#ccc url({{ STATIC_URL }}admin/img/admin/nav-bg.gif) bottom left repeat-x; color: #333940; }
 a.section:link, a.section:visited { color: #666666; }
 #branding #site-name img{margin-right:20px; height:32px; width:62px;}
 #footer {color: #eee;}
@@ -20,7 +20,7 @@ a.section:link, a.section:visited { color: #666666; }
 {% endblock %}
  
 {% block branding %}
-<h1 id="site-name" ><span><img src="{{ STATIC_URL }}/images/tendenci_white_small_100x51.gif"></span>
+<h1 id="site-name" ><span><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif"></span>
 {% if user.is_authenticated %}<a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }} ({{ SITE_GLOBAL_SITEURL }})</a>
 {% else %}
 Web Administration
