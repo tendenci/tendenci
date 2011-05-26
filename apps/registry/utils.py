@@ -38,3 +38,6 @@ class RegisteredApps(object):
 
     def __iter__(self):
         return iter(self.all_apps)
+
+    def __len__(self):
+        return len(self.all_apps)

@@ -9,15 +9,37 @@ from perms.managers import TendenciBaseManager
 from perms.utils import is_admin
 
 
-class MemberAppManager(Manager):
+class MemberAppManager(TendenciBaseManager):
     def search(self, query=None, *args, **kwargs):
+        # """
+        # Uses haystack to query articles.
+        # Returns a SearchQuerySet
+        # """
+        # # update what the status detail should be instead of active
+        # kwargs.update({'status_detail': 'published'})
+        # return super(MemberAppManager, self).search(query=query, *args, **kwargs)
+
         """
-        Uses haystack to query articles.
-        Returns a SearchQuerySet
+        Use Django Haystack search index
+        Returns a SearchQuerySet object
         """
-        # update what the status detail should be instead of active
-        kwargs.update({'status_detail': 'published'})
-        return super(EventManager, self).search(query=query, *args, **kwargs)
+        sqs = SearchQuerySet()
+        user = kwargs.get('user', AnonymousUser())
+        user = impersonation(user)
+
+        if query:
+            sqs = sqs.auto_query(sqs.query.clean(query))
+
+        if is_admin(user):
+            sqs = sqs.all()  # admin
+        else:
+            if user.is_anonymous():
+                sqs = anon2_sqs(sqs)  # anonymous
+            else:
+                pass
+                sqs = user2_sqs(sqs, user=user)  # user
+
+        return sqs.models(self.model)
 
 
 class MemberAppEntryManager(TendenciBaseManager):
@@ -26,6 +48,29 @@ class MemberAppEntryManager(TendenciBaseManager):
     """
     pass
 
+
+def anon2_sqs(sqs):
+    sqs = sqs.filter(status=1).filter(status_detail='published')
+    sqs = sqs.filter(allow_anonymous_view=True)
+    return sqs
+
+def user2_sqs(sqs, **kwargs):
+    """
+    people between admin and anon permission
+    (status+status_detail+(anon OR user)) OR (who_can_view__exact)
+    """
+    user = kwargs.get('user', None)
+
+    anon_q = Q(allow_anonymous_view=True)
+    user_q = Q(allow_user_view=True)
+    status_q = Q(status=1, status_detail='published')
+    perm_q = Q(users_can_view__in=user.username)
+
+    q = reduce(operator.or_, [anon_q, user_q])
+    q = reduce(operator.and_, [status_q, q])
+    q = reduce(operator.or_, [q, perm_q])
+
+    return sqs.filter(q)
 
 def anon_sqs(sqs):
     sqs = sqs.filter(status=1).filter(status_detail='active')
@@ -43,7 +88,7 @@ def user_sqs(sqs, **kwargs):
     anon_q = Q(allow_anonymous_view=True)
     user_q = Q(allow_user_view=True)
     status_q = Q(status=1, status_detail='active')
-    perm_q = Q(who_can_view__exact=user.username)
+    perm_q = Q(users_can_view__in=user.username)
 
     q = reduce(operator.or_, [anon_q, user_q])
     q = reduce(operator.and_, [status_q, q])

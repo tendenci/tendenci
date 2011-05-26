@@ -192,15 +192,17 @@
             <a href="{% url event event.pk %}">Register More People</a>
         </div>
 	</div>
-	
 
 	<div class="regconf-section payment">
 		<h2>Payment Details</h2>
 
         <div class="payment-links">
-            <a href="{% url invoice.view registration.invoice.pk registration.invoice.guid %}">View invoice</a>
 
-            {% if event.registration_configuration.can_pay_online and registration.invoice.balance > 0 %}
+        	{% if registration.invoice %}
+            <a href="{% url invoice.view registration.invoice.pk registration.invoice.guid %}">View invoice</a>
+            {% endif %}
+
+            {% if registration.invoice and event.registration_configuration.can_pay_online and registration.invoice.balance > 0 %}
                 <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">Pay online</a>
             {% endif %}
         </div>

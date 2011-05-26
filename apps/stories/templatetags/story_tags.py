@@ -113,22 +113,24 @@ class ListStoriesNode(ListNode):
 
         # get the list of staff
         items = self.model.objects.search(user=user, query=query)
+        objects = []
 
         # Custom filter for stories
         date_query = reduce(or_, [Q(end_dt__gte = datetime.now()), Q(expires=False)])
         date_query = reduce(and_, [Q(start_dt__lte = datetime.now()), date_query])
         items = items.filter(date_query)
 
-        # if order is not specified it sorts by relevance
         if order:
             items = items.order_by(order)
 
-        if randomize:
-            objects = [item.object for item in random.sample(items, items.count())][:limit]
-        else:
-            objects = [item.object for item in items[:limit]]
+        # if order is not specified it sorts by relevance
+        if items:
+            if randomize:
+                objects = [item.object for item in random.sample(items, items.count())][:limit]
+            else:
+                objects = [item.object for item in items[:limit]]
 
-        context[self.context_var] = objects
+            context[self.context_var] = objects
         return ""
 
 @register.tag

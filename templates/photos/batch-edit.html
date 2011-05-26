@@ -79,6 +79,12 @@
                             <div class="field">{{ photo_form.DELETE }}</div>
                             <div class="label">{{ photo_form.DELETE.label_tag }}</div>
                         </div>
+                        <div class="delete-wrap">
+                            <div class="field">
+                                <input type="radio" name="album_cover" value="{{ photo_form.initial.id }}" {% if photo_form.initial.id == photo_set.albumcover.photo.id %}selected{% endif %}>
+                                &nbsp;Set as album cover
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% empty %}

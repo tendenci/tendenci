@@ -25,7 +25,7 @@ from models import MembershipType, Notice, App, AppEntry, AppField
 from fields import TypeExpMethodField, PriceInput
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from memberships.models import AppFieldEntry
-from memberships.utils import import_csv
+from memberships.utils import csv_to_dict
 
 from widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
 from corporate_memberships.models import CorporateMembership, AuthorizedDomain
@@ -204,6 +204,7 @@ class MembershipTypeForm(forms.ModelForm):
                   #'corporate_membership_type_id',
                   'require_approval',
                   'admin_only',
+                  'renewal_require_approval',
                   'renewal_period_start',
                   'renewal_period_end',
                   'expiration_grace_period',
@@ -524,6 +525,10 @@ class AppEntryForm(forms.ModelForm):
             self.fields[field_key] = field_class(**field_args)
             self.fields[field_key].css_classes = ' %s' % field.css_class
 
+            if field.field_type == 'date':
+                year = datetime.today().year
+                self.fields[field_key].widget.years = range(year-120, year+120)
+
         if app.use_captcha and not user.is_authenticated():
             self.fields['field_captcha'] = CaptchaField(**{
                 'label':'',
@@ -611,13 +616,43 @@ class CSVForm(forms.Form):
             """
 
             # file to make field-mapping form
-            csv = import_csv(file_path)
+            csv = csv_to_dict(file_path)
 
             choices = {}
             for column_name in csv[0].keys():
                 choices[column_name] = column_name
 
             app_fields = AppField.objects.filter(app=2)
+
+            req_fields = [
+                'User Name',
+                'Membership Type',
+                'Member Number',
+                'Payment Method',
+                'Join Date',
+                'Renew Date',
+                'Expire Date',
+                'Renewal',
+                'Owner',
+                'Creator',
+                'Status',
+                'Status Detail',
+            ]
+
+            for req_field in req_fields:
+                self.fields[slugify(req_field)] = ChoiceField(**{
+                    'label': req_field,
+                    'choices': choices.items(),
+                    'required': False,
+                })
+
+                # compare required field with choices
+                # if they match; set initial
+                if req_field in choices:
+                    self.fields[slugify(req_field)].initial = req_field
+
+            self.fields['user-name'].required = True
+            self.fields['membership-type'].required = True
 
             for app_field in app_fields:
                 for csv_row in csv:

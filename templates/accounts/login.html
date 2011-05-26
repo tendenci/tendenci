@@ -1,11 +1,12 @@
 {% extends "accounts/base.html" %}
 
+{% block title %}Login{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="/site_media/static/css/accounts.css">
 {% endblock %}
-
+ 
 {% block body %}
 <h2>Log In to the Site</h2>
 {% if user.is_authenticated %}
@@ -14,23 +15,23 @@
         <a href="{% url auth_logout %}">Logout?</a>
     </p>
 {% else %}
-
-<form method="post" action="">{% csrf_token %}
+ 
+<form id="login-form" method="post" action="">{% csrf_token %}
 {{form.as_p}}
-
+ 
 <div class="submitbutton">
 <input type="submit" name="submit" value="Log in" />
 </div>
 </form>
-
+ 
 <h3>Forgot your password?</h3>
 <p>Click <a href="{% url auth_password_reset %}">here</a> to reset your password.</p>
-
+ 
 {% if MODULE_USERS_SELFREGISTRATION %}
 <h3>Don't have an account?</h3>
 <p><a href="{% url registration_register %}">Register Now </a></p>
-{% endif %}
-
+<!-- <p><a href="{% url social_begin 'facebook' %}">Log in with Facebook</a></p> -->
 {% endif %}
  
+{% endif %}
 {% endblock %}

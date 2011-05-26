@@ -1,5 +1,5 @@
 import os
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext
@@ -20,24 +20,16 @@ from event_logs.models import EventLog
 #from photologue.models import *
 from photos.utils import dynamic_image
 from photos.search_indexes import PhotoSetIndex
-from photos.models import Image, Pool, PhotoSet
+from photos.models import Image, Pool, PhotoSet, AlbumCover
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 
 
 def details(request, id, set_id=0, template_name="photos/details.html"):
     """ show the photo details """
     photo = get_object_or_404(Image, id=id)
-    set_id = int(set_id)
 
-    # permissions
-    if not has_perm(request.user,'photologue.view_photo',photo):
-        raise Http403
-
-    # if not public
-    if not photo.is_public:
-        # if no permission; raise 404 exception
-        if not photo.check_perm(request.user,'photos.view_image'):
-            raise Http404
+    if not photo.check_perm(request.user,'photos.view_image'):
+        raise Http404
     
     photo_url = photo.get_large_url()
 
@@ -50,6 +42,43 @@ def details(request, id, set_id=0, template_name="photos/details.html"):
         "id": photo.id,
         "set_id": set_id,
         "is_me": is_me,
+    }, context_instance=RequestContext(request))
+
+def sizes(request, id, size_name=None, template_name="photos/sizes.html"):
+    """ Show all photo sizes """
+
+    photo = get_object_or_404(Image, id=id)
+    if not photo.check_perm(request.user,'photos.view_image'):
+        raise Http404
+
+    if not size_name:
+        return redirect('photo_square', id=id)
+
+    # get url & sizes
+    # url = getattr(photo, 'get_%s_url' % size_name)()  # get_thumbnail_url()
+
+
+    if size_name != 'original':
+        sizes = getattr(photo, 'get_%s_size' % size_name)()
+    else:
+        sizes = (photo.image.width, photo.image.height)
+
+    url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % sizes})
+
+
+    # get download url
+    if size_name == 'square': download_url = reverse('photo_crop_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
+    else: download_url = reverse('photo_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
+
+    # download original url
+    download_original_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % (photo.image.width, photo.image.height)})
+
+    return render_to_response(template_name, {
+        "photo": photo,
+        "size_name": size_name.replace("_","-"),
+        "url": url,
+        "download_url": download_url,
+        "download_original_url": download_original_url,
     }, context_instance=RequestContext(request))
 
 def photo(request, id, set_id=0, template_name="photos/details.html"):
@@ -79,7 +108,7 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
     })
 
     # default prev/next URL
-    photo_prev_url = photo_next_url = ''
+    photo_prev_url, photo_next_url = '', ''
 
     if set_id:
         photo_set = get_object_or_404(PhotoSet, id=set_id)
@@ -118,7 +147,7 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
         "is_me": is_me,
     }, context_instance=RequestContext(request))
 
-def photo_size(request, id=None, size=None, crop=False):
+def photo_size(request, id=None, size='', crop=False, download=False):
     """
     Renders image and returns response
     Does not use template
@@ -134,6 +163,9 @@ def photo_size(request, id=None, size=None, crop=False):
     if not has_perm(request.user,'photologue.view_photo',photo):
         raise Http403
 
+    if download: attachment = 'attachment;'
+    else: attachment = ''
+
     if crop: crop = True
 
     # gets resized image from cache or rebuild
@@ -143,7 +175,7 @@ def photo_size(request, id=None, size=None, crop=False):
     if not image: raise Http404
 
     response = HttpResponse(mimetype='image/jpeg')
-    response['Content-Disposition'] = 'filename=%s'% photo.image.file.name
+    response['Content-Disposition'] = '%s filename=%s'% (attachment, photo.image.file.name)
     image.save(response, "JPEG", quality=100)
 
     return response
@@ -377,7 +409,7 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
         'source': 'photos'
     }
     EventLog.objects.log(**log_defaults)
-        
+
     return render_to_response(template_name, {"photo_sets": photo_sets}, 
         context_instance=RequestContext(request))
 
@@ -479,7 +511,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
     """ change multiple photos with one "save button" click """
     photo_set = get_object_or_404(PhotoSet, id=photoset_id)
     if not photo_set.check_perm(request.user, 'photos.change_photoset'):
-        raise Http404
+        raise Http403
 
     PhotoFormSet = modelformset_factory(
         Image,
@@ -515,7 +547,25 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
                     'request': request,
                     'instance': photo,
                 })
-
+            
+            #set album cover if specified
+            chosen_cover_id = request.POST.get('album_cover', None)
+            print "chosen", chosen_cover_id
+            if chosen_cover_id:
+                #validate chosen cover
+                valid_cover = True
+                try:
+                    chosen_cover = photo_set.image_set.get(id=chosen_cover_id)
+                except Image.DoesNotExist:
+                    valid_cover = False
+                if valid_cover:
+                    try:
+                        cover = AlbumCover.objects.get(photoset=photo_set)
+                    except AlbumCover.DoesNotExist:
+                        cover = AlbumCover(photoset=photo_set)
+                    cover.photo = chosen_cover
+                    cover.save()
+            
             messages.add_message(request, messages.INFO, 'Photo changes saved')
             return HttpResponseRedirect(reverse('photoset_details', args=(photoset_id,)))  
 
@@ -538,11 +588,11 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
 
     # check photo-set permissions
     photo_sets = PhotoSet.objects.search('id:%s' % id, user=request.user)
-    if not photo_sets:
-        raise Http404
-
+    if not photo_sets: raise Http404
     photo_set = photo_sets.best_match().object
-    photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by("-update_dt")
+
+    # get photos within photoset; newest ones first
+    photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by('-photo_pk')
 
     EventLog.objects.log(**{
         'event_id' : 991500,
