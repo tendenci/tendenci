@@ -1,5 +1,5 @@
 import os
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext
@@ -24,34 +24,44 @@ from photos.models import Image, Pool, PhotoSet, AlbumCover
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 
 
-def details(request, id, set_id=0, template_name="photos/details.html"):
-    """ show the photo details """
-    photo = get_object_or_404(Image, id=id)
+def sizes(request, id, size_name='', template_name="photos/sizes.html"):
+    """ Show all photo sizes """
 
-    if not photo.check_perm(request.user,'photos.view_image'):
-        raise Http404
+    # check permissions & get photo queryset
+    photo = Image.objects.search("id:%s" % id)
 
-    # # permissions
-    # if not has_perm(request.user,'photologue.view_photo',photo):
-    #     raise Http403
+    # assume protect image
+    if not photo:
+        raise Http403
 
-    # # if not public
-    # if not photo.is_public:
-    #     # if no permission; raise 404 exception
-    #     if not photo.check_perm(request.user,'photos.view_image'):
-    #         raise Http404
-    
-    photo_url = photo.get_large_url()
+    # get image object
+    photo = photo.best_match().object
 
-    is_me = (photo.member == request.user)
-    
+    # security-check on size name
+    if not size_name: return redirect('photo_square', id=id)
+
+    # get sizes
+    if size_name == 'original':
+        sizes = (photo.image.width, photo.image.height)
+    else:  # use photologue size table
+        sizes = getattr(photo, 'get_%s_size' % size_name)()
+
+    # get download url
+    if size_name == 'square':
+        source_url = reverse('photo.size', kwargs={'id':id, 'crop':'crop', 'size':"%sx%s" % sizes})
+        download_url = reverse('photo_crop_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
+    else:
+        source_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % sizes})
+        download_url = reverse('photo_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
+
+    original_source_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % (photo.image.width, photo.image.height)})
+
     return render_to_response(template_name, {
         "photo": photo,
-        "photo_url": photo_url,
-        "photo_set_id": set_id,
-        "id": photo.id,
-        "set_id": set_id,
-        "is_me": is_me,
+        "size_name": size_name.replace("_"," "),
+        "download_url": download_url,
+        "source_url": source_url,
+        "original_source_url": original_source_url,
     }, context_instance=RequestContext(request))
 
 def photo(request, id, set_id=0, template_name="photos/details.html"):
@@ -68,8 +78,8 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
     except:
         # can't tell if they're denied
         # or the image does not exist
-        # i assume does not exist
-        raise Http404
+        # i assume protected
+        raise Http403
 
     EventLog.objects.log(**{
         'event_id' : 990500,
@@ -120,7 +130,7 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
         "is_me": is_me,
     }, context_instance=RequestContext(request))
 
-def photo_size(request, id=None, size=None, crop=False):
+def photo_size(request, id=None, size='', crop=False, download=False):
     """
     Renders image and returns response
     Does not use template
@@ -136,6 +146,9 @@ def photo_size(request, id=None, size=None, crop=False):
     if not has_perm(request.user,'photologue.view_photo',photo):
         raise Http403
 
+    if download: attachment = 'attachment;'
+    else: attachment = ''
+
     if crop: crop = True
 
     # gets resized image from cache or rebuild
@@ -145,7 +158,7 @@ def photo_size(request, id=None, size=None, crop=False):
     if not image: raise Http404
 
     response = HttpResponse(mimetype='image/jpeg')
-    response['Content-Disposition'] = 'filename=%s'% photo.image.file.name
+    response['Content-Disposition'] = '%s filename=%s'% (attachment, photo.image.file.name)
     image.save(response, "JPEG", quality=100)
 
     return response
@@ -520,7 +533,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
             
             #set album cover if specified
             chosen_cover_id = request.POST.get('album_cover', None)
-            print "chosen", chosen_cover_id
+
             if chosen_cover_id:
                 #validate chosen cover
                 valid_cover = True

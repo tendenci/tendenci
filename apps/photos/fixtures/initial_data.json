@@ -1,1 +1,130 @@
-[{"pk": 2, "model": "photologue.photosize", "fields": {"name": "small_crop", "watermark": null, "increment_count": false, "effect": null, "crop": true, "height": 75, "width": 100, "upscale": false, "pre_cache": false, "quality": 100}}, {"pk": 4, "model": "photologue.photosize", "fields": {"name": "thumbnail", "watermark": null, "increment_count": false, "effect": null, "crop": true, "height": 75, "width": 100, "upscale": false, "pre_cache": false, "quality": 100}}, {"pk": 1, "model": "photologue.photosize", "fields": {"name": "display", "watermark": null, "increment_count": false, "effect": null, "crop": false, "height": 275, "width": 500, "upscale": false, "pre_cache": false, "quality": 80}}, {"pk": 3, "model": "photologue.photosize", "fields": {"name": "large", "watermark": null, "increment_count": false, "effect": null, "crop": false, "height": 500, "width": 500, "upscale": false, "pre_cache": false, "quality": 100}}]
+[
+    {
+        "pk": 5, 
+        "model": "photologue.photosize", 
+        "fields": {
+            "name": "square", 
+            "watermark": null, 
+            "increment_count": false, 
+            "effect": null, 
+            "crop": true, 
+            "height": 75, 
+            "width": 75, 
+            "upscale": false, 
+            "pre_cache": false, 
+            "quality": 80
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "photologue.photosize", 
+        "fields": {
+            "name": "small_crop", 
+            "watermark": null, 
+            "increment_count": false, 
+            "effect": null, 
+            "crop": true, 
+            "height": 75, 
+            "width": 100, 
+            "upscale": false, 
+            "pre_cache": false, 
+            "quality": 100
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "photologue.photosize", 
+        "fields": {
+            "name": "thumbnail", 
+            "watermark": null, 
+            "increment_count": false, 
+            "effect": null, 
+            "crop": false, 
+            "height": 100, 
+            "width": 100, 
+            "upscale": false, 
+            "pre_cache": false, 
+            "quality": 100
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "photologue.photosize", 
+        "fields": {
+            "name": "small", 
+            "watermark": null, 
+            "increment_count": false, 
+            "effect": null, 
+            "crop": false, 
+            "height": 240, 
+            "width": 240, 
+            "upscale": false, 
+            "pre_cache": false, 
+            "quality": 100
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "photologue.photosize", 
+        "fields": {
+            "name": "display", 
+            "watermark": null, 
+            "increment_count": false, 
+            "effect": null, 
+            "crop": false, 
+            "height": 275, 
+            "width": 500, 
+            "upscale": false, 
+            "pre_cache": false, 
+            "quality": 80
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "photologue.photosize", 
+        "fields": {
+            "name": "medium_500", 
+            "watermark": null, 
+            "increment_count": false, 
+            "effect": null, 
+            "crop": false, 
+            "height": 500, 
+            "width": 500, 
+            "upscale": false, 
+            "pre_cache": false, 
+            "quality": 100
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "photologue.photosize", 
+        "fields": {
+            "name": "medium_640", 
+            "watermark": null, 
+            "increment_count": false, 
+            "effect": null, 
+            "crop": false, 
+            "height": 640, 
+            "width": 640, 
+            "upscale": false, 
+            "pre_cache": false, 
+            "quality": 100
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "photologue.photosize", 
+        "fields": {
+            "name": "large", 
+            "watermark": null, 
+            "increment_count": false, 
+            "effect": null, 
+            "crop": false, 
+            "height": 1024, 
+            "width": 1024, 
+            "upscale": false, 
+            "pre_cache": false, 
+            "quality": 95
+        }
+    }
+]
