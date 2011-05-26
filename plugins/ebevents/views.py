@@ -39,7 +39,7 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         q_event_month = 0
     if not q_event_year.isdigit():
         q_event_year = 0  
-
+    
     # pull from cache
     xml = cache.get('event_booking_xml')
 
@@ -83,12 +83,13 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         events = [event for event in events if event['event_type']==q_event_type]
     
     # filter date  
-    if q_event_month and q_event_year:
+    if int(q_event_month) > 0 and q_event_year:
         events = [event for event in events if event['start_date'].year==int(q_event_year) and \
                   event['start_date'].month==int(q_event_month)]
 
-    elif q_event_month:
+    elif int(q_event_month) > 0:
         events = [event for event in events if event['start_date'].month==int(q_event_month)]
+
     elif q_event_year:
         events = [event for event in events if event['start_date'].year==int(q_event_year)]
         

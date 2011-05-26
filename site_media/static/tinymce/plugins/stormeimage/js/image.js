@@ -20,6 +20,9 @@ var ImageDialog = {
 		TinyMCE_EditableSelects.init();
 
 		if (n.nodeName == 'IMG') {
+
+			this.n = n;
+
 			mcTabs.displayTab('imageedit_tab','imageedit_panel');
 			$(".edit_src").attr({src:dom.getAttrib(n, 'src')});
 
@@ -56,6 +59,7 @@ var ImageDialog = {
 			}
 		}
 		else {
+			this.n = null;
 			$("#imageedit_tab").hide();
 		}
 
@@ -76,7 +80,9 @@ var ImageDialog = {
 	remove_image : function() {
 		var ed = tinyMCEPopup.editor, f = document.forms[0], nl = f.elements, v, args = {};
 		var dom = ed.dom, n = ed.selection.getNode();
-		
+
+		n = this.n;
+
 		if (n.nodeName == 'IMG') {
 			dom.remove(n);
 			ed.execCommand('mceRepaint');
@@ -105,6 +111,8 @@ var ImageDialog = {
 	update : function() {
 		var ed = tinyMCEPopup.editor, f = document.forms[0], nl = f.elements, v, args = {};
 		var n = ed.selection.getNode();
+
+		n = this.n;
 
 		var img_src = $(".edit_src").attr("src");
 		var img_title = nl.edit_title.value;

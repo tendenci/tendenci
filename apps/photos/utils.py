@@ -15,7 +15,7 @@ def dynamic_image(photo, size, crop):
     # if file does not exist; then quit
     if not exists(photo.image.path): return None
 
-    size = validate_image_size(size) # make sure it's not too big
+    # size = validate_image_size(size) # make sure it's not too big
     key = generate_image_cache_key(photo, size, crop)
 
     binary = cache.get(key) # check if key exists
