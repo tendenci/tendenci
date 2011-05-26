@@ -24,61 +24,44 @@ from photos.models import Image, Pool, PhotoSet, AlbumCover
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 
 
-def details(request, id, set_id=0, template_name="photos/details.html"):
-    """ show the photo details """
-    photo = get_object_or_404(Image, id=id)
-
-    if not photo.check_perm(request.user,'photos.view_image'):
-        raise Http404
-    
-    photo_url = photo.get_large_url()
-
-    is_me = (photo.member == request.user)
-    
-    return render_to_response(template_name, {
-        "photo": photo,
-        "photo_url": photo_url,
-        "photo_set_id": set_id,
-        "id": photo.id,
-        "set_id": set_id,
-        "is_me": is_me,
-    }, context_instance=RequestContext(request))
-
-def sizes(request, id, size_name=None, template_name="photos/sizes.html"):
+def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     """ Show all photo sizes """
 
-    photo = get_object_or_404(Image, id=id)
-    if not photo.check_perm(request.user,'photos.view_image'):
-        raise Http404
+    # check permissions & get photo queryset
+    photo = Image.objects.search("id:%s" % id)
 
-    if not size_name:
-        return redirect('photo_square', id=id)
+    # assume protect image
+    if not photo:
+        raise Http403
 
-    # get url & sizes
-    # url = getattr(photo, 'get_%s_url' % size_name)()  # get_thumbnail_url()
+    # get image object
+    photo = photo.best_match().object
 
+    # security-check on size name
+    if not size_name: return redirect('photo_square', id=id)
 
-    if size_name != 'original':
-        sizes = getattr(photo, 'get_%s_size' % size_name)()
-    else:
+    # get sizes
+    if size_name == 'original':
         sizes = (photo.image.width, photo.image.height)
-
-    url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % sizes})
-
+    else:  # use photologue size table
+        sizes = getattr(photo, 'get_%s_size' % size_name)()
 
     # get download url
-    if size_name == 'square': download_url = reverse('photo_crop_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
-    else: download_url = reverse('photo_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
+    if size_name == 'square':
+        source_url = reverse('photo.size', kwargs={'id':id, 'crop':'crop', 'size':"%sx%s" % sizes})
+        download_url = reverse('photo_crop_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
+    else:
+        source_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % sizes})
+        download_url = reverse('photo_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
 
-    # download original url
-    download_original_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % (photo.image.width, photo.image.height)})
+    original_source_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % (photo.image.width, photo.image.height)})
 
     return render_to_response(template_name, {
         "photo": photo,
-        "size_name": size_name.replace("_","-"),
-        "url": url,
+        "size_name": size_name.replace("_"," "),
         "download_url": download_url,
-        "download_original_url": download_original_url,
+        "source_url": source_url,
+        "original_source_url": original_source_url,
     }, context_instance=RequestContext(request))
 
 def photo(request, id, set_id=0, template_name="photos/details.html"):
@@ -95,8 +78,8 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
     except:
         # can't tell if they're denied
         # or the image does not exist
-        # i assume does not exist
-        raise Http404
+        # i assume protected
+        raise Http403
 
     EventLog.objects.log(**{
         'event_id' : 990500,
@@ -550,7 +533,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
             
             #set album cover if specified
             chosen_cover_id = request.POST.get('album_cover', None)
-            print "chosen", chosen_cover_id
+
             if chosen_cover_id:
                 #validate chosen cover
                 valid_cover = True
