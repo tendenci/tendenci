@@ -16,7 +16,7 @@ from event_logs.models import EventLog
 
 from corporate_memberships.models import CorpApp, CorpField, CorporateMembership, CorporateMembershipType
 from corporate_memberships.models import CorporateMembershipRep
-from corporate_memberships.forms import CorpMembForm, CorpMembRepForm, RosterSearchForm
+from corporate_memberships.forms import CorpMembForm, CorpMembRepForm, RosterSearchForm, CorpMembRenewForm
 from corporate_memberships.utils import get_corporate_membership_type_choices, get_payment_method_choices
 from corporate_memberships.utils import corp_memb_inv_add
 #from memberships.models import MembershipType
@@ -244,7 +244,25 @@ def edit(request, id, template="corporate_memberships/edit.html"):
                'form':form}
     return render_to_response(template, context, RequestContext(request))
 
-
+@login_required
+def renew(request, id, template="corporate_memberships/renew.html"):
+    corporate_membership = get_object_or_404(CorporateMembership, id=id)
+    
+    if not has_perm(request.user,'corporate_memberships.change_corporatemembership',corporate_membership):
+        if not corporate_membership.allow_edit_by(request.user):
+            raise Http403
+        
+    user_is_admin = is_admin(request.user)
+    
+    corp_app = corporate_membership.corp_app
+    
+    form = CorpMembRenewForm(request.POST or None, user=request.user, corporate_membership=corporate_membership)
+    
+    context = {"corporate_membership": corporate_membership, 
+               'corp_app': corp_app,
+               'form': form,
+               }
+    return render_to_response(template, context, RequestContext(request))
 
 @login_required
 def renew_conf(request, id, template="corporate_memberships/renew_conf.html"):

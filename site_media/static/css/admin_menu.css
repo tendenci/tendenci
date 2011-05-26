@@ -1,4 +1,4 @@
-html { margin-top: 30px !important; margin-bottom: 26px !important;  }
+html { padding-top: 30px !important; padding-bottom: 26px !important;  }
 	#admin-bar { width: 100%; position: fixed; top: 0; left: 0; background: #6A120D; color: #ebebeb; height: 30px; z-index: 99999 !important;}
 	#admin-bar .admin-logo img {margin: 0; padding: 0;}
 	#admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 12px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }

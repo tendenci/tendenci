@@ -45,7 +45,7 @@ class ObjectPermissionManager(models.Manager):
                     users.append(perm.user.pk)
             return users
         else:
-            return None
+            return []
 
     def groups_with_perms(self, perm, instance):
         """
@@ -76,7 +76,7 @@ class ObjectPermissionManager(models.Manager):
                     groups.append(perm.group.pk)
             return groups
         else:
-            return None
+            return []
 
     def assign_group(self, group_or_groups, object, perms=None):
         """

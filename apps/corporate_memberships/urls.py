@@ -13,6 +13,7 @@ urlpatterns = patterns('corporate_memberships.views',
     url(r'^delete/(?P<id>\d+)/$', 'delete', name="corp_memb.delete"),
     url(r'^delete_rep/(?P<id>\d+)/$', 'delete_rep', name="corp_memb.delete_rep"),
     #(r'^renew/(?P<id>\d+)/$', CorpMembRenewFormPreview(CorpMembRenewForm)),
-    #url(r"^renew_conf/(?P<id>\d+)/$", "renew_conf", name="corp_memb.renew_conf"),
+    url(r"^renew/(?P<id>\d+)/$", "renew", name="corp_memb.renew"),
+    url(r"^renew_conf/(?P<id>\d+)/$", "renew_conf", name="corp_memb.renew_conf"),
     url(r"^(?P<id>\d+)/$", "view", name="corp_memb.view"),
 )

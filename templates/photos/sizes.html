@@ -1,0 +1,72 @@
+{% extends "photos/base-wide.html" %}
+{% load i18n %}
+
+{% block meta_description %}{{ photo.title|striptags|truncatewords:20 }}{% endblock %}
+{% block meta_keywords %}{{ photo.meta_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ photo.get_canonical_url }}" />{% endblock %}
+
+{% block title %}{% firstof photo.title "Untitled" %} - {% blocktrans %}All Photo Sizes{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
+{% endblock %}
+
+{% block body %}
+<div id="photo-sizes">
+
+	<h1>{{ photo.title }} &middot; All Photo Sizes</h1>
+	<div id="back-link"><a href="{{ photo.get_absolute_url }}">&larr; Back to photo</a></div>
+
+	<div id="download-wrap">
+		<div class="label">Download</div>
+		<div class="link"><a href="{{ download_url }}">Download the {{ size_name|capfirst }} size of this photo</a></div>
+	</div>
+	<div id="sizes-wrap">
+		<div class="label">Sizes</div>
+
+		<div class="sizes">
+			<div class="size-wrap{% if size_name == "square" %} highlight{% endif %}">
+				<div class="size-name"><a href="{% url photo_square photo.pk %}">Square</a></div>
+				<div class="size-numerals">{{ photo.get_square_size|join:" x " }}</div>
+			</div>
+			<div class="size-wrap{% if size_name == "thumbnail" %} highlight{% endif %}">
+				<div class="size-name"><a href="{% url photo_thumbnail photo.pk %}">Thumbnail</a></div>
+				<div class="size-numerals">{{ photo.get_thumbnail_size|join:" x " }}</div>
+			</div>
+			<div class="size-wrap{% if size_name == "small" %} highlight{% endif %}">
+				<div class="size-name"><a href="{% url photo_small photo.pk %}">Small</a></div>
+				<div class="size-numerals">{{ photo.get_small_size|join:" x " }}</div>
+			</div>
+			<div class="size-wrap{% if size_name == "medium 500" %} highlight{% endif %}">
+				<div class="size-name"><a href="{% url photo_medium_500 photo.pk %}">Medium 500</a></div>
+				<div class="size-numerals">{{ photo.get_medium_500_size|join:" x " }}</div>
+			</div>
+			<div class="size-wrap{% if size_name == "medium 640" %} highlight{% endif %}">
+				<div class="size-name"><a href="{% url photo_medium_640 photo.pk %}">Medium 640</a></div>
+				<div class="size-numerals">{{ photo.get_medium_640_size|join:" x " }}</div>
+			</div>
+			<div class="size-wrap{% if size_name == "large" %} highlight{% endif %}">
+				<div class="size-name">
+					<a target="_blank" href="{% url photo.size photo.pk photo.get_large_size|join:"x" %}">
+						Large (opens in new tab)</a></div>
+				<div class="size-numerals">{{ photo.get_large_size|join:" x " }}</div>
+			</div>
+			<div class="size-wrap{% if size_name == "original" %} highlight{% endif %}">
+				<div class="size-name"><a target="_blank" href="{{ original_source_url }}">Original (opens in new tab)</a></div>
+				<div class="size-numerals">{{ photo.image.width }} x {{ photo.image.height }}</div>
+			</div>
+
+		</div><!-- .sizes -->
+		<div style="clear:both"></div>
+	</div><!-- #sizes-wrap -->
+
+	<img id='featured-photo' src="{{ source_url }}" alt="{{ photo.title }}" />
+
+	<div id="embed-photo">
+	<div>Copy &amp; paste HTML into your webpage</div>
+	<textarea><a href="{{ photo.get_absolute_url }}"><img src="{{ source_url }}" alt="{{ photo.title }}"></a></textarea>
+	</div><!-- #embed-photo -->
+
+</div> <!-- #photo-sizes -->
+{% endblock %}
