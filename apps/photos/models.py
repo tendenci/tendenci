@@ -13,6 +13,7 @@ from photos.managers import PhotoManager, PhotoSetManager
 from meta.models import Meta as MetaTags
 from photos.module_meta import PhotoMeta
 
+
 class PhotoSet(TendenciBaseModel):
     """
     A set of photos
@@ -42,8 +43,13 @@ class PhotoSet(TendenciBaseModel):
     def get_cover_photo(self, *args, **kwargs):
         """ get latest thumbnail url """
         default_cover = settings.STATIC_URL + "/images/default-photo.jpg"
-        try: cover_photo = self.image_set.latest('id').get_thumbnail_url()
-        except: cover_photo = default_cover
+        try:
+            cover_photo = AlbumCover.objects.get(photoset = self).photo.get_thumbnail_url()
+        except AlbumCover.DoesNotExist:
+            try:
+                cover_photo = self.image_set.latest('id').get_thumbnail_url()
+            except:
+                cover_photo = default_cover
         return cover_photo
 
     def check_perm(self, user, permission, *args, **kwargs):
@@ -116,7 +122,10 @@ class Image(ImageModel, TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        photo_set = self.photoset.all()[0]
+        try:
+            photo_set = self.photoset.all()[0]
+        except IndexError:
+            return ("photo", [self.pk])
         return ("photo", [self.pk, photo_set.pk])
 
     def meta_keywords(self):
@@ -140,20 +149,20 @@ class Image(ImageModel, TendenciBaseModel):
 
     def get_next(self, set=None):
         # decide which set to pull from
-        if set: images = Image.objects.filter(photoset=set, id__gt=self.id)
-        else: images = Image.objects.filter(id__gt=self.id)
+        if set: images = Image.objects.filter(photoset=set, id__lt=self.id)
+        else: images = Image.objects.filter(id__lt=self.id)
         images = images.values_list("id", flat=True)
-        images = images.order_by('date_added')
-        try: return Image.objects.get(id=min(images))
+        images = images.order_by('-id')
+        try: return Image.objects.get(id=max(images))
         except ValueError: return None
 
     def get_prev(self, set=None):
         # decide which set to pull from
-        if set: images = Image.objects.filter(photoset=set, id__lt=self.id)
-        else: images = Image.objects.filter(id__lt=self.id)
+        if set: images = Image.objects.filter(photoset=set, id__gt=self.id)
+        else: images = Image.objects.filter(id__gt=self.id)
         images = images.values_list("id", flat=True)
-        images = images.order_by('date_added')
-        try: return Image.objects.get(id=max(images))
+        images = images.order_by('-id')
+        try: return Image.objects.get(id=min(images))
         except ValueError: return None
 
     objects = PhotoManager()
@@ -178,3 +187,13 @@ class Pool(models.Model):
         unique_together = (('photo', 'content_type', 'object_id'),)
         verbose_name = _('pool')
         verbose_name_plural = _('pools')
+        
+class AlbumCover(models.Model):
+    """
+    model to mark a photo set's album cover
+    """
+    photoset = models.OneToOneField(PhotoSet)
+    photo = models.ForeignKey(Image)
+    
+    def __unicode__(self):
+        return self.photo.title

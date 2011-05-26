@@ -75,6 +75,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     width: 230px;
 }
 
+.selector .selector-chosen input {
+    width: 230px;
+}
+
 .selector ul.selector-chooser {
     float: left;
     width: 22px;

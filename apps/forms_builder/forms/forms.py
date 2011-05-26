@@ -155,7 +155,8 @@ class FormForm(TendenciBaseForm):
             
 class FormForField(forms.ModelForm):
     class Meta:
-        model = Field        
+        model = Field
+        exclude = ["position"]
     
     def clean_function_params(self):
         function_params = self.cleaned_data['function_params']
@@ -181,5 +182,9 @@ class FormForField(forms.ModelForm):
                         Group.objects.get(name=val)
                     except Group.DoesNotExist:
                         raise forms.ValidationError("The group \"%s\" does not exist" % (val))
+                    
+        if field_function != None and field_function.startswith("Email"):
+            if field_type != "CharField":
+                raise forms.ValidationError("This field's function requires Text as a field type")
                 
         return cleaned_data

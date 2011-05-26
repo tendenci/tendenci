@@ -89,6 +89,11 @@ class MembershipType(TendenciBaseModel):
     require_approval = models.BooleanField(_('Require Approval'), default=1)
     allow_renewal = models.BooleanField(_('Allow Renewal'), default=1)
     renewal = models.BooleanField(_('Renewal Only'), default=0)
+    renewal_require_approval = models.BooleanField(_('Renewal Requires Approval'), default=1)
+
+    # renew_approval_required
+    # join_approval_required
+
     order = models.IntegerField(_('Order'), default=0, 
         help_text='Types will be displayed in ascending order based on this field')
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
@@ -143,7 +148,9 @@ class MembershipType(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
     
-     
+
+
+
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
         """
         Calculate the expiration date - for join or renew (renewal=True)
@@ -267,12 +274,10 @@ class Membership(TendenciBaseModel):
     directory = models.ForeignKey(Directory, blank=True, null=True) 
     renewal = models.BooleanField(default=False)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
-
     subscribe_dt = models.DateTimeField(_("Subscribe Date"), null=True)
     join_dt = models.DateTimeField(_("Join Date"), null=True)
     renew_dt = models.DateTimeField(_("Renew Date"), blank=True, null=True)
-
-    expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
+    expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     ma = models.ForeignKey("App")
@@ -310,8 +315,13 @@ class Membership(TendenciBaseModel):
         return (start_dt, end_dt)
         
     def can_renew(self):
+        """
+        Checks memberships that are never ending. No expire dt.
+        Checks if membership is within renewal period.
+        Returns boolean.
+        """
 
-        if self.expiration_dt is None:  # expiration_dt == NULL
+        if self.expiration_dt is None:  # neverending expirations
             return False
 
         start_dt, end_dt = self.get_renewal_period_dt()
@@ -666,6 +676,16 @@ class AppEntry(TendenciBaseModel):
     def email(self):
         """Get email string"""
         return self.get_field_value('email')
+
+    def approval_required(self):
+        join_approval_required = self.membership_type.require_approval
+        renew_approval_required = self.membership_type.renewal_require_approval
+
+        if self.user:
+            return renew_approval_required
+        else:
+            return join_approval_required
+
     
     @property
     def corporate_membership_id(self):

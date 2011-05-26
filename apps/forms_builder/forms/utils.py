@@ -4,7 +4,7 @@ from site_settings.utils import get_setting
 
 def generate_email_body(entry):
     """
-        Generates the email body so that is is readable
+        Generates the email body so that is readable
     """
     body = []
     body.append('<h3>%s</h3>' % entry.form.title)    

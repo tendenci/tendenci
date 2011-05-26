@@ -1,4 +1,7 @@
-from django.template import Library
+from django.template import Library, TemplateSyntaxError, Variable
+
+from base.template_tags import ListNode, parse_tag_kwargs
+from directories.models import Directory
 
 register = Library()
 
@@ -52,3 +55,37 @@ def directory_pricing_table(context):
         'show_premium_price': show_premium_price
     })
     return context
+
+
+class ListDirectoriesNode(ListNode):
+    model = Directory
+
+
+@register.tag
+def list_directories(parser, token):
+    """
+    Example:
+        {% list_directories as directories_list [user=user limit=3 tags=bloop bleep] %}
+        {% for directory in directories_list %}
+            {{ directory.headline }}
+        {% endfor %}
+
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    context_var = bits[2]
+
+    if len(bits) < 3:
+        message = "'%s' tag requires more than 3" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    if bits[1] != "as":
+        message = "'%s' second argument must be 'as" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    kwargs = parse_tag_kwargs(bits)
+
+    if 'order' not in kwargs:
+        kwargs['order'] = 'headline_exact'
+
+    return ListDirectoriesNode(context_var, *args, **kwargs)

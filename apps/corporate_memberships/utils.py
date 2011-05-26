@@ -6,7 +6,7 @@ from django.utils import simplejson
 from site_settings.utils import get_setting
 from perms.utils import is_admin
 from corporate_memberships.models import CorpField, AuthorizedDomain
-from memberships.models import AppField
+from memberships.models import AppField, Membership
 from invoices.models import Invoice
 from payments.models import Payment
 
@@ -30,7 +30,16 @@ def get_corporate_membership_type_choices(user, corpapp):
     for cmt in corporate_membership_types:
         cmt_list.append((cmt.id, '%s - %s%0.2f' % (cmt.name, currency_symbol, cmt.price)))
         
-    return cmt_list        
+    return cmt_list 
+
+def get_indiv_membs_choices(corp):
+    im_list = []
+    indiv_memberships = Membership.objects.filter(corporate_membership_id=corp.id)
+    
+    for membership in indiv_memberships:
+        im_list.append((membership.id, '%s' % (membership.user.get_full_name())))
+        
+    return im_list        
    
 def get_payment_method_choices(user):
     if is_admin(user):
