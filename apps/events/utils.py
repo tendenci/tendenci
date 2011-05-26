@@ -370,6 +370,7 @@ def add_registration(*args, **kwargs):
     Add the registration
     Args are split up below into the appropriate attributes
     """
+    from decimal import Decimal
     total_amount = 0
     count = 0
 
@@ -379,6 +380,8 @@ def add_registration(*args, **kwargs):
     registrant_formset, price, \
     event_price = args
     
+    event_price = Decimal(event_price)
+
     reg8n_attrs = {
             "event": event,
             "payment_method": reg_form.cleaned_data.get('payment_method', None),
@@ -430,7 +433,7 @@ def create_registrant_from_form(*args, **kwargs):
 
     registrant = Registrant()
     registrant.registration = reg8n
-    registrant.amount = str(amount)
+    registrant.amount = amount
 
     registrant.first_name = form.cleaned_data.get('first_name', '')
     registrant.last_name = form.cleaned_data.get('last_name', '')
