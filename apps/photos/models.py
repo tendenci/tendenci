@@ -69,6 +69,24 @@ class PhotoSet(TendenciBaseModel):
 
     def __unicode__(self):
         return self.name
+        
+        
+class License(models.Model):
+    """
+    License with details
+    """
+    name = models.CharField(_('name'), max_length=200)
+    code = models.CharField(_('code'), max_length=200, blank=True)
+    author = models.CharField(_('author'), max_length=200, blank=True)
+    deed = models.URLField(_('license deed'), blank=True)
+    legal_code = models.URLField(_('legal code'), blank=True)
+    
+    def __unicode__(self):
+        return self.name
+        
+def default_license():
+    return License.objects.get(id=1)
+
 
 class Image(ImageModel, TendenciBaseModel):
     """
@@ -88,10 +106,11 @@ class Image(ImageModel, TendenciBaseModel):
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField()
-
+    license = models.ForeignKey(License, related_name="license", default=default_license)
+    
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
-
+    
     def get_meta(self, name):
         """
         This method is standard across all models that are
@@ -99,7 +118,7 @@ class Image(ImageModel, TendenciBaseModel):
         methods coupled to this instance.
         """    
         return PhotoMeta().get_meta(self, name)
-
+    
     class Meta:
         permissions = (("view_image","Can view image"),)
 
