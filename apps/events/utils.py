@@ -430,7 +430,7 @@ def create_registrant_from_form(*args, **kwargs):
 
     registrant = Registrant()
     registrant.registration = reg8n
-    registrant.amount = amount
+    registrant.amount = str(amount)
 
     registrant.first_name = form.cleaned_data.get('first_name', '')
     registrant.last_name = form.cleaned_data.get('last_name', '')
