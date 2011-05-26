@@ -39,8 +39,7 @@ jQuery(function($) {
                 rows[position] = $(this);
                 
                 // Add move cursor to table row.
-                // Also remove row coloring, as it confuses when using drag-and-drop for ordering
-                table.find('tr:has(td)').css('cursor', 'move').removeClass('row1').removeClass('row2');
+                table.find('tr:has(td)').css('cursor', 'move')
             });
             
             for (var i in rows) { table.append(rows[i]); } // Move <tr> to its correct position
@@ -65,9 +64,7 @@ function update_positions(table, update_ids)
             // Update position field
             $(this).find('td.' + position_field + ' input').val(position + 1);
             position++;
-        }
-        else
-        {
+            
             // Update row coloring
             $(this).removeClass('row1 row2');
             if (even)

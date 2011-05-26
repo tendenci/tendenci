@@ -738,7 +738,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if not event.registration_configuration.within_time:
             messages.add_message(request, messages.INFO,
                                 'Registration has been closed.')
-            return HttpResponseRedirect(reverse('event', args=(event_id),))
+            return HttpResponseRedirect(reverse('event', args=(event_id,),))
     
     event_price = event.registration_configuration.price 
     
@@ -1159,7 +1159,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
 
     event = get_object_or_404(Event, pk=event_id)
     registrants = Registrant.objects.search(
-        query, user=request.user, event=event,).order_by("-update_dt")
+        query, user=request.user, event=event).order_by("-update_dt")
 
     return render_to_response(template_name, {'event':event, 'registrants':registrants}, 
         context_instance=RequestContext(request))
@@ -1210,9 +1210,10 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     # get total and balance (sum)
     for reg8n in registrations:
         if not reg8n.canceled:  # not cancelled
-            if roster_view != 'paid':
-                total_sum += float(reg8n.invoice.total)
-            balance_sum += float(reg8n.invoice.balance)
+            if reg8n.invoice != None:
+                if roster_view != 'paid':
+                    total_sum += float(reg8n.invoice.total)
+                balance_sum += float(reg8n.invoice.balance)
 
     num_registrants_who_payed = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
