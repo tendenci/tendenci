@@ -17,12 +17,11 @@
 			var instance_id = ed.settings.app_instance_id;
 
 			// Register commands
-			
 			ed.addCommand('mceStormImage', function() {
 				// Internal image object like a flash placeholder
 				if (ed.dom.getAttrib(ed.selection.getNode(), 'class').indexOf('mceItem') != -1)
 					return;
-					
+
 				ed.windowManager.open({
 					//file : url + '/image.html',
 					file : '/files/tinymce/?app_label='+ app_label +'&model='+ model +'&instance_id='+ instance_id,
@@ -34,7 +33,6 @@
 					plugin_url : url
 				});
 			});
-			
 
 			// Register buttons
 			ed.addButton('image', {
@@ -42,7 +40,6 @@
 				cmd : 'mceStormImage',
 				image : url + '/img/attachment.gif'
 			});
-
 
 			// Add a node change handler, selects the button in the UI when a image is selected
 			ed.onNodeChange.add(function(ed, cm, n) {

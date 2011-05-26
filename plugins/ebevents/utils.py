@@ -135,12 +135,32 @@ def get_event_by_id(id, **kwargs):
     event['additional_info'] = node.additional_info.string
     event['additional_info'] = strip_tags(event['additional_info'])
     
+    # additional info 2
+    try:
+        event['additional_info2'] = node.additional_info2.string
+        event['additional_info2'] = strip_tags(event['additional_info2'])
+    except:
+        event['additional_info2'] = ''
+    
     # picture full
     event['picture_full'] = ''
     if node.picture_full:
         event['picture_full'] = node.picture_full.string
         event['picture_full_height'] = int(node.picture_full['height'])
         event['picture_full_width'] = int(node.picture_full['width'])
+    
+    # special media photo fields        
+    if node.media_group:
+        for media in node.media_group:
+            label = media['type'].lower()
+            try:
+                event[label] = media.string
+                event[label + '_height'] = int(media['height'])
+                event[label + '_width'] = int(media['width'])
+            except:
+                event[label] = ''
+                event[label + '_height'] = ''
+                event[label + '_width'] = ''
     
     # weird - those elements appear as upper case in the xml file
     # but the parser only takes as lower case. Need to change all to lower case

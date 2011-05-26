@@ -89,7 +89,7 @@ class RegistrantManager(TendenciBaseManager):
         Returns a SearchQuerySet
         """
         sqs = SearchQuerySet()
-        event = kwargs.get('event', None)
+        event = kwargs.get('event')
 
         if event:
             sqs = sqs.filter(event_pk=event.pk)
@@ -97,7 +97,7 @@ class RegistrantManager(TendenciBaseManager):
         # let the parent search know that we have started a SQS
         kwargs.update({'sqs': sqs})
 
-        sqs = super(EventManager, self).search(
+        sqs = super(RegistrantManager, self).search(
             query=query, *args, **kwargs)
 
         return sqs

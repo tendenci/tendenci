@@ -102,9 +102,6 @@
                     <input type="hidden" name="image-id" value="{{ file.id }}" />
 					<input type="hidden" name="orig_width" value="{{ file.image_dimensions|first }}" />
 					<input type="hidden" name="orig_height" value="{{ file.image_dimensions|last }}" />
-<!--                     <div class="photo">
-                        <img class="edit_src" style="width:75px; height:75px;" src="{{ file.file.url }}" />
-                    </div> -->
                     <div class="info">
                         <div style="width:100%;" class="title">{{ file.name }}</div>
                     </div>
@@ -165,38 +162,11 @@
 							</tr>
 							<input style="width:30px" type="hidden" name="edit_vspace" value="0" />
 							<input style="width:30px" type="hidden" name="edit_hspace" value="0" />
-							<input style="width:30px" type="hidden" name="edit_align" value="-- not set --" />
-<!-- 							<tr>
-								<td style="border-top: 1px solid #CCC;">
-									<p>Deprecated Attributes:</p>
-									<table cellpadding=5 style="width:100%;" border="0"> 
-										<tr>
-											<td>
-												V-Space: <input style="width:30px" type="text" name="edit_vspace" value="0" />
-											</td>
-										</tr>
-										<tr>
-											<td>
-												H-Space:<input style="width:30px" type="text" name="edit_hspace" value="0" />
-											</td>
-										</td>
-										<tr>
-											<td>
-												Align: 
-						                        <select name="edit_align">
-						                            <option value="">-- Alignment --</option>
-						                            <option value="left">Left</option>
-						                            <option value="right">Right</option>
-						                        </select>
-											</td>
-										</tr>
-									</table>
-								</td>
-							</tr>			 -->				
+							<input style="width:30px" type="hidden" name="edit_align" value="-- not set --" />			
                         </table>
                         <div class="actions">
                             <a class="update-btn" onclick="ImageDialog.update();" href="javascript:;">Update Image</a>  
-                            <a class="delete-btn" onclick="ImageDialog.remove_image();" href="#">Remove Image</a> 
+                            <a class="delete-btn" onclick="ImageDialog.remove_image();" href="javascript:;">Remove Image</a> 
                         </div>
                     </div>
                 </div>

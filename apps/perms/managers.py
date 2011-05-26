@@ -45,7 +45,7 @@ class ObjectPermissionManager(models.Manager):
                     users.append(perm.user.pk)
             return users
         else:
-            return None
+            return []
 
     def groups_with_perms(self, perm, instance):
         """
@@ -76,7 +76,7 @@ class ObjectPermissionManager(models.Manager):
                     groups.append(perm.group.pk)
             return groups
         else:
-            return None
+            return []
 
     def assign_group(self, group_or_groups, object, perms=None):
         """
@@ -370,10 +370,7 @@ class TendenciBaseManager(models.Manager):
         """
         from perms.utils import is_admin, is_member
 
-        # form the seach queryset
-        child_sqs = kwargs.get('sqs', None)
-        if not child_sqs:
-            sqs = SearchQuerySet()
+        sqs = kwargs.get('sqs', SearchQuerySet())
 
         # user information
         user = kwargs.get('user') or AnonymousUser()
