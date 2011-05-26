@@ -126,5 +126,40 @@
             "pre_cache": false, 
             "quality": 85
         }
+    },
+    {
+        "pk": 1,
+        "model": "photos.license",
+        "fields": {"name": "All Rights Reserved", "code": "", "author": "", "deed": "", "legal_code": ""}
+    },
+    {
+        "pk": 2,
+        "model": "photos.license",
+        "fields": {"name": "Attribution", "code": "CC BY", "author": "Creative Commons", "deed": "http://creativecommons.org/licenses/by/3.0", "legal_code": "http://creativecommons.org/licenses/by/3.0/legalcode"}
+    },
+    {
+        "pk": 3,
+        "model": "photos.license",
+        "fields": {"name": "Attribution-ShareAlike", "code": "CC BY-SA", "author": "Creative Commons", "deed": "http://creativecommons.org/licenses/by-sa/3.0", "legal_code": "http://creativecommons.org/licenses/by-sa/3.0/legalcode"}
+    },
+    {
+        "pk": 4,
+        "model": "photos.license",
+        "fields": {"name": "Attribution-NoDerivs", "code": "CC BY-ND", "author": "Creative Commons", "deed": "http://creativecommons.org/licenses/by-nd/3.0", "legal_code": "http://creativecommons.org/licenses/by-nd/3.0/legalcode"}
+    },
+    {
+        "pk": 5,
+        "model": "photos.license",
+        "fields": {"name": "Attribution-NonCommercial", "code": "CC BY-NC", "author": "Creative Commons", "deed": "http://creativecommons.org/licenses/by-nc/3.0", "legal_code": "http://creativecommons.org/licenses/by-nc/3.0/legalcode"}
+    },
+    {
+        "pk": 6,
+        "model": "photos.license",
+        "fields": {"name": "Attribution-NonCommercial-ShareAlike", "code": "CC BY-NC-SA", "author": "Creative Commons", "deed": "http://creativecommons.org/licenses/by-nc-sa/3.0", "legal_code": "http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode"}
+    },
+    {
+        "pk": 7,
+        "model": "photos.license",
+        "fields": {"name": "Attribution-NonCommercial-NoDerivs", "code": "CC BY-NC-ND", "author": "Creative Commons", "deed": "http://creativecommons.org/licenses/by-nc-nd/3.0", "legal_code": "http://creativecommons.org/licenses/by-nc-nd/3.0/legalcode"}
     }
 ]
