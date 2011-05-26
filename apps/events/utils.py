@@ -380,7 +380,7 @@ def add_registration(*args, **kwargs):
     registrant_formset, price, \
     event_price = args
     
-    event_price = Decimal(event_price)
+    event_price = Decimal(str(event_price))
 
     reg8n_attrs = {
             "event": event,
