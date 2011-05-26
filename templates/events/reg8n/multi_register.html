@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}Register{% endblock %}
+{% block title %}{{ block.super }}Registration {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -12,27 +12,33 @@
 
 {% block body %}
 
-<style type="text/css">
-
-	.t h1 {
-		margin-bottom: 0;
-	}
-	.t div.event-title {
-		font-size: 1.2em;
-		margin-bottom: 10px;
-	}
-
-	.price {
-		font-size: 1.6em;
-		margin-bottom: 10px;
-		background-color: #FFC;
+<style type="text/css">	
+	.event-info {
 		padding: 10px;
+		background-color: #F5F5F5;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+		text-align: left;	
+		margin-bottom: 10px;
+		width: 61%;
 	}
-	
-	.hidden{
+
+	.event-title {
+		font-size: 1.3em;	
+		margin-bottom: 10px;
+	}
+	.event-time {
+		font-size: 1.1em;
+	}
+	.event-price {
+		font-size: 1.5em;
+		font-weight: bold;
+		margin-bottom: 10px;
+	}
+	.hidden {
 		display: none;
 	}
-	
 	.registrant-header{
 		border-bottom: 1px dotted #ccc;
 		margin: 2em 0 1em;
@@ -43,15 +49,7 @@
 		background-color: #f5f5f5;
 		padding: 10px;
 	}
-	.event-price-display{
-		background-color: #ffffcc;
-		font-size: 1.6em;
-		margin-bottom: 10px;
-		padding: 10px;
-		width: 10em;
-	}
 	#reg-form-box{
-	
 		border: 1px solid #ccc;
 		background-color: #fff;
 		padding: 1em;
@@ -93,11 +91,9 @@
 	#summary-price td, #summary-total-price td{
 		padding: 3px;
 	}
-	#register-button{
-		background-color: lightblue;
-		font-weight: bold;
+	#register-button {
 		font-size: 1.2em;
-		
+		padding: 5px;
 	}
 	div.delete-button-wrap{
 		display: none;
@@ -122,20 +118,25 @@
 		clear: both;
 	}
 	.delete-button{
-		padding: 3px 3px 3px 10px;
-		color: #cc3434;
+		padding: 6px 10px 6px 15px;
 		background: url("/site_media/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 5px 50%;
+		border: 1px solid #CCC;
+		cursor: pointer;
+		color: darkred;
 	}
-	
-
 </style>
 
 <div class="t">    
     {% event_nav user %}
-    <h1>Register for Event - <a href="{% url event event.id %}">{{ event.title }}</a></h1>
-		<div class="event-price-display">
-		Price:
-		{{ event_price|format_currency }}</div>
+    <h1>Registration</h1>
+    <div class="event-info">
+	    <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
+		<div class="event-price">{{ event_price|format_currency }}</div>
+		<div class="event-time">
+	        <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
+	        <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
+		</div>
+	</div>
 		
 	{% if reg_form.errors.values or has_registrant_form_errors %}
 		<div class="errors-box">
