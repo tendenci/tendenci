@@ -1,5 +1,5 @@
 import os
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext
@@ -30,16 +30,6 @@ def details(request, id, set_id=0, template_name="photos/details.html"):
 
     if not photo.check_perm(request.user,'photos.view_image'):
         raise Http404
-
-    # # permissions
-    # if not has_perm(request.user,'photologue.view_photo',photo):
-    #     raise Http403
-
-    # # if not public
-    # if not photo.is_public:
-    #     # if no permission; raise 404 exception
-    #     if not photo.check_perm(request.user,'photos.view_image'):
-    #         raise Http404
     
     photo_url = photo.get_large_url()
 
@@ -52,6 +42,43 @@ def details(request, id, set_id=0, template_name="photos/details.html"):
         "id": photo.id,
         "set_id": set_id,
         "is_me": is_me,
+    }, context_instance=RequestContext(request))
+
+def sizes(request, id, size_name=None, template_name="photos/sizes.html"):
+    """ Show all photo sizes """
+
+    photo = get_object_or_404(Image, id=id)
+    if not photo.check_perm(request.user,'photos.view_image'):
+        raise Http404
+
+    if not size_name:
+        return redirect('photo_square', id=id)
+
+    # get url & sizes
+    # url = getattr(photo, 'get_%s_url' % size_name)()  # get_thumbnail_url()
+
+
+    if size_name != 'original':
+        sizes = getattr(photo, 'get_%s_size' % size_name)()
+    else:
+        sizes = (photo.image.width, photo.image.height)
+
+    url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % sizes})
+
+
+    # get download url
+    if size_name == 'square': download_url = reverse('photo_crop_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
+    else: download_url = reverse('photo_download', kwargs={'id':id, 'size':"%sx%s" % sizes})
+
+    # download original url
+    download_original_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % (photo.image.width, photo.image.height)})
+
+    return render_to_response(template_name, {
+        "photo": photo,
+        "size_name": size_name.replace("_","-"),
+        "url": url,
+        "download_url": download_url,
+        "download_original_url": download_original_url,
     }, context_instance=RequestContext(request))
 
 def photo(request, id, set_id=0, template_name="photos/details.html"):
@@ -120,7 +147,7 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
         "is_me": is_me,
     }, context_instance=RequestContext(request))
 
-def photo_size(request, id=None, size=None, crop=False):
+def photo_size(request, id=None, size='', crop=False, download=False):
     """
     Renders image and returns response
     Does not use template
@@ -136,6 +163,9 @@ def photo_size(request, id=None, size=None, crop=False):
     if not has_perm(request.user,'photologue.view_photo',photo):
         raise Http403
 
+    if download: attachment = 'attachment;'
+    else: attachment = ''
+
     if crop: crop = True
 
     # gets resized image from cache or rebuild
@@ -145,7 +175,7 @@ def photo_size(request, id=None, size=None, crop=False):
     if not image: raise Http404
 
     response = HttpResponse(mimetype='image/jpeg')
-    response['Content-Disposition'] = 'filename=%s'% photo.image.file.name
+    response['Content-Disposition'] = '%s filename=%s'% (attachment, photo.image.file.name)
     image.save(response, "JPEG", quality=100)
 
     return response

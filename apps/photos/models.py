@@ -13,6 +13,7 @@ from photos.managers import PhotoManager, PhotoSetManager
 from meta.models import Meta as MetaTags
 from photos.module_meta import PhotoMeta
 
+
 class PhotoSet(TendenciBaseModel):
     """
     A set of photos
@@ -121,7 +122,10 @@ class Image(ImageModel, TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        photo_set = self.photoset.all()[0]
+        try:
+            photo_set = self.photoset.all()[0]
+        except IndexError:
+            return ("photo", [self.pk])
         return ("photo", [self.pk, photo_set.pk])
 
     def meta_keywords(self):

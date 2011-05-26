@@ -1,5 +1,7 @@
 {% extends "ebevents/base.html" %}
 
+{% load base_filters %}
+
 {% block title %}{{ html_title }}{% endblock %}
 
 {% block extra_head %}
@@ -48,7 +50,7 @@
     
 }
 
-#event_image_block{
+.event_image_block{
     text-align: center;
     z-index:-1;
 }
@@ -164,23 +166,48 @@ h1{
                <p>Ticket prices: {{ event.ticket_prices }}</p>
            {% endif %}
            {% if event.ticket_sale_date %}
-               <p>Ticket sale date: {{ ticket_saledate|date:'l M j, Y' }} {{ ticket_saletime }}</p>
+               <p>Ticket sale date: {{ event.ticket_sale_date|date:'l M j, Y' }} {{ event.ticket_sale_time }}</p>
            {% endif %}
-       {% endif %}
+        {% endif %}
 
    
-       <p id="event-description">{{ event.description|safe }}</p><br />
+        <p id="event-description">{{ event.description|safe }}</p><br />
        
-       {% if event.picture_full %}
-           <div id="event_image_block" {%  if event.picture_full_width < 200 %} style="float:right;margin:1em;" {% else %} style="width:520px;"{% endif %}>
+        {% if event.picture_full %}
+           <div class="event_image_block" class="event_image_block" {%  if event.picture_full_width < 200 %} style="float:right;margin:1em;" {% else %} style="width:520px;"{% endif %}>
 	        <img src="{{ event.picture_full }}" width="{{ event.picture_full_width }}" height="{{ event.picture_full_height }}" /><br />
 	        </div>
-	    {% endif %}
+        {% endif %}
+
+        {% if event.primaryphoto %}
+            <div id="primaryphoto" class="event_image_block" {%  if event.primaryphoto_width < 200 %} style="float:right;margin:1em;" {% else %} style="width:520px;"{% endif %}>
+	        <img src="{{ event.primaryphoto }}" width="{{ event.primaryphoto_width }}" height="{{ event.primaryphoto_height }}" /><br />
+	        </div>
+        {% endif %}
+        
+        {% if event.secondaryphoto %}
+            <div id="secondaryphoto" class="event_image_block" {%  if event.secondaryphoto_width < 200 %} style="float:right;margin:1em;" {% else %} style="width:520px;"{% endif %}>
+	        <img src="{{ event.secondaryphoto }}" width="{{ event.secondaryphoto_width }}" height="{{ event.secondaryphoto_height }}" /><br />
+	        </div>
+        {% endif %}
+        
+        {% if event.sponsorlogo %}
+            <div id="sponsorlogo" class="event_image_block" {%  if event.sponsorlogo_width < 200 %} style="float:right;margin:1em;" {% else %} style="width:520px;"{% endif %}>
+	        <img src="{{ event.sponsorlogo }}" width="{{ event.sponsorlogo_width }}" height="{{ event.sponsorlogo_height }}" /><br />
+	        </div>
+        {% endif %}
+        
+        {% if event.thumbnail %}
+            <div id="thumbnail" class="event_image_block" {%  if event.thumbnail_width < 200 %} style="float:right;margin:1em;" {% else %} style="width:520px;"{% endif %}>
+	        <img src="{{ event.thumbnail }}" width="{{ event.thumbnail_width }}" height="{{ event.thumbnail_height }}" /><br />
+	        </div>
+        {% endif %}
+        
     
-    {% if event.location %}
+        {% if event.location %}
            <h3>Location</h3>
            <p>{{ event.location }}</p>
-     {% endif %}
+        {% endif %}
        
        
        
@@ -369,6 +396,11 @@ h1{
        {% if event.additional_info %}
            <h3>Additional Information</h3>
            <p>{{ event.additional_info|safe|urlize }}</p>
+       {% endif %}
+       
+       {% if event.additional_info2 %}
+           <h3>More Information</h3>
+           <p>{{ event.additional_info2|safe|urlize }}</p>
        {% endif %}
 	
 	</div>
