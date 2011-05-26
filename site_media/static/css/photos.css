@@ -582,7 +582,7 @@ div.gallery-photo-thumb img {
 }
 #photo-sizes #download-wrap .label {
 	float: left;
-	width: 100px;
+	width: 105px;
 }
 
 #photo-sizes #sizes-wrap {
@@ -599,7 +599,7 @@ div.gallery-photo-thumb img {
 }
 #photo-sizes #sizes-wrap .size-wrap {
 	float: left;
-	margin-right: 25px;
+	margin-right: 20px;
 }
 #photo-sizes #sizes-wrap .size-wrap .size-numerals {
 	color: gray;
