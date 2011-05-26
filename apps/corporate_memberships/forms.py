@@ -309,13 +309,16 @@ class RosterSearchForm(forms.Form):
     
     
 class CorpMembRenewForm(forms.ModelForm):
-    members = forms.ChoiceField(required=False)
+    members = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, 
+                                        choices=[],required=False)
+    select_all_members = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     
     class Meta:
         model = CorpMembRenewEntry
         fields = ('corporate_membership_type',
                   'members',
-                  'payment_method')
+                  'payment_method',
+                  'select_all_members')
         
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -329,7 +332,8 @@ class CorpMembRenewForm(forms.ModelForm):
         self.fields['corporate_membership_type'].empty_label=None
         self.fields['corporate_membership_type'].initial = corporate_membership.corporate_membership_type.id
         
-        self.fields['members'].widget=forms.CheckboxSelectMultiple(choices=get_indiv_membs_choices(corporate_membership))
+        members_choices = get_indiv_membs_choices(corporate_membership)
+        self.fields['members'].choices = members_choices
         self.fields['members'].label = "Select the individual members you want to renew"
         
         self.fields['payment_method'].widget=forms.RadioSelect(choices=get_payment_method_choices(user))

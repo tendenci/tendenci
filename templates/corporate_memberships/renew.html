@@ -47,7 +47,7 @@ div.id_members .field ul li {
      	{% if corporate_membership.email %}
      		{{ corporate_membership.email }} <br />
      	{% endif %}
-     	<b>Join Date</b>: {{ corporate_membership.join_dt }}<br />
+     	Join Date: {{ corporate_membership.join_dt }}<br />
      	<b>Expiration Date</b>: {{ corporate_membership.expiration_dt }}
      	{% if corporate_membership.is_expired %}
      		{% if corporate_membership.is_in_grace_period %}
@@ -134,8 +134,8 @@ div.id_members .field ul li {
 	          <div class="field_members_all">
 	          	<ul>
 	          	<li>
-	          	<label for="id_members_all">
-	          	<input id="id_members_all" type="checkbox" value="1" name="members_all" /> 
+	          	<label for="id_select_all_members">
+	          	{{ form.select_all_members }}
 	          	<span style="background:yellow">Renew all individuals</span>
 	          	</label>
 	          	</li>
@@ -166,7 +166,7 @@ div.id_members .field ul li {
     <script type="text/javascript">
 		$(document).ready(function()
 		{
-			$("#id_members_all").click(function()				
+			$("#id_select_all_members").click(function()				
 			{
 				var checked_status = this.checked;
 				$("input[name=members]").each(function()
