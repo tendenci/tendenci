@@ -856,13 +856,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
     reg8n = get_object_or_404(Registration, pk=reg8n_id)
     
     # check permission
-    boo = False
-    if has_perm(request.user, 'events.change_registration', reg8n) or \
-        (hash and reg8n.registrant.hash == hash):
-        boo = True
-            
-    if not boo:
-        raise Http403
+    if not has_perm(request.user, 'events.change_registration', reg8n) or \
+        not (hash and reg8n.registrant.hash == hash):
+            raise Http403
     
     RegistrantFormSet = modelformset_factory(Registrant, extra=0,
                                 fields=('first_name', 'last_name', 'email', 'phone', 'company_name'))
