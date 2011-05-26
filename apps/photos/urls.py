@@ -1,12 +1,12 @@
 from django.conf.urls.defaults import url, patterns
 from photos.feeds import LatestAlbums, LatestAlbumPhotos
 
+
+
 urlpatterns = patterns('',
 
     ## photos ##
 
-    # /photos/details
-    url(r'^details/(?P<id>\d+)/$', 'photos.views.details', name="photo_details"),
     # /photos/23
     url(r'^(?P<id>\d+)/$', 'photos.views.photo', name="photo"),
     # /photos/23/in/36

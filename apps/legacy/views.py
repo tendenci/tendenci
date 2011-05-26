@@ -75,7 +75,7 @@ def redirect_for_view(content_type, id):
         sql = "SELECT t5_id FROM mig_photos_photoset_t4_to_t5 WHERE t4_id = %s"
 
     if content_type == 'photos':
-        redirect_name = 'photo_details'
+        redirect_name = 'photo'
         sql = "SELECT t5_id FROM mig_photos_image_t4_to_t5 WHERE t4_id = %s"
 
     if content_type == 'quotes':
