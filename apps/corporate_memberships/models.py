@@ -103,7 +103,7 @@ class CorporateMembership(TendenciBaseModel):
     secret_code = models.CharField(max_length=50, blank=True, null=True)
     
     renewal = models.BooleanField(default=0)
-    pending_renew_entry_id = models.IntegerField(default=0, null=True) 
+    renew_entry_id = models.IntegerField(default=0, blank=True, null=True) 
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time")) 
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True) 
@@ -270,7 +270,24 @@ class CorporateMembership(TendenciBaseModel):
             grace_period_end_dt = self.expiration_dt + timedelta(days=self.corporate_membership_type.membership_type.expiration_grace_period)
             return datetime.now() < grace_period_end_dt
         return False
-
+    
+    def archive(self, user=None):
+        """
+        Copy self to the CorporateMembershipArchive table
+        """
+        corp_memb_archive = CorporateMembershipArchive()
+        
+        field_names = [field.name for field in self.__class__._meta.fields]
+        field_names.remove('id')
+        
+        for name in field_names:
+            exec("corp_memb_archive.%s=self.%s" % (name, name))
+            
+        corp_memb_archive.corporate_membership = self
+        corp_memb_archive.corp_memb_create_dt = self.create_dt
+        corp_memb_archive.corp_memb_update_dt = self.update_dt
+        corp_memb_archive.archive_user = user
+        corp_memb_archive.save()
         
         
 class AuthorizedDomain(models.Model):
@@ -289,7 +306,8 @@ class CorporateMembershipRep(models.Model):
         unique_together = (("corporate_membership", "user"),)
     
     
-class CorporateMembershipArchive(models.Model):
+class CorporateMembershipArchive(TendenciBaseModel):
+    corporate_membership = models.ForeignKey('CorporateMembership')
     guid = models.CharField(max_length=50)
     corporate_membership_type = models.ForeignKey("CorporateMembershipType") 
     name = models.CharField(max_length=250)
@@ -303,9 +321,10 @@ class CorporateMembershipArchive(models.Model):
     email = models.CharField(_('email'), max_length=200,  blank=True)
     url = models.CharField(_('url'), max_length=100, blank=True, null=True)
     #authorized_domains = models.CharField(max_length=500, blank=True, null=True)
-    secret_code = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    secret_code = models.CharField(max_length=50, blank=True, null=True)
     
     renewal = models.BooleanField(default=0)
+    renew_entry_id = models.IntegerField(default=0, blank=True, null=True) 
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time")) 
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True) 
@@ -314,23 +333,16 @@ class CorporateMembershipArchive(models.Model):
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
     approved_denied_user = models.ForeignKey(User, null=True)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
+
+    corp_memb_create_dt = models.DateTimeField()
+    corp_memb_update_dt = models.DateTimeField()
     
-    create_dt = models.DateTimeField()
-    update_dt = models.DateTimeField()
-    creator_id = models.IntegerField(default=0)
-    creator_username = models.CharField(max_length=50)
-    owner_id = models.IntegerField(default=0)   
-    owner_username = models.CharField(max_length=50)
-    status = models.BooleanField()
-    status_detail = models.CharField(max_length=50)
-    
-    archive_dt = models.DateTimeField()
-    archive_user = models.ForeignKey(User, related_name="corp_memb_archiver")
+    archive_user = models.ForeignKey(User, related_name="corp_memb_archiver", null=True)
     
     
     class Meta:
-        verbose_name = _("Corporate Membership")
-        verbose_name_plural = _("Corporate Memberships")
+        verbose_name = _("Corporate Membership Archive")
+        verbose_name_plural = _("Corporate Membership Archives")
     
     def __unicode__(self):
         return "%s (%s)" % (self.user.get_full_name(), self.member_number)

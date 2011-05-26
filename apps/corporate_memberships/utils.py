@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from site_settings.utils import get_setting
 from perms.utils import is_admin
-from corporate_memberships.models import CorpField, AuthorizedDomain
+from corporate_memberships.models import CorpField, AuthorizedDomain, CorpMembRenewEntry
 from memberships.models import AppField, Membership
 from invoices.models import Invoice
 from payments.models import Payment
@@ -27,6 +27,7 @@ def get_corpapp_default_fields_list():
 def get_corporate_membership_type_choices(user, corpapp, renew=False):
     cmt_list = []
     corporate_membership_types = corpapp.corp_memb_type.all()
+    
     if not is_admin(user):
         corporate_membership_types = corporate_membership_types.filter(admin_only=False)
     currency_symbol = get_setting("site", "global", "currencysymbol")
@@ -34,13 +35,15 @@ def get_corporate_membership_type_choices(user, corpapp, renew=False):
     for cmt in corporate_membership_types:
         if not renew:
             price_display = '%s - %s%0.2f' % (cmt.name, currency_symbol, cmt.price)
-            cmt_list.append((cmt.id, '%s - %s%0.2f' % (cmt.name, currency_symbol, cmt.price)))
         else:
             indiv_renewal_price = cmt.membership_type.renewal_price
             if not indiv_renewal_price:
                 indiv_renewal_price = 'Free'
             else:
                 indiv_renewal_price = '%s%0.2f' % (currency_symbol, indiv_renewal_price)
+            if not cmt.renewal_price:
+                cmt.renewal_price = 0
+            
             price_display = '%s - <b>%s%0.2f</b> (individual members renewal: <b>%s</b>)' % (cmt.name, 
                                                                                 currency_symbol, 
                                                                                 cmt.renewal_price,
@@ -59,7 +62,7 @@ def get_indiv_membs_choices(corp):
                                                                       membership.user.get_full_name())
         indiv_memb_display = mark_safe(indiv_memb_display)
         im_list.append((membership.id, indiv_memb_display))
-        
+    
     return im_list        
    
 def get_payment_method_choices(user):
@@ -72,11 +75,50 @@ def get_payment_method_choices(user):
                 ('cash', 'Cash'),
                 ('cc', 'Credit Card'),)
         
+def approve_corp_renewal(user, corp_memb, **kwargs):
+    """
+    Approve the corporate membership renewal, and
+    approve the individual memberships that are 
+    renewed with the corporate_membership
+    """
+    if corp_memb.renew_entry_id:
+        renew_entry = CorpMembRenewEntry.objects.get(id=corp_memb.renew_entry_id)
+        if renew_entry.status_detail not in ['approved', 'disapproved']:
+            # 1) archive corporate membership
+            corp_memb.archive(user)
+            
+            # 2) update the corporate_membership with the renewal info from renew_entry
+            corp_memb.renewal = True
+            corp_memb.corporate_membership_type = renew_entry.corporate_membership_type
+            corp_memb.payment_method = renew_entry.payment_method
+            corp_memb.invoice = renew_entry.invoice
+            corp_memb.renew_dt = renew_entry.create_dt
+            corp_memb.approved = True
+            corp_memb.approved_denied_dt = datetime.now()
+            corp_memb.approved_denied_user = user
+            
+            memb_type = corp_memb.corporate_membership_type.membership_type
+            corp_memb.expiration_dt = memb_type.get_expiration_dt(renewal=True,
+                                                                  join_dt=corp_memb.join_dt,
+                                                                  renew_dt=corp_memb.renew_dt)
+            corp_memb.save()
+            
+            renew_entry.status_detail = 'approved'
+            renew_entry.save()
+            
+            # 3) approve the individual memberships
+            
+            
+        
+    
+        
 def corp_memb_inv_add(user, corp_memb, **kwargs): 
     """
     Add an invoice for this corporate membership
     """
-    if not corp_memb.invoice:
+    renewal = kwargs.get('renewal', False)
+    renewal_total = kwargs.get('renewal_total', 0)
+    if not corp_memb.invoice or renewal:
         inv = Invoice()
         inv.object_type = ContentType.objects.get(app_label=corp_memb._meta.app_label, 
                                               model=corp_memb._meta.module_name)
@@ -106,37 +148,36 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         inv.message = 'Thank You.'
         inv.status = True
         
-        if not corp_memb.renewal:
+        if not renewal:
             inv.total = corp_memb.corporate_membership_type.price
         else:
-            inv.total = corp_memb.corporate_membership_type.renewal_price
+            inv.total = renewal_total
         inv.subtotal = inv.total
         inv.balance = inv.total
         inv.estimate = 1
         inv.status_detail = 'estimate'
         inv.save(user)
         
-        # update corp_memb
-        corp_memb.invoice = inv
-        corp_memb.save()
         
         if is_admin(user):
             if corp_memb.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
-                boo_inv = inv.tender(user) 
+                inv.tender(user) 
                 
                 # payment
                 payment = Payment()
-                boo = payment.payments_pop_by_invoice_user(user, inv, inv.guid)
+                payment.payments_pop_by_invoice_user(user, inv, inv.guid)
                 payment.mark_as_paid()
                 payment.method = corp_memb.payment_method
                 payment.save(user)
                 
                 # this will make accounting entry
                 inv.make_payment(user, payment.amount)
+        return inv
+    return None
         
 def update_auth_domains(corp_memb, domain_names):
     """
-        Update the authorized domains for this corporate membership.
+    Update the authorized domains for this corporate membership.
     """
     if domain_names:
         dname_list = domain_names.split(',')
