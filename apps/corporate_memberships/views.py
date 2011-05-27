@@ -14,16 +14,14 @@ from site_settings.utils import get_setting
 
 from event_logs.models import EventLog
 
-from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership, 
-                                          CorporateMembershipType,
+from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
                                           CorporateMembershipRep, 
                                           CorpMembRenewEntry, 
                                           IndivMembRenewEntry)
 from corporate_memberships.forms import CorpMembForm, CorpMembRepForm, RosterSearchForm, CorpMembRenewForm
 from corporate_memberships.utils import (get_corporate_membership_type_choices, 
                                          get_payment_method_choices,
-                                         corp_memb_inv_add, 
-                                         approve_corp_renewal)
+                                         corp_memb_inv_add)
 #from memberships.models import MembershipType
 from memberships.models import Membership
 
@@ -285,7 +283,9 @@ def renew(request, id, template="corporate_memberships/renew.html"):
                 indiv_renewal_price = 0
             
             renewal_total = corp_renewal_price + indiv_renewal_price * len(members)
-            opt_d = {'renewal':True, 'renewal_total': renewal_total}
+            opt_d = {'renewal':True, 
+                     'renewal_total': renewal_total,
+                     'renew_entry':corp_renew_entry}
             # create an invoice - invoice.object_type - use corporate_membership?
             inv = corp_memb_inv_add(request.user, corporate_membership, **opt_d)
             
@@ -296,7 +296,7 @@ def renew(request, id, template="corporate_memberships/renew.html"):
             corporate_membership.renew_entry_id = corp_renew_entry.id
             corporate_membership.save()
             
-            # individual members
+            # store individual members
             for id in members:
                 membership = Membership.objects.get(id=id)
                 ind_memb_renew_entry = IndivMembRenewEntry(corp_memb_renew_entry=corp_renew_entry,
@@ -312,7 +312,7 @@ def renew(request, id, template="corporate_memberships/renew.html"):
                                                               corp_renew_entry.invoice.guid]))
             if user_is_admin:
                 # admin: approve renewal
-                approve_corp_renewal(request.user, corporate_membership)
+                corporate_membership.approve_renewal(request.user)
             return HttpResponseRedirect(reverse('corp_memb.renew_conf', args=[corporate_membership.id]))
             
     
