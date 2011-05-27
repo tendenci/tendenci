@@ -349,7 +349,10 @@ class TendenciBaseManager(models.Manager):
 
         q = reduce(operator.or_, [anon_q, user_q])
         q = reduce(operator.and_, [status_q, q])
-        q = reduce(operator.or_, [q, user_perm_q, group_perm_q])
+        if groups:
+            q = reduce(operator.or_, [q, user_perm_q, group_perm_q])
+        else:
+            q = reduce(operator.or_, [q, user_perm_q])
 
         return sqs.filter(q)
 
