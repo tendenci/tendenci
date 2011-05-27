@@ -748,6 +748,12 @@ class AppEntry(TendenciBaseModel):
 
     def approve(self):
         """
+        # Create membership/archive membership
+        # Bind user and membership
+        # Place user in membership group
+        # Update user profile with membership data (fn,ln,email)
+        # Update application as approved, bind to membership, update decition_dt
+
         order of candidates (for user-binding)
             authenticated user
             suggestions per fn, ln, em
@@ -773,7 +779,7 @@ class AppEntry(TendenciBaseModel):
         else:
             judge, judge_pk, judge_username = None, 0, ''
 
-        # if veteran; create archive
+        # if renewal; create archive
         membership = user.memberships.get_membership()
         if membership:
             archive = MembershipArchive.objects.create(**{

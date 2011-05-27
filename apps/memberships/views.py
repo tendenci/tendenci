@@ -319,8 +319,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     """
 
     if not id:
-        return HttpResponseRedirect(reverse('membership.application_entries_search'))
-
+        return redirect(reverse('membership.application_entries_search'))
 
     # TODO: Not use search but query the database
     # TODO: Needs a manager to query database with permission checks
@@ -365,6 +364,27 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                         'password': hashlib.sha1(entry.email).hexdigest()[:6]
                     })
 
+                    from django.core.mail import send_mail
+                    from django.utils.http import int_to_base36
+                    from django.contrib.auth.tokens import default_token_generator
+                    from site_settings.utils import get_setting
+                    token_generator = default_token_generator
+
+                    site_url = get_setting('site', 'global', 'siteurl')
+                    site_name = get_setting('site', 'global', 'sitedisplayname')
+
+                    # send new user account welcome email (notification)
+                    notification.send_emails([entry.user.email],'user_welcome', {
+                        'site_url': site_url,
+                        'site_name': site_name,
+                        'uid': int_to_base36(entry.user.id),
+                        'user': entry.user,
+                        'username': entry.user.username,
+                        'token': token_generator.make_token(entry.user),
+                    })
+
+                # update application, user, 
+                # group, membership, and archive
                 entry.approve()
 
                 notice_dict = {
@@ -377,7 +397,9 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                 if entry.is_renewal:
                     notice_dict['notice_type'] = 'renewal'
 
-                # send email to member
+                
+
+                # send membership notification(s) (email)
                 for notice in Notice.objects.filter(**notice_dict):
 
                     notice_requirements = [
@@ -391,7 +413,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                             'content': notice.get_content(entry.membership),
                         })
 
-                # send email to admins
+                # send notification to admin (email)
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                 if recipients and notification:
                     notification.send_emails(recipients,'membership_approved_to_admin', {
@@ -413,7 +435,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
             else:  # if not approved
                 entry.disapprove()
 
-                # send email to disapproved membership applicant
+                # send email to disapproved applicant
                 notification.send_emails([entry.email],'membership_disapproved_to_member', {
                     'object':entry,
                     'request':request,
