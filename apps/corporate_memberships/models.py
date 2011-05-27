@@ -17,6 +17,7 @@ from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from corporate_memberships.managers import CorporateMembershipManager
 from perms.utils import is_admin
 #from site_settings.utils import get_setting
+from user_groups.models import GroupMembership
 
 FIELD_CHOICES = (
                     ("CharField", _("Text")),
@@ -181,13 +182,16 @@ class CorporateMembership(TendenciBaseModel):
         from perms.utils import get_notice_recipients
          
         # approve it
-        if (self.status_detail).lower() <> 'active':
-            self.status_detail = 'active'
-        self.approved = 1
-        self.approved_denied_dt = datetime.now()
-        if not request.user.is_anonymous():
-            self.approved_denied_user = request.user
-        self.save()
+        if self.renew_entry_id:
+            self.approve_renewal(request.user)
+        else:
+            if (self.status_detail).lower() <> 'active':
+                self.status_detail = 'active'
+            self.approved = 1
+            self.approved_denied_dt = datetime.now()
+            if not request.user.is_anonymous():
+                self.approved_denied_user = request.user
+            self.save()
         
         # send notification to administrators
         recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
@@ -198,6 +202,86 @@ class CorporateMembership(TendenciBaseModel):
                     'request': request,
                 }
                 notification.send_emails(recipients,'corp_memb_paid', extra_context)
+                
+    def approve_renewal(self, user, **kwargs):
+        """
+        Approve the corporate membership renewal, and
+        approve the individual memberships that are 
+        renewed with the corporate_membership
+        """
+        if self.renew_entry_id:
+            renew_entry = CorpMembRenewEntry.objects.get(id=self.renew_entry_id)
+            if renew_entry.status_detail not in ['approved', 'disapproved']:
+                # 1) archive corporate membership
+                self.archive(user)
+                
+                # 2) update the corporate_membership record with the renewal info from renew_entry
+                self.renewal = True
+                self.corporate_membership_type = renew_entry.corporate_membership_type
+                self.payment_method = renew_entry.payment_method
+                self.invoice = renew_entry.invoice
+                self.renew_dt = renew_entry.create_dt
+                self.approved = True
+                self.approved_denied_dt = datetime.now()
+                self.approved_denied_user = user
+                self.status = 1
+                self.status_detail = 'active'
+                
+                memb_type = self.corporate_membership_type.membership_type
+                self.expiration_dt = memb_type.get_expiration_dt(renewal=True,
+                                                                join_dt=self.join_dt,
+                                                                renew_dt=self.renew_dt)
+                self.save()
+                
+                renew_entry.status_detail = 'approved'
+                renew_entry.save()
+                
+                # 3) approve the individual memberships
+                
+                if user and not user.is_anonymous():
+                    user_id = user.id
+                    username = user.username
+                else:
+                    user_id = 0
+                    username = ''
+                group = self.corporate_membership_type.membership_type.group
+                
+                ind_memb_renew_entries = IndivMembRenewEntry.objects.filter(corp_memb_renew_entry=renew_entry)   
+                for memb_entry in ind_memb_renew_entries:
+                    membership = memb_entry.membership
+                    membership.archive(user)
+                    
+                    # update the membership record with the renewal info
+                    membership.renewal = True
+                    membership.renew_dt = self.renew_dt
+                    membership.expiration_dt = self.expiration_dt
+                    membership.corporate_membership_id = self.id
+                    membership.membership_type = self.corporate_membership_type.membership_type
+                    membership.status = 1
+                    membership.status_detail = 'active'
+                    
+                    membership.save()
+
+                    # check and add member to the group if not exist
+                    try:
+                        gm = GroupMembership.objects.get(group=group, member=membership.user)
+                    except GroupMembership.DoesNotExist:
+                        gm = None
+                    if gm:
+                        if gm.status_detail != 'active':
+                            gm.status_detail = 'active'
+                            gm.save()
+                    else: 
+                        GroupMembership.objects.create(**{
+                            'group':group,
+                            'member':membership.user,
+                            'creator_id': user_id,
+                            'creator_username': username,
+                            'owner_id':user_id,
+                            'owner_username':username,
+                            'status':True,
+                            'status_detail':'active',
+                        })
                 
     def is_rep(self, this_user):
         """

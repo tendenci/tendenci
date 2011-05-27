@@ -7,10 +7,11 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from site_settings.utils import get_setting
 from perms.utils import is_admin
-from corporate_memberships.models import CorpField, AuthorizedDomain, CorpMembRenewEntry
+from corporate_memberships.models import (CorpField, AuthorizedDomain)
 from memberships.models import AppField, Membership
 from invoices.models import Invoice
 from payments.models import Payment
+
 
 # get the corpapp default fields list from json
 def get_corpapp_default_fields_list():
@@ -74,42 +75,6 @@ def get_payment_method_choices(user):
         return (('check', 'Check'),
                 ('cash', 'Cash'),
                 ('cc', 'Credit Card'),)
-        
-def approve_corp_renewal(user, corp_memb, **kwargs):
-    """
-    Approve the corporate membership renewal, and
-    approve the individual memberships that are 
-    renewed with the corporate_membership
-    """
-    if corp_memb.renew_entry_id:
-        renew_entry = CorpMembRenewEntry.objects.get(id=corp_memb.renew_entry_id)
-        if renew_entry.status_detail not in ['approved', 'disapproved']:
-            # 1) archive corporate membership
-            corp_memb.archive(user)
-            
-            # 2) update the corporate_membership with the renewal info from renew_entry
-            corp_memb.renewal = True
-            corp_memb.corporate_membership_type = renew_entry.corporate_membership_type
-            corp_memb.payment_method = renew_entry.payment_method
-            corp_memb.invoice = renew_entry.invoice
-            corp_memb.renew_dt = renew_entry.create_dt
-            corp_memb.approved = True
-            corp_memb.approved_denied_dt = datetime.now()
-            corp_memb.approved_denied_user = user
-            
-            memb_type = corp_memb.corporate_membership_type.membership_type
-            corp_memb.expiration_dt = memb_type.get_expiration_dt(renewal=True,
-                                                                  join_dt=corp_memb.join_dt,
-                                                                  renew_dt=corp_memb.renew_dt)
-            corp_memb.save()
-            
-            renew_entry.status_detail = 'approved'
-            renew_entry.save()
-            
-            # 3) approve the individual memberships
-            
-            
-        
     
         
 def corp_memb_inv_add(user, corp_memb, **kwargs): 
@@ -118,11 +83,17 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
     """
     renewal = kwargs.get('renewal', False)
     renewal_total = kwargs.get('renewal_total', 0)
+    renew_entry = kwargs.get('renew_entry', None)
     if not corp_memb.invoice or renewal:
         inv = Invoice()
-        inv.object_type = ContentType.objects.get(app_label=corp_memb._meta.app_label, 
-                                              model=corp_memb._meta.module_name)
-        inv.object_id = corp_memb.id
+        if renew_entry:
+            inv.object_type = ContentType.objects.get(app_label=renew_entry._meta.app_label, 
+                                                      model=renew_entry._meta.module_name)
+            inv.object_id = renew_entry.id
+        else:
+            inv.object_type = ContentType.objects.get(app_label=corp_memb._meta.app_label, 
+                                                      model=corp_memb._meta.module_name)
+            inv.object_id = corp_memb.id
         inv.title = "Corporate Membership Invoice"
         inv.bill_to = corp_memb.name
         inv.bill_to_company = corp_memb.name

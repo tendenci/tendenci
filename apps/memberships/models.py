@@ -338,6 +338,25 @@ class Membership(TendenciBaseModel):
         entry = self.ma.entries.order_by('-pk')[0]
         init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
         return dict(init_kwargs)
+    
+    def archive(self, user=None):
+        """
+        Copy self to the MembershipArchive table
+        """
+        memb_archive = MembershipArchive()
+        
+        field_names = [field.name for field in self.__class__._meta.fields]
+        field_names.remove('id')
+        field_names.remove('guid') # the archive table doesn't have guid, so remove it
+        
+        for name in field_names:
+            exec("memb_archive.%s=self.%s" % (name, name))
+            
+        memb_archive.membership = self
+        memb_archive.membership_create_dt = self.create_dt
+        memb_archive.membership_update_dt = self.update_dt
+        memb_archive.archive_user = user
+        memb_archive.save()
 
 
 class MembershipArchive(TendenciBaseModel):
@@ -354,15 +373,21 @@ class MembershipArchive(TendenciBaseModel):
     directory = models.ForeignKey(Directory, blank=True, null=True)
     renewal = models.BooleanField(default=False)
 
-    subscribe_dt = models.DateTimeField(_("Subscribe Date"))
+    subscribe_dt = models.DateTimeField(_("Subscribe Date"), null=True)
     join_dt = models.DateTimeField(_("Join Date Time"))
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True)
 
-    expire_dt = models.DateTimeField(_("Expire Date Time"), null=True)
+    expiration_dt = models.DateTimeField(_("Expire Date Time"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     invoice = models.ForeignKey(Invoice, null=True)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     ma = models.ForeignKey("App")
+    
+    membership_create_dt = models.DateTimeField()   # original create dt for the membership entry
+    membership_update_dt = models.DateTimeField()   # original update dt for the membership entry
+    
+    archive_user = models.ForeignKey(User, related_name="membership_archiver", null=True)
+    
     objects = MembershipManager()
 
     class Meta:
@@ -783,7 +808,7 @@ class AppEntry(TendenciBaseModel):
                 'directory':membership.directory,
                 'join_dt':membership.join_dt,
                 'renew_dt':membership.renew_dt,
-                'expire_dt':membership.expiration_dt,
+                'expiration_dt':membership.expiration_dt,
                 'corporate_membership_id':membership.corporate_membership_id,
                 'invoice':membership.invoice,
                 'payment_method':membership.payment_method,
