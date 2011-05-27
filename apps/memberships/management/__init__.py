@@ -6,6 +6,11 @@ from notification import models as notification
 def create_notice_types(app, created_models, verbosity, **kwargs):
 
     notification.create_notice_type(
+        "user_welcome", 
+        _("User Welcome"), 
+        _("User Account Created, Welcome Message"))
+
+    notification.create_notice_type(
         'membership_approved_to_admin',
         _('Membership Application Approved'),
         _('Membership Application Approved'))
