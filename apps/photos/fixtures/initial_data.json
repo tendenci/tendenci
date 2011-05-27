@@ -12,7 +12,7 @@
             "width": 75, 
             "upscale": false, 
             "pre_cache": false, 
-            "quality": 80
+            "quality": 85
         }
     }, 
     {
@@ -92,7 +92,7 @@
             "width": 500, 
             "upscale": false, 
             "pre_cache": false, 
-            "quality": 100
+            "quality": 85
         }
     }, 
     {
@@ -108,7 +108,7 @@
             "width": 640, 
             "upscale": false, 
             "pre_cache": false, 
-            "quality": 100
+            "quality": 85
         }
     }, 
     {
@@ -124,7 +124,7 @@
             "width": 1024, 
             "upscale": false, 
             "pre_cache": false, 
-            "quality": 95
+            "quality": 85
         }
     }
 ]
