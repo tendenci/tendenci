@@ -82,7 +82,7 @@ class License(models.Model):
     legal_code = models.URLField(_('legal code'), blank=True)
     
     def __unicode__(self):
-        return self.name
+        return "%s %s" % (self.author, self.name)
         
 def default_license():
     return License.objects.get(id=1)
