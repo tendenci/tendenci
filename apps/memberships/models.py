@@ -579,7 +579,7 @@ class AppFieldManager(models.Manager):
     Only show visible fields when displaying actual form..
     """
     def visible(self):
-        return self.filter(visible=True).order_by('pk')
+        return self.filter(visible=True).order_by('position')
 
 class AppField(models.Model):
     app = models.ForeignKey("App", related_name="fields")

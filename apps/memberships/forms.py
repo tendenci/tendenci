@@ -444,16 +444,13 @@ class AppEntryForm(forms.ModelForm):
         instance and its related field model instances.
         """
 
-        self._meta.model()
-
         self.app = app
         self.form_fields = app.fields.visible()
         self.types_field = app.membership_types
-        user = kwargs.pop('user') or AnonymousUser
-        self.user = user
+        self.user = kwargs.pop('user') or AnonymousUser
+        self.corporate_membership = kwargs.pop('corporate_membership') # id; not object
 
-        # corporate_membership_id for corp. individuals
-        self.corporate_membership = kwargs.pop('corporate_membership')
+        print 'form_fields', self.form_fields
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
@@ -529,7 +526,7 @@ class AppEntryForm(forms.ModelForm):
                 year = datetime.today().year
                 self.fields[field_key].widget.years = range(year-120, year+120)
 
-        if app.use_captcha and not user.is_authenticated():
+        if app.use_captcha and not self.user.is_authenticated():
             self.fields['field_captcha'] = CaptchaField(**{
                 'label':'',
                 'error_messages':{'required':'CAPTCHA is required'}
