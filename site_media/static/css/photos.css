@@ -350,6 +350,7 @@ table.photo-form select {
 
 .tags-wrap input {
 	width: 80%;
+    margin-bottom: 5px
 }
 
 .delete-wrap {
@@ -360,6 +361,17 @@ table.photo-form select {
     margin: 0;
 }
 .delete-wrap label {
+    margin-left: 5px;
+}
+
+.cover-wrap {
+    margin-top: 10px;
+}
+.cover-wrap input {
+    float: left;
+    margin: 0;
+}
+.cover-wrap label {
     margin-left: 5px;
 }
 
