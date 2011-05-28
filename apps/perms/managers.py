@@ -384,11 +384,12 @@ class TendenciBaseManager(models.Manager):
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 
-        if is_admin(user):
-            sqs = sqs.all()  # admin
+        if is_admin(user) or is_developer(user):
+            print "all"
+            sqs = sqs.all()
         else:
             if user.is_anonymous():
-                sqs = self._anon_sqs(sqs, status_detail=status_detail)  # anonymous
+                sqs = self._anon_sqs(sqs, status_detail=status_detail)
 
             elif is_member(user):
                 sqs = self._member_sqs(sqs, user=user,

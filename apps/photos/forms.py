@@ -20,6 +20,7 @@ class PhotoAdminForm(TendenciBaseForm):
             'syndicate',
             'status',
             'status_detail',
+            'license',
         )
 
 class PhotoUploadForm(TendenciBaseForm):
@@ -54,6 +55,7 @@ class PhotoEditForm(TendenciBaseForm):
             'group_perms',
             'status',
             'status_detail'
+            'license',
         )
 
         fieldsets = [
@@ -61,6 +63,7 @@ class PhotoEditForm(TendenciBaseForm):
                       'fields': [
                           'title',
                           'caption',
+                          'license',
                           'tags',
                       ], 'legend': '',
                   }),
