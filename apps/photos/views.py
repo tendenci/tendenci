@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
 
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save
+from perms.utils import has_perm, update_perms_and_save, can_view
 from event_logs.models import EventLog
 
 #from photologue.models import *
@@ -68,17 +68,21 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
     """ photo details """
 
     # check photo set permissions first
-    photo_set_sqs = PhotoSet.objects.search('id:%s' % set_id, user=request.user)
-    if not photo_set_sqs:
-        raise Http403
-
-    try:
-        sqs = Image.objects.search('id:%s' % id, user=request.user)
-        photo = sqs.best_match().object
-    except:
+    # photo_set_sqs = PhotoSet.objects.search('id:%s' % set_id, user=request.user)
+    # if not photo_set_sqs:
+    # raise Http403
+    
+    #try:
+    #    sqs = Image.objects.search('id:%s' % id, user=request.user)
+    #    photo = sqs.best_match().object
+    # except:
         # can't tell if they're denied
         # or the image does not exist
         # i assume protected
+    #    raise Http403
+    
+    photo = get_object_or_404(Image, id=id)
+    if not can_view(request.user, photo):
         raise Http403
 
     EventLog.objects.log(**{
@@ -199,22 +203,22 @@ def memberphotos(request, username, template_name="photos/memberphotos.html", gr
 @login_required
 def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/edit.html"):
     """ edit photo view """
-
+    
     # get photo
     photo = get_object_or_404(Image, id=id)
     set_id = int(set_id)
-
+    
     # permissions
     if not has_perm(request.user,'photologue.change_photo',photo):
         raise Http403
-
+    
     # get available photo sets
     photo_sets = PhotoSet.objects.all()
-
+    
     if request.method == "POST":
-        if photo.member != request.user: # no permission
-            request.user.message_set.create(message="You can't edit photos that aren't yours")
-            return HttpResponseRedirect(reverse('photo', args=(photo.id, set_id)))
+        #if photo.member != request.user: # no permission
+        #    request.user.message_set.create(message="You can't edit photos that aren't yours")
+        #    return HttpResponseRedirect(reverse('photo', args=(photo.id, set_id)))
         if request.POST["action"] == "update":
             form = form_class(request.POST, instance=photo, user=request.user)
             if form.is_valid():
@@ -237,10 +241,10 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
         else:
             form = form_class(instance=photo, user=request.user)
-
+    
     else:
         form = form_class(instance=photo, user=request.user)
-
+    
     return render_to_response(template_name, {
         "photo_form": form,
         "photo": photo,
@@ -568,15 +572,20 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
 def photoset_details(request, id, template_name="photos/photo-set/details.html"):
     """ View photos in photo set """
-
+    
     # check photo-set permissions
-    photo_sets = PhotoSet.objects.search('id:%s' % id, user=request.user)
-    if not photo_sets: raise Http404
-    photo_set = photo_sets.best_match().object
-
+    # photo_sets = PhotoSet.objects.search('id:%s' % id, user=request.user)
+    # if not photo_sets: raise Http404
+    # photo_set = photo_sets.best_match().object
+    
+    photo_set = get_object_or_404(PhotoSet, id=id)
+    if not can_view(request.user, photo_set):
+        raise Http403
+    
     # get photos within photoset; newest ones first
     photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by('-photo_pk')
-
+    print photos
+    
     EventLog.objects.log(**{
         'event_id' : 991500,
         'event_data': '%s (%d) viewed by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
