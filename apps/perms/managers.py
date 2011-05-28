@@ -368,7 +368,7 @@ class TendenciBaseManager(models.Manager):
         Search the Django Haystack search index
         Returns a SearchQuerySet object
         """
-        from perms.utils import is_admin, is_member
+        from perms.utils import is_admin, is_member, is_developer
 
         sqs = kwargs.get('sqs', SearchQuerySet())
 
@@ -385,7 +385,6 @@ class TendenciBaseManager(models.Manager):
             sqs = sqs.auto_query(sqs.query.clean(query))
 
         if is_admin(user) or is_developer(user):
-            print "all"
             sqs = sqs.all()
         else:
             if user.is_anonymous():

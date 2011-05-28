@@ -54,6 +54,7 @@ class PhotoIndex(indexes.RealTimeSearchIndex):
     photo_pk = indexes.IntegerField(model_attr='pk')
     title = indexes.CharField(model_attr='title')
     caption = indexes.CharField(model_attr='caption')
+    photosets = indexes.MultiValueField()
     create_dt = indexes.DateTimeField(model_attr='create_dt')
     update_dt = indexes.DateTimeField(model_attr='update_dt')
 
@@ -83,6 +84,9 @@ class PhotoIndex(indexes.RealTimeSearchIndex):
         caption = strip_tags(caption)
         caption = strip_entities(caption)
         return caption
+        
+    def prepare_photosets(self, obj):
+        return [photoset.pk for photoset in obj.photoset.all()]
 
     def get_updated_field(self):
         return 'update_dt'

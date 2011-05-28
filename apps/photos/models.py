@@ -1,7 +1,7 @@
 import uuid
 # django
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
@@ -9,10 +9,11 @@ from django.utils.translation import ugettext_lazy as _
 from photologue.models import *
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
+from perms.utils import is_admin, is_member, is_developer
 from photos.managers import PhotoManager, PhotoSetManager
 from meta.models import Meta as MetaTags
 from photos.module_meta import PhotoMeta
-
+from haystack.query import SearchQuerySet
 
 class PhotoSet(TendenciBaseModel):
     """
@@ -33,6 +34,8 @@ class PhotoSet(TendenciBaseModel):
         verbose_name = _('photo set')
         verbose_name_plural = _('photo sets')
         permissions = (("view_photoset","Can view photoset"),)
+        
+    objects = PhotoSetManager()
         
     def save(self):
         if not self.id:
@@ -61,14 +64,43 @@ class PhotoSet(TendenciBaseModel):
             return True
         return False
 
-    objects = PhotoSetManager()
-
     @models.permalink
     def get_absolute_url(self):
         return ("photoset_details", [self.pk])
 
     def __unicode__(self):
         return self.name
+        
+    def get_images(self, user = None, status_detail='active'):
+        """
+        Returns the images of this photosets and filters according
+        to the given user's permissions.
+        This makes use of the search index to avoid hitting the database.
+        """
+        
+        sqs = SearchQuerySet().models(Image).filter(photosets=self.pk)
+        
+        # user information
+        user = user or AnonymousUser()
+        
+        if hasattr(user, 'impersonated_user'):
+            if isinstance(user.impersonated_user, User):
+                user = user.impersonated_user
+        
+        if is_admin(user) or is_developer(user):
+            sqs = sqs.all()
+        else:
+            if user.is_anonymous():
+                sqs = self.objects._anon_sqs(sqs, 
+                    status_detail=status_detail)
+            elif is_member(user):
+                sqs = self.objects._member_sqs(sqs, user=user,
+                    status_detail=status_detail)
+            else:
+                sqs = self.objects._user_sqs(sqs, user=user,
+                    status_detail=status_detail)
+        
+        return sqs
         
         
 class License(models.Model):
