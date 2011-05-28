@@ -218,3 +218,27 @@ def update_admin_group_perms():
     permissions = Permission.objects.all().exclude(content_type__in=content_to_exclude)
     auth_group.permissions = permissions
     auth_group.save()
+
+
+def can_view(user, obj, status_detail = 'active'):
+    """
+        Checks for tendenci specific permissions to viewing objects.
+    """
+    
+    # check to see if there is impersonation
+    # if there is, use the impersonated user instead.
+    if hasattr(user, 'impersonated_user'):
+        if isinstance(user.impersonated_user, User):
+            user = user.impersonated_user
+    
+    if is_admin(user) or is_developer(user):
+        return True
+    else:
+        # check object's status
+        if not (obj.active and obj.status_detail == status_detail):
+            return False
+        if user.is_anonymous():
+            return obj.allow_anonymous_view
+        if is_member(user):
+            return obj.allow_member_view
+        return obj.allow_user_view
