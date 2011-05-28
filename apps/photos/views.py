@@ -71,7 +71,6 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
     # photo_set_sqs = PhotoSet.objects.search('id:%s' % set_id, user=request.user)
     # if not photo_set_sqs:
     # raise Http403
-    
     #try:
     #    sqs = Image.objects.search('id:%s' % id, user=request.user)
     #    photo = sqs.best_match().object
@@ -80,6 +79,10 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
         # or the image does not exist
         # i assume protected
     #    raise Http403
+    
+    # calling .object is a db query,
+    # might as well go straight to the database since it's just one entry. 
+    # if it doesn't match to anything we raise a 404 error.
     
     photo = get_object_or_404(Image, id=id)
     if not can_view(request.user, photo):
@@ -576,15 +579,21 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     # check photo-set permissions
     # photo_sets = PhotoSet.objects.search('id:%s' % id, user=request.user)
     # if not photo_sets: raise Http404
-    # photo_set = photo_sets.best_match().object
+    # photo_set = photo_sets.best_match().object 
+    
+    # calling .object is a db query,
+    # might as well go straight to the database since it's just one entry. 
+    # if it doesn't match to anything we raise a 404 error.
     
     photo_set = get_object_or_404(PhotoSet, id=id)
     if not can_view(request.user, photo_set):
         raise Http403
     
     # get photos within photoset; newest ones first
-    photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by('-photo_pk')
-    print photos
+    # this doesn't seem to work. possibly a xapian issue. not tested in solr.
+    # photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by('-photo_pk')
+    
+    photos = photo_set.get_images(user=request.user).order_by('-photo_pk')
     
     EventLog.objects.log(**{
         'event_id' : 991500,
