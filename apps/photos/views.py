@@ -64,26 +64,9 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
         "original_source_url": original_source_url,
     }, context_instance=RequestContext(request))
 
-def photo(request, id, set_id=0, template_name="photos/details.html"):
+def photo(request, id, set_id=0, partial=False, template_name="photos/details.html"):
     """ photo details """
 
-    # check photo set permissions first
-    # photo_set_sqs = PhotoSet.objects.search('id:%s' % set_id, user=request.user)
-    # if not photo_set_sqs:
-    # raise Http403
-    #try:
-    #    sqs = Image.objects.search('id:%s' % id, user=request.user)
-    #    photo = sqs.best_match().object
-    # except:
-        # can't tell if they're denied
-        # or the image does not exist
-        # i assume protected
-    #    raise Http403
-    
-    # calling .object is a db query,
-    # might as well go straight to the database since it's just one entry. 
-    # if it doesn't match to anything we raise a 404 error.
-    
     photo = get_object_or_404(Image, id=id)
     if not can_view(request.user, photo):
         raise Http403
@@ -125,7 +108,10 @@ def photo(request, id, set_id=0, template_name="photos/details.html"):
 
     # "is me" variable
     is_me = photo.member == request.user
-    
+
+    if partial:  # return partial html; for ajax end-user
+        template_name = "photos/partial-details.html"
+
     return render_to_response(template_name, {
         "photo_prev_url": photo_prev_url,
         "photo_next_url": photo_next_url,

@@ -235,7 +235,7 @@ def can_view(user, obj, status_detail = 'active'):
         return True
     else:
         # check object's status
-        if not (obj.active and obj.status_detail == status_detail):
+        if not (obj.status and obj.status_detail == status_detail):
             return False
         if user.is_anonymous():
             return obj.allow_anonymous_view
