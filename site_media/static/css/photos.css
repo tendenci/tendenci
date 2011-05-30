@@ -93,6 +93,9 @@ div.gallery-photo-thumb img {
 .photo-wrap {
 	text-align: center;
 }
+.photo-wrap .photo {
+	margin-bottom: 25px;	
+}
 .photo-nav {
 	float: left;
 }
@@ -588,15 +591,22 @@ div.gallery-photo-thumb img {
 	font-size: 12px;
 }
 
-#photo-sizes #download-wrap {
+#photo-sizes #license-wrap {
 	padding: 5px 0 10px 0;
+	border-bottom: 1px solid #DDD;
+}
+#photo-sizes #license-wrap .label {
+	float: left;
+	width: 105px;
+}
+#photo-sizes #download-wrap {
+	padding: 10px 0;
 	border-bottom: 1px solid #DDD;
 }
 #photo-sizes #download-wrap .label {
 	float: left;
 	width: 105px;
 }
-
 #photo-sizes #sizes-wrap {
 	font-size: 12px;
 	padding: 10px 0;
