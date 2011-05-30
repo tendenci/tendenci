@@ -87,7 +87,7 @@ class PhotoSet(TendenciBaseModel):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
         
-        sqs = self._permissions_sqs(sqs, user, status_detail)
+        sqs = PhotoSet.objects._permissions_sqs(sqs, user, status_detail)
         
         return sqs        
 
