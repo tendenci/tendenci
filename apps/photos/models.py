@@ -100,25 +100,7 @@ class PhotoSet(TendenciBaseModel):
                 sqs = self.objects._user_sqs(sqs, user=user,
                     status_detail=status_detail)
         
-        return sqs
-        
-        
-class License(models.Model):
-    """
-    License with details
-    """
-    name = models.CharField(_('name'), max_length=200)
-    code = models.CharField(_('code'), max_length=200, blank=True)
-    author = models.CharField(_('author'), max_length=200, blank=True)
-    deed = models.URLField(_('license deed'), blank=True)
-    legal_code = models.URLField(_('legal code'), blank=True)
-    
-    def __unicode__(self):
-        return "%s %s" % (self.author, self.name)
-        
-def default_license():
-    return License.objects.get(id=1)
-
+        return sqs        
 
 class Image(ImageModel, TendenciBaseModel):
     """
@@ -138,7 +120,7 @@ class Image(ImageModel, TendenciBaseModel):
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField()
-    license = models.ForeignKey(License, related_name="license", default=default_license)
+    license = models.ForeignKey('License', null=True, blank=True)
     
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
@@ -215,11 +197,33 @@ class Image(ImageModel, TendenciBaseModel):
         images = images.order_by('-id')
         try: return Image.objects.get(id=min(images))
         except ValueError: return None
+        
+    def get_license(self):
+        if self.license:
+            return self.license
+        return self.default_license()
+        
+    def default_license(self):
+        return License.objects.get(id=1)
 
     objects = PhotoManager()
 
     def __unicode__(self):
         return self.title
+        
+class License(models.Model):
+    """
+    License with details
+    """
+    name = models.CharField(_('name'), max_length=200)
+    code = models.CharField(_('code'), max_length=200, blank=True)
+    author = models.CharField(_('author'), max_length=200, blank=True)
+    deed = models.URLField(_('license deed'), blank=True)
+    legal_code = models.URLField(_('legal code'), blank=True)
+    
+    def __unicode__(self):
+       return "%s %s" % (self.author, self.name)
+
 
 class Pool(models.Model):
     """
