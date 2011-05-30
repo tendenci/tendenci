@@ -1,0 +1,17 @@
+<p>Your corporate membership has been renewed and approved..
+</p>
+
+<p>
+To view this corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view corporate_membership.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view corporate_membership.pk  %}</a>
+</p>
+
+<p>
+	To view the invoice, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+	</p>
+
+<p>
+Total individual memberships renewed: {{ total_individuals_renewed }}
+</p>
+<p>Thanks!</p>
+
+<p>Time submitted: {% now "D d M Y P" %}</p>
