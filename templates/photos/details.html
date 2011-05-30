@@ -63,16 +63,15 @@
         <div class="photo-caption-wrap">
             {{ photo.caption|safe }}
         </div>
-        <div class="photo-tags">
-            Tags: {% for tag in tags %} {{ tag }} {% endfor %}
-        </div>
-        <div class="photo-author-wrap">
-            Uploaded by {% firstof  photo.member.get_profile.display_name photo.member.username %}
-        </div>
         <div class="hr"></div>
         <div class="photo-options">
 			{% photo_options request.user photo %}
         </div>
+        {% if tags %}
+        <div class="photo-tags">
+            Tags: {% for tag in tags %} {{ tag }} {% endfor %}
+        </div>
+        {% endif %}
 	</div><!-- END .photo-instance -->
 
 <!-- delete photo form -->

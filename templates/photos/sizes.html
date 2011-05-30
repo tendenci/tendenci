@@ -18,6 +18,15 @@
 	<h1>{{ photo.title }} &middot; All Photo Sizes</h1>
 	<div id="back-link"><a href="{{ photo.get_absolute_url }}">&larr; Back to photo</a></div>
 
+	<div id="license-wrap">
+		<div class="label">License</div>
+		<div class="link">{{ photo.get_license.name }} by 
+			<a href="{{ photo.creator.get_absolute_url }}">
+				{{ photo.creator.get_full_name }}
+			</a>
+		</div>
+	</div>
+
 	<div id="download-wrap">
 		<div class="label">Download</div>
 		<div class="link"><a href="{{ download_url }}">Download the {{ size_name|capfirst }} size of this photo</a></div>
