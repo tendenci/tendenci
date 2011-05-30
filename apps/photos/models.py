@@ -87,18 +87,7 @@ class PhotoSet(TendenciBaseModel):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
         
-        if is_admin(user) or is_developer(user):
-            sqs = sqs.all()
-        else:
-            if user.is_anonymous():
-                sqs = self.objects._anon_sqs(sqs, 
-                    status_detail=status_detail)
-            elif is_member(user):
-                sqs = self.objects._member_sqs(sqs, user=user,
-                    status_detail=status_detail)
-            else:
-                sqs = self.objects._user_sqs(sqs, user=user,
-                    status_detail=status_detail)
+        sqs = self._permissions_sqs(sqs, user, status_detail)
         
         return sqs        
 

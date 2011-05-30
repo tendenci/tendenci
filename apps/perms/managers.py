@@ -361,6 +361,22 @@ class TendenciBaseManager(models.Manager):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
         return user
+        
+    def _permissions_sqs(self, sqs, user, status_detail):
+        from perms.utils import is_admin, is_member, is_developer
+        
+        if is_admin(user) or is_developer(user):
+            sqs = sqs.all()
+        else:
+            if user.is_anonymous():
+                sqs = self._anon_sqs(sqs, status_detail=status_detail)
+            elif is_member(user):
+                sqs = self._member_sqs(sqs, user=user,
+                status_detail=status_detail)
+            else:
+                sqs = self._user_sqs(sqs, user=user,
+                status_detail=status_detail)
+        return sqs
 
     # Public functions
     def search(self, query=None, *args, **kwargs):
@@ -368,7 +384,6 @@ class TendenciBaseManager(models.Manager):
         Search the Django Haystack search index
         Returns a SearchQuerySet object
         """
-        from perms.utils import is_admin, is_member, is_developer
 
         sqs = kwargs.get('sqs', SearchQuerySet())
 
@@ -384,17 +399,6 @@ class TendenciBaseManager(models.Manager):
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 
-        if is_admin(user) or is_developer(user):
-            sqs = sqs.all()
-        else:
-            if user.is_anonymous():
-                sqs = self._anon_sqs(sqs, status_detail=status_detail)
-
-            elif is_member(user):
-                sqs = self._member_sqs(sqs, user=user,
-                status_detail=status_detail)
-            else:
-                sqs = self._user_sqs(sqs, user=user,
-                status_detail=status_detail)
-
+        sqs = self._permissions_sqs(sqs, user, status_detail)
+        
         return sqs.models(self.model)
