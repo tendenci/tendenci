@@ -21,7 +21,7 @@
 {% block body %}
 {% tags_for_object photo as tags %}
 
-	<div class="photo-instance">
+	<div id="photo-instance">
         <div class="photo-title-wrap">
             <h2>{% firstof photo.title "Untitled" %}</h2>
         </div>
@@ -30,8 +30,8 @@
         </div>
         <div class="photo-traverse">
             <ul>
-				{% if photo_prev_url %}<li><a href="{{ photo_prev_url }}">&laquo; Prev</a></li>{% endif %}
-                {% if photo_next_url %}<li><a href="{{ photo_next_url }}">Next &raquo;</a></li>{% endif %}
+				{% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; Prev</a></li>{% endif %}
+                {% if photo_next_url %}<li><a id="photo-next" href="{{ photo_next_url }}">Next &raquo;</a></li>{% endif %}
             </ul>
         </div>
         <div class="hr"></div>
@@ -42,7 +42,7 @@
                 <div about="{{ photo.get_medium_640_url }}" 
                     xmlns:dct="http://purl.org/dc/terms/"
                     xmlns:cc="http://creativecommons.org/ns#">
-                    <a href="{{ photo_next_url }}">
+                    <a id="image-photo-next" href="{{ photo_next_url }}">
                         <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title }}" />
                     </a>
                     <br />
@@ -87,309 +87,64 @@
 {{ block.super }}
 <script type="text/javascript" src="/site_media/static/js/tendenci5.api.client.js"></script>
 <script type="text/javascript" src="/site_media/static/js/jquery.tools.min.js"></script>
-<script src="/site_media/static/js/json2.js" type="text/javascript"></script>
-<script src="/site_media/static/js/storme-api-client.js" type="text/javascript"></script>
 <script type="text/javascript">
-$(document).ready(function(){
 
-	// photo: delete confirmation
-	$('.photo-options .photo-delete').click(function(){
-		var delete_photo = confirm('Permenantly delete photo?');	// confirm
-		if(delete_photo) $('form[name="photo-delete"]').submit();	// delete: if OK
-		return false;	// cancel
-	});
-
-	// keyboard shorcut (left, right)
-	$(document).keyup(function(event){
-		if(event.target.tagName == 'INPUT') return false; // avoid input fields
-		if(event.keyCode == 37) window.location = '{{ photo_prev_url }}'; // left arrow
-		else if(event.keyCode == 39) window.location = '{{ photo_next_url }}'; // right arrow
-	});
-
-	var mini_slide = new MiniSlide({
-		photo_id: {{ photo.pk }},
-		set_id: {{ photo_set_id }}
-	});
-
-	//mini_slide.init();
-
+// photo: delete confirmation
+$('.photo-options .photo-delete').click(function(){
+	var delete_photo = confirm('Permenantly delete photo?');	// confirm
+	if(delete_photo) $('form[name="photo-delete"]').submit();	// delete: if OK
+	return false;	// cancel
 });
 
-var MiniSlide = function(params){
-	var self = this;
+// keyboard shorcut (left, right)
+$(document).keyup(function(event){
+	if(event.target.tagName == 'INPUT') return false; // avoid input fields
+	if(event.keyCode == 37) $("#photo-prev").click(); // left arrow
+	else if(event.keyCode == 39) $("#photo-next").click(); // right arrow
+});
 
-	// api clients
-	this.photo_client = new PhotoClient();
-	this.photo_neighbor_client = new PhotoNeighborClient();
+function supports_history_api() {
+  return !!(window.history && history.pushState);
+}
 
-	// storage
-	self.photo_id = params.photo_id;
-	self.set_id = params.set_id;
-	self.photos = {}
+function setupHistoryClicks() {
+	addClicker(document.getElementById("image-photo-next"));
+	addClicker(document.getElementById("photo-next"));
+	addClicker(document.getElementById("photo-prev"));
+}
 
-	// vital html elements
-	self.elm_switch = $(params.elm_switch);
-	self.elm_prev = $(params.elm_prev);
-	self.elm_next = $(params.elm_next);
-	self.elm_scrollable = $(params.elm_scrollable);
+function addClicker(link) {
+	$(link).click(function(e){
+	    swapPhoto(link.href);
+	    history.pushState(null, null, link.href);
+	    e.preventDefault();
+	});
+}
 
-	// initialize:
-	// bind event handlers
-	// make elements scrollable
-	// run initial populate
-	self.init = function(){
-		self.bind_switch(); // collapse/expand
-		self.bind_prev(); // previous link w/in mini-slider
-		self.bind_next(); // next link w/in mini-slider
-		self.make_scrollable(); // make mini-sliders scrollable
-		self.init_populate() // initial populate
-	};
+function swapPhoto(href) {
+  var req = new XMLHttpRequest();
+  req.open("GET",
+           "/photos/partial/" +
+             href.split("/").slice(4).join("/"),
+           false);
+  req.send(null);
 
-	// bind collapse/expand link to event handler
-	self.bind_switch = function(){
+  if (req.status == 200) {
+    document.getElementById("photo-instance").innerHTML = req.responseText;
+    setupHistoryClicks();
+    return true;
+  }
+  return false;
+}
 
-		// photoset: collapse/expand
-		$('.photo-set-collapse').click(function(){
-			var $self = $(this);
-	
-			// element
-			$(this).parents('.photo-set-wrap')
-			.find('.photo-set-belt-wrap').slideToggle(100, function(){
-				if($(this).is(":hidden")) $self.html('+'); // collapse
-				else{
-					$self.html('&ndash;'); // expand
-					self.inspect(self.photo_id, $(this).attr('data-id'));
-				}
-			});
-		});
-	};
-
-	// bind prev-link to event handler
-	self.bind_prev = function(){
-
-		// set previous-link click handler
-		$('div.photo-set-nav .prev').click(function(){
-	
-			var api = $(this).parents('.photo-set-belt-wrap').children('.photo-set-belt').scrollable();
-			self.manage_nav('good', $(this).parents('.photo-set-belt-wrap'));
-
-			var $set = $(this).parents('.photo-set-belt-wrap');
-
-			// manage navigation
-			if($(api.getItems()[api.getIndex()-1]).attr('last-item')){
-				self.manage_nav('remove-prev', $set);
-				return; // return false
-			}
-
-			// if begining of list
-			if(api.getIndex() == 0){
-	
-				var $photo = $(api.getItems()[0]);
-
-				// manage navigation
-				if($photo.attr('first-item')){
-					self.manage_nav('remove-prev', $set);
-					return; // return false
-				}
-
-				self.photo_client.read({id:$photo.attr('data-id'), set:$set.attr('data-id'), prev:'1'}, {
-				success: function(photo){
-					// make image item
-					var image_item = self.make_image_item(photo);
-					// append item
-					api.getItemWrap().prepend(image_item);	
-					// manage navigation
-					self.manage_nav('good', $set);
-				},
-				error:function(){
-					// make image item
-					var image_item = self.make_image_item({first_item:1});
-					// append item
-					api.getItemWrap().prepend(image_item);
-					// manage navigation
-					self.manage_nav('remove-prev', $set);
-				}});
-	
-			};
-		});
-	};
-
-	// bind next-link to event handler
-	self.bind_next = function(){
-
-		// set next-link click handler
-		$('div.photo-set-nav .next').click(function(){
-	
-			var api = $(this).parents('.photo-set-belt-wrap').children('.photo-set-belt').scrollable();
-			self.manage_nav('good', $(this).parents('.photo-set-belt-wrap'));
-			var curr_index = api.getIndex()+1;
-			var next_index = curr_index+1;
-
-			var $set = $(this).parents('.photo-set-belt-wrap');
-
-			// manage navigation
-			if($(api.getItems()[next_index]).attr('last-item')){
-				self.manage_nav('remove-next', $set);
-				return; // return false
-			}
-	
-			// if end-of-list
-			if(curr_index == api.getSize()-1) {
-
-				var $photo = $(api.getItems()[curr_index]);
-
-				var photo_id = '', set_id = '';
-				if($photo.attr('data-id')){
-					photo_id = $photo.attr('data-id');
-					set_id = $set.attr('data-id');
-				}
-
-
-				self.photo_client.read({id:photo_id, set:set_id, next:'1'}, {
-				success:function(photo){
-					// make image item
-					image_item = self.make_image_item(photo);
-					// append item
-					api.getItemWrap().append(image_item);
-					// manage navigation
-					self.manage_nav('good', $set);
-				},
-				error:function(){
-					// make image item
-					image_item = self.make_image_item({last_item:1});
-					// append item
-					api.getItemWrap().append(image_item);
-					// manage navigation
-					self.manage_nav('remove-next', $set);
-				}});
-			}
-		});
-	};
-
-	// make elements scrollable
-	self.make_scrollable = function(){
-		$('.photo-set-belt').scrollable({
-			size: 0,
-			speed: 150,
-			keyboard: false
-		});
-	};
-
-	// initial populate
-	self.init_populate = function(){
-	// finds open photo sets & loads them
-		var photo_sets = $('.photo-sets-wrap .photo-set-belt-wrap:visible');
-		$.each(photo_sets, function(i, photo_set){
-			self.inspect(self.photo_id, $(photo_set).attr('data-id'));
-		});
-	};
-
-	// inspect slider (do we need to populate)
-	self.inspect = function(photo_id, set_id){
-		// set_id defaults to 0
-		if(set_id==undefined) set_id = 0;
-		// if we don't have photos
-		if(self.photos[set_id] == undefined){
-			self.loading_msg_handler('show', set_id);
-			// get photos from database
-			self.photo_neighbor_client.read({id:{{ photo.pk }}, set:set_id}, function(photos_list){
-				self.photos[set_id] = photos_list; // save photos
-				self.populate(set_id, self.photos[set_id]);
-				// hide loading message; half-a-second delay
-				window.setTimeout(function(){ self.loading_msg_handler('hide', set_id)}, 500);
-			});
-		};
-	};
-
-	// populate slide (pull prev-photo/next-photo)
-	self.populate = function(set_id, photos){
-		var image_item = {};
-		$.each(photos, function(i, photo){
-
-			if(!photo){ // remove prev-link or next-link
-				if(i==0){
-					self.manage_nav('remove-prev', $('.photo-set-belt-wrap[data-id="'+ set_id +'"]'));
-					image_item = self.make_image_item({first_item:1}, i);
-				}
-				else if(i==1){
-					self.manage_nav('remove-next', $('.photo-set-belt-wrap[data-id="'+ set_id +'"]'));
-					image_item = self.make_image_item({last_item:1}, i);
-				};
-			}
-			else {
-				// make image item
-				image_item = self.make_image_item(photo, i);
-			}
-
-			// append item
-			$('.photo-set-belt-wrap[data-id="'+ set_id +'"]')
-			.find('.photo-set-images').append(image_item);
-		});
-	};
-
-	// loading-message handler
-	self.loading_msg_handler = function(action, set_id){
-		if(action == 'show') $('.photo-set-belt-wrap[data-id="'+ set_id +'"] .load-msg').show();
-		else $('.photo-set-belt-wrap[data-id="'+ set_id +'"] .load-msg').hide();
-	};
-
-	// make image item
-	self.make_image_item = function(photo, i){
-
-		if(!photo) return; // return false
-
-		var $new_link = $('<a></a>');
-		var $new_div = $('<div></div>');
-
-		// TODO: clean up this crap
-		if(photo.first_item){
-			$new_link.attr('href', 'javascript:;' );
-			$new_link.attr('first-item', 1);
-			$new_div.html('You are at the first photo.');
-			$new_link.append($new_div);
-		}
-		else if(photo.last_item){
-			$new_link.attr('href', 'javascript:;' );
-			$new_link.attr('last-item', 1);
-			$new_div.html('You are at the last photo.');
-			$new_link.append($new_div);
-		}
-		else{
-			$new_link.attr('href', photo.absolute_url );
-			$new_link.attr('data-id', photo.pk);			
-			// make new image
-			$new_img = $('<img />');
-			$new_img.attr('src', photo.square_url );
-			// append image to link
-			$new_link.append($new_img);
-		};
-
-
-		// return
-		return $new_link[0];
-
-	};
-
-	self.manage_nav = function(action, $wrap){
-
-		var $prev = $wrap.find('.left-arrow');
-		var $next = $wrap.find('.right-arrow');
-
-		switch(action){
-			case 'good':
-				$prev.show();
-				$next.show();
-			break;
-			case 'remove-next':
-				$next.hide();
-				$prev.show();
-			break;
-			case 'remove-prev':
-				$prev.hide();
-				$next.show();
-			break;
-		}
-	};
+window.onload = function() {
+  if (!supports_history_api()) { return; }
+  setupHistoryClicks();
+  window.setTimeout(function() {
+    window.addEventListener("popstate", function(e) {
+      swapPhoto(location.href);
+    }, false);
+  }, 1);
 }
 
 </script>

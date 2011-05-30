@@ -83,7 +83,7 @@ div.gallery-photo-thumb img {
 
 /*= photo details
 -------------------------------- */
-.photo-instance .hr {
+#photo-instance .hr {
 	height: 1px;
 	background-color: #EEE;
 	border-bottom: 1px solid #BBB;
@@ -122,9 +122,10 @@ div.gallery-photo-thumb img {
 	display: inline;
 	margin-right: 3px;
 }
-.photo-instance {
+#photo-instance {
 	float: left;
 	width: 100%;
+	height: 615px;
 }
 .photo-sets-wrap {
 	float: right;
