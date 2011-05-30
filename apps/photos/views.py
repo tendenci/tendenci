@@ -28,15 +28,17 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     """ Show all photo sizes """
 
     # check permissions & get photo queryset
-    photo = Image.objects.search("id:%s" % id)
-
+    # photo = Image.objects.search("id:%s" % id)
     # assume protect image
-    if not photo:
-        raise Http403
-
+    # if not photo:
+    #    raise Http403
     # get image object
-    photo = photo.best_match().object
-
+    # photo = photo.best_match().object
+    
+    photo = get_object_or_404(Image, id=id)
+    if not can_view(request.user, photo):
+        raise Http403
+    
     # security-check on size name
     if not size_name: return redirect('photo_square', id=id)
 
