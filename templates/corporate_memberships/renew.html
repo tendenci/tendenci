@@ -1,4 +1,4 @@
-{% extends "corporate_memberships/base.html" %}
+{% extends "corporate_memberships/base-wide.html" %}
 {% load corporate_memberships_tags %}
 {% load styled_forms %}
 
@@ -10,10 +10,73 @@
 <style>
 div.id_members .field ul li {
 	float: left;
-	width: 45%;
+	width: 35%;
 	margin: 0;
 	padding: 0;
 }
+div.id_payment_method ul{
+	list-style: none;
+}
+#main-forms{
+	width: 70%;
+}
+#summary-form-wrap{
+	width:300px;
+	margin:1em 8em 1em 1em;
+	float:right;
+}
+#summary-form-box{
+	border: 1px solid #ccc;
+	background-color: #fff;
+	padding:0.8em;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	width: 300px;
+}
+#renew-summary{
+	font-weight: bold;
+	font-size: 1.2em;
+	margin-bottom: 1em;
+	border-bottom: 1px solid silver;
+	text-align: center;
+}
+#summary-price, #summary-total-price{
+	width: 98%;
+}
+#summary-price td, #summary-total-price td{
+	padding: 3px;
+}
+#summary-total-price{
+	margin-bottom: 1em;
+	padding-top: 3px;
+	border-top: 1px dotted #ccc;
+}
+.summary-header{
+	font-weight: bold;
+	text-align: center;
+}
+#total-label,#total-amount{ 
+	font-weight: bold;
+}
+#update_summary{
+	margin-bottom: 1em;
+	padding: 3px;
+}
+#renew-button-wrap{
+	margin-top: 1em;
+	text-align: center;
+}
+#renew-button{
+	padding: 3px;
+	
+}
+.center{
+	text-align: center;
+}
+.right{
+	text-align: right;
+}
+
 </style>
 {% endblock %}
 
@@ -21,8 +84,89 @@ div.id_members .field ul li {
 <div class="t">
 {% corpmemb_nav request.user corporate_membership %} 
 
-     <h1>Corporate Membership Renewal for</h1>
-     <p>
+     <h1>Corporate Membership Renewal</h1>
+  
+<form action="" method="post">{% csrf_token %}
+
+<div id="summary-form-wrap">
+	<div class="float-anchor"><!-- ie7 fix --></div>
+	<div class="float-window">
+	<div id="summary-form-box">
+		<div id="renew-summary">Summary</div>
+		<table id="summary-price">
+			<tr>
+				<td width="25%" class="summary-header">&nbsp;</td>
+				<td width="25%" class="summary-header">Qty</td>
+				<td width="25%" class="summary-header">Unit Price</td>
+				<td width="25%" class="summary-header">Sub-total</td>
+			</tr>
+			<tr>
+				<td>Corporate</td>
+				<td class="center">1</td>
+				<td class="right">
+					<span>{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span><span id="corp-price">{{ summary_data.corp_price }}</span>
+				</td>
+				<td class="right">
+					<span>{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span><span id="corp-sub-total">{{ summary_data.corp_price }}
+				</td>
+			</tr>
+			<tr>
+				<td>Individuals</td>
+				<td class="center" id="ind-qty">{{ summary_data.individual_count }}</td>
+				<td class="right">
+					{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="ind-price">{{ summary_data.individual_price }}</span>
+				</td>
+				<td class="right">
+					{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="ind-sub-total">{{ summary_data.individual_total }}</span>
+				</td>
+			</tr>
+		</table>
+		<table id="summary-total-price">
+			<tr>
+				<td><div id="total-label">Total</div></td>
+				<td align="right">
+					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+					<span id="total-amount">{{ summary_data.total_amount }}</span>
+				</td>
+			</tr>
+		</table>
+		
+		<noscript>
+  			<div>
+  				<input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
+			</div>
+  		</noscript>
+		
+		<div class="form-field">
+	   		<div class="{{ form.payment_method.auto_id }}{{ form.payment_method.field.css_classes }}">
+			  <div class="label{% if form.payment_method.field.required %} required{% endif %}">
+	              {{ form.payment_method.label_tag }}
+	          </div>
+	          {% if form.payment_method.errors %}
+	          <div class="error">{{ error }}</div>
+	          {% endif %}
+	          <div class="field">
+	              {{ form.payment_method }}
+	          </div>
+	          {% if form.payment_method.help_text %}
+	          <div class="help-text">{{ form.payment_method.help_text }}</div>
+	          {% endif %}
+	       </div>
+	    </div>
+	    
+	    <div id="renew-button-wrap">
+	    <input type="submit" id="renew-button" value="Renew Now" />
+	    </div>
+		
+	</div>
+	</div>
+</div>	
+
+
+
+<div id="main-forms">
+<div class="forms">
+	<p>
      <a href="{% url corp_memb.view corporate_membership.id %}" target="_blank">{{ corporate_membership.name }}</a><br />
      	{% if corporate_membership.address %}
   			{{ corporate_membership.address }} 
@@ -59,12 +203,10 @@ div.id_members .field ul li {
      	<br />
      </p>
      
-   <div style="height:1px;width:60%;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
+   <div style="height:1px;width:80%;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
         
   {% if form.errors %}<h1>Please correct the following errors</h1>{% endif %}
 
-<form action="" method="post">{% csrf_token %}
-	<div class="forms">
 	{% if form.errors.values %}
 		<div class="errors">
 			{% for field in form %}
@@ -97,27 +239,7 @@ div.id_members .field ul li {
 	          {% endif %}
 	       </div>
 	    </div>
-	    
-	 <div class="form-field">
-   		<div class="{{ form.payment_method.auto_id }}{{ form.payment_method.field.css_classes }}">
-		  <div class="label{% if form.payment_method.field.required %} required{% endif %}">
-              {{ form.payment_method.label_tag }}
-          </div>
-          {% if form.payment_method.errors %}
-          <div class="error">
-              {% for error in form.payment_method.errors %}
-              <p>{{ error }}</p>
-              {% endfor %}
-          </div>
-          {% endif %}
-          <div class="field">
-              {{ form.payment_method }}
-          </div>
-          {% if form.payment_method.help_text %}
-          <div class="help-text">{{ form.payment_method.help_text }}</div>
-          {% endif %}
-       </div>
-    </div>
+	   
 	    
 	 <div class="form-field">
 	    <div class="{{ form.members.auto_id }}{{ form.members.field.css_classes }}">
@@ -149,35 +271,124 @@ div.id_members .field ul li {
 	          {% endif %}
 	       </div>
 	    <div style="clear: both"></div>
-	 </div>
-	 
-	    
+	 </div>    
    
                         
-       	<input type="submit" value="Renew" />
+       	
 	</div>
+</div>
+<div style="clear:both;"></div>
+
 </form> 
     
 </div>
+
+
 {% endblock %}
 
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-		$(document).ready(function()
-		{
-			$("#id_select_all_members").click(function()				
-			{
-				var checked_status = this.checked;
-				$("input[name=members]").each(function()
-				{
-					this.checked = checked_status;
-				});
-			});					
-		});
-		
-		</script>
     
+    function IndUpdateSummary(memb){
+        var ind_qty = $("#ind-qty").html();
+        var ind_price = $("#ind-price").html();
+        var ind_sub_total = $("#ind-sub-total").html();
+        var total_amount = $("#total-amount").html();
+
+        if (parseFloat(ind_price) > 0){
+			if(memb.checked){
+				ind_qty = parseInt(ind_qty) + 1;
+				ind_sub_total = parseFloat(ind_sub_total) + parseFloat(ind_price)
+				total_amount = parseFloat(total_amount) + parseFloat(ind_price)
+			}else{
+				ind_qty = parseInt(ind_qty) - 1;
+				ind_sub_total = parseFloat(ind_sub_total) - parseFloat(ind_price)
+				total_amount = parseFloat(total_amount) - parseFloat(ind_price)
+			}
+			ind_sub_total = ind_sub_total.toFixed(2)
+			total_amount = total_amount.toFixed(2)
+			$("#ind-qty").html(ind_qty);
+			$("#ind-sub-total").html(ind_sub_total);
+			$("#total-amount").html(total_amount);
+        }
+	}
+
+    function TypeUpdateSummary(corp_type){
+        var corp_price = $("#corp-price").html();
+        var ind_qty = $("#ind-qty").html();
+        var ind_price = $("#ind-price").html();
+        var ind_sub_total = $("#ind-sub-total").html();
+        //var total_amount = $("#total-amount").html();
+
+		var new_corp_price = $(corp_type).parent().find(".type-corp-price").html();
+		var new_ind_price = $(corp_type).parent().find(".type-ind-price").html();
+
+		var update_total = false;
+
+		// update corp. price and total
+		if (parseFloat(new_corp_price) != parseFloat(corp_price)){
+			$("#corp-price").html(new_corp_price);
+			$("#corp-sub-total").html(new_corp_price);
+			update_total = true;
+		}
+
+		// update individual price and total
+		if (parseFloat(new_ind_price) != parseFloat(ind_price)){
+			$("#ind-price").html(new_ind_price);
+			ind_sub_total = (parseInt(ind_qty) * parseFloat(new_ind_price)).toFixed(2);
+			$("#ind-sub-total").html(ind_sub_total);
+			update_total = true;
+		}
+
+		// update total amount
+		if (update_total){
+			total_amount = (parseFloat(new_corp_price) + parseFloat(ind_sub_total)).toFixed(2);
+			$("#total-amount").html(total_amount);
+		}
+
+	}
+	
+	$(document).ready(function()
+	{
+		$("#id_select_all_members").click(function()				
+		{
+			var checked_status = this.checked;
+			$("input[name=members]").each(function()
+			{
+				var old_status = this.checked;
+				this.checked = checked_status;
+				if (old_status != checked_status){
+					IndUpdateSummary(this);
+				}
+			});
+		});	
+
+		$("input[name=members]").change(function()
+		{
+			IndUpdateSummary(this);
+		});
+
+		$("input[name=corporate_membership_type]").change(function()
+		{
+			TypeUpdateSummary(this);
+		});					
+	});
+
+	$(window).scroll(function(){
+		if  ($(window).scrollTop() > $(".float-anchor").offset().top){
+			$(".float-window").css("position", "fixed");
+			$(".float-window").css("top", "8px");
+		}
+		
+		if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
+			$(".float-window").css("position", "relative");
+			$(".float-window").css("top", $(".float-anchor").offset);
+		}
+	});
+	
+	</script>
+   
     
 
 {% endblock %}
