@@ -130,7 +130,7 @@
     {
         "pk": 1,
         "model": "photos.license",
-        "fields": {"name": "All Rights Reserved", "code": "", "author": "", "deed": "", "legal_code": ""}
+        "fields": {"name": "All Rights Reserved", "code": "", "author": "", "deed": "#", "legal_code": "#"}
     },
     {
         "pk": 2,
