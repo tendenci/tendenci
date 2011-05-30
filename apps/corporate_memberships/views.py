@@ -14,7 +14,7 @@ from site_settings.utils import get_setting
 
 from event_logs.models import EventLog
 
-from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
+from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,CorporateMembershipType,
                                           CorporateMembershipRep, 
                                           CorpMembRenewEntry, 
                                           IndivMembRenewEntry)
@@ -266,59 +266,99 @@ def renew(request, id, template="corporate_memberships/renew.html"):
     
     if request.method == "POST":
         if form.is_valid():
-            members = form.cleaned_data['members']
-            
-            corp_renew_entry = form.save(commit=False)
-            corp_renew_entry.corporate_membership = corporate_membership
-            corp_renew_entry.creator = request.user
-            corp_renew_entry.status_detail = 'pending'
-            corp_renew_entry.save()
-            
-            # calculate the total price for invoice
-            corp_renewal_price = corp_renew_entry.corporate_membership_type.renewal_price
-            if not corp_renewal_price:
-                corp_renewal_price = 0
-            indiv_renewal_price = corp_renew_entry.corporate_membership_type.membership_type.renewal_price
-            if not indiv_renewal_price:
-                indiv_renewal_price = 0
-            
-            renewal_total = corp_renewal_price + indiv_renewal_price * len(members)
-            opt_d = {'renewal':True, 
-                     'renewal_total': renewal_total,
-                     'renew_entry':corp_renew_entry}
-            # create an invoice - invoice.object_type - use corporate_membership?
-            inv = corp_memb_inv_add(request.user, corporate_membership, **opt_d)
-            
-            # update corp_renew_entry with inv
-            corp_renew_entry.invoice = inv
-            corp_renew_entry.save()
-            
-            corporate_membership.renew_entry_id = corp_renew_entry.id
-            corporate_membership.save()
-            
-            # store individual members
-            for id in members:
-                membership = Membership.objects.get(id=id)
-                ind_memb_renew_entry = IndivMembRenewEntry(corp_memb_renew_entry=corp_renew_entry,
-                                                           membership=membership)
-                ind_memb_renew_entry.save()
-            
-            
-            # handle online payment
-            if corp_renew_entry.payment_method.lower() in ['credit card', 'cc']:
-                if corp_renew_entry.invoice and corp_renew_entry.invoice.balance > 0:
-                    return HttpResponseRedirect(reverse('payments.views.pay_online', 
-                                                        args=[corp_renew_entry.invoice.id, 
-                                                              corp_renew_entry.invoice.guid]))
-            if user_is_admin:
-                # admin: approve renewal
-                corporate_membership.approve_renewal(request.user)
-            return HttpResponseRedirect(reverse('corp_memb.renew_conf', args=[corporate_membership.id]))
-            
+            if 'update_summary' in request.POST:
+                pass
+            else:
+                
+                members = form.cleaned_data['members']
+                
+                corp_renew_entry = form.save(commit=False)
+                corp_renew_entry.corporate_membership = corporate_membership
+                corp_renew_entry.creator = request.user
+                corp_renew_entry.status_detail = 'pending'
+                corp_renew_entry.save()
+                
+                # calculate the total price for invoice
+                corp_renewal_price = corp_renew_entry.corporate_membership_type.renewal_price
+                if not corp_renewal_price:
+                    corp_renewal_price = 0
+                indiv_renewal_price = corp_renew_entry.corporate_membership_type.membership_type.renewal_price
+                if not indiv_renewal_price:
+                    indiv_renewal_price = 0
+                
+                renewal_total = corp_renewal_price + indiv_renewal_price * len(members)
+                opt_d = {'renewal':True, 
+                         'renewal_total': renewal_total,
+                         'renew_entry':corp_renew_entry}
+                # create an invoice - invoice.object_type - use corporate_membership?
+                inv = corp_memb_inv_add(request.user, corporate_membership, **opt_d)
+                
+                # update corp_renew_entry with inv
+                corp_renew_entry.invoice = inv
+                corp_renew_entry.save()
+                
+                corporate_membership.renew_entry_id = corp_renew_entry.id
+                corporate_membership.save()
+                
+                # store individual members
+                for id in members:
+                    membership = Membership.objects.get(id=id)
+                    ind_memb_renew_entry = IndivMembRenewEntry(corp_memb_renew_entry=corp_renew_entry,
+                                                               membership=membership)
+                    ind_memb_renew_entry.save()
+                    
+                # log an event
+                log_defaults = {
+                    'event_id' : 681001,
+                    'event_data': '%s (%d) renewed by %s' % (corporate_membership._meta.object_name, 
+                                                           corporate_membership.pk, request.user),
+                    'description': '%s renewed' % corporate_membership._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': corporate_membership,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                
+                # handle online payment
+                if corp_renew_entry.payment_method.lower() in ['credit card', 'cc']:
+                    if corp_renew_entry.invoice and corp_renew_entry.invoice.balance > 0:
+                        return HttpResponseRedirect(reverse('payments.views.pay_online', 
+                                                            args=[corp_renew_entry.invoice.id, 
+                                                                  corp_renew_entry.invoice.guid]))
+                if user_is_admin:
+                    # admin: approve renewal
+                    corporate_membership.approve_renewal(request.user)
+                return HttpResponseRedirect(reverse('corp_memb.renew_conf', args=[corporate_membership.id]))
+                
+    
+    
+    summary_data = {'corp_price':0, 'individual_price':0, 'individual_count':0, 
+                    'individual_total':0, 'total_amount':0}
+    if request.method == "POST":
+        cmt_id = request.POST.get('corporate_membership_type', 0)
+        try:
+            cmt = CorporateMembershipType.objects.get(id=cmt_id)
+        except CorporateMembershipType.DoesNotExist:
+            pass
+        summary_data['individual_count'] = len(request.POST.getlist('members'))
+    else:
+        cmt = corporate_membership.corporate_membership_type
+    
+    if cmt:
+        summary_data['corp_price'] = cmt.renewal_price
+        if not summary_data['corp_price']:
+            summary_data['corp_price'] = 0
+        summary_data['individual_price'] = cmt.membership_type.renewal_price
+        if not summary_data['individual_price']:
+            summary_data['individual_price'] = 0
+    summary_data['individual_total'] = summary_data['individual_count'] * summary_data['individual_price']
+    summary_data['total_amount'] = summary_data['individual_total'] + summary_data['corp_price']
     
     context = {"corporate_membership": corporate_membership, 
                'corp_app': corp_app,
                'form': form,
+               'summary_data': summary_data,
                }
     return render_to_response(template, context, RequestContext(request))
 
