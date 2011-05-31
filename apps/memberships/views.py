@@ -677,9 +677,9 @@ def membership_join_report(request):
             if form.cleaned_data['membership_status']:
                 mem_stat = form.cleaned_data['membership_status']
                 if form.cleaned_data['membership_status'] == 'ACTIVE':
-                    mems = mems.filter(expiration_dt__gte = now, join_dt__lte = now)
+                    mems = mems.filter(expire_dt__gte = now, join_dt__lte = now)
                 else:
-                    mems = mems.exclude(expiration_dt__gte = now, join_dt__lte = now)
+                    mems = mems.exclude(expire_dt__gte = now, join_dt__lte = now)
     else:
         form = ReportForm()
     mems30days = mems.filter(join_dt__gte = now-timedelta(days=30))
@@ -707,9 +707,9 @@ def membership_join_report_pdf(request):
         mems = mems.filter(membership_type=mem_type)
     if mem_stat:
         if mem_stat == 'ACTIVE':
-            mems = mems.filter(expiration_dt__gte = now, join_dt__lte = now)
+            mems = mems.filter(expire_dt__gte = now, join_dt__lte = now)
         else:
-            mems = mems.exclude(expiration_dt__gte = now, join_dt__lte = now)
+            mems = mems.exclude(expire_dt__gte = now, join_dt__lte = now)
     mems = mems.filter(join_dt__gte = now-timedelta(days=int(days)))
     report = ReportNewMems(queryset = mems)
     resp = HttpResponse(mimetype='application/pdf')
