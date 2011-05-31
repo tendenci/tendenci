@@ -121,12 +121,10 @@ def new_mems_from_csv(file_path, app, columns):
         except: continue  # on to the next one
         try: membership_type = MembershipType.objects.get(name = m['membership-type'])
         except: continue  # on to the next one
-        try: join_dt = datetime.strptime(slugify(m['join-dt']), '%b-%d-%Y')
-        except: join_dt = now
-        try: renew_dt = datetime.strptime(slugify(m['renew-dt']), '%b-%d-%Y')
-        except: renew_dt = now
+        try: subscribe_dt = datetime.strptime(slugify(m['subscribe-dt']), '%b-%d-%Y')
+        except: subscribe_dt = now
         try: expire_dt = datetime.strptime(slugify(m['expire-dt']), '%b-%d-%Y')
-        except: expire_dt = membership_type.get_expiration_dt(join_dt=join_dt)
+        except: expire_dt = membership_type.get_expiration_dt(subscribe_dt=subscribe_dt)
 
         memberships = Membership.objects.filter(
             user=user,
@@ -143,8 +141,7 @@ def new_mems_from_csv(file_path, app, columns):
             membership.member_number = m.get('member-number') or 0
             membership.owner = user
             membership.creator = user
-            membership.join_dt = join_dt
-            membership.renew_dt = renew_dt
+            membership.subscribe_dt = subscribe_dt
             membership.payment_method = m.get('payment-method') or ''
             membership.renewal = m.get('renewal') or False
             membership.status = m.get('status') or True
