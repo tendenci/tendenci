@@ -149,7 +149,7 @@ def new_mems_from_csv(file_path, app, columns):
             membership.renewal = m.get('renewal') or False
             membership.status = m.get('status') or True
             membership.status_detail = m.get('status-detail') or 'Active'
-            membership.expiration_dt = expire_dt
+            membership.expire_dt = expire_dt
 
         membership_set.append(membership)
 

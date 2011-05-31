@@ -45,7 +45,7 @@ class ReportNewMems(Report):
                 #ObjectValue(attribute_name='payment_method', left=15*cm),
                 ObjectValue(attribute_name='join_dt', left=14.5*cm,
                     get_value=lambda instance: instance.join_dt.strftime('%m/%d/%Y')),
-                ObjectValue(attribute_name='expiration_dt', left=17.5*cm,
-                    get_value=lambda instance: instance.expiration_dt.strftime('%m/%d/%Y')),
+                ObjectValue(attribute_name='expire_dt', left=17.5*cm,
+                    get_value=lambda instance: instance.expire_dt.strftime('%m/%d/%Y')),
             )
     
