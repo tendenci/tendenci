@@ -71,6 +71,10 @@ class PhotoIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
+    
+    # permission fields
+    users_can_view = indexes.MultiValueField()
+    groups_can_view = indexes.MultiValueField()
 
     # RSS fields
     can_syndicate = indexes.BooleanField()
@@ -87,9 +91,12 @@ class PhotoIndex(indexes.RealTimeSearchIndex):
         
     def prepare_photosets(self, obj):
         return [photoset.pk for photoset in obj.photoset.all()]
+        
+    def prepare_users_can_view(self, obj):
+        return ObjectPermission.objects.users_with_perms('photos.view_image', obj)
 
-    def get_updated_field(self):
-        return 'update_dt'
+    def prepare_groups_can_view(self, obj):
+        return ObjectPermission.objects.groups_with_perms('photos.view_image', obj)
 
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view and obj.status == 1 \
@@ -97,6 +104,9 @@ class PhotoIndex(indexes.RealTimeSearchIndex):
 
     def prepare_syndicate_order(self, obj):
         return obj.update_dt
+        
+    def get_updated_field(self):
+        return 'update_dt'
 
 
 site.register(PhotoSet, PhotoSetIndex)
