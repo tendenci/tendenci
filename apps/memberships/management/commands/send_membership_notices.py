@@ -107,9 +107,9 @@ class Command(BaseCommand):
                                                 renew_dt__month=start_dt.month,
                                                 renew_dt__day=start_dt.day)
             else: # 'expire'
-                memberships = memberships.filter(expiration_dt__year=start_dt.year,
-                                                expiration_dt__month=start_dt.month,
-                                                expiration_dt__day=start_dt.day)
+                memberships = memberships.filter(expire_dt__year=start_dt.year,
+                                                expire_dt__month=start_dt.month,
+                                                expire_dt__day=start_dt.day)
             if memberships:
                 email.content_type = notice.content_type
                 notice.email_content = notice.email_content.replace("[sitedisplayname]", site_display_name)
@@ -179,9 +179,9 @@ class Command(BaseCommand):
             body = body.replace("[membershiptypeid]", str(membership.membership_type.id))
             body = body.replace("[membershiplink]", '%s%s' % (site_url, membership.get_absolute_url()))
             body = body.replace("[renewlink]", '%s%s' % (site_url, membership.get_absolute_url()))
-            if membership.expiration_dt:
+            if membership.expire_dt:
                 body = body.replace("[expirationdatetime]", 
-                                    time.strftime("%d-%b-%y %I:%M %p", membership.expiration_dt.timetuple()))
+                                    time.strftime("%d-%b-%y %I:%M %p", membership.expire_dt.timetuple()))
             else:
                 body = body.replace("[expirationdatetime]", '')
                 

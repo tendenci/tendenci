@@ -277,7 +277,7 @@ class Membership(TendenciBaseModel):
     subscribe_dt = models.DateTimeField(_("Subscribe Date"), null=True)
     join_dt = models.DateTimeField(_("Join Date"), null=True)
     renew_dt = models.DateTimeField(_("Renew Date"), blank=True, null=True)
-    expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
+    expire_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     ma = models.ForeignKey("App")
@@ -306,11 +306,11 @@ class Membership(TendenciBaseModel):
          (renewal_period_start_dt, renewal_period_end_dt)
          
         """
-        if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
+        if not self.expire_dt or not isinstance(self.expire_dt, datetime):
             return (None, None)
         
-        start_dt = self.expiration_dt - timedelta(days=self.membership_type.renewal_period_start)
-        end_dt = self.expiration_dt + timedelta(days=self.membership_type.renewal_period_end)
+        start_dt = self.expire_dt - timedelta(days=self.membership_type.renewal_period_start)
+        end_dt = self.expire_dt + timedelta(days=self.membership_type.renewal_period_end)
         
         return (start_dt, end_dt)
         
@@ -321,7 +321,7 @@ class Membership(TendenciBaseModel):
         Returns boolean.
         """
 
-        if self.expiration_dt is None:  # neverending expirations
+        if self.expire_dt is None:  # neverending expirations
             return False
 
         start_dt, end_dt = self.get_renewal_period_dt()
@@ -436,10 +436,10 @@ class Notice(models.Model):
         except Profile.DoesNotExist as e:
             profile = Profile.objects.create_profile(user=user)
 
-        if membership.expiration_dt:
+        if membership.expire_dt:
             expiration_dt = time.strftime(
                 "%d-%b-%y %I:%M %p",
-                membership.expiration_dt.timetuple()
+                membership.expire_dt.timetuple()
             )
 
         if membership.corporate_membership_id:
@@ -789,7 +789,7 @@ class AppEntry(TendenciBaseModel):
                 'directory':membership.directory,
                 'join_dt':membership.join_dt,
                 'renew_dt':membership.renew_dt,
-                'expire_dt':membership.expiration_dt,
+                'expire_dt':membership.expire_dt,
                 'corporate_membership_id':membership.corporate_membership_id,
                 'invoice':membership.invoice,
                 'payment_method':membership.payment_method,
@@ -815,7 +815,7 @@ class AppEntry(TendenciBaseModel):
                 'renewal': self.membership_type.renewal,
                 'join_dt':datetime.now(),
                 'renew_dt': None,
-                'expiration_dt': self.membership_type.get_expiration_dt(join_dt=datetime.now()),
+                'expire_dt': self.membership_type.get_expiration_dt(join_dt=datetime.now()),
                 'payment_method':'',
                 'ma':self.app,
                 'corporate_membership_id': self.corporate_membership_id,
