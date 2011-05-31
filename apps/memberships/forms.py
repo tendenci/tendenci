@@ -544,14 +544,19 @@ class AppEntryForm(forms.ModelForm):
         # TODO: We're assuming that an administrator exists
         # We're assuming this administrator is actively used
         admin = User.objects.order_by('pk')[0]
-        user = self.user
+
+        user = None
+        username = None
+        if hasattr(self.user, 'pk'):
+            user = self.user
+            username = user.username
 
         app_entry.user = user
         app_entry.entry_time = datetime.now()
         app_entry.creator = user or admin
-        app_entry.creator_username = user.username or admin.username
+        app_entry.creator_username = username or admin.username
         app_entry.owner = user or admin
-        app_entry.owner_username = user.username or admin.username
+        app_entry.owner_username = username or admin.username
         app_entry.status = True
         app_entry.status_detail = 'active'
 
