@@ -99,13 +99,15 @@ class Command(BaseCommand):
             
             memberships = Membership.objects.filter(status=1)
             if notice.notice_type == 'join':
-                memberships = memberships.filter(join_dt__year=start_dt.year,
-                                                join_dt__month=start_dt.month,
-                                                join_dt__day=start_dt.day)
+                memberships = memberships.filter(subscribe_dt__year=start_dt.year,
+                                                subscribe_dt__month=start_dt.month,
+                                                subscribe_dt__day=start_dt.day,
+                                                renewal=False)
             elif notice.notice_type == 'renew':
-                memberships = memberships.filter(renew_dt__year=start_dt.year,
-                                                renew_dt__month=start_dt.month,
-                                                renew_dt__day=start_dt.day)
+                memberships = memberships.filter(subscribe_dt__year=start_dt.year,
+                                                subscribe_dt__month=start_dt.month,
+                                                subscribe_dt__day=start_dt.day
+                                                renewal=True)
             else: # 'expire'
                 memberships = memberships.filter(expire_dt__year=start_dt.year,
                                                 expire_dt__month=start_dt.month,

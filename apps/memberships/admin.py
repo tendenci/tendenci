@@ -26,8 +26,8 @@ class MembershipAdmin(admin.ModelAdmin):
     member_name.allow_tags = True
     member_name.short_description = 'Member Name'
 
-    list_display = (member_name, 'membership_type', 'join_dt', 'expire_dt', 'payment_method')
-    list_filter = ('membership_type', 'join_dt', 'expire_dt', 'payment_method')
+    list_display = (member_name, 'membership_type', 'subscribe_dt', 'expire_dt', 'payment_method')
+    list_filter = ('membership_type', 'subscribe_dt', 'expire_dt', 'payment_method')
 
     def __init__(self, *args, **kwargs):
         super(MembershipAdmin, self).__init__(*args, **kwargs)

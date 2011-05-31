@@ -139,7 +139,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
 
         if user.memberships.get_membership():
             pending_entries.filter(
-                entry_time__gte = user.memberships.get_membership().join_dt
+                entry_time__gte = user.memberships.get_membership().subscribe_dt
             )
 
     app_entry_form = AppEntryForm(
@@ -660,7 +660,7 @@ def membership_import(request, step=None):
 #REPORTS
     
 def _membership_joins(from_date):
-    return Membership.objects.filter(join_dt__gte=from_date)
+    return Membership.objects.filter(subscribe_dt__gte=from_date)
 
 @staff_member_required
 def membership_join_report(request):
@@ -677,14 +677,14 @@ def membership_join_report(request):
             if form.cleaned_data['membership_status']:
                 mem_stat = form.cleaned_data['membership_status']
                 if form.cleaned_data['membership_status'] == 'ACTIVE':
-                    mems = mems.filter(expire_dt__gte = now, join_dt__lte = now)
+                    mems = mems.filter(expire_dt__gte = now, subscribe_dt__lte = now)
                 else:
-                    mems = mems.exclude(expire_dt__gte = now, join_dt__lte = now)
+                    mems = mems.exclude(expire_dt__gte = now, subscribe_dt__lte = now)
     else:
         form = ReportForm()
-    mems30days = mems.filter(join_dt__gte = now-timedelta(days=30))
-    mems60days = mems.filter(join_dt__gte = now-timedelta(days=60))
-    mems90days = mems.filter(join_dt__gte = now-timedelta(days=90))
+    mems30days = mems.filter(subscribe_dt__gte = now-timedelta(days=30))
+    mems60days = mems.filter(subscribe_dt__gte = now-timedelta(days=60))
+    mems90days = mems.filter(subscribe_dt__gte = now-timedelta(days=90))
     return render_to_response(
                 'reports/membership_joins.html', {
                     'mems30days': mems30days,
@@ -707,10 +707,10 @@ def membership_join_report_pdf(request):
         mems = mems.filter(membership_type=mem_type)
     if mem_stat:
         if mem_stat == 'ACTIVE':
-            mems = mems.filter(expire_dt__gte = now, join_dt__lte = now)
+            mems = mems.filter(expire_dt__gte = now, subscribe_dt__lte = now)
         else:
-            mems = mems.exclude(expire_dt__gte = now, join_dt__lte = now)
-    mems = mems.filter(join_dt__gte = now-timedelta(days=int(days)))
+            mems = mems.exclude(expire_dt__gte = now, subscribe_dt__lte = now)
+    mems = mems.filter(subscribe_dt__gte = now-timedelta(days=int(days)))
     report = ReportNewMems(queryset = mems)
     resp = HttpResponse(mimetype='application/pdf')
     report.generate_by(PDFGenerator, filename=resp)
