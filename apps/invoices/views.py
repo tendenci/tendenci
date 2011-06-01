@@ -7,6 +7,7 @@ from invoices.models import Invoice
 from invoices.forms import AdminNotesForm, AdminAdjustForm
 from perms.utils import is_admin
 from event_logs.models import EventLog
+from notification.utils import send_notifications
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
@@ -97,7 +98,14 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
                 'request': request,
                 'instance': invoice,
             }
-            EventLog.objects.log(**log_defaults)  
+            EventLog.objects.log(**log_defaults)
+            
+            notif_context = {
+                'request': request,
+                'object': invoice,
+            }
+            send_notifications('module','invoices','invoicerecipients',
+                'invoice_edited', notif_context)
             
             # make accounting entries
             from accountings.models import AcctEntry
