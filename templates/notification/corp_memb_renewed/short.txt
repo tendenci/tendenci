@@ -1,1 +1,1 @@
-Corporate Membership Renewal Notice on  {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+Corporate Membership Renewal - {{ object.name }}
