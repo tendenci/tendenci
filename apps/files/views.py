@@ -139,7 +139,7 @@ def add(request, form_class=FileForm, template_name="files/add.html"):
             # assign creator permissions
             ObjectPermission.objects.assign(file.creator, file) 
             
-            return HttpResponseRedirect(reverse('file', args=[file.pk]))
+            return HttpResponseRedirect(reverse('file.search'))
     else:
         form = form_class(user=request.user)
        
