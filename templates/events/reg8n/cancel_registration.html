@@ -1,0 +1,144 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+{% load avatar_tags %}
+{% load base_filters %}
+
+{% block title %}{{ block.super }} {{ event.title }} Cancel Registration{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+{% endblock %}
+
+{% block body %}
+
+<style type="text/css">
+    .event-info {
+        padding: 10px;
+        background-color: #F5F5F5;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+        text-align: left;   
+        margin-bottom: 10px;
+        width: 61%;
+    }
+
+    .event-title {
+        font-size: 1.3em;   
+        margin-bottom: 10px;
+    }
+
+    .event-cancel-amount {
+        font-weight: bold;
+        padding: 5px;
+    }
+
+    .event-registrants-cancelled {
+        opacity: .5;
+    }
+
+    .event-registrants {
+        margin: 10px 0 10px 0;
+    }
+
+    .event-registrants-cancelled {
+        margin: 10px 0 10px 0;
+    }
+
+    .event-registrants h4 {
+        margin-bottom: 5px;
+    }
+
+    .event-registrants-cancelled h4 {
+        margin-bottom: 5px;
+    }
+
+    .light {
+        color: #777;
+    }
+</style>
+
+<div class="t">
+    <h1>Cancel Event Registration</h1>
+    <div class="event-info">
+        <div class="event-title">{{ event.title }}</div>
+        <div class="event-cancel-amount">Cancelling {{ registrants|length }} registration(s)</div>
+        {% if cancelled_registrants %}
+            <div class="event-cancel-amount light">{{ registrants|length }} registration(s) already cancelled</div>
+        {% endif %}
+    </div>
+    <div class="event-registrants">
+        <h4>Cancelling</h4>
+        {% for registrant in registrants %}
+            <div class='avatar'>{% avatar registrant.user 56 %}</div>
+            <div class="info">
+                
+                <div class="name">
+                {% if registrant.first_name or registrant.last_name %}
+                    {% if registrant.first_name %}
+                        {{ registrant.first_name }}
+                    {% endif %}
+                    {%  if registrant.last_name %}
+                        {{ registrant.last_name }}
+                    {% endif %}
+                {% else %}
+                    Guest #{{ forloop.counter0 }}
+                {% endif %}
+                </div>
+                
+                <div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
+                <div class="amount">Amount: 
+                <span{% if registrant.cancel_dt %} class="canceled-amount"{% endif %}>
+                        {{ registrant.amount|format_currency }}
+                </span>
+                </div>
+            </div>
+            <div style="clear:both;"></div>
+         {% endfor %}
+    </div>
+    {% if cancelled_registrants %}
+    <div class="event-registrants-cancelled">
+        <h4>Already Cancelled</h4>
+        {% for registrant in cancelled_registrants %}
+            <div class='avatar'>{% avatar registrant.user 56 %}</div>
+            <div class="info">
+                
+                <div class="name">
+                {% if registrant.first_name or registrant.last_name %}
+                    {% if registrant.first_name %}
+                        {{ registrant.first_name }}
+                    {% endif %}
+                    {%  if registrant.last_name %}
+                        {{ registrant.last_name }}
+                    {% endif %}
+                {% else %}
+                    Guest #{{ forloop.counter0 }}
+                {% endif %}
+                </div>
+                
+                <div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
+                <div class="amount">Amount: 
+                <span{% if registrant.cancel_dt %} class="canceled-amount"{% endif %}>
+                        {{ registrant.amount|format_currency }}
+                </span>
+                </div>
+            </div>
+            <div style="clear:both;"></div>
+         {% endfor %}
+    </div>
+    {% endif %}
+    <div class="form-wrap">
+        {% if hash %}
+            <form action="{% url event.cancel_registration event.pk registration.pk registration.hash %}" method="post">
+        {% else %}
+            <form action="{% url event.cancel_registration event.pk registration.pk  %}" method="post">
+        {%  endif %}
+            <div class="forms">
+                <input type="submit" value="Cancel Event Registration" />
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
