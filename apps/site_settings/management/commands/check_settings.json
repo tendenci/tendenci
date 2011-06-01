@@ -10,7 +10,7 @@
         "scope": "module"
     },
     {
-        "name": "corporatemembershipsrecipients",
+        "name": "corporatemembershiprecipients",
         "scope_category": "corporatememberships",
         "scope": "module"
     },
