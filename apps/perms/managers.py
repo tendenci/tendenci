@@ -380,10 +380,10 @@ class TendenciBaseManager(models.Manager):
             if user.is_anonymous():
                 sqs = self._anon_sqs(sqs, status_detail=status_detail)
             elif is_member(user):
-                sqs = self._member_sqs(sqs, user=user,
+                sqs = self._member_sqs(sqs, user,
                     status_detail=status_detail)
             else:
-                sqs = self._user_sqs(sqs, user=user,
+                sqs = self._user_sqs(sqs, user,
                     status_detail=status_detail)
         return sqs
 
@@ -395,6 +395,9 @@ class TendenciBaseManager(models.Manager):
         """
         
         sqs = kwargs.get('sqs', SearchQuerySet())
+        
+        # filter out the big parts first
+        sqs = sqs.models(self.model)
         
         # user information
         user = kwargs.get('user') or AnonymousUser()
@@ -410,4 +413,4 @@ class TendenciBaseManager(models.Manager):
         
         sqs = self._permissions_sqs(sqs, user, status_detail)
         
-        return sqs.models(self.model)
+        return sqs
