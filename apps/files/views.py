@@ -54,7 +54,7 @@ def index(request, id=None, size=None, download=False, template_name="files/view
 
 def search(request, template_name="files/search.html"):
     query = request.GET.get('q', None)
-    files = File.objects.search(query)
+    files = File.objects.search(query, user=request.user)
 
     if not query:
         files = files.order_by('-update_dt')
