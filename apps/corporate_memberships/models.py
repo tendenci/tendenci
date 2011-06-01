@@ -19,6 +19,9 @@ from perms.utils import is_admin
 #from site_settings.utils import get_setting
 from user_groups.models import GroupMembership
 
+from base.utils import send_email_notification
+
+
 FIELD_CHOICES = (
                     ("CharField", _("Text")),
                     ("CharField/django.forms.Textarea", _("Paragraph Text")),
@@ -183,7 +186,7 @@ class CorporateMembership(TendenciBaseModel):
          
         # approve it
         if self.renew_entry_id:
-            self.approve_renewal(request.user)
+            self.approve_renewal(request)
         else:
             if (self.status_detail).lower() <> 'active':
                 self.status_detail = 'active'
@@ -203,17 +206,18 @@ class CorporateMembership(TendenciBaseModel):
                 }
                 notification.send_emails(recipients,'corp_memb_paid', extra_context)
                 
-    def approve_renewal(self, user, **kwargs):
+    def approve_renewal(self, request, **kwargs):
         """
         Approve the corporate membership renewal, and
         approve the individual memberships that are 
         renewed with the corporate_membership
         """
+        from corporate_memberships.utils import dues_rep_emails_list
         if self.renew_entry_id:
             renew_entry = CorpMembRenewEntry.objects.get(id=self.renew_entry_id)
             if renew_entry.status_detail not in ['approved', 'disapproved']:
                 # 1) archive corporate membership
-                self.archive(user)
+                self.archive(request.user)
                 
                 # 2) update the corporate_membership record with the renewal info from renew_entry
                 self.renewal = True
@@ -223,7 +227,7 @@ class CorporateMembership(TendenciBaseModel):
                 self.renew_dt = renew_entry.create_dt
                 self.approved = True
                 self.approved_denied_dt = datetime.now()
-                self.approved_denied_user = user
+                self.approved_denied_user = request.user
                 self.status = 1
                 self.status_detail = 'active'
                 
@@ -237,7 +241,7 @@ class CorporateMembership(TendenciBaseModel):
                 renew_entry.save()
                 
                 # 3) approve the individual memberships
-                
+                user = request.user
                 if user and not user.is_anonymous():
                     user_id = user.id
                     username = user.username
@@ -282,6 +286,17 @@ class CorporateMembership(TendenciBaseModel):
                             'status':True,
                             'status_detail':'active',
                         })
+                # email dues reps that corporate membership has been approved
+                recipients = dues_rep_emails_list(self)
+                extra_context = {
+                    'object': self,
+                    'request': request,
+                    'corp_renew_entry': renew_entry,
+                    'invoice': renew_entry.invoice,
+                }
+                send_email_notification('corp_memb_renewal_approved', recipients, extra_context)
+                
+                
                 
     def is_rep(self, this_user):
         """
@@ -446,6 +461,17 @@ class CorpMembRenewEntry(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True)
     status_detail = models.CharField(max_length=50)   # pending, approved and disapproved
+    
+    def get_payment_description(self, inv):
+        return self.corporate_membership.get_payment_description(inv)
+    
+    def make_acct_entries(self, user, inv, amount, **kwargs):
+        return self.corporate_membership.make_acct_entries(user, inv, amount, **kwargs)
+    
+    def auto_update_paid_object(self, request, payment):
+        return self.corporate_membership.auto_update_paid_object(request, payment)
+        
+    
     
 class IndivMembRenewEntry(models.Model):
     corp_memb_renew_entry = models.ForeignKey("CorpMembRenewEntry")

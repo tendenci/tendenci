@@ -21,15 +21,13 @@ from corporate_memberships.models import (CorpApp, CorpField, CorporateMembershi
 from corporate_memberships.forms import CorpMembForm, CorpMembRepForm, RosterSearchForm, CorpMembRenewForm
 from corporate_memberships.utils import (get_corporate_membership_type_choices, 
                                          get_payment_method_choices,
-                                         corp_memb_inv_add)
+                                         corp_memb_inv_add, 
+                                         dues_rep_emails_list)
 #from memberships.models import MembershipType
 from memberships.models import Membership
 
 from perms.utils import get_notice_recipients
-try:
-    from notification import models as notification
-except:
-    notification = None
+from base.utils import send_email_notification
 
 
 def add(request, slug, template="corporate_memberships/add.html"):
@@ -99,13 +97,11 @@ def add(request, slug, template="corporate_memberships/add.html"):
             
             # send notification to administrators
             recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
-            if recipients:
-                if notification:
-                    extra_context = {
-                        'object': corporate_membership,
-                        'request': request,
-                    }
-                    notification.send_emails(recipients,'corp_memb_added', extra_context)
+            extra_context = {
+                'object': corporate_membership,
+                'request': request,
+            }
+            send_email_notification('corp_memb_added', recipients, extra_context)
             
             
             # log an event
@@ -219,13 +215,11 @@ def edit(request, id, template="corporate_memberships/edit.html"):
             # send notification to administrators
             if not user_is_admin:
                 recipients = get_notice_recipients('module', 'corporate_membership', 'corporatemembershiprecipients')
-                if recipients:
-                    if notification:
-                        extra_context = {
-                            'object': corporate_membership,
-                            'request': request,
-                        }
-                        notification.send_emails(recipients,'corp_memb_edited', extra_context)
+                extra_context = {
+                    'object': corporate_membership,
+                    'request': request,
+                }
+                send_email_notification('corp_memb_edited', recipients, extra_context)
             
             # log an event
             log_defaults = {
@@ -326,9 +320,29 @@ def renew(request, id, template="corporate_memberships/renew.html"):
                         return HttpResponseRedirect(reverse('payments.views.pay_online', 
                                                             args=[corp_renew_entry.invoice.id, 
                                                                   corp_renew_entry.invoice.guid]))
+                        
+                extra_context = {
+                    'object': corporate_membership,
+                    'request': request,
+                    'corp_renew_entry': corp_renew_entry,
+                    'invoice': inv,
+                }
                 if user_is_admin:
                     # admin: approve renewal
-                    corporate_membership.approve_renewal(request.user)
+                    corporate_membership.approve_renewal(request)
+                else:
+                    # send a notice to admin
+                    recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
+                    
+                    send_email_notification('corp_memb_renewed', recipients, extra_context)
+                    
+                   
+                            
+                # send an email to dues reps
+                recipients = dues_rep_emails_list(corporate_membership)
+                send_email_notification('corp_memb_renewed_user', recipients, extra_context)
+                    
+                    
                 return HttpResponseRedirect(reverse('corp_memb.renew_conf', args=[corporate_membership.id]))
                 
     
