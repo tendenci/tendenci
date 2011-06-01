@@ -383,9 +383,10 @@ def add_registration(*args, **kwargs):
     event_price = Decimal(str(event_price))
 
     reg8n_attrs = {
-            "event": event,
-            "payment_method": reg_form.cleaned_data.get('payment_method', None),
-            "amount_paid": str(total_amount),
+        "event": event,
+        "payment_method": reg_form.cleaned_data.get('payment_method', None),
+        "amount_paid": str(total_amount),
+        "reg_conf_price": price
     }
     if request.user.is_authenticated():
         reg8n_attrs['creator'] = request.user
@@ -493,54 +494,6 @@ def get_pricing_dict(price, qualifies):
     return pricing
 
 
-def count_event_spots_taken(event):
-    """
-    Count the number of spots taken in an event
-    """
-    registrations = Registration.objects.filter(event=event)
-    count = 0
-
-    for reg in registrations:
-        count += reg.registrant_set.count()
-    
-    return count
-
-
-def update_event_spots_taken(event):
-    """
-    Update the index registration count for 
-    an event
-    """
-    from events.search_indexes import EventIndex
-    from events.models import Event
-
-    event_index = EventIndex(Event)
-    event.spots_taken = count_event_spots_taken(event)
-    event_index.update_object(event)
-
-    return event.spots_taken
-
-
-def get_event_spots_taken(event):
-    """
-    Get the index registration count for
-    an event
-    """
-    from haystack.query import SearchQuerySet
-    from events.models import Event
-    sqs = SearchQuerySet().models(Event)
-    sqs = sqs.filter(primary_key=event.pk)
-
-    try:
-        spots_taken = sqs[0].spots_taken
-        if not spots_taken:
-            spots_taken = update_event_spots_taken(event)
-        return spots_taken
-    except IndexError:
-        return update_event_spots_taken(event)
-    return 0
-
-
 def get_pricing(user, event, pricing=None):
     """
     Get a list of qualified pricing in a dictionary
@@ -599,6 +552,54 @@ def get_pricing(user, event, pricing=None):
             break
 
     return sorted_pricing_list
+
+
+def count_event_spots_taken(event):
+    """
+    Count the number of spots taken in an event
+    """
+    registrations = Registration.objects.filter(event=event)
+    count = 0
+
+    for reg in registrations:
+        count += reg.registrant_set.count()
+    
+    return count
+
+
+def update_event_spots_taken(event):
+    """
+    Update the index registration count for 
+    an event
+    """
+    from events.search_indexes import EventIndex
+    from events.models import Event
+
+    event_index = EventIndex(Event)
+    event.spots_taken = count_event_spots_taken(event)
+    event_index.update_object(event)
+
+    return event.spots_taken
+
+
+def get_event_spots_taken(event):
+    """
+    Get the index registration count for
+    an event
+    """
+    from haystack.query import SearchQuerySet
+    from events.models import Event
+    sqs = SearchQuerySet().models(Event)
+    sqs = sqs.filter(primary_key=event.pk)
+
+    try:
+        spots_taken = sqs[0].spots_taken
+        if not spots_taken:
+            spots_taken = update_event_spots_taken(event)
+        return spots_taken
+    except IndexError:
+        return update_event_spots_taken(event)
+    return 0
 
 
 def registration_earliest_time(event, pricing=None):

@@ -714,6 +714,9 @@ tr.non-paid-middle {
     border: 1px solid;
     padding: 10px;
     margin-bottom: 10px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
 }
 
 .registration-status .registered {

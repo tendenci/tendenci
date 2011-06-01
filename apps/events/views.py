@@ -593,7 +593,15 @@ def delete(request, id, template_name="events/delete.html"):
                     'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                 })
 
-            event.delete()
+            # The one-to-one relationship is on events which 
+            # doesn't delete the registration_configuration record.
+            # The delete must occur on registration_configuration
+            # for both to be deleted. An honest accident on 
+            # one-to-one fields. 
+            try:
+                event.registration_configuration.delete()
+            except:
+                event.delete()
 
             return HttpResponseRedirect(reverse('event.search'))
     

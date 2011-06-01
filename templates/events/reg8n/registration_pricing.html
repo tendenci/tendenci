@@ -1,4 +1,5 @@
 {% load i18n %} 
+{% load base_filters %}
 {% if registration.enabled %}
     {% if event.is_over %}
         <div class="registration-red">
@@ -39,7 +40,7 @@
                                         {% if spots_left < price.price.quantity and limit > 0 %}
                                             Sorry, no more of these available.
                                         {% endif %}
-                                        {% if user.is_authenticated and price.price.group %}
+                                        {% if user.is_authenticated and not user|in_group:price.price.group %}
                                             You must be in the group '{{ price.price.group.label }}' to qualify.
                                         {% endif %}
                                         {% if not user.is_authenticated %}
