@@ -156,7 +156,7 @@ class Registrant(models.Model):
 
     @property
     def hash(self):
-        return md5(".".join([str(self.registration.event.pk), str(self.registration.pk)])).hexdigest()
+        return md5(".".join([str(self.registration.event.pk), str(self.pk)])).hexdigest()
 
     @property
     def old_hash1(self):
@@ -333,7 +333,11 @@ class Registration(models.Model):
     owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    
+
+    @property
+    def hash(self):
+        return md5(".".join([str(self.event.pk), str(self.pk)])).hexdigest()
+
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """

@@ -10,6 +10,7 @@ from events.models import Registration
 from events.models import Registrant, RegConfPricing
 from user_groups.models import Group
 
+
 def get_vevents(request, d):
     from django.conf import settings
     from timezones.utils import adjust_datetime_to_timezone
@@ -69,6 +70,7 @@ def get_vevents(request, d):
         
     return e_str
 
+
 def build_ical_text(event, d):
     ical_text = "--- This iCal file does *NOT* confirm registration.\n"
     ical_text += "Event details subject to change. ---\n"
@@ -127,7 +129,8 @@ def build_ical_text(event, d):
     ical_text  = ical_text.replace('\n', '\\n')
    
     return ical_text
-    
+
+
 def build_ical_html(event, d):
     # disclaimer: registration
     ical_html = "<div>--- This iCal file does *NOT* confirm registration."
@@ -199,8 +202,9 @@ def build_ical_html(event, d):
    
     return ical_html
 
-# degrade header tags h1, h2..., h6 to font tags for MS outlook
+
 def degrade_tags(str):
+    # degrade header tags h1, h2..., h6 to font tags for MS outlook
     # h1 --> font size 6
     str = re.sub(r'<h1[^>]*>(.*?)</h1>', r'<div><strong><font size="6">\1</font></strong></div>', str)
     
@@ -232,6 +236,7 @@ def next_month(month, year):
 
     return (next_month, next_year)
 
+
 def prev_month(month, year):
     # TODO: cleaner way to get previous date
     prev_month = (month-1)%13
@@ -241,6 +246,7 @@ def prev_month(month, year):
         prev_year -= 1
 
     return (prev_month, prev_year)
+
 
 def email_registrants(event, email, **kwargs):
 
@@ -262,7 +268,7 @@ def email_registrants(event, email, **kwargs):
 
     # i had these two lines initially to temporarily hold the original email body
     # please DO NOT remove them. Otherwise, all recipients would have the same names.
-    # as the first registrant in the email body.              - GJQ  4/13/2011
+    # as the first registrant in the email body. - GJQ  4/13/2011
     tmp_body = email.body
         
     for registrant in registrants:
@@ -276,6 +282,7 @@ def email_registrants(event, email, **kwargs):
         email.send()
         
         email.body = tmp_body  # restore to the original
+
 
 def save_registration(*args, **kwargs):
     """
