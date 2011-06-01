@@ -283,7 +283,6 @@ class Reg8nEditForm(BetterModelForm):
         fields = (
             'enabled',
             'limit',
-            'is_guest_price',
             'payment_method',
             'payment_required',
         )
@@ -291,7 +290,6 @@ class Reg8nEditForm(BetterModelForm):
         fieldsets = [('Registration Configuration', {
           'fields': ['enabled',
                     'limit',
-                    'is_guest_price',
                     'payment_method',
                     'payment_required',
                     ],

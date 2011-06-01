@@ -4,7 +4,7 @@
 {% load avatar_tags %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}Register{% endblock %}
+{% block title %}{{ block.super }}Registration Confirmation {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,8 +15,11 @@
 <style type="text/css">
 	.regconf-section {
 		background-color: #F7F7F7;
-		border: 1px solid silver;
+		border: 1px solid #CCC;
 		margin-bottom: 10px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
 	}
 	.regconf-section h2 {
 		background-color: #DDD;
@@ -57,7 +60,14 @@
 	.canceled-amount{
 		text-decoration: line-through;
 	}
+    div.event-desc-long {
+        display: none;
+    }
 
+    div.event-desc-toggle {
+        margin: 10px 0 0 0;
+        display: block;
+    }
 </style>
 
 <div class="t">    
@@ -115,8 +125,15 @@
 			</a>
 		</div>
 
-		
-		<div>{{ event.description|safe }}</div>
+        {% if event.description|striptags|wordcount > 50 %}
+		  <div class="event-desc-short">{{ event.description|striptags|truncatewords:"50"|safe }}</div>
+          <div class="event-desc-long">{{ event.description|safe }}</div>
+        {% else %}
+          <div class="event-desc-short">{{ event.description|safe }}</div>
+        {% endif %}
+        {% if event.description|striptags|wordcount > 50 %}
+          <div><a class="event-desc-toggle" href="#">Full Description</a></div>
+        {% endif %}
 	</div>
 
 	<div class="regconf-section registration">
@@ -214,6 +231,23 @@
 
 		<div style="clear:both;"></div>
 	</div>
-
 </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // speaker description toggle
+            $('a.event-desc-toggle').click(function() {
+                var _this = $(this);
+                var event_wrap = _this.parents('.regconf-section');
+
+                _this.hide();
+                event_wrap.find('div.event-desc-short').hide();
+                event_wrap.find('div.event-desc-long').show();
+                return false;
+            });
+        });
+    </script>
 {% endblock %}

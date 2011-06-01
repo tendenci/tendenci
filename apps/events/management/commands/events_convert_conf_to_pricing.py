@@ -1,30 +1,8 @@
 import re
 from django.core.management.base import BaseCommand
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from datetime import datetime
-
-
-class DummyRegistrationConfiguration(models.Model):
-    payment_method_id = models.IntegerField()
-
-    early_price = models.DecimalField(max_digits=21, decimal_places=2, default=0)
-    regular_price = models.DecimalField(max_digits=21, decimal_places=2, default=0)
-    late_price = models.DecimalField(max_digits=21, decimal_places=2, default=0)
-
-    early_dt = models.DateTimeField()
-    regular_dt = models.DateTimeField()
-    late_dt = models.DateTimeField()
-    end_dt = models.DateTimeField(default=0)
-
-    payment_required = models.BooleanField()
-
-    limit = models.IntegerField(default=0)
-    enabled = models.BooleanField(default=False)
-
-    is_guest_price = models.BooleanField()
-
-    create_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
 
 
 class Command(BaseCommand):
@@ -34,47 +12,55 @@ class Command(BaseCommand):
     def handle(self, *event_ids, **options):
         from events.models import RegistrationConfiguration
         from events.models import RegConfPricing
+        from events.models import Registration
         from django.db import connection, transaction
 
         select_sql = "SELECT * FROM events_registrationconfiguration"
-        reg8n_configs = DummyRegistrationConfiguration.objects.raw(select_sql)
+        reg8n_configs = RegistrationConfiguration.objects.raw(select_sql)
         cursor = connection.cursor()
 
+        # add the pricing and update registations
         for config in reg8n_configs:
-            insert_sql = """
-            INSERT INTO events_regconfpricing (
-                title, 
-                quantity, 
-                group_id, 
-                reg_conf_id, 
-                early_price, 
-                regular_price,
-                late_price,
-                early_dt,
-                regular_dt,
-                late_dt,
-                end_dt
-            ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-            """
+            reg_conf_pricing = RegConfPricing()
+            reg_conf_pricing.title = ''
+            reg_conf_pricing.quantity = 1
+            reg_conf_pricing.group_id = None
+            reg_conf_pricing.reg_conf_id = config.pk
+            reg_conf_pricing.early_price = config.early_price
+            reg_conf_pricing.regular_price = config.regular_price
+            reg_conf_pricing.late_price = config.late_price
+            reg_conf_pricing.early_dt = config.early_dt
+            reg_conf_pricing.regular_dt = config.regular_dt
+            reg_conf_pricing.late_dt = config.late_dt
+            reg_conf_pricing.end_dt = config.end_dt
 
-            # clean up the pretty sql to a 
-            # usable statements
-            pattern = re.compile(r'[\s\t]+')
-            insert_sql = insert_sql.replace('\n',' ')
-            insert_sql = re.sub(pattern, ' ', insert_sql)
+            reg_conf_pricing.save()
 
-            cursor.execute(insert_sql, [
-                '',
-                1,
-                None,
-                config.pk,
-                config.early_price,
-                config.regular_price,
-                config.late_price,
-                config.early_dt,
-                config.regular_dt,
-                config.late_dt,
-                config.end_dt
-            ])
+            try:
+                # update the registrations with pricing
+                registrations = Registration.objects.filter(
+                    event=config.event
+                )
+            #except ObjectDoesNotExist:
+            except:
+                registrations = []
 
-            transaction.commit_unless_managed()
+            for registration in registrations:
+                disable_fk_sql = "SET FOREIGN_KEY_CHECKS=0;"
+                enable_fk_sql = "SET FOREIGN_KEY_CHECKS=1;"
+                update_sql = """
+                UPDATE events_registration 
+                SET reg_conf_price_id = %s
+                WHERE id = %s;
+                """
+                # clean up the pretty sql to a 
+                # usable statements
+                pattern = re.compile(r'[\s\t]+')
+                update_sql = update_sql.replace('\n',' ')
+                update_sql = re.sub(pattern, ' ', update_sql)
+
+                cursor.execute(disable_fk_sql)
+                cursor.execute(update_sql, [reg_conf_pricing.pk, registration.pk])
+                cursor.execute(enable_fk_sql)
+
+                transaction.commit_unless_managed()

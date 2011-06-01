@@ -36,6 +36,10 @@
 		font-weight: bold;
 		margin-bottom: 10px;
 	}
+	.event-msg {
+		padding: 10px;
+		color: #777;
+	}
 	.hidden {
 		display: none;
 	}
@@ -135,6 +139,9 @@
 		<div class="event-time">
 	        <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
 	        <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
+		</div>
+		<div class="event-msg">
+			<strong>Only the first</strong> registrant information is required. The rest of the registrants can be left blank if you don't know the information.
 		</div>
 	</div>
 		

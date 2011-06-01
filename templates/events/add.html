@@ -50,35 +50,55 @@
             geocoder = new google.maps.Geocoder();
         }
 
+        function set_address(address) {
+            var pre_input = 'input#id_place-';
+             // setup new address
+            if (address.subpremise) {
+                if (address.street_number) {
+                    $(pre_input + 'address').val(
+                        address.street_number + ' ' + address.route + ' ' + address.subpremise
+                    );
+                } else {
+                     $(pre_input + 'address').val(
+                        address.route + ' ' + address.subpremise
+                    )                           
+                }
+            } else {
+                if (address.street_number) {
+                    $(pre_input + 'address').val(
+                        address.street_number + ' ' + address.route + ' '
+                    );
+                } else {
+                     $(pre_input + 'address').val(
+                        address.route
+                    )                           
+                }                  
+            }
+            $(pre_input + 'city').val(address.locality);
+            $(pre_input + 'state').val(address.administrative_area_level_1);
+            if (address.postal_code) {
+                $(pre_input + 'zip').val(address.postal_code);
+            }
+            if (address.postal_code_prefix) {
+                $(pre_input + 'zip').val(address.postal_code_prefix);
+            }
+            $(pre_input + 'country').val(address.country);
+        }
+
         $('input#id_place-address').bind('keyup', 'Ctrl+v', function() {
             var input = $(this)[0];
             var address = input.value;
             geocoder.geocode({
                 address: address
             }, function(results, status) {
-                if (status == "OK") {
-                    var pre_input = 'input#id_place-';
+                if (status == "OK") {      
                     var components = results[0].address_components;
                     var address = {};
                     for (var i in components) {
                         var c = components[i];
                         address[c.types[0]] = c.long_name;
                     }
-
-                    // setup new address
-                    if (address.subpremise) {
-                        $(pre_input + 'address').val(
-                            address.street_number + ' ' + address.route + ' ' + address.subpremise
-                        );
-                    } else {
-                         $(pre_input + 'address').val(
-                            address.street_number + ' ' + address.route
-                        );                       
-                    }
-                    $(pre_input + 'city').val(address.locality);
-                    $(pre_input + 'state').val(address.administrative_area_level_1);
-                    $(pre_input + 'zip').val(address.postal_code);
-                    $(pre_input + 'country').val(address.country);
+                    set_address(address);
                 }
             });         
         });
