@@ -112,10 +112,15 @@
     		target:		'more-options-target'
     	});
 
-        $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
-        $('.timepicker').timePicker({
-          show24Hours: false,
-          step: 15
+        $(".datepicker").live('focus', function() {
+            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+
+        $(".timepicker").live('focus', function() {
+            $(this).timePicker({
+              show24Hours: false,
+              step: 15
+            });
         });
 	</script>
 	<script type="text/javascript">
