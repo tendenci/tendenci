@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from site_settings.utils import get_setting
 from perms.utils import is_admin
-from corporate_memberships.models import (CorpField, AuthorizedDomain)
+from corporate_memberships.models import (CorpField, AuthorizedDomain, CorporateMembershipRep)
 from memberships.models import AppField, Membership
 from invoices.models import Invoice
 from payments.models import Payment
@@ -231,6 +231,12 @@ def edit_corpapp_update_memb_app(corpapp):
             for field in field_list:
                 field.update({'app':app})
                 AppField.objects.create(**field)
+                
+def dues_rep_emails_list(corp_memb):
+    dues_reps = CorporateMembershipRep.objects.filter(corporate_membership=corp_memb,
+                                                      is_dues_rep=1)
+    return [dues_rep.user.email for dues_rep in dues_reps if dues_rep.user.email]
+
             
             
         

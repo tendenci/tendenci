@@ -95,10 +95,10 @@ div.id_payment_method ul{
 		<div id="renew-summary">Summary</div>
 		<table id="summary-price">
 			<tr>
-				<td width="25%" class="summary-header">&nbsp;</td>
-				<td width="25%" class="summary-header">Qty</td>
-				<td width="25%" class="summary-header">Unit Price</td>
-				<td width="25%" class="summary-header">Sub-total</td>
+				<td width="26%" class="summary-header">&nbsp;</td>
+				<td width="20%" class="summary-header">Qty</td>
+				<td width="27%" class="summary-header">Unit Price</td>
+				<td width="27%" class="summary-header">Sub-total</td>
 			</tr>
 			<tr>
 				<td>Corporate</td>
@@ -296,22 +296,32 @@ div.id_payment_method ul{
         var ind_sub_total = $("#ind-sub-total").html();
         var total_amount = $("#total-amount").html();
 
-        if (parseFloat(ind_price) > 0){
-			if(memb.checked){
-				ind_qty = parseInt(ind_qty) + 1;
-				ind_sub_total = parseFloat(ind_sub_total) + parseFloat(ind_price)
-				total_amount = parseFloat(total_amount) + parseFloat(ind_price)
-			}else{
-				ind_qty = parseInt(ind_qty) - 1;
-				ind_sub_total = parseFloat(ind_sub_total) - parseFloat(ind_price)
-				total_amount = parseFloat(total_amount) - parseFloat(ind_price)
+        ind_price = parseFloat(ind_price);
+       
+		if(memb.checked){
+			ind_qty = parseInt(ind_qty) + 1;
+			if (isNaN(ind_price)==false && ind_price > 0){
+				ind_sub_total = parseFloat(ind_sub_total) + parseFloat(ind_price);
+				total_amount = parseFloat(total_amount) + parseFloat(ind_price);
 			}
-			ind_sub_total = ind_sub_total.toFixed(2)
-			total_amount = total_amount.toFixed(2)
-			$("#ind-qty").html(ind_qty);
+		}else{
+			ind_qty = parseInt(ind_qty) - 1;
+			if (isNaN(ind_price)==false && ind_price > 0){
+				ind_sub_total = parseFloat(ind_sub_total) - parseFloat(ind_price);
+				total_amount = parseFloat(total_amount) - parseFloat(ind_price);
+			}
+		}
+
+		$("#ind-qty").html(ind_qty);
+
+		if (isNaN(ind_price)==false && ind_price > 0){
+			ind_sub_total = ind_sub_total.toFixed(2);
+			total_amount = total_amount.toFixed(2);
 			$("#ind-sub-total").html(ind_sub_total);
 			$("#total-amount").html(total_amount);
-        }
+		}
+       
+       
 	}
 
     function TypeUpdateSummary(corp_type){
@@ -323,6 +333,18 @@ div.id_payment_method ul{
 
 		var new_corp_price = $(corp_type).parent().find(".type-corp-price").html();
 		var new_ind_price = $(corp_type).parent().find(".type-ind-price").html();
+
+		new_corp_price = parseFloat(new_corp_price);
+		if (isNaN(new_corp_price) == true){
+			new_corp_price = 0
+		}
+		new_corp_price = new_corp_price.toFixed(2);
+		
+		new_ind_price = parseFloat(new_ind_price);
+		if (isNaN(new_ind_price) == true){
+			new_ind_price = 0
+		}
+		new_ind_price = new_ind_price.toFixed(2);
 
 		var update_total = false;
 

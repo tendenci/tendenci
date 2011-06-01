@@ -1097,7 +1097,6 @@ class AppFieldEntry(models.Model):
 
         return None
     
-
 # Moved from management/__init__.py to here because it breaks 
 # the management commands due to the ImportError.
 # assign models permissions to the admin auth group

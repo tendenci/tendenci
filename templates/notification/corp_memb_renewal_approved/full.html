@@ -1,8 +1,8 @@
-<p>Your corporate membership has been renewed and approved..
+<p>Your corporate membership "{{ object.name }}" has been renewed and approved.
 </p>
 
 <p>
-To view this corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view corporate_membership.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view corporate_membership.pk  %}</a>
+To view this corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
 </p>
 
 <p>
