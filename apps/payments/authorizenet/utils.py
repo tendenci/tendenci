@@ -8,6 +8,7 @@ from payments.models import Payment
 from payments.utils import payment_processing_object_updates
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
+from notification.utils import send_notifications
 
 def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
     msg = '^'.join([settings.MERCHANT_LOGIN,
@@ -72,6 +73,7 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
         x_invoice_num = int(x_invoice_num)
     except:
         x_invoice_num = 0
+    
     payment = get_object_or_404(Payment, pk=x_invoice_num)
     
     # authenticate with md5 hash to make sure the response is securely received from authorize.net.
@@ -111,6 +113,15 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
             'instance': payment,
         }
         EventLog.objects.log(**log_defaults)
+        
+        notif_context = {
+        'request': request,
+        'object': payment,
+        }
+
+        send_notifications('module','payments', 'paymentrecipients',
+            'payment_added', notif_context)
+            
     return payment
         
 def payment_update_authorizenet(request, response_d, payment, **kwargs):
