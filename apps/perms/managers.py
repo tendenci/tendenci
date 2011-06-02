@@ -373,7 +373,6 @@ class TendenciBaseManager(models.Manager):
         
     def _permissions_sqs(self, sqs, user, status_detail):
         from perms.utils import is_admin, is_member, is_developer
-        
         if is_admin(user) or is_developer(user):
             sqs = sqs.all()
         else:
@@ -403,11 +402,11 @@ class TendenciBaseManager(models.Manager):
         user = kwargs.get('user') or AnonymousUser()
         user = self._impersonation(user)
         self.user = user
-        
+
         # if the status_detail is something like "published"
         # then you can specify the kwargs to override
         status_detail = kwargs.get('status_detail', 'active')
-        
+
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
         
