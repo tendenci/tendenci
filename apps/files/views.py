@@ -16,7 +16,10 @@ from event_logs.models import EventLog
 
 def index(request, id=None, size=None, download=False, template_name="files/view.html"):
     if not id: return HttpResponseRedirect(reverse('file.search'))
-    file = get_object_or_404(File, pk=id)
+
+    files = File.objects.search('"pk:%s"'%id, user=request.user)
+    if files: file = files[0].object
+    else: raise Http404
 
     if download: attachment = 'attachment;'
     else: attachment = ''
