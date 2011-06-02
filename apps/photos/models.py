@@ -1,7 +1,7 @@
 import uuid
 # django
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
@@ -9,10 +9,11 @@ from django.utils.translation import ugettext_lazy as _
 from photologue.models import *
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
+from perms.utils import is_admin, is_member, is_developer
 from photos.managers import PhotoManager, PhotoSetManager
 from meta.models import Meta as MetaTags
 from photos.module_meta import PhotoMeta
-
+from haystack.query import SearchQuerySet
 
 class PhotoSet(TendenciBaseModel):
     """
@@ -33,6 +34,8 @@ class PhotoSet(TendenciBaseModel):
         verbose_name = _('photo set')
         verbose_name_plural = _('photo sets')
         permissions = (("view_photoset","Can view photoset"),)
+        
+    objects = PhotoSetManager()
         
     def save(self):
         if not self.id:
@@ -61,14 +64,32 @@ class PhotoSet(TendenciBaseModel):
             return True
         return False
 
-    objects = PhotoSetManager()
-
     @models.permalink
     def get_absolute_url(self):
         return ("photoset_details", [self.pk])
 
     def __unicode__(self):
         return self.name
+        
+    def get_images(self, user=None, status_detail='active'):
+        """
+        Returns the images of this photosets and filters according
+        to the given user's permissions.
+        This makes use of the search index to avoid hitting the database.
+        """
+        
+        sqs = SearchQuerySet().models(Image).filter(photosets=self.pk)
+
+        # user information
+        user = user or AnonymousUser()
+        
+        if hasattr(user, 'impersonated_user'):
+            if isinstance(user.impersonated_user, User):
+                user = user.impersonated_user
+        
+        sqs = PhotoSet.objects._permissions_sqs(sqs, user, status_detail)
+        
+        return sqs        
 
 class Image(ImageModel, TendenciBaseModel):
     """
@@ -88,10 +109,11 @@ class Image(ImageModel, TendenciBaseModel):
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField()
-
+    license = models.ForeignKey('License', null=True, blank=True)
+    
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
-
+    
     def get_meta(self, name):
         """
         This method is standard across all models that are
@@ -99,7 +121,7 @@ class Image(ImageModel, TendenciBaseModel):
         methods coupled to this instance.
         """    
         return PhotoMeta().get_meta(self, name)
-
+    
     class Meta:
         permissions = (("view_image","Can view image"),)
 
@@ -164,11 +186,33 @@ class Image(ImageModel, TendenciBaseModel):
         images = images.order_by('-id')
         try: return Image.objects.get(id=min(images))
         except ValueError: return None
+        
+    def get_license(self):
+        if self.license:
+            return self.license
+        return self.default_license()
+        
+    def default_license(self):
+        return License.objects.get(id=1)
 
     objects = PhotoManager()
 
     def __unicode__(self):
         return self.title
+        
+class License(models.Model):
+    """
+    License with details
+    """
+    name = models.CharField(_('name'), max_length=200)
+    code = models.CharField(_('code'), max_length=200, blank=True)
+    author = models.CharField(_('author'), max_length=200, blank=True)
+    deed = models.URLField(_('license deed'), blank=True)
+    legal_code = models.URLField(_('legal code'), blank=True)
+    
+    def __unicode__(self):
+       return "%s %s" % (self.author, self.name)
+
 
 class Pool(models.Model):
     """

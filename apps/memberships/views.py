@@ -77,23 +77,22 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
     """
     Display a built membership application and handle submission.
     """
-    if not slug:
-        raise Http404
+    if not slug: raise Http404
+    user = request.user
 
+    # check user permissions / get application QS
     query = '"slug:%s"' % slug
-    apps = App.objects.search(query, user=request.user)
+    apps = App.objects.search(query, user=user)
 
-    if apps:
-        app = apps.best_match().object
-    else:
-        raise Http404
+    # get application
+    if apps: app = apps.best_match().object
+    else: raise Http404
 
     # if this app is for corporation individuals, redirect them to corp-pre page first.
     # from there, we can decide which corp they'll be in.
     is_corp_ind = False
     if hasattr(app, 'corp_app') and app.corp_app:
         is_corp_ind = True
-
         if request.method != "POST":
             http_referer = request.META.get('HTTP_REFERER', '')
             corp_pre_url = reverse('membership.application_details_corp_pre', args=[slug])
@@ -103,27 +102,24 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
     # log application details view
     EventLog.objects.log(**{
         'event_id' : 655000,
-        'event_data': '%s (%d) viewed by %s' % (app._meta.object_name, app.pk, request.user),
+        'event_data': '%s (%d) viewed by %s' % (app._meta.object_name, app.pk, user),
         'description': '%s viewed' % app._meta.object_name,
-        'user': request.user,
+        'user': user,
         'request': request,
         'instance': app,
     })
 
+    corporate_membership = None
     if is_corp_ind and cmb_id:
         corporate_membership = CorporateMembership.objects.get(id=cmb_id)
-    else:
-        corporate_membership = None
-
-    user = request.user
 
     initial_dict = {}
     if hasattr(user, 'memberships'):
         membership = user.memberships.get_membership()
         user_member_requirements = [
-            is_developer(request.user) == False,
-            is_admin(request.user) == False,
-            is_member(request.user) == True,
+            is_developer(user) == False,
+            is_admin(user) == False,
+            is_member(user) == True,
         ]
 
         # deny access to renew memberships
@@ -137,20 +133,20 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
     pending_entries = []
 
     if hasattr(user, 'appentry_set'):
-        pending_entries = request.user.appentry_set.filter(
+        pending_entries = user.appentry_set.filter(
             is_approved__isnull = True,  # pending   
         )
 
-        if request.user.memberships.get_membership():
+        if user.memberships.get_membership():
             pending_entries.filter(
-                entry_time__gte = request.user.memberships.get_membership().join_dt
+                entry_time__gte = user.memberships.get_membership().subscribe_dt
             )
 
     app_entry_form = AppEntryForm(
             app, 
             request.POST or None, 
             request.FILES or None, 
-            user=request.user, 
+            user=user, 
             corporate_membership=corporate_membership,
             initial=initial_dict,
         )
@@ -162,8 +158,8 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
             entry_invoice = entry.save_invoice()
 
 
-            if request.user.is_authenticated():  # bind to user
-                entry.user = request.user
+            if user.is_authenticated():  # bind to user
+                entry.user = user
                 if all(user_member_requirements):  # save as renewal
                     entry.is_renewal = True
 
@@ -171,7 +167,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
             entry = update_perms_and_save(request, app_entry_form, entry)
 
             # administrators go to approve/disapprove page
-            if is_admin(request.user):
+            if is_admin(user):
                 return redirect(reverse('membership.application_entries', args=[entry.pk]))
 
             # online payment
@@ -225,7 +221,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
                         'event_id' : 1082101,
                         'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, entry.judge),
                         'description': '%s viewed' % entry._meta.object_name,
-                        'user': request.user,
+                        'user': user,
                         'request': request,
                         'instance': entry,
                     })
@@ -235,7 +231,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
                 'event_id' : 1081000,
                 'event_data': '%s (%d) submitted by %s' % (entry._meta.object_name, entry.pk, request.user),
                 'description': '%s viewed' % entry._meta.object_name,
-                'user': request.user,
+                'user': user,
                 'request': request,
                 'instance': entry,
             })
@@ -323,8 +319,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     """
 
     if not id:
-        return HttpResponseRedirect(reverse('membership.application_entries_search'))
-
+        return redirect(reverse('membership.application_entries_search'))
 
     # TODO: Not use search but query the database
     # TODO: Needs a manager to query database with permission checks
@@ -369,6 +364,27 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                         'password': hashlib.sha1(entry.email).hexdigest()[:6]
                     })
 
+                    from django.core.mail import send_mail
+                    from django.utils.http import int_to_base36
+                    from django.contrib.auth.tokens import default_token_generator
+                    from site_settings.utils import get_setting
+                    token_generator = default_token_generator
+
+                    site_url = get_setting('site', 'global', 'siteurl')
+                    site_name = get_setting('site', 'global', 'sitedisplayname')
+
+                    # send new user account welcome email (notification)
+                    notification.send_emails([entry.user.email],'user_welcome', {
+                        'site_url': site_url,
+                        'site_name': site_name,
+                        'uid': int_to_base36(entry.user.id),
+                        'user': entry.user,
+                        'username': entry.user.username,
+                        'token': token_generator.make_token(entry.user),
+                    })
+
+                # update application, user, 
+                # group, membership, and archive
                 entry.approve()
 
                 notice_dict = {
@@ -381,7 +397,9 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                 if entry.is_renewal:
                     notice_dict['notice_type'] = 'renewal'
 
-                # send email to member
+                
+
+                # send membership notification(s) (email)
                 for notice in Notice.objects.filter(**notice_dict):
 
                     notice_requirements = [
@@ -395,7 +413,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                             'content': notice.get_content(entry.membership),
                         })
 
-                # send email to admins
+                # send notification to admin (email)
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                 if recipients and notification:
                     notification.send_emails(recipients,'membership_approved_to_admin', {
@@ -417,7 +435,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
             else:  # if not approved
                 entry.disapprove()
 
-                # send email to disapproved membership applicant
+                # send email to disapproved applicant
                 notification.send_emails([entry.email],'membership_disapproved_to_member', {
                     'object':entry,
                     'request':request,
@@ -525,23 +543,30 @@ def membership_import(request, step=None):
 
                 # move to next wizard page
                 return redirect('membership_import_map_fields')
-
         else:  # if not POST
             form = CSVForm(step=step)
-            return render_to_response(template_name, {
-                'form':form,
-                'datetime':datetime,
-                }, context_instance=RequestContext(request))
+
+        return render_to_response(template_name, {
+            'form':form,
+            'datetime':datetime,
+            }, context_instance=RequestContext(request))
 
     if step_numeral == 2:  # map-fields
         template_name = 'memberships/import-map-fields.html'
         file_path = request.session.get('membership.import.file_path')
+        app = request.session.get('membership.import.app')
 
         if request.method == 'POST':
-            form = CSVForm(request.POST, request.FILES, step=step, file_path=file_path)
+            form = CSVForm(
+                request.POST,
+                request.FILES,
+                step=step,
+                app=app,
+                file_path=file_path
+            )
+
             if form.is_valid():
                 cleaned_data = form.save(step=step)
-                app = request.session.get('membership.import.app')
                 file_path = request.session.get('membership.import.file_path')
 
                 memberships = new_mems_from_csv(file_path, app, cleaned_data)
@@ -552,7 +577,7 @@ def membership_import(request, step=None):
                 return redirect('membership_import_preview')
 
         else:  # if not POST
-            form = CSVForm(step=step, file_path=file_path)
+            form = CSVForm(step=step, app=app, file_path=file_path)
 
         return render_to_response(template_name, {
             'form':form,
@@ -642,7 +667,7 @@ def membership_import(request, step=None):
 #REPORTS
     
 def _membership_joins(from_date):
-    return Membership.objects.filter(join_dt__gte=from_date)
+    return Membership.objects.filter(subscribe_dt__gte=from_date)
 
 @staff_member_required
 def membership_join_report(request):
@@ -659,14 +684,14 @@ def membership_join_report(request):
             if form.cleaned_data['membership_status']:
                 mem_stat = form.cleaned_data['membership_status']
                 if form.cleaned_data['membership_status'] == 'ACTIVE':
-                    mems = mems.filter(expiration_dt__gte = now, join_dt__lte = now)
+                    mems = mems.filter(expire_dt__gte = now, subscribe_dt__lte = now)
                 else:
-                    mems = mems.exclude(expiration_dt__gte = now, join_dt__lte = now)
+                    mems = mems.exclude(expire_dt__gte = now, subscribe_dt__lte = now)
     else:
         form = ReportForm()
-    mems30days = mems.filter(join_dt__gte = now-timedelta(days=30))
-    mems60days = mems.filter(join_dt__gte = now-timedelta(days=60))
-    mems90days = mems.filter(join_dt__gte = now-timedelta(days=90))
+    mems30days = mems.filter(subscribe_dt__gte = now-timedelta(days=30))
+    mems60days = mems.filter(subscribe_dt__gte = now-timedelta(days=60))
+    mems90days = mems.filter(subscribe_dt__gte = now-timedelta(days=90))
     return render_to_response(
                 'reports/membership_joins.html', {
                     'mems30days': mems30days,
@@ -689,10 +714,10 @@ def membership_join_report_pdf(request):
         mems = mems.filter(membership_type=mem_type)
     if mem_stat:
         if mem_stat == 'ACTIVE':
-            mems = mems.filter(expiration_dt__gte = now, join_dt__lte = now)
+            mems = mems.filter(expire_dt__gte = now, subscribe_dt__lte = now)
         else:
-            mems = mems.exclude(expiration_dt__gte = now, join_dt__lte = now)
-    mems = mems.filter(join_dt__gte = now-timedelta(days=int(days)))
+            mems = mems.exclude(expire_dt__gte = now, subscribe_dt__lte = now)
+    mems = mems.filter(subscribe_dt__gte = now-timedelta(days=int(days)))
     report = ReportNewMems(queryset = mems)
     resp = HttpResponse(mimetype='application/pdf')
     report.generate_by(PDFGenerator, filename=resp)
