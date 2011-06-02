@@ -4,7 +4,6 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
 from django.contrib.auth.models import User, AnonymousUser
 
 from haystack.query import SearchQuerySet
