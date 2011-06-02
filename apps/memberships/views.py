@@ -543,23 +543,30 @@ def membership_import(request, step=None):
 
                 # move to next wizard page
                 return redirect('membership_import_map_fields')
-
         else:  # if not POST
             form = CSVForm(step=step)
-            return render_to_response(template_name, {
-                'form':form,
-                'datetime':datetime,
-                }, context_instance=RequestContext(request))
+
+        return render_to_response(template_name, {
+            'form':form,
+            'datetime':datetime,
+            }, context_instance=RequestContext(request))
 
     if step_numeral == 2:  # map-fields
         template_name = 'memberships/import-map-fields.html'
         file_path = request.session.get('membership.import.file_path')
+        app = request.session.get('membership.import.app')
 
         if request.method == 'POST':
-            form = CSVForm(request.POST, request.FILES, step=step, file_path=file_path)
+            form = CSVForm(
+                request.POST,
+                request.FILES,
+                step=step,
+                app=app,
+                file_path=file_path
+            )
+
             if form.is_valid():
                 cleaned_data = form.save(step=step)
-                app = request.session.get('membership.import.app')
                 file_path = request.session.get('membership.import.file_path')
 
                 memberships = new_mems_from_csv(file_path, app, cleaned_data)
@@ -570,7 +577,7 @@ def membership_import(request, step=None):
                 return redirect('membership_import_preview')
 
         else:  # if not POST
-            form = CSVForm(step=step, file_path=file_path)
+            form = CSVForm(step=step, app=app, file_path=file_path)
 
         return render_to_response(template_name, {
             'form':form,

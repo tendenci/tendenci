@@ -107,24 +107,49 @@ def new_mems_from_csv(file_path, app, columns):
     membership_dicts = []
     for membership in csv_to_dict(file_path):  # field mapping
         for native_column, foreign_column in columns.items():
-            # membership['username'] = 'charliesheen'
-            membership[native_column] = membership[foreign_column]
+
+            if foreign_column:  # skip blank option
+                # membership['username'] = 'charliesheen'
+                membership[native_column] = membership[foreign_column]
+
         membership_dicts.append(membership)
 
     membership_set = []
+
     for m in membership_dicts:
 
         now = datetime.now()
 
+        if m['renew-date']:
+            m['subscribe-dt'] = m['renew-date']
+            m['renewal'] = True
+        else:
+            m['subscribe-dt'] = m['join-date']
+            m['renewal'] = False
+
         # get/create objects from strings
-        try: user = User.objects.get(username = m['user-name'])
-        except: continue  # on to the next one
-        try: membership_type = MembershipType.objects.get(name = m['membership-type'])
-        except: continue  # on to the next one
-        try: subscribe_dt = datetime.strptime(slugify(m['subscribe-dt']), '%b-%d-%Y')
+        try:
+            user = User.objects.get(username = m['user-name'])
+        except:
+            # print 'bad username', m['user-name']
+            continue  # on to the next one
+
+        try:
+            membership_type = MembershipType.objects.get(name = m['membership-type'])
+        except:
+            # print 'bad membership type', m['membership-type']
+            continue  # on to the next one
+
+        try: subscribe_dt = datetime.strptime(m['subscribe-dt'], '%b %j %Y')
         except: subscribe_dt = now
-        try: expire_dt = datetime.strptime(slugify(m['expire-dt']), '%b-%d-%Y')
+        try: expire_dt = datetime.strptime(m['expire-date'], '%b %j %Y')
         except: expire_dt = membership_type.get_expiration_dt(subscribe_dt=subscribe_dt)
+
+        # update user; TODO use field types for more optimal import
+        if m.get('First Name') or m.get('Last Name'):
+            user.first_name = m.get('First Name') or user.first_name
+            user.last_name = m.get('Last Name') or user.last_name
+            user.save()
 
         memberships = Membership.objects.filter(
             user=user,

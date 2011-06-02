@@ -76,8 +76,8 @@
 			<td>{{ forloop.counter }}</td>
 			<td><div>{% firstof membership.user.get_full_name "No Name" %}</div></td>
 			<td><div>{{ membership.member_number }}</div></td>
-			<td><div>{{ membership.renew_dt|date:"M d, Y" }}</div></td>
-			<td><div>{{ membership.expiration_dt|date:"M d, Y" }}</div></td>
+			<td><div>{{ membership.subscribe_dt|date:"M d, Y" }}</div></td>
+			<td><div>{{ membership.expire_dt|date:"M d, Y" }}</div></td>
 		</tr>
 	{% endfor %}
 	</table>
