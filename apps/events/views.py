@@ -290,18 +290,6 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 )
 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % event)
-                # notification to administrator(s) and module recipient(s)
-                
-                recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-                if recipients and notification:
-                    notification.send_emails(recipients, 'event_added', {
-                        'event':event,
-                        'user':request.user,
-                        'registrants_paid':event.registrants(with_balance=False),
-                        'registrants_pending':event.registrants(with_balance=True),
-                        'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
-                        'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
-                    })
                 return HttpResponseRedirect(reverse('event', args=[event.pk]))
         else:
             # single forms

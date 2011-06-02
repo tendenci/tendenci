@@ -1,16 +1,30 @@
-function update_form_fields(form, original_form, form_number, remove) {
+function update_form_fields(form, original_form, form_number, total, remove) {
     form_number = parseInt(form_number);
+
+    // edit page detection
+    var href = window.location.href;
+    var is_edit_page = (href.indexOf('/edit') > -1);
     var search = '-' + (form_number) + '-';
+
+    var original_form_number = null;
+    if (original_form) {
+        original_form_number = original_form.find('input[name="form-number"]').val()
+        search = '-' + (original_form_number) + '-';
+    }
+   
     var replacement = '-' + (form_number + 1) + '-';
-    var rep_label = '$1&nbsp;#' + (form_number + 2);
     var rep_form_number = form_number + 1;
 
-    // update replacement according to removing
-    // or adding an form
-    if (remove) {
-        replacement = '-' + (form_number - 1) + '-';
-        rep_label = '$1&nbsp;#' + (form_number);
-        rep_form_number = form_number - 1;
+    if (is_edit_page) {
+        replacement = '-' + (total) + '-';
+        rep_form_number = total;
+    } else {
+        // update replacement according to removing
+        // or adding an form
+        if (remove) {
+            replacement = '-' + (form_number - 1) + '-';
+            rep_form_number = form_number - 1;
+        }
     }
 
     // update the class attributes
@@ -23,13 +37,21 @@ function update_form_fields(form, original_form, form_number, remove) {
     form.find(':input').each(function() {
         var name = $(this).attr('name').replace(search, replacement);
         var id = 'id_' + name;
+        var type = $(this).attr('type');
         $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+
+        if (type == 'checkbox') {
+            $(this).removeAttr('value')
+        }
     });
 
     // update the label attribute wrapped on each form input
     form.find('label').each(function() {
         var newFor = $(this).attr('for').replace(search, replacement);
-        $(this).attr('for', newFor);
+        var id = newFor;
+        if (newFor.indexOf('id_') < 0)
+            id = 'id_' + newFor;
+        $(this).attr('for', id);
     });
 
     // update the form field values with
@@ -56,7 +78,13 @@ function clone_form(selector, type) {
     var total = parseInt($('#' + type + '-TOTAL_FORMS').val());
     var form_number = current_element.find('input[name="form-number"]').val();
 
-    new_element = update_form_fields(new_element, current_element, form_number, false);
+    new_element = update_form_fields(
+        new_element, 
+        current_element, 
+        form_number,
+        total,
+        false
+    );
 
     // update the total
     total++;
@@ -73,6 +101,9 @@ function clone_form(selector, type) {
     // enable the delete link for the next and previous form
     // and remove the add link on the previous
     if (total > 1) {
+        var add_link = form_functions.find('div.formset-add');
+        add_link.css({ display: 'inline' });
+
         var delete_link = form_functions.find('div.formset-delete');
         delete_link.css({ display: 'inline', marginLeft: '15px' });
 
@@ -103,7 +134,7 @@ function delete_form(current_form, selector, type) {
 
     // edit page detection
     var href = window.location.href;
-    var is_edit_page = (href.indexOf('events/edit') > -1);
+    var is_edit_page = (href.indexOf('/edit') > -1);
 
     var form_functions = prev_form_functions;
     // if its the last form this should execute on 
@@ -116,7 +147,7 @@ function delete_form(current_form, selector, type) {
         }
     }
 
-    // decrement the managerment for total on add pages
+    // decrement the management for total on add pages
     // only
     if (!is_edit_page) {
         total--;
@@ -129,15 +160,31 @@ function delete_form(current_form, selector, type) {
             forms_after.each(function() { 
                 var form = $(this);
                 var form_number = form.find('input[name="form-number"]').val();
-                update_form_fields(form, null, form_number, true);
+                update_form_fields(form, null, form_number, total, true);
             });
         }
     };
 
-    // remove the delete link
+    // adjust the links
     if ((forms_prev.length == 0) && (forms_after.length == 0)) {
         var delete_link = form_functions.find('div.formset-delete');
-        delete_link.hide();   
+        delete_link.hide();
+    }
+
+    if ((forms_prev.length >= 1) && (forms_after.length == 0)) { 
+        var add_link = form_functions.find('div.formset-add');
+        add_link.css({ display: 'inline' });
+
+        var delete_link = form_functions.find('div.formset-delete');
+        delete_link.css({ display: 'inline', marginLeft: '15px' });
+    }
+
+    if ((forms_prev.length == 0) && (forms_after.length == 1)) { 
+        var add_link = form_functions.find('div.formset-add');
+        add_link.css({ display: 'inline' });
+
+        var delete_link = form_functions.find('div.formset-delete');
+        delete_link.hide();
     }
 
     // add the add link back
@@ -146,16 +193,9 @@ function delete_form(current_form, selector, type) {
         add_link.css({ display: 'inline' });
 
         var delete_link = form_functions.find('div.formset-delete');
-        delete_link.hide(); 
+        delete_link.hide();
     }
 
-    if ((forms_prev.length == 0) && (forms_after.length == 1)) { 
-        var add_link = form_functions.find('div.formset-add');
-        add_link.css({ display: 'inline' });
-
-        var delete_link = form_functions.find('div.formset-delete');
-        delete_link.hide(); 
-    }
 
     // delete stuff differently depending on page
     // your on. ie. events/edit
@@ -202,13 +242,13 @@ $(document).ready(function(){
 
     // hide the delete link if it's an add page
     var href = window.location.href;
-    if (href.indexOf('events/add') > -1) {
+    if (href.indexOf('/add') > -1) {
         form_set_funcs.find('div.formset-add').show();
         form_set_funcs.find('div.formset-delete').hide();
     }
 
     // hide all the add elements except for the last one
-    if (href.indexOf('events/edit') > -1) {
+    if (href.indexOf('/edit') > -1) {
         var fsa = form_set_funcs.find('div.formset-add');
         var fsd = form_set_funcs.find('div.formset-delete');
 
