@@ -146,10 +146,17 @@ def new_mems_from_csv(file_path, app, columns):
         try: expire_dt = dt_parse(m['expire-date'])
         except: expire_dt = membership_type.get_expiration_dt(subscribe_dt=subscribe_dt)
 
+        user_attrs = (
+            m.get('First Name'),
+            m.get('Last Name'),
+            m.get('Email'),
+        )
+
         # update user; TODO use field types for more optimal import
-        if m.get('First Name') or m.get('Last Name'):
+        if any(user_attrs):
             user.first_name = m.get('First Name') or user.first_name
             user.last_name = m.get('Last Name') or user.last_name
+            user.email = m.get('Email') or user.email
             user.save()
 
         memberships = Membership.objects.filter(

@@ -487,8 +487,8 @@ form.connect-with li {
 	font-weight: bold;
 }
 
-#import-wrap .msg {
-	margin-bottom: 0;
+#import-wrap p.msg {
+	margin: 14px 0 0 0;
 }
 
 #import-wrap.finished .link {
