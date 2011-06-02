@@ -6,7 +6,7 @@ if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
 
     def create_notice_types(app, created_models, verbosity, **kwargs):
-        notification.create_notice_type("invoice_edited", _("Invoice Edited"), _("An invoice has been edited."))
+        notification.create_notice_type("payment_added", _("Payment Generated"), _("A payment has been generated."))
 
     post_syncdb.connect(create_notice_types, sender=notification)
 else:

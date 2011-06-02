@@ -11,6 +11,8 @@ urlpatterns = patterns('',
     url(r'^(?P<id>\d+)/$', 'photos.views.photo', name="photo"),
     # /photos/23/in/36
     url(r'^(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.photo', name="photo"),
+    # /photos/partial/23/in/36
+    url(r'^partial/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.photo', kwargs={'partial':True}, name="photo_partial"),
     # /photos/delete/23/in/36
     url(r'^delete/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.delete', name='photo_destroy'),
     # /photos/edit/23/in/36

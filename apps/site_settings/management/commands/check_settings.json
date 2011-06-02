@@ -1,0 +1,72 @@
+[
+    {
+        "name": "jobrecipients",
+        "scope_category": "jobs",
+        "scope": "module"
+    },
+    {
+        "name": "articlerecipients",
+        "scope_category": "articles",
+        "scope": "module"
+    },
+    {
+        "name": "corporatemembershiprecipients",
+        "scope_category": "corporatememberships",
+        "scope": "module"
+    },
+    {
+        "name": "directoryrecipients",
+        "scope_category": "directories",
+        "scope": "module"
+    },
+    {
+        "name": "allnoticerecipients",
+        "scope_category": "global",
+        "scope": "site"
+    },
+    {
+        "name": "contactrecipients",
+        "scope_category": "contacts",
+        "scope": "module"
+    },
+    {
+        "name": "paymentrecipients",
+        "scope_category": "payments",
+        "scope": "module"
+    },
+    {
+        "name": "newsrecipients",
+        "scope_category": "news",
+        "scope": "module"
+    },
+    {
+        "name": "pagerecipients",
+        "scope_category": "pages",
+        "scope": "module"
+    },
+    {
+        "name": "userrecipients",
+        "scope_category": "users",
+        "scope": "module"
+    },
+    {
+        "name": "resumerecipients",
+        "scope_category": "resumes",
+        "scope": "module"
+    },
+    {
+        "name": "grouprecipients",
+        "scope_category": "groups",
+        "scope": "module"
+    },
+    {
+        "name": "donationsrecipients",
+        "scope_category": "donations",
+        "scope": "module"
+    },
+    {
+        "name": "servicerecipients",
+        "scope_category": "service",
+        "scope": "module"
+    }
+]

@@ -54,7 +54,7 @@ def index(request, id=None, size=None, download=False, template_name="files/view
 
 def search(request, template_name="files/search.html"):
     query = request.GET.get('q', None)
-    files = File.objects.search(query)
+    files = File.objects.search(query, user=request.user)
 
     if not query:
         files = files.order_by('-update_dt')
@@ -139,7 +139,7 @@ def add(request, form_class=FileForm, template_name="files/add.html"):
             # assign creator permissions
             ObjectPermission.objects.assign(file.creator, file) 
             
-            return HttpResponseRedirect(reverse('file', args=[file.pk]))
+            return HttpResponseRedirect(reverse('file.search'))
     else:
         form = form_class(user=request.user)
        
@@ -197,16 +197,13 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
         try: # get content type
             contenttype = ContentType.objects.get(app_label=params['app_label'], model=params['model'])
 
-            if params['instance_id'] == '0':
-                # orphaned files
-                files = File.objects.filter(
-                    content_type=contenttype, 
-                    object_id=0)
-            else:
-                # coupled files
-                files = File.objects.filter(
-                    content_type=contenttype, 
-                    object_id=params['instance_id'])
+            instance_id = params['instance_id']
+            if instance_id == 'undefined':
+                instance_id = 0
+
+            files = File.objects.filter(
+                content_type=contenttype, 
+                object_id=instance_id)
 
             for media_file in files:
                 file, ext = os.path.splitext(media_file.file.url)
