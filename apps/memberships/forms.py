@@ -459,7 +459,7 @@ class AppEntryForm(forms.ModelForm):
             'paragraph-text': ('CharField', 'django.forms.Textarea'),
             'check-box': ('BooleanField', None),
             'choose-from-list': ('ChoiceField', None),
-            'multi-select': ('BooleanField', None),
+            'multi-select': ('MultipleChoiceField', 'django.forms.CheckboxSelectMultiple'),
             'email-field': ('EmailField', None),
             'file-uploader': ('FileField', None),
             'date': ('DateField', 'django.forms.extras.SelectDateWidget'),
