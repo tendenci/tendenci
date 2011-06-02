@@ -1,5 +1,6 @@
 import os
 import csv
+from dateutil.parser import parse as dt_parse
 from datetime import datetime
 from django.conf import settings
 from django.utils import simplejson
@@ -140,9 +141,9 @@ def new_mems_from_csv(file_path, app, columns):
             # print 'bad membership type', m['membership-type']
             continue  # on to the next one
 
-        try: subscribe_dt = datetime.strptime(m['subscribe-dt'], '%b %j %Y')
+        try: subscribe_dt = dt_parse(m['subscribe-dt'])
         except: subscribe_dt = now
-        try: expire_dt = datetime.strptime(m['expire-date'], '%b %j %Y')
+        try: expire_dt = dt_parse(m['expire-date'])
         except: expire_dt = membership_type.get_expiration_dt(subscribe_dt=subscribe_dt)
 
         # update user; TODO use field types for more optimal import
