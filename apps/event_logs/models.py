@@ -51,7 +51,7 @@ class EventLog(models.Model):
         if not self.id:
             self.guid = uuid.uuid1()
 
-        super(self.__class__, self).save()
+        super(EventLog, self).save()
 
     def __unicode__(self):
         return str(self.event_id)
