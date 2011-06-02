@@ -47,7 +47,7 @@
 
 	<p class="msg"><em>{{ memberships|length}}</em> import{{ memberships|length|pluralize }}; 
 	<em>{{ added|length }}</em> will be added, and <em>{{ skipped|length }}</em> will be skipped.
-	<em><a href="{% url membership_import_confirm %}">Import Now &rarr;</a></em></p>
+	<em><a title="Looks good!" href="{% url membership_import_confirm %}">Import Now &rarr;</a></em></p>
 
 	<table>
 		<tr class="header">
@@ -55,16 +55,18 @@
 			<td>Name</td>
 			<td>Number</td>
 			<td>Email</td>
+			<td>Type</td>
 			<td>Join Date</td>
 			<td>Expire Date</td>
 		</tr>
 
-	{% for membership in memberships|slice:":10" %}
+	{% for membership in memberships|slice:":25" %}
 		<tr class="{% cycle 'odd' 'even' as rowcolors %}">
 			<td>{{ forloop.counter }}</td>
 			<td><div>{% firstof membership.user.get_full_name "No Name" %}</div></td>
 			<td><div>{{ membership.member_number }}</div></td>
 			<td><div>{{ membership.user.email }}</div></td>
+			<td><div>{{ membership.membership_type }}</div></td>
 			<td><div>{{ membership.subscribe_dt|date:"M d, Y" }}</div></td>
 			<td><div>{{ membership.expire_dt|date:"M d, Y" }}</div></td>
 		</tr>
