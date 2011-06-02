@@ -249,6 +249,16 @@ class FormEntry(models.Model):
             if entry.field.field_function == field_function:
                 return entry.value
         return ''
+    
+    def get_type_of(self, field_type):
+        """
+        Returns the value of the a field entry based 
+        on the field_type specified
+        """
+        for entry in self.fields.all():
+            if entry.field.field_type.lower() == field_type:
+                return entry.value
+        return ''
         
     def get_first_name(self):
         return self.get_value_of("EmailFirstName")
@@ -261,6 +271,9 @@ class FormEntry(models.Model):
         
     def get_phone_number(self):
         return self.get_value_of("EmailPhoneNumber")
+        
+    def get_email_address(self):
+        return self.get_type_of("emailfield")
     
 class FieldEntry(models.Model):
     """
