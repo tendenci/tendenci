@@ -9,6 +9,7 @@ from site_settings.utils import get_setting
 from events.models import Registration
 from events.models import Registrant, RegConfPricing
 from user_groups.models import Group
+from perms.utils import is_member
 
 
 def get_vevents(request, d):
@@ -513,6 +514,8 @@ def get_pricing(user, event, pricing=None):
 
     type: string that holds what price type (early,
           regular or late)
+
+    failure_type: string of what permissions it failed on
     """
     pricing_list = []
     limit = event.registration_configuration.limit
@@ -523,27 +526,44 @@ def get_pricing(user, event, pricing=None):
             reg_conf=event.registration_configuration
         )
 
-    # iterate the pricing based on date
-    # and group
+    # iterate and create a dictionary based
+    # on dates and permissions
+    # get_pricing_dict(price_instance, qualifies)
     for price in pricing:
-        if price.group:
-            if not price.group.is_member(user):
-                pricing_dict = get_pricing_dict(price, False)
-                if pricing_dict:
-                    pricing_list.append(pricing_dict)
-                continue
+        qualifies = True
+        failure_type = ''
+
+        # limits
         if limit > 0:
             if spots_left < price.quantity:
-                pricing_dict = get_pricing_dict(price, False)
-            else:
-                pricing_dict = get_pricing_dict(price, True)
-        else:
-            pricing_dict = get_pricing_dict(price, True)
+              failure_type = 'limit'
+              qualifies = False
+
+        # Group based permissions
+        if price.group:
+            if not price.group.is_member(user):
+                failure_type = 'group'
+                qualifies = False
+
+        # User permissions
+        if price.allow_user and not user.is_authenticated():
+            failure_type = 'user'
+            qualifies = False
+
+        # Member permissions
+        if price.allow_member and not is_member(user):
+            failure_type = 'member'
+            qualifies = False
+
+        pricing_dict = get_pricing_dict(price, qualifies)
         if pricing_dict:
+            pricing_dict.update({
+                'failure_type': failure_type
+            })
             pricing_list.append(pricing_dict)
 
     # sort the pricing from smallest to largest
-    # by amount
+    # by price
     sorted_pricing_list = sorted(
         pricing_list, 
         key=lambda k: k['amount']

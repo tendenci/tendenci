@@ -228,12 +228,20 @@ class Reg8nConfPricingEditForm(BetterModelForm):
     def __init__(self, *args, **kwargs):
         super(Reg8nConfPricingEditForm, self).__init__(*args, **kwargs)
         self.fields['reg8n_dt_price'].build_widget_reg8n_dict(*args, **kwargs)
+        self.fields['allow_anonymous'].initial = True
 
     def clean(self):
         # make sure that quantity is always a positive number
         quantity = self.cleaned_data.get('quantity')
         if quantity <= 0:
             self.cleaned_data['quantity'] = 1
+
+        # if no permissions are checked make it public
+        allow_anonymous = self.cleaned_data.get('allow_anonymous')
+        allow_user = self.cleaned_data.get('allow_user')
+        allow_member = self.cleaned_data.get('allow_member')
+        if not any([allow_anonymous, allow_user, allow_member]):
+            self.cleaned_data['allow_anonymous'] = True
 
         return self.cleaned_data
 
@@ -250,14 +258,20 @@ class Reg8nConfPricingEditForm(BetterModelForm):
             'early_dt',
             'regular_dt',
             'late_dt',
-            'end_dt'           
+            'end_dt',
+            'allow_anonymous',
+            'allow_user',
+            'allow_member'
          ]
 
         fieldsets = [('Registration Pricing', {
           'fields': ['title',
                     'quantity',
+                    'reg8n_dt_price',
                     'group',
-                    'reg8n_dt_price'
+                    'allow_anonymous',
+                    'allow_user',
+                    'allow_member'
                     ],
           'legend': '',
           'classes': ['boxy-grey'],

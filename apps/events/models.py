@@ -255,6 +255,10 @@ class RegConfPricing(models.Model):
     late_dt = models.DateTimeField(_('Late Registration Starts'))
     end_dt = models.DateTimeField(_('Registration Ends'), default=0)
 
+    allow_anonymous = models.BooleanField(_("Public can use"))
+    allow_user = models.BooleanField(_("Signed in user can use"))
+    allow_member = models.BooleanField(_("All members can use"))
+
     def __unicode__(self):
         if self.title:
             return '%s' % self.title
