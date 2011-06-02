@@ -117,3 +117,11 @@ def get_setting(scope, scope_category, name):
                 else: value = 0 # default to 0
                 
     return value
+    
+def check_setting(scope, scope_category, name):
+    try:
+        setting = Setting.objects.get(scope=scope, 
+            scope_category=scope_category, name=name)
+    except Setting.DoesNotExist:
+        return False
+    return True

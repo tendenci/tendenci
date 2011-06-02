@@ -6,12 +6,14 @@
 {% has_perm user photologue.change_photo as can_change %}
 {% has_perm user photologue.delete_photo as can_delete %}
 
-{% if can_change %}
 <ul>
     <li class="photo-view"><a href="{% url photo_medium_640 opt_object.pk %}">View all sizes</a></li>
+
+	{% if can_change %}
     <li class="photo-edit" data-id="{{ opt_object.pk }}"><a href="{% url photo_edit opt_object.pk photo_set_id %}">Edit</a></li>
+    {% endif %}
+
 	{% if can_delete %}
     <li class="photo-delete" data-id="{{ opt_object.pk }}"><a href="{% url photo_destroy opt_object.pk photo_set_id %}">Delete</a></li>
 	{% endif %}
 </ul>
-{% endif %}

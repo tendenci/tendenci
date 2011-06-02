@@ -9,7 +9,7 @@ class PhotoAdmin(admin.ModelAdmin):
     list_display = ('title', 'caption', 'update_dt', 'create_dt', 'tags',)
 
     fieldsets = (
-        (None, {'fields': ('image', 'title', 'caption', 'tags')}),
+        (None, {'fields': ('image', 'title', 'caption', 'tags', 'license')}),
         ('Administrative', 
             {'fields': 
                 (

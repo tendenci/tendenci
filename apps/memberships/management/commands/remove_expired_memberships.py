@@ -10,7 +10,7 @@ class Command(BaseCommand):
 		from user_groups.models import GroupMembership
 
 		## get list of expired memberships
-		memberships = Membership.objects.filter(expiration_dt__lt = datetime.now())
+		memberships = Membership.objects.filter(expire_dt__lt = datetime.now())
 
 		# # Change status_detail to expired
 		# # My only problem with this currently is having

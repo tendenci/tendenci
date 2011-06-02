@@ -1,9 +1,17 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.encoding import force_unicode
 
-from photos.models import Image, PhotoSet
+from photos.models import Image, PhotoSet, License
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
+
+class LicenseField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        if obj.id == 1:
+            return obj.name
+        return mark_safe("%s -- <a href='%s'>see details</a>" % (obj.name, obj.deed))
 
 class PhotoAdminForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
@@ -20,6 +28,7 @@ class PhotoAdminForm(TendenciBaseForm):
             'syndicate',
             'status',
             'status_detail',
+            'license',
         )
 
 class PhotoUploadForm(TendenciBaseForm):
@@ -40,7 +49,10 @@ class PhotoUploadForm(TendenciBaseForm):
 class PhotoEditForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
-    choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active','Active'),('inactive','Inactive'), 
+                ('pending','Pending'),))
+    license = LicenseField(queryset=License.objects.all(),
+                widget = forms.RadioSelect(), empty_label=None)
     
     class Meta:
         model = Image
@@ -48,6 +60,7 @@ class PhotoEditForm(TendenciBaseForm):
         fields = (
             'title',
             'caption',
+            'license',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -62,9 +75,9 @@ class PhotoEditForm(TendenciBaseForm):
                           'title',
                           'caption',
                           'tags',
+                          'license',
                       ], 'legend': '',
                   }),
-
                 ('Permissions', {
                       'fields': [
                           'allow_anonymous_view',
