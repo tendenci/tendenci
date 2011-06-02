@@ -594,7 +594,6 @@ class AppField(models.Model):
     required = models.BooleanField(_("Required"), default=False, blank=True)
     visible = models.BooleanField(_("Visible"), default=True, blank=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
-    show_on_site = models.BooleanField(_("Show on Site"), default=False, blank=True)
         help_text="Comma separated options where applicable")
 
     unique = models.BooleanField(_("Unique"), default=False, blank=True)
