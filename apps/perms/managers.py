@@ -351,13 +351,13 @@ class TendenciBaseManager(models.Manager):
         """
         groups = [g.pk for g in user.group_set.all()]
         status_detail = kwargs.get('status_detail', 'active')
-        
+
         anon_q = SQ(allow_anonymous_view=True)
         user_q = SQ(allow_user_view=True)
         status_q = SQ(status=1, status_detail=status_detail)
         user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)
-        
+
         return sqs.filter(
             (status_q&(anon_q|user_q))|
             (user_perm_q|group_perm_q))
@@ -385,7 +385,7 @@ class TendenciBaseManager(models.Manager):
             else:
                 sqs = self._user_sqs(sqs, user,
                     status_detail=status_detail)
-        return sqs
+        # return sqsmem
 
     # Public functions
     def search(self, query=None, *args, **kwargs):
