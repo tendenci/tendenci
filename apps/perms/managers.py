@@ -384,7 +384,7 @@ class TendenciBaseManager(models.Manager):
             else:
                 sqs = self._user_sqs(sqs, user,
                     status_detail=status_detail)
-        # return sqsmem
+        return sqs
 
     # Public functions
     def search(self, query=None, *args, **kwargs):
