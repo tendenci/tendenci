@@ -87,6 +87,10 @@ class Payment(models.Model):
 
     def __unicode__(self):
         return u"response_code: %s, trans_id: %s, amount: %.2f" % (self.response_code, self.trans_id, self.amount)
+        
+    @models.permalink
+    def get_absolute_url(self):
+        return ('payment.view', [self.id, self.guid])
     
     def allow_view_by(self, user2_compare, guid=''):
         boo = False
