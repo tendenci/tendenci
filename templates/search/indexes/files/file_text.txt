@@ -1,3 +1,4 @@
+pk:{{ object.pk }}
 {% firstof object.file "Untitled" %}
 by {{ object.creator }}
 by {{ object.object.creator.get_profile.display_name }}
