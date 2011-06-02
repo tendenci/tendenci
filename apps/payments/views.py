@@ -7,7 +7,6 @@ from invoices.models import Invoice
 from base.http import Http403
 from base.utils import tcurrency
 from event_logs.models import EventLog
-from notification.utils import send_notifications
 
 from site_settings.utils import get_setting
 
@@ -44,14 +43,6 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
         'instance': payment,
     }
     EventLog.objects.log(**log_defaults)
-    
-    notif_context = {
-        'request': request,
-        'object': payment,
-    }
-    
-    send_notifications('module','payments', 'paymentrecipients',
-        'payment_added', notif_context)
     
     # post payment form to gateway and redirect to the vendor so customer can pay from there
     if boo:
