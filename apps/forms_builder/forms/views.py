@@ -298,7 +298,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 #            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k]) 
 #                for (k, v) in form_for_form.fields.items()]
             
-            subject = "%s - %s" % (form.title, entry.entry_time.strftime('%m-%d-%Y %H:%M'))
+            subject = "%s:" % (form.title)
             if entry.get_first_name():
                 subject = "%s %s" % (subject, entry.get_first_name())
             if entry.get_last_name():
@@ -306,7 +306,10 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             if entry.get_full_name():
                 subject = "%s %s" % (subject, entry.get_full_name())
             if entry.get_phone_number():
-                subject = "%s %s" % (subject, entry.get_phone_number())
+                subject = "%s - %s" % (subject, entry.get_phone_number())
+            if entry.get_email_address():
+                subject = "%s - %s" % (subject, entry.get_email_address())
+            
                 
             # body = "\n".join(fields)
             body = generate_email_body(entry)
