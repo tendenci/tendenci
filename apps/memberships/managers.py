@@ -46,8 +46,50 @@ class MemberAppEntryManager(TendenciBaseManager):
     """
     Model Manager
     """
-    pass
+    # TODO: lots of clean up
 
+    # Public functions
+    def search(self, query=None, *args, **kwargs):
+        """
+        Search the Django Haystack search index
+        Returns a SearchQuerySet object
+        """
+        from perms.utils import is_admin, is_member, is_developer
+
+        sqs = kwargs.get('sqs', SearchQuerySet())
+
+        # user information
+        user = kwargs.get('user') or AnonymousUser()
+        user = self._impersonation(user)
+        self.user = user
+
+        # if the status_detail is something like "published"
+        # then you can specify the kwargs to override
+        status_detail = kwargs.get('status_detail', 'active')
+
+        if query:
+            sqs = sqs.auto_query(sqs.query.clean(query))
+
+        if is_admin(user) or is_developer(user):
+            sqs = sqs.all()
+        else:
+            if user.is_anonymous():
+                sqs = anon3_sqs(sqs, status_detail=status_detail)
+
+            elif is_member(user):
+                sqs = self._member_sqs(sqs, user=user,
+                status_detail=status_detail)
+            else:
+                sqs = self._user_sqs(sqs, user=user,
+                status_detail=status_detail)
+
+        return sqs.models(self.model)
+
+def anon3_sqs(sqs, **kwargs):
+    status_detail = kwargs.get('status_detail', 'active')
+    sqs = sqs.filter(status=1).filter(status_detail=status_detail)
+    # sqs = sqs.filter(allow_anonymous_view=True)
+    return sqs
 
 def anon2_sqs(sqs):
     sqs = sqs.filter(status=1).filter(status_detail='published')

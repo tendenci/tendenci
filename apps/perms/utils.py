@@ -7,6 +7,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from profiles.models import Profile
 from perms.object_perms import ObjectPermission
 
+from haystack.query import SearchQuerySet
+from haystack.backends import SQ
+
 
 def set_perm_bits(request, form, instance):
     """
@@ -218,3 +221,62 @@ def update_admin_group_perms():
     permissions = Permission.objects.all().exclude(content_type__in=content_to_exclude)
     auth_group.permissions = permissions
     auth_group.save()
+
+
+def can_view(user, obj, status_detail = 'active'):
+    """
+        Checks for tendenci specific permissions to viewing objects.
+    """
+    
+    # check to see if there is impersonation
+    # if there is, use the impersonated user instead.
+    if hasattr(user, 'impersonated_user'):
+        if isinstance(user.impersonated_user, User):
+            user = user.impersonated_user
+    
+    if is_admin(user) or is_developer(user):
+        return True
+    else:
+        anon_q = obj.allow_anonymous_view
+        status_q = ((obj.status == 1) and (obj.status_detail == status_detail))
+        member_q = obj.allow_member_view
+        user_q = obj.allow_user_view
+        
+        if user.is_anonymous():
+            return (status_q and anon_q)
+        
+        specific_q = _specific_view(user, obj)
+        
+        if is_member(user):
+            return ((status_q and (anon_q or member_q or user_q)) or 
+                specific_q)
+        
+        return ((status_q and (anon_q or user_q)) or specific_q)
+    
+def _specific_view(user, obj):
+    """
+        determines if a user has specific permissions to view the object.
+        note this is based only on:
+        
+        (users_can_view contains user)
+        +
+        (groups_can_view contains one of user's groups)
+    """
+    
+    # Checking permissions via ObjectPermission manager will 
+    # hit the db multiple times. 
+    # So we'll go for the search index this time
+    
+    groups = [g.pk for g in user.group_set.all()]
+    
+    sqs = SearchQuerySet().models(obj.__class__).filter(
+            SQ(primary_key=obj.pk) &
+            (SQ(groups_can_view__in=groups)|SQ(users_can_view__in=[user.pk]))
+        )
+    if sqs:
+        return True
+    
+    return False
+        
+    
+    

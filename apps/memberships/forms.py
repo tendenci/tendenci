@@ -444,16 +444,13 @@ class AppEntryForm(forms.ModelForm):
         instance and its related field model instances.
         """
 
-        self._meta.model()
-
         self.app = app
         self.form_fields = app.fields.visible()
         self.types_field = app.membership_types
-        user = kwargs.pop('user') or AnonymousUser
-        self.user = user
+        self.user = kwargs.pop('user') or AnonymousUser
+        self.corporate_membership = kwargs.pop('corporate_membership') # id; not object
 
-        # corporate_membership_id for corp. individuals
-        self.corporate_membership = kwargs.pop('corporate_membership')
+        print 'form_fields', self.form_fields
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
@@ -529,7 +526,7 @@ class AppEntryForm(forms.ModelForm):
                 year = datetime.today().year
                 self.fields[field_key].widget.years = range(year-120, year+120)
 
-        if app.use_captcha and not user.is_authenticated():
+        if app.use_captcha and not self.user.is_authenticated():
             self.fields['field_captcha'] = CaptchaField(**{
                 'label':'',
                 'error_messages':{'required':'CAPTCHA is required'}
@@ -547,14 +544,19 @@ class AppEntryForm(forms.ModelForm):
         # TODO: We're assuming that an administrator exists
         # We're assuming this administrator is actively used
         admin = User.objects.order_by('pk')[0]
-        user = self.user
+
+        user = None
+        username = None
+        if hasattr(self.user, 'pk'):
+            user = self.user
+            username = user.username
 
         app_entry.user = user
         app_entry.entry_time = datetime.now()
         app_entry.creator = user or admin
-        app_entry.creator_username = user.username or admin.username
+        app_entry.creator_username = username or admin.username
         app_entry.owner = user or admin
-        app_entry.owner_username = user.username or admin.username
+        app_entry.owner_username = username or admin.username
         app_entry.status = True
         app_entry.status_detail = 'active'
 
@@ -596,6 +598,7 @@ class CSVForm(forms.Form):
         dynamic fields are the csv import columns.
         """
         step_numeral, step_name = kwargs.pop('step', (None, None))
+        app = kwargs.pop('app', '')
         file_path = kwargs.pop('file_path', '')
 
         super(CSVForm, self).__init__(*args, **kwargs)
@@ -618,11 +621,16 @@ class CSVForm(forms.Form):
             # file to make field-mapping form
             csv = csv_to_dict(file_path)
 
-            choices = {}
-            for column_name in csv[0].keys():
-                choices[column_name] = column_name
+            # choices list
+            choices = csv[0].keys()
 
-            app_fields = AppField.objects.filter(app=2)
+            # make tuples; sort tuples (case-insensitive)
+            choice_tuples = [(c,c) for c in csv[0].keys()]
+
+            choice_tuples.insert(0, ('',''))  # insert blank option
+            choice_tuples = sorted(choice_tuples, key=lambda c: c[0].lower())
+
+            app_fields = AppField.objects.filter(app=app)
 
             req_fields = [
                 'User Name',
@@ -632,7 +640,6 @@ class CSVForm(forms.Form):
                 'Join Date',
                 'Renew Date',
                 'Expire Date',
-                'Renewal',
                 'Owner',
                 'Creator',
                 'Status',
@@ -642,7 +649,7 @@ class CSVForm(forms.Form):
             for req_field in req_fields:
                 self.fields[slugify(req_field)] = ChoiceField(**{
                     'label': req_field,
-                    'choices': choices.items(),
+                    'choices': choice_tuples,
                     'required': False,
                 })
 
@@ -659,7 +666,7 @@ class CSVForm(forms.Form):
 
                     self.fields[app_field.label] = ChoiceField(**{
                         'label':app_field.label,
-                        'choices': choices.items(),
+                        'choices': choice_tuples,
                         'required': False,
                     })
 
@@ -702,46 +709,46 @@ class CSVForm(forms.Form):
 
             for membership in memberships:
 
-                # entry = AppEntry.objects.filter(
-                #     app = app,
-                #     user = user,
-                #     entry_time = datetime.now(),
-                #     membership = membership,
-                # ).exists()
-
-                # if not entry:  # create if does not exist
-
-                entry = AppEntry.objects.create(
+                entry = AppEntry.objects.filter(
                     app = app,
                     user = user,
                     entry_time = datetime.now(),
                     membership = membership,
-                    is_renewal = membership.renewal,
-                    is_approved = True,
-                    decision_dt = membership.create_dt,
-                    judge = membership.creator,
-                    creator=membership.creator,
-                    creator_username=membership.creator_username,
-                    owner=membership.owner,
-                    owner_username=membership.owner_username,
-                )
+                ).exists()
 
-                for key, value in self.cleaned_data.items():
+                if not entry:  # create; if does not exist
 
-                    app_fields = AppField.objects.filter(app=app, label=key)
-                    if app_fields:
-                        app_field = app_fields[0]
-                    else:
-                        app_field = None
+                    entry = AppEntry.objects.create(
+                        app = app,
+                        user = user,
+                        entry_time = datetime.now(),
+                        membership = membership,
+                        is_renewal = membership.renewal,
+                        is_approved = True,
+                        decision_dt = membership.create_dt,
+                        judge = membership.creator,
+                        creator=membership.creator,
+                        creator_username=membership.creator_username,
+                        owner=membership.owner,
+                        owner_username=membership.owner_username,
+                    )
 
-                    try:
-                        AppFieldEntry.objects.create(
-                            entry=entry,
-                            field=app_field,
-                            value=value,
-                        )
-                    except:
-                        print sys.exc_info()[1]
+                    for key, value in self.cleaned_data.items():
+
+                        app_fields = AppField.objects.filter(app=app, label=key)
+                        if app_fields:
+                            app_field = app_fields[0]
+                        else:
+                            app_field = None
+
+                        try:
+                            AppFieldEntry.objects.create(
+                                entry=entry,
+                                field=app_field,
+                                value=value,
+                            )
+                        except:
+                            print sys.exc_info()[1]
 
 
 class ReportForm(forms.Form):
