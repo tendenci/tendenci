@@ -450,8 +450,6 @@ class AppEntryForm(forms.ModelForm):
         self.user = kwargs.pop('user') or AnonymousUser
         self.corporate_membership = kwargs.pop('corporate_membership') # id; not object
 
-        print 'form_fields', self.form_fields
-
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
         CLASS_AND_WIDGET = {
