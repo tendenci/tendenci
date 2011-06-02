@@ -57,8 +57,8 @@
 		border: 1px solid #ccc;
 		background-color: #fff;
 		padding: 1em;
-		-moz-border-radius: 8px;
-		border-radius: 8px;
+		-moz-border-radius: 4px;
+		border-radius: 4px;
 		width: 200px;
 		
 	}
@@ -128,6 +128,30 @@
 		cursor: pointer;
 		color: darkred;
 	}
+
+	.extra-registrants {
+		width: 50px;
+	}
+
+	.add-registrants-button {
+		padding: 3px;
+		margin-left: 5px;
+	}
+
+	.add-registrants-text {
+		padding-top: 20px;
+		float: left;
+	}
+
+	.summary-total {
+		font-weight: bold;
+		font-size: 1.7em;
+		margin-bottom: 10px;
+	}
+
+	.summary-payment {
+		margin-bottom: 15px;
+	}
 </style>
 
 <div class="t">    
@@ -181,8 +205,36 @@
                 <div class="float-window">
                 
 				<div id="reg-form-box">	
-    				<div id="reg-summary">Summary</div>
-    			
+    				<div class="summary-total">
+    					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
+    					<span class="summary-total-amount">{{ total_price|floatformat:2 }}</span>
+    				</div>
+
+    				<div class="summary-payment">
+		    			<noscript>
+		    			<div>
+		    				<input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
+						</div>
+		    			</noscript>
+		    			
+		   				{% if reg_form.payment_method %}
+							<div class="form-field">
+								<div class="error">{{ reg_form.payment_method.errors }}</div>
+								<div class="required">Payment Method</div>
+								<div class="field">{{ reg_form.payment_method }}</div>
+							</div>
+						{% endif %}
+						
+						{% if reg_form.captcha %}
+							<div class="form-field">
+								<div class="error">{{ reg_form.captcha.errors }}</div>
+								<div class="required">Type the Code Below</div>
+								<div class="field">{{ reg_form.captcha }}</div>
+							</div>
+						{% endif %}
+		   				<input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register & Pay{%endif%}" />
+    				</div>
+
     				{# price list #}
     				<table id="summary-price">
     					{% for price_entry in price_list %}
@@ -195,40 +247,15 @@
     					</tr>
     					{% endfor %}
     				</table>
-    				<table id="summary-total-price">
-    					<tr>
-    						<td><div id="total-label">Total</div></td>
-    						<td align="right">
-    							<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-    							<span id="total-amount">{{ total_price|floatformat:2 }}</span>
-    						</td>
-    					</tr>
-    				</table>
-    			
-    			
-    			<noscript>
-    			<div>
-    				<input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
-				</div>
-    			</noscript>
-    			
-   				{% if reg_form.payment_method %}
-					<div class="form-field">
-						<div class="error">{{ reg_form.payment_method.errors }}</div>
-						<div class="required">Payment Method</div>
-						<div class="field">{{ reg_form.payment_method }}</div>
-					</div>
-				{% endif %}
-				
-				{% if reg_form.captcha %}
-					<div class="form-field">
-						<div class="error">{{ reg_form.captcha.errors }}</div>
-						<div class="required">Type the Code Below</div>
-						<div class="field">{{ reg_form.captcha }}</div>
-					</div>
-				{% endif %}
-   				<input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register & Pay{%endif%}" />
-    		
+					<table id="summary-total-price">
+						<tr>
+							<td><div id="total-label">Total</div></td>
+							<td align="right">
+								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+								<span id="total-amount">{{ total_price|floatformat:2 }}</span>
+							</td>
+						</tr>
+					</table>
     		   </div>
     		   </div>  {# float-widow#}
     		</div>
@@ -309,25 +336,24 @@
 			
 			{% if price.quantity == 1 %}
 			<div class="add-registrant-box">
-				 <input title='Add a registrant' type='submit' name='add_registrant' 
-				 onClick="addRegistrant(this, 'registrant');return false;"
-			 value='Add another registrant' />
+				 <div class="add-registrants-text">
+				 Add another <input class="extra-registrants" type="text" name="extra-registrant-amount" value="1" /> registrant(s)
+				 </div>
+				 <input class="add-registrants-button" title='Add registrant(s)' type='submit' name='add_registrant'  onClick="add_registrants(this, 'registrant'); return false;"
+			 	  value='Add' />
 			</div>
 			{% endif %}
 			
 			<div class="clear"></div>
-			
-			<br />
-
 		</div>
         </form>
 	</div>
-
 </div>
 {% endblock %}
 
 {% block extra_body %}
  <script type="text/javascript">
+ 	var price_quantity = {{ price.quantity }};
 
  	function deleteRegistrant(ele, prefix) {
 		var registrant_form = $(ele).parents('.registrant-form');
@@ -425,6 +451,7 @@
 		var total_amount = $("#total-amount").html();
 		total_amount = (parseFloat(total_amount) + parseFloat($(row).find(".reg-price").html())).toFixed(2);
 		$("#total-amount").html(total_amount);
+		$("span.summary-total-amount").html(total_amount);
 	}
 
 	function addRegistrant(ele, prefix) {
@@ -454,8 +481,17 @@
 		addSummaryEntry(row, prefix, formCount);
 
 		return false;
-		
+	}
 
+	function add_registrants(e, prefix) {
+		extra_count = $(e).prev().find('.extra-registrants').val();
+		extra_count = parseInt(extra_count);
+		if (extra_count > 0) {
+			for (var i=0; i<extra_count; i++) {
+				addRegistrant(e, prefix);
+			}
+		}
+		return false;
 	}
 	
 	$(document).ready(function(){
@@ -464,28 +500,26 @@
 		
 		
 		// delete confirmation
-		$('button.delete-button').click(function(){
+		$('button.delete-button').live('click', function(){
 			var delete_confirm = confirm('Are you sure you want to delete this registrant?');	// confirm
 			if(delete_confirm) {
-					return deleteRegistrant(this, 'registrant');
+				return deleteRegistrant(this, 'registrant');
 			}
 			return false;	// cancel
 		});
-
-		
 	});
 
-	$(window).scroll(function(){
-		if  ($(window).scrollTop() > $(".float-anchor").offset().top){
-			$(".float-window").css("position", "fixed");
-			$(".float-window").css("top", "8px");
-		}
+	// $(window).scroll(function(){
+	// 	if  ($(window).scrollTop() > $(".float-anchor").offset().top){
+	// 		$(".float-window").css("position", "fixed");
+	// 		$(".float-window").css("top", "8px");
+	// 	}
 		
-		if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
-			$(".float-window").css("position", "relative");
-			$(".float-window").css("top", $(".float-anchor").offset);
-		}
-	});
+	// 	if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
+	// 		$(".float-window").css("position", "relative");
+	// 		$(".float-window").css("top", $(".float-anchor").offset);
+	// 	}
+	// });
 
 
    </script>

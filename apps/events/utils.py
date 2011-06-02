@@ -9,7 +9,7 @@ from site_settings.utils import get_setting
 from events.models import Registration
 from events.models import Registrant, RegConfPricing
 from user_groups.models import Group
-from perms.utils import is_member
+from perms.utils import is_member, is_admin
 
 
 def get_vevents(request, d):
@@ -472,7 +472,7 @@ def create_registrant_from_form(*args, **kwargs):
     return registrant
 
 
-def get_pricing_dict(price, qualifies):
+def gen_pricing_dict(price, qualifies):
     now = datetime.now()
     pricing = {}
 
@@ -500,6 +500,15 @@ def get_pricing_dict(price, qualifies):
             })
 
     return pricing
+
+
+def get_pricing_dict(price, qualifies, failure_type):
+    pricing_dict = gen_pricing_dict(price, qualifies)
+    if pricing_dict:
+        pricing_dict.update({
+            'failure_type': failure_type
+        })
+    return pricing_dict
 
 
 def get_pricing(user, event, pricing=None):
@@ -531,36 +540,70 @@ def get_pricing(user, event, pricing=None):
     # get_pricing_dict(price_instance, qualifies)
     for price in pricing:
         qualifies = True
-        failure_type = ''
 
         # limits
         if limit > 0:
             if spots_left < price.quantity:
-              failure_type = 'limit'
               qualifies = False
+              pricing_list.append(get_pricing_dict(
+                price, 
+                qualifies, 
+                'limit')
+              )
+              continue
+
+        # Admins are always true
+        if is_admin(user):
+            qualifies = True
+            pricing_list.append(get_pricing_dict(
+               price, 
+               qualifies, 
+               '')
+            )
+            continue   
+
+        # Admin only price
+        if not any([price.allow_user, price.allow_anonymous, price.allow_member]):
+            if not is_admin(user):
+                continue               
 
         # Group based permissions
         if price.group:
             if not price.group.is_member(user):
-                failure_type = 'group'
                 qualifies = False
+                pricing_list.append(get_pricing_dict(
+                   price, 
+                   qualifies, 
+                   'group')
+                )
+                continue
 
         # User permissions
         if price.allow_user and not user.is_authenticated():
-            failure_type = 'user'
             qualifies = False
+            pricing_list.append(get_pricing_dict(
+               price, 
+               qualifies, 
+               'user')
+            )
+            continue
 
         # Member permissions
         if price.allow_member and not is_member(user):
-            failure_type = 'member'
             qualifies = False
+            pricing_list.append(get_pricing_dict(
+               price, 
+               qualifies, 
+               'member')
+            )
+            continue
 
-        pricing_dict = get_pricing_dict(price, qualifies)
-        if pricing_dict:
-            pricing_dict.update({
-                'failure_type': failure_type
-            })
-            pricing_list.append(pricing_dict)
+        # public pricing
+        pricing_list.append(get_pricing_dict(
+           price, 
+           qualifies, 
+           '')
+        )
 
     # sort the pricing from smallest to largest
     # by price

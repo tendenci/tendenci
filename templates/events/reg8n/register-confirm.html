@@ -150,7 +150,7 @@
 			      {% if user.is_authenticated %}
 			          <a href="{% url event.cancel_registration event.pk registration.pk %}">Cancel Registation</a>
 			      {% else %}
-			          <a href="{% url event.cancel_registration event.pk registration.pk registation.hash %}">Cancel Registation</a>
+			          <a href="{% url event.cancel_registration event.pk registration.pk registration.hash %}">Cancel Registation</a>
 			      {% endif %}
 		     {% endif %}
 		      </div>

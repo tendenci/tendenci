@@ -45,7 +45,10 @@
                                         {% endif %}
                                         {% if price.failure_type == 'member' %}
                                             You must be a member to qualify.
-                                        {% endif %}                                        
+                                        {% endif %}
+                                        {% if price.failure_type == 'admin' %}
+                                            You must be an admin to qualify.
+                                        {% endif %}                                         
                                         {% if price.failure_type == 'user' %}
                                             You must be logged in for this price.
                                         {% endif %}">
