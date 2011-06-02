@@ -236,13 +236,6 @@ class Reg8nConfPricingEditForm(BetterModelForm):
         if quantity <= 0:
             self.cleaned_data['quantity'] = 1
 
-        # if no permissions are checked make it public
-        allow_anonymous = self.cleaned_data.get('allow_anonymous')
-        allow_user = self.cleaned_data.get('allow_user')
-        allow_member = self.cleaned_data.get('allow_member')
-        if not any([allow_anonymous, allow_user, allow_member]):
-            self.cleaned_data['allow_anonymous'] = True
-
         return self.cleaned_data
 
     class Meta:
