@@ -254,7 +254,6 @@ class AppFieldAdmin(admin.StackedInline):
                 'required',
                 'unique',
                 'admin_only',
-                'show_on_site',
             ),
             'choices',
             'help_text',
