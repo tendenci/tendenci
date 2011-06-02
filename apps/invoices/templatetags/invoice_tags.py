@@ -48,7 +48,6 @@ def invoice_search(context):
 @register.inclusion_tag("invoices/object_display.html")
 def invoice_object_display(request, invoice):
     obj = invoice.get_object()
-    
     object_display = None
     if invoice.object_type:
         from django.template.loader import render_to_string
