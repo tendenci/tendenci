@@ -1,0 +1,1 @@
+New payment (reponse code: {{ object.response_code }}, trans ID: {{ object.trans_id }}, amount: {{ object.amount }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}

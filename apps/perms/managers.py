@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User, AnonymousUser
 
 from haystack.query import SearchQuerySet
+from haystack.backends import SQ
 
 
 class ObjectPermissionManager(models.Manager):
@@ -297,64 +298,69 @@ class TendenciBaseManager(models.Manager):
     user = None
 
     # Private functions
-    def _member_sqs(self, sqs, **kwargs):
-        """
-        Filter the query set for members
-        """
-        user = kwargs.get('user', None)
-        groups = []
-        if user and user.is_authenticated():
-            groups = [g.pk for g in user.group_set.all()]
-        status_detail = kwargs.get('status_detail', 'active')
-
-        anon_q = Q(allow_anonymous_view=True)
-        user_q = Q(allow_user_view=True)
-        member_q = Q(allow_member_view=True)
-        status_q = Q(status=1, status_detail=status_detail)
-        user_perm_q = Q(users_can_view__in=user.pk)
-        group_perm_q = Q(groups_can_view__in=groups)
-
-        q = reduce(operator.or_, [anon_q, user_q, member_q])
-        q = reduce(operator.and_, [status_q, q])
-        q = reduce(operator.or_, [q, user_perm_q, group_perm_q])
-
-        return sqs.filter(q)
-
     def _anon_sqs(self, sqs, **kwargs):
         """
         Filter the query set for anonymous users
         """
         status_detail = kwargs.get('status_detail', 'active')
 
-        sqs = sqs.filter(status=1).filter(status_detail=status_detail)
-        sqs = sqs.filter(allow_anonymous_view=True)
+        sqs = sqs.filter(
+            allow_anonymous_view=True, 
+            status=1, 
+            status_detail=status_detail)
         return sqs
+    
+    def _member_sqs(self, sqs, user, **kwargs):
+        """
+        Filter the query set for members.
+        
+        (status AND status_detail AND
+        (anon_view OR user_view OR member_view))
+        OR 
+        (users_can_view__in user.pk)
+        OR
+        (groups_can_view__in user's groups)
+        
+        user is a required argument since we'll be filtering by user.pk.
+        """
+        groups = [g.pk for g in user.group_set.all()]
+        status_detail = kwargs.get('status_detail', 'active')
+        
+        anon_q = SQ(allow_anonymous_view=True)
+        user_q = SQ(allow_user_view=True)
+        member_q = SQ(allow_member_view=True)
+        status_q = SQ(status=1, status_detail=status_detail)
+        user_perm_q = SQ(users_can_view__in=[user.pk])
+        group_perm_q = SQ(groups_can_view__in=groups)
+        
+        return sqs.filter(
+            (status_q&(anon_q|user_q|member_q))|
+            (user_perm_q|group_perm_q))
 
-    def _user_sqs(self, sqs, **kwargs):
+    def _user_sqs(self, sqs, user, **kwargs):
         """
         Filter the query set for people between admin and anon permission
-        (status+status_detail+(anon OR user)) OR (who_can_view__exact)
+        
+        (status AND status_detail AND ((anon_view OR user_view)
+        OR 
+        (users_can_view__in user.pk)
+        OR
+        (groups_can_view__in user's groups)
+        
+        user required since we'll filter by user.pk.
         """
-        user = kwargs.get('user', None)
-        groups = []
-        if user and user.is_authenticated():
-            groups = [g.pk for g in user.group_set.all()]
+        groups = [g.pk for g in user.group_set.all()]
         status_detail = kwargs.get('status_detail', 'active')
 
-        anon_q = Q(allow_anonymous_view=True)
-        user_q = Q(allow_user_view=True)
-        status_q = Q(status=1, status_detail=status_detail)
-        user_perm_q = Q(users_can_view__in=user.pk)
-        group_perm_q = Q(groups_can_view__in=groups)
+        anon_q = SQ(allow_anonymous_view=True)
+        user_q = SQ(allow_user_view=True)
+        status_q = SQ(status=1, status_detail=status_detail)
+        user_perm_q = SQ(users_can_view__in=[user.pk])
+        group_perm_q = SQ(groups_can_view__in=groups)
 
-        q = reduce(operator.or_, [anon_q, user_q])
-        q = reduce(operator.and_, [status_q, q])
-        if groups:
-            q = reduce(operator.or_, [q, user_perm_q, group_perm_q])
-        else:
-            q = reduce(operator.or_, [q, user_perm_q])
-
-        return sqs.filter(q)
+        return sqs.filter(
+            (status_q&(anon_q|user_q))|
+            (user_perm_q|group_perm_q))
 
     def _impersonation(self, user):
         """
@@ -364,6 +370,22 @@ class TendenciBaseManager(models.Manager):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
         return user
+        
+    def _permissions_sqs(self, sqs, user, status_detail):
+        from perms.utils import is_admin, is_member, is_developer
+        
+        if is_admin(user) or is_developer(user):
+            sqs = sqs.all()
+        else:
+            if user.is_anonymous():
+                sqs = self._anon_sqs(sqs, status_detail=status_detail)
+            elif is_member(user):
+                sqs = self._member_sqs(sqs, user,
+                    status_detail=status_detail)
+            else:
+                sqs = self._user_sqs(sqs, user,
+                    status_detail=status_detail)
+        return sqs
 
     # Public functions
     def search(self, query=None, *args, **kwargs):
@@ -371,33 +393,24 @@ class TendenciBaseManager(models.Manager):
         Search the Django Haystack search index
         Returns a SearchQuerySet object
         """
-        from perms.utils import is_admin, is_member
-
+        
         sqs = kwargs.get('sqs', SearchQuerySet())
-
+        
+        # filter out the big parts first
+        sqs = sqs.models(self.model)
+        
         # user information
         user = kwargs.get('user') or AnonymousUser()
         user = self._impersonation(user)
         self.user = user
-
+        
         # if the status_detail is something like "published"
         # then you can specify the kwargs to override
         status_detail = kwargs.get('status_detail', 'active')
-
+        
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
-
-        if is_admin(user):
-            sqs = sqs.all()  # admin
-        else:
-            if user.is_anonymous():
-                sqs = self._anon_sqs(sqs, status_detail=status_detail)  # anonymous
-
-            elif is_member(user):
-                sqs = self._member_sqs(sqs, user=user,
-                status_detail=status_detail)
-            else:
-                sqs = self._user_sqs(sqs, user=user,
-                status_detail=status_detail)
-
-        return sqs.models(self.model)
+        
+        sqs = self._permissions_sqs(sqs, user, status_detail)
+        
+        return sqs
