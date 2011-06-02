@@ -1,4 +1,4 @@
-{% extends "memberships/base.html" %}
+{% extends "memberships/base-wide.html" %}
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
@@ -10,40 +10,27 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
 
 	<style type="text/css">
-		.preview-wrap {
-			border: 1px solid silver;
-			width: 450px;
-			margin-top: 10px;
-		}
 
 		table {
-			width: 450px;
+			margin-top: 5px;
+			white-space: nowrap;
+			border: 1px solid silver;
 		}
 
 		tr.header {
-			background-color: #EEE;
+			background-color: #DDD;
 			text-align: left;
 		}
-		tr td {
-			padding: 10px;
-			border-bottom: 1px solid #EEE;
+
+		tr.even {
+			background-color: #EEE;
+			border: 1px solid silver;
+			border-top: 0;
+			border-bottom: 0;
 		}
 
-		.import-now-link a {
-			display: block;
-			background-color: #FAFAFA;
-			margin-top: 10px;
+		tr td {
 			padding: 10px;
-			width: 429px;
-			border: 1px solid #CCC;
-			border-right: 2px solid #CCC;
-			border-bottom: 2px solid #CCC;
-			font-size: 20px;
-			text-decoration: underline;
-		}
-		.import-now-link a:active,
-		.import-now-link a:hover {
-			background-color: #F7F7F7;
 		}
 
 	</style>
@@ -59,32 +46,32 @@
 	<p class="timestamp">Step 3/4 &middot; {{ datetime.now }}</p>
 
 	<p class="msg"><em>{{ memberships|length}}</em> import{{ memberships|length|pluralize }}; 
-	<em>{{ added|length }}</em> will be added, and <em>{{ skipped|length }}</em> will be skipped.</p>
+	<em>{{ added|length }}</em> will be added, and <em>{{ skipped|length }}</em> will be skipped.
+	<em><a title="Looks good!" href="{% url membership_import_confirm %}">Import Now &rarr;</a></em></p>
 
-	<div class="preview-wrap">
 	<table>
 		<tr class="header">
 			<td></td>
 			<td>Name</td>
 			<td>Number</td>
+			<td>Email</td>
+			<td>Type</td>
 			<td>Join Date</td>
 			<td>Expire Date</td>
 		</tr>
 
-	{% for membership in memberships|slice:":10" %}
-		<tr>
+	{% for membership in memberships|slice:":25" %}
+		<tr class="{% cycle 'odd' 'even' as rowcolors %}">
 			<td>{{ forloop.counter }}</td>
 			<td><div>{% firstof membership.user.get_full_name "No Name" %}</div></td>
 			<td><div>{{ membership.member_number }}</div></td>
-			<td><div>{{ membership.renew_dt|date:"M d, Y" }}</div></td>
-			<td><div>{{ membership.expiration_dt|date:"M d, Y" }}</div></td>
+			<td><div>{{ membership.user.email }}</div></td>
+			<td><div>{{ membership.membership_type }}</div></td>
+			<td><div>{{ membership.subscribe_dt|date:"M d, Y" }}</div></td>
+			<td><div>{{ membership.expire_dt|date:"M d, Y" }}</div></td>
 		</tr>
 	{% endfor %}
 	</table>
-	</div>
-
-	<div class="import-now-link"><a href="{% url membership_import_confirm %}">
-		Yeah, this looks right.  Import now! &gt;&gt;</a></div>
 
 </div>
 {% endblock %}

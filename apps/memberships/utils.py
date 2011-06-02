@@ -1,5 +1,6 @@
 import os
 import csv
+from dateutil.parser import parse as dt_parse
 from datetime import datetime
 from django.conf import settings
 from django.utils import simplejson
@@ -107,26 +108,56 @@ def new_mems_from_csv(file_path, app, columns):
     membership_dicts = []
     for membership in csv_to_dict(file_path):  # field mapping
         for native_column, foreign_column in columns.items():
-            # membership['username'] = 'charliesheen'
-            membership[native_column] = membership[foreign_column]
+
+            if foreign_column:  # skip blank option
+                # membership['username'] = 'charliesheen'
+                membership[native_column] = membership[foreign_column]
+
         membership_dicts.append(membership)
 
     membership_set = []
+
     for m in membership_dicts:
 
         now = datetime.now()
 
+        if m['renew-date']:
+            m['subscribe-dt'] = m['renew-date']
+            m['renewal'] = True
+        else:
+            m['subscribe-dt'] = m['join-date']
+            m['renewal'] = False
+
         # get/create objects from strings
-        try: user = User.objects.get(username = m['user-name'])
-        except: continue  # on to the next one
-        try: membership_type = MembershipType.objects.get(name = m['membership-type'])
-        except: continue  # on to the next one
-        try: join_dt = datetime.strptime(slugify(m['join-dt']), '%b-%d-%Y')
-        except: join_dt = now
-        try: renew_dt = datetime.strptime(slugify(m['renew-dt']), '%b-%d-%Y')
-        except: renew_dt = now
-        try: expire_dt = datetime.strptime(slugify(m['expire-dt']), '%b-%d-%Y')
-        except: expire_dt = membership_type.get_expiration_dt(join_dt=join_dt)
+        try:
+            user = User.objects.get(username = m['user-name'])
+        except:
+            # print 'bad username', m['user-name']
+            continue  # on to the next one
+
+        try:
+            membership_type = MembershipType.objects.get(name = m['membership-type'])
+        except:
+            # print 'bad membership type', m['membership-type']
+            continue  # on to the next one
+
+        try: subscribe_dt = dt_parse(m['subscribe-dt'])
+        except: subscribe_dt = now
+        try: expire_dt = dt_parse(m['expire-date'])
+        except: expire_dt = membership_type.get_expiration_dt(subscribe_dt=subscribe_dt)
+
+        user_attrs = (
+            m.get('First Name'),
+            m.get('Last Name'),
+            m.get('Email'),
+        )
+
+        # update user; TODO use field types for more optimal import
+        if any(user_attrs):
+            user.first_name = m.get('First Name') or user.first_name
+            user.last_name = m.get('Last Name') or user.last_name
+            user.email = m.get('Email') or user.email
+            user.save()
 
         memberships = Membership.objects.filter(
             user=user,
@@ -143,13 +174,12 @@ def new_mems_from_csv(file_path, app, columns):
             membership.member_number = m.get('member-number') or 0
             membership.owner = user
             membership.creator = user
-            membership.join_dt = join_dt
-            membership.renew_dt = renew_dt
+            membership.subscribe_dt = subscribe_dt
             membership.payment_method = m.get('payment-method') or ''
             membership.renewal = m.get('renewal') or False
             membership.status = m.get('status') or True
             membership.status_detail = m.get('status-detail') or 'Active'
-            membership.expiration_dt = expire_dt
+            membership.expire_dt = expire_dt
 
         membership_set.append(membership)
 
