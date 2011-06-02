@@ -136,6 +136,10 @@ class CorporateMembership(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
         
+    @property   
+    def module_name(self):
+        return self._meta.module_name
+        
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
         """
@@ -461,6 +465,13 @@ class CorpMembRenewEntry(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True)
     status_detail = models.CharField(max_length=50)   # pending, approved and disapproved
+    
+    @property   
+    def module_name(self):
+        return self._meta.module_name.lower()
+    
+    def indiv_memb_renew_entries(self):
+        return self.indivmembrenewentry_set.all()
     
     def get_payment_description(self, inv):
         return self.corporate_membership.get_payment_description(inv)
