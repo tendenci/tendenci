@@ -33,6 +33,9 @@ class Command(BaseCommand):
             reg_conf_pricing.regular_dt = config.regular_dt
             reg_conf_pricing.late_dt = config.late_dt
             reg_conf_pricing.end_dt = config.end_dt
+            reg_conf_pricing.allow_anonymous = True
+            reg_conf_pricing.allow_user = False
+            reg_conf_pricing.allow_member = False
 
             reg_conf_pricing.save()
 

@@ -28,6 +28,9 @@ class Migration(SchemaMigration):
             ('regular_dt', self.gf('django.db.models.fields.DateTimeField')()),
             ('late_dt', self.gf('django.db.models.fields.DateTimeField')()),
             ('end_dt', self.gf('django.db.models.fields.DateTimeField')(default=0)),
+            ('allow_anonymous', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('allow_user', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('allow_member', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal('events', ['RegConfPricing'])
 

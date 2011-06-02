@@ -66,7 +66,7 @@
         <div class="event-title">{{ event.title }}</div>
         <div class="event-cancel-amount">Cancelling {{ registrants|length }} registration(s)</div>
         {% if cancelled_registrants %}
-            <div class="event-cancel-amount light">{{ registrants|length }} registration(s) already cancelled</div>
+            <div class="event-cancel-amount light">{{ cancelled_registrants|length }} registration(s) already cancelled</div>
         {% endif %}
     </div>
     <div class="event-registrants">
