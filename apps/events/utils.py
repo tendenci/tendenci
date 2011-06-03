@@ -605,21 +605,26 @@ def get_pricing(user, event, pricing=None):
            '')
         )
 
+    # pop out the empty ones if they exist
+    pricing_list = [i for i in pricing_list if i]
+
     # sort the pricing from smallest to largest
     # by price
-    sorted_pricing_list = sorted(
-        pricing_list, 
-        key=lambda k: k['amount']
-    )
+    sorted_pricing_list = []
+    if pricing_list:
+        sorted_pricing_list = sorted(
+            pricing_list, 
+            key=lambda k: k['amount']
+        )
 
-    # set a default pricing on the first
-    # one that qualifies
-    for price in sorted_pricing_list:
-        if price['qualifies']:
-            price.update({
-                'default': True,
-            })
-            break
+        # set a default pricing on the first
+        # one that qualifies
+        for price in sorted_pricing_list:
+            if price['qualifies']:
+                price.update({
+                    'default': True,
+                })
+                break
 
     return sorted_pricing_list
 
