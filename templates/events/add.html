@@ -21,7 +21,7 @@
     {% event_nav request.user %}
 
     <div class="event-wrap">
-    	<form action="{% url event.add %}" method="post">
+    	<form action="{% url event.add %}" method="post" enctype="multipart/form-data">
     	<div class="forms">
     		{{ multi_event_forms|styled_multi_forms }}
 			<input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL 'Event' %}" />

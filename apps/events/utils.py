@@ -560,12 +560,7 @@ def get_pricing(user, event, pricing=None):
                qualifies, 
                '')
             )
-            continue   
-
-        # Admin only price
-        if not any([price.allow_user, price.allow_anonymous, price.allow_member]):
-            if not is_admin(user):
-                continue               
+            continue            
 
         # Group based permissions
         if price.group:
@@ -577,6 +572,11 @@ def get_pricing(user, event, pricing=None):
                    'group')
                 )
                 continue
+
+        # Admin only price
+        if not any([price.allow_user, price.allow_anonymous, price.allow_member]):
+            if not is_admin(user):
+                continue      
 
         # User permissions
         if price.allow_user and not user.is_authenticated():
