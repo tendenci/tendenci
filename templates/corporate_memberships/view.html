@@ -34,13 +34,25 @@
 	    </form>
 
 		<div class="content">
+			<div style="float: right;">
+				<a href="{% url membership.application_details_corp_pre corporate_membership.corp_app.memb_app.slug corp_memb.id %}">Join under this corporation</a>
+			</div>
 			{% has_perm request.user corporate_memberships.change_corpapp corporate_membership.corp_app as can_change %}
-			 {% if can_change %}
-			 <div class="corp-app-name">
-			 	App: <a href="{% url admin:corporate_memberships_corpapp_change corporate_membership.corp_app.id %}">{{ corporate_membership.corp_app.name }}</a>
-			 </div>
-			 {% endif %}
 			 
+			 <div class="corp-app-name">
+			 {% if can_change %}
+			 	App: <a href="{% url admin:corporate_memberships_corpapp_change corporate_membership.corp_app.id %}">{{ corporate_membership.corp_app.name }}</a>
+			 {% else %}
+			 	App: {{ corporate_membership.corp_app.name }}
+			 {% endif %}
+			 </div>
+			 
+		 	{% if corporate_membership.can_renew %}
+    			<div><a href="{% url corp_memb.renew corporate_membership.id %}" style="background-color:yellow;">Renew</a></div>
+    		{% endif %}
+			   
+			 
+			 <div style="clear:right;"></div>
 			 {% for field_obj in field_objs %}
 			 	{% if field_obj.field_type == 'section_break' or field_obj.field_type == 'page_break' %}
 			 		<div class="section-break{% if field_obj.admin_only %} admin-only{% endif %}">
@@ -120,20 +132,9 @@
 {% endblock %}
 
 {% block extra_body %}
- <script type="text/javascript">
-	$(document).ready(function(){
-
-		// delete confirmation
-		$('.delete').click(function(){
-			var delete_corp_memb = confirm('Permenantly delete {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Membership' %}?');	// confirm
-			if(delete_corp_memb) $(this).parents('.corpmemb-view').find('form[name="corp-memb-delete"]').submit() // delete: if OK
-			return false;	// cancel
-		});
-	});
-   </script>
 <script>
 	var filename = "{{ STATIC_URL }}js/global/dropdown.js";
-	
+
 	if (typeof dropdown == "undefined")
 	{
 		var fileref=document.createElement('script');
@@ -143,12 +144,23 @@
 		head.appendChild(fileref);
 	}
 </script>
-<script type="text/javascript">
-var iconrow = new dropdown({
-	container:	'more-options-wrap',
-	trigger:	'more-options-trigger',
-	target:		'more-options-target'
-});
-</script>
+ <script type="text/javascript">
+	$(document).ready(function(){
+
+		// delete confirmation
+		$('.delete').click(function(){
+			var delete_corp_memb = confirm('Permenantly delete {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Membership' %}?');	// confirm
+			if(delete_corp_memb) $(this).parents('.corpmemb-view').find('form[name="corp-memb-delete"]').submit() // delete: if OK
+			return false;	// cancel
+		});
+		
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+		
+	});
+   </script>
 	
 {% endblock %}
