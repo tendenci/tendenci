@@ -398,6 +398,58 @@ def renew_conf(request, id, template="corporate_memberships/renew_conf.html"):
                'renew_entry': renew_entry,
                }
     return render_to_response(template, context, RequestContext(request))
+
+
+@login_required
+def approve(request, id, template="corporate_memberships/approve.html"):
+    corporate_membership = get_object_or_404(CorporateMembership, id=id)
+    
+    user_is_admin = is_admin(request.user)
+    if not user_is_admin:
+        raise Http403
+
+    try:
+        renew_entry = CorpMembRenewEntry.objects.get(pk=corporate_membership.renew_entry_id)
+    except CorpMembRenewEntry.DoesNotExist:
+        renew_entry = None
+        
+    if renew_entry:
+        indiv_renew_entries = renew_entry.indiv_memb_renew_entries()
+        membership_type = corporate_membership.corporate_membership_type.membership_type
+        new_expiration_dt = membership_type.get_expiration_dt(renewal=True,
+                                                join_dt=corporate_membership.join_dt,
+                                                renew_dt=renew_entry.create_dt)
+    else:
+        indiv_renew_entries = None
+        
+    if request.method == "POST":
+        if 'approve' in request.POST:
+            if renew_entry:
+                # approve the renewal
+                corporate_membership.approve_renewal(request)
+                # send an email to dues reps
+                recipients = dues_rep_emails_list(corporate_membership)
+                extra_context = {
+                    'object': corporate_membership,
+                    'request': request,
+                    'corp_renew_entry': renew_entry,
+                    'invoice': renew_entry.invoice,
+                }
+                send_email_notification('corp_memb_renewed_user', recipients, extra_context)
+        else:
+            if 'disapprove' in request.POST:
+                # disapprove the renewal
+                pass
+    
+        
+    
+    
+    context = {"corporate_membership": corporate_membership,
+               'renew_entry': renew_entry,
+               'indiv_renew_entries': indiv_renew_entries,
+               'new_expiration_dt': new_expiration_dt,
+               }
+    return render_to_response(template, context, RequestContext(request))
     
     
 
