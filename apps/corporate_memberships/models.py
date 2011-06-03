@@ -329,7 +329,7 @@ class CorporateMembership(TendenciBaseModel):
         if is_admin(this_user): return True
         
         if not this_user.is_anonymous():
-            if self.status == 1 and self.status_detail == 'active':
+            if self.status == 1 and (self.status_detail not in ['inactive', 'admin hold'] ):
                 if self.is_rep(this_user): return True
                 if self.creator:
                     if this_user.id == self.creator.id: return True
@@ -361,6 +361,14 @@ class CorporateMembership(TendenciBaseModel):
         now = datetime.now()
         return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
     
+    def get_pending_renewal_entry(self):
+        try:
+            return CorpMembRenewEntry.objects.get(id=self.renew_entry_id, 
+                                                  status_detail__in=['pending', 'paid - pending approval'])
+        except CorpMembRenewEntry.DoesNotExist:
+            return None
+        
+    
     @property
     def is_expired(self):
         if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
@@ -371,8 +379,20 @@ class CorporateMembership(TendenciBaseModel):
     def is_in_grace_period(self):
         if self.is_expired:
             grace_period_end_dt = self.expiration_dt + timedelta(days=self.corporate_membership_type.membership_type.expiration_grace_period)
+            
             return datetime.now() < grace_period_end_dt
         return False
+    
+    @property
+    def real_time_status_detail(self):
+        if self.is_expired:
+            if self.is_in_grace_period:
+                return "expired - in grace period"
+            else:
+                return "expired"
+        else:
+            return self.status_detail
+            
     
     def archive(self, user=None):
         """
