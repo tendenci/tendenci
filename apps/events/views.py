@@ -266,7 +266,13 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 for speaker in speakers:
                     speaker.event = [event]
                     speaker.save()
-                    File.objects.save_files_for_instance(request, speaker)
+                    files = File.objects.save_files_for_instance(request, speaker)
+                    # set file permissions
+                    for f in files:
+                        f.allow_anonymous_view = event.allow_anonymous_view
+                        f.allow_user_view = event.allow_user_view
+                        f.allow_member_view = event.allow_member_view
+                        f.save()
 
                 for regconf_price in regconf_pricing:
                     regconf_price.reg_conf = regconf
@@ -442,7 +448,13 @@ def add(request, year=None, month=None, day=None, \
                 for speaker in speakers:
                     speaker.event = [event]
                     speaker.save()
-                    File.objects.save_files_for_instance(request, speaker)
+                    files = File.objects.save_files_for_instance(request, speaker)
+                    # set file permissions
+                    for f in files:
+                        f.allow_anonymous_view = event.allow_anonymous_view
+                        f.allow_user_view = event.allow_user_view
+                        f.allow_member_view = event.allow_member_view
+                        f.save()
                     
                 for regconf_price in regconf_pricing:
                     regconf_price.reg_conf = regconf
