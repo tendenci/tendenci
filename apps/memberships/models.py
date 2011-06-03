@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.db.models.query_utils import Q
 from django.template import Context, Template
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
@@ -298,7 +299,26 @@ class Membership(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
-        
+
+    @property
+    def entry_items(self):
+        """
+        Returns a dictionary of entry items.
+        The approved entry that is associated with this membership.
+        """
+        items = {}
+
+        try:  # membership was created when entry was approved
+            entry = self.entries.get(decision_dt=datetime.now())
+        except entry.DoesNotExist as e:
+            return items  # return {}
+
+        for field in entry.fields.all():
+            label = slugify(field.field.label).replace('-','_')
+            items[label] = field.value
+
+        return items
+
     def get_renewal_period_dt(self):
         """
         calculate and return a tuple of renewal period dt (the renewal window):

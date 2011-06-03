@@ -63,6 +63,9 @@ def register_button(context):
     user = context['user']
     reg8n_config = event.registration_configuration
 
+    if not reg8n_config:
+        return {}
+
     # Set the variables ------------------
 
     reg8n_enabled = reg8n_config and reg8n_config.enabled
