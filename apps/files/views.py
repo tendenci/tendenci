@@ -17,9 +17,9 @@ from event_logs.models import EventLog
 def index(request, id=None, size=None, download=False, template_name="files/view.html"):
     if not id: return HttpResponseRedirect(reverse('file.search'))
 
-    files = File.objects.search('"pk:%s"'%id, user=request.user)
-    if files: file = files[0].object
-    else: raise Http404
+    file = get_object_or_404(File, pk=id)
+    if not has_perm(request.user, 'files.view_file', file):
+        raise Http403
 
     if download: attachment = 'attachment;'
     else: attachment = ''
