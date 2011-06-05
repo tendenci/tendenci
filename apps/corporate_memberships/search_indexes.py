@@ -1,6 +1,6 @@
 from haystack import indexes
 from haystack import site
-from corporate_memberships.models import CorporateMembership
+from corporate_memberships.models import CorporateMembership, CorpMembRenewEntry
 
 
 class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
@@ -22,6 +22,7 @@ class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
     join_dt = indexes.DateTimeField(model_attr='join_dt')
     renew_dt = indexes.DateTimeField(model_attr='renew_dt', null=True)
     expiration_dt = indexes.DateTimeField(model_attr='expiration_dt', null=True)
+    renew_entry_id = indexes.IntegerField(model_attr='renew_entry_id', null=True)
 
     # TendenciBaseModel Fields
     create_dt = indexes.DateTimeField(model_attr='create_dt')
@@ -31,6 +32,10 @@ class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
     owner_username = indexes.CharField(model_attr='owner_username', default='')
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
+    
+    is_join_pending = indexes.IntegerField(model_attr='is_join_pending', default=0)
+    is_renewal_pending = indexes.IntegerField(model_attr='is_renewal_pending', default=0)
+    is_pending = indexes.IntegerField(model_attr='is_pending', default=0)
 
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
@@ -53,5 +58,7 @@ class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
     def prepare_corp_app(self, obj):
         if obj.corp_app:
             return obj.corp_app.name
+
+        
 
 site.register(CorporateMembership, CorporateMembershipIndex)

@@ -2,6 +2,7 @@
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
 
+ {% is_admin request.user as is_admin %}
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {#{% has_perm user corporate_memberships.add_corporatemembership as can_add_corpmemb %}#}
 
@@ -42,6 +43,10 @@
 				{% endif %}
 			{% endif %}
 			<li><a href="{% url corp_memb.search %}">Search</a></li>
+			
+			{% if is_admin %}
+				<li><a href="{% url corp_memb.search %}?q=is_pending:true">Pendings</a></li>
+			{% endif %}
 			
 			{% if user.is_authenticated %}
 				<li>{% corp_memb_render_add_links %}</li>
