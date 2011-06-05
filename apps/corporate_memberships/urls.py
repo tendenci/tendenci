@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('corporate_memberships.views',                  
+urlpatterns = patterns('corporate_memberships.views', 
+    url(r'^$', 'search', name="corp_memb"),                 
     url(r"^(?P<slug>.*)/add/$", "add", name="corp_memb.add"),
     url(r"^add_conf/(?P<id>\d+)/$", "add_conf", name="corp_memb.add_conf"),
     url(r"^edit/(?P<id>\d+)/$", "edit", name="corp_memb.edit"),

@@ -300,7 +300,34 @@ class CorporateMembership(TendenciBaseModel):
                 }
                 send_email_notification('corp_memb_renewal_approved', recipients, extra_context)
                 
+    def disapprove_renewal(self, request, **kwargs):
+        """
+        deny the corporate membership renewal
+        set the status detail of renew entry to 'disapproved'
+        do we need to de-activate the corporate membership?
+        """
+        if self.renew_entry_id:
+            renew_entry = CorpMembRenewEntry.objects.get(id=self.renew_entry_id)
+            if renew_entry.status_detail not in ['approved', 'disapproved']:
+                renew_entry.status_detail = 'disapproved'
+                renew_entry.save()
                 
+    def approve_join(self, request, **kwargs):
+        self.approved = True
+        self.approved_denied_dt = datetime.now()
+        self.approved_denied_user = request.user
+        self.status = 1
+        self.status_detail = 'active'
+        self.save()
+    
+    def disapprove_join(self, request, **kwargs):
+        self.approved = False
+        self.approved_denied_dt = datetime.now()
+        self.approved_denied_user = request.user
+        self.status = 1
+        self.status_detail = 'disapproved'
+        self.save()
+                            
                 
     def is_rep(self, this_user):
         """
@@ -367,6 +394,20 @@ class CorporateMembership(TendenciBaseModel):
                                                   status_detail__in=['pending', 'paid - pending approval'])
         except CorpMembRenewEntry.DoesNotExist:
             return None
+        
+    
+    @property
+    def is_join_pending(self):
+        return self.status_detail in ['pending', 'paid - pending approval']
+    
+    @property
+    def is_renewal_pending(self):
+        renew_entry = self.get_pending_renewal_entry()
+        return renew_entry <> None
+    
+    @property
+    def is_pending(self):
+        return self.is_join_pending or self.is_renewal_pending
         
     
     @property
