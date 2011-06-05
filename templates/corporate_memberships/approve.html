@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 <style>
 #indiv-entries{
-	margin: 3px 0 1em 2em;
+	margin: 5px 0 1em 2em;
 	display: none;
 }
 #indiv-entries table{
@@ -84,7 +84,8 @@
 	   	<br /><br />
 	   	The number of individual memberships renewed in this transaction: <b>{{ indiv_renew_entries.count }}</b>
 	   	{% if indiv_renew_entries.count > 0 %}
-		   <span id="toggle-indiv-entries"><a href="javascript:;">Show Details</a></span>
+	   		
+		   <small>(<span id="toggle-indiv-entries"><a href="javascript:;">Show Details</a></span>)</small>
 		   <div id="indiv-entries">
 			   <table width="70%">
 				<tr><td width="50%" class="indiv-header">Name</td><td width="50%" class="indiv-header">Member Number</td></tr>
@@ -103,11 +104,11 @@
    {% endif %}
    <p>&nbsp;</p>     
 <form action="" method="post">
+<input type="submit" id="disapprove-button" name="disapprove" value="Disapprove" />
+
+&nbsp;&nbsp;&nbsp;&nbsp;
 
 <input type="submit" id="approve-button" name="approve" value="Approve" />
-&nbsp;&nbsp;&nbsp;&nbsp;
-or
-<input type="submit" id="disapprove-button" name="disapprove" value="Disapprove" />
 </form>
                      
 </div>
