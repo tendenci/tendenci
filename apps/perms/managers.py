@@ -242,7 +242,7 @@ class ObjectPermissionManager(models.Manager):
                         }
                         try:
                             self.get_or_create(**defaults)
-                        except Permission.MultipleObjectsReturned as e:
+                        except self.model.MultipleObjectsReturned as e:
                             pass
 
                 else:  # all default permissions
@@ -257,7 +257,7 @@ class ObjectPermissionManager(models.Manager):
                         }
                         try:
                             self.get_or_create(**defaults)
-                        except Permission.MultipleObjectsReturned as e:
+                        except self.model.MultipleObjectsReturned as e:
                             pass
 
         else:  # not muli_user
@@ -276,7 +276,7 @@ class ObjectPermissionManager(models.Manager):
                     }
                     try:
                         self.get_or_create(**defaults)
-                    except Permission.MultipleObjectsReturned as e:
+                    except self.model.MultipleObjectsReturned as e:
                         pass
 
             else:  # all default permissions
@@ -291,7 +291,7 @@ class ObjectPermissionManager(models.Manager):
                     }
                     try:
                         self.get_or_create(**defaults)
-                    except Permission.MultipleObjectsReturned as e:
+                    except self.model.MultipleObjectsReturned as e:
                         pass
 
     def remove_all(self, object):
