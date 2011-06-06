@@ -41,6 +41,17 @@ class BeforeAndAfter(models.Model):
     admin_notes = models.TextField(_('admin notes'), blank=True)
     meta = models.OneToOneField(MetaTags, null=True, blank=True)
     
+    def get_featured(self):
+        """
+        Returns the featured before and after photoset.
+        The first photoset in the list.
+        """
+        photosets = self.photoset_set.all().order_by('order')
+        try:
+            return photosets[0]
+        except:
+            return None
+    
     def get_meta(self, name):
         """
         This method is standard across all models that are
@@ -62,7 +73,7 @@ class BeforeAndAfter(models.Model):
         
 
 class PhotoSet(models.Model):
-    
+    order = models.IntegerField(_('order'), blank=True, null=True)
     before_and_after = models.ForeignKey(BeforeAndAfter)
     before_photo = models.ImageField(upload_to=file_directory)
     after_photo = models.ImageField(upload_to=file_directory)
