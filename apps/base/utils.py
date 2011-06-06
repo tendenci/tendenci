@@ -149,6 +149,20 @@ def get_unique_username(user):
         user.username = '%s%s' % (user.username, str(num))
    
     return user.username
+
+
+def send_email_notification(notice_name, recipients, extra_context):
+    """
+    Send email notice specified by the notice_name to the recipients.
+    recipients - a list of emails
+    """
+    try:
+        from notification import models as notification
+    except:
+        notification = None
+    if notification and recipients:
+        notification.send_emails(recipients, notice_name, extra_context)
+    
                                        
 def generate_meta_keywords(value):
     """ 
