@@ -1,6 +1,6 @@
-{% extends "site_base.html" %}
+{% extends "base-wide.html" %}
 
-{% block title %}Corporate Memberships{% endblock %}
+{% block title %}{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Membership' %} - {% endblock %}
 
 {% block extra_head %}
 {{ block.super }}

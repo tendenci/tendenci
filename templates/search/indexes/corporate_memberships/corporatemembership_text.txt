@@ -17,3 +17,6 @@ authorized domain:{{ authorized_domain }}
 {% for rep in object.reps.all %}
 rep:{{ rep.user.username }} {{ rep.user.first_name }} {{ rep.user.last_name }}
 {% endfor %}
+is_join_pending:{{ object.is_join_pending }}
+is_renewal_pending:{{ object.is_renewal_pending }}
+is_pending:{{ object.is_pending }}

@@ -9,7 +9,15 @@
 <div class="t-iconrow">
 
 	{% if can_edit or allow_edit %}
-	<span{% if opt_object.status_detail in 'pending'%} class="status-pending"{%endif%}>{{ opt_object.status_detail|capfirst }}</span>
+		{% if opt_object.real_time_status_detail in 'expired - in grace period' %}
+			<span class="status-expired">{{ opt_object.real_time_status_detail|capfirst }}</span>
+		{% else %}
+			{% if opt_object.status_detail in 'paid - pending approval'%}
+				<span class="status-pending">{{ opt_object.real_time_status_detail|capfirst }}</span>
+			{% else %}
+				<span>{{ opt_object.real_time_status_detail|capfirst }}</span>
+			{% endif %}
+		{% endif %}
 	{% endif %}
 
 	{% if can_edit or allow_edit %}
