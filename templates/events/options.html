@@ -4,6 +4,7 @@
 {% has_perm user events.change_event opt_object as can_edit %}
 {% has_perm user events.delete_event opt_object as can_delete %}
 
+{% if opt_object %}
 <style type="text/css">
 	.event-type-label {
 		padding: 3px 5px;
@@ -47,3 +48,4 @@
 	  </div>
   {% endif %}
 </div>
+{% endif %}
