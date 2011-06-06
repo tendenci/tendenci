@@ -192,7 +192,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         organizer.event = [event]
         organizer.save()
 
-    if has_perm(request.user,'events.change_event',event):    
+    if has_perm(request.user,'events.change_event', event):    
         if request.method == "POST":
 
             form_event = form_class(request.POST, instance=event, user=request.user)
@@ -293,18 +293,24 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
             form_event = form_class(instance=event, user=request.user)
             form_place = PlaceForm(instance=event.place, prefix='place')
-            form_speaker = SpeakerFormSet(queryset=event.speaker_set.all(), 
-                prefix='speaker')
-            form_organizer = OrganizerForm(instance=organizer, 
-                prefix='organizer')
-            form_regconf = Reg8nEditForm(instance=event.registration_configuration, 
-                prefix='regconf')
-            form_grpregconf = GrpRegFormSet(
-                    queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
-                    prefix='grpregconf')
-            form_special = SpecialPricingFormSet(
-                    queryset=event.registration_configuration.specialpricing_set.all(),
-                    prefix='special')
+            form_speaker = SpeakerFormSet(queryset=event.speaker_set.all(), prefix='speaker')
+            form_organizer = OrganizerForm(instance=organizer, prefix='organizer')
+            form_regconf = Reg8nEditForm(instance=event.registration_configuration, prefix='regconf')
+
+            if event.registration_configuration:
+                form_grpregconf = GrpRegFormSet(
+                        queryset=event.registration_configuration.groupregistrationconfiguration_set.all(),
+                        prefix='grpregconf')
+                form_special = SpecialPricingFormSet(
+                        queryset=event.registration_configuration.specialpricing_set.all(),
+                        prefix='special')
+            else:
+                form_grpregconf = GrpRegFormSet(
+                        queryset=GroupRegistrationConfiguration.objects.none(),
+                        prefix='grpregconf')
+                form_special = SpecialPricingFormSet(
+                        queryset=SpecialPricing.objects.none(),
+                        prefix='special')
 
         # response
         return render_to_response(template_name, {
