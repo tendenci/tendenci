@@ -5,7 +5,11 @@
 	{# make 3 blocks in the first box #}
 	<div class="invoice-view-detail-left">
 		{% if obj %}
+			{% if obj.module_name == 'corporatemembership'%}
 			<a href="{% url corp_memb.view obj.id %}" title="View Corporate Membership">{{ obj.id }}</a>
+			{% else %}
+			<a href="{% url corp_memb.view obj.corporate_membership.id %}" title="View Corporate Membership">{{ obj.corporate_membership.id }}</a>
+			{% endif %}
 		{% else %}
 			{{ invoice.object_id }}
 		{% endif%}
@@ -14,12 +18,34 @@
 	<div class="invoice-view-detail-middle">
 		<div class="invoice-item">
 			{% if obj %}
-				{{ obj.name|truncatewords:5 }}
+				{% if obj.module_name == 'corporatemembership'%}
+					<b>{{ obj.name|truncatewords:5 }}</b>
+				{% else %}
+					<b>{{ obj.corporate_membership.name|truncatewords:5 }}</b>
+				{% endif %}
 			{% else %}
 				Corporate Membership Information not available
 			{% endif%}
 		</div>
 		<div class="invoice-item">Corporate Membership Type: {{ obj.corporate_membership_type.name|truncatewords:30 }}</div>
+		
+		{% if obj.module_name == 'corpmembrenewentry' %}
+			{% if obj.indiv_memb_renew_entries %}
+				<br />
+				<div><b>Individual memberships renewed in this transaction:</b></div>
+				<br />
+				<table width="80%">
+				<tr><td width="50%">Name</td><td width="50%">Member Number</td></tr>
+				{% for renew_entry in obj.indiv_memb_renew_entries %}
+					<tr>
+					<td><a href="{% url profile renew_entry.membership.user.username %}">{{ renew_entry.membership.user.get_full_name }}</a></td>
+					<td>{{ renew_entry.membership.member_number }}</td>
+					</tr>
+				{% endfor %}
+				</table>
+			{% endif%}
+		{% endif%}
+		
 	</div>
 	
 	<div class="invoice-view-detail-right">

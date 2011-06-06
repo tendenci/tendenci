@@ -357,6 +357,25 @@ class Membership(TendenciBaseModel):
         entry = self.ma.entries.order_by('-pk')[0]
         init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
         return dict(init_kwargs)
+    
+    def archive(self, user=None):
+        """
+        Copy self to the MembershipArchive table
+        """
+        memb_archive = MembershipArchive()
+        
+        field_names = [field.name for field in self.__class__._meta.fields]
+        field_names.remove('id')
+        field_names.remove('guid') # the archive table doesn't have guid, so remove it
+        
+        for name in field_names:
+            exec("memb_archive.%s=self.%s" % (name, name))
+            
+        memb_archive.membership = self
+        memb_archive.membership_create_dt = self.create_dt
+        memb_archive.membership_update_dt = self.update_dt
+        memb_archive.archive_user = user
+        memb_archive.save()
 
 
 class MembershipArchive(TendenciBaseModel):
@@ -378,6 +397,12 @@ class MembershipArchive(TendenciBaseModel):
     invoice = models.ForeignKey(Invoice, null=True)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     ma = models.ForeignKey("App")
+    
+    membership_create_dt = models.DateTimeField()   # original create dt for the membership entry
+    membership_update_dt = models.DateTimeField()   # original update dt for the membership entry
+    
+    archive_user = models.ForeignKey(User, related_name="membership_archiver", null=True)
+    
     objects = MembershipManager()
 
     class Meta:
@@ -993,6 +1018,7 @@ class AppEntry(TendenciBaseModel):
 
         # if auto-approve; approve entry; send emails
         # -------------------------------------------
+        from notification import models as notification
 
         if not self.membership_type.require_approval:
 
@@ -1090,7 +1116,6 @@ class AppFieldEntry(models.Model):
 
         return None
     
-
 # Moved from management/__init__.py to here because it breaks 
 # the management commands due to the ImportError.
 # assign models permissions to the admin auth group
