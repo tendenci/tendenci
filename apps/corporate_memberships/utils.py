@@ -237,6 +237,33 @@ def dues_rep_emails_list(corp_memb):
                                                       is_dues_rep=1)
     return [dues_rep.user.email for dues_rep in dues_reps if dues_rep.user.email]
 
+def corp_memb_update_perms(corp_memb, **kwargs):
+    """
+    update object permissions to creator, owner and representatives.
+    view and change permissions only - no delete permission assigned 
+    because we don't want them to delete corporate membership records.
+    """
+    from perms.object_perms import ObjectPermission
+    
+    ObjectPermission.objects.remove_all(corp_memb)
+    
+    perms = ['view', 'change']
+    
+    # creator and owner
+    if corp_memb.creator:
+        ObjectPermission.objects.assign(corp_memb.creator, corp_memb, perms=perms)
+        
+    if corp_memb.owner:
+        ObjectPermission.objects.assign(corp_memb.owner, corp_memb, perms=perms)
+        
+    # dues and members reps
+    reps = CorporateMembershipRep.objects.filter(corporate_membership=corp_memb)
+    for rep in reps:
+        ObjectPermission.objects.assign(rep.user, corp_memb, perms=perms)
+        
+    return corp_memb
+    
+
             
             
         

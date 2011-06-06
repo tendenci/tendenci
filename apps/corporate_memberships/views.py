@@ -22,7 +22,8 @@ from corporate_memberships.forms import CorpMembForm, CorpMembRepForm, RosterSea
 from corporate_memberships.utils import (get_corporate_membership_type_choices, 
                                          get_payment_method_choices,
                                          corp_memb_inv_add, 
-                                         dues_rep_emails_list)
+                                         dues_rep_emails_list,
+                                         corp_memb_update_perms)
 #from memberships.models import MembershipType
 from memberships.models import Membership
 
@@ -94,6 +95,9 @@ def add(request, slug, template="corporate_memberships/add.html"):
             # update corp_memb with inv
             corporate_membership.invoice = inv
             corporate_membership.save()
+            
+            # assign object permissions
+            corp_memb_update_perms(corporate_membership)
             
             # send notification to administrators
             recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
@@ -211,6 +215,8 @@ def edit(request, id, template="corporate_memberships/edit.html"):
     if request.method == "POST":
         if form.is_valid():
             corporate_membership = form.save(request.user)
+            
+            corp_memb_update_perms(corporate_membership)
             
             # send notification to administrators
             if not user_is_admin:
@@ -516,12 +522,12 @@ def view(request, id, template="corporate_memberships/view.html"):
     """  
     corporate_membership = get_object_or_404(CorporateMembership, id=id)
     
-    if not has_perm(request.user,'corporate_memberships.view_corporatemembership',corporate_membership):
+    if not has_perm(request.user, 'corporate_memberships.view_corporatemembership', corporate_membership):
         if not corporate_membership.allow_view_by(request.user):
             raise Http403
     
     can_edit = False
-    if has_perm(request.user,'corporate_memberships.edit_corporatemembership',corporate_membership):
+    if has_perm(request.user, 'corporate_memberships.change_corporatemembership', corporate_membership):
         can_edit = True
     
     user_is_admin = is_admin(request.user)
@@ -631,6 +637,8 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
             rep.corporate_membership = corp_memb
             rep.save()
             
+            corp_memb_update_perms(corp_memb)
+            
             # log an event here
             
             if (request.POST.get('submit', '')).lower() == 'save':
@@ -654,6 +662,7 @@ def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % rep)
             
             rep.delete()
+            corp_memb_update_perms(corp_memb)
                 
             return HttpResponseRedirect(reverse('corp_memb.edit_reps', args=[corp_memb.pk]))
     
