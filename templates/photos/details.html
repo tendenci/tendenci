@@ -98,54 +98,61 @@ $('.photo-options .photo-delete').click(function(){
 
 // keyboard shorcut (left, right)
 $(document).keyup(function(event){
-	if(event.target.tagName == 'INPUT') return false; // avoid input fields
-	if(event.keyCode == 37) $("#photo-prev").click(); // left arrow
-	else if(event.keyCode == 39) $("#photo-next").click(); // right arrow
+  if(event.target.tagName == 'INPUT') return false; // avoid input fields
+  if(event.keyCode == 37) window.location = '{{ photo_prev_url }}'; // left arrow
+  else if(event.keyCode == 39) window.location = '{{ photo_next_url }}'; // right arrow
 });
 
-function supports_history_api() {
-  return !!(window.history && history.pushState);
-}
+// // keyboard shorcut (left, right)
+// $(document).keyup(function(event){
+// 	if(event.target.tagName == 'INPUT') return false; // avoid input fields
+// 	if(event.keyCode == 37) $("#photo-prev").click(); // left arrow
+// 	else if(event.keyCode == 39) $("#photo-next").click(); // right arrow
+// });
 
-function setupHistoryClicks() {
-	addClicker(document.getElementById("image-photo-next"));
-	addClicker(document.getElementById("photo-next"));
-	addClicker(document.getElementById("photo-prev"));
-}
+// function supports_history_api() {
+//   return !!(window.history && history.pushState);
+// }
 
-function addClicker(link) {
-	$(link).click(function(e){
-	    swapPhoto(link.href);
-	    history.pushState(null, null, link.href);
-	    e.preventDefault();
-	});
-}
+// function setupHistoryClicks() {
+// 	addClicker(document.getElementById("image-photo-next"));
+// 	addClicker(document.getElementById("photo-next"));
+// 	addClicker(document.getElementById("photo-prev"));
+// }
 
-function swapPhoto(href) {
-  var req = new XMLHttpRequest();
-  req.open("GET",
-           "/photos/partial/" +
-             href.split("/").slice(4).join("/"),
-           false);
-  req.send(null);
+// function addClicker(link) {
+// 	$(link).click(function(e){
+// 	    swapPhoto(link.href);
+// 	    history.pushState(null, null, link.href);
+// 	    e.preventDefault();
+// 	});
+// }
 
-  if (req.status == 200) {
-    document.getElementById("photo-instance").innerHTML = req.responseText;
-    setupHistoryClicks();
-    return true;
-  }
-  return false;
-}
+// function swapPhoto(href) {
+//   var req = new XMLHttpRequest();
+//   req.open("GET",
+//            "/photos/partial/" +
+//              href.split("/").slice(4).join("/"),
+//            false);
+//   req.send(null);
 
-window.onload = function() {
-  if (!supports_history_api()) { return; }
-  setupHistoryClicks();
-  window.setTimeout(function() {
-    window.addEventListener("popstate", function(e) {
-      swapPhoto(location.href);
-    }, false);
-  }, 1);
-}
+//   if (req.status == 200) {
+//     document.getElementById("photo-instance").innerHTML = req.responseText;
+//     setupHistoryClicks();
+//     return true;
+//   }
+//   return false;
+// }
+
+// window.onload = function() {
+//   if (!supports_history_api()) { return; }
+//   setupHistoryClicks();
+//   window.setTimeout(function() {
+//     window.addEventListener("popstate", function(e) {
+//       swapPhoto(location.href);
+//     }, false);
+//   }, 1);
+// }
 
 </script>
 {% endblock %}
