@@ -468,7 +468,7 @@ class Registration(models.Model):
         super(self.__class__, self).save(*args, **kwargs)
 
     def save_invoice(self, *args, **kwargs):
-        status_detail = kwargs.get('status_detail', 'estimate')
+        status_detail = kwargs.get('status_detail', 'tendered')
         
         object_type = ContentType.objects.get(app_label=self._meta.app_label, 
             model=self._meta.module_name)
