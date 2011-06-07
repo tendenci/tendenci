@@ -34,6 +34,8 @@ from base.utils import send_email_notification
 def add(request, slug, template="corporate_memberships/add.html"):
     """
         add a corporate membership
+        admin - active
+        user - if paid, active, otherwise, pending 
     """ 
     corp_app = get_object_or_404(CorpApp, slug=slug)
     user_is_admin = is_admin(request.user)
@@ -86,8 +88,8 @@ def add(request, slug, template="corporate_memberships/add.html"):
             corporate_membership = form.save(request.user)
             
             # calculate the expiration
-            memb_type = corporate_membership.corporate_membership_type.membership_type
-            corporate_membership.expiration_dt = memb_type.get_expiration_dt(join_dt=corporate_membership.join_dt)
+            corp_memb_type = corporate_membership.corporate_membership_type
+            corporate_membership.expiration_dt = corp_memb_type.get_expiration_dt(join_dt=corporate_membership.join_dt)
             corporate_membership.save()
             
             # generate invoice
@@ -210,12 +212,30 @@ def edit(request, id, template="corporate_memberships/edit.html"):
     
     # we don't need the captcha on edit because it requires login
     #del form.fields['captcha']
+    
+    status_info_before_edit = {'corporate_membership_type': corporate_membership.corporate_membership_type,
+                               'status': corporate_membership.status,
+                               'status_detail': corporate_membership.status_detail}
+    old_corp_memb = CorporateMembership.objects.get(pk=corporate_membership.pk)
         
         
     if request.method == "POST":
         if form.is_valid():
-            corporate_membership = form.save(request.user)
+            corporate_membership = form.save(request.user, commit=False)
             
+            # archive the corporate membership if any of these changed:
+            # corporate_membership_type, status, status_detail
+            need_archive = False
+            for key in status_info_before_edit:
+                exec('value=corporate_membership.%s' % key)
+                if value <> status_info_before_edit[key]:
+                    need_archive = True
+                    break
+                
+            if need_archive:
+                old_corp_memb.archive(request.user)
+            
+            corporate_membership.save()
             corp_memb_update_perms(corporate_membership)
             
             # send notification to administrators
@@ -429,14 +449,14 @@ def approve(request, id, template="corporate_memberships/approve.html"):
         
     if renew_entry:
         indiv_renew_entries = renew_entry.indiv_memb_renew_entries()
-        membership_type = renew_entry.corporate_membership_type.membership_type
-        new_expiration_dt = membership_type.get_expiration_dt(renewal=True,
+        corp_membership_type = renew_entry.corporate_membership_type
+        new_expiration_dt = corp_membership_type.get_expiration_dt(renewal=True,
                                                 join_dt=corporate_membership.join_dt,
                                                 renew_dt=renew_entry.create_dt)
     else:
         indiv_renew_entries = None
-        membership_type = corporate_membership.corporate_membership_type.membership_type
-        new_expiration_dt = membership_type.get_expiration_dt(renewal=False,
+        corp_membership_type = corporate_membership.corporate_membership_type
+        new_expiration_dt = corp_membership_type.get_expiration_dt(renewal=False,
                                                 join_dt=corporate_membership.join_dt,
                                                 renew_dt=corporate_membership.create_dt)
         
@@ -521,6 +541,7 @@ def view(request, id, template="corporate_memberships/view.html"):
         view a corporate membership
     """  
     corporate_membership = get_object_or_404(CorporateMembership, id=id)
+    corporate_membership.status_detail = corporate_membership.real_time_status_detail
     
     if not has_perm(request.user, 'corporate_memberships.view_corporatemembership', corporate_membership):
         if not corporate_membership.allow_view_by(request.user):

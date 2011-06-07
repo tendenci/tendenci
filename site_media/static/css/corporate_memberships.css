@@ -63,3 +63,7 @@ div.forms div.form-field input.timepicker{
 .status-expired{
 	color: red;
 }
+.pending-info-box{
+	background-color: #F7FFAF;
+}
+	
