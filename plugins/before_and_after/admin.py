@@ -13,20 +13,23 @@ class PhotoSetAdmin(admin.StackedInline):
 class BnAAdmin(admin.ModelAdmin):
     form = BnAForm
     inlines = [PhotoSetAdmin,]
-    fieldsets = [('', {
-                      'fields': [
-                        'title',
-                        'category',
-                        'subcategory',
-                        'description',
-                        'tags'
-                      ],
-                      }),
-                     ('Administrator Only', {
-                      'fields': ['admin_notes',], 
-                      'classes': ['admin-only',],
-                    })]
     
+    fieldsets = (
+        (None, {'fields': (
+            'title',
+            'category',
+            'subcategory',
+            'description',
+            'tags',
+        )}),
+        ('Administrative', {'fields': (
+            'allow_anonymous_view',
+            'status',
+            'status_detail',
+            'admin_notes',
+        )}),
+    )
+            
     class Media:
         js = (
             '%sjs/admin/sortable_inline/jquery-1.5.1.min.js' % settings.STATIC_URL,
