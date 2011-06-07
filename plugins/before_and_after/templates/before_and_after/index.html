@@ -1,0 +1,41 @@
+{% extends "before_and_after/base.html" %}
+{% load perm_tags %}
+{% load before_and_after_tags %}
+
+{% block title %}Before and After{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+        {% include "before_and_after/media/css/before_and_after.css" %}
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>Before & After Gallery</h1>
+    <div class="bna-search">
+        {% before_and_after_search %}
+    </div>
+    <div class="bna-categories-wrap">
+        {% for category in categories %}
+            <div class="bna-category">
+                <h3>{{ category.name }}</h3>
+                <img src="{{ category.thumbnail }}">
+                <div class="bna-subcategories">
+                    <ul>
+                        {% for sub in category.subcategory_set.all %}
+                            <li><a>{{ sub.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+        <div style="clear:both"></div>
+    </div>
+</div>
+{% endblock body %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}

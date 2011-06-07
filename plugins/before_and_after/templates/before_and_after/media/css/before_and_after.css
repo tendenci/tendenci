@@ -1,0 +1,43 @@
+.t {
+}
+
+/* general */
+.t h1 {
+	margin: 0 auto 10px 0;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+/* search */
+.t .bna-search {
+    padding: 8px;
+    margin-bottom: 15px;
+    background-color: #EFEFEF;
+}
+
+/* index */
+.t .bna-categories-wrap {
+}
+
+.t .bna-category {
+    float: left;
+    width: 30%;
+    height: 300px;
+    padding: 5px;
+    background-color: #DFDFDF;
+    border: 1px solid #000000;
+    margin: 0px 6px 12px 6px;
+}
+
+.t .bna-category h3 {
+    padding: 5px;
+    text-align: center;
+    background-color: #555555;
+    color: #FFFFFF;
+}
+
+.t .bna-subcategories {
+    padding: 10px 0px;
+}

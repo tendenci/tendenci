@@ -11,29 +11,43 @@ from files.models import file_directory
 from before_and_after.module_meta import BeforeAndAfterMeta
 
 class Category(models.Model):
-    name = models.CharField(_('name'), max_length=200)
+    name = models.CharField(_('name'), max_length=200, unique=True)
     image = models.ImageField(upload_to=file_directory, null=True, blank=True)
     
+    @property
+    def thumbnail(self):
+        if self.image:
+            return self.image.url
+        else:
+            return 'before_and_after/media/i/default.jpg'
+    
+    @property
+    def content_type(self):
+        return 'before_and_after'
+    
     class Meta:
+        verbose_name_plural = "Categories"
         ordering = ('name',)
         
     def __unicode__(self):
         return self.name
     
 class Subcategory(models.Model):
+    category = models.ForeignKey(Category)
     name = models.CharField(_('name'), max_length=200)
     warning = models.BooleanField(_('display warning'))
     
     class Meta:
+        verbose_name_plural = "Subcategories"
+        unique_together = ("category", "name")
         ordering = ('name',)
         
     def __unicode__(self):
         return self.name
         
 
-class BeforeAndAfter(models.Model):
+class BeforeAndAfter(TendenciBaseModel):
     title = models.CharField(_('title'), max_length=200)
-    slug = models.SlugField(_('slug'), unique=True)
     category = models.ForeignKey(Category)
     description = models.TextField(_('description'))
     subcategory = models.ForeignKey(Subcategory, null=True, blank=True)
