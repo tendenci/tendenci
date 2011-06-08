@@ -22,7 +22,8 @@
 	</div>
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
-</body>
+</div>
+</div>
 {% endblock %}
 
 {% block extra_body %}
@@ -30,7 +31,7 @@
 
 <script text="text/javascript">
 $(document).ready(function(){
-
+	console.log("asdf asdf")
     var myurl = "{% url import.user_upload_subprocess id %}";
     var retval;
     var i = 0;
