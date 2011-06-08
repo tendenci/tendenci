@@ -118,7 +118,7 @@ class ListNode(Node):
             tag = tag.strip()
             query = '%s "tag:%s"' % (query, tag)
 
-        # get the list of staff
+        # get the list of items
         items = self.model.objects.search(user=user, query=query)
         objects = []
         
@@ -132,7 +132,7 @@ class ListNode(Node):
                 items = items.order_by(order)
 
             if randomize:
-                objects = [item.object for item in random.sample(items, items.count())][:limit]
+                objects = [item.object for item in random.sample(items, len(items))][:limit]
             else:
                 objects = [item.object for item in items[:limit]]
 

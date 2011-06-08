@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 from django.views.generic.simple import redirect_to
 
+from pluginmanager.models import PluginApp
 
 urlpatterns = patterns('legacy.views',
     # static redirects
@@ -17,5 +18,10 @@ urlpatterns = patterns('legacy.views',
     url(r'^photos/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'photos'}),
     url(r'^photos/albums/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'photo_sets'}),
     url(r'^helpfiles/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'help_files'}),
-    url(r'^(q|quotes)/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'quotes'}),
 )
+
+quotes = PluginApp.objects.filter(is_enabled=True).filter(package__contains='quotes')
+if quotes:
+    urlpatterns += patterns('legacy.views',
+        url(r'^(q|quotes)/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'quotes'}),
+    )
