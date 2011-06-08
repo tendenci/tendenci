@@ -257,7 +257,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         extra_context = {}
 
     notice_type = NoticeType.objects.get(label=label)
-
+    headers = {}
     protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
     current_site = Site.objects.get_current()
 
@@ -318,12 +318,14 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         recipients = [email_addr]
        
         if messages['full'][1] == '.html':
-            headers = {'Content-Type': 'text/html'} 
+            # commented out for Amazon SES
+            # headers = {'Content-Type': 'text/html'} 
             content_type = 'html'
         else:
-            headers = {'Content-Type': 'text/plain'}
+            # commented out for Amazon SES
+            # headers = {'Content-Type': 'text/plain'}
             content_type = 'text'
-            
+
         if reply_to:
             headers['Reply-To'] = reply_to
         if recipient_bcc:
@@ -378,6 +380,7 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
 
     for user in users:
         recipients = []
+        headers = {}
         # get user language for user from language store defined in
         # NOTIFICATION_LANGUAGE_MODULE setting
         try:
@@ -429,16 +432,15 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
         recipients.append('eloyz.email@gmail.com')
         
         if messages['full'][1] == '.html':
-            headers = {'Content-Type': 'text/html'} 
+            # headers = {'Content-Type': 'text/html'} 
             content_type = 'html'
         else:
-            headers = {'Content-Type': 'text/plain'}
+            # headers = {'Content-Type': 'text/plain'}
             content_type = 'text'  
             
         email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
         email.content_subtype = content_type
-        email.send() 
-        # send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, recipients)
+        email.send()
 
     # reset environment to original language
     activate(current_language)
