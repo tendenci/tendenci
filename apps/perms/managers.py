@@ -240,7 +240,11 @@ class ObjectPermissionManager(models.Manager):
                             "content_type": perm.content_type,
                             "user": user,
                         }
-                        self.get_or_create(**defaults)
+                        try:
+                            self.get_or_create(**defaults)
+                        except self.model.MultipleObjectsReturned as e:
+                            pass
+
                 else:  # all default permissions
                     content_type = ContentType.objects.get_for_model(object)
                     perms = Permission.objects.filter(content_type=content_type)
@@ -251,7 +255,11 @@ class ObjectPermissionManager(models.Manager):
                             "content_type": content_type,
                             "user": user,
                         }
-                        self.get_or_create(**defaults)
+                        try:
+                            self.get_or_create(**defaults)
+                        except self.model.MultipleObjectsReturned as e:
+                            pass
+
         else:  # not muli_user
             if perms:
                 for perm in perms:
@@ -266,7 +274,11 @@ class ObjectPermissionManager(models.Manager):
                         "content_type": perm.content_type,
                         "user": user_or_users,
                     }
-                    self.get_or_create(**defaults)
+                    try:
+                        self.get_or_create(**defaults)
+                    except self.model.MultipleObjectsReturned as e:
+                        pass
+
             else:  # all default permissions
                 content_type = ContentType.objects.get_for_model(object)
                 perms = Permission.objects.filter(content_type=content_type)
@@ -277,7 +289,10 @@ class ObjectPermissionManager(models.Manager):
                         "content_type": content_type,
                         "user": user_or_users,
                     }
-                    self.get_or_create(**defaults)
+                    try:
+                        self.get_or_create(**defaults)
+                    except self.model.MultipleObjectsReturned as e:
+                        pass
 
     def remove_all(self, object):
         """

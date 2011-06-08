@@ -1,5 +1,7 @@
 import uuid
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+
 from django import forms
 from django.utils.importlib import import_module
 from django.db import models
@@ -7,6 +9,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
+from base.utils import day_validate
 
 #from completion import AutocompleteProvider, site
 
@@ -17,6 +20,10 @@ from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from corporate_memberships.managers import CorporateMembershipManager
 from perms.utils import is_admin
 #from site_settings.utils import get_setting
+from user_groups.models import GroupMembership
+
+from base.utils import send_email_notification
+
 
 FIELD_CHOICES = (
                     ("CharField", _("Text")),
@@ -75,7 +82,6 @@ class CorporateMembershipType(TendenciBaseModel):
                                                      help_text=_("All individual members applying under or " + \
                                                                  "equal to the threashold limit receive the " + \
                                                                  "threshold prices."))
-
     
     def __unicode__(self):
         return self.name
@@ -84,6 +90,120 @@ class CorporateMembershipType(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
+      
+    # added here temporarily because i cannot use the one in memberships now
+    # switch later if the function in memberships is restored.
+    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
+        """
+        Calculate the expiration date - for join or renew (renewal=True)
+        Examples:
+            For join:
+                expiration_dt = corporate_membership_type.get_expiration_dt(join_dt=membership.join_dt)
+            For renew:
+                expiration_dt = corporate_membership_type.get_expiration_dt(renewal=1,
+                join_dt=membership.join_dt,
+                renew_dt=membership.renew_dt)
+        """
+        mt = self.membership_type
+        now = datetime.now()
+        
+        if not join_dt or not isinstance(join_dt, datetime):
+            join_dt = now
+        if renewal and (not renew_dt or not isinstance(renew_dt, datetime)):
+            renew_dt = now
+        
+        if mt.never_expires:
+            return None
+        
+        if mt.period_type == 'rolling':
+            if mt.period_unit == 'days':
+                return now + timedelta(days=mt.period)
+            
+            elif mt.period_unit == 'months':
+                return now + relativedelta(months=mt.period)
+            
+            else: # if self.period_unit == 'years':
+                if not renewal:
+                    if mt.rolling_option == '0':
+                        # expires on end of full period
+                        return join_dt + relativedelta(years=mt.period)
+                    else: # self.expiration_method == '1':
+                        # expires on ? days at signup (join) month
+                        if not mt.rolling_option1_day:
+                            mt.rolling_option1_day = 1
+                        expiration_dt = join_dt + relativedelta(years=mt.period)
+                        mt.rolling_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1),
+                                                                    mt.rolling_option1_day)
+                        
+                        return datetime(expiration_dt.year, join_dt.month,
+                                                 mt.rolling_option1_day, expiration_dt.hour,
+                                                 expiration_dt.minute, expiration_dt.second)
+                else: # renewal = True
+                    if mt.rolling_renew_option == '0':
+                        # expires on the end of full period
+                        return renew_dt + relativedelta(years=mt.period)
+                    elif mt.rolling_renew_option == '1':
+                        # expires on the ? days at signup (join) month
+                        if not mt.rolling_renew_option1_day:
+                            mt.rolling_renew_option1_day = 1
+                        expiration_dt = renew_dt + relativedelta(years=mt.period)
+                        mt.rolling_renew_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1),
+                                                                    mt.rolling_renew_option1_day)
+                        return datetime(expiration_dt.year, join_dt.month,
+                                                 mt.rolling_renew_option1_day, expiration_dt.hour,
+                                                 expiration_dt.minute, expiration_dt.second)
+                    else:
+                        # expires on the ? days at renewal month
+                        if not mt.rolling_renew_option2_day:
+                            mt.rolling_renew_option2_day = 1
+                        expiration_dt = renew_dt + relativedelta(years=mt.period)
+                        mt.rolling_renew_option2_day = day_validate(datetime(expiration_dt.year, renew_dt.month, 1),
+                                                                    mt.rolling_renew_option2_day)
+                        return datetime(expiration_dt.year, renew_dt.month,
+                                                 mt.rolling_renew_option2_day, expiration_dt.hour,
+                                                 expiration_dt.minute, expiration_dt.second)
+                    
+                    
+        else: #self.period_type == 'fixed':
+            if mt.fixed_option == '0':
+                # expired on the fixed day, fixed month, fixed year
+                if not mt.fixed_option1_day:
+                    mt.fixed_option1_day = 1
+                if not mt.fixed_option1_month:
+                    mt.fixed_option1_month = 1
+                if mt.fixed_option1_month > 12:
+                    mt.fixed_option1_month = 12
+                if not mt.fixed_option1_year:
+                    mt.fixed_option1_year = now.year
+                    
+                mt.fixed_option1_day = day_validate(datetime(mt.fixed_expiration_year,
+                                                                  mt.fixed_expiration_month, 1),
+                                                                    mt.fixed_option1_day)
+                    
+                return datetime(mt.fixed_option1_year, mt.fixed_option1_month,
+                                mt.fixed_option1_day)
+            else: # self.fixed_option == '1'
+                # expired on the fixed day, fixed month of current year
+                if not mt.fixed_option2_day:
+                    mt.fixed_option2_day = 1
+                if not mt.fixed_option2_month:
+                    mt.fixed_option2_month = 1
+                if mt.fixed_option2_month > 12:
+                    mt.fixed_option2_month = 12
+                
+                mt.fixed_expiration_day2 = day_validate(datetime(now.year,
+                                                                mt.fixed_option2_month, 1),
+                                                                mt.fixed_option2_day)
+                
+                expiration_dt = datetime(now.year, mt.fixed_option2_month,
+                                        mt.fixed_option2_day)
+                if mt.fixed_option2_can_rollover:
+                    if not mt.fixed_option2_rollover_days:
+                        mt.fixed_option2_rollover_days = 0
+                    if (now - expiration_dt).days <= mt.fixed_option2_rollover_days:
+                        expiration_dt = expiration_dt + relativedelta(years=1)
+                        
+                return expiration_dt
         
     
 class CorporateMembership(TendenciBaseModel):
@@ -103,6 +223,7 @@ class CorporateMembership(TendenciBaseModel):
     secret_code = models.CharField(max_length=50, blank=True, null=True)
     
     renewal = models.BooleanField(default=0)
+    renew_entry_id = models.IntegerField(default=0, blank=True, null=True) 
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time")) 
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True) 
@@ -130,6 +251,10 @@ class CorporateMembership(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
+        
+    @property   
+    def module_name(self):
+        return self._meta.module_name
         
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -180,13 +305,16 @@ class CorporateMembership(TendenciBaseModel):
         from perms.utils import get_notice_recipients
          
         # approve it
-        if (self.status_detail).lower() <> 'active':
-            self.status_detail = 'active'
-        self.approved = 1
-        self.approved_denied_dt = datetime.now()
-        if not request.user.is_anonymous():
-            self.approved_denied_user = request.user
-        self.save()
+        if self.renew_entry_id:
+            self.approve_renewal(request)
+        else:
+            if (self.status_detail).lower() <> 'active':
+                self.status_detail = 'active'
+            self.approved = 1
+            self.approved_denied_dt = datetime.now()
+            if not request.user.is_anonymous():
+                self.approved_denied_user = request.user
+            self.save()
         
         # send notification to administrators
         recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
@@ -197,6 +325,125 @@ class CorporateMembership(TendenciBaseModel):
                     'request': request,
                 }
                 notification.send_emails(recipients,'corp_memb_paid', extra_context)
+                
+    def approve_renewal(self, request, **kwargs):
+        """
+        Approve the corporate membership renewal, and
+        approve the individual memberships that are 
+        renewed with the corporate_membership
+        """
+        from corporate_memberships.utils import dues_rep_emails_list
+        if self.renew_entry_id:
+            renew_entry = CorpMembRenewEntry.objects.get(id=self.renew_entry_id)
+            if renew_entry.status_detail not in ['approved', 'disapproved']:
+                # 1) archive corporate membership
+                self.archive(request.user)
+                
+                # 2) update the corporate_membership record with the renewal info from renew_entry
+                self.renewal = True
+                self.corporate_membership_type = renew_entry.corporate_membership_type
+                self.payment_method = renew_entry.payment_method
+                self.invoice = renew_entry.invoice
+                self.renew_dt = renew_entry.create_dt
+                self.approved = True
+                self.approved_denied_dt = datetime.now()
+                self.approved_denied_user = request.user
+                self.status = 1
+                self.status_detail = 'active'
+                
+                corp_memb_type = self.corporate_membership_type
+                self.expiration_dt = corp_memb_type.get_expiration_dt(renewal=True,
+                                                                join_dt=self.join_dt,
+                                                                renew_dt=self.renew_dt)
+                self.save()
+                
+                renew_entry.status_detail = 'approved'
+                renew_entry.save()
+                
+                # 3) approve the individual memberships
+                user = request.user
+                if user and not user.is_anonymous():
+                    user_id = user.id
+                    username = user.username
+                else:
+                    user_id = 0
+                    username = ''
+                group = self.corporate_membership_type.membership_type.group
+                
+                ind_memb_renew_entries = IndivMembRenewEntry.objects.filter(corp_memb_renew_entry=renew_entry)   
+                for memb_entry in ind_memb_renew_entries:
+                    membership = memb_entry.membership
+                    membership.archive(user)
+                    
+                    # update the membership record with the renewal info
+                    membership.renewal = True
+                    membership.renew_dt = self.renew_dt
+                    membership.expiration_dt = self.expiration_dt
+                    membership.corporate_membership_id = self.id
+                    membership.membership_type = self.corporate_membership_type.membership_type
+                    membership.status = 1
+                    membership.status_detail = 'active'
+                    
+                    membership.save()
+
+                    # check and add member to the group if not exist
+                    try:
+                        gm = GroupMembership.objects.get(group=group, member=membership.user)
+                    except GroupMembership.DoesNotExist:
+                        gm = None
+                    if gm:
+                        if gm.status_detail != 'active':
+                            gm.status_detail = 'active'
+                            gm.save()
+                    else: 
+                        GroupMembership.objects.create(**{
+                            'group':group,
+                            'member':membership.user,
+                            'creator_id': user_id,
+                            'creator_username': username,
+                            'owner_id':user_id,
+                            'owner_username':username,
+                            'status':True,
+                            'status_detail':'active',
+                        })
+                # email dues reps that corporate membership has been approved
+                recipients = dues_rep_emails_list(self)
+                extra_context = {
+                    'object': self,
+                    'request': request,
+                    'corp_renew_entry': renew_entry,
+                    'invoice': renew_entry.invoice,
+                }
+                send_email_notification('corp_memb_renewal_approved', recipients, extra_context)
+                
+    def disapprove_renewal(self, request, **kwargs):
+        """
+        deny the corporate membership renewal
+        set the status detail of renew entry to 'disapproved'
+        do we need to de-activate the corporate membership?
+        """
+        if self.renew_entry_id:
+            renew_entry = CorpMembRenewEntry.objects.get(id=self.renew_entry_id)
+            if renew_entry.status_detail not in ['approved', 'disapproved']:
+                renew_entry.status_detail = 'disapproved'
+                renew_entry.save()
+                
+    def approve_join(self, request, **kwargs):
+        self.approved = True
+        self.approved_denied_dt = datetime.now()
+        self.approved_denied_user = request.user
+        self.status = 1
+        self.status_detail = 'active'
+        self.save()
+    
+    def disapprove_join(self, request, **kwargs):
+        self.approved = False
+        self.approved_denied_dt = datetime.now()
+        self.approved_denied_user = request.user
+        self.status = 1
+        self.status_detail = 'disapproved'
+        self.save()
+                            
                 
     def is_rep(self, this_user):
         """
@@ -225,7 +472,7 @@ class CorporateMembership(TendenciBaseModel):
         if is_admin(this_user): return True
         
         if not this_user.is_anonymous():
-            if self.status == 1 and self.status_detail == 'active':
+            if self.status == 1 and (self.status_detail not in ['inactive', 'admin hold'] ):
                 if self.is_rep(this_user): return True
                 if self.creator:
                     if this_user.id == self.creator.id: return True
@@ -256,7 +503,71 @@ class CorporateMembership(TendenciBaseModel):
         
         now = datetime.now()
         return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
-
+    
+    def get_pending_renewal_entry(self):
+        try:
+            return CorpMembRenewEntry.objects.get(id=self.renew_entry_id, 
+                                                  status_detail__in=['pending', 'paid - pending approval'])
+        except CorpMembRenewEntry.DoesNotExist:
+            return None
+        
+    
+    @property
+    def is_join_pending(self):
+        return self.status_detail in ['pending', 'paid - pending approval']
+    
+    @property
+    def is_renewal_pending(self):
+        renew_entry = self.get_pending_renewal_entry()
+        return renew_entry <> None
+    
+    @property
+    def is_pending(self):
+        return self.is_join_pending or self.is_renewal_pending
+        
+    
+    @property
+    def is_expired(self):
+        if not self.expiration_dt or not isinstance(self.expiration_dt, datetime):
+            return False
+        return datetime.now() >= self.expiration_dt
+    
+    @property
+    def is_in_grace_period(self):
+        if self.is_expired:
+            grace_period_end_dt = self.expiration_dt + timedelta(days=self.corporate_membership_type.membership_type.expiration_grace_period)
+            
+            return datetime.now() < grace_period_end_dt
+        return False
+    
+    @property
+    def real_time_status_detail(self):
+        if self.is_expired:
+            if self.is_in_grace_period:
+                return "expired - in grace period"
+            else:
+                return "expired"
+        else:
+            return self.status_detail
+            
+    
+    def archive(self, user=None):
+        """
+        Copy self to the CorporateMembershipArchive table
+        """
+        corp_memb_archive = CorporateMembershipArchive()
+        
+        field_names = [field.name for field in self.__class__._meta.fields]
+        field_names.remove('id')
+        
+        for name in field_names:
+            exec("corp_memb_archive.%s=self.%s" % (name, name))
+            
+        corp_memb_archive.corporate_membership = self
+        corp_memb_archive.corp_memb_create_dt = self.create_dt
+        corp_memb_archive.corp_memb_update_dt = self.update_dt
+        corp_memb_archive.archive_user = user
+        corp_memb_archive.save()
         
         
 class AuthorizedDomain(models.Model):
@@ -275,7 +586,8 @@ class CorporateMembershipRep(models.Model):
         unique_together = (("corporate_membership", "user"),)
     
     
-class CorporateMembershipArchive(models.Model):
+class CorporateMembershipArchive(TendenciBaseModel):
+    corporate_membership = models.ForeignKey('CorporateMembership')
     guid = models.CharField(max_length=50)
     corporate_membership_type = models.ForeignKey("CorporateMembershipType") 
     name = models.CharField(max_length=250)
@@ -289,9 +601,10 @@ class CorporateMembershipArchive(models.Model):
     email = models.CharField(_('email'), max_length=200,  blank=True)
     url = models.CharField(_('url'), max_length=100, blank=True, null=True)
     #authorized_domains = models.CharField(max_length=500, blank=True, null=True)
-    secret_code = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    secret_code = models.CharField(max_length=50, blank=True, null=True)
     
     renewal = models.BooleanField(default=0)
+    renew_entry_id = models.IntegerField(default=0, blank=True, null=True) 
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     join_dt = models.DateTimeField(_("Join Date Time")) 
     renew_dt = models.DateTimeField(_("Renew Date Time"), null=True) 
@@ -300,23 +613,16 @@ class CorporateMembershipArchive(models.Model):
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
     approved_denied_user = models.ForeignKey(User, null=True)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
+
+    corp_memb_create_dt = models.DateTimeField()
+    corp_memb_update_dt = models.DateTimeField()
     
-    create_dt = models.DateTimeField()
-    update_dt = models.DateTimeField()
-    creator_id = models.IntegerField(default=0)
-    creator_username = models.CharField(max_length=50)
-    owner_id = models.IntegerField(default=0)   
-    owner_username = models.CharField(max_length=50)
-    status = models.BooleanField()
-    status_detail = models.CharField(max_length=50)
-    
-    archive_dt = models.DateTimeField()
-    archive_user = models.ForeignKey(User, related_name="corp_memb_archiver")
+    archive_user = models.ForeignKey(User, related_name="corp_memb_archiver", null=True)
     
     
     class Meta:
-        verbose_name = _("Corporate Membership")
-        verbose_name_plural = _("Corporate Memberships")
+        verbose_name = _("Corporate Membership Archive")
+        verbose_name_plural = _("Corporate Membership Archives")
     
     def __unicode__(self):
         return "%s (%s)" % (self.user.get_full_name(), self.member_number)
@@ -328,11 +634,32 @@ class CorporateMembershipArchive(models.Model):
         
 class CorpMembRenewEntry(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership")
+    corporate_membership_type = models.ForeignKey("CorporateMembershipType")
+    payment_method = models.CharField(_("Payment Method"), max_length=50)
+    
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True)
-    status_detail = models.CharField(max_length=50)
+    status_detail = models.CharField(max_length=50)   # pending, approved and disapproved
+    
+    @property   
+    def module_name(self):
+        return self._meta.module_name.lower()
+    
+    def indiv_memb_renew_entries(self):
+        return self.indivmembrenewentry_set.all()
+    
+    def get_payment_description(self, inv):
+        return self.corporate_membership.get_payment_description(inv)
+    
+    def make_acct_entries(self, user, inv, amount, **kwargs):
+        return self.corporate_membership.make_acct_entries(user, inv, amount, **kwargs)
+    
+    def auto_update_paid_object(self, request, payment):
+        return self.corporate_membership.auto_update_paid_object(request, payment)
+        
+    
     
 class IndivMembRenewEntry(models.Model):
     corp_memb_renew_entry = models.ForeignKey("CorpMembRenewEntry")

@@ -1,0 +1,39 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+{% load perm_tags %}
+
+{% block title %}Corporate Membership Renewal Confirmation{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% corpmemb_nav request.user corporate_membership %} 
+     <h1>Corporate Membership Renewal Confirmation</h1>
+    <p>
+    Thanks for renewing corporate membership "{{ corporate_membership.name }}"!<br /><br />
+    The status of the renewal: <b>{{ renew_entry.status_detail }}</b> <br /><br />
+    	{% is_admin request.user as admin %}
+    	{% if not admin %}
+    		{% if  renew_entry.status_detail == "pending" or renew_entry.status_detail == "paid - pending approval" %}
+		    	Your membership renewal will be reviewed by an administrator 
+		    	who will be contacting you shortly.
+	    	{% endif %}
+    	{% endif %}
+    
+    </p>
+    {% has_perm request.user corporate_memberships.view_corporatemembership as can_view %}
+    {% has_perm request.user corporate_memberships.change_corporatemembership as can_edit %}
+   	
+   	{% if can_view %}
+    <p><a href="{% url corp_memb.view corporate_membership.id %}">View this Corporate Membership</a></p>
+    {% endif %}
+    {% if can_edit %}
+    <p><a href="{% url corp_memb.edit corporate_membership.id %}">Edit this Corporate Membership</a></p>
+    <p><a href="{% url corp_memb.edit_reps corporate_membership.pk %}">Add/Edit Representatives</a></p>
+    {% endif %}
+</div>
+{% endblock %}
