@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):    
     # authority fields
@@ -28,7 +29,6 @@ class TendenciBaseModel(models.Model):
     @property
     def opt_module_name(self):
         return self._meta.module_name
-                
-    class Meta:
-        abstract = True 
 
+    class Meta:
+        abstract = True
