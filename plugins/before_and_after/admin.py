@@ -26,6 +26,8 @@ class BnAAdmin(admin.ModelAdmin):
             'allow_anonymous_view',
             'status',
             'status_detail',
+            'group_perms',
+            'user_perms',
             'admin_notes',
         )}),
     )
@@ -36,6 +38,15 @@ class BnAAdmin(admin.ModelAdmin):
             '%sjs/admin/sortable_inline/jquery-ui-1.8.13.custom.min.js' % settings.STATIC_URL,
             '%sjs/admin/sortable_inline/stacked-sort.js' % settings.STATIC_URL,
         )
+        
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        inject the user in the form.
+        """
+        print "user: %d" % request.user.id
+        form = super(BnAAdmin, self).get_form(request, obj, **kwargs)
+        form.current_user = request.user
+        return form
     
 admin.site.register(BeforeAndAfter, BnAAdmin)
 admin.site.register(Category)

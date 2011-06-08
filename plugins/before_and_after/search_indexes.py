@@ -2,12 +2,13 @@ from haystack import indexes
 from haystack import site
 
 from before_and_after.models import BeforeAndAfter
+from perms.object_perms import ObjectPermission
 
 class BeforeAndAfterIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr='title')
     category = indexes.CharField(model_attr='category')
-    subcategory = indexes.CharField(model_attr='subcategory')
+    subcategory = indexes.CharField(model_attr='subcategory', null=True)
     
     # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
@@ -27,6 +28,16 @@ class BeforeAndAfterIndex(indexes.RealTimeSearchIndex):
     
     # PK: needed for exclude list_tags
     primary_key = indexes.CharField(model_attr='pk')
+    
+    # permission fields
+    users_can_view = indexes.MultiValueField()
+    groups_can_view = indexes.MultiValueField()
+    
+    def prepare_users_can_view(self, obj):
+        return ObjectPermission.objects.users_with_perms('before_and_after.view_before_and_after', obj)
+
+    def prepare_groups_can_view(self, obj):
+        return ObjectPermission.objects.groups_with_perms('before_and_after.view_before_and_after', obj)
 
     def get_updated_field(self):
         return 'update_dt'
