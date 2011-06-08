@@ -245,7 +245,7 @@ twitterize.is_safe=True
 twitterize.needs_autoescape = True
 
     
-def thumbnail(file, size='200x150'):
+def thumbnail(file, size='200x200'):
     # defining the size
     x, y = [int(x) for x in size.split('x')]
     # defining the filename and the miniature filename

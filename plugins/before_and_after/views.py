@@ -10,10 +10,16 @@ from before_and_after.models import BeforeAndAfter, Category
 def search(request, template_name='before_and_after/search.html'):
     category = request.GET.get('category', None)
     subcategory = request.GET.get('subcategory', None)
+    q = request.GET.get('q', None)
     
-    sqs = SearchQuerySet().filter(category=category, subcategory=subcategory)
+    bnas = BeforeAndAfter.objects.search(query=q, user=request.user)
     
-    return render_to_response(template_name, {'sqs': sqs},
+    if category:
+        bnas = bnas.filter(category=category)
+        if subcategory:
+            bnas = bnas.filter(subcategory=subcategory)
+    
+    return render_to_response(template_name, {'bnas': bnas},
         context_instance=RequestContext(request))
 
 def detail(request, id, template_name='before_and_after/detail.html'):
