@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
+from django.conf import settings
 
 from tagging.fields import TagField
 from meta.models import Meta as MetaTags
@@ -15,11 +16,8 @@ class Category(models.Model):
     image = models.ImageField(upload_to=file_directory, null=True, blank=True)
     
     @property
-    def thumbnail(self):
-        if self.image:
-            return self.image.url
-        else:
-            return 'before_and_after/media/i/default.jpg'
+    def default_image(self):
+        return settings.STATIC_URL + "/images/default-photo.jpg"
     
     @property
     def content_type(self):
@@ -55,6 +53,11 @@ class BeforeAndAfter(TendenciBaseModel):
     admin_notes = models.TextField(_('admin notes'), blank=True)
     meta = models.OneToOneField(MetaTags, null=True, blank=True)
     
+    class Meta:
+        verbose_name = _('Before & After')
+        verbose_name_plural = _('Before & Afters')
+        permissions = (("view_before_and_after","Can view Before and After"),)
+    
     def get_featured(self):
         """
         Returns the featured before and after photoset.
@@ -80,10 +83,6 @@ class BeforeAndAfter(TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
-        
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
-        super(BeforeAndAfter, self).save(*args, **kwargs)
         
 
 class PhotoSet(models.Model):
