@@ -160,11 +160,10 @@ class EventListNode(Node):
             'start_year:%s' % day.year,
         ]
 
-        type_sqs = Type.objects.search()
-        type_sqs = type_sqs.filter(slug=type_slug)
-
-        if type_sqs and type_sqs[0]:
-            type = type_sqs[0].object
+        try:
+            type = Type.objects.get(slug=type_slug)
+        except:
+            pass
 
         if type:
             filters.append('type_id:%s' % type.pk)

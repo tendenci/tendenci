@@ -1221,7 +1221,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                     total_sum += float(reg8n.invoice.total)
                 balance_sum += float(reg8n.invoice.balance)
 
-    num_registrants_who_payed = event.registrants(with_balance=False).count()
+    num_registrants_who_paid = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
 
     return render_to_response(template_name, {
@@ -1229,7 +1229,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         'registrants':registrants,
         'balance_sum':balance_sum,
         'total_sum':total_sum,
-        'num_registrants_who_payed':num_registrants_who_payed,
+        'num_registrants_who_paid':num_registrants_who_paid,
         'num_registrants_who_owe':num_registrants_who_owe,
         'roster_view':roster_view,
         },
