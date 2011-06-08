@@ -23,16 +23,14 @@
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
 </body>
-{# dynamically load jquery #}
-<script>
-	if (!(window.jQuery)) { 
-		var s = document.createElement('script');
-		s.setAttribute('src', '/site_media/static/js/jquery-1.4.2.min.js'); 
-		s.setAttribute('type', 'text/javascript');
-		document.getElementsByTagName('head')[0].appendChild(s);}
-</script>
-<script type="text/javascript">
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+<script text="text/javascript">
 $(document).ready(function(){
+
     var myurl = "{% url import.user_upload_subprocess id %}";
     var retval;
     var i = 0;
