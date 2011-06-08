@@ -70,8 +70,6 @@ class ListStoriesNode(ListNode):
 
             tags = tags.replace('"', '')
             tags = tags.split(',')
-            
-            print tags
 
         if 'user' in self.kwargs:
             try:
@@ -127,7 +125,7 @@ class ListStoriesNode(ListNode):
         # if order is not specified it sorts by relevance
         if items:
             if randomize:
-                objects = [item.object for item in random.sample(items, items.count())][:limit]
+                objects = [item.object for item in random.sample(items, len(items))][:limit]
             else:
                 objects = [item.object for item in items[:limit]]
 
