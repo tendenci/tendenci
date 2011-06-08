@@ -1,0 +1,44 @@
+{% extends "before_and_after/base.html" %}
+{% load pagination_tags %}
+{% load before_and_after_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+
+{% block title %}Before & After{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+        {% include "before_and_after/media/css/before_and_after.css" %}
+    </style>
+{% endblock %}
+
+{% block body %}
+{% autopaginate bnas 5 %}
+
+<div class="t">
+    <h1>Case Studies Search</h1>
+    {% before_and_after_search %}
+    <div class="bna-search-wrap">
+        {% for bna in bnas %}
+        {% with bna.object as bna %}
+            <div class="bna-search-item">
+                <h3><a href="{{ bna.get_absolute_url }}" title="{{ bna.title }}">{{ bna.title }}</a></h3>
+                <p class="bna-search-item-desc">
+                    {% filter striptags|truncatewords:"60" %}
+                        {{ bna.description }}
+                    {% endfilter %}
+                </p>
+            </div>
+        {% endwith %}
+        {% empty %}
+            <p>0 Before & Afters Found</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+{% endblock %}

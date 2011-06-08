@@ -23,14 +23,14 @@
             <div class="bna-category">
                 <h3>{{ category.name }}</h3>
                 {% if category.image %}
-                    <img src="{{ category.image|thumbnail }}">
+                    <img src="{{ category.image|thumbnail:'200x150' }}">
                 {% else %}
                     <img src="{{ category.default_image }}">
                 {% endif %}
                 <div class="bna-subcategories">
                     <ul>
                         {% for sub in category.subcategory_set.all %}
-                            <li><a>{{ sub.name }}</a></li>
+                            <li><a href="{% url before_and_after.search %}?category={{ category.id }}&subcategory={{ sub.id }}">{{ sub.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>

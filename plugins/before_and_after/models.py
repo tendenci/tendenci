@@ -10,6 +10,7 @@ from perms.models import TendenciBaseModel
 from files.models import file_directory
 
 from before_and_after.module_meta import BeforeAndAfterMeta
+from before_and_after.managers import BeforeAndAfterManager
 
 class Category(models.Model):
     name = models.CharField(_('name'), max_length=200, unique=True)
@@ -52,6 +53,8 @@ class BeforeAndAfter(TendenciBaseModel):
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
     admin_notes = models.TextField(_('admin notes'), blank=True)
     meta = models.OneToOneField(MetaTags, null=True, blank=True)
+    
+    objects = BeforeAndAfterManager()
     
     class Meta:
         verbose_name = _('Before & After')
