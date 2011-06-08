@@ -1,6 +1,7 @@
 {% extends "corporate_memberships/base.html" %}
 {% load pagination_tags %}
 {% load base_filters %}
+{% load perm_tags %}
 {% load corporate_memberships_tags %}
 
 {% block title %}{{ block.super }}Corporate Membership Search{% endblock %}
@@ -41,6 +42,8 @@
 	.t-search .search-form input[type="text"]{
 		width: 500px;
 	}
+	
+	
 </style>
 {% endblock %}
 
@@ -49,6 +52,7 @@
 <div class="t-search">
  {% corpmemb_nav request.user %}
  
+ {% is_admin request.user as is_admin %}
 <h1>Corporate Membership Search</h1>
 {% corp_memb_search %}
 {% autopaginate corp_members 10 %}
@@ -96,9 +100,30 @@
 			    							Never Expire
 			    							{% endif %}
 			    		</div>
-			    		{% if corp_memb.can_renew %}
-			    			<a href="{% url corp_memb.renew corp_memb.id %}">Renew</a>
+			    		{% with corp_memb.get_pending_renewal_entry as pending_renewal_entry %}
+			    		{% if pending_renewal_entry %}
+			    			<div class="pending-info-box">
+			    			Renewed on {{ pending_renewal_entry.create_dt|date:"d-M-Y" }}<br />
+			    			Status of Renewal: <span class="status-pending">{{ pending_renewal_entry.status_detail }}</span><br />
+			    			{% if is_admin %}
+			    				<b>Admin</b>: <a href="{% url corp_memb.approve corp_memb.pk %}">Approve / Disapprove</a>
+			    			{% endif %}
+			    			</div>
+			    		{% else %}
+			    			{% if is_admin and corp_memb.is_join_pending %}
+			    				<div class="pending-info-box">
+			    				<b>Admin</b>: <a href="{% url corp_memb.approve corp_memb.pk %}">Approve / Disapprove</a>
+			    				</div>
+			    			{% endif %}
+			    			
+				    		{% if corp_memb.can_renew %}
+				    			<a href="{% url corp_memb.renew corp_memb.id %}" style="background-color:yellow;">Renew</a>
+				    		{% endif %}
 			    		{% endif %}
+			    		
+			    		{% endwith %}
+			    		
+			    		
 			    	</div>
 			    	<div class="clear-left"></div>
 		    	</div>

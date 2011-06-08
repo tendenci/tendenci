@@ -3,6 +3,7 @@ from django.utils.html import strip_tags, strip_entities
 from haystack import indexes
 from haystack import site
 from events.models import Event, Registrant
+from events.utils import count_event_spots_taken
 from perms.object_perms import ObjectPermission
 from events.models import Type as EventType
 
@@ -27,6 +28,9 @@ class EventIndex(indexes.RealTimeSearchIndex):
     status = indexes.IntegerField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
 
+    # amount of registrations spots left
+    spots_taken = indexes.IntegerField()
+
     # permission fields
     users_can_view = indexes.MultiValueField()
     groups_can_view = indexes.MultiValueField()
@@ -45,6 +49,12 @@ class EventIndex(indexes.RealTimeSearchIndex):
         description = strip_tags(description)
         description = strip_entities(description)
         return description
+
+    def prepare_spots_taken(self, obj):
+        if hasattr(obj, 'spots_taken'):
+            return obj.spots_taken
+        else:
+            return count_event_spots_taken(obj)
 
     def prepare_users_can_view(self, obj):
         return ObjectPermission.objects.users_with_perms('events.view_event', obj)

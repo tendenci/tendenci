@@ -20,4 +20,5 @@ is:non-paid
 {% endif %}
 
 hash:{{ object.hash }}
-hash:{{ object.old_hash }}
+hash:{{ object.old_hash1 }}
+hash:{{ object.old_hash2 }}

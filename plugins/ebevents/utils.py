@@ -143,11 +143,12 @@ def get_event_by_id(id, **kwargs):
         event['additional_info2'] = ''
     
     # picture full
-    event['picture_full'] = ''
-    if node.picture_full:
-        event['picture_full'] = node.picture_full.string
-        event['picture_full_height'] = int(node.picture_full['height'])
-        event['picture_full_width'] = int(node.picture_full['width'])
+    # Removed 6/6/2011 at request of client in favor of special media photos
+    #event['picture_full'] = ''
+    #if node.picture_full:
+    #    event['picture_full'] = node.picture_full.string
+    #    event['picture_full_height'] = int(node.picture_full['height'])
+    #    event['picture_full_width'] = int(node.picture_full['width'])
     
     # special media photo fields        
     if node.media_group:

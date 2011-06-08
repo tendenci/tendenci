@@ -38,7 +38,7 @@ on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
 <p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">View event details</a></p>
 </div>
 
-<p>We now have {{ event.registrants.count }} registrants, {{ registrants_paid.count }} payed
+<p>We now have {{ event.registrants.count }} registrants, {{ registrants_paid.count }} paid
     (${{ event.money_collected }}) and {{ registrants_pending.count }} pending ({{ event.money_outstanding }})</p>
 
 <p><a href="{{ SITE_GLOBAL_SITEURL }}/settings/site/global/#id_allnoticerecipients">

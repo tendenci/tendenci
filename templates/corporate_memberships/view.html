@@ -14,7 +14,10 @@
 {% endblock %}
 
 {% block body %}
-
+ {% is_admin request.user as is_admin %}
+ {% has_perm request.user corporate_memberships.change_corpapp corporate_membership.corp_app as can_change_app %}
+ {% has_perm request.user corporate_memberships.change_corporatemembership corporate_membership as can_change %}
+ 
 <div class="t">
     {% corpmemb_nav request.user corporate_membership %} 
 
@@ -34,13 +37,50 @@
 	    </form>
 
 		<div class="content">
-			{% has_perm request.user corporate_memberships.change_corpapp corporate_membership.corp_app as can_change %}
-			 {% if can_change %}
-			 <div class="corp-app-name">
+			
+			<div style="float: right;">
+				{% if corporate_membership.real_time_status_detail == 'active' %}
+				<a href="{% url membership.application_details_corp_pre corporate_membership.corp_app.memb_app.slug corporate_membership.pk %}">Join under this corporation</a>
+				{% endif %}
+				{% with corporate_membership.get_pending_renewal_entry as pending_renewal_entry %}
+				{% if pending_renewal_entry %}
+	    			<div class="pending-info-box">
+	    			Renewed on {{ pending_renewal_entry.create_dt|date:"d-M-Y" }}<br />
+	    			Status of Renewal: <span class="status-pending">{{ pending_renewal_entry.status_detail }}</span><br />
+	    			{% if is_admin %}
+	    				<b>Admin</b>: <a href="{% url corp_memb.approve corporate_membership.pk %}">Approve / Disapprove</a>
+	    			{% endif %}
+	    			</div>
+	    		{% else %}
+	    			{% if is_admin and corp_memb.is_join_pending %}
+	    				<div class="pending-info-box">
+	    				<b>Admin</b>: <a href="{% url corp_memb.approve corporate_membership.pk %}">Approve / Disapprove</a>
+	    				</div>
+	    			{% endif %}
+	    			
+		    		{% if corporate_membership.can_renew %}
+					{% if can_change %}
+		    			<div><a href="{% url corp_memb.renew corporate_membership.id %}" style="background-color:yellow;">Renew</a>&nbsp;&nbsp;&nbsp;</div>
+		    			{% endif %}
+
+		    		{% endif %}
+	    		{% endif %}
+	    		{% endwith %}
+   		
+	    		
+			</div>
+				
+  		
+    		<div class="corp-app-name">
+			 {% if can_change_app %}
 			 	App: <a href="{% url admin:corporate_memberships_corpapp_change corporate_membership.corp_app.id %}">{{ corporate_membership.corp_app.name }}</a>
-			 </div>
+			 {% else %}
+			 	App: {{ corporate_membership.corp_app.name }}
 			 {% endif %}
+			 </div>
+			   
 			 
+			 <div style="clear:right;"></div>
 			 {% for field_obj in field_objs %}
 			 	{% if field_obj.field_type == 'section_break' or field_obj.field_type == 'page_break' %}
 			 		<div class="section-break{% if field_obj.admin_only %} admin-only{% endif %}">
@@ -100,10 +140,12 @@
 				 			
 				 			{% if field_obj.field_name == 'payment_method' %}
 				 				{% if corporate_membership.invoice %}
+				 					{% if is_admin %}
 				 					<div>&nbsp;</div>
 				 					<div>
 				 					<a href="{{ corporate_membership.invoice.get_absolute_url }}">View Invoice</a>
 				 					</div>
+				 					{% endif %}
 				 				{% endif %}
 				 			{% endif %}
 				 			
@@ -120,20 +162,9 @@
 {% endblock %}
 
 {% block extra_body %}
- <script type="text/javascript">
-	$(document).ready(function(){
-
-		// delete confirmation
-		$('.delete').click(function(){
-			var delete_corp_memb = confirm('Permenantly delete {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Membership' %}?');	// confirm
-			if(delete_corp_memb) $(this).parents('.corpmemb-view').find('form[name="corp-memb-delete"]').submit() // delete: if OK
-			return false;	// cancel
-		});
-	});
-   </script>
 <script>
 	var filename = "{{ STATIC_URL }}js/global/dropdown.js";
-	
+
 	if (typeof dropdown == "undefined")
 	{
 		var fileref=document.createElement('script');
@@ -143,12 +174,23 @@
 		head.appendChild(fileref);
 	}
 </script>
-<script type="text/javascript">
-var iconrow = new dropdown({
-	container:	'more-options-wrap',
-	trigger:	'more-options-trigger',
-	target:		'more-options-target'
-});
-</script>
+ <script type="text/javascript">
+	$(document).ready(function(){
+
+		// delete confirmation
+		$('.delete').click(function(){
+			var delete_corp_memb = confirm('Permenantly delete {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Membership' %}?');	// confirm
+			if(delete_corp_memb) $(this).parents('.corpmemb-view').find('form[name="corp-memb-delete"]').submit() // delete: if OK
+			return false;	// cancel
+		});
+		
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+		
+	});
+   </script>
 	
 {% endblock %}

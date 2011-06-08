@@ -14,24 +14,28 @@ from site_settings.utils import get_setting
 
 from event_logs.models import EventLog
 
-from corporate_memberships.models import CorpApp, CorpField, CorporateMembership, CorporateMembershipType
-from corporate_memberships.models import CorporateMembershipRep
+from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,CorporateMembershipType,
+                                          CorporateMembershipRep, 
+                                          CorpMembRenewEntry, 
+                                          IndivMembRenewEntry)
 from corporate_memberships.forms import CorpMembForm, CorpMembRepForm, RosterSearchForm, CorpMembRenewForm
-from corporate_memberships.utils import get_corporate_membership_type_choices, get_payment_method_choices
-from corporate_memberships.utils import corp_memb_inv_add
+from corporate_memberships.utils import (get_corporate_membership_type_choices, 
+                                         get_payment_method_choices,
+                                         corp_memb_inv_add, 
+                                         dues_rep_emails_list,
+                                         corp_memb_update_perms)
 #from memberships.models import MembershipType
 from memberships.models import Membership
 
 from perms.utils import get_notice_recipients
-try:
-    from notification import models as notification
-except:
-    notification = None
+from base.utils import send_email_notification
 
 
 def add(request, slug, template="corporate_memberships/add.html"):
     """
         add a corporate membership
+        admin - active
+        user - if paid, active, otherwise, pending 
     """ 
     corp_app = get_object_or_404(CorpApp, slug=slug)
     user_is_admin = is_admin(request.user)
@@ -84,22 +88,26 @@ def add(request, slug, template="corporate_memberships/add.html"):
             corporate_membership = form.save(request.user)
             
             # calculate the expiration
-            memb_type = corporate_membership.corporate_membership_type.membership_type
-            corporate_membership.expiration_dt = memb_type.get_expiration_dt(join_dt=corporate_membership.join_dt)
+            corp_memb_type = corporate_membership.corporate_membership_type
+            corporate_membership.expiration_dt = corp_memb_type.get_expiration_dt(join_dt=corporate_membership.join_dt)
             corporate_membership.save()
             
             # generate invoice
-            corp_memb_inv_add(request.user, corporate_membership)
+            inv = corp_memb_inv_add(request.user, corporate_membership)
+            # update corp_memb with inv
+            corporate_membership.invoice = inv
+            corporate_membership.save()
+            
+            # assign object permissions
+            corp_memb_update_perms(corporate_membership)
             
             # send notification to administrators
             recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
-            if recipients:
-                if notification:
-                    extra_context = {
-                        'object': corporate_membership,
-                        'request': request,
-                    }
-                    notification.send_emails(recipients,'corp_memb_added', extra_context)
+            extra_context = {
+                'object': corporate_membership,
+                'request': request,
+            }
+            send_email_notification('corp_memb_added', recipients, extra_context)
             
             
             # log an event
@@ -204,22 +212,40 @@ def edit(request, id, template="corporate_memberships/edit.html"):
     
     # we don't need the captcha on edit because it requires login
     #del form.fields['captcha']
+    
+    status_info_before_edit = {'corporate_membership_type': corporate_membership.corporate_membership_type,
+                               'status': corporate_membership.status,
+                               'status_detail': corporate_membership.status_detail}
+    old_corp_memb = CorporateMembership.objects.get(pk=corporate_membership.pk)
         
         
     if request.method == "POST":
         if form.is_valid():
-            corporate_membership = form.save(request.user)
+            corporate_membership = form.save(request.user, commit=False)
+            
+            # archive the corporate membership if any of these changed:
+            # corporate_membership_type, status, status_detail
+            need_archive = False
+            for key in status_info_before_edit:
+                exec('value=corporate_membership.%s' % key)
+                if value <> status_info_before_edit[key]:
+                    need_archive = True
+                    break
+                
+            if need_archive:
+                old_corp_memb.archive(request.user)
+            
+            corporate_membership.save()
+            corp_memb_update_perms(corporate_membership)
             
             # send notification to administrators
             if not user_is_admin:
                 recipients = get_notice_recipients('module', 'corporate_membership', 'corporatemembershiprecipients')
-                if recipients:
-                    if notification:
-                        extra_context = {
-                            'object': corporate_membership,
-                            'request': request,
-                        }
-                        notification.send_emails(recipients,'corp_memb_edited', extra_context)
+                extra_context = {
+                    'object': corporate_membership,
+                    'request': request,
+                }
+                send_email_notification('corp_memb_edited', recipients, extra_context)
             
             # log an event
             log_defaults = {
@@ -252,15 +278,131 @@ def renew(request, id, template="corporate_memberships/renew.html"):
         if not corporate_membership.allow_edit_by(request.user):
             raise Http403
         
+    if corporate_membership.is_renewal_pending:
+        messages.add_message(request, messages.INFO, 'The corporate membership "%s" has been renewed and is pending for admin approval.' % corporate_membership.name)
+        return HttpResponseRedirect(reverse('corp_memb.view', args=[corporate_membership.id]))
+        
     user_is_admin = is_admin(request.user)
     
     corp_app = corporate_membership.corp_app
     
     form = CorpMembRenewForm(request.POST or None, user=request.user, corporate_membership=corporate_membership)
     
+    if request.method == "POST":
+        if form.is_valid():
+            if 'update_summary' in request.POST:
+                pass
+            else:
+                
+                members = form.cleaned_data['members']
+                
+                corp_renew_entry = form.save(commit=False)
+                corp_renew_entry.corporate_membership = corporate_membership
+                corp_renew_entry.creator = request.user
+                corp_renew_entry.status_detail = 'pending'
+                corp_renew_entry.save()
+                
+                # calculate the total price for invoice
+                corp_renewal_price = corp_renew_entry.corporate_membership_type.renewal_price
+                if not corp_renewal_price:
+                    corp_renewal_price = 0
+                indiv_renewal_price = corp_renew_entry.corporate_membership_type.membership_type.renewal_price
+                if not indiv_renewal_price:
+                    indiv_renewal_price = 0
+                
+                renewal_total = corp_renewal_price + indiv_renewal_price * len(members)
+                opt_d = {'renewal':True, 
+                         'renewal_total': renewal_total,
+                         'renew_entry':corp_renew_entry}
+                # create an invoice - invoice.object_type - use corporate_membership?
+                inv = corp_memb_inv_add(request.user, corporate_membership, **opt_d)
+                
+                # update corp_renew_entry with inv
+                corp_renew_entry.invoice = inv
+                corp_renew_entry.save()
+                
+                corporate_membership.renew_entry_id = corp_renew_entry.id
+                corporate_membership.save()
+                
+                # store individual members
+                for id in members:
+                    membership = Membership.objects.get(id=id)
+                    ind_memb_renew_entry = IndivMembRenewEntry(corp_memb_renew_entry=corp_renew_entry,
+                                                               membership=membership)
+                    ind_memb_renew_entry.save()
+                    
+                # log an event
+                log_defaults = {
+                    'event_id' : 681001,
+                    'event_data': '%s (%d) renewed by %s' % (corporate_membership._meta.object_name, 
+                                                           corporate_membership.pk, request.user),
+                    'description': '%s renewed' % corporate_membership._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': corporate_membership,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                
+                # handle online payment
+                if corp_renew_entry.payment_method.lower() in ['credit card', 'cc']:
+                    if corp_renew_entry.invoice and corp_renew_entry.invoice.balance > 0:
+                        return HttpResponseRedirect(reverse('payments.views.pay_online', 
+                                                            args=[corp_renew_entry.invoice.id, 
+                                                                  corp_renew_entry.invoice.guid]))
+                        
+                extra_context = {
+                    'object': corporate_membership,
+                    'request': request,
+                    'corp_renew_entry': corp_renew_entry,
+                    'invoice': inv,
+                }
+                if user_is_admin:
+                    # admin: approve renewal
+                    corporate_membership.approve_renewal(request)
+                else:
+                    # send a notice to admin
+                    recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
+                    
+                    send_email_notification('corp_memb_renewed', recipients, extra_context)
+                    
+                   
+                            
+                # send an email to dues reps
+                recipients = dues_rep_emails_list(corporate_membership)
+                send_email_notification('corp_memb_renewed_user', recipients, extra_context)
+                    
+                    
+                return HttpResponseRedirect(reverse('corp_memb.renew_conf', args=[corporate_membership.id]))
+                
+    
+    
+    summary_data = {'corp_price':0, 'individual_price':0, 'individual_count':0, 
+                    'individual_total':0, 'total_amount':0}
+    if request.method == "POST":
+        cmt_id = request.POST.get('corporate_membership_type', 0)
+        try:
+            cmt = CorporateMembershipType.objects.get(id=cmt_id)
+        except CorporateMembershipType.DoesNotExist:
+            pass
+        summary_data['individual_count'] = len(request.POST.getlist('members'))
+    else:
+        cmt = corporate_membership.corporate_membership_type
+    
+    if cmt:
+        summary_data['corp_price'] = cmt.renewal_price
+        if not summary_data['corp_price']:
+            summary_data['corp_price'] = 0
+        summary_data['individual_price'] = cmt.membership_type.renewal_price
+        if not summary_data['individual_price']:
+            summary_data['individual_price'] = 0
+    summary_data['individual_total'] = summary_data['individual_count'] * summary_data['individual_price']
+    summary_data['total_amount'] = summary_data['individual_total'] + summary_data['corp_price']
+    
     context = {"corporate_membership": corporate_membership, 
                'corp_app': corp_app,
                'form': form,
+               'summary_data': summary_data,
                }
     return render_to_response(template, context, RequestContext(request))
 
@@ -272,12 +414,123 @@ def renew_conf(request, id, template="corporate_memberships/renew_conf.html"):
         if not corporate_membership.allow_edit_by(request.user):
             raise Http403
         
-    user_is_admin = is_admin(request.user)
+    #user_is_admin = is_admin(request.user)
     
     corp_app = corporate_membership.corp_app
     
+    try:
+        renew_entry = CorpMembRenewEntry.objects.get(pk=corporate_membership.renew_entry_id)
+    except CorpMembRenewEntry.DoesNotExist:
+        renew_entry = None
+    
     context = {"corporate_membership": corporate_membership, 
                'corp_app': corp_app,
+               'renew_entry': renew_entry,
+               }
+    return render_to_response(template, context, RequestContext(request))
+
+
+@login_required
+def approve(request, id, template="corporate_memberships/approve.html"):
+    corporate_membership = get_object_or_404(CorporateMembership, id=id)
+    
+    user_is_admin = is_admin(request.user)
+    if not user_is_admin:
+        raise Http403
+    
+    # if not in pending, go to view page
+    if not (corporate_membership.is_pending):
+        return HttpResponseRedirect(reverse('corp_memb.view', args=[corporate_membership.id]))
+
+    try:
+        renew_entry = CorpMembRenewEntry.objects.get(pk=corporate_membership.renew_entry_id)
+    except CorpMembRenewEntry.DoesNotExist:
+        renew_entry = None
+        
+    if renew_entry:
+        indiv_renew_entries = renew_entry.indiv_memb_renew_entries()
+        corp_membership_type = renew_entry.corporate_membership_type
+        new_expiration_dt = corp_membership_type.get_expiration_dt(renewal=True,
+                                                join_dt=corporate_membership.join_dt,
+                                                renew_dt=renew_entry.create_dt)
+    else:
+        indiv_renew_entries = None
+        corp_membership_type = corporate_membership.corporate_membership_type
+        new_expiration_dt = corp_membership_type.get_expiration_dt(renewal=False,
+                                                join_dt=corporate_membership.join_dt,
+                                                renew_dt=corporate_membership.create_dt)
+        
+    if request.method == "POST":
+        msg = ''
+        if 'approve' in request.POST:
+            if renew_entry:
+                # approve the renewal
+                corporate_membership.approve_renewal(request)
+                # send an email to dues reps
+                recipients = dues_rep_emails_list(corporate_membership)
+                extra_context = {
+                    'object': corporate_membership,
+                    'request': request,
+                    'corp_renew_entry': renew_entry,
+                    'invoice': renew_entry.invoice,
+                }
+                send_email_notification('corp_memb_renewed_user', recipients, extra_context)
+                msg = 'Corporate membership "%s" renewal has been APPROVED.' % corporate_membership.name
+                
+                event_id = 682002
+                event_data = '%s (%d) renewal approved by %s' % (corporate_membership._meta.object_name, 
+                                                                 corporate_membership.pk, request.user)
+                event_description = '%s renewal approved' % corporate_membership._meta.object_name
+                
+            else:
+                # approve join
+                corporate_membership.approve_join(request)
+                msg = 'Corporate membership "%s" has been APPROVED.' % corporate_membership.name
+                event_id = 682001
+                event_data = '%s (%d) approved by %s' % (corporate_membership._meta.object_name, 
+                                                        corporate_membership.pk, request.user)
+                event_description = '%s approved' % corporate_membership._meta.object_name
+        else:
+            if 'disapprove' in request.POST:
+                if renew_entry:
+                    # deny the renewal
+                    corporate_membership.disapprove_renewal(request)
+                    
+                    msg = 'Corporate membership "%s" renewal has been DENIED.' % corporate_membership.name
+                    event_id = 682004
+                    event_data = '%s (%d) renewal denied by %s' % (corporate_membership._meta.object_name, 
+                                                                 corporate_membership.pk, request.user)
+                    event_description = '%s renewal denied' % corporate_membership._meta.object_name
+                else:
+                    # deny join
+                    corporate_membership.disapprove_join(request)
+                    msg = 'Corporate membership "%s" has been DENIED.' % corporate_membership.name
+                    event_id = 682003
+                    event_data = '%s (%d) denied by %s' % (corporate_membership._meta.object_name, 
+                                                        corporate_membership.pk, request.user)
+                    event_description = '%s denied' % corporate_membership._meta.object_name
+                
+        if msg:      
+            messages.add_message(request, messages.INFO, msg)
+            
+            # log an event
+            log_defaults = {
+                'event_id' : event_id,
+                'event_data': event_data,
+                'description': event_description,
+                'user': request.user,
+                'request': request,
+                'instance': corporate_membership,
+            }
+            EventLog.objects.log(**log_defaults)
+                
+        return HttpResponseRedirect(reverse('corp_memb.view', args=[corporate_membership.id]))
+    
+    
+    context = {"corporate_membership": corporate_membership,
+               'renew_entry': renew_entry,
+               'indiv_renew_entries': indiv_renew_entries,
+               'new_expiration_dt': new_expiration_dt,
                }
     return render_to_response(template, context, RequestContext(request))
     
@@ -288,13 +541,14 @@ def view(request, id, template="corporate_memberships/view.html"):
         view a corporate membership
     """  
     corporate_membership = get_object_or_404(CorporateMembership, id=id)
+    corporate_membership.status_detail = corporate_membership.real_time_status_detail
     
-    if not has_perm(request.user,'corporate_memberships.view_corporatemembership',corporate_membership):
+    if not has_perm(request.user, 'corporate_memberships.view_corporatemembership', corporate_membership):
         if not corporate_membership.allow_view_by(request.user):
             raise Http403
     
     can_edit = False
-    if has_perm(request.user,'corporate_memberships.edit_corporatemembership',corporate_membership):
+    if has_perm(request.user, 'corporate_memberships.change_corporatemembership', corporate_membership):
         can_edit = True
     
     user_is_admin = is_admin(request.user)
@@ -404,6 +658,8 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
             rep.corporate_membership = corp_memb
             rep.save()
             
+            corp_memb_update_perms(corp_memb)
+            
             # log an event here
             
             if (request.POST.get('submit', '')).lower() == 'save':
@@ -427,6 +683,7 @@ def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html
             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % rep)
             
             rep.delete()
+            corp_memb_update_perms(corp_memb)
                 
             return HttpResponseRedirect(reverse('corp_memb.edit_reps', args=[corp_memb.pk]))
     

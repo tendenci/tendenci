@@ -34,7 +34,6 @@ urlpatterns = patterns('events',
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
 
     # register for event
-    url(r'^(?P<event_id>\d+)/register/$', 'views.register', name='event.register'),
     url(r'^(?P<event_id>\d+)/multi-register/$', 'views.multi_register', name='event.multi_register'),
     url(r'^registration/(?P<reg8n_id>\d+)/edit/$', 'views.registration_edit', 
         name="event.registration_edit"),
@@ -42,9 +41,15 @@ urlpatterns = patterns('events',
         name="event.registration_edit"),
 
     # cancel event registration
-    url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<registrant_id>\d+)/$', 
+    url(r'^(?P<event_id>\d+)/registrants/cancel/(?P<registrant_id>\d+)/$', 
+        'views.cancel_registrant', name='event.cancel_registrant'),
+    url(r'^(?P<event_id>\d+)/registrants/cancel/(?P<hash>\w+)/$',
+        'views.cancel_registrant', name='event.cancel_registrant'),
+
+    
+    url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<registration_id>\d+)/$', 
         'views.cancel_registration', name='event.cancel_registration'),
-    url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<hash>\w+)/$',
+    url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<registration_id>\d+)/(?P<hash>\w+)/$',
         'views.cancel_registration', name='event.cancel_registration'),
 
     url(r'^types/$', 'views.types', name='event.types'),
