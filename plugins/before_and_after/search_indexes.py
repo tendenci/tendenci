@@ -7,8 +7,8 @@ from perms.object_perms import ObjectPermission
 class BeforeAndAfterIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     title = indexes.CharField(model_attr='title')
-    category = indexes.CharField(model_attr='category')
-    subcategory = indexes.CharField(model_attr='subcategory', null=True)
+    category = indexes.CharField()
+    subcategory = indexes.CharField(null=True)
     
     # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
@@ -38,6 +38,14 @@ class BeforeAndAfterIndex(indexes.RealTimeSearchIndex):
 
     def prepare_groups_can_view(self, obj):
         return ObjectPermission.objects.groups_with_perms('before_and_after.view_before_and_after', obj)
+        
+    def prepare_category(self, obj):
+        return obj.category.pk
+        
+    def prepare_subcategory(self, obj):
+        if obj.subcategory:
+            return obj.subcategory.pk
+        return None
 
     def get_updated_field(self):
         return 'update_dt'
