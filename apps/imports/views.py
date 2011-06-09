@@ -126,7 +126,7 @@ def user_upload_process(request, id, template_name="imports/users_process.html")
 @login_required
 def user_upload_subprocess(request, id, template_name="imports/users_subprocess.html"):
     if not is_admin(request.user):raise Http403   # admin only page
-    
+
     id = str(id)
     import_dict = get_user_import_settings(request, id)
     if not import_dict:
