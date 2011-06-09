@@ -3,7 +3,7 @@ from haystack import site
 from event_logs.models import EventLog
 
 
-class EventLogIndex(indexes.RealTimeSearchIndex):
+class EventLogIndex(indexes.SearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     create_dt = indexes.DateTimeField(model_attr='create_dt')
 
