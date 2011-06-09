@@ -17,15 +17,36 @@
 {% autopaginate bnas 5 %}
 
 <div class="t">
-    <h1>Before & After Search</h1>
     {% before_and_after_search %}
+    <div class="bna-breadcrumbs">
+        {% if category %}
+            <h1><a href="{% url before_and_after.search %}?category={{ category.pk}}">{{ category.name }}</a></h1>
+        {% endif %}
+        {% if subcategory %}
+            <h2>&raquo; <a href="{% url before_and_after.search %}?category={{ category.pk}}&subcategory={{ subcategory.pk }}">{{ subcategory.name }}</a></h2>
+        {% endif %}
+    </div>
+    <div class="bna-warning">
+        <h3>*Photos on this page depict actual patients. Results may vary.</h3>
+        <p>
+            The photos displayed below depict actual patients. These patients have
+            provided their consent to display their pictures online. All photos
+            contained in this Web site are protected by copyright and may not be copied,
+            linked, or redistributed in any form.
+        </p>
+    </div>
     <div class="bna-search-wrap">
         {% for bna in bnas %}
         {% with bna.object as bna %}
             <div class="bna-search-item">
                 <div class="bna-featured">
-                    <img src="{{ bna.featured.before_photo.url }}">
-                    <img src="{{ bna.featured.after_photo.url }}">
+                    {% if bna.featured %}
+                        <img src="{{ bna.featured.before_photo|thumbnail:'140x200' }}">
+                        <img src="{{ bna.featured.after_photo|thumbnail:'140x200' }}">
+                    {% else %}
+                        <img src="">
+                        <img src="">
+                    {% endif %}
                 </div>
                 <div class="bna-desc">
                     <h3><a href="{{ bna.get_absolute_url }}" title="{{ bna.title }}">{{ bna.title }}</a></h3>

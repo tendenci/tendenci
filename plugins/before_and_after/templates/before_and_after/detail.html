@@ -1,0 +1,85 @@
+{% extends "before_and_after/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load before_and_after_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+        {{ bna.title }}&nbsp;&ndash;&nbsp;Before & After
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        before and after {{ bna.title }}
+        {% if bna.tags %}
+            {{ bna.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ bna.title }} before and after
+        {{ bna.description|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+        {% include "before_and_after/media/css/before_and_after.css" %}
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <div class="bna-breadcrumbs">
+        {% if bna.category %}
+            <h1><a href="{% url before_and_after.search %}?category={{ bna.category.pk}}">{{ bna.category.name }}</a></h1>
+        {% endif %}
+        {% if bna.subcategory %}
+            <h2>&raquo; <a href="{% url before_and_after.search %}?category={{ bna.category.pk}}&subcategory={{ bna.subcategory.pk }}">{{ bna.subcategory.name }}</a></h2>
+        {% endif %}
+    </div>
+    <div class="bna-detail">
+        <div class="photoset-wrap">
+            <a href="#" class="left">prev</a>
+            <div class="photoset-large">
+                {% if active_photoset %}
+                    <img src="{{ active_photoset.before_photo|thumbnail:'200x300' }}">
+                    <img src="{{ active_photoset.after_photo|thumbnail:'200x300' }}">
+                {% else %}
+                    <img src="">
+                    <img src="">
+                {% endif %}
+            </div>
+            <a href="#" class="right">next</a>
+            <div style="clear:both"></div>
+        </div>
+        <div class="desc">
+            <h2>
+                <a href="{% url before_and_after.search %}?q={{ bna.title}}">{{ bna.title }}</a>
+            </h2>
+            <b>Description</b>
+            <p>{{ bna.description|safe }}</p>
+        </div>
+        {% if other_photosets %}
+            <div class="other-photosets-wrap">
+                <h2>More Photos</h2>
+                <div class="other-photosets">
+                    {% for set in other_photosets %}
+                        <a href="{% url before_and_after.detail bna.pk %}?active={{ set.id }}">
+                            <div class="photoset-small">
+                                <img src="{{ set.before_photo|thumbnail:'80x80' }}">
+                                <img src="{{ set.after_photo|thumbnail:'80x80' }}">
+                            </div>
+                        </a>
+                    {% endfor %}
+                    <div style="clear:both"></div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock body %}

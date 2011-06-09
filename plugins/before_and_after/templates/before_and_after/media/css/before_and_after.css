@@ -2,12 +2,14 @@
 }
 
 /* general */
-.t h1 {
-	margin: 0 auto 10px 0;
-}
 
 .t h2 {
-	margin: 0 auto 10px 0;
+    font-size: 1.25em;
+    margin-bottom: 10px;
+}
+
+.t h2 a {
+    text-decoration: underline;
 }
 
 /* search */
@@ -42,6 +44,12 @@
     padding: 10px 0px;
 }
 
+/* search */
+
+.t .bna-breadcrumbs {
+    margin-bottom: 10px;
+}
+
 .t .bna-search-wrap {
     
 }
@@ -64,8 +72,8 @@
 .t .bna-featured img {
     margin: 4px;
     border: 1px solid #FFFFFF;
-    height: 40%;
-    width: 46%;
+    height: 200px;
+    width: 140px;
 }
 
 .t .bna-desc {
@@ -75,3 +83,59 @@
     float: left;
 }
 
+/* detail */
+
+.t .bna-detail {
+
+}
+
+.t .bna-detail .photoset-wrap {
+    position: relative;
+    margin: 40px 0px;
+}
+
+.t .bna-detail .photoset-wrap .left {
+    position: absolute;
+    left: 50px;
+    top: 180px;
+}
+
+.t .bna-detail .photoset-wrap .right {
+    position: absolute;
+    right: 50px;
+    top: 180px;
+}
+
+.t .bna-detail .photoset-large{
+    text-align:center;
+    margin: auto;
+    width: 430px;
+    border: 10px solid #DFDFDF;
+    background-color: khaki;
+    padding: 5px;
+}
+
+.t .bna-detail .photoset-large img{
+    margin: 4px;
+    border: 1px solid #FFFFFF;
+    height: 300px;
+    width: 200px;
+}
+
+.t .bna-detail .photoset-small{
+    float: left;
+    padding: 3px;
+}
+
+.t .bna-detail .desc {
+    margin-bottom: 40px;
+}
+
+.t .bna-detail .other-photosets-wrap {
+    margin-bottom: 20px;
+}
+
+.t .bna-detail .other-photosets {
+    background-color: khaki;
+    border: 3px solid #DFDFDF;
+}
