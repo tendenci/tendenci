@@ -61,7 +61,8 @@ class BeforeAndAfter(TendenciBaseModel):
         verbose_name_plural = _('Before & Afters')
         permissions = (("view_before_and_after","Can view Before and After"),)
     
-    def get_featured(self):
+    @property
+    def featured(self):
         """
         Returns the featured before and after photoset.
         The first photoset in the list.
@@ -82,7 +83,7 @@ class BeforeAndAfter(TendenciBaseModel):
     
     @models.permalink
     def get_absolute_url(self):
-        return ('before_and_after.detail', [self.slug])
+        return ('before_and_after.detail', [self.id])
 
     def __unicode__(self):
         return self.title

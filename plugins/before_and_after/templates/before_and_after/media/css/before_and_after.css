@@ -41,3 +41,37 @@
 .t .bna-subcategories {
     padding: 10px 0px;
 }
+
+.t .bna-search-wrap {
+    
+}
+
+.t .bna-search-item {
+    margin-bottom: 15px;
+    padding: 5px;
+    background-color: #DFDFDF;
+    border: 1px solid #000000;
+}
+
+.t .bna-featured {
+    float: left;
+    padding: 10px;
+    background-color: khaki;
+    border: 1px solid #000000;
+    width: 45%;
+}
+
+.t .bna-featured img {
+    margin: 4px;
+    border: 1px solid #FFFFFF;
+    height: 40%;
+    width: 46%;
+}
+
+.t .bna-desc {
+    width: 48%;
+    margin-left: 10px;
+    padding: 5px;
+    float: left;
+}
+

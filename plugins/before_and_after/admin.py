@@ -9,8 +9,17 @@ class PhotoSetAdmin(admin.StackedInline):
     model = PhotoSet
     extra = 1
     ordering = ("order",)
+    
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ["name"]
+    
+class SubcategoryAdmin(admin.ModelAdmin):
+    list_display = ["name", "category", "warning"]
+    list_filter = ["category", "warning"]
 
 class BnAAdmin(admin.ModelAdmin):
+    list_display = ["title", "category", "subcategory"]
+    list_filter = ["category", "subcategory"]
     form = BnAForm
     inlines = [PhotoSetAdmin,]
     
@@ -37,6 +46,7 @@ class BnAAdmin(admin.ModelAdmin):
             '%sjs/admin/sortable_inline/jquery-1.5.1.min.js' % settings.STATIC_URL,
             '%sjs/admin/sortable_inline/jquery-ui-1.8.13.custom.min.js' % settings.STATIC_URL,
             '%sjs/admin/sortable_inline/stacked-sort.js' % settings.STATIC_URL,
+            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
         
     def get_form(self, request, obj=None, **kwargs):
@@ -49,5 +59,5 @@ class BnAAdmin(admin.ModelAdmin):
         return form
     
 admin.site.register(BeforeAndAfter, BnAAdmin)
-admin.site.register(Category)
-admin.site.register(Subcategory)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Subcategory, SubcategoryAdmin)
