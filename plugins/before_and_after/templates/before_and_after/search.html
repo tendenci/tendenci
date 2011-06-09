@@ -17,18 +17,27 @@
 {% autopaginate bnas 5 %}
 
 <div class="t">
-    <h1>Case Studies Search</h1>
+    <h1>Before & After Search</h1>
     {% before_and_after_search %}
     <div class="bna-search-wrap">
         {% for bna in bnas %}
         {% with bna.object as bna %}
             <div class="bna-search-item">
-                <h3><a href="{{ bna.get_absolute_url }}" title="{{ bna.title }}">{{ bna.title }}</a></h3>
-                <p class="bna-search-item-desc">
-                    {% filter striptags|truncatewords:"60" %}
-                        {{ bna.description }}
-                    {% endfilter %}
-                </p>
+                <div class="bna-featured">
+                    <img src="{{ bna.featured.before_photo.url }}">
+                    <img src="{{ bna.featured.after_photo.url }}">
+                </div>
+                <div class="bna-desc">
+                    <h3><a href="{{ bna.get_absolute_url }}" title="{{ bna.title }}">{{ bna.title }}</a></h3>
+                    <p>
+                        <b>Description</b><br>
+                        {% filter striptags|truncatewords:"60" %}
+                            {{ bna.description|safe }}
+                        {% endfilter %}
+                    </p>
+                    <a href="{{ bna.get_absolute_url }}">Read More</a>
+                </div>
+                <div style="clear:both"></div>
             </div>
         {% endwith %}
         {% empty %}

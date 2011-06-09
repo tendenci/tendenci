@@ -1,6 +1,8 @@
-<form class="search-form" action="{% url before_and_after.search %}" method="get">
-{{ form.category }}
-{{ form.subcategory }}
-{{ form.q }}
-<input type="submit" value="Search" />
-</form>
+<div class="bna-search">
+    <form class="search-form" action="{% url before_and_after.search %}" method="get">
+    {{ form.category }}
+    {{ form.subcategory }}
+    {{ form.q }}
+    <input type="submit" value="Search" />
+    </form>
+</div>

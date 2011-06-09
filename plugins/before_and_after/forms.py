@@ -8,24 +8,25 @@ class BnAForm(TendenciBaseForm):
     class Meta:
         model = BeforeAndAfter
         
-    description = forms.CharField(required=False,
+    description = forms.CharField(
         widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':BeforeAndAfter._meta.app_label,
         'storme_model':BeforeAndAfter._meta.module_name.lower()}))
         
     status_detail = forms.ChoiceField(choices=(('active','Active'),('inactive','Inactive')))
     
-    def __init__(self, *args, **kwargs):
-        super(BnAForm, self).__init__(*args, **kwargs)
-        if self.instance.pk:
-            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-        else:
-            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+    def clean(self):
+        data = self.cleaned_data
+        cat = data.get('category')
+        sub = data.get('subcategory', None)
+        if sub:
+            if sub.category != cat:
+                raise forms.ValidationError(
+                    "%s is not a subcategory of %s" % (sub, cat))
+        return data
             
     def save(self, *args, **kwargs):
         bna = super(BnAForm, self).save(commit=False)
-        print bna.id
-        print self.current_user
         if not bna.id:
             bna.creator = self.current_user
             bna.creator_username = self.current_user.username
@@ -37,10 +38,12 @@ class BnAForm(TendenciBaseForm):
 
 class SearchForm(forms.Form):
     category = forms.ModelChoiceField(
+                        empty_label="Category",
                         queryset=Category.objects.all(),
                         required=False,
                     )
     subcategory = forms.ModelChoiceField(
+                        empty_label="Subcategory",
                         queryset=Subcategory.objects.all(),
                         required=False,
                     )
