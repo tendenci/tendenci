@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 
 from haystack.query import SearchQuerySet
 
-from before_and_after.models import BeforeAndAfter, Category
+from before_and_after.models import BeforeAndAfter, Category, PhotoSet
 
 def search(request, template_name='before_and_after/search.html'):
     category = request.GET.get('category', None)
@@ -15,17 +15,41 @@ def search(request, template_name='before_and_after/search.html'):
     bnas = BeforeAndAfter.objects.search(query=q, user=request.user)
     
     if category:
-        bnas = bnas.filter(category=category)
+        category = get_object_or_404(Category, pk=category)
+        bnas = bnas.filter(category=category.pk)
         if subcategory:
-            bnas = bnas.filter(subcategory=subcategory)
+            subcategory = get_object_or_404(Subcategory, pk=subcategory)
+            bnas = bnas.filter(subcategory=subcategory.pk)
     
-    return render_to_response(template_name, {'bnas': bnas},
+    return render_to_response(template_name, 
+        {
+            'bnas': bnas,
+            'category': category,
+            'subcategory': subcategory,
+        },
         context_instance=RequestContext(request))
 
 def detail(request, id, template_name='before_and_after/detail.html'):
     bna = get_object_or_404(BeforeAndAfter, id=id)
     
-    return render_to_response(template_name, {'bna': bna},
+    active = request.GET.get('active', None)
+    
+    if active:
+        active_photoset = get_object_or_404(PhotoSet, pk=active, before_and_after=bna)
+    else:
+        active_photoset = bna.featured
+        
+    if active_photoset:       
+        other_photosets = bna.photoset_set.exclude(pk=active_photoset.pk)[0:6]
+    else:
+        other_photosets = []
+    
+    return render_to_response(template_name,
+        {
+            'bna': bna,
+            'active_photoset': active_photoset,
+            'other_photosets': other_photosets,
+        },
         context_instance=RequestContext(request))
 
 def index(request, template_name='before_and_after/index.html'):
