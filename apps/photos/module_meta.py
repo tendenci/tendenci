@@ -95,7 +95,7 @@ class PhotoMeta():
 
     def get_canonical_url(self):
         object = self.object
-        return "asdf"
+        return object.get_absolute_url()
 
     def get_meta(self, object, name):
 
