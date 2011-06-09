@@ -9,6 +9,8 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-logs.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
 {% endblock %}
 
 {% block body %}
@@ -18,48 +20,47 @@
 
     <h1>{% firstof MODULE_EVENT_LOGS_LABEL 'Event Logs' %} Search</h1>
 
-	{% event_log_search %}
+	{% event_log_search search_form %}
     {% autopaginate event_logs 10 %}
-	
+    <p>Found <strong>{{ paginator.count }}</strong> results</p>
 	<div class="event-logs-wrap">
     {% for event_log in event_logs %}
-    	{% with event_log.object as event_log %}
 		<div class="event-log-search-wrap">
         	<div class="el-search-header">
                 <table border="0" cellpadding="0" cellspacing="0">
                     <tr>
                         <td class="el-sh-pk"><strong><a href="{{ event_log.get_absolute_url }}">{{ event_log.pk }}</a></strong></td>
                         <td class="el-sh-elid">
-                        	<a href="{% url event_log.search %}?q={{ event_log.event_id }}">
+                        	<a href="{% url event_log.search %}?event_id={{ event_log.event_id }}{{ date_range_query }}">
                         		<img border="0" src="{% url event_log.colored_image event_log.color %}" width="40" height="20" />&nbsp; 
                                 {{ event_log.event_id }}
                       		</a>
-                      		<a href="{% url event_log.search %}?q={{ event_log.event_id|first_chars:"3" }}">()</a>
+                      		<a href="{% url event_log.search %}?event_id={{ event_log.event_id }}{{ date_range_query }}">()</a>
                         </td>
                         <td class="el-sh-source">
                         	{% if event_log.source %}
-                            	<a href="{% url event_log.search %}?q={{ event_log.source|urlencode }}">{{ event_log.source }}</a>
+                            	<a href="{% url event_log.search %}?source={{ event_log.source|urlencode }}{{ date_range_query }}#advanced">{{ event_log.source }}</a>
                             {% else %}
                             	&nbsp;
                             {% endif %}
                         </td>
                         <td class="el-sh-dt">
                             {{ event_log.create_dt|date:"short" }}
-                            <a href="{% url event_log.search %}?q={{ event_log.create_dt|urlencode }}&range=1">()</a>
+                            <a href="{% url event_log.search %}?start_dt_0={{ event_log.create_dt|datedelta:'-minutes=30'|date:"Y-m-d" }}&start_dt_1={{ event_log.create_dt|datedelta:'-minutes=30'|date:"h:i A" }}&end_dt_0={{ event_log.create_dt|datedelta:'+minutes=30'|date:"Y-m-d" }}&end_dt_1={{ event_log.create_dt|datedelta:'+minutes=30'|date:"h:i A" }}">()</a>
                         </td>
                     </tr>
                     <tr>
                     	{% if event_log.user %}
                     		<td class="el-sh-user">
                             	User: <a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
-                                <a href="{% url event_log.search %}?q={{ event_log.username|urlencode }}">
+                                <a href="{% url event_log.search %}?user_name={{ event_log.username|urlencode }}#advanced">
                                 	<img border="0" src="{{ STATIC_URL }}images/icons/crosscheck12x12.gif" />
                                 </a>
                             </td>
                         {% else %}
                         	<td class="el-sh-user">
                             	User: {{ event_log.username }}
-                                <a href="{% url event_log.search %}?q={{ event_log.username }}">
+                                <a href="{% url event_log.search %}?user_name={{ event_log.username|urlencode }}#advanced">
                                     <img border="0" src="{{ STATIC_URL }}images/icons/crosscheck12x12.gif" />
                                 </a>
                             </td>
@@ -67,9 +68,9 @@
                     	<td>{{ event_log.description }}</td>
                         <td colspan="2">
                           	{% if event_log.user %}
-                                User ID: <a href="{% url event_log.search %}?q={{ event_log.user.pk }}">{{ event_log.user.pk }}</a>
+                                User ID: <a href="{% url event_log.search %}?user_id={{ event_log.user.pk }}{{ date_range_query }}#advanced">{{ event_log.user.pk }}</a>
                             {% else %}
-                                User ID: <a href="{% url event_log.search %}?q={{ event_log.username }}">0</a>
+                                User ID: <a href="{% url event_log.search %}?user_name={{ event_log.username|urlencode }}{{ date_range_query }}#advanced">0</a>
                             {% endif %}                      
                         </td>
                     </tr>
@@ -83,10 +84,7 @@
                 {% endif %}
                 {% if event_log.entity %}
                 	<div class="el-meta-entity">
-                    	Entity: 
-                    	<a href="{% url event_log.search %}?q={{ event_log.entity.entity_name|urlencode }}">
-                        	{{ event_log.entity.pk }}
-                     	</a>
+                    	Entity: {{ event_log.entity.pk }}
                     </div>
                 {% endif %}
                 <div class="el-meta-ips">
@@ -95,12 +93,12 @@
                         	{% if event_log.user %}
                         		<td colspan="2">
                                 	Creator: <a href="{% url profile event_log.username %}">{{ event_log.username }}</a>
-                                    <a href="{% url event_log.search %}?q={{ event_log.user.pk }}">{{ event_log.user.pk }}</a>
+                                    <a href="{% url event_log.search %}?user_id={{ event_log.user.pk }}{{ date_range_query }}#advanced">{{ event_log.user.pk }}</a>
                                 </td>
                             {% else %}
                         		<td colspan="2">
                                 	Creator: {{ event_log.username }}
-                                    <a href="{% url event_log.search %}?q={{ event_log.username }}">0</a>
+                                    <a href="{% url event_log.search %}?user_name={{ event_log.username }}{{ date_range_query }}">0</a>
                                 </td>
                             {% endif %}
                             <td>
@@ -115,12 +113,12 @@
                      	  <td>
                      	  	<img height="12" width="12" alt="Cookie" src="{{ STATIC_URL }}images/icons/cookie12x12.gif">
                             {% if event_log.session_id %}
-                          	<a href="{% url event_log.search %}?q={{ event_log.session_id }}">
+                          	<a href="{% url event_log.search %}?session_id={{ event_log.session_id }}{{ date_range_query }}#advanced">
                             	{{ event_log.session_id }}
                             </a>
                             {% else %}
                             	{% if event_log.username == 'anonymous' %}
-                                    <a href="{% url event_log.search %}?q={{ event_log.username }}">
+                                    <a href="{% url event_log.search %}?user_name={{ event_log.username|urlencode }}{{ date_range_query }}#advanced">
                                     {{ event_log.username }}
                                     </a>                          	
                                 {% else %}
@@ -129,14 +127,11 @@
                             {% endif %}
                           </td>                   	
                     	  <td>User IP: 
-                          	<a href="{% url event_log.search %}?q={{ event_log.user_ip_address|urlencode }}">
+                          	<a href="{% url event_log.search %}?user_ip_address={{ event_log.user_ip_address|urlencode }}{{ date_range_query }}#advanced">
                             	{{ event_log.user_ip_address }}
                             </a>
                           </td>
-                    	  <td>Server IP: 
-                          	<a href="{% url event_log.search %}?q={{ event_log.server_ip_address|urlencode }}">
-                            	{{ event_log.server_ip_address }}
-                            </a>
+                    	  <td>Server IP: {{ event_log.server_ip_address }}
                           </td>
                     	</tr>
                     </table>
@@ -152,12 +147,48 @@
                 {% endif %}
             </div>
 		</div>
-		{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+        <div class="event-log-search-wrap">
+		  <div>0 Results Found</div>
+        </div>
     {% endfor %}
 	</div>
 
     {% paginate %}
 </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(".datepicker").live('focus', function() {
+            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+
+        $(".timepicker").live('focus', function() {
+            $(this).timePicker({
+              show24Hours: false,
+              step: 15
+            });
+        });
+
+        var adv_opt_legend = $('fieldset legend');
+        var adv_opt = adv_opt_legend.parent();
+        var adv_opt_fields = adv_opt.find('.form-field');
+
+        // hide the user form fields
+        adv_opt_fields.hide();
+        adv_opt_legend.html('<a href="#">' + adv_opt_legend.html() + '</a>');
+        adv_opt_legend.click(function() {
+            adv_opt_fields.toggle();
+            return false;
+        });
+
+        if (window.location.hash == '#advanced') {
+            adv_opt_legend.trigger('click');
+        }
+    </script>
 {% endblock %}
