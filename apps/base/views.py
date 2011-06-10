@@ -1,15 +1,19 @@
 # python
+import datetime
+import re
 import Image as Pil
 
 # django
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
+from django.conf import settings
 
 # local
 from base.cache import IMAGE_PREVIEW_CACHE
+
 
 def image_preview(request, app_label, model, id,  size):
     """
@@ -82,9 +86,11 @@ def image_preview(request, app_label, model, id,  size):
             return HttpResponseNotFound("Image not found.", mimetype="text/plain")
     else:
         return response
-    
+
+
 def custom_error(request, template_name="500.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
+
 
 def plugin_static_serve(request, plugin, path, show_indexes=False):
     """
@@ -153,7 +159,58 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     response["Last-Modified"] = http_date(statobj[stat.ST_MTIME])
     response["Content-Length"] = len(contents)
     return response
+
     
 def clear_cache(request):
     cache.clear()
     return redirect('dashboard')
+
+
+def memcached_status(request):
+    try:
+        import memcache
+    except ImportError:
+        raise Http404
+
+    if not request.user.is_authenticated() and request.user.is_superuser:
+        raise Http404
+
+    # get first memcached URI
+    m = re.match(
+        "memcached://([.\w]+:\d+)", settings.CACHE_BACKEND
+    )
+    if not m:
+        raise Http404
+
+    host = memcache._Host(m.group(1))
+    host.connect()
+    host.send_cmd("stats")
+
+    class Stats:
+        pass
+
+    stats = Stats()
+
+    while 1:
+        line = host.readline().split(None, 2)
+        if line[0] == "END":
+            break
+        stat, key, value = line
+        try:
+            # convert to native type, if possible
+            value = int(value)
+            if key == "uptime":
+                value = datetime.timedelta(seconds=value)
+            elif key == "time":
+                value = datetime.datetime.fromtimestamp(value)
+        except ValueError:
+            pass
+        setattr(stats, key, value)
+
+    host.close_socket()
+
+    return render_to_response('base/memcached_status.html', {
+            'stats': stats,
+            'hit_rate': 100 * stats.get_hits / stats.cmd_get,
+            'time': datetime.datetime.now(), # server time
+    })
