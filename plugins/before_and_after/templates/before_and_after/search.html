@@ -3,6 +3,7 @@
 {% load before_and_after_tags %}
 {% load perm_tags %}
 {% load base_filters %}
+{% load forms_tags %}
 
 {% block title %}Before & After{% endblock %}
 
@@ -27,13 +28,7 @@
         {% endif %}
     </div>
     <div class="bna-warning">
-        <h3>*Photos on this page depict actual patients. Results may vary.</h3>
-        <p>
-            The photos displayed below depict actual patients. These patients have
-            provided their consent to display their pictures online. All photos
-            contained in this Web site are protected by copyright and may not be copied,
-            linked, or redistributed in any form.
-        </p>
+        {{ disclaimer_text|safe }}
     </div>
     <div class="bna-search-wrap">
         {% for bna in bnas %}
@@ -66,6 +61,9 @@
         {% endfor %}
     </div>
     {% paginate %}
+    <div class="bna-embed-form">
+        {% embed_form embed_form %}
+    </div>
 </div>
 {% endblock body %}
 

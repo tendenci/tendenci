@@ -4,6 +4,7 @@
 {% load perm_tags %}
 {% load before_and_after_tags %}
 {% load tagging_tags %}
+{% load forms_tags %}
 
 {% block title %}
         {{ bna.title }}&nbsp;&ndash;&nbsp;Before & After
@@ -80,6 +81,9 @@
                 </div>
             </div>
         {% endif %}
+    </div>
+    <div class="bna-embed-form">
+        {% embed_form embed_form %}
     </div>
 </div>
 {% endblock body %}
