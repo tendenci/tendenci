@@ -634,23 +634,15 @@ def membership_import(request, step=None):
 
                 # create entry fields
                 for key, value in fields.items():
-
                     app_fields = AppField.objects.filter(app=app, label=key)
                     if app_fields:
-                        app_field = app_fields[0]
-                    else:
-                        app_field = None
-
-                    try:
                         AppFieldEntry.objects.create(
                             entry=entry,
-                            field=app_field,
+                            field=app_fields[0],
                             value=value,
                         )
-                    except:
-                        print sys.exc_info()[1]
 
-                membership.save()
+                membership.save()  # creates pk
 
                 added.append(membership)
             else:
