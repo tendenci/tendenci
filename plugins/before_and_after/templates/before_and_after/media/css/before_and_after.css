@@ -27,7 +27,7 @@
     float: left;
     width: 30%;
     height: 300px;
-    padding: 5px;
+    padding: 4px;
     background-color: #DFDFDF;
     border: 1px solid #000000;
     margin: 0px 6px 12px 6px;
@@ -38,6 +38,11 @@
     text-align: center;
     background-color: #555555;
     color: #FFFFFF;
+}
+
+.t .bna-category img {
+    height: 110px;
+    width: 210px;
 }
 
 .t .bna-subcategories {
