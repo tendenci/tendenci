@@ -21,9 +21,9 @@
             <div class="bna-category">
                 <h3>{{ category.name }}</h3>
                 {% if category.image %}
-                    <img src="{{ category.image|thumbnail:'200x150' }}">
+                    <img src="{{ category.image|thumbnail:'220x120' }}">
                 {% else %}
-                    <img src="{{ category.default_image }}">
+                    <img src="/path/to/default/image">
                 {% endif %}
                 <div class="bna-subcategories">
                     <ul>

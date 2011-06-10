@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 
 from haystack.query import SearchQuerySet
 
-from before_and_after.models import BeforeAndAfter, Category, PhotoSet
+from before_and_after.models import BeforeAndAfter, Category, PhotoSet, Subcategory
 
 def search(request, template_name='before_and_after/search.html'):
     category = request.GET.get('category', None)
