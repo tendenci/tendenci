@@ -90,6 +90,11 @@ def add(request, slug, template="corporate_memberships/add.html"):
             # calculate the expiration
             corp_memb_type = corporate_membership.corporate_membership_type
             corporate_membership.expiration_dt = corp_memb_type.get_expiration_dt(join_dt=corporate_membership.join_dt)
+            
+            #if corp_app.authentication_method == 'secret_code':
+            # assign a secret code for this corporate
+            # secret code is a unique 6 characters long string
+            corporate_membership.assign_secret_code()
             corporate_membership.save()
             
             # generate invoice
@@ -101,6 +106,18 @@ def add(request, slug, template="corporate_memberships/add.html"):
             # assign object permissions
             corp_memb_update_perms(corporate_membership)
             
+            # email to user who created the corporate membership
+            # include the secret code in the email if authentication_method == 'secret_code'
+            
+            # send notification to user
+            recipients = [request.user.email]
+            extra_context = {
+                'object': corporate_membership,
+                'request': request,
+                'invoice': inv,
+            }
+            send_email_notification('corp_memb_added_user', recipients, extra_context)
+                        
             # send notification to administrators
             recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
             extra_context = {
@@ -556,13 +573,14 @@ def view(request, id, template="corporate_memberships/view.html"):
     field_objs = corporate_membership.corp_app.fields.filter(visible=1)
     if not user_is_admin:
         field_objs = field_objs.filter(admin_only=0)
+    if not can_edit:
+        field_objs = field_objs.exclude(field_name='corporate_membership_type')
     
     field_objs = list(field_objs.order_by('order'))
     
     if can_edit:
         field_objs.append(CorpField(label='Representatives', field_type='section_break', admin_only=0))
         field_objs.append(CorpField(label='Reps', field_name='reps', object_type='corporate_membership', admin_only=0))
-        
         
     if user_is_admin:
         field_objs.append(CorpField(label='Admin Only', field_type='section_break', admin_only=1))
