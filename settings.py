@@ -110,6 +110,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'johnny.middleware.LocalStoreClearMiddleware',
+    'johnny.middleware.QueryCacheMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
@@ -193,7 +195,6 @@ INSTALLED_APPS = (
     'email_blocks',
     'actions',
     'subscribers',
-    #'donations',
     'files',
     'contacts',
     'event_logs',
@@ -286,11 +287,11 @@ TINYMCE_DEFAULT_CONFIG = {
 # -------------------------------------- #
 # CACHING
 # -------------------------------------- #
-CACHE_DIR = PROJECT_ROOT + "/cache"
-CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800"   # 7 days
+CACHE_BACKEND = 'memcached://10.82.33.140:11211/'
+JOHNNY_MIDDLEWARE_SECONDS = 604800  # 7 days
 
 # --------------------------------------#
-# Celery
+# CELERY
 # --------------------------------------#
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
@@ -313,33 +314,30 @@ HAYSTACK_INDEX_LIMITS = {
     'event_logs': 3000,
 }
 
-#---------------------------------------------------------------
-# payment gateway settings - LOGIN and KEY need to be moved
-# to local_urls.py later
-#---------------------------------------------------------------
-#AUTHNET_POST_URL = "https://secure.authorize.net/gateway/transact.dll"
+# --------------------------------------#
+# PAYMENT GATEWAYS
+# --------------------------------------#
+
+# AUTHORIZE.NET
 AUTHNET_POST_URL = "https://test.authorize.net/gateway/transact.dll"
-# the AUTHNET_LOGIN and AUTHNET_KEY are specified in local_settings
-#AUTHNET_LOGIN = ""
-#AUTHNET_KEY = ""
+AUTHNET_LOGIN = ""
+AUTHNET_KEY = ""
 AUTHNET_MD5_HASH_VALUE = ''
 
-# First Data
-# latest version
+# FIRSTDATA
 FIRSTDATA_POST_URL = 'https://secure.linkpt.net/lpcentral/servlet/lppay'
-#FIRSTDATA_POST_URL = 'https://www.linkpointcentral.com/lpc/servlet/lppay'
-# test link
-#FIRSTDATA_POST_URL = 'https://www.staging.linkpointcentral.com/lpc/servlet/lppay'
-
 MERCHANT_LOGIN = ""
 MERCHANT_TXN_KEY = ""
 
-#-------------------------------------------------------------------#
-# Maximum number of rss items to display on the main rss
-#-------------------------------------------------------------------#
+# --------------------------------------#
+# RSS
+# --------------------------------------#
 MAX_RSS_ITEMS = 100
+MAX_FEED_ITEMS_PER_APP = 10
 
-# admin auth group name
+# ------------------------------------ #
+# Initial Admin Group
+# ------------------------------------ #
 ADMIN_AUTH_GROUP_NAME = 'Admin'
 
 # --------------------------------------#
@@ -348,10 +346,14 @@ ADMIN_AUTH_GROUP_NAME = 'Admin'
 CAPTCHA_FONT_SIZE = 50
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 
-# Django Messaging system
+# ------------------------------------ #
+# Django Messaging
+# ------------------------------------ #
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-# Fomrs upload path
+# ------------------------------------ #
+# FORMS
+# ------------------------------------ #
 FORMS_BUILDER_UPLOAD_ROOT = MEDIA_ROOT
 
 # --------------------------------------#
@@ -370,31 +372,18 @@ SOCIAL_AUTH_DEFAULT_USERNAME = 'social_auth_user'
 SOCIAL_AUTH_CREATE_USERS = True
 SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
 
-# Amazon SES 
-#----------------------------------------------#
-# http://docs.amazonwebservices.com/ses/latest/GettingStartedGuide/
-# https://github.com/hmarr/django-ses/tree/d9825e046fdc490187ef90a048eea983c2dd4606
-#EMAIL_BACKEND = 'django_ses.SESBackend'
-
-#AWS_ACCESS_KEY_ID = ''
-#AWS_SECRET_ACCESS_KEY = ''
-#----------------------------------------------#
-
-
 # local settings for development
 try:
     from local_settings import *
 except ImportError:
     pass
 
-
-#THIS MUST BE AT THE END!
-#Plugin configuration
-DEFAULT_INSTALLED_APPS = INSTALLED_APPS
+# ------------------------------------ #
+# PLUGINS
+# ------------------------------------ #
+# THIS MUST BE AT THE END!
 import pluginmanager
+DEFAULT_INSTALLED_APPS = INSTALLED_APPS
 INSTALLED_APPS = pluginmanager.plugin_apps(INSTALLED_APPS)
-# add the plugins to the sys path - GJQ 10/12/2010
 PLUGINS_PATH = os.path.join(PROJECT_ROOT, 'plugins')
 sys.path.insert(0, PLUGINS_PATH)
-
-MAX_FEED_ITEMS_PER_APP = 10
