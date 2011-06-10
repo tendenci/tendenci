@@ -15,6 +15,12 @@ div.forms .form-label {
 	font-weight: bold;	
 }
 
+div.forms .formset-label {
+	font-size: 1.2em;
+	margin: 35px 0 10px 0;
+	font-weight: normal;	
+}
+
 div.forms .form-field {
 	margin-bottom: 15px;
 }
@@ -61,6 +67,7 @@ div.forms .form-field .field textarea {
 }
 
 div.forms input[type="submit"] {
+	margin-top: 15px;
 	padding: 5px;
 	cursor: pointer;
 }
@@ -103,6 +110,19 @@ div.forms div.form-grouping {
 
 div.forms div.alt {
 	background-color: #EFEFEF;	
+}
+
+
+div.forms div.formset-functions {
+	margin-bottom: 15px;
+}
+
+div.forms div.formset-add {
+	display: none;
+}
+
+div.forms div.formset-delete {
+	display: none;
 }
 
 .required {
@@ -194,6 +214,22 @@ div.forms fieldset.admin-only {
 div.forms fieldset.admin-only legend {
 	padding: 5px;
 }
+
+/* boxy-grey stuff */
+div.forms fieldset.boxy-grey {
+	background-color: #EFEFEF;	
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+
+div.forms fieldset.boxy-grey legend {
+	padding: 5px;
+}
+
 
 /* capctha section */
 div.forms fieldset.captcha {

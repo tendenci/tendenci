@@ -27,8 +27,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        from user_groups.models import GroupMembership
-
         verbosity = options['verbosity']
         username = options['username']
         password = options['password']
