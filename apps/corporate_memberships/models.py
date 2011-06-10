@@ -255,6 +255,23 @@ class CorporateMembership(TendenciBaseModel):
     @property   
     def module_name(self):
         return self._meta.module_name
+    
+    def assign_secret_code(self):
+        if not self.secret_code:
+            # use the make_random_password in the User object
+            length = 6
+            allowed_chars='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+            secret_code = User.objects.make_random_password(length=length, allowed_chars=allowed_chars)
+            
+            # check if this one is unique
+            corp_membs = CorporateMembership.objects.filter(secret_code=secret_code)
+            
+            while corp_membs:
+                secret_code = User.objects.make_random_password(length=length, allowed_chars=allowed_chars)
+                corp_membs = CorporateMembership.objects.filter(secret_code=secret_code)
+                if not corp_membs:
+                    break
+            self.secret_code = secret_code       
         
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -657,13 +674,22 @@ class CorpMembRenewEntry(models.Model):
         return self.corporate_membership.make_acct_entries(user, inv, amount, **kwargs)
     
     def auto_update_paid_object(self, request, payment):
-        return self.corporate_membership.auto_update_paid_object(request, payment)
-        
+        return self.corporate_membership.auto_update_paid_object(request, payment)       
     
     
 class IndivMembRenewEntry(models.Model):
     corp_memb_renew_entry = models.ForeignKey("CorpMembRenewEntry")
     membership = models.ForeignKey(Membership)
+
+    
+class IndivMembAuthentication(models.Model):
+    corporate_membership = models.ForeignKey("CorporateMembership")
+    user = models.ForeignKey(User, null=True)  
+    authorized_email = models.CharField(_('email'), max_length=200)
+    authorized = models.BooleanField(default=0)
+    authorized_dt = models.DateTimeField(null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    guid= models.CharField(max_length=50)    
     
     
 class CorpFieldEntry(models.Model):
