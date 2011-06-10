@@ -612,6 +612,7 @@ def membership_import(request, step=None):
 
         added = []
         skipped = []
+
         for membership in memberships:
 
             if not membership.pk:  # new membership
@@ -635,11 +636,11 @@ def membership_import(request, step=None):
                 # create entry fields
                 for key, value in fields.items():
                     app_fields = AppField.objects.filter(app=app, label=key)
-                    if app_fields:
+                    if app_fields and membership.m.get(value):
                         AppFieldEntry.objects.create(
                             entry=entry,
                             field=app_fields[0],
-                            value=value,
+                            value=membership.m.get(value),
                         )
 
                 membership.save()  # creates pk
