@@ -4,7 +4,6 @@ from django.contrib.admin import site as admin_site
 from django.utils.translation import ugettext_lazy as _
 
 from registry.exceptions import *
-from site_settings.utils import get_setting
 
 lazy_reverse = lazy(reverse, str)
 
@@ -88,13 +87,6 @@ class Registry(object):
         # transfer verbose names for easy access
         self.fields['verbose_name'] = unicode(self.model._meta.verbose_name)
         self.fields['verbose_name_plural'] = unicode(self.model._meta.verbose_name_plural)
-
-        # module enabled
-        self.fields['enabled'] = get_setting(
-            'module', 
-            self.model._meta.app_label, 
-            'enabled'
-        ) or False
 
         # default url patterns
         if 'url' not in self.fields:
