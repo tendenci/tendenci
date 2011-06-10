@@ -120,8 +120,8 @@
 					</div>
 					<div class="member-right">
 						<div>Join Date: {{ membership.join_dt|date:'Y-n-j' }}</div>
-						<div>Expiration Date: {% if membership.expiration_dt %}
-				    							{{ membership.expiration_dt|date:'Y-n-j' }}
+						<div>Expiration Date: {% if membership.expire_dt %}
+				    							{{ membership.expire_dt|date:'Y-n-j' }}
 				    							{% else %}
 				    							Never Expire
 				    							{% endif %}

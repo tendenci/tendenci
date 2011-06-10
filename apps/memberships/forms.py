@@ -381,6 +381,7 @@ class AppCorpPreForm(forms.Form):
                                                                    status_detail='active')
         if not corporate_memberships:
             raise forms.ValidationError(_("Invalid Secret Code."))
+        
         self.corporate_membership_id = corporate_memberships[0].id
         
     def clean_email(self):
