@@ -5,6 +5,8 @@ from before_and_after.models import BeforeAndAfter
 from before_and_after.forms import SearchForm
 from base.template_tags import ListNode, parse_tag_kwargs
 
+from site_settings.utils import get_setting
+
 register = Library()
 
 @register.inclusion_tag("before_and_after/search-form.html", takes_context=True)

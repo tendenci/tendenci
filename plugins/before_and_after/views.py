@@ -2,9 +2,9 @@ from django.conf import settings
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect, get_object_or_404
-
 from haystack.query import SearchQuerySet
 
+from site_settings.utils import get_setting
 from before_and_after.models import BeforeAndAfter, Category, PhotoSet, Subcategory
 
 def search(request, template_name='before_and_after/search.html'):
@@ -26,6 +26,8 @@ def search(request, template_name='before_and_after/search.html'):
             'bnas': bnas,
             'category': category,
             'subcategory': subcategory,
+            'disclaimer_text': get_setting('module', 'before_and_after', 'searchpagedisclaimertext'),
+            'embed_form': get_setting('module', 'before_and_after', 'mainembedform'),
         },
         context_instance=RequestContext(request))
 
@@ -49,11 +51,19 @@ def detail(request, id, template_name='before_and_after/detail.html'):
             'bna': bna,
             'active_photoset': active_photoset,
             'other_photosets': other_photosets,
+            'embed_form': get_setting('module', 'before_and_after', 'mainembedform'),
         },
         context_instance=RequestContext(request))
 
 def index(request, template_name='before_and_after/index.html'):
     categories = Category.objects.all()
     
-    return render_to_response(template_name, {'categories':categories},
+    return render_to_response(template_name, 
+        {
+            'categories':categories,
+            'title': get_setting('module', 'before_and_after', 'mainpagetitle'),
+            'title_tag': get_setting('module', 'before_and_after', 'mainpagetitletag'),
+            'description': get_setting('module', 'before_and_after', 'mainpagedescription'),
+            'embed_form': get_setting('module', 'before_and_after', 'mainembedform'),
+        },
         context_instance=RequestContext(request))
