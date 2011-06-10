@@ -10,6 +10,7 @@
             	<h4><a href="{% url dashboard %}">App List</a></h4>
                 	<div class="column app-list">  
                         {% for app in registered_apps.core %}
+                             {{ app.enabled }}
                             <ul>
                                 <li class="app">
                                      <a href="{{ app.url.search }}" title="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}">
@@ -83,6 +84,7 @@
                         <li><a href="/settings/module/contacts/">Contacts</a></li>
                         <li><a href="/settings/module/directories/">Directories</a></li>
                         <li><a href="/settings/module/jobs/">Jobs</a></li>
+                        <li><a href="/settings/module/memberships/">Memberships</a></li>
                         <li><a href="/settings/module/payments/">Payments</a></li>
                         <li><a href="/settings/module/photos/">Photos</a></li>
                         <li><a href="/settings/module/users/">Users</a></li>
