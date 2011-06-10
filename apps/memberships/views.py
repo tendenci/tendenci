@@ -534,7 +534,7 @@ def membership_import(request, step=None):
 
                 # check import requirements
                 saved_files = File.objects.save_files_for_instance(request, Membership)
-                file_path = os.path.join('site_media/media', str(saved_files[0].file))
+                file_path = os.path.join(settings.MEDIA_ROOT, str(saved_files[0].file))
                 valid_import = is_import_valid(file_path)
 
                 # store session info

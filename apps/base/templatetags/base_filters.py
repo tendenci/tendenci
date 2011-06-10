@@ -12,6 +12,7 @@ from django.contrib.auth.models import AnonymousUser
 
 register = Library()
 
+
 @register.filter(name="localize_date")
 def localize_date(value, to_tz=None):
     from timezones.utils import adjust_datetime_to_timezone
@@ -26,6 +27,7 @@ def localize_date(value, to_tz=None):
         return ''
 
 localize_date.is_safe = True
+
 
 @register.filter_function
 def date_short(value, arg=None):
@@ -49,6 +51,7 @@ def date_short(value, arg=None):
             return ''
 date_short.is_safe = False
 
+
 @register.filter_function
 def date_long(value, arg=None):
     """Formats a date according to the given format."""
@@ -70,6 +73,7 @@ def date_long(value, arg=None):
         except AttributeError:
             return ''
 date_long.is_safe = False
+
 
 @register.filter_function
 def date(value, arg=None):
@@ -93,10 +97,12 @@ def date(value, arg=None):
             return ''
 date_long.is_safe = False
 
+
 @register.filter_function
 def order_by(queryset, args):
     args = [x.strip() for x in args.split(',')]
     return queryset.order_by(*args)
+
 
 @register.filter_function
 def in_group(user, group):
@@ -107,18 +113,21 @@ def in_group(user, group):
     else:
         return False
 
+
 @register.filter
 def domain(link):
     from urlparse import urlparse
     link = urlparse(link)
     return link.hostname
 
+
 @register.filter
 def strip_template_tags(string):
     import re
     p = re.compile('{[#{%][^#}%]+[%}#]}')
     return re.sub(p,'',string)
-    
+
+
 @register.filter
 @stringfilter      
 def stripentities(value):
@@ -127,6 +136,7 @@ def stripentities(value):
     return strip_entities(value)
 stripentities.is_safe = True
 
+
 @register.filter     
 def format_currency(value):
     """format currency"""
@@ -134,15 +144,18 @@ def format_currency(value):
     return tcurrency(value)
 format_currency.is_safe = True
 
+
 @register.filter
 def scope(object):
     return dir(object)
+
 
 @register.filter
 @stringfilter
 def basename(path):
     from os.path import basename
     return basename(path)
+
 
 @register.filter     
 def date_diff(value, date_to_compare=None):
@@ -156,6 +169,7 @@ def date_diff(value, date_to_compare=None):
     
     return (date_to_compare-value).days
 
+
 @register.filter
 def first_chars(string, arg):
     """ returns the first x characters from a string """
@@ -166,6 +180,7 @@ def first_chars(string, arg):
     else:
         return string
     return string
+
 
 @register.filter
 def rss_date(value, arg=None):
@@ -188,6 +203,7 @@ def rss_date(value, arg=None):
         except AttributeError:
             return ''
 rss_date.is_safe = False
+
 
 @register.filter()
 def obfuscate_email(email, linktext=None, autoescape=None):
@@ -218,6 +234,7 @@ def obfuscate_email(email, linktext=None, autoescape=None):
     return mark_safe(rotten_link)
 obfuscate_email.needs_autoescape = True
 
+
 @register.filter_function
 def split_str(s, args):
     """
@@ -229,6 +246,7 @@ def split_str(s, args):
             return s.split(splitter)
         return s
     return s
+
 
 @register.filter
 @stringfilter
@@ -244,7 +262,7 @@ def twitterize(value, autoescape=None):
 twitterize.is_safe=True
 twitterize.needs_autoescape = True
 
-    
+@register.filter
 def thumbnail(file, size='200x200'):
     # defining the size
     x, y = [int(x) for x in size.split('x')]
@@ -269,4 +287,29 @@ def thumbnail(file, size='200x200'):
 
     return miniature_url
 
-register.filter(thumbnail)
+@register.filter_function
+def datedelta(dt, range_):
+    from datetime import datetime
+    from datetime import timedelta
+    from time import strftime
+
+    range_type = 'add'
+    # parse the range
+    if '+' in range_:
+        range_ = range_[1:len(range_)]
+    if '-' in range_:
+        range_type = 'subtract'
+        range_ = range_[1:len(range_)]
+    k, v = range_.split('=')
+    set_range = {
+        str(k): int(v)
+    }
+
+    # set the date
+    if range_type == 'add':
+        dt = dt + timedelta(**set_range)
+    if range_type == 'subtract':
+        dt = dt - timedelta(**set_range)
+
+    return dt
+    
