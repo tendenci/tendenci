@@ -48,7 +48,7 @@
 .t-iconrow a.myevents{background-image: url('/site_media/static/images/icons/myevents12x12.gif');}
 .t-iconrow a.permissions{background-image: url('/site_media/static/images/icons/permissions12x12.gif');}
 .t-iconrow a.podcast {background-image: url('/site_media/static/images/icons/filetypes/mp3.gif');}
-.t-iconrow a.print {background-image: url('/site_media/static/images/icons/printer12x12.gif');}
+/* .t-iconrow a.print {background-image: url('/site_media/static/images/icons/printer.gif');} */
 .t-iconrow a.recurring{background-image: url('/en/calendarevents/images/icons/recurring.gif');}
 .t-iconrow a.reporting{background-image: url('/site_media/static/images/icons/reports12x12.gif');}
 .t-iconrow a.rss {background-image: url('/site_media/static/images/icons/feed-icon-12x12.gif');}

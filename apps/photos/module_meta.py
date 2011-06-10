@@ -102,8 +102,6 @@ class PhotoMeta():
         self.object = object
         self.name = name
 
-        print "name", name
-
         if name == 'title':
             if object.meta and object.meta.title: return object.meta.title
             else: return self.get_title()
