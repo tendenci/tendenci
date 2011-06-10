@@ -37,8 +37,10 @@ class Command(BaseCommand):
 
         try:
             cursor = connection.cursor()
+            cursor.execute('SET FOREIGN_KEY_CHECKS = 0;')
             for sql in sql_list:
                 cursor.execute(sql)
+            cursor.execute('SET FOREIGN_KEY_CHECKS = 1;')
         except Exception, e:
             transaction.rollback_unless_managed()
             raise CommandError("""
