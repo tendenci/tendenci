@@ -181,6 +181,8 @@ def new_mems_from_csv(file_path, app, columns):
             membership.status_detail = m.get('status-detail') or 'Active'
             membership.expire_dt = expire_dt
 
+        membership.m = m
+
         membership_set.append(membership)
 
     return membership_set
