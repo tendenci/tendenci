@@ -15,7 +15,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-<link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 {% endblock %}
 
 {% block body %}
@@ -23,127 +23,165 @@
 {% has_perm user events.change_event as can_edit %}
 
 <div class="t">
-
     {% event_nav user event %}
-
     <div class="event-wrap">
-
 		<div class="info">
 	        <h1>{{ event.title }}</h1>
-	        <div class="content">
-                <p>{{ event.description|safe }}</p>
-                {% if event.registration_configuration.groupregistrationconfiguration_set.all %}
-                    <h3>Group Pricings</h3>
-                {% endif %}
-                {% for gp in event.registration_configuration.groupregistrationconfiguration_set.all %}
-                    <p>
-                    Group: {{ gp.group.name }}<br>
-                    Early Price: {{ gp.early_price }} (Starts On: {{ gp.early_dt }})<br>
-                    Regular Price: {{ gp.regular_price }} (Starts On: {{ gp.regular_dt }})<br>
-                    Late Price: {{ gp.late_price }} (Starts On: {{ gp.late_dt }})<br>
-                    Registration Ends On: {{ gp.end_dt }}
-                    </p>
-                    <p></p><a href="{% url event.delete_group_pricing gp.id %}">Remove</a> </p>
-                {% endfor %}
-                {% if event.registration_configuration.specialpricing_set.all %}
-                <h3>Special Pricings</h3>
-                {% endif %}
-                {% for gp in event.registration_configuration.specialpricing_set.all %}
-                    <p>
-                    Title: {{ gp.title }}<br>
-                    Group: {{ gp.group.name }}<br>
-                    Quantity: {{ gp.quantity }}<br>
-                    Early Price: {{ gp.early_price }} (Starts On: {{ gp.early_dt }})<br>
-                    Regular Price: {{ gp.regular_price }} (Starts On: {{ gp.regular_dt }})<br>
-                    Late Price: {{ gp.late_price }} (Starts On: {{ gp.late_dt }})<br>
-                    Registration Ends On: {{ gp.end_dt }}
-                    </p>
-                    <p><a href="{% url event.delete_special_pricing gp.id %}">Remove</a> </p>
-                {% endfor %}
-            </div>
-		</div>
 
-		<div class="vitals">
-
-            {% register_button %}
-			
-			<div class="place">
-				<div><strong>{{ event.place.name }}</strong></div>
-				<div class="line">{{ event.place.address }}</div>
-				<div class="line">{{ event.place.city_state|join:", "}} {{ event.place.zip }} {{ event.place.country }}</div>
-				<div class="line">{{ event.place.description|urlize|linebreaks }}</div>
-			</div>
-
-			<div class="time-period">
-				<div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
-				<div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
-			</div>
-			
-			<div class="hr"></div>
-            
             {% for speaker in speakers %}
-
                 {% if speaker.name %}
                 <div class="speaker-wrap">
+                    {% for img in speaker.files %}
+                    <div class="speaker-photo">
+                      <img alt="Speaker: {{ speaker.name }}" src="{% url file img.pk %}"  width="100" />
+                    </div>
+                    {% endfor %}
                     <div class="speaker">
                         <strong>Speaker</strong> {{ speaker.name }}
                     </div>
-                    <div>
-                        {% for img in speaker.files %}
-                        <div class="event-speaker">
-                          <img alt="Speaker: {{ speaker.name }}" src="{% url file img.pk %}"  width="260" />
-                        </div>
-                        {% endfor %}
-                        {{ speaker.description|safe|urlize|linebreaks }}
-                        <br />
-                        {% if can_edit %}
-                        <a href="{% url event.delete_speaker speaker.id %}">Remove</a>
-                        {% endif %}
+                    {% if speaker.description|striptags|wordcount > 50 %}
+                    <div class="speaker-desc-short">
+                        {{ speaker.description|striptags|truncatewords:"50" }}
                     </div>
+                    <div class="speaker-desc-long">
+                        {{ speaker.description|safe|urlize|linebreaks }}
+                    </div>
+                    {% else %}
+                        <div class="speaker-desc-short">
+                            {{ speaker.description|safe|urlize|linebreaks }}
+                        </div>                    
+                    {% endif %}
+                    {% if speaker.description|striptags|wordcount > 50 %}
+                    <a class="speaker-desc-toggle" href="#">Full Description</a>
+                    {% endif %}
+                    <div style="clear:both;"></div>
                 </div>
-                {% endif %}
-            
+                {% endif %}                        
             {% endfor %}
+	        
+            <!-- event description -->
+            <div class="content">
+                <div class="event-desc">{{ event.description|safe }}</div>
+            </div>
 
-			{% if organizer.name %}
-			<div class="organizer-wrap">
-				<div class="organizer"><strong>Organizer</strong> {{ organizer.name }}</div>
-				<div>{{ organizer.description|safe|urlize|linebreaks }}</div>
+            {% if organizer.name %}
+            <div class="organizer-wrap">
+                <div class="organizer">
+                    <strong>Organizer</strong> {{ organizer.name }}
+                </div>
+                {% if organizer.description|striptags|wordcount > 50 %}
+                <div class="organizer-desc-short">
+                    {{ organizer.description|striptags|truncatewords:"50" }}
+                </div>
+                <div class="organizer-desc-long">
+                    {{ organizer.description|safe|urlize|linebreaks }}
+                </div>
+                {% else %}
+                    <div class="organizer-desc-short">
+                        {{ organizer.description|safe|urlize|linebreaks }}
+                    </div>                    
+                {% endif %}
+                {% if organizer.description|striptags|wordcount > 50 %}
+                <a class="organizer-desc-toggle" href="#">Full Description</a>
+                {% endif %}
+            </div>
+            {% endif %}
+		</div> <!-- end info -->
+
+		<div class="vitals">
+            <div class="time-period">
+                <h4 class="vital-header">When?</h4>
+                <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
+                <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
+            </div>
+
+            {% if event.registration_configuration.enabled %}
+            <div class="pricing">
+                <h4 class="vital-header">How Much?</h4>
+                {% registration_pricing_and_button event request.user %}
+            </div>
+            {% endif %}
+
+			<div class="place">
+                <h4 class="vital-header">Where?</h4>
+				<div><strong>{{ event.place.name }}</strong></div>
+				<div class="line">{{ event.place.address }}</div>
+				<div class="line">{{ event.place.city_state|join:", "}} {{ event.place.zip }}</div>
+                <div class="line">{{ event.place.country }}</div>
+                {% if event.place.description|striptags|wordcount > 50 %}
+                    <div class="line event-place-desc-short">
+                        {{ event.place.description|striptags|truncatewords:"50" }}
+                    </div>
+                    <div class="line event-place-desc-long">
+                        {{ event.place.description|safe|urlize|linebreaks }}
+                    </div>
+                {% else %}
+                        <div class="line event-place-desc-short">
+                            {{ event.place.description|safe|urlize|linebreaks }}
+                        </div>        
+                {% endif %}
+                {% if event.place.description|striptags|wordcount > 50 %}
+                    <a class="line event-place-desc-toggle" href="#">Full Description</a> 
+                {% endif %}
 			</div>
-			{% endif %}
 
-		</div>
+			<div class="hr"></div>
+
+            <div class="map">
+            {% if event.place.address and event.place.city_state %}
+<iframe width="250" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?q={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?q={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;ll=29.784544,-95.593006&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small>
+            </div>
+            {% endif %}
+            {% url event event.pk as the_url %}
+            <p>{% fb_like_button_iframe the_url %}</p>
+		</div> <!-- end vitals -->
 
 		<div style="clear:both;"></div>
     </div>
-
-    <!-- delete-event form -->
-    <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">
-        <input type="hidden" name="action" value="delete">
-    </form>
-
 </div>
 {% endblock %}
 
-<div class="meta">
-<div class="submitted">Submitted on {{ event.create_dt|date:"D d M Y P" }}
-by {% firstof event.creator.get_profile.display_name event.creator %}</div>
-</div>
-
-{% url event event.pk as the_url %}
-<p>{% fb_like_button_iframe the_url %}</p>
-
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_event = confirm('Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?');	// confirm
-				if(delete_event) $('.t').find('form[name="event-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
+            $('td.price-disabled').tipsy({
+                gravity: 'e', 
+                live: true 
+            });
+            // speaker description toggle
+            $('a.speaker-desc-toggle').click(function() {
+                var _this = $(this);
+                var speaker_wrap = _this.parents('.speaker-wrap');
+
+                _this.hide();
+                speaker_wrap.find('div.speaker-desc-short').hide();
+                speaker_wrap.find('div.speaker-desc-long').show();
+                return false;
+            });
+
+            // organizer description toggle
+            $('a.organizer-desc-toggle').click(function() {
+                var _this = $(this);
+                var speaker_wrap = _this.parents('.organizer-wrap');
+
+                _this.hide();
+                speaker_wrap.find('div.organizer-desc-short').hide();
+                speaker_wrap.find('div.organizer-desc-long').show();
+                return false;
+            });
+
+            // event description toggle
+            $('a.event-place-desc-toggle').click(function() {
+                var _this = $(this);
+                var speaker_wrap = _this.parents('.place');
+
+                _this.hide();
+                speaker_wrap.find('div.event-place-desc-short').hide();
+                speaker_wrap.find('div.event-place-desc-long').show();
+                return false;
+            });
 
 			// Dialog			
 			$('#event_export_dialog').dialog({

@@ -4,7 +4,7 @@
 {% load avatar_tags %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}Register{% endblock %}
+{% block title %}{{ block.super }}Registration Confirmation {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,8 +15,11 @@
 <style type="text/css">
 	.regconf-section {
 		background-color: #F7F7F7;
-		border: 1px solid silver;
+		border: 1px solid #CCC;
 		margin-bottom: 10px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
 	}
 	.regconf-section h2 {
 		background-color: #DDD;
@@ -57,7 +60,14 @@
 	.canceled-amount{
 		text-decoration: line-through;
 	}
+    div.event-desc-long {
+        display: none;
+    }
 
+    div.event-desc-toggle {
+        margin: 10px 0 0 0;
+        display: block;
+    }
 </style>
 
 <div class="t">    
@@ -115,8 +125,15 @@
 			</a>
 		</div>
 
-		
-		<div>{{ event.description|safe }}</div>
+        {% if event.description|striptags|wordcount > 50 %}
+		  <div class="event-desc-short">{{ event.description|striptags|truncatewords:"50"|safe }}</div>
+          <div class="event-desc-long">{{ event.description|safe }}</div>
+        {% else %}
+          <div class="event-desc-short">{{ event.description|safe }}</div>
+        {% endif %}
+        {% if event.description|striptags|wordcount > 50 %}
+          <div><a class="event-desc-toggle" href="#">Full Description</a></div>
+        {% endif %}
 	</div>
 
 	<div class="regconf-section registration">
@@ -124,25 +141,23 @@
 		<h3>
             Registration Number: {{ registration.pk }}
         </h3>
-        
-        
+
 		{% if not registration.canceled %}
 			<div>
 			 <a href="{% if hash %}{% url event.registration_edit registration.pk, hash %}{% else %}{% url event.registration_edit registration.pk %}{% endif %}">Edit Registrant(s) Info</a>
-			 
-			{% if count_registrants == 1 %}
+			{% if registrants_count >= 1 or registration.reg_conf_price.quantity > 1 %}
 					&nbsp;&nbsp;
 			      {% if user.is_authenticated %}
-			          <a href="{% url event.cancel_registration event.pk registrant.pk %}">Cancel Registation</a>
+			          <a href="{% url event.cancel_registration event.pk registration.pk %}">Cancel Registation</a>
 			      {% else %}
-			          <a href="{% url event.cancel_registration event.pk registrant.hash %}">Cancel Registation</a>
+			          <a href="{% url event.cancel_registration event.pk registration.pk registration.hash %}">Cancel Registation</a>
 			      {% endif %}
 		     {% endif %}
 		      </div>
 	     {% endif %}
 	     
-	    {% if count_registrants > 1 %}
-	    	<div style="font-weight: bold;">Registrants ... ({{ count_registrants }})</div>
+	    {% if registrants_count > 1 %}
+	    	<div style="font-weight: bold;">Registrants ... ({{ registrants_count }})</div>
 	    {% endif %}
 	            
         {% for registrant in registrants %}
@@ -158,7 +173,7 @@
 	                    {{ registrant.last_name }}
 	                {% endif %}
 	            {% else %}
-	            	Guest #{{ registrant.pk }}
+	            	Guest #{{ forloop.counter0 }}
 	            {% endif %}
 	            </div>
 	            
@@ -175,11 +190,13 @@
 						Canceled on {{ registrant.cancel_dt|date_short }}
 					</span>
 				{% else %}
-					{% if user.is_authenticated %}
-				          <a href="{% url event.cancel_registration event.pk registrant.pk %}">Cancel</a>
+                    {% if registration.reg_conf_price.quantity == 1 %}
+					  {% if user.is_authenticated %}
+				          <a href="{% url event.cancel_registrant event.pk registrant.pk %}">Cancel</a>
 				      {% else %}
-				          <a href="{% url event.cancel_registration event.pk registrant.hash %}">Cancel</a>
+				          <a href="{% url event.cancel_registrant event.pk registrant.hash %}">Cancel</a>
 				      {% endif %}
+                    {% endif %}
 				{% endif %}
 				
 				
@@ -188,7 +205,9 @@
 			</div>
 			<div style="clear:both;"></div>
 		 {% endfor %}
-		
+		<div class="info">
+            <a href="{% url event event.pk %}">Register More People</a>
+        </div>
 	</div>
 
 	<div class="regconf-section payment">
@@ -212,6 +231,23 @@
 
 		<div style="clear:both;"></div>
 	</div>
-
 </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // speaker description toggle
+            $('a.event-desc-toggle').click(function() {
+                var _this = $(this);
+                var event_wrap = _this.parents('.regconf-section');
+
+                _this.hide();
+                event_wrap.find('div.event-desc-short').hide();
+                event_wrap.find('div.event-desc-long').show();
+                return false;
+            });
+        });
+    </script>
 {% endblock %}

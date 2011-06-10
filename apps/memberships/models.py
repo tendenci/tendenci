@@ -357,6 +357,25 @@ class Membership(TendenciBaseModel):
         entry = self.ma.entries.order_by('-pk')[0]
         init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
         return dict(init_kwargs)
+    
+    def archive(self, user=None):
+        """
+        Copy self to the MembershipArchive table
+        """
+        memb_archive = MembershipArchive()
+        
+        field_names = [field.name for field in self.__class__._meta.fields]
+        field_names.remove('id')
+        field_names.remove('guid') # the archive table doesn't have guid, so remove it
+        
+        for name in field_names:
+            exec("memb_archive.%s=self.%s" % (name, name))
+            
+        memb_archive.membership = self
+        memb_archive.membership_create_dt = self.create_dt
+        memb_archive.membership_update_dt = self.update_dt
+        memb_archive.archive_user = user
+        memb_archive.save()
 
 
 class MembershipArchive(TendenciBaseModel):
@@ -378,6 +397,12 @@ class MembershipArchive(TendenciBaseModel):
     invoice = models.ForeignKey(Invoice, null=True)
     payment_method = models.CharField(_("Payment Method"), max_length=50)
     ma = models.ForeignKey("App")
+    
+    membership_create_dt = models.DateTimeField()   # original create dt for the membership entry
+    membership_update_dt = models.DateTimeField()   # original update dt for the membership entry
+    
+    archive_user = models.ForeignKey(User, related_name="membership_archiver", null=True)
+    
     objects = MembershipManager()
 
     class Meta:
@@ -821,13 +846,26 @@ class AppEntry(TendenciBaseModel):
                 'status_detail': 'active',
             })
         except: # or create membership
+            # for the individual members under a corporate, their expire_dt should be 
+            # the same as their corporate membership.
+            expire_dt = ''
+            if self.corporate_membership_id:
+                from corporate_memberships.models import CorporateMembership
+                try:
+                    corp_memb = CorporateMembership.objects.get(pk=self.corporate_membership_id)
+                    expire_dt = corp_memb.expiration_dt
+                except CorporateMembership.DoesNotExist:
+                    self.corporate_membership_id = 0
+            if not expire_dt:
+                expire_dt = self.membership_type.get_expiration_dt(subscribe_dt=datetime.now())
+                
             membership = Membership.objects.create(**{
                 'member_number': self.app.entries.count(),
                 'membership_type': self.membership_type,
                 'user':user,
                 'renewal': self.membership_type.renewal,
                 'subscribe_dt':datetime.now(),
-                'expire_dt': self.membership_type.get_expiration_dt(subscribe_dt=datetime.now()),
+                'expire_dt': expire_dt,
                 'payment_method':'',
                 'ma':self.app,
                 'corporate_membership_id': self.corporate_membership_id,
@@ -993,6 +1031,7 @@ class AppEntry(TendenciBaseModel):
 
         # if auto-approve; approve entry; send emails
         # -------------------------------------------
+        from notification import models as notification
 
         if not self.membership_type.require_approval:
 
@@ -1045,9 +1084,20 @@ class AppEntry(TendenciBaseModel):
         # update invoice with details
         invoice.estimate = True
         invoice.status_detail = status_detail
-        invoice.subtotal = self.membership_type.price
-        invoice.total = self.membership_type.price
-        invoice.balance = self.membership_type.price
+        
+        # if this membership is under a corporate and its corporate membership allows
+        # threshold and the threshold is whithin limit, then this membership gets the
+        # threshold price.
+        
+        (use_threshold, threshold_price) = self.get_corp_memb_threshold_price()
+        if use_threshold:
+            invoice.subtotal = threshold_price
+            invoice.total = threshold_price
+            invoice.balance = threshold_price
+        else:
+            invoice.subtotal = self.membership_type.price
+            invoice.total = self.membership_type.price
+            invoice.balance = self.membership_type.price
 
         invoice.due_date = datetime.now() # TODO: change model field to null=True
         invoice.ship_date = datetime.now()  # TODO: change model field to null=True
@@ -1058,6 +1108,36 @@ class AppEntry(TendenciBaseModel):
         self.save()
 
         return invoice
+    
+    def get_corp_memb_threshold_price(self):
+        """
+        get the threshold price for this individual. 
+        return tuple (use_threshold, threshold_price)
+        """
+        from corporate_memberships.models import CorporateMembership
+        try:
+            corp_memb = CorporateMembership.objects.get(id=self.corporate_membership_id)
+        except CorporateMembership.DoesNotExist:
+            corp_memb = None
+        
+        if corp_memb:
+            allow_threshold = corp_memb.corporate_membership_type.apply_threshold
+            threshold_limit = corp_memb.corporate_membership_type.individual_threshold
+            threshold_price = corp_memb.corporate_membership_type.individual_threshold_price
+            
+            if allow_threshold and threshold_limit and threshold_limit > 0:
+                # check how many memberships have joined under this corporate
+                field_entries = AppFieldEntry.objects.filter(field__field_type='corporate_membership_id', 
+                                                             value=corp_memb.id)
+                count = field_entries.count()
+                if count <= threshold_limit:
+                    return True, threshold_price
+                
+        return False, None
+                
+                
+            
+            
 
 class AppFieldEntry(models.Model):
     """
@@ -1090,7 +1170,6 @@ class AppFieldEntry(models.Model):
 
         return None
     
-
 # Moved from management/__init__.py to here because it breaks 
 # the management commands due to the ImportError.
 # assign models permissions to the admin auth group
