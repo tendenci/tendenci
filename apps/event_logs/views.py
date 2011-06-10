@@ -54,15 +54,17 @@ def search(request, template_name="event_logs/search.html"):
                 search_form.cleaned_data['end_dt'] = end_dt
 
             # if they set the dates lets update the range
-            if search_form.cleaned_data['start_dt']:
+            start_dt = search_form.cleaned_data['start_dt']
+            if isinstance(start_dt, unicode):
                 start_dt = datetime.strptime(
-                    search_form.cleaned_data['start_dt'],
+                    start_dt,
                     '%Y-%m-%d %H:%M'
                 )
 
-            if search_form.cleaned_data['end_dt']:
+            end_dt = search_form.cleaned_data['end_dt']
+            if isinstance(end_dt, unicode):
                 end_dt = datetime.strptime(
-                    search_form.cleaned_data['end_dt'],
+                    end_dt,
                     '%Y-%m-%d %H:%M'
                 )
 
