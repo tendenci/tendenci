@@ -2,145 +2,310 @@
 {% load base_filters %}
 
 {% for form in forms %}
-{% if form.errors.values %}
-<div class="errors">
-There were some problems in the form. Please review. Thanks!
-{% if form.fieldsets.fielsets %}
-	{% for fieldset in form.fieldsets %}
-		{% for field in fieldset %}
-			{% if field.errors %}
-            {% for error in field.errors %}
-            	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
-            {% endfor %}
+	{% if form.forms %}
+		{% for form_set in form.forms %}
+			{% if form_set.errors.values %}
+			<div class="errors">
+			    {% if form.fieldsets.fieldsets %}
+					{% for fieldset in form.fieldsets %}
+						{% for field in fieldset %}
+							{% if field.errors %}
+				            {% for error in field.errors %}
+				            	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+				            {% endfor %}
+							{% endif %}
+						{% endfor %}
+					{% endfor %}
+				{% else %}
+					{% for field in form_set %}
+						{% if field.errors %}
+					          {% for error in field.errors %}
+					          	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+					          {% endfor %}
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+			</div>
 			{% endif %}
 		{% endfor %}
-	{% endfor %}
-{% else %}
-	{% for field in form %}
-		{% if field.errors %}
-	          {% for error in field.errors %}
-	          	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
-	          {% endfor %}
+	{% endif %}
+
+	{% if form.errors.values %}
+		<div class="errors">
+		There were some problems in the form. Please review. Thanks!
+		{% if form.fieldsets.fieldsets %}
+			{% for fieldset in form.fieldsets %}
+				{% for field in fieldset %}
+					{% if field.errors %}
+		            {% for error in field.errors %}
+		            	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+		            {% endfor %}
+					{% endif %}
+				{% endfor %}
+			{% endfor %}
+		{% else %}
+			{% for field in form %}
+				{% if field.errors %}
+			          {% for error in field.errors %}
+			          	<p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+			          {% endfor %}
+				{% endif %}
+			{% endfor %}
 		{% endif %}
-	{% endfor %}
-{% endif %}
-</div>
-{% endif %}
+		</div>
+	{% endif %}
 {% endfor %}
 
 {% for form in forms %}
-{% if form.label %}
-	<div class="form-label">{{ form.label }}</div>
-{% endif %}
-{% if form.fieldsets.fieldsets %}
-	{% for fieldset in form.fieldsets %}
-	  {% if fieldset.boundfields %}
-	  <fieldset class="{{ fieldset.classes }}">
-		{% if fieldset.legend %}
-		  <legend>{{ fieldset.legend }}</legend>
+	{% if form.forms %} {# form sets #}
+		{% if form.label %}
+			<div class="form-label">{{ form.label }}</div>
 		{% endif %}
-		{% if fieldset.description %}
-		  <p class="section-description">{{ fieldset.description }}</p>
-		{% endif %}
-		{% for field in fieldset %}
-		{% if field.is_hidden %}
-		    {{ field }}
-		{% else %}
-		    <div class="form-field">
-		        <div class="{{ field.auto_id }}">
-		        	{% if field|is_checkbox %}
-		            	<div class="checkbox">
-		               		{% if field.errors %}
-		                    <div class="error">
-		                        {% for error in field.errors %}
-		                        <p>{{ error }}</p>
-		                        {% endfor %}
-		                    </div>
-		                    {% endif %}
-		                    <div class="field">
-		                        {{ field }}
-		                    </div>
-		                    <div class="label{% if field.field.required %} required{% endif %}">
-		                        {{ field.label_tag }}
-		                    </div>
-		                    {% if field.help_text %}
-		                    <div class="help-text">{{ field.help_text }}</div>
-		                    {% endif %}
-		                </div>
-		                <div style="clear: both"><!-- IE7 --></div>
-		            {% else %}
-		                <div class="label{% if field.field.required %} required{% endif %}">
-		                    {{ field.label_tag }}
-		                </div>
-		                {% if field.errors %}
-		                <div class="error">
-		                    {% for error in field.errors %}
-		                    <p>{{ error }}</p>
-		                    {% endfor %}
-		                </div>
-		                {% endif %}
-		                <div class="field">
-		                    {{ field }}
-		                </div>
-		                {% if field.help_text %}
-		                <div class="help-text">{{ field.help_text }}</div>
-		                {% endif %}
-		            {% endif %}
-		         </div>
-		    </div>
-		{% endif %}
+		{{ form.management_form }}
+		{% for form_set in form.forms %}
+			<div class="{{ form_set.auto_id }}">
+			<input type="hidden" name="form-number" value="{{ forloop.counter0 }}" />
+			{% if form_set.id %}
+				{{ form_set.id }}
+			{% endif %}
+			{% if form_set.label %}
+				<div class="formset-label">{{ form_set.label }}</div>
+			{% endif %}
+			{% if form_set.fieldsets.fieldsets %}
+				{% for fieldset in form_set.fieldsets %}
+				  {% if fieldset.boundfields %}
+				  <fieldset class="{{ fieldset.classes }}">
+					{% if fieldset.legend %}
+					  <legend>{{ fieldset.legend }}</legend>
+					{% endif %}
+					{% if fieldset.description %}
+					  <p class="section-description">{{ fieldset.description }}</p>
+					{% endif %}
+					{% for field in fieldset %}
+					{% if field.is_hidden %}
+					    {{ field }}
+					{% else %}
+					    <div class="form-field">
+					        <div class="{{ field.auto_id }}">
+					        	{% if field|is_checkbox %}
+					            	<div class="checkbox">
+					               		{% if field.errors %}
+					                    <div class="error">
+					                        {% for error in field.errors %}
+					                        <p>{{ error }}</p>
+					                        {% endfor %}
+					                    </div>
+					                    {% endif %}
+					                    <div class="field">
+					                        {{ field }}
+					                    </div>
+					                    <div class="label{% if field.field.required %} required{% endif %}">
+					                        {{ field.label_tag }}
+					                    </div>
+					                    {% if field.help_text %}
+					                    <div class="help-text">{{ field.help_text }}</div>
+					                    {% endif %}
+					                </div>
+					                <div style="clear: both"><!-- IE7 --></div>
+					            {% else %}
+					                <div class="label{% if field.field.required %} required{% endif %}">
+					                    {{ field.label_tag }}
+					                </div>
+					                {% if field.errors %}
+					                <div class="error">
+					                    {% for error in field.errors %}
+					                    <p>{{ error }}</p>
+					                    {% endfor %}
+					                </div>
+					                {% endif %}
+					                <div class="field">
+					                    {{ field }}
+					                </div>
+					                {% if field.help_text %}
+					                <div class="help-text">{{ field.help_text }}</div>
+					                {% endif %}
+					            {% endif %}
+					         </div>
+					    </div>
+					{% endif %}
+					{% endfor %}
+				  </fieldset>
+				  {% endif %}
+				{% endfor %}
+			{% else %}
+				{% for field in form_set %}
+				{% if field.is_hidden %}
+				    {{ field }}
+				{% else %}
+				    <div class="form-field">
+				        <div class="{{ field.auto_id }}">
+				        	{% if field|is_checkbox %}
+				            	<div class="checkbox">
+				               		{% if field.errors %}
+				                    <div class="error">
+				                        {% for error in field.errors %}
+				                        <p>{{ error }}</p>
+				                        {% endfor %}
+				                    </div>
+				                    {% endif %}
+				                    <div class="field">
+				                        {{ field }}
+				                    </div>
+				                    <div class="label{% if field.field.required %} required{% endif %}">
+				                        {{ field.label_tag }}
+				                    </div>
+				                    {% if field.help_text %}
+				                    <div class="help-text">{{ field.help_text }}</div>
+				                    {% endif %}
+				                </div>
+				                <div style="clear: both"><!-- IE7 --></div>
+				            {% else %}
+				                <div class="label{% if field.field.required %} required{% endif %}">
+				                    {{ field.label_tag }}
+				                </div>
+				                {% if field.errors %}
+				                <div class="error">
+				                    {% for error in field.errors %}
+				                    <p>{{ error }}</p>
+				                    {% endfor %}
+				                </div>
+				                {% endif %}
+				                <div class="field">
+				                    {{ field }}
+				                </div>
+				                {% if field.help_text %}
+				                <div class="help-text">{{ field.help_text }}</div>
+				                {% endif %}
+				            {% endif %}
+				         </div>
+				    </div>
+				{% endif %}
+				{% endfor %}
+			{% endif %}
+			</div>
+			<div class="formset-functions">
+				<div class="formset-add">
+					<a href="#{{ form_set.auto_id }},{{ form_set.prefix }}" title="Add {{ form_set.label }}">Add {{ form_set.label }}</a>
+				</div>
+				<div class="formset-delete">
+					<a href="#{{ form_set.auto_id }},{{ form_set.prefix }}" title="Delete {{ form_set.label }}">Delete This {{ form_set.label }}</a>
+				</div>
+			</div>
 		{% endfor %}
-	  </fieldset>
-	  {% endif %}
-	{% endfor %}
-{% else %}
-	{% for field in form %}
-	{% if field.is_hidden %}
-	    {{ field }}
-	{% else %}
-	    <div class="form-field">
-	        <div class="{{ field.auto_id }}">
-	        	{% if field|is_checkbox %}
-	            	<div class="checkbox">
-	               		{% if field.errors %}
-	                    <div class="error">
-	                        {% for error in field.errors %}
-	                        <p>{{ error }}</p>
-	                        {% endfor %}
-	                    </div>
-	                    {% endif %}
-	                    <div class="field">
-	                        {{ field }}
-	                    </div>
-	                    <div class="label{% if field.field.required %} required{% endif %}">
-	                        {{ field.label_tag }}
-	                    </div>
-	                    {% if field.help_text %}
-	                    <div class="help-text">{{ field.help_text }}</div>
-	                    {% endif %}
-	                </div>
-	                <div style="clear: both"><!-- IE7 --></div>
-	            {% else %}
-	                <div class="label{% if field.field.required %} required{% endif %}">
-	                    {{ field.label_tag }}
-	                </div>
-	                {% if field.errors %}
-	                <div class="error">
-	                    {% for error in field.errors %}
-	                    <p>{{ error }}</p>
-	                    {% endfor %}
-	                </div>
-	                {% endif %}
-	                <div class="field">
-	                    {{ field }}
-	                </div>
-	                {% if field.help_text %}
-	                <div class="help-text">{{ field.help_text }}</div>
-	                {% endif %}
-	            {% endif %}
-	         </div>
-	    </div>
+	{% else %} {# Non-form sets #}
+		{% if form.label %}
+			<div class="form-label">{{ form.label }}</div>
+		{% endif %}
+		{% if form.fieldsets.fieldsets %}
+			{% for fieldset in form.fieldsets %}
+			  {% if fieldset.boundfields %}
+			  <fieldset class="{{ fieldset.classes }}">
+				{% if fieldset.legend %}
+				  <legend>{{ fieldset.legend }}</legend>
+				{% endif %}
+				{% if fieldset.description %}
+				  <p class="section-description">{{ fieldset.description }}</p>
+				{% endif %}
+				{% for field in fieldset %}
+				{% if field.is_hidden %}
+				    {{ field }}
+				{% else %}
+				    <div class="form-field">
+				        <div class="{{ field.auto_id }}">
+				        	{% if field|is_checkbox %}
+				            	<div class="checkbox">
+				               		{% if field.errors %}
+				                    <div class="error">
+				                        {% for error in field.errors %}
+				                        <p>{{ error }}</p>
+				                        {% endfor %}
+				                    </div>
+				                    {% endif %}
+				                    <div class="field">
+				                        {{ field }}
+				                    </div>
+				                    <div class="label{% if field.field.required %} required{% endif %}">
+				                        {{ field.label_tag }}
+				                    </div>
+				                    {% if field.help_text %}
+				                    <div class="help-text">{{ field.help_text }}</div>
+				                    {% endif %}
+				                </div>
+				                <div style="clear: both"><!-- IE7 --></div>
+				            {% else %}
+				                <div class="label{% if field.field.required %} required{% endif %}">
+				                    {{ field.label_tag }}
+				                </div>
+				                {% if field.errors %}
+				                <div class="error">
+				                    {% for error in field.errors %}
+				                    <p>{{ error }}</p>
+				                    {% endfor %}
+				                </div>
+				                {% endif %}
+				                <div class="field">
+				                    {{ field }}
+				                </div>
+				                {% if field.help_text %}
+				                <div class="help-text">{{ field.help_text }}</div>
+				                {% endif %}
+				            {% endif %}
+				         </div>
+				    </div>
+				{% endif %}
+				{% endfor %}
+			  </fieldset>
+			  {% endif %}
+			{% endfor %}
+		{% else %}
+			{% for field in form %}
+			{% if field.is_hidden %}
+			    {{ field }}
+			{% else %}
+			    <div class="form-field">
+			        <div class="{{ field.auto_id }}">
+			        	{% if field|is_checkbox %}
+			            	<div class="checkbox">
+			               		{% if field.errors %}
+			                    <div class="error">
+			                        {% for error in field.errors %}
+			                        <p>{{ error }}</p>
+			                        {% endfor %}
+			                    </div>
+			                    {% endif %}
+			                    <div class="field">
+			                        {{ field }}
+			                    </div>
+			                    <div class="label{% if field.field.required %} required{% endif %}">
+			                        {{ field.label_tag }}
+			                    </div>
+			                    {% if field.help_text %}
+			                    <div class="help-text">{{ field.help_text }}</div>
+			                    {% endif %}
+			                </div>
+			                <div style="clear: both"><!-- IE7 --></div>
+			            {% else %}
+			                <div class="label{% if field.field.required %} required{% endif %}">
+			                    {{ field.label_tag }}
+			                </div>
+			                {% if field.errors %}
+			                <div class="error">
+			                    {% for error in field.errors %}
+			                    <p>{{ error }}</p>
+			                    {% endfor %}
+			                </div>
+			                {% endif %}
+			                <div class="field">
+			                    {{ field }}
+			                </div>
+			                {% if field.help_text %}
+			                <div class="help-text">{{ field.help_text }}</div>
+			                {% endif %}
+			            {% endif %}
+			         </div>
+			    </div>
+			{% endif %}
+			{% endfor %}
+		{% endif %}
 	{% endif %}
-	{% endfor %}
-{% endif %}
 {% endfor %}

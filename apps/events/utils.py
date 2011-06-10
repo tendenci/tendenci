@@ -2,11 +2,15 @@ import re
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
 from django.contrib.auth.models import User
+from datetime import datetime
 
 from profiles.models import Profile
 from site_settings.utils import get_setting
 from events.models import Registration
-from events.models import Registrant
+from events.models import Registrant, RegConfPricing
+from user_groups.models import Group
+from perms.utils import is_member, is_admin
+
 
 def get_vevents(request, d):
     from django.conf import settings
@@ -67,6 +71,7 @@ def get_vevents(request, d):
         
     return e_str
 
+
 def build_ical_text(event, d):
     ical_text = "--- This iCal file does *NOT* confirm registration.\n"
     ical_text += "Event details subject to change. ---\n"
@@ -125,7 +130,8 @@ def build_ical_text(event, d):
     ical_text  = ical_text.replace('\n', '\\n')
    
     return ical_text
-    
+
+
 def build_ical_html(event, d):
     # disclaimer: registration
     ical_html = "<div>--- This iCal file does *NOT* confirm registration."
@@ -197,8 +203,9 @@ def build_ical_html(event, d):
    
     return ical_html
 
-# degrade header tags h1, h2..., h6 to font tags for MS outlook
+
 def degrade_tags(str):
+    # degrade header tags h1, h2..., h6 to font tags for MS outlook
     # h1 --> font size 6
     str = re.sub(r'<h1[^>]*>(.*?)</h1>', r'<div><strong><font size="6">\1</font></strong></div>', str)
     
@@ -230,6 +237,7 @@ def next_month(month, year):
 
     return (next_month, next_year)
 
+
 def prev_month(month, year):
     # TODO: cleaner way to get previous date
     prev_month = (month-1)%13
@@ -239,6 +247,7 @@ def prev_month(month, year):
         prev_year -= 1
 
     return (prev_month, prev_year)
+
 
 def email_registrants(event, email, **kwargs):
 
@@ -260,7 +269,7 @@ def email_registrants(event, email, **kwargs):
 
     # i had these two lines initially to temporarily hold the original email body
     # please DO NOT remove them. Otherwise, all recipients would have the same names.
-    # as the first registrant in the email body.              - GJQ  4/13/2011
+    # as the first registrant in the email body. - GJQ  4/13/2011
     tmp_body = email.body
         
     for registrant in registrants:
@@ -274,6 +283,7 @@ def email_registrants(event, email, **kwargs):
         email.send()
         
         email.body = tmp_body  # restore to the original
+
 
 def save_registration(*args, **kwargs):
     """
@@ -362,13 +372,29 @@ def save_registration(*args, **kwargs):
     reg8n.save_invoice()
     return (reg8n, created)
 
-def add_registration(request, event, reg_form, registrant_formset, *args, **kwargs):
+
+def add_registration(*args, **kwargs):
+    """
+    Add the registration
+    Args are split up below into the appropriate attributes
+    """
+    from decimal import Decimal
     total_amount = 0
+    count = 0
+
+    # arguments were getting kinda long
+    # moved them to an unpacked version
+    request, event, reg_form, \
+    registrant_formset, price, \
+    event_price = args
     
+    event_price = Decimal(str(event_price))
+
     reg8n_attrs = {
-            "event": event,
-            "payment_method": reg_form.cleaned_data.get('payment_method', None),
-            "amount_paid": str(total_amount),
+        "event": event,
+        "payment_method": reg_form.cleaned_data.get('payment_method', None),
+        "amount_paid": str(total_amount),
+        "reg_conf_price": price
     }
     if request.user.is_authenticated():
         reg8n_attrs['creator'] = request.user
@@ -378,9 +404,22 @@ def add_registration(request, event, reg_form, registrant_formset, *args, **kwar
     reg8n = Registration.objects.create(**reg8n_attrs)
     
     for form in registrant_formset.forms:
+        amount = event_price
+        if price.quantity > 1 and count >= 1:
+            amount = Decimal('0.00')
         if not form in registrant_formset.deleted_forms:
-            registrant = create_registrant_from_form(form, event, reg8n)
-            total_amount += registrant.amount
+            registrant_args = [
+                form,
+                event,
+                reg8n,
+                price,
+                amount
+            ]
+            registrant = create_registrant_from_form(*registrant_args)
+            total_amount += registrant.amount 
+            
+            count += 1
+    
     # update reg8n with the real amount
     reg8n.amount_paid = total_amount
     
@@ -391,10 +430,19 @@ def add_registration(request, event, reg_form, registrant_formset, *args, **kwar
     return (reg8n, created)
 
 
-def create_registrant_from_form(form, event, reg8n, **kwargs):
+def create_registrant_from_form(*args, **kwargs):
+    """
+    Create the registrant
+    Args are split up below into the appropriate attributes
+    """
+    # arguments were getting kinda long
+    # moved them to an unpacked version
+    form, event, reg8n, \
+    price, amount = args
+
     registrant = Registrant()
     registrant.registration = reg8n
-    registrant.amount = event.registration_configuration.price
+    registrant.amount = amount
 
     registrant.first_name = form.cleaned_data.get('first_name', '')
     registrant.last_name = form.cleaned_data.get('last_name', '')
@@ -422,11 +470,249 @@ def create_registrant_from_form(form, event, reg8n, **kwargs):
             
     registrant.save()
     return registrant
+
+
+def gen_pricing_dict(price, qualifies):
+    now = datetime.now()
+    pricing = {}
+
+    if price.end_dt >= now:
+        if now >= price.early_dt and now <= price.regular_dt:
+            pricing.update({
+                'price': price,
+                'amount': price.early_price,
+                'qualifies': qualifies,
+                'type': 'early_price'
+            })
+        if now >= price.regular_dt and now <= price.late_dt:
+            pricing.update({
+                'price': price,
+                'amount': price.regular_price,
+                'qualifies': qualifies,
+                'type': 'regular_price'
+            })
+        if now >= price.late_dt and now <= price.end_dt:
+            pricing.update({
+                'price': price,
+                'amount': price.late_price,
+                'qualifies': qualifies,
+                'type': 'late_price'
+            })
+
+    return pricing
+
+
+def get_pricing_dict(price, qualifies, failure_type):
+    pricing_dict = gen_pricing_dict(price, qualifies)
+    if pricing_dict:
+        pricing_dict.update({
+            'failure_type': failure_type
+        })
+    return pricing_dict
+
+
+def get_pricing(user, event, pricing=None):
+    """
+    Get a list of qualified pricing in a dictionary
+    form with keys as helpers:
+
+    qualified: boolean that tells you if they qualify
+               to use this price
+
+    price: instance of the RegConfPricing model
+
+    type: string that holds what price type (early,
+          regular or late)
+
+    failure_type: string of what permissions it failed on
+    """
+    pricing_list = []
+    limit = event.registration_configuration.limit
+    spots_taken = get_event_spots_taken(event)
+    spots_left = limit - spots_taken
+    if not pricing:
+        pricing = RegConfPricing.objects.filter(
+            reg_conf=event.registration_configuration
+        )
+
+    # iterate and create a dictionary based
+    # on dates and permissions
+    # get_pricing_dict(price_instance, qualifies)
+    for price in pricing:
+        qualifies = True
+
+        # limits
+        if limit > 0:
+            if spots_left < price.quantity:
+              qualifies = False
+              pricing_list.append(get_pricing_dict(
+                price, 
+                qualifies, 
+                'limit')
+              )
+              continue
+
+        # Admins are always true
+        if is_admin(user):
+            qualifies = True
+            pricing_list.append(get_pricing_dict(
+               price, 
+               qualifies, 
+               '')
+            )
+            continue            
+
+        # Group based permissions
+        if price.group:
+            if not price.group.is_member(user):
+                qualifies = False
+                pricing_list.append(get_pricing_dict(
+                   price, 
+                   qualifies, 
+                   'group')
+                )
+                continue
+
+        # Admin only price
+        if not any([price.allow_user, price.allow_anonymous, price.allow_member]):
+            if not is_admin(user):
+                continue      
+
+        # User permissions
+        if price.allow_user and not user.is_authenticated():
+            qualifies = False
+            pricing_list.append(get_pricing_dict(
+               price, 
+               qualifies, 
+               'user')
+            )
+            continue
+
+        # Member permissions
+        if price.allow_member and not is_member(user):
+            qualifies = False
+            pricing_list.append(get_pricing_dict(
+               price, 
+               qualifies, 
+               'member')
+            )
+            continue
+
+        # public pricing
+        pricing_list.append(get_pricing_dict(
+           price, 
+           qualifies, 
+           '')
+        )
+
+    # pop out the empty ones if they exist
+    pricing_list = [i for i in pricing_list if i]
+
+    # sort the pricing from smallest to largest
+    # by price
+    sorted_pricing_list = []
+    if pricing_list:
+        sorted_pricing_list = sorted(
+            pricing_list, 
+            key=lambda k: k['amount']
+        )
+
+        # set a default pricing on the first
+        # one that qualifies
+        for price in sorted_pricing_list:
+            if price['qualifies']:
+                price.update({
+                    'default': True,
+                })
+                break
+
+    return sorted_pricing_list
+
+
+def count_event_spots_taken(event):
+    """
+    Count the number of spots taken in an event
+    """
+    registrations = Registration.objects.filter(event=event)
+    count = 0
+
+    for reg in registrations:
+        count += reg.registrant_set.count()
     
-            
-    
+    return count
 
 
+def update_event_spots_taken(event):
+    """
+    Update the index registration count for 
+    an event
+    """
+    from events.search_indexes import EventIndex
+    from events.models import Event
+
+    event_index = EventIndex(Event)
+    event.spots_taken = count_event_spots_taken(event)
+    event_index.update_object(event)
+
+    return event.spots_taken
 
 
+def get_event_spots_taken(event):
+    """
+    Get the index registration count for
+    an event
+    """
+    from haystack.query import SearchQuerySet
+    from events.models import Event
+    sqs = SearchQuerySet().models(Event)
+    sqs = sqs.filter(primary_key=event.pk)
 
+    try:
+        spots_taken = sqs[0].spots_taken
+        if not spots_taken:
+            spots_taken = update_event_spots_taken(event)
+        return spots_taken
+    except IndexError:
+        return update_event_spots_taken(event)
+    return 0
+
+
+def registration_earliest_time(event, pricing=None):
+    """
+    Get the earlist time out of all the pricing
+    """
+    earliest_time = []
+    if not pricing:
+        pricing = RegConfPricing.objects.filter(
+            reg_conf=event.registration_configuration
+        )
+
+    for price in pricing:
+        earliest_time.append(price.early_dt)    
+
+    try:
+        earliest_time = sorted(earliest_time)[0]
+    except IndexError:
+        earliest_time = None
+
+    return earliest_time
+
+
+def registration_has_started(event, pricing=None):
+    """
+    Check all times and make sure the registration has
+    started
+    """
+    reg_started = []
+
+    if not pricing:
+        pricing = RegConfPricing.objects.filter(
+            reg_conf=event.registration_configuration
+        )
+
+    for price in pricing:
+        reg_started.append(
+            price.registration_has_started
+        )
+
+    return any(reg_started)
