@@ -8,7 +8,6 @@ from before_and_after.forms import BnAForm
 class PhotoSetAdmin(admin.StackedInline):
     model = PhotoSet
     extra = 1
-    ordering = ("order",)
     
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ["name"]
@@ -53,7 +52,6 @@ class BnAAdmin(admin.ModelAdmin):
         """
         inject the user in the form.
         """
-        print "user: %d" % request.user.id
         form = super(BnAAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
         return form
