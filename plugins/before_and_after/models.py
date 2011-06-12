@@ -96,9 +96,17 @@ class PhotoSet(models.Model):
     after_photo = models.ImageField(upload_to=file_directory)
     description = models.TextField(_('description'), blank=True)
     
+    class Meta:
+        ordering = ("order",)
+    
     @property
     def content_type(self):
         return 'before_and_after'
     
     def __unicode__(self):
         return self.before_and_after.title
+        
+    def save(self, *args, **kwargs):
+        if not self.order:
+            self.order = self.before_and_after.photoset_set.all().count()
+        super(PhotoSet, self).save(*args, **kwargs)    

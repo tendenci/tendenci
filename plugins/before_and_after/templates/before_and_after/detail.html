@@ -45,7 +45,7 @@
     </div>
     <div class="bna-detail">
         <div class="photoset-wrap">
-            <a href="#" class="left">prev</a>
+            <a href="{% url before_and_after.detail bna.pk %}?order={{ active_photoset.order|add:'-1' }}" class="left">prev</a>
             <div class="photoset-large">
                 {% if active_photoset %}
                     <img src="{{ active_photoset.before_photo|thumbnail:'200x300' }}">
@@ -55,7 +55,7 @@
                     <img src="/path/to/default/image">
                 {% endif %}
             </div>
-            <a href="#" class="right">next</a>
+            <a href="{% url before_and_after.detail bna.pk %}?order={{ active_photoset.order|add:'1' }}" class="right">next</a>
             <div style="clear:both"></div>
         </div>
         <div class="desc">

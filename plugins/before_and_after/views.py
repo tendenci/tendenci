@@ -48,14 +48,23 @@ def detail(request, id, template_name='before_and_after/detail.html'):
         raise Http403
     
     active = request.GET.get('active', None)
+    order = request.GET.get('order', None)
     
     if active:
-        active_photoset = get_object_or_404(PhotoSet, pk=active, before_and_after=bna)
+        try:
+            active_photoset = PhotoSet.objects.get(pk=active, before_and_after=bna)
+        except:
+            active_photoset = bna.featured
+    elif order:
+        try:
+            active_photoset = bna.photoset_set.get(order=order)
+        except:
+            active_photoset = bna.featured
     else:
         active_photoset = bna.featured
         
-    if active_photoset:       
-        other_photosets = bna.photoset_set.exclude(pk=active_photoset.pk)[0:6]
+    if active_photoset:
+        other_photosets = bna.photoset_set.exclude(pk=active_photoset.pk).order_by('order')[0:6]
     else:
         other_photosets = []
     
