@@ -3,9 +3,17 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from haystack.query import SearchQuerySet
+import simplejson
 
 from site_settings.utils import get_setting
 from before_and_after.models import BeforeAndAfter, Category, PhotoSet, Subcategory
+
+def subcategories(request):
+    cat = request.GET.get('category', None)
+    response_dict = [{'id':None, 'label':'Subcategory'}]
+    for sub in Subcategory.objects.filter(category=cat):
+        response_dict.append({'id':sub.pk, 'label':sub.name})
+    return HttpResponse(simplejson.dumps(response_dict), mimetype='application/javascript')
 
 def search(request, template_name='before_and_after/search.html'):
     category = request.GET.get('category', None)

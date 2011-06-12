@@ -5,4 +5,13 @@
     {{ form.q }}
     <input type="submit" value="Search" />
     </form>
+    <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="/site_media/static/js/jquery_plugins/select-chain.js"></script>
+    <script type="text/javascript">
+        $('#id_category').selectChain({
+            target: $('#id_subcategory'),
+            url: '{% url before_and_after.subcategories %}',
+            type: 'get',
+        });
+    </script>
 </div>

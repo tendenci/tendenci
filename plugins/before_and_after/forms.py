@@ -44,7 +44,7 @@ class SearchForm(forms.Form):
                     )
     subcategory = forms.ModelChoiceField(
                         empty_label="Subcategory",
-                        queryset=Subcategory.objects.all(),
+                        queryset=Subcategory.objects.none(),
                         required=False,
                     )
     q = forms.CharField(required=False)
