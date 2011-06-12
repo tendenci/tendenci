@@ -1,0 +1,72 @@
+{% extends "before_and_after/base.html" %}
+{% load pagination_tags %}
+{% load before_and_after_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+{% load forms_tags %}
+
+{% block title %}Before & After{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+        {% include "before_and_after/media/css/before_and_after.css" %}
+    </style>
+{% endblock %}
+
+{% block body %}
+{% autopaginate bnas 5 %}
+
+<div class="t">
+    {% before_and_after_search %}
+    <div class="bna-breadcrumbs">
+        {% if category %}
+            <h1><a href="{% url before_and_after.search %}?category={{ category.pk}}">{{ category.name }}</a></h1>
+        {% endif %}
+        {% if subcategory %}
+            <h2>&raquo; <a href="{% url before_and_after.search %}?category={{ category.pk}}&subcategory={{ subcategory.pk }}">{{ subcategory.name }}</a></h2>
+        {% endif %}
+    </div>
+    <div class="bna-warning">
+        {{ disclaimer_text|safe }}
+    </div>
+    <div class="bna-search-wrap">
+        {% for bna in bnas %}
+        {% with bna.object as bna %}
+            <div class="bna-search-item">
+                <div class="bna-featured">
+                    {% if bna.featured %}
+                        <img src="{{ bna.featured.before_photo|thumbnail:'140x200' }}">
+                        <img src="{{ bna.featured.after_photo|thumbnail:'140x200' }}">
+                    {% else %}
+                        <img src="/path/to/default/image">
+                        <img src="/path/to/default/image">
+                    {% endif %}
+                </div>
+                <div class="bna-desc">
+                    <h3><a href="{{ bna.get_absolute_url }}" title="{{ bna.title }}">{{ bna.title }}</a></h3>
+                    <p>
+                        <b>Description</b><br>
+                        {% filter striptags|truncatewords:"60" %}
+                            {{ bna.description|safe }}
+                        {% endfilter %}
+                    </p>
+                    <a href="{{ bna.get_absolute_url }}">Read More</a>
+                </div>
+                <div style="clear:both"></div>
+            </div>
+        {% endwith %}
+        {% empty %}
+            <p>0 Before & Afters Found</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+    <div class="bna-embed-form">
+        {% embed_form embed_form %}
+    </div>
+</div>
+{% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+{% endblock %}
