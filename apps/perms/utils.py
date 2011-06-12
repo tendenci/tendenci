@@ -225,7 +225,7 @@ def update_admin_group_perms():
 
 def can_view(user, obj, status_detail = 'active'):
     """
-        Checks for tendenci specific permissions to viewing objects.
+        Checks for tendenci specific permissions (ONLY) to viewing objects.
     """
     
     # check to see if there is impersonation

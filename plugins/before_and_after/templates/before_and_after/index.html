@@ -1,0 +1,58 @@
+{% extends "before_and_after/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load before_and_after_tags %}
+{% load forms_tags %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        before and after {{ title_tag }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+        {% include "before_and_after/media/css/before_and_after.css" %}
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h1>{{ title }}</h1>
+    {% before_and_after_search %}
+    <div class="bna-main-desc">
+        {{ description|safe }}
+    </div>
+    <div class="bna-categories-wrap">
+        {% for category in categories %}
+            <div class="bna-category">
+                <h3>{{ category.name }}</h3>
+                {% if category.image %}
+                    <img src="{{ category.image|thumbnail:'220x120' }}">
+                {% else %}
+                    <img src="/path/to/default/image">
+                {% endif %}
+                <div class="bna-subcategories">
+                    <ul>
+                        {% for sub in category.subcategory_set.all %}
+                            <li><a href="{% url before_and_after.search %}?category={{ category.id }}&subcategory={{ sub.id }}">{{ sub.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+        <div style="clear:both"></div>
+    </div>
+    <div class="bna-embed-form">
+        {% embed_form embed_form %}
+    </div>
+</div>
+{% endblock body %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}

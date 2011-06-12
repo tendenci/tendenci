@@ -1,0 +1,146 @@
+.t {
+}
+
+/* general */
+
+.t h2 {
+    font-size: 1.25em;
+    margin-bottom: 10px;
+}
+
+.t h2 a {
+    text-decoration: underline;
+}
+
+/* search */
+.t .bna-search {
+    padding: 8px;
+    margin-bottom: 15px;
+    background-color: #EFEFEF;
+}
+
+/* index */
+.t .bna-categories-wrap {
+}
+
+.t .bna-category {
+    float: left;
+    width: 30%;
+    height: 300px;
+    padding: 4px;
+    background-color: #DFDFDF;
+    border: 1px solid #000000;
+    margin: 0px 6px 12px 6px;
+}
+
+.t .bna-category h3 {
+    padding: 5px;
+    text-align: center;
+    background-color: #555555;
+    color: #FFFFFF;
+}
+
+.t .bna-category img {
+    height: 110px;
+    width: 210px;
+}
+
+.t .bna-subcategories {
+    padding: 10px 0px;
+}
+
+/* search */
+
+.t .bna-breadcrumbs {
+    margin-bottom: 10px;
+}
+
+.t .bna-search-wrap {
+    
+}
+
+.t .bna-search-item {
+    margin-bottom: 15px;
+    padding: 5px;
+    background-color: #DFDFDF;
+    border: 1px solid #000000;
+}
+
+.t .bna-featured {
+    float: left;
+    padding: 10px;
+    background-color: khaki;
+    border: 1px solid #000000;
+    width: 45%;
+}
+
+.t .bna-featured img {
+    margin: 4px;
+    border: 1px solid #FFFFFF;
+    height: 200px;
+    width: 140px;
+}
+
+.t .bna-desc {
+    width: 48%;
+    margin-left: 10px;
+    padding: 5px;
+    float: left;
+}
+
+/* detail */
+
+.t .bna-detail {
+
+}
+
+.t .bna-detail .photoset-wrap {
+    position: relative;
+    margin: 40px 0px;
+}
+
+.t .bna-detail .photoset-wrap .left {
+    position: absolute;
+    left: 50px;
+    top: 180px;
+}
+
+.t .bna-detail .photoset-wrap .right {
+    position: absolute;
+    right: 50px;
+    top: 180px;
+}
+
+.t .bna-detail .photoset-large{
+    text-align:center;
+    margin: auto;
+    width: 430px;
+    border: 10px solid #DFDFDF;
+    background-color: khaki;
+    padding: 5px;
+}
+
+.t .bna-detail .photoset-large img{
+    margin: 4px;
+    border: 1px solid #FFFFFF;
+    height: 300px;
+    width: 200px;
+}
+
+.t .bna-detail .photoset-small{
+    float: left;
+    padding: 3px;
+}
+
+.t .bna-detail .desc {
+    margin-bottom: 40px;
+}
+
+.t .bna-detail .other-photosets-wrap {
+    margin-bottom: 20px;
+}
+
+.t .bna-detail .other-photosets {
+    background-color: khaki;
+    border: 3px solid #DFDFDF;
+}
