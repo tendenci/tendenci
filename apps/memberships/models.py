@@ -1037,7 +1037,9 @@ class AppEntry(TendenciBaseModel):
 
             self.approve()
 
-            # send email to approved members
+            membership_total = Membership.objects.filter(status=True, status_detail='active').count()
+
+            # send email to approved member
             notification.send_emails([self.email],'membership_approved_to_member', {
                 'object':self,
                 'request':request,
