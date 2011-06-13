@@ -1,9 +1,14 @@
 {% load tagging_tags %}
 {% load base_filters %}
 
-{{ object.first_name }}
-{{ object.last_name }}
-{{ object.position }}
+{{ object.name }}
+{% if object.position %}
+    position:{{ object.position }}
+{% endif %}
+{% if object.category %}
+    category:{{ object.category }}
+{% endif %}
+
 {{ object.address }}
 {{ object.address2 }}
 {{ object.city }}
@@ -12,10 +17,11 @@
 {{ object.phone }}
 {{ object.fax }}
 {{ object.email }}
-{{ object.bio }}
-{{ object.education }}
-{{ object.casework }}
-{{ object.admissions }}
+
+{{ object.bio|striptags|stripentities }}
+{{ object.education|striptags|stripentities }}
+{{ object.casework|striptags|stripentities }}
+{{ object.admissions|striptags|stripentities }}
 
 {% tags_for_object object as tags %}
 {% for tag in tags %}
