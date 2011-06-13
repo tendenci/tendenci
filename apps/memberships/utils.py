@@ -119,32 +119,26 @@ def new_mems_from_csv(file_path, app, columns):
 
     for m in membership_dicts:
 
-        now = datetime.now()
+        # detect if renewal
+        m['renewal'] = bool(m['renew-date'])
 
-        if m['renew-date']:
-            m['subscribe-dt'] = m['renew-date']
-            m['renewal'] = True
-        else:
-            m['subscribe-dt'] = m['join-date']
-            m['renewal'] = False
-
-        # get/create objects from strings
-        try:
+        try: # if user exists; import membership
             user = User.objects.get(username = m['user-name'])
         except:
-            # print 'bad username', m['user-name']
             continue  # on to the next one
 
-        try:
+        try:  # if membership type exists; import membership
             membership_type = MembershipType.objects.get(name = m['membership-type'])
         except:
-            # print 'bad membership type', m['membership-type']
             continue  # on to the next one
 
-        try: subscribe_dt = dt_parse(m['subscribe-dt'])
-        except: subscribe_dt = now
+        try: join_dt = dt_parse(m['join-date'])
+        except: join_dt = None
+        try: renew_dt = dt_parse(m['renew-date'])
+        except: renew_dt = None
+
         try: expire_dt = dt_parse(m['expire-date'])
-        except: expire_dt = membership_type.get_expiration_dt(subscribe_dt=subscribe_dt)
+        except: expire_dt = membership_type.get_expiration_dt(join_dt=join_dt, renew_dt=renew_dt, renewal=m.get('renewal'))
 
         user_attrs = (
             m.get('First Name'),
@@ -164,6 +158,11 @@ def new_mems_from_csv(file_path, app, columns):
             membership_type=membership_type,
         )
 
+        # get subscribe_dt
+        if renew_dt: subscribe_dt = renew_dt
+        elif join_dt: subscribe_dt = join_dt
+        else: subscribe_dt = datetime.now()
+
         if memberships:  # get membership record
             membership = memberships[0]
         else:  # create membership record
@@ -176,7 +175,7 @@ def new_mems_from_csv(file_path, app, columns):
             membership.creator = user
             membership.subscribe_dt = subscribe_dt
             membership.payment_method = m.get('payment-method') or ''
-            membership.renewal = m.get('renewal') or False
+            membership.renewal = m.get('renewal')
             membership.status = m.get('status') or True
             membership.status_detail = m.get('status-detail') or 'Active'
             membership.expire_dt = expire_dt
