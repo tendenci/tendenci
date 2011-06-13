@@ -53,6 +53,9 @@
 .modules li.news {
 	background-image: url('/site_media/static/images/icons/news-bw-64x64.png');
 }
+.modules li.memberships {
+	background-image: url('/site_media/static/images/icons/memberships-bw-64x64.png');
+}
 .modules li.directories {
 	background-image: url('/site_media/static/images/icons/directories-bw-64x64.png');
 }

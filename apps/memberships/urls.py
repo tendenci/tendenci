@@ -1,13 +1,14 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns("memberships.views",
-    url(r"^$", "membership_index", name="membership.index"),
-    url(r"^search/$", "membership_search", name="membership.search"),
-
-    (r'^notices/', include('memberships.notices.urls')),
 
     # memberships
+    url(r"^$", "membership_index", name="membership.index"),
+    url(r"^search/$", "membership_search", name="membership.search"),
     url(r"^memberships/(?P<id>\d+)/$", "membership_details", name="membership.details"),
+
+    # notices
+    (r'^notices/', include('memberships.notices.urls')),
 
     # import
     url(r"^import/$", "membership_import", name="membership_import"),
