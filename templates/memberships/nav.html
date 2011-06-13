@@ -2,7 +2,6 @@
 {% load perm_tags %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
-
 {% has_perm user memberships.change_notice as can_edit_notice %}
 
 <div id="showh">
@@ -24,7 +23,10 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "memberships" %}">Settings</a></li>
             {% endif %}
-            
+
+            <!-- permissions are set per entry -->
+            <li><a href="{% url membership.application_entries_search %}">Entries</a></li>
+
             {% if can_edit_notice %}
                 <li><a href="{% url admin:memberships_notice_changelist %}">Notices</a></li>
             {% endif %}
