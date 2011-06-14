@@ -59,58 +59,36 @@
     position: relative;
 }
 
-.t .attornies-search table td.photo {
-    width: 128px;
-    height: 128px;
-    padding: 10px;
-    background-color: #F2F2F2;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    text-align: center;
-}
-
-.t .attornies-search table td.photo img {
-    width: 128px;
-    height: 128px;
-}
-
-.t .attornies-search table td.photo p {
-    margin-top: 10px;
-}
-
-.t .attornies-search table td.info {
-    padding: 10px;
-}
-
-.t .attornies-search table td.info p {
-    margin-top: 10px;
-}
-
-.t .view-attorney {
-    width: 100%;
-    position: relative;
-}
-
-.t .view-attorney .photo {
+.t .attornies-search .photo {
     padding: 5px 15px 15px 5px;
     float: left;
     text-align: center;
 }
 
-.t .view-attorney .photo img {
+.t .attornies-search .photo img {
     width: 128px;
     height: 128px;
     border: 6px solid #f2f2f2;
 }
 
-.t .view-attorney .photo p {
-    margin-top: 5px;
+.t .attornies-search .info {
+    padding-top: 5px;
 }
 
-.t .view-attorney .photo .attornies-position {
+.t .attornies-search .info .position {
     font-style: italic;
     font-size: 12px;
+    padding-top: 5px;
+}
+
+.t .attornies-search .info .contact {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.t .view-attorney {
+    width: 100%;
+    position: relative;
 }
 
 .t .view-attorney h1 {
@@ -119,3 +97,41 @@
     padding: 10px;
 }
 
+.t .view-attorney .top-wrap { 
+    
+}
+
+.t .view-attorney .top-wrap .photo {
+    padding: 5px 15px 15px 5px;
+    float: left;
+    text-align: center;
+}
+
+.t .view-attorney .top-wrap .photo img {
+    width: 128px;
+    height: 128px;
+    border: 6px solid #f2f2f2;
+}
+
+.t .view-attorney .top-wrap .position {
+    font-style: italic;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.t .view-attorney .top-wrap .contact {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.t .view-attorney .bottom-wrap {
+    margin-top: 10px;
+}
+
+.t .view-attorney .bottom-wrap .left-wrap{
+    float: left;
+    padding-right: 15px
+}
+
+.t .view-attorney .bottom-wrap .right-wrap {
+}
