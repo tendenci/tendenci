@@ -30,15 +30,19 @@
             </div>
             <table border="0" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                    <td class="attorney-photo">
+                    <td class="photo">
                         {% if attorney.photo %}
-                        <a href="{{ attorney.get_absolute_url }}">
-                        <img src="{% url file attorney.photo.pk %}128x128/" title="{{ attorney.name }}"  />
-                        </a>
+                            <a href="{{ attorney.get_absolute_url }}">
+                            <img src="{% url file attorney.photo.pk %}128x128/" title="{{ attorney.name }}"  />
+                            </a>
+                        {% else %}
+                            <a href="{{ attorney.get_absolute_url }}">
+                            <img src="/path/to/default/photo" title="{{ attorney.name }}"  />
+                            </a>
                         {% endif %}
                         <p><a href="{{ attorney.get_absolute_url }}">{{ attorney.name }}</a></p>
                     </td>
-                    <td class="attorney-info">
+                    <td class="info">
                         <p>
                             {% spaceless %}
                                 <a href="{{ attorney.get_absolute_url }}">{{ attorney.name }}</a>
