@@ -48,8 +48,8 @@
             <a href="{% url before_and_after.detail bna.pk %}?order={{ active_photoset.order|add:'-1' }}" class="left">prev</a>
             <div class="photoset-large">
                 {% if active_photoset %}
-                    <img src="{{ active_photoset.before_photo|thumbnail:'200x300' }}">
-                    <img src="{{ active_photoset.after_photo|thumbnail:'200x300' }}">
+                    <img src="{{ active_photoset.before_photo|thumbnail:'200x300' }}" alt="{{ active_photoset.description }}">
+                    <img src="{{ active_photoset.after_photo|thumbnail:'200x300' }}" alt="{{ active_photoset.description }}">
                 {% else %}
                     <img src="/path/to/default/image">
                     <img src="/path/to/default/image">

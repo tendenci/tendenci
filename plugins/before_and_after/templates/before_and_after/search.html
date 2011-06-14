@@ -36,8 +36,8 @@
             <div class="bna-search-item">
                 <div class="bna-featured">
                     {% if bna.featured %}
-                        <img src="{{ bna.featured.before_photo|thumbnail:'140x200' }}">
-                        <img src="{{ bna.featured.after_photo|thumbnail:'140x200' }}">
+                        <img src="{{ bna.featured.before_photo|thumbnail:'140x200'}}" alt="{{ bna.description }}">
+                        <img src="{{ bna.featured.after_photo|thumbnail:'140x200' }}" alt="{{ bna.description }}">
                     {% else %}
                         <img src="/path/to/default/image">
                         <img src="/path/to/default/image">
