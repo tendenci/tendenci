@@ -70,6 +70,11 @@
     text-align: center;
 }
 
+.t .attornies-search table td.photo img {
+    width: 128px;
+    height: 128px;
+}
+
 .t .attornies-search table td.photo p {
     margin-top: 10px;
 }
@@ -94,6 +99,8 @@
 }
 
 .t .view-attorney .photo img {
+    width: 128px;
+    height: 128px;
     border: 6px solid #f2f2f2;
 }
 

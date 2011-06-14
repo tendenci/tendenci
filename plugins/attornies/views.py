@@ -26,7 +26,7 @@ def search(request, template_name='attornies/search.html'):
 def detail(request, id, template_name='attornies/detail.html'):
     attorney = get_object_or_404(Attorney, id=id)
     
-    if not can_view(attorney, request.user):
+    if not can_view(request.user, attorney):
         raise Http403
     
     return render_to_response(template_name,

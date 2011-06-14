@@ -49,7 +49,7 @@ class Attorney(TendenciBaseModel):
     
     @models.permalink
     def get_absolute_url(self):
-        return ('attorney.detail', [self.pk])
+        return ('attornies.detail', [self.pk])
         
     @property
     def name(self):
