@@ -1,0 +1,91 @@
+{% extends "attornies/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load attornies_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+    {% nowhitespace %}
+        {{ attorney.name }}
+        {% if attorney.position %}
+            &nbsp;&ndash;&nbsp;{{ attorney.position }}
+        {% endif %}
+        {% if attorney.category %}
+            &nbsp;&ndash;&nbsp;{{ attorney.category }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        attorney {{ attorney.name }}
+        {% if attorney.position %}
+            {{ attorney.position }}
+        {% endif %}
+        {% if attorney.category %}
+            {{ attorney.category }}
+        {% endif %}
+        {% if attorney.tags %}
+            {{ attorney.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ attorney.name }}
+        {% if attorney.position %}
+            ,{{ attorney.position }}
+        {% endif %}
+        {% if attorney.category %}
+            ,{{ attorney.category }}
+        {% endif %}
+        {{ attorney.bio|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "attornies/media/css/attornies.css" %}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <div class="view-attorney">
+        <div class="quick-options">
+            {% attornies_options request.user attorney %}
+        </div>
+        <div class="photo">
+            {% if attorney.professional_photo %}
+                <img src="{% url file attorney.professional_photo.pk %}128x128/" title="{{ attorney.name }}"  />
+            {% else %}
+                <img src="/path/to/default/photo" />
+            {% endif %}
+            <p>{{ attorney.name }}</p>
+            {%  if attorney.position %}
+            <p class="attorney-position">{{ attorney.position }}</p>
+            {% endif %}
+        </div>
+        <h1>
+            {{ attorney.name }}
+            {% if attorney.position %}
+                &nbsp;&ndash;&nbsp;{{ attorney.position }}
+            {% endif %}
+            {% if attorney.category %}
+                &nbsp;&ndash;&nbsp;{{ attorney.category }}
+            {% endif %}
+        </h1>
+        {% if attorney.bio %}
+        <p class="attorney-bio">
+            {{ attorney.bio|safe }}
+        </p>
+        {% endif %}
+        <div class="attorney-meta">
+            <a href="{% url attornies.search %}">&laquo;&nbsp;Search other attornies</a>
+        </div>
+    </div>
+</div>
+{% endblock body %}
