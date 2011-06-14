@@ -39,8 +39,8 @@ class AttorneyIndex(indexes.RealTimeSearchIndex):
     primary_key = indexes.CharField(model_attr='pk')
     
     # permission fields
-    users_can_view = indexes.MultiValueField()
-    groups_can_view = indexes.MultiValueField()
+    users_can_view = indexes.MultiValueField(null=True)
+    groups_can_view = indexes.MultiValueField(null=True)
     
     def prepare_users_can_view(self, obj):
         return ObjectPermission.objects.users_with_perms('before_and_after.view_before_and_after', obj)
