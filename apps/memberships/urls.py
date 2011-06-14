@@ -28,9 +28,14 @@ urlpatterns = patterns("memberships.views",
 
     # notice
     url(r"^notices/(?P<id>\d+)/email_content/$", "notice_email_content", name="membership.notice_email_content"),
+    
+    url(r"^emailtoverify/conf/$", "email_to_verify_conf", name="membership.email__to_verify_conf"),
+    url(r"^verifyemail/(?P<id>\d+)/(?P<guid>[\d\w-]+)/$", "verify_email", name="membership.verify_email"),
 
     # application
     url(r"^confirmation/(?P<hash>[\w]+)/$", "application_confirmation", name="membership.application_confirmation"),
     url(r"^(?P<slug>[\w\-]+)/(?P<cmb_id>\d+)?/?$", "application_details", name="membership.application_details"),
+    url(r"^(?P<slug>[\w\-]+)/(?P<cmb_id>\d+)/(?P<imv_id>\d+)/(?P<imv_guid>[\d\w-]+)/$", "application_details", name="membership.application_details_via_corp_domain"),
+    url(r"^(?P<slug>[\w\-]+)/(?P<cmb_id>\d+)/(?P<secret_hash>[\d\w]+)$", "application_details", name="membership.application_details_via_corp_secret_code"),
     url(r"^(?P<slug>[\w\-]+)/corp-pre/(?P<cmb_id>\d+)?/?$", "application_details_corp_pre", name="membership.application_details_corp_pre"),
 )
