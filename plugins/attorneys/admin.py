@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 
-from attorneys.models import Attorney
+from attorneys.models import Attorney, Photo
 from attorneys.forms import AttorneyForm
 
 class AttorneyAdmin(admin.ModelAdmin):
@@ -55,3 +55,4 @@ class AttorneyAdmin(admin.ModelAdmin):
         return form
 
 admin.site.register(Attorney, AttorneyAdmin)
+admin.site.register(Photo)
