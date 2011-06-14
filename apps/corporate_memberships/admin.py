@@ -1,10 +1,12 @@
 from django.contrib import admin
 from django.conf import settings
 
-from corporate_memberships.models import CorporateMembershipType
+from corporate_memberships.models import CorporateMembershipType, CorporateMembership
 from corporate_memberships.models import CorpApp, CorpField
 from corporate_memberships.forms import CorporateMembershipTypeForm, CorpFieldForm, CorpAppForm
 from corporate_memberships.utils import get_corpapp_default_fields_list, update_authenticate_fields, edit_corpapp_update_memb_app
+
+from event_logs.models import EventLog
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'renewal_price', 'membership_type',  
@@ -108,9 +110,11 @@ class CorpAppAdmin(admin.ModelAdmin):
             extra_context = {'excluded_lines': excluded_lines,
                              "excluded_fields":excluded_fields,
                              'fields_to_check': fields_to_check}
-        return super(CorpAppAdmin, self).change_view(request, object_id,
+            
+        return  super(CorpAppAdmin, self).change_view(request, object_id,
                                               extra_context)
-         
+        
+
     def get_fieldsets(self, request, obj=None):
         if obj and obj.id:
             return  (
@@ -155,12 +159,61 @@ class CorpAppAdmin(admin.ModelAdmin):
                                     
         form.save_m2m()
         
-        #if change:
-        update_authenticate_fields(instance)
-        edit_corpapp_update_memb_app(instance)
+        if change and instance.authentication_method == 'secret_code':
+            # check for existing corporate memberships for secret code,
+            # assign secret code if not assigned already
+            corp_membs = CorporateMembership.objects.filter(corp_app=instance)
+            if corp_membs:
+                for corp_memb in corp_membs:
+                    if not corp_memb.secret_code:
+                        corp_memb.assign_secret_code()
+                        corp_memb.save()
         
         return instance
+    
+    def log_deletion(self, request, object, object_repr):
+        super(CorpAppAdmin, self).log_deletion(request, object, object_repr)
+        log_defaults = {
+            'event_id' : 689300,
+            'event_data': '%s %s(%d) deleted by %s' % (object._meta.object_name, 
+                                                    object.name, object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)           
 
+    def log_change(self, request, object, message):
+        update_authenticate_fields(object)
+        edit_corpapp_update_memb_app(object)
+        super(CorpAppAdmin, self).log_change(request, object, message)
+        log_defaults = {
+            'event_id' : 689200,
+            'event_data': '%s %s(%d) edited by %s' % (object._meta.object_name, 
+                                                    object.name, object.pk, request.user),
+            'description': '%s edited' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)               
 
+    def log_addition(self, request, object):
+        update_authenticate_fields(object)
+        edit_corpapp_update_memb_app(object)
+        super(CorpAppAdmin, self).log_addition(request, object)
+        log_defaults = {
+            'event_id' : 689100,
+            'event_data': '%s %s(%d) added by %s' % (object._meta.object_name, 
+                                                   object.name, object.pk, request.user),
+            'description': '%s added' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
+         
+    
 admin.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
 admin.site.register(CorpApp, CorpAppAdmin)
