@@ -1,0 +1,120 @@
+{% extends "attorneys/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load attorneys_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+    {% nowhitespace %}
+        {{ attorney.name }}
+        {% if attorney.position %}
+            &nbsp;&ndash;&nbsp;{{ attorney.position }}
+        {% endif %}
+        {% if attorney.category %}
+            &nbsp;&ndash;&nbsp;{{ attorney.category }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        attorney {{ attorney.name }}
+        {% if attorney.position %}
+            {{ attorney.position }}
+        {% endif %}
+        {% if attorney.category %}
+            {{ attorney.category }}
+        {% endif %}
+        {% if attorney.tags %}
+            {{ attorney.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ attorney.name }}
+        {% if attorney.position %}
+            ,{{ attorney.position }}
+        {% endif %}
+        {% if attorney.category %}
+            ,{{ attorney.category }}
+        {% endif %}
+        {{ attorney.bio|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "attorneys/media/css/attorneys.css" %}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <div class="view-attorney">
+        <div class="quick-options">
+            {% attorneys_options request.user attorney %}
+        </div>
+        <div class="top-wrap">
+            <div class="photo">
+                {% if attorney.professional_photo %}
+                    <img src="{% url file attorney.professional_photo.pk %}128x128/" title="{{ attorney.name }}"  />
+                {% else %}
+                    <img src="/path/to/default/photo" />
+                {% endif %}
+            </div>
+            <div class="info">
+                <h1>{{ attorney.name }}</h1>
+                <div class="position">
+                    {{ attorney.get_category_display }}{% if attorney.category %}, {% endif %}{{ attorney.position }}
+                    {% if attorney.position %}&nbsp;&mdash;&nbsp;{% endif %}{{ attorney.city }}{% if attorney.city %}, {% endif %}{{ attorney.state }}
+                </div>
+                <div class="contact">
+                    {% if attorney.address %}Address: {{ attorney.address }}{% endif %}<br/>
+                    {% if attorney.address2 %}Address 2: {{ attorney.address2 }}{% endif %}<br/>
+                    {% if attorney.zip %}Zip: {{ attorney.zip }}{% endif %}<br/>
+                    {% if attorney.phone %}Phone: {{ attorney.phone }}{% endif %}<br/>
+                    {% if attorney.fax %}Fax: {{ attorney.fax }}{% endif %}<br/>
+                    {% if attorney.email %}Email: <a href="mailto:{{ attorney.email }}">{{ attorney.email }}</a>{% endif %}<br/>
+                </div>
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        <div class="bottom-wrap">
+            <div class="left-wrap">
+                {% if attorney.education %}
+                    <p class="education">
+                        {{ attorney.education|safe }}
+                    </p>
+                {% endif %}
+                {% if attorney.casework %}
+                    <h3>Practice Areas and Casework</h3>
+                    <p class="casework">
+                        {{ attorney.casework|safe }}
+                    </p>
+                {% endif %}
+                {% if attorney.admissions %}
+                    <h3>Admissions</h3>
+                    <p class="admissions">
+                        {{ attorney.admissions|safe }}
+                    </p>
+                {% endif %}
+            </div>
+            <div class="right-wrap">
+                {% if attorney.bio %}
+                <p class="bio">
+                    {{ attorney.bio|safe }}
+                </p>
+                {% endif %}
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        <div class="attorney-meta">
+            <a href="{% url attorneys.search %}">&laquo;&nbsp;Search other attorneys</a>
+        </div>
+    </div>
+</div>
+{% endblock body %}
