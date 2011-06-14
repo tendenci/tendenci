@@ -3,7 +3,7 @@
 {% load attornies_tags %}
 {% load perm_tags %}
 
-{% block title %}Attornies{% endblock %}
+{% block title %}Attorneys{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -28,48 +28,34 @@
             <div class="quick-options">
                 {% attornies_options request.user attorney %}
             </div>
-            <table border="0" width="100%" cellspacing="0" cellpadding="0">
-                <tr>
-                    <td class="photo">
-                        {% if attorney.photo %}
-                            <a href="{{ attorney.get_absolute_url }}">
-                            <img src="{% url file attorney.photo.pk %}128x128/" title="{{ attorney.name }}"  />
-                            </a>
-                        {% else %}
-                            <a href="{{ attorney.get_absolute_url }}">
-                            <img src="/path/to/default/photo" title="{{ attorney.name }}"  />
-                            </a>
-                        {% endif %}
-                        <p><a href="{{ attorney.get_absolute_url }}">{{ attorney.name }}</a></p>
-                    </td>
-                    <td class="info">
-                        <p>
-                            {% spaceless %}
-                                <a href="{{ attorney.get_absolute_url }}">{{ attorney.name }}</a>
-                                {% if attorney.category %}
-                                    &nbsp;&ndash;&nbsp;
-                                        <a href="{% url attornies.search %}?q=category:{{ attorney.category }}">
-                                            {{  attorney.category }}
-                                        </a>
-                                {%  endif %}
-                                {% if attorney.position %}
-                                    &nbsp;&ndash;&nbsp;
-                                        <a href="{% url attornies.search %}?q=position:{{ attorney.position }}">
-                                            {{  attorney.position }}
-                                        </a>
-                                {%  endif %}
-                            {% endspaceless %}
-                        </p>
-                        {% if attorney.bio %}
-                            <p>{{ attorney.bio|striptags|truncatewords:"80" }}</p>
-                        {% endif %}
-                    </td>
-                </tr>
-            </table>
+            <div class="photo">
+                {% if attorney.professional_photo %}
+                    <img src="{% url file attorney.professional_photo.pk %}128x128/" title="{{ attorney.name }}"  />
+                {% else %}
+                    <img src="/path/to/default/photo" />
+                {% endif %}
+            </div>
+            <div class="info">
+                <a href="{{ attorney.get_absolute_url }}"><h3>{{ attorney.name }}</h3></a>
+                <div class="position">
+                    <a href="{% url attornies.search %}?q=category:{{ attorney.category }}">{{ attorney.get_category_display }}</a>{% if attorney.category %}, {% endif %}
+                    <a href="{% url attornies.search %}?q=position:{{ attorney.position }}">{{ attorney.position }}</a>
+                    {% if attorney.position %}&nbsp;&mdash;&nbsp;{% endif %}{{ attorney.city }}{% if attorney.city %}, {% endif %}{{ attorney.state }}
+                </div>
+                <div class="contact">
+                    {% if attorney.phone %}Phone: {{ attorney.phone }}{% endif %}<br/>
+                    {% if attorney.fax %}Fax: {{ attorney.fax }}{% endif %}<br/>
+                    {% if attorney.email %}Email: <a href="mailto:{{ attorney.email }}">{{ attorney.email }}</a>{% endif %}<br/>
+                </div>
+                {% if attorney.bio %}
+                    <p>{{ attorney.bio|striptags|truncatewords:"80" }}</p>
+                {% endif %}
+            </div>
+            <div style="clear:both"></div>
         </div>
         {% endwith %}
         {% empty %}
-            <p>0 Attornies Found</p>
+            <p>0 Attorneys Found</p>
         {% endfor %}
     </div>
     {% paginate %}

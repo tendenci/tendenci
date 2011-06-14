@@ -30,12 +30,12 @@ class Attorney(TendenciBaseModel):
     address2 = models.CharField(_('address 2'), max_length=200, blank=True)
     city = models.CharField(_('city'), max_length=36, blank=True)
     state = models.CharField(_('state'), max_length=36, blank=True)
-    zip = models.CharField(_('zip'), max_length=8, blank=True)
-    phone = models.CharField(_('phone'), max_length=16, blank=True)
-    fax = models.CharField(_('fax'), max_length=16, blank=True)
+    zip = models.CharField(_('zip'), max_length=16, blank=True)
+    phone = models.CharField(_('phone'), max_length=36, blank=True)
+    fax = models.CharField(_('fax'), max_length=36, blank=True)
     email = models.EmailField(_('email'), blank=True)
     bio = models.TextField(_('bio'), blank=True)
-    education = models.TextField(_('bio'), blank=True)
+    education = models.TextField(_('education'), blank=True)
     casework = models.TextField(_('practice area and casework'), blank=True)
     admissions = models.TextField(_('admissions'), blank=True)
     tags = tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
@@ -44,7 +44,7 @@ class Attorney(TendenciBaseModel):
     
     class Meta:
         verbose_name = _('Attorney')
-        verbose_name_plural = _('Attornies')
+        verbose_name_plural = _('Attorneys')
         permissions = (("view_attorney","Can view Attorney"),)
     
     @models.permalink
