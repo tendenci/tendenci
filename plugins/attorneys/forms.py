@@ -1,7 +1,7 @@
 from django import forms
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from attorneys.models import Attorney
+from attorneys.models import Attorney, Photo
 
 class AttorneyForm(TendenciBaseForm):
     class Meta:
@@ -39,3 +39,18 @@ class AttorneyForm(TendenciBaseForm):
         att.owner_username = self.current_user.username
         att.save()
         return att
+
+class PhotoForm(TendenciBaseForm):
+    class Meta:
+        model = Photo
+    
+    def save(self, *args, **kwargs):
+        photo = super(PhotoForm, self).save(commit=False)
+        if not photo.pk:
+            photo.creator = self.current_user
+            photo.creator_username = self.current_user.username
+            
+        photo.owner = self.current_user
+        photo.owner_username = self.current_user.username
+        photo.save()
+        return photo

@@ -2,11 +2,12 @@ from django.contrib import admin
 from django.conf import settings
 
 from attorneys.models import Attorney, Photo
-from attorneys.forms import AttorneyForm
+from attorneys.forms import AttorneyForm, PhotoForm
 
 class AttorneyAdmin(admin.ModelAdmin):
     class Meta:
         model = Attorney
+        
     list_display = ["last_name", "first_name", "position", "category"]
     list_filter = ["category"]
     form = AttorneyForm
@@ -53,6 +54,28 @@ class AttorneyAdmin(admin.ModelAdmin):
         form = super(AttorneyAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
         return form
+        
+class PhotoAdmin(admin.ModelAdmin):
+    class Meta:
+        model = Photo
+        
+    form = PhotoForm
+    list_display = ["name", "file"]
+    
+    fieldsets = (
+        (None, {'fields': (
+            'name',
+            'file',
+        )}),
+    )
+        
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        inject the user in the form.
+        """
+        form = super(PhotoAdmin, self).get_form(request, obj, **kwargs)
+        form.current_user = request.user
+        return form
 
 admin.site.register(Attorney, AttorneyAdmin)
-admin.site.register(Photo)
+admin.site.register(Photo, PhotoAdmin)

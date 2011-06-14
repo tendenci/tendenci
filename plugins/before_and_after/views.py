@@ -6,7 +6,7 @@ from haystack.query import SearchQuerySet
 from base.http import Http403
 import simplejson
 
-from perms.utils import can_view
+from perms.utils import has_perm
 from site_settings.utils import get_setting
 from before_and_after.models import BeforeAndAfter, Category, PhotoSet, Subcategory
 
@@ -44,7 +44,7 @@ def search(request, template_name='before_and_after/search.html'):
 def detail(request, id, template_name='before_and_after/detail.html'):
     bna = get_object_or_404(BeforeAndAfter, id=id)
     
-    if not can_view(request.user, bna):
+    if not has_perm(request.user, 'before_and_after.view_beforeandafter', bna):
         raise Http403
     
     active = request.GET.get('active', None)

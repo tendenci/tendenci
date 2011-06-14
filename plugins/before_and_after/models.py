@@ -59,7 +59,7 @@ class BeforeAndAfter(TendenciBaseModel):
     class Meta:
         verbose_name = _('Before & After')
         verbose_name_plural = _('Before & Afters')
-        permissions = (("view_before_and_after","Can view Before and After"),)
+        permissions = (("view_beforeandafter","Can view Before and After"),)
     
     @property
     def featured(self):

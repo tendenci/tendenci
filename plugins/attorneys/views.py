@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 
 from base.http import Http403
 from site_settings.utils import get_setting
-from perms.utils import can_view
+from perms.utils import has_perm
 from attorneys.models import Attorney
 
 def search(request, template_name='attorneys/search.html'):
@@ -26,7 +26,7 @@ def search(request, template_name='attorneys/search.html'):
 def detail(request, id, template_name='attorneys/detail.html'):
     attorney = get_object_or_404(Attorney, id=id)
     
-    if not can_view(request.user, attorney):
+    if not has_perm(request.user, 'attorneys.view_attorney', attorney):
         raise Http403
     
     return render_to_response(template_name,
