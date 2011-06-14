@@ -29,5 +29,10 @@ def create_notice_types(app, created_models, verbosity, **kwargs):
         'membership_disapproved_to_member',
         _('Membership Application Disapproved'),
         _('Membership Application Disapproved'))
+    
+    notification.create_notice_type(
+        'membership_corp_indiv_verify_email',
+        _('Membership Corp Indiv Verify Email'),
+        _('Membership Corp Indiv Email To Be Verified'))
 
 post_syncdb.connect(create_notice_types, sender=notification)
