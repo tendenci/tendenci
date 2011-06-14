@@ -60,8 +60,8 @@
         </div>
         <div class="top-wrap">
             <div class="photo">
-                {% if attorney.professional_photo %}
-                    <img src="{% url file attorney.professional_photo.pk %}128x128/" title="{{ attorney.name }}"  />
+                {% if attorney.photo %}
+                    <img src="{% url file attorney.photo.pk %}128x128/" title="{{ attorney.name }}"  />
                 {% else %}
                     <img src="/path/to/default/photo" />
                 {% endif %}
