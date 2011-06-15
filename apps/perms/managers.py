@@ -319,48 +319,56 @@ class TendenciBaseManager(models.Manager):
         status_detail = kwargs.get('status_detail', 'active')
 
         sqs = sqs.filter(
-            allow_anonymous_view=True, 
-            status=1, 
+            allow_anonymous_view=True,
+            status=1,
             status_detail=status_detail)
         return sqs
-    
+
     def _member_sqs(self, sqs, user, **kwargs):
         """
         Filter the query set for members.
-        
+
         (status AND status_detail AND
         (anon_view OR user_view OR member_view))
-        OR 
+        OR
         (users_can_view__in user.pk)
         OR
         (groups_can_view__in user's groups)
-        
+
         user is a required argument since we'll be filtering by user.pk.
         """
         groups = [g.pk for g in user.group_set.all()]
         status_detail = kwargs.get('status_detail', 'active')
-        
+
         anon_q = SQ(allow_anonymous_view=True)
         user_q = SQ(allow_user_view=True)
         member_q = SQ(allow_member_view=True)
         status_q = SQ(status=1, status_detail=status_detail)
-        user_perm_q = SQ(users_can_view__in=[user.pk])
+        user_perm_q = SQ(users_can_view__in=user.pk)
         group_perm_q = SQ(groups_can_view__in=groups)
-        
-        return sqs.filter(
-            (status_q&(anon_q|user_q|member_q))|
-            (user_perm_q|group_perm_q))
+
+        if groups:
+            sqs = sqs.filter(
+                (status_q & (anon_q | user_q)) |
+                (user_perm_q | group_perm_q))
+        else:
+            pass
+            sqs = sqs.filter(
+                (status_q & (anon_q | user_q)) |
+                (user_perm_q))
+
+        return sqs
 
     def _user_sqs(self, sqs, user, **kwargs):
         """
         Filter the query set for people between admin and anon permission
-        
+
         (status AND status_detail AND ((anon_view OR user_view)
-        OR 
+        OR
         (users_can_view__in user.pk)
         OR
         (groups_can_view__in user's groups)
-        
+
         user required since we'll filter by user.pk.
         """
         groups = [g.pk for g in user.group_set.all()]
@@ -369,12 +377,20 @@ class TendenciBaseManager(models.Manager):
         anon_q = SQ(allow_anonymous_view=True)
         user_q = SQ(allow_user_view=True)
         status_q = SQ(status=1, status_detail=status_detail)
-        user_perm_q = SQ(users_can_view__in=[user.pk])
+        user_perm_q = SQ(users_can_view__in=user.pk)
         group_perm_q = SQ(groups_can_view__in=groups)
 
-        return sqs.filter(
-            (status_q&(anon_q|user_q))|
-            (user_perm_q|group_perm_q))
+        if groups:
+            sqs = sqs.filter(
+                (status_q & (anon_q | user_q)) |
+                (user_perm_q | group_perm_q))
+        else:
+            sqs = sqs.filter(
+                (status_q & (anon_q | user_q)) |
+                (user_perm_q)
+            )
+
+        return sqs
 
     def _impersonation(self, user):
         """
@@ -384,7 +400,7 @@ class TendenciBaseManager(models.Manager):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
         return user
-        
+
     def _permissions_sqs(self, sqs, user, status_detail):
         from perms.utils import is_admin, is_member, is_developer
         if is_admin(user) or is_developer(user):
@@ -406,12 +422,11 @@ class TendenciBaseManager(models.Manager):
         Search the Django Haystack search index
         Returns a SearchQuerySet object
         """
-        
         sqs = kwargs.get('sqs', SearchQuerySet())
-        
+
         # filter out the big parts first
         sqs = sqs.models(self.model)
-        
+
         # user information
         user = kwargs.get('user') or AnonymousUser()
         user = self._impersonation(user)
@@ -423,7 +438,7 @@ class TendenciBaseManager(models.Manager):
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
-        
+
         sqs = self._permissions_sqs(sqs, user, status_detail)
-        
+
         return sqs
