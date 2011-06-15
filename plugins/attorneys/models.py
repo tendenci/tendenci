@@ -16,12 +16,8 @@ CATEGORY_CHOICES = (
     ('AS', 'Associates'),
 )
 
-class Photo(File):
-    pass
-
 class Attorney(TendenciBaseModel):
     category = models.CharField(_('category'), max_length=2, choices=CATEGORY_CHOICES, blank=True)
-    photo = models.ForeignKey(Photo, null=True, blank=True)
     
     first_name = models.CharField(_('first name'), max_length=36)
     last_name = models.CharField(_('last name'), max_length=36)
@@ -54,7 +50,22 @@ class Attorney(TendenciBaseModel):
     @property
     def name(self):
         return "%s %s" % (self.first_name, self.last_name)
+        
+    @property
+    def photo(self):
+        """
+        If the need arises we can have multiple photos for attorneys.
+        The model can support that.
+        For now this method is made assuming that attorney photos are one to one
+        with attorneys.
+        """
+        try:
+            return self.photo_set.all()[0]
+        except IndexError:
+            return None
 
     def __unicode__(self):
         return "%s %s" % (self.first_name, self.last_name)
         
+class Photo(File):
+    attorney = models.ForeignKey(Attorney)

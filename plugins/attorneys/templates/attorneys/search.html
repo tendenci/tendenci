@@ -29,7 +29,7 @@
                 {% attorneys_options request.user attorney %}
             </div>
             <div class="photo">
-                {% if attorney.professional_photo %}
+                {% if attorney.photo %}
                     <img src="{% url file attorney.photo.pk %}128x128/" title="{{ attorney.name }}"  />
                 {% else %}
                     <img src="/path/to/default/photo" />
