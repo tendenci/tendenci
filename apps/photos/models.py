@@ -27,7 +27,7 @@ class PhotoSet(TendenciBaseModel):
     name = models.CharField(_('name'), max_length=200)
     description = models.TextField(_('description'), blank=True)
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
-    tags = TagField() # blank = True
+    tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
     author = models.ForeignKey(User)
 
     class Meta:
@@ -108,7 +108,7 @@ class Image(ImageModel, TendenciBaseModel):
     member = models.ForeignKey(User, related_name="added_photos", blank=True, null=True)
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
-    tags = TagField()
+    tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
     license = models.ForeignKey('License', null=True, blank=True)
     
     # html-meta tags
