@@ -1,14 +1,23 @@
 from haystack import indexes
 from haystack import site
 
-from before_and_after.models import BeforeAndAfter
+from attorneys.models import Attorney
 from perms.object_perms import ObjectPermission
 
-class BeforeAndAfterIndex(indexes.RealTimeSearchIndex):
+class AttorneyIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-    title = indexes.CharField(model_attr='title')
-    category = indexes.CharField()
-    subcategory = indexes.CharField(null=True)
+    first_name = indexes.CharField(model_attr='first_name')
+    last_name = indexes.CharField(model_attr='last_name')
+    category = indexes.CharField(model_attr='category')
+    position = indexes.CharField(model_attr='position')
+    address = indexes.CharField(model_attr='address')
+    address2 = indexes.CharField(model_attr='address2')
+    city = indexes.CharField(model_attr='city')
+    state = indexes.CharField(model_attr='state')
+    zip = indexes.CharField(model_attr='zip')
+    phone = indexes.CharField(model_attr='phone')
+    fax = indexes.CharField(model_attr='fax')
+    email = indexes.CharField(model_attr='email')
     
     # TendenciBaseModel Fields
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
@@ -38,16 +47,8 @@ class BeforeAndAfterIndex(indexes.RealTimeSearchIndex):
 
     def prepare_groups_can_view(self, obj):
         return ObjectPermission.objects.groups_with_perms('before_and_after.view_before_and_after', obj)
-        
-    def prepare_category(self, obj):
-        return obj.category.pk
-        
-    def prepare_subcategory(self, obj):
-        if obj.subcategory:
-            return obj.subcategory.pk
-        return None
 
     def get_updated_field(self):
         return 'update_dt'
 
-site.register(BeforeAndAfter, BeforeAndAfterIndex)
+site.register(Attorney, AttorneyIndex)

@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
 
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, can_view
+from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 
 #from photologue.models import *
@@ -36,7 +36,7 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     # photo = photo.best_match().object
     
     photo = get_object_or_404(Image, id=id)
-    if not can_view(request.user, photo):
+    if not has_perm(request.user, 'photologue.view_photo', photo):
         raise Http403
     
     # security-check on size name
@@ -70,7 +70,7 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
     """ photo details """
 
     photo = get_object_or_404(Image, id=id)
-    if not can_view(request.user, photo):
+    if not has_perm(request.user, 'photologue.view_photo', photo):
         raise Http403
 
     EventLog.objects.log(**{
@@ -574,7 +574,7 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     # if it doesn't match to anything we raise a 404 error.
     
     photo_set = get_object_or_404(PhotoSet, id=id)
-    if not can_view(request.user, photo_set):
+    if not has_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
     
     # get photos within photoset; newest ones first

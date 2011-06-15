@@ -1,6 +1,7 @@
 import os
 import sys
 import hashlib
+from hashlib import md5
 
 from datetime import datetime, timedelta
 from django.conf import settings
@@ -24,7 +25,7 @@ from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
     has_perm, update_perms_and_save, is_admin, is_member, is_developer
 from invoices.models import Invoice
-from corporate_memberships.models import CorporateMembership
+from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from geraldo.generators import PDFGenerator
 from reports import ReportNewMems
 from files.models import File
@@ -33,6 +34,7 @@ try:
     from notification import models as notification
 except:
     notification = None
+from base.utils import send_email_notification
 
 def membership_index(request):
     return HttpResponseRedirect(reverse('membership.search'))
@@ -73,7 +75,8 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         context_instance=RequestContext(request))
 
 
-def application_details(request, slug=None, cmb_id=None, membership_id=0, template_name="memberships/applications/details.html"):
+def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None, secret_hash="", 
+                        membership_id=0, template_name="memberships/applications/details.html"):
     """
     Display a built membership application and handle submission.
     """
@@ -88,16 +91,36 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
     if apps: app = apps.best_match().object
     else: raise Http404
 
-    # if this app is for corporation individuals, redirect them to corp-pre page first.
-    # from there, we can decide which corp they'll be in.
+    # if this app is for corporation individuals, redirect them to corp-pre page if
+    # they have not passed the security check.
     is_corp_ind = False
+    corporate_membership = None
     if hasattr(app, 'corp_app') and app.corp_app:
         is_corp_ind = True
-        if request.method != "POST":
-            http_referer = request.META.get('HTTP_REFERER', '')
-            corp_pre_url = reverse('membership.application_details_corp_pre', args=[slug])
-            if not http_referer or not corp_pre_url in http_referer:
-                return redirect(corp_pre_url)
+        corporate_membership = get_object_or_404(CorporateMembership, id=cmb_id)
+        # check if they have verified their email or entered the secret code
+        is_verified = False
+        if is_admin(request.user) or app.corp_app.authentication_method == 'admin':
+            is_verified = True
+        elif app.corp_app.authentication_method == 'email':
+            try:
+                indiv_veri = IndivMembEmailVeri8n.objects.get(pk=imv_id,
+                                                              guid=imv_guid)
+                if indiv_veri.verified:
+                    is_verified = True
+            except IndivMembEmailVeri8n.DoesNotExist:
+                pass 
+                                                              
+        elif app.corp_app.authentication_method == 'secret_code':
+            tmp_secret_hash = md5('%s%s' % (corporate_membership.secret_code, 
+                                    request.session.get('corp_hash_random_string', ''))).hexdigest()
+            if secret_hash == tmp_secret_hash:
+                is_verified = True
+                                        
+        
+        if not is_verified:
+            return redirect(reverse('membership.application_details_corp_pre', args=[slug]))
+#       
 
     # log application details view
     EventLog.objects.log(**{
@@ -108,10 +131,7 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
         'request': request,
         'instance': app,
     })
-
-    corporate_membership = None
-    if is_corp_ind and cmb_id:
-        corporate_membership = CorporateMembership.objects.get(id=cmb_id)
+        
 
     initial_dict = {}
     if hasattr(user, 'memberships'):
@@ -238,11 +258,12 @@ def application_details(request, slug=None, cmb_id=None, membership_id=0, templa
 
             return redirect(entry.confirmation_url)
 
-    return render_to_response(template_name, {
-        'app': app, 
-        'app_entry_form': app_entry_form, 
-        'pending_entries': pending_entries,
-        }, 
+    c = {
+            'app': app, 
+            'app_entry_form': app_entry_form, 
+            'pending_entries': pending_entries,
+        }
+    return render_to_response(template_name, c, 
         context_instance=RequestContext(request))
     
 def application_details_corp_pre(request, slug, cmb_id=None, template_name="memberships/applications/details_corp_pre.html"):
@@ -285,13 +306,86 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
                 corporate_membership_id = form.cleaned_data['corporate_membership_id']
             else:
                 corporate_membership_id = form.corporate_membership_id
+                
+                if form.auth_method == 'email':
+                    corp_memb = CorporateMembership.objects.get(pk=corporate_membership_id)
+                    try:
+                        indiv_veri = IndivMembEmailVeri8n.objects.get(corporate_membership=corp_memb,
+                                                                verified_email=form.cleaned_data['email'])
+                        if indiv_veri.verified:
+                            is_verified = True
+                        else:
+                            is_verified = False
+                    except IndivMembEmailVeri8n.DoesNotExist:
+                        print form.cleaned_data['email']
+                        is_verified = False
+                        indiv_veri = IndivMembEmailVeri8n()
+                        indiv_veri.corporate_membership = corp_memb
+                        indiv_veri.verified_email = form.cleaned_data['email']
+                        if request.user and not request.user.is_anonymous():
+                            indiv_veri.creator = request.user
+                        indiv_veri.save()
+                        
+                    # send an email to the user to verify the email address
+                    # then redirect them to the verification conf page
+                    # they'll need to follow the instruction in the email
+                    # to continue to sign up.
+                    if not is_verified:
+                        recipients = [indiv_veri.verified_email]
+                        extra_context = {
+                            'object': indiv_veri,
+                            'app': app,
+                            'corp_memb': corp_memb,
+                            'request': request,
+                        }
+                        send_email_notification('membership_corp_indiv_verify_email', recipients, extra_context)
+                        
+                        return redirect(reverse('membership.email__to_verify_conf'))
+                    else:
+                        # the email address is verified
+                        return redirect(reverse('membership.application_details_via_corp_domain', 
+                                                args=[app.slug, 
+                                                indiv_veri.corporate_membership.id,
+                                                indiv_veri.pk,
+                                                indiv_veri.guid]))
+                if form.auth_method == 'secret_code':
+                    # secret code hash
+                    random_string = User.objects.make_random_password(length=4, allowed_chars='abcdefghjkmnpqrstuvwxyz')
+                    request.session['corp_hash_random_string'] = random_string
+                    secret_code = form.cleaned_data['secret_code']
+                    secret_hash = md5('%s%s' % (secret_code, random_string)).hexdigest()
+                    return redirect(reverse('membership.application_details_via_corp_secret_code', 
+                                            args=[app.slug, 
+                                                corporate_membership_id,
+                                                secret_hash]))
+                
             
             return redirect(reverse('membership.application_details', args=[app.slug, corporate_membership_id]))
     
-    
-    return render_to_response(template_name, {
-        'app': app, "form": form}, 
+    c = {'app': app, "form": form}
+    return render_to_response(template_name, c, 
         context_instance=RequestContext(request))
+    
+def email_to_verify_conf(request, template_name="memberships/applications/email_to_verify_conf.html"):
+    return render_to_response(template_name, 
+        context_instance=RequestContext(request))
+    
+def verify_email(request, id=0, guid=None, template_name="memberships/applications/verify_email.html"):
+    indiv_veri = get_object_or_404(IndivMembEmailVeri8n, id=id, guid=guid)
+    if not indiv_veri.verified:
+        indiv_veri.verified = True
+        indiv_veri.verified_dt = datetime.now()
+        if request.user and not request.user.is_anonymous():
+            indiv_veri.updated_by = request.user
+            indiv_veri.save()
+            
+    # let them continue to sign up for membership
+    return redirect(reverse('membership.application_details_via_corp_domain', 
+                            args=[indiv_veri.corporate_membership.corp_app.memb_app.slug,
+                                  indiv_veri.corporate_membership.id,
+                                  indiv_veri.pk,
+                                  indiv_veri.guid]))
+    
 
 def application_confirmation(request, hash=None, template_name="memberships/entries/details.html"):
     """

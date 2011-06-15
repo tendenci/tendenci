@@ -150,31 +150,27 @@ class MembershipType(TendenciBaseModel):
         super(self.__class__, self).save(*args, **kwargs)
     
 
-
-
-    def get_expiration_dt(self, renewal=False, subscribe_dt=None):
+    def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
         """
         Calculate the expiration date - for join or renew (renewal=True)
         
         Examples: 
             
             For join:
-            expiration_dt = membership_type.get_expiration_dt(subscribe_dt=membership.subscribe_dt)
+            expiration_dt = membership_type.get_expiration_dt(join_dt=membership.join_dt)
             
             For renew:
-            expiration_dt = membership_type.get_expiration_dt(
-                renewal=1,
-                subscribe_dt=membership.subscribe_dt
-            )
-
+            expiration_dt = membership_type.get_expiration_dt(renewal=True, 
+                                                              join_dt=membership.join_dt,
+                                                              renew_dt=membership.renew_dt)
         """
         now = datetime.now()
         
-        if not subscribe_dt or not isinstance(subscribe_dt, datetime):
-            subscribe_dt = now
-        if renewal and (not subscribe_dt or not isinstance(subscribe_dt, datetime)):
-            subscribe_dt = now
-
+        if not join_dt or not isinstance(join_dt, datetime):
+            join_dt = now
+        if renewal and (not renew_dt or not isinstance(renew_dt, datetime)):
+            renew_dt = now
+        
         if self.never_expires:
             return None
         
@@ -189,40 +185,40 @@ class MembershipType(TendenciBaseModel):
                 if not renewal:
                     if self.rolling_option == '0':
                         # expires on end of full period
-                        return subscribe_dt + relativedelta(years=self.period)
+                        return join_dt + relativedelta(years=self.period)
                     else: # self.expiration_method == '1':
                         # expires on ? days at signup (join) month
                         if not self.rolling_option1_day:
                             self.rolling_option1_day = 1
-                        expiration_dt = subscribe_dt + relativedelta(years=self.period)
-                        self.rolling_option1_day = day_validate(datetime(expiration_dt.year, subscribe_dt.month, 1), 
+                        expiration_dt = join_dt + relativedelta(years=self.period)
+                        self.rolling_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
                                                                     self.rolling_option1_day)
                         
-                        return datetime(expiration_dt.year, subscribe_dt.month, 
+                        return datetime(expiration_dt.year, join_dt.month, 
                                                  self.rolling_option1_day, expiration_dt.hour,
                                                  expiration_dt.minute, expiration_dt.second)
                 else: # renewal = True
                     if self.rolling_renew_option == '0':
                         # expires on the end of full period
-                        return subscribe_dt + relativedelta(years=self.period)
+                        return renew_dt + relativedelta(years=self.period)
                     elif self.rolling_renew_option == '1':
                         # expires on the ? days at signup (join) month
                         if not self.rolling_renew_option1_day:
                             self.rolling_renew_option1_day = 1
-                        expiration_dt = subscribe_dt + relativedelta(years=self.period)
-                        self.rolling_renew_option1_day = day_validate(datetime(expiration_dt.year, subscribe_dt.month, 1), 
+                        expiration_dt = renew_dt + relativedelta(years=self.period)
+                        self.rolling_renew_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1), 
                                                                     self.rolling_renew_option1_day)
-                        return datetime(expiration_dt.year, subscribe_dt.month, 
+                        return datetime(expiration_dt.year, join_dt.month, 
                                                  self.rolling_renew_option1_day, expiration_dt.hour,
                                                  expiration_dt.minute, expiration_dt.second)
                     else:
                         # expires on the ? days at renewal month
                         if not self.rolling_renew_option2_day:
                             self.rolling_renew_option2_day = 1
-                        expiration_dt = subscribe_dt + relativedelta(years=self.period)
-                        self.rolling_renew_option2_day = day_validate(datetime(expiration_dt.year, subscribe_dt.month, 1), 
+                        expiration_dt = renew_dt + relativedelta(years=self.period)
+                        self.rolling_renew_option2_day = day_validate(datetime(expiration_dt.year, renew_dt.month, 1), 
                                                                     self.rolling_renew_option2_day)
-                        return datetime(expiration_dt.year, subscribe_dt.month, 
+                        return datetime(expiration_dt.year, renew_dt.month, 
                                                  self.rolling_renew_option2_day, expiration_dt.hour,
                                                  expiration_dt.minute, expiration_dt.second)
                     
@@ -1037,7 +1033,9 @@ class AppEntry(TendenciBaseModel):
 
             self.approve()
 
-            # send email to approved members
+            membership_total = Membership.objects.filter(status=True, status_detail='active').count()
+
+            # send email to approved member
             notification.send_emails([self.email],'membership_approved_to_member', {
                 'object':self,
                 'request':request,

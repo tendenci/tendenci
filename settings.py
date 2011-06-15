@@ -105,6 +105,7 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'swfupload.middleware.SWFUploadMiddleware',
     'swfupload.middleware.MediaUploadMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
