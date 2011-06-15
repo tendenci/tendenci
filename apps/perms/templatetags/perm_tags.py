@@ -1,6 +1,7 @@
 from django.template import Library, Node, Variable
 from django.contrib.auth.models import User
 from perms import utils
+from perms.fields import groups_with_perms
 
 register = Library()
 
@@ -135,3 +136,20 @@ def is_developer(parser, token):
     else:
         context_var = None
     return IsDeveloperNode(user, context_var=context_var)
+
+@register.simple_tag
+def obj_perms(obj):
+    if obj.allow_anonymous_view:
+        return "public"
+    elif obj.allow_user_view or obj.allow_member_view or groups_with_perms(obj):
+        return "groups"
+    else:
+        return "admin"
+
+@register.simple_tag
+def obj_status(obj):
+    if obj.status:
+        return obj.status_detail
+    else:
+        return "inactive"
+
