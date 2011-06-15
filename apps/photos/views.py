@@ -462,6 +462,8 @@ def photos_batch_add(request, photoset_id=0):
                     photo_set = get_object_or_404(PhotoSet, id=photoset_id)
                     photo_set.image_set.add(photo)
 
+                photo.save()  # real time search index hooked to save method
+
                 # serialize queryset
                 data = serializers.serialize("json", Image.objects.filter(id=photo.id))
     
