@@ -85,8 +85,8 @@ class PhotoIndex(indexes.RealTimeSearchIndex):
     status_detail = indexes.CharField(model_attr='status_detail')
     
     # permission fields
-    users_can_view = indexes.MultiValueField()
-    groups_can_view = indexes.MultiValueField()
+    users_can_view = indexes.MultiValueField(null=True)
+    groups_can_view = indexes.MultiValueField(null=True)
 
     # RSS fields
     can_syndicate = indexes.BooleanField()
