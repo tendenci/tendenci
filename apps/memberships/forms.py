@@ -401,10 +401,34 @@ class AppCorpPreForm(forms.Form):
         return email 
 
 class AppForm(TendenciBaseForm):
+
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':App._meta.app_label, 
+        'storme_model':App._meta.module_name.lower()}))
+
+    confirmation_text = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':App._meta.app_label, 
+        'storme_model':App._meta.module_name.lower()}))
+
     status_detail = forms.ChoiceField(choices=(('draft','Draft'),('published','Published')))
 
     class Meta:
         model = App
+
+    def __init__(self, *args, **kwargs): 
+        super(AppForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+
+        if self.instance.pk:
+            self.fields['confirmation_text'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['confirmation_text'].widget.mce_attrs['app_instance_id'] = 0
+
 
 class AppFieldForm(forms.ModelForm):
     class Meta:
