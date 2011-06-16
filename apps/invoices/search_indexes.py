@@ -2,7 +2,6 @@ from haystack import indexes
 from haystack import site
 from invoices.models import Invoice
 
-
 class InvoiceIndex(indexes.RealTimeSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     object_type = indexes.CharField(model_attr='object_type', null=True)
@@ -21,7 +20,6 @@ class InvoiceIndex(indexes.RealTimeSearchIndex):
     total = indexes.FloatField(model_attr='total')
     balance = indexes.FloatField(model_attr='balance')
 
-    # TendenciBaseModel Fields
     create_dt = indexes.DateTimeField(model_attr='create_dt')
     creator = indexes.CharField(model_attr='creator', null=True)
     creator_username = indexes.CharField(model_attr='creator_username', default='')
