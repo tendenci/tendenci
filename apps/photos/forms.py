@@ -116,6 +116,7 @@ class PhotoSetAddForm(TendenciBaseForm):
             'tags',
             'allow_anonymous_view',
             'user_perms',
+            'member_perms',
             'group_perms',
             'status',
             'status_detail',
@@ -168,8 +169,9 @@ class PhotoSetEditForm(TendenciBaseForm):
             'description',
             'tags',
             'allow_anonymous_view',
-            'allow_user_view',
-            'allow_user_edit',
+            'user_perms',
+            'member_perms',
+            'group_perms',
             'status',
             'status_detail',
         )
@@ -184,7 +186,7 @@ class PhotoSetEditForm(TendenciBaseForm):
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
-                                 'member_permis',
+                                 'member_perms',
                                  'group_perms',
                                  ],
                       'classes': ['permissions'],
