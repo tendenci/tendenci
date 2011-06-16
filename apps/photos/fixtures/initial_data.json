@@ -112,6 +112,22 @@
         }
     }, 
     {
+        "pk": 9, 
+        "model": "photologue.photosize", 
+        "fields": {
+            "name": "album_cover", 
+            "watermark": null, 
+            "increment_count": false, 
+            "effect": null, 
+            "crop": true, 
+            "height": 100, 
+            "width": 100, 
+            "upscale": false, 
+            "pre_cache": false, 
+            "quality": 85
+        }
+    }, 
+    {
         "pk": 3, 
         "model": "photologue.photosize", 
         "fields": {

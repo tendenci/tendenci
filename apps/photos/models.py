@@ -47,10 +47,10 @@ class PhotoSet(TendenciBaseModel):
         """ get latest thumbnail url """
         default_cover = settings.STATIC_URL + "/images/default-photo.jpg"
         try:
-            cover_photo = AlbumCover.objects.get(photoset = self).photo.get_thumbnail_url()
+            cover_photo = AlbumCover.objects.get(photoset = self).photo.get_album_cover_url()
         except AlbumCover.DoesNotExist:
             try:
-                cover_photo = self.image_set.latest('id').get_thumbnail_url()
+                cover_photo = self.image_set.latest('id').get_album_cover_url()
             except:
                 cover_photo = default_cover
         return cover_photo
