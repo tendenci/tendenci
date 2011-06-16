@@ -139,17 +139,30 @@ def is_developer(parser, token):
 
 @register.simple_tag
 def obj_perms(obj):
+
+    t = '<span class="perm-%s">%s</span>'
+
     if obj.allow_anonymous_view:
-        return "public"
-    elif obj.allow_user_view or obj.allow_member_view or groups_with_perms(obj):
-        return "groups"
+        value = t % ('public','Public')
+    elif obj.allow_user_view:
+        value = t % ('users','Users')
+    elif obj.allow_member_view:
+        value = t % ('members','Members')
+    elif groups_with_perms(obj):
+        value = t % ('groups','Groups')
     else:
-        return "admin"
+        value = t % ('groups','Groups')
+
+    return value
 
 @register.simple_tag
 def obj_status(obj):
+    t = '<span class="status-%s">%s</span>'
+
     if obj.status:
-        return obj.status_detail
+        value = t % (obj.status_detail, obj.status_detail.capitalize())
     else:
-        return "inactive"
+        value = t % ('inactive','Inactive')
+
+    return value
 
