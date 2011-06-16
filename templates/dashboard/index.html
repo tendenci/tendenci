@@ -73,10 +73,12 @@
  
         {% if MODULE_MEMBERSHIPS_ENABLED %}
         <li class="memberships">
-            <a href="{% url membership.search %}"><span>{% firstof MODULE_EVENTS_ENABLED "Memberships" %}</span></a></li>
+            <a href="{% url membership.search %}"><span>{% firstof MODULE_EVENTS_LABEL "Memberships" %}</span></a></li>
         {% endif %}
 
-        <li class="events"><a href="{% url event.month %}"><span>{% firstof MODULE_EVENTS_ENABLED "Events" %}</span></a></li>
+        {% if MODULE_EVENTS_ENABLED %}
+        <li class="events"><a href="{% url event.month %}"><span>{% firstof MODULE_EVENTS_LABEL "Events" %}</span></a></li>
+        {% endif %}
 
 		{% if MODULE_PHOTOS_ENABLED %}
         <li class="photo-albums"><a href="{% url photoset_latest %}"><span>{% firstof MODULE_PHOTOSETS_LABEL "Photo Albums" %}</span></a></li>
