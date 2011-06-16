@@ -13,9 +13,6 @@ class ResumeIndex(TendenciBaseSearchIndex):
     expiration_dt = indexes.DateTimeField(model_attr='expiration_dt', null=True)
     syndicate = indexes.BooleanField(model_attr='syndicate')
 
-    # PK: needed for exclude list_tags
-    primary_key = indexes.CharField(model_attr='pk')
-
     def prepare_description(self, obj):
         description = obj.description
         description = strip_tags(description)
