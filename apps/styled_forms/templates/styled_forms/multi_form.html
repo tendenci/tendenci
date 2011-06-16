@@ -1,6 +1,8 @@
 {% load styled_forms %}
 {% load base_filters %}
 
+{% csrf_token %}
+
 {% for form in forms %}
 	{% if form.forms %}
 		{% for form_set in form.forms %}
