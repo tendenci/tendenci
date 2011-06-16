@@ -17,5 +17,8 @@ class DonationIndex(TendenciBaseSearchIndex):
     country = indexes.CharField(model_attr='country')
     email = indexes.CharField(model_attr='email')
     phone = indexes.CharField(model_attr='phone')
+    
+    def get_updated_field(self):
+        return 'create_dt'
 
 site.register(Donation, DonationIndex)

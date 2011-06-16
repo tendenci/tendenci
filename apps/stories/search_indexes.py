@@ -18,8 +18,8 @@ class StoryIndex(TendenciBaseSearchIndex):
     expires = indexes.BooleanField(model_attr='expires')
 
     # categories
-    category = indexes.CharField(null=True)
-    sub_category = indexes.CharField(null=True)
+    category = indexes.CharField()
+    sub_category = indexes.CharField()
 
     # RSS fields
     can_syndicate = indexes.BooleanField()
@@ -34,13 +34,13 @@ class StoryIndex(TendenciBaseSearchIndex):
         category = Category.objects.get_for_object(obj, 'category')
         if category:
             return category.name
-        return None
+        return ''
 
     def prepare_sub_category(self, obj):
         category = Category.objects.get_for_object(obj, 'sub_category')
         if category:
             return category.name
-        return None
+        return ''
 
     def prepare_can_syndicate(self, obj):
         return obj.syndicate and obj.status == 1  and obj.status_detail == 'active' \
