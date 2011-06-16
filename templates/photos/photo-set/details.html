@@ -1,10 +1,13 @@
-{% extends "photos/base.html" %}
+{% extends "photos/base-wide.html" %}
 
 {% load i18n %}
 {% load humanize %}
 {% load pagination_tags %}
 {% load tagging_tags %}
 {% load photo_tags %}
+{% load perm_tags %}
+
+{% is_admin user as admin %}
 
 {% block title %}{{ block.super }}{{ photo_set.name }}{% endblock %}
 
@@ -14,32 +17,134 @@
 {% endblock %}
 
 {% block body %}
+
+<style type="text/css">
+
+    h1.set-name {
+        margin: 0;
+    }
+    div.back-to-photo-sets {
+        font-size: 12px;
+        margin-bottom: 20px;
+    }
+
+    table.wrap {
+        width: 100%;
+    }
+    td.set-info {
+        width: 200px;
+        padding: 0 20px 0 0;
+    }
+
+    td.set-info .cover-photo {
+        margin-bottom: 3px;
+    }
+
+    td.set-info .quick-info {
+        font-size: 12px;
+    }
+
+    td.set-info .set-description {
+        font-size: 12px;
+        line-height: 16px;
+        margin-top: 10px;
+    }
+
+    td.set-info .actions {
+        margin-top: 10px;
+    }
+
+    td.set-info .actions a {
+        font-size: 12px;
+        display: block;
+        border-bottom: 1px solid #DDD;
+        padding: 4px;
+    }
+
+    td.set-info .actions a:active,
+    td.set-info .actions a:hover {
+        background-color: #EEE;
+    }
+
+    .perm-public {
+        color: green;
+    }
+    .perm-users, .perm-members, .perm-groups {
+        color: darkblue;
+    }
+    .perm-private {
+        color: red;
+    }
+    .status-active {
+        color: green;
+    }
+
+    .status-pending {
+        color: orange;
+    }
+
+    .status-inactive {
+        color: red;
+    }
+
+
+
+</style>
+
+
 <div class="t" style="width:100%;">
 
     <div class="photos-nav">
-		{% photo_set_nav request.user photo_set %}
+		{# photo_set_nav request.user photo_set #}
 	</div>
 
-    <h1>{{ photo_set.name }}</h1>
-    <div class="description">{{ photo_set.description|striptags|safe }}</div>
-	<div id="photos-wrap">
-        {% if photos %}
-        {% autopaginate photos 30 %}
-            <div class="thumb-row clearfix">
-            	{% for photo in photos %}
-                {% with photo.object as photo %}
-                <div class="gallery-photo-thumb">
-                    <a href="{% url photo photo.pk photo_set.pk %}"><img src="{{ photo.get_small_crop_url }}" alt="{{ photo.title }}"/></a>
-                </div>
-                {% endwith %}
-            	{% endfor %}
+    <h1 class="set-name">{{ photo_set.name }}</h1>
+    <div class="back-to-photo-sets"><a href="{% url photoset_latest %}">&larr; Back to Albums</a></div>
+    <table class="wrap">
+        <tr><td class="set-info">
+            <div class="cover-photo"><a href="{% url photo photo_set.get_cover_photo.pk photo_set.pk %}">
+            <img src="{{ photo_set.get_cover_photo.get_small_url }}" />
+            </a></div>
+
+            <div class="quick-info">
+            {{ photo_set.image_set.count }} Photo{{ photo_set.image_set.count|pluralize }}
+            {% if admin %}
+            <span class="visibility">
+                 &middot; {% obj_perms photo_set %} &middot; {% obj_status photo_set %}
+            </span>
+            {% endif %}
             </div>
-			<div style="clear:both;"></div>
-            {% paginate %}
-        {% else %}
-            <p>{% trans "No photos were found." %}</p>
-        {% endif %}
-    </div>
+
+            <div class="set-description">{{ photo_set.description|safe|urlize|linebreaks }}</div>
+
+            <div class="actions">
+                {% photo_set_options request.user photo_set %}
+            </div>
+
+        </td>
+        <td class="set-photos">
+
+        <div id="photos-wrap">
+            {% if photos %}
+            {% autopaginate photos 48 %}
+                <div class="thumb-row clearfix">
+                    {% for photo in photos %}
+                    {% with photo.object as photo %}
+                    <div class="gallery-photo-thumb">
+                        <a href="{% url photo photo.pk photo_set.pk %}"><img src="{{ photo.get_small_crop_url }}" alt="{{ photo.title }}"/></a>
+                    </div>
+                    {% endwith %}
+                    {% endfor %}
+                </div>
+                <div style="clear:both; height:10px;"></div>
+                {% paginate %}
+            {% else %}
+                <p>{% trans "No photos were found." %}</p>
+            {% endif %}
+        </div>
+
+        </td></tr>
+    </table>
 </div>
 
 <!-- delete form -->

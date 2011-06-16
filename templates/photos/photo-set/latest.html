@@ -90,7 +90,7 @@
             	<td class="image">
                 	<a title="{{ photo_set.image_set.count }} {{ photo_set.name }} Photo{{ photo_set.image_set.count|pluralize }}" 
                         href="{{ photo_set.get_absolute_url }}">
-                        <img src="{{ photo_set.get_cover_photo }}" />
+                        <img src="{{ photo_set.get_cover_photo.get_album_cover_url }}" />
                         <div class="photo-count">{{ photo_set.image_set.count|intcomma }} </div>
                     </a>
                 </td>
