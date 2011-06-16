@@ -6,6 +6,7 @@ from events.models import Event, Registrant
 from events.utils import count_event_spots_taken
 from events.models import Type as EventType
 from perms.indexes import TendenciBaseSearchIndex
+from perms.object_perms import ObjectPermission
 
 class EventIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')
