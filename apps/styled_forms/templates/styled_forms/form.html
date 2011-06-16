@@ -1,8 +1,6 @@
 {% load styled_forms %}
 {% load base_filters %}
 
-{% csrf_token %}
-
 {% if form.errors.values %}
 <div class="errors">
 There were some problems in the form. Please review. Thanks!
