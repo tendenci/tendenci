@@ -42,9 +42,14 @@
                 <div about="{{ photo.get_medium_640_url }}" 
                     xmlns:dct="http://purl.org/dc/terms/"
                     xmlns:cc="http://creativecommons.org/ns#">
+
+                    {% if photo_next_url %}
                     <a id="image-photo-next" href="{{ photo_next_url }}">
-                        <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title }}" />
-                    </a>
+                        <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title }}" /></a>
+                    {% else %}
+                    <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title }}" />
+                    {% endif %}
+
                     <br />
                     <span property="dct:title">{{ photo.title }}</span>
                     by <a href="{{ photo.creator.get_absolute_url }}"
