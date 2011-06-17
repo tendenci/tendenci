@@ -15,6 +15,22 @@
 {% endblock %}
 
 {% block body %}
+
+<style type="text/css">
+    table {
+        margin-top: 10px;
+    }
+    table.some-details td:first-child {
+        width: 350px;
+    }
+    table.some-details td {
+        padding: 3px 0;
+    }
+    span.company-label:after, span.position-label:after {
+        content: ": ";
+    }
+</style>
+
 <div class="t">
     {% membership_nav request.user %}
 
@@ -30,14 +46,20 @@
         {% with member.object as member %}
         <div class="membership-wrap-search">
 
-            <h2>
-                <a href="{% url profile member.user %}">
-                {{ member.user.last_name }}, {{ member.user.first_name}} ({{ member.membership_type.name }})
-                </a>
-            </h2>
+            <div><a href="{% url profile member.user %}">
+                {{ member.user.first_name }} {{ member.user.last_name }}</a></div>
+            <div>{{ member.membership_type.name}}</div>
 
-            <h3>Joined {{ member.join_dt|date }}</h3>
-            <div style="clear:both;"></div>
+            <!-- <table class="some-details">
+                <tr>
+                    <td><span class="company-label">Company</span>{{ member.entry_items.company }}</td>
+                    <td>{{ member.user.email }}</td>
+                </tr>
+                <tr>
+                    <td><span class="position-label">Position</span>{{ member.entry_items.title }}</td>
+                    <td>{{ member.entry_items.work_phone }}</td>
+                </tr>
+            </table> -->
 
         </div>
         {% endwith %}
