@@ -112,7 +112,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'johnny.middleware.LocalStoreClearMiddleware',
-    'johnny.middleware.QueryCacheMiddleware',
+    # 'johnny.middleware.QueryCacheMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
@@ -288,8 +288,8 @@ TINYMCE_DEFAULT_CONFIG = {
 # -------------------------------------- #
 # CACHING
 # -------------------------------------- #
-CACHE_BACKEND = 'memcached://10.82.33.140:11211/'
-JOHNNY_MIDDLEWARE_SECONDS = 604800  # 7 days
+CACHE_DIR = PROJECT_ROOT + "/cache"
+CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800"   # 7 days
 
 # --------------------------------------#
 # CELERY
