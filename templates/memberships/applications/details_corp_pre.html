@@ -17,10 +17,10 @@
     <p>{{ app.description|urlize }}</p>
 
 	<div class="form-builder-wrap">
-    	<form method="post">
+    	<form method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Continue &raquo;" />
+        	<input type="submit" value="Submit &raquo;" />
 		</div>
         </form>
     </div>

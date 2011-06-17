@@ -22,7 +22,7 @@ Clicking Delete User Group will
 <li>the group will be deleted from the system</li> <li>Deleted items cannot be recovered!</li>
 </ul>
 </div>
-<form action="{% url group.delete group.id %}" method="post">
+<form action="{% url group.delete group.id %}" method="post">{% csrf_token %}
 <input type="hidden" name="id" value="{{group.id}}" />
 <input type="submit" value="Delete User Group" />
 </form>

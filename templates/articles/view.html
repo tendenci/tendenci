@@ -87,7 +87,7 @@
     </div>
 
     <!-- delete-article form -->
-    <form name="article-delete" method="POST" action="{% url article.delete article.pk %}">
+    <form name="article-delete" method="POST" action="{% url article.delete article.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">
     </form>
 

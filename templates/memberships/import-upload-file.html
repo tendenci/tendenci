@@ -16,7 +16,7 @@
     <h1>Membership Import Upload File</h1>
     <p class="timestamp">Step 1/4 &middot; {{ datetime.now }}</p>
 
-    <form method='post' action='{% url membership_import_upload_file %}' enctype="multipart/form-data">
+    <form method='post' action='{% url membership_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}
     {{ form.as_p }}
     <input type='submit' value='Submit'>
     </form>

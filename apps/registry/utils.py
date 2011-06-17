@@ -1,3 +1,9 @@
+from django.core.urlresolvers import reverse
+from django.utils.functional import lazy
+
+from site_settings.utils import get_setting
+
+lazy_reverse = lazy(reverse, str)
 
 
 class RegisteredApps(object):
@@ -20,6 +26,21 @@ class RegisteredApps(object):
         # append core and plugin apps to
         # individual lists
         for model, registry in apps.items():
+
+            # module enabled
+            registry.fields['enabled'] = get_setting(
+                'module',
+                registry.fields['model']._meta.app_label,
+                'enabled'
+            ) or False
+
+            registry.fields['url'].update({
+                'settings': lazy_reverse('settings.index', args=[
+                    'module',
+                    registry.fields['model']._meta.app_label
+                ])
+            })
+
             if registry.fields['app_type'] == 'plugin':
                 self.plugins.append(registry.fields)
 

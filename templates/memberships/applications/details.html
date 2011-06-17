@@ -23,7 +23,7 @@
     {% endif %}
 
 	<div class="form-builder-wrap">
-    	<form method="post" enctype="multipart/form-data">
+    	<form method="post" enctype="multipart/form-data">{% csrf_token %}
     	<div class="forms">
             {{ app_entry_form|styled_form }}
         	<input type="submit" value="Submit" />

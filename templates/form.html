@@ -28,7 +28,7 @@
 			</ul>
 		</div>
 
-    	<form action="{% url form %}" method="post">
+    	<form action="{% url form %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Contact {{ SITE_GLOBAL_SITEDISPLAYNAME|capfirst }}" />

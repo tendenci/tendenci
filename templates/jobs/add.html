@@ -21,7 +21,7 @@
     <h1>{% firstof MODULE_JOBS_LABEL 'Jobs' %} Add</h1>
 
     <div class="job-wrap">
-    <form action="{% url job.add %}" method="post">
+    <form action="{% url job.add %}" method="post">{% csrf_token %}
     	<div class="forms">
     		{% if MODULE_JOBS_JOBSREQUIRESPAYMENT %}
 	    	 	<div class="pricing-table-block">

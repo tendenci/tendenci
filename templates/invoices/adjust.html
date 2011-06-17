@@ -67,7 +67,7 @@
 	<div class="clear-left"></div>
 	<p>&nbsp;</p>
 
-	<form method="post" action=".">
+	<form method="post" action=".">{% csrf_token %}
 	<div class="field-wrapper required">
 		{% if form.variance.errors %}
 			{{ form.variance.errors }}

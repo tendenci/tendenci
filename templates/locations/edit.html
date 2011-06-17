@@ -22,7 +22,7 @@
                {% location_options request.user location %}
             </div>
         </div>
-    	<form action="{% url location.edit location.pk %}" method="post">
+    	<form action="{% url location.edit location.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
         	{{ form|styled_form }}
             <input type="submit" value="Save Changes" />

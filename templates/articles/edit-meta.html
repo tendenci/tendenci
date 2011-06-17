@@ -22,7 +22,7 @@
 				{% article_options request.user article %} 	       
              </div>
 		</div>
-    	<form action="{% url article.edit.meta article.pk %}" method="post">
+    	<form action="{% url article.edit.meta article.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />

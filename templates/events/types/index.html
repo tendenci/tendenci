@@ -38,7 +38,7 @@
 		</div>
 
 		<div class="forms">
-    	<form action="{% url event.types %}" method="post">
+    	<form action="{% url event.types %}" method="post">{% csrf_token %}
 
 			{{ formset.management_form }}
 			{% for form in formset.forms %}

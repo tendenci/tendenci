@@ -1,10 +1,9 @@
 from haystack import indexes
 from haystack import site
 from corporate_memberships.models import CorporateMembership, CorpMembRenewEntry
+from perms.indexes import TendenciBaseSearchIndex
 
-
-class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
-    text = indexes.CharField(document=True, use_template=True)
+class CorporateMembershipIndex(TendenciBaseSearchIndex):
     corporate_membership_type = indexes.CharField(model_attr='corporate_membership_type')
     name = indexes.CharField(model_attr='name', faceted=True)
     address = indexes.CharField(model_attr='address', default='')
@@ -23,42 +22,24 @@ class CorporateMembershipIndex(indexes.RealTimeSearchIndex):
     renew_dt = indexes.DateTimeField(model_attr='renew_dt', null=True)
     expiration_dt = indexes.DateTimeField(model_attr='expiration_dt', null=True)
     renew_entry_id = indexes.IntegerField(model_attr='renew_entry_id', null=True)
-
-    # TendenciBaseModel Fields
-    create_dt = indexes.DateTimeField(model_attr='create_dt')
-    creator = indexes.CharField(model_attr='creator', null=True)
-    creator_username = indexes.CharField(model_attr='creator_username', default='')
-    owner = indexes.CharField(model_attr='owner', null=True)
-    owner_username = indexes.CharField(model_attr='owner_username', default='')
-    status = indexes.IntegerField(model_attr='status')
-    status_detail = indexes.CharField(model_attr='status_detail')
-    
     is_join_pending = indexes.IntegerField(model_attr='is_join_pending', default=0)
     is_renewal_pending = indexes.IntegerField(model_attr='is_renewal_pending', default=0)
     is_pending = indexes.IntegerField(model_attr='is_pending', default=0)
 
-    # PK: needed for exclude list_tags
-    primary_key = indexes.CharField(model_attr='pk')
-
-    def get_updated_field(self):
-        return 'update_dt'
-
     def prepare_authorized_domains(self, obj):
         if obj.auth_domains:
             return list(obj.auth_domains.all())
+        return None
 
     def prepare_reps(self, obj):
         if obj.reps:
             return [rep.user for rep in obj.reps.all()]
+        return None
 
     def prepare_corporate_membership_type(self, obj):
-        if obj.corporate_membership_type:
-            return obj.corporate_membership_type.name
+        return obj.corporate_membership_type.name
 
     def prepare_corp_app(self, obj):
-        if obj.corp_app:
-            return obj.corp_app.name
-
-        
+        return obj.corp_app.name
 
 site.register(CorporateMembership, CorporateMembershipIndex)

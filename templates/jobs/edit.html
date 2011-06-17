@@ -27,7 +27,7 @@
              </div>
 		</div>
 
-    <form action="{% url job.edit job.id %}" method="post">
+    <form action="{% url job.edit job.id %}" method="post">{% csrf_token %}
     	<div class="forms">
     		{{ form|styled_form }}
 			<input type="submit" value="Save changes" />

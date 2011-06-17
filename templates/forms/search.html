@@ -25,7 +25,7 @@
 		    </div>
 			<h3><a href="{{ form.object.get_absolute_url }}">{{ form.title }}</a></h3>
             <!-- delete form -->
-            <form name="form-delete" method="POST" action="{% url form_delete form.pk %}">
+            <form name="form-delete" method="POST" action="{% url form_delete form.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>

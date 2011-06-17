@@ -37,7 +37,7 @@
  	</div>
 
     <div class="profile-wrap" style="margin-top:1em;">
-    <form action="" method="post">
+    <form action="" method="post">{% csrf_token %}
 	
 	<div class="field-wrapper">
 		{% if form.permissions.errors %}

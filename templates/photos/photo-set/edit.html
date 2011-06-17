@@ -14,10 +14,10 @@
 	{% photo_set_nav user %}
 	<h1>{{ MODULE_PHOTOS_LABEL }} Set Edit</h1>
 	<div class="forms">
-    <form method="POST" action="">
+    <form method="POST" action="">{% csrf_token %}
         {{ photoset_form|styled_form }}
         <input type="hidden" name="action" value="edit" />
-        <input type="submit" value="{% trans "Edit" %}"/>
+        <input type="submit" value="{% trans 'Edit' %}"/>
     </form>
     </div>
 {% endblock %}

@@ -10,6 +10,7 @@
             	<h4><a href="{% url dashboard %}">App List</a></h4>
                 	<div class="column app-list">  
                         {% for app in registered_apps.core %}
+                            {% if app.enabled %}
                             <ul>
                                 <li class="app">
                                      <a href="{{ app.url.search }}" title="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}">
@@ -23,7 +24,8 @@
                                 <li><a href="{{ app.url.add }}">Add</a></li>
                                 {% endif %}
                             </ul>
-                        {% endfor %}             
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
                 {% if registered_apps.plugins %}
@@ -79,13 +81,11 @@
             	<div class="column">                
                     <ul>
                         <li><a href="/settings/site/global/">Global</a></li>
-                        <li><a href="/settings/module/articles/">Articles</a></li>
-                        <li><a href="/settings/module/contacts/">Contacts</a></li>
-                        <li><a href="/settings/module/directories/">Directories</a></li>
-                        <li><a href="/settings/module/jobs/">Jobs</a></li>
-                        <li><a href="/settings/module/payments/">Payments</a></li>
-                        <li><a href="/settings/module/photos/">Photos</a></li>
-                        <li><a href="/settings/module/users/">Users</a></li>
+                        {% for app in registered_apps.core %}
+                            {% if app.enabled %}
+                            <li><a href="{{ app.url.settings }}">{{ app|capfirst }}</a></li>
+                            {% endif %}
+                        {% endfor %}
                     </ul>
                 </div>
             </div>

@@ -32,7 +32,7 @@
 {{form.non_field_errors}}
 {% endif %}
     <div class="profile-wrap">
-    	<form action="." method="post">
+    	<form action="." method="post">{% csrf_token %}
     	<div class="forms">
            
            <table width="100%" border="0"> 

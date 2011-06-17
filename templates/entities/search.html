@@ -53,7 +53,7 @@
             </div>
 
             <!-- delete-entity form -->
-            <form name="entity-delete" method="POST" action="{% url entity.delete entity.pk %}">
+            <form name="entity-delete" method="POST" action="{% url entity.delete entity.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 

@@ -6,6 +6,7 @@
 {% has_perm user photos.change_photoset as can_change %}
 {% has_perm user photos.delete_photoset as can_delete %}
 
+
 {% if can_change %}
 <a href="{% url photoset_edit opt_object.pk %}">Edit Set</a> 
 {% endif %}

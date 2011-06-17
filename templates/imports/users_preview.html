@@ -54,7 +54,7 @@
 
 </div> <!-- import settings -->
 
-	<form class="import" method="post" action="{% url import.user_upload_process id %}">
+	<form class="import" method="post" action="{% url import.user_upload_process id %}">{% csrf_token %}
 
 	<div class="results">
 	{% for u in users_list %}
