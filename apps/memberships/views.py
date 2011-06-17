@@ -709,7 +709,9 @@ def membership_import(request, step=None):
 
         for membership in memberships:
 
-            if not membership.pk:  # new membership
+            if not membership.pk:  # new membership; no pk
+
+                membership.save()  # create pk
 
                 # create entry
                 entry = AppEntry.objects.create(
@@ -719,7 +721,7 @@ def membership_import(request, step=None):
                     membership = membership,
                     is_renewal = membership.renewal,
                     is_approved = True,
-                    decision_dt = membership.create_dt,
+                    decision_dt = membership.subscribe_dt,
                     judge = membership.creator,
                     creator=membership.creator,
                     creator_username=membership.creator_username,
@@ -729,15 +731,19 @@ def membership_import(request, step=None):
 
                 # create entry fields
                 for key, value in fields.items():
+
+                    print key, value,
+
                     app_fields = AppField.objects.filter(app=app, label=key)
                     if app_fields and membership.m.get(value):
+
+                        print 'success!'
+
                         AppFieldEntry.objects.create(
                             entry=entry,
                             field=app_fields[0],
                             value=membership.m.get(value),
                         )
-
-                membership.save()  # creates pk
 
                 added.append(membership)
             else:
