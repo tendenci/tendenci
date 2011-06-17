@@ -5,7 +5,8 @@
         "fields": {
             "human_name": "Credit Card", 
             "machine_name": "credit-card", 
-            "is_online": true
+            "is_online": true,
+            "admin_only": false;
         }
     }, 
     {
@@ -14,7 +15,8 @@
         "fields": {
             "human_name": "Check", 
             "machine_name": "check", 
-            "is_online": false
+            "is_online": false,
+            "admin_only": false;
         }
     }, 
     {
@@ -23,7 +25,8 @@
         "fields": {
             "human_name": "Cash", 
             "machine_name": "cash", 
-            "is_online": false
+            "is_online": false,
+            "admin_only": false;
         }
     }
 ]
