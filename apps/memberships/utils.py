@@ -159,9 +159,7 @@ def new_mems_from_csv(file_path, app, columns):
         )
 
         # get subscribe_dt
-        if renew_dt: subscribe_dt = renew_dt
-        elif join_dt: subscribe_dt = join_dt
-        else: subscribe_dt = datetime.now()
+        subscribe_dt = renew_dt or join_dt or datetime.now()
 
         if memberships:  # get membership record
             membership = memberships[0]

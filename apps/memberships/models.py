@@ -15,6 +15,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from base.utils import day_validate
 from site_settings.utils import get_setting
@@ -305,8 +306,8 @@ class Membership(TendenciBaseModel):
         items = {}
 
         try:  # membership was created when entry was approved
-            entry = self.entries.get(decision_dt=datetime.now())
-        except entry.DoesNotExist as e:
+            entry = self.entries.get(decision_dt=self.subscribe_dt)
+        except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
             return items  # return {}
 
         for field in entry.fields.all():
@@ -570,12 +571,9 @@ class App(TendenciBaseModel):
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(blank=True,
         help_text="Description of this application. Displays at top of application.")
-    confirmation_text = models.TextField(_("Confirmation Text"), blank=True, 
-        help_text="Text the submitter sees after submitting.")
-    notes = models.TextField(blank=True,
-        help_text="Extra notes about this application for editors.  Hidden actual application.")
+    confirmation_text = tinymce_models.HTMLField()
+    notes = tinymce_models.HTMLField()
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
-
     membership_types = models.ManyToManyField(MembershipType, verbose_name="Membership Types")
     payment_methods = models.ManyToManyField(PaymentMethod, verbose_name="Payment Methods")
     
