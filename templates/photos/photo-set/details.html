@@ -160,7 +160,7 @@
 		$(document).ready(function(){
 
 			// delete confirmation
-			$('.delete-photoset').click(function(){
+			$('.delete-set').click(function(){
 				var delete_item = confirm('Permenantly delete photo set?');	// confirm
 				if(delete_item) $('form[name="delete-photo-set"]').submit() // delete: if OK
 				return false;	// cancel
