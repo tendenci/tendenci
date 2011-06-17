@@ -151,7 +151,7 @@ def obj_perms(obj):
     elif groups_with_perms(obj):
         value = t % ('groups','Groups')
     else:
-        value = t % ('groups','Groups')
+        value = t % ('private','Private')
 
     return value
 
