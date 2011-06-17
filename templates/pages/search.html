@@ -43,7 +43,7 @@
             </div>
 
             <!-- delete-page form -->
-            <form name="page-delete" method="POST" action="{% url page.delete page.pk %}">
+            <form name="page-delete" method="POST" action="{% url page.delete page.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 

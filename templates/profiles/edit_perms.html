@@ -36,7 +36,7 @@
 <div class="clear-right"></div>
 
     <div class="profile-wrap">
-    <form action="" method="post">
+    <form action="" method="post">{% csrf_token %}
 	       
 	<div class="field-wrapper">
 		{% if form.is_superuser.errors %}

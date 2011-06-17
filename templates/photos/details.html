@@ -80,7 +80,7 @@
 	</div><!-- END .photo-instance -->
 
 <!-- delete photo form -->
-<form name="photo-delete" method="POST" action="{% url photo_destroy photo.pk set_id %}">
+<form name="photo-delete" method="POST" action="{% url photo_destroy photo.pk set_id %}">{% csrf_token %}
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="delete_id" value="{{ photo.pk }}" />
 </form>

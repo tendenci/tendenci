@@ -16,7 +16,7 @@
 
 Please provide as much detail as possible.<br>
 If you would like to, also include your name and email:
-<form method="POST">
+<form method="POST">{% csrf_token %}
 	<div class="forms">
 	{{ form|styled_form }}
 	<input type="submit" value="Request Help File">

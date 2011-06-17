@@ -20,7 +20,7 @@
     {{ service.title }}</h1>
 
     <div class="service-wrap">
-    	<form action="{% url service.edit.meta service.pk %}" method="post">
+    	<form action="{% url service.edit.meta service.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />

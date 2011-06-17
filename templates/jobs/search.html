@@ -40,7 +40,7 @@
             </div>
 
             <!-- delete-job form -->
-            <form name="job-delete" method="POST" action="{% url job.delete job.pk %}">
+            <form name="job-delete" method="POST" action="{% url job.delete job.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>

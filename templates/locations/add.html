@@ -17,7 +17,7 @@
     <h1>{% firstof MODULE_LOCATIONS_LABEL 'Location' %} Add</h1>
 
     <div class="location-wrap">
-    	<form action="{% url location.add %}" method="post">
+    	<form action="{% url location.add %}" method="post">{% csrf_token %}
         <div class="forms">
             {{ form|styled_form }}
             <input type="submit" value="Add {{ MODULE_Locations_LABEL }}" />

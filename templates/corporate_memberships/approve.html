@@ -103,7 +103,7 @@
    
    {% endif %}
    <p>&nbsp;</p>     
-<form action="" method="post">
+<form action="" method="post">{% csrf_token %}
 <input type="submit" id="disapprove-button" name="disapprove" value="Disapprove" />
 
 &nbsp;&nbsp;&nbsp;&nbsp;

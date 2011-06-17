@@ -14,7 +14,7 @@
     <div class="job-wrap">
     <p><a href="{{ job.get_absolute_url }}" title="{{ job.title }}">{{ job.title }}</a></p>
     <p>Are you sure you want to approve this job?</p>
-    <form action="{% url job.approve job.pk %}" method="post">
+    <form action="{% url job.approve job.pk %}" method="post">{% csrf_token %}
     <div class="forms">
         <input type="submit" value="Yes, approve it." /> or <a href="javascript:history.go(-1);">Cancel</a>
     </div>

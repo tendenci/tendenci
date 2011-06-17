@@ -10,7 +10,7 @@
 
 {% block body %}
 <h2>{% trans 'Fill out the form below to create your account' %}</h2>
-<form method="post" action="." id="registration_form">
+<form method="post" action="." id="registration_form">{% csrf_token %}
 {% if form.errors.values %}
 <div class="errors">
 	{% for field in form %}

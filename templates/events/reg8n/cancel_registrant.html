@@ -81,9 +81,9 @@
     </div>
     <div class="form-wrap">
         {% if hash %}
-            <form action="{% url event.cancel_registrant event.pk registrant.hash %}" method="post">
+            <form action="{% url event.cancel_registrant event.pk registrant.hash %}" method="post">{% csrf_token %}
         {% else %}
-            <form action="{% url event.cancel_registrant event.pk registrant.pk  %}" method="post">
+            <form action="{% url event.cancel_registrant event.pk registrant.pk  %}" method="post">{% csrf_token %}
         {%  endif %}
             <div class="forms">
                 <input type="submit" value="Cancel Event Registration" />
