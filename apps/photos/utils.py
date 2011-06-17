@@ -7,7 +7,7 @@ from django.core.cache import cache
 from photos.cache import PHOTO_PRE_KEY
 from base.utils import image_rescale
 
-def dynamic_image(photo, size, crop):
+def dynamic_image(photo, size, crop, quality):
     """
     Gets resized-image-object from cache or rebuilds
     the resized-image-object using the original image-file.
@@ -16,17 +16,17 @@ def dynamic_image(photo, size, crop):
     if not exists(photo.image.path): return None
 
     # size = validate_image_size(size) # make sure it's not too big
-    key = generate_image_cache_key(photo, size, crop)
-
+    key = generate_image_cache_key(photo, size, crop, quality)
+    
     binary = cache.get(key) # check if key exists
-
+    
     if not binary:
-        binary = build_image(photo, size, crop)
-
+        binary = build_image(photo, size, crop, quality)
+    
     try: return Image.open(StringIO(binary))
     except: return ''
 
-def build_image(photo, size, crop=False):
+def build_image(photo, size, crop=False, quality=90):
     """
     Builds a resized image based off of the original image.
     """
@@ -43,7 +43,7 @@ def build_image(photo, size, crop=False):
 
     # mission: get binary
     output = StringIO()
-    image.save(output, "JPEG", quality=100)
+    image.save(output, "JPEG", quality=quality)
     binary = output.getvalue() # mission accomplished
     output.close()
 
@@ -69,7 +69,7 @@ def validate_image_size(size):
 
     return new_size
 
-def generate_image_cache_key(photo, size, crop=False):
+def generate_image_cache_key(photo, size, crop=False, quality=90):
     """
     Generates image cache key. You can use this for adding, 
     retrieving or removing a cache record.
@@ -82,7 +82,7 @@ def generate_image_cache_key(photo, size, crop=False):
     last_modification = stat(photo.image.path)[ST_MODE]
 
     str_size = 'x'.join([str(i) for i in size])
-    key = '.'.join((PHOTO_PRE_KEY, str(photo.pk), str(last_modification), str_size, str_crop))
+    key = '.'.join((PHOTO_PRE_KEY, str(photo.pk), str(last_modification), str_size, str_crop), str(quality))
     # e.g. photo.23.33206.200x300.cropped <pre-key>.<pk>.<last_modification>.<width>x<height>.<cropped>
 
     return key
