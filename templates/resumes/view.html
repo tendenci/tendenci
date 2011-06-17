@@ -97,7 +97,7 @@
     </div>
 
     <!-- delete-resume form -->
-    <form name="resume-delete" method="POST" action="{% url resume.delete resume.pk %}">
+    <form name="resume-delete" method="POST" action="{% url resume.delete resume.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">
     </form>
 

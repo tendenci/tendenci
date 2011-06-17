@@ -71,7 +71,7 @@
             </div>
 
             <!-- delete-file form -->
-            <form name="file-delete" method="POST" action="{% url file.delete file.pk %}">
+            <form name="file-delete" method="POST" action="{% url file.delete file.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>

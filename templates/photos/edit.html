@@ -22,7 +22,7 @@
 
 <div style="margin-bottom: 10px;">{% photo_nav request.user %}</div>
 
-<form name="photo-edit" method="post" action="">
+<form name="photo-edit" method="post" action="">{% csrf_token %}
     <div class="forms">
 
 		{{ photo_form|styled_form }}

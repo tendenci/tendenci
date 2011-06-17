@@ -21,7 +21,7 @@
 		{% if form.non_field_errors %}
 			{{ form.non_field_errors }}
 		{% endif %}
-		<form name="newsletteraddform" id="newsletteraddform" method="post" action=".">
+		<form name="newsletteraddform" id="newsletteraddform" method="post" action=".">{% csrf_token %}
 			<p class="headers" title="This field is required.">
                 &nbsp;<label>Send To:</label><span style="color: rgb(255, 0, 51);">*</span>&nbsp;
             </p> 

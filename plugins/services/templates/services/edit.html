@@ -31,7 +31,7 @@
 
 
         <div class="forms">
-        <form action="{% url service.edit service.id %}" method="post">
+        <form action="{% url service.edit service.id %}" method="post">{% csrf_token %}
             {{ form|styled_form }}
             <input type="submit" value="Save changes" />
         </form>

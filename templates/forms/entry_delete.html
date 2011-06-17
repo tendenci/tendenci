@@ -26,7 +26,7 @@
 	    </h3>
 		
 		<div class="delete-form">
-		    <form action="{% url form_entry_delete entry.pk %}" method="post">
+		    <form action="{% url form_entry_delete entry.pk %}" method="post">{% csrf_token %}
 		        <input type="submit" value="Delete Entry" />
 		    </form>
 	    </div>

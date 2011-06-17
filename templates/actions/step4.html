@@ -92,7 +92,7 @@
     <div class="step-wrap">
 	   	<div class="step-label body-copy-yellow">&nbsp;</div>
 	   	<div class="step-desc">
-	   		<form method="post" action=".">
+	   		<form method="post" action=".">{% csrf_token %}
 			{{ form.sla }} I Agree 
 			<input type="submit" name="Submit" value="Accept Software License Agreement" > 
 			</form>  

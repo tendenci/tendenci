@@ -42,7 +42,7 @@
             </div>
 
             <!-- delete-directory form -->
-            <form name="directory-pricing-delete" method="POST" action="{% url directory_pricing.delete dp.pk %}">
+            <form name="directory-pricing-delete" method="POST" action="{% url directory_pricing.delete dp.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>

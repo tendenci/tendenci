@@ -366,8 +366,13 @@ class NoticeForm(forms.ModelForm):
 class AppCorpPreForm(forms.Form):
     corporate_membership_id = forms.ChoiceField(label=_('Join Under the Corporation:'))
     secret_code = forms.CharField(label=_('Enter the Secret Code'), max_length=50)
-    email = forms.EmailField(label=_('Enter Your Email Address'), max_length=100,
-                             help_text="Your email address will help us to find your corporation.")
+    email = forms.EmailField(label=_('Verify Your Email Address'), max_length=100,
+                             help_text="""Your email address will help us to identify your corporate.
+                                         You will receive an email to the address you entered for us
+                                         to verify your email address. 
+                                         Please follow the instruction
+                                         in the email to continue signing up for the membership.
+                                          """)
     
     def __init__(self, *args, **kwargs):
         super(AppCorpPreForm, self).__init__(*args, **kwargs)
@@ -381,7 +386,9 @@ class AppCorpPreForm(forms.Form):
                                                                    status_detail='active')
         if not corporate_memberships:
             raise forms.ValidationError(_("Invalid Secret Code."))
+        
         self.corporate_membership_id = corporate_memberships[0].id
+        return secret_code
         
     def clean_email(self):
         email = self.cleaned_data['email']
@@ -390,13 +397,38 @@ class AppCorpPreForm(forms.Form):
             auth_domains = AuthorizedDomain.objects.filter(name=email_domain)
             if not auth_domains:
                 raise forms.ValidationError(_("Sorry but we're not able to find your corporation."))
-            self.corporate_membership_id = auth_domains[0].corporate_membership.id  
+            self.corporate_membership_id = auth_domains[0].corporate_membership.id 
+        return email 
 
 class AppForm(TendenciBaseForm):
+
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':App._meta.app_label, 
+        'storme_model':App._meta.module_name.lower()}))
+
+    confirmation_text = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':App._meta.app_label, 
+        'storme_model':App._meta.module_name.lower()}))
+
     status_detail = forms.ChoiceField(choices=(('draft','Draft'),('published','Published')))
 
     class Meta:
         model = App
+
+    def __init__(self, *args, **kwargs): 
+        super(AppForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+
+        if self.instance.pk:
+            self.fields['confirmation_text'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['confirmation_text'].widget.mce_attrs['app_instance_id'] = 0
+
 
 class AppFieldForm(forms.ModelForm):
     class Meta:

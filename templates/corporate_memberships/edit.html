@@ -15,7 +15,7 @@
 {% corpmemb_nav request.user corporate_membership %} 
      <h1>Edit Corporate Membership</h1>
      
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
 	<div class="forms">
 	{% if form.errors.values %}
 		<div class="errors">

@@ -60,7 +60,7 @@
 	     		</td>
 	     		<td><a href="{% url corp_memb.delete_rep rep.pk %}"><small class="delete">Delete</small></a>
 	     		<!-- delete-corp_memb form -->
-		            <form name="corp-memb-rep-delete" method="POST" action="{% url corp_memb.delete_rep rep.pk %}">
+		            <form name="corp-memb-rep-delete" method="POST" action="{% url corp_memb.delete_rep rep.pk %}">{% csrf_token %}
 		                <input type="hidden" name="action" value="delete">
 		            </form>
 	     		</td>

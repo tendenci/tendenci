@@ -9,7 +9,7 @@
         <h1>{% firstof MODULE_RESUMES_LABEL 'Resume' %} Delete</h1>
         <p><a href="{{ resume.get_absolute_url }}" title="{{ resume.title }}">{{ resume.title }}</a></p>
         <p>Are you sure you want to delete this resume?</p>
-        <form action="{% url resume.delete resume.pk %}" method="post">
+        <form action="{% url resume.delete resume.pk %}" method="post">{% csrf_token %}
         <div class="forms">
             <input type="submit" value="Yes, delete it." /> or <a href="javascript:history.go(-1);">Cancel</a>
         </div>

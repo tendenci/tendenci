@@ -125,7 +125,6 @@ div.gallery-photo-thumb img {
 #photo-instance {
 	float: left;
 	width: 100%;
-	height: 615px;
 }
 .photo-sets-wrap {
 	float: right;
@@ -562,14 +561,34 @@ div.gallery-photo-thumb img {
 }
 .photo-set table td.image img {
 	padding: 5px;
-	margin: 0 10px 0 0;
 	border: 1px solid gray;
 }
 .photo-set table td.info h2 {
-	margin: 0;
+	margin: 0 0 10px;
 }
 .photo-set table td.info div.actions a {
 	margin: 0 1px;
+}
+.photo-set td.image a {
+    position: relative;
+}
+.photo-set td.image a .photo-count {
+    color: white;
+    font-weight: bold;
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    padding: 7px 10px;
+
+    background: darkgreen;
+    background: -moz-linear-gradient(top, #26bc12 0%, darkgreen 100%);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#26bc12), to(darkgreen));
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    border-radius: 100px;
+}
+.photo-set td.image {
+    padding-right: 20px;
 }
 
 /*= photo-set search form

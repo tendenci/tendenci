@@ -18,7 +18,7 @@ URL: {{ site.domain }}
 	{{ date_range.0|date:"M d, Y" }}:{{ date_range.1|date:"M d, Y" }}
 </div>
 
-<form>
+<form>{% csrf_token %}
 Entity:
 <select name='entity'>
 	<option></option>

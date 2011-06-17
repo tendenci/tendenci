@@ -21,7 +21,7 @@
 				{% event_options user event %} 	       
              </div>
 		</div>
-    	<form action="{% url event.edit.registration event.pk %}" method="post">
+    	<form action="{% url event.edit.registration event.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
 

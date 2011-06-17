@@ -3,6 +3,10 @@
 {% load i18n %}
 {% load pagination_tags %}
 {% load photo_tags %}
+{% load perm_tags %}
+{% load humanize %}
+
+{% is_admin user as admin %}
 
 {% block title %}{% blocktrans %}Latest Photo Sets{% endblocktrans %}{% endblock %}
 {% block extra_head %}
@@ -20,6 +24,59 @@
         <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
     </div>
 
+<style type="text/css">
+
+    .photo-set {
+        position: relative;
+    }
+
+    .info .actions {
+        font-size: 12px;
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .info .visibility {
+        font-size: 12px;
+        position: absolute;
+        bottom: 10px;
+    }
+
+    .info .actions a {
+        text-decoration: underline;
+    }
+
+    .perm-public {
+        font-weight: bold;
+        color: green;
+    }
+    .perm-users, .perm-members, .perm-groups {
+        font-weight: bold;
+        color: darkblue;
+    }
+    .perm-private {
+        font-weight: bold;
+        color: red;
+    }
+    .status-active {
+        font-weight: bold;
+        color: green;
+    }
+
+    .status-pending {
+        font-weight: bold;
+        color: orange;
+    }
+
+    .status-inactive {
+        font-weight: bold;
+        color: red;
+    }
+
+</style>
+
+
 	{% photo_set_search %}
     {% autopaginate photo_sets %}
 
@@ -29,13 +86,25 @@
         {% with photo_set.object as photo_set %}
 		<div class="photo-set">
         	<table><tr>
+
             	<td class="image">
-                	<a href="{{ photo_set.get_absolute_url }}"><img src="{{ photo_set.get_cover_photo }}" /></a>
+                	<a title="{{ photo_set.image_set.count }} {{ photo_set.name }} Photo{{ photo_set.image_set.count|pluralize }}" 
+                        href="{{ photo_set.get_absolute_url }}">
+                        <img src="{{ photo_set.get_cover_photo.get_album_cover_url }}" />
+                        <div class="photo-count">{{ photo_set.image_set.count|intcomma }} </div>
+                    </a>
                 </td>
+
                 <td class="info">
                 	<h2><a href="{{ photo_set.get_absolute_url }}">{{ photo_set.name }}</a></h2>
-					<div>{{ photo_set.image_set.count }} photo{{ photo_set.image_set.count|pluralize }} </div>
                     <div class="description">{{ photo_set.description|striptags|truncatewords_html:25|safe }}</div>
+
+                    {% if admin %}
+                    <div class="visibility">
+                        {% obj_perms photo_set %} &middot; {% obj_status photo_set %}
+                    </div>
+                    {% endif %}
+
                     <div class="actions">
 						{% photo_set_options request.user photo_set %}
                     </div>
@@ -62,6 +131,5 @@
 		var delete_photo = confirm('Permenantly delete photo set?'); // confirm
 		if(!delete_photo) return false; // do not delete
 	});
-
 </script>
 {% endblock %}

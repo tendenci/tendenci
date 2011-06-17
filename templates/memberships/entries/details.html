@@ -62,7 +62,7 @@
         {% if entry.is_approved == 0 or entry.is_approved == 1 %}
         {% else %}
             {% if form %}
-            <form action="" method="post" class="connect-with">
+            <form action="" method="post" class="connect-with">{% csrf_token %}
                 <div>{{ form }}</div>
                 
                 {% if entry.is_renewal %}

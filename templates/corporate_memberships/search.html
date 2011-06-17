@@ -129,7 +129,7 @@
 		    	</div>
 		    	
 		    	<!-- delete-corp_memb form -->
-	            <form name="corp-memb-delete" method="POST" action="{% url corp_memb.delete corp_memb.pk %}">
+	            <form name="corp-memb-delete" method="POST" action="{% url corp_memb.delete corp_memb.pk %}">{% csrf_token %}
 	                <input type="hidden" name="action" value="delete">
 	            </form>
             
