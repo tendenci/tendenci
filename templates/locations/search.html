@@ -36,7 +36,7 @@
             </div>
 
             <!-- delete-location form -->
-            <form name="location-delete" method="POST" action="{% url location.delete location.pk %}">
+            <form name="location-delete" method="POST" action="{% url location.delete location.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>

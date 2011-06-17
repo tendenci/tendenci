@@ -14,7 +14,7 @@
 
 <h1>Make a Payment</h1>
 
-<form method="post" action="{% url make_payment.add %}">
+<form method="post" action="{% url make_payment.add %}">{% csrf_token %}
 	<div class="forms">
 	{{ form|styled_form }}
 	<div class="submitbutton">

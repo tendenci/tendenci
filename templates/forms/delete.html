@@ -21,7 +21,7 @@
 	    <h2>{{ form }}</h2>
 		
 		<div class="delete-form">
-		    <form action="{% url form_delete form.pk %}" method="post">
+		    <form action="{% url form_delete form.pk %}" method="post">{% csrf_token %}
 		        <input type="submit" value="Delete {% firstof MODULE_FORMS_LABEL 'Form' %}" />
 		    </form>
 	    </div>

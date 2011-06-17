@@ -23,7 +23,7 @@
             </div>
         </div>
     
-    	<form action="{% url page.edit.meta page.pk %}" method="post">
+    	<form action="{% url page.edit.meta page.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />

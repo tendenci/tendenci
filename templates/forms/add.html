@@ -12,7 +12,7 @@
     <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} Add</h1>
 
 	<div class="form-builder-wrap">
-    	<form action="." method="post">
+    	<form action="." method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Add {% firstof MODULE_FORMS_LABEL 'Form' %}" />

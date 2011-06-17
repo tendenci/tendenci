@@ -21,7 +21,7 @@
     <h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} Add</h1>
 
     <div class="directory-wrap">
-    	<form action="{% url directory.add %}" method="post" enctype="multipart/form-data">
+    	<form action="{% url directory.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
     	<div class="forms">
     		{% if MODULE_DIRECTORIES_DIRECTORIESREQUIRESPAYMENT %}
     	 	<div class="pricing-table-block">

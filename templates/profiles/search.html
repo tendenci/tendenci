@@ -57,7 +57,7 @@
             </div>
 
             <!-- delete-profile form -->
-            <form name="profile-delete" method="POST" action="{% url profile.delete profile.user.pk %}">
+            <form name="profile-delete" method="POST" action="{% url profile.delete profile.user.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
             

@@ -22,7 +22,7 @@
 
     <div class="resume-wrap">
         <div class="forms">
-        <form action="{% url resume.add %}" method="post">
+        <form action="{% url resume.add %}" method="post">{% csrf_token %}
             {{ form|styled_form }}
             <input type="submit" value="Add {% firstof MODULE_RESUMES_LABEL 'Resume' %}" />
         </form>

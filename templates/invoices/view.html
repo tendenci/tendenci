@@ -65,7 +65,7 @@
 {% if form %}
 {# admin notes form #}
 <div style="margin-top: 1em;">
-<form method="post" action=".">
+<form method="post" action=".">{% csrf_token %}
 <div><label for="id_admin_notes" class="field-label">Admin Notes:</label></div>
 <div>{{ form.admin_notes }}</div>
 <input type="submit" name="submit" value="Add/Update Notes" />

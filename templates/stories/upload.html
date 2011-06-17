@@ -30,7 +30,7 @@
         	To upload image to this story, browse to your document and click Upload Image. 
         </p>
         
-        <form method="post" enctype="multipart/form-data" action="" class="add-image">
+        <form method="post" enctype="multipart/form-data" action="" class="add-image">{% csrf_token %}
 		    <input type="hidden" name="next" value="{{ next }}"/>
 		    <p>
 		    {% if form.file.errors %}<div class="error">{{ form.errors }}</div>{% endif %}
@@ -39,7 +39,7 @@
 		    <div class="help_text">{{ form.help_text|safe }}</div>
 		    </p>
 		    <p class="submit">
-		        <input type="submit" value="{% trans "Upload Image" %}"/>
+		        <input type="submit" value="{% trans 'Upload Image' %}"/>
 		    </p>
 		</form>
         

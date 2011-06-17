@@ -15,7 +15,7 @@
     <h1>Redirects Add</h1>
    
     <div class="redirect-wrap">
-    	<form action="{% url redirect.add %}" method="post">
+    	<form action="{% url redirect.add %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Add Redirect" />

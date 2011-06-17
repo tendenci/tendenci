@@ -18,7 +18,7 @@
     <h1>{% firstof MODULE_STORIES_LABEL "Story" %} Add</h1>
    
     <div class="article-wrap">
-    	<form action="{% url story.add %}" method="post" enctype="multipart/form-data">
+    	<form action="{% url story.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Add {{ MODULE_STORIES_LABEL }}" />
