@@ -12,7 +12,7 @@
     <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} Edit</h1>
 
 	<div class="form-builder-wrap">
-    	<form action="{% url form_edit form_instance.pk %}" method="post">
+    	<form action="{% url form_edit form_instance.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Apply Change(s)" />

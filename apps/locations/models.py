@@ -6,7 +6,7 @@ from perms.models import TendenciBaseModel
 from locations.managers import LocationManager
 from entities.models import Entity
 
-class Location(TendenciBaseModel ):
+class Location(TendenciBaseModel):
     guid = models.CharField(max_length=40) 
     location_name = models.CharField(_('Name'), max_length=200, blank=True)
     description = models.TextField(blank=True)

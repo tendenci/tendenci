@@ -99,7 +99,7 @@
     </div>
 
     <!-- delete-service form -->
-    <form name="service-delete" method="POST" action="{% url service.delete service.pk %}">
+    <form name="service-delete" method="POST" action="{% url service.delete service.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">
     </form>
 

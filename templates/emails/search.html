@@ -38,7 +38,7 @@
             </div>
 
             <!-- delete-email form -->
-            <form name="email-delete" method="POST" action="{% url email.delete email.pk %}">
+            <form name="email-delete" method="POST" action="{% url email.delete email.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 

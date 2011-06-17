@@ -24,7 +24,7 @@
 
     <div class="service-wrap">
         <div class="forms">
-        <form action="{% url service.add %}" method="post">
+        <form action="{% url service.add %}" method="post">{% csrf_token %}
             {{ form|styled_form }}
             <input type="submit" value="Add Service" />
         </form>

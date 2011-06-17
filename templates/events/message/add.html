@@ -26,7 +26,7 @@
     
 
     <div class="event-message-wrap">
-    	<form action="." method="post" name="form1">
+    	<form action="." method="post" name="form1">{% csrf_token %}
     	<div class="message-forms">
     		<h2>Event Title: <a href="{% url event event.id %}">{{ event.title }}</a></h2>
 

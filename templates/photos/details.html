@@ -42,9 +42,14 @@
                 <div about="{{ photo.get_medium_640_url }}" 
                     xmlns:dct="http://purl.org/dc/terms/"
                     xmlns:cc="http://creativecommons.org/ns#">
+
+                    {% if photo_next_url %}
                     <a id="image-photo-next" href="{{ photo_next_url }}">
-                        <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title }}" />
-                    </a>
+                        <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title }}" /></a>
+                    {% else %}
+                    <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title }}" />
+                    {% endif %}
+
                     <br />
                     <span property="dct:title">{{ photo.title }}</span>
                     by <a href="{{ photo.creator.get_absolute_url }}"
@@ -75,7 +80,7 @@
 	</div><!-- END .photo-instance -->
 
 <!-- delete photo form -->
-<form name="photo-delete" method="POST" action="{% url photo_destroy photo.pk set_id %}">
+<form name="photo-delete" method="POST" action="{% url photo_destroy photo.pk set_id %}">{% csrf_token %}
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="delete_id" value="{{ photo.pk }}" />
 </form>

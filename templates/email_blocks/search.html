@@ -45,7 +45,7 @@
             </div>
 
             <!-- delete-email form -->
-            <form name="email_block-delete" method="POST" action="{% url email_block.delete email_block.pk %}">
+            <form name="email_block-delete" method="POST" action="{% url email_block.delete email_block.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 

@@ -196,7 +196,7 @@
 	{% endif %}
 
 	<div class="form-wrap">
-    	<form action="" method="post">
+    	<form action="" method="post">{% csrf_token %}
     	<input type="hidden" name="price" value="{{ price.pk }}-{{ price_type }}-{{ event_price }}">
     	<div class="forms">
     	

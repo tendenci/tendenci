@@ -22,7 +22,7 @@
     <div class="clear-right"></div>
      <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
 
-    <form method="post" action=".">
+    <form method="post" action=".">{% csrf_token %}
         {% if form.non_field_errors %}
             <div class="errors">
             {{ form.non_field_errors|striptags }}

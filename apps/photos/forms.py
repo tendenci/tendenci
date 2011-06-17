@@ -116,6 +116,7 @@ class PhotoSetAddForm(TendenciBaseForm):
             'tags',
             'allow_anonymous_view',
             'user_perms',
+            'member_perms',
             'group_perms',
             'status',
             'status_detail',
@@ -145,11 +146,15 @@ class PhotoSetAddForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(PhotoSetAddForm, self).__init__(*args, **kwargs)
+        
+        if not is_admin(self.user):
+            if 'status' in self.fields: self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
-        if is_admin(self.user):
-            self.fields['status'] = forms.BooleanField(required=False)
-            self.fields['status_detail'] = forms.ChoiceField(
-                choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+#        if is_admin(self.user):
+#            self.fields['status'] = forms.BooleanField(required=False)
+#            self.fields['status_detail'] = forms.ChoiceField(
+#                choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
 class PhotoSetEditForm(TendenciBaseForm):
     """ Photo-Set Edit-Form """
@@ -164,8 +169,9 @@ class PhotoSetEditForm(TendenciBaseForm):
             'description',
             'tags',
             'allow_anonymous_view',
-            'allow_user_view',
-            'allow_user_edit',
+            'user_perms',
+            'member_perms',
+            'group_perms',
             'status',
             'status_detail',
         )
@@ -180,7 +186,7 @@ class PhotoSetEditForm(TendenciBaseForm):
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
-                                 'member_permis',
+                                 'member_perms',
                                  'group_perms',
                                  ],
                       'classes': ['permissions'],

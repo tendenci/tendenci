@@ -81,7 +81,7 @@
 		
 		
 		 <!-- delete-job_pricing form -->
-            <form name="job-pricing-delete" method="POST" action="{% url job_pricing.delete job_pricing.pk %}">
+            <form name="job-pricing-delete" method="POST" action="{% url job_pricing.delete job_pricing.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 		

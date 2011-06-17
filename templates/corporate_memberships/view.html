@@ -32,7 +32,7 @@
 		</div>
 		
 		<!-- delete-corp_memb form -->
-	    <form name="corp-memb-delete" method="POST" action="{% url corp_memb.delete corporate_membership.pk %}">
+	    <form name="corp-memb-delete" method="POST" action="{% url corp_memb.delete corporate_membership.pk %}">{% csrf_token %}
 	        <input type="hidden" name="action" value="delete">
 	    </form>
 
@@ -137,6 +137,15 @@
 				 				{% endif %}
 				 			{% endif %}
 				 			</span>
+				 			
+				 			{% if field_obj.field_name == 'corporate_membership_type' %}
+				 				{% if corporate_membership.corp_app.authentication_method == "secret_code" %}
+				 				<div>
+				 				<span class="label">Secret Code:</span>: 
+				 				<span><b>{{ corporate_membership.secret_code }}</b></span>
+				 				</div>
+				 				{% endif %}
+				 			{% endif %}
 				 			
 				 			{% if field_obj.field_name == 'payment_method' %}
 				 				{% if corporate_membership.invoice %}

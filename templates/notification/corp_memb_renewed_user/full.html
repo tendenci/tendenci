@@ -24,6 +24,13 @@ To view this corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% ur
 	</p>
 {% endif %}
 
-<p>Thanks!</p>
+{% if object.corp_app.authentication_method == 'secret_code' %}
+<p>
+The <b>secret code</b> for individuals to join under your corporate membership:<br />
+<b>{{ object.secret_code }}</b>
+</p>
+{% endif %}
 
+<p>Thanks!</p>
+<p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
  <p>Time submitted: {% now "D d M Y P" %}</p>

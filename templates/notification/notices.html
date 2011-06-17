@@ -29,8 +29,7 @@
             </p>
         {% endif %}
         
-        <form method="POST" action=""> {# doubt this easy to do in uni-form #}
-            {% csrf_token %}
+        <form method="POST" action="">{% csrf_token %} {# doubt this easy to do in uni-form #}
             <table class="notice_settings">
                 <tr>
                     <th>{% trans "Notification Type" %}</th>

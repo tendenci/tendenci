@@ -43,7 +43,7 @@
             </p>
 
             <!-- delete-article form -->
-            <form name="redirect-delete" method="POST" action="{% url redirect.delete redirect.pk %}">
+            <form name="redirect-delete" method="POST" action="{% url redirect.delete redirect.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 

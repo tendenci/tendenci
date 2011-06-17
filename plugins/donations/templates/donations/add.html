@@ -31,7 +31,7 @@ The required fields are marked with <em class="body-copy-alert">*</em>. <br />Th
 		</div>
 	{% endif %}
 	
-<form method="post" action=".">
+<form method="post" action=".">{% csrf_token %}
 <div class="field-wrapper">
 	{% if form.donation_amount.errors %}
 		<div class="errs">{{ form.donation_amount.errors }}</div>

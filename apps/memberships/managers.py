@@ -80,10 +80,33 @@ class MemberAppEntryManager(TendenciBaseManager):
                 sqs = self._member_sqs(sqs, user=user,
                 status_detail=status_detail)
             else:
-                sqs = self._user_sqs(sqs, user=user,
+                sqs = user3_sqs(sqs, user=user,
                 status_detail=status_detail)
+                # pass
 
         return sqs.models(self.model)
+
+
+
+def user3_sqs(sqs, **kwargs):
+    """
+    people between admin and anon permission
+    (status+status_detail+(anon OR user)) OR (who_can_view__exact)
+    """
+    user = kwargs.get('user')
+    groups = [g.pk for g in user.group_set.all()]
+    status_detail = kwargs.get('status_detail', 'active')
+
+    status_q = Q(status=1, status_detail=status_detail)
+    creator_q = Q(creator_username=user.username)
+    owner_q = Q(owner_username=user.username)
+    user_perm_q = Q(users_can_view__in=[user.pk])
+
+    if groups:
+        group_perm_q = Q(groups_can_view__in=groups)
+        return sqs.filter((status_q&(creator_q|owner_q))|(user_perm_q|group_perm_q))
+    else:
+        return sqs.filter((status_q&(creator_q|owner_q))|(user_perm_q))
 
 def anon3_sqs(sqs, **kwargs):
     status_detail = kwargs.get('status_detail', 'active')

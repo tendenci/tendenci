@@ -22,7 +22,7 @@
 Deleted items cannot be recovered!
 </div>
 <br />
-<form action="{% url email_block.delete email_block.id %}" method="post">
+<form action="{% url email_block.delete email_block.id %}" method="post">{% csrf_token %}
 <input type="hidden" name="id" value="{{email_block.id}}" />
 <input type="submit" value="Delete Email Block" />
 </form>

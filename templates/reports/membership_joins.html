@@ -2,7 +2,7 @@
 
 {% block content %}
 	<h1>Membership Joins Report Summary</h1>
-    <form action="" method="post">
+    <form action="" method="post">{% csrf_token %}
         Filter By: {{ form.membership_type.label }} {{ form.membership_type }} 
         {{ form.membership_status.label }} {{ form.membership_status }}
         <input type="submit" value="submit">

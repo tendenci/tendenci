@@ -36,7 +36,7 @@ Upload your updated spread sheet. Review and adjust settings.  Preview import.
 	{{ form.non_field_errors }}
 {% endif %}
 
-<form class="import" action="." method="post" enctype="multipart/form-data" >
+<form class="import" action="." method="post" enctype="multipart/form-data" >{% csrf_token %}
 
 <div class="select-file">
 	<h2>Upload Your Spread Sheet </h2>

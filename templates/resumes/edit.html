@@ -29,7 +29,7 @@
 
 
         <div class="forms">
-        <form action="{% url resume.edit resume.id %}" method="post">
+        <form action="{% url resume.edit resume.id %}" method="post">{% csrf_token %}
             {{ form|styled_form }}
             <input type="submit" value="Save changes" />
         </form>

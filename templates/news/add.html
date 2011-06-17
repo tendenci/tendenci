@@ -21,7 +21,7 @@
     <h1>{% firstof MODULE_NEWS_LABEL 'News' %} Add</h1>
 
     <div class="news-wrap">
-    	<form action="{% url news.add %}" method="post">
+    	<form action="{% url news.add %}" method="post">{% csrf_token %}
 		<div class="forms">
 			{{ form|styled_form }}
         	<input type="submit" value="Add {% firstof MODULE_NEWS_LABEL 'News' %}" />

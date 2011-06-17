@@ -21,7 +21,7 @@
     <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} Add</h1>
 
     <div class="page-wrap">
-    	<form action="{% url page.add %}" method="post">
+    	<form action="{% url page.add %}" method="post">{% csrf_token %}
     	<div class="forms">			
 			{{ form|styled_form }}
         	<input type="submit" value="Add {% firstof MODULE_PAGES_LABEL 'Page' %}" />

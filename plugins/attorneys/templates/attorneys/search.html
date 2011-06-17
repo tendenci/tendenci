@@ -1,0 +1,75 @@
+{% extends "attorneys/base.html" %}
+{% load pagination_tags %}
+{% load attorneys_tags %}
+{% load perm_tags %}
+
+{% block title %}Attorneys{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "attorneys/media/css/attorneys.css" %}
+</style>
+{% endblock %}
+
+{% block body %}
+{% autopaginate attorneys 5 %}
+{% has_perm user attorneys.add_attorney as can_add_attorney %}
+<div class="t">
+    <h1>Attorney Search</h1>
+    {% attorneys_search %}
+    {% if can_add_attorney %}
+    <div><a href="{% url admin:attorneys_attorney_add %}">Add Attorney</a></div>
+    {% endif %}
+    <div class="attorneys-search-wrap">
+        {% for attorney in attorneys %}
+        {% with attorney.object as attorney %}
+        <div class="attorneys-search">
+            <div class="quick-options">
+                {% attorneys_options request.user attorney %}
+            </div>
+            <div class="photo">
+                {% if attorney.photo %}
+                    <img src="{% url file attorney.photo.pk %}128x128/" title="{{ attorney.name }}"  />
+                {% else %}
+                    <img src="/path/to/default/photo" />
+                {% endif %}
+            </div>
+            <div class="info">
+                <a href="{{ attorney.get_absolute_url }}"><h3>{{ attorney.name }}</h3></a>
+                <div class="position">
+                    <a href="{% url attorneys.search %}?q=category:{{ attorney.category }}">{{ attorney.get_category_display }}</a>{% if attorney.category %}, {% endif %}
+                    <a href="{% url attorneys.search %}?q=position:{{ attorney.position }}">{{ attorney.position }}</a>
+                    {% if attorney.position %}&nbsp;&mdash;&nbsp;{% endif %}{{ attorney.city }}{% if attorney.city %}, {% endif %}{{ attorney.state }}
+                </div>
+                <div class="contact">
+                    {% if attorney.phone %}Phone: {{ attorney.phone }}{% endif %}<br/>
+                    {% if attorney.fax %}Fax: {{ attorney.fax }}{% endif %}<br/>
+                    {% if attorney.email %}Email: <a href="mailto:{{ attorney.email }}">{{ attorney.email }}</a>{% endif %}<br/>
+                </div>
+                {% if attorney.bio %}
+                    <p>{{ attorney.bio|striptags|truncatewords:"80" }}</p>
+                {% endif %}
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        {% endwith %}
+        {% empty %}
+            <p>0 Attorneys Found</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+	</script>
+{% endblock %}

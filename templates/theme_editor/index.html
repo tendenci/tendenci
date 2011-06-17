@@ -20,7 +20,7 @@
         <table id="file-editor" width="100%">
         <tr>
         	<td width="80%">
-            <form class="uniForm" method="POST" name="edit" action="">
+            <form class="uniForm" method="POST" name="edit" action="">{% csrf_token %}
                 {% if file_form.content.errors and current_file %}<div>{{ file_form.content.errors }}</div>{% endif %}
 					 <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
    					{{ file_form.rf_path }}

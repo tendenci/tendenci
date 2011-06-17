@@ -1,0 +1,24 @@
+{% extends "memberships/base.html" %}
+
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <h2>Email Has been Sent to Verify Your Email Address</h2>
+   	<p>
+   	Please follow the instruction in the email to continue signing up for the membership. <br /><br />
+   	
+   	Thank you!
+   	</p>
+	
+</div>
+{% endblock %}
