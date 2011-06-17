@@ -14,7 +14,7 @@
     <div class="resume-wrap">
     <p><a href="{{ resume.get_absolute_url }}" title="{{ resume.title }}">{{ resume.title }}</a></p>
     <p>Are you sure you want to approve this resume?</p>
-    <form action="{% url resume.approve resume.pk %}" method="post">
+    <form action="{% url resume.approve resume.pk %}" method="post">{% csrf_token %}
     <div class="forms">
         <input type="submit" value="Yes, approve it." /> or <a href="javascript:history.go(-1);">Cancel</a>
     </div>

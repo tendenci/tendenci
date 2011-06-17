@@ -148,7 +148,7 @@
 </div>
 
 <!-- delete form -->
-<form name="delete-photo-set" method="POST" action="{% url photoset_delete photo_set.pk %}">
+<form name="delete-photo-set" method="POST" action="{% url photoset_delete photo_set.pk %}">{% csrf_token %}
     <input type="hidden" name="action" value="delete">
 </form>
 

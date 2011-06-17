@@ -22,7 +22,7 @@
 				{% event_options request.user event %} 	       
              </div>
 		</div>
-    	<form action="{% url event.edit.meta event.pk %}" method="post">
+    	<form action="{% url event.edit.meta event.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />

@@ -18,7 +18,7 @@
 
     <div class="contact-wrap">
     	<form action="{% url contact.add %}" method="post">
-    	<div class="forms">
+    	<div class="forms">{% csrf_token %}
             {{ form|styled_form }}
         	<input type="submit" value="Add {{ {% firstof MODULE_CONTACTS_LABEL 'Contact' %}}}" />
 		</div>

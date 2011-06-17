@@ -132,7 +132,7 @@
 			<div style="clear:both;"></div>
 
             <!-- delete-event form -->
-            <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">
+            <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 		</div>

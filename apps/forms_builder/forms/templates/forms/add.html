@@ -27,7 +27,7 @@
 	{% endif %}
 
     <div class="article-wrap">
-    	<form action="{% url article.add %}" method="post">
+    	<form action="{% url article.add %}" method="post">{% csrf_token %}
     	<div class="forms">
 
 			<div class="item">

@@ -15,7 +15,7 @@
 	<h1>{{ form.title }}</h1>
 	<p>{{ form.intro|safe }}</p>
 	
-	<form method="post" enctype="multipart/form-data">
+	<form method="post" enctype="multipart/form-data">{% csrf_token %}
 		{{ form_for_form.as_p }}
 		<input type="submit" />
 	</form>

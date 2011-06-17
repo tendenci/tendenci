@@ -82,7 +82,7 @@
              {% if can_delete %}
                 &nbsp;<span class="delete"><a href="{% url group.deleteuser group.slug gm.member.id %}">Remove</a></span>
              <!-- delete-member form -->
-                <form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">
+                <form name="member-delete" method="POST" action="{% url group.deleteuser group.slug gm.member.id %}">{% csrf_token %}
                     <input type="hidden" name="action" value="delete">
                 </form>
             {% endif %}

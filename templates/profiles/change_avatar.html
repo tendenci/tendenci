@@ -26,14 +26,14 @@
     {% if not avatars %}
         <p>You do not yet have an avatar.  Please upload one now.</p>
     {% else %}
-        <form method="POST" action="">
+        <form method="POST" action="">{% csrf_token %}
             <ul class="list-avatars">
                 {{ primary_avatar_form.as_ul }}
             </ul>
             <input type="submit" value="Choose new Default" />
         </form>
     {% endif %}
-    <form enctype="multipart/form-data" method="POST" action="">
+    <form enctype="multipart/form-data" method="POST" action="">{% csrf_token %}
         <input type="file" name="avatar" value="Avatar Image" />
         <input type="submit" value="Upload New Image" />
     </form>

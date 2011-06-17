@@ -26,7 +26,7 @@
             </div>
         </div>
     
-    	<form action="{% url page.edit page.pk %}" method="post">
+    	<form action="{% url page.edit page.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
 			{{ form|styled_form }}
         	<input type="submit" value="Save Changes" />
@@ -34,7 +34,7 @@
         </form>
 
 	    <!-- delete-page form -->
-	    <form name="page-delete" method="POST" action="{% url page.delete page.pk %}">
+	    <form name="page-delete" method="POST" action="{% url page.delete page.pk %}">{% csrf_token %}
 	        <input type="hidden" name="action" value="delete">
 	    </form>
 

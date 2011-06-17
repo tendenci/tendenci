@@ -31,7 +31,7 @@
     {{ user_this.firstname}} {{ user_this.lastname}}({{ user_this.username}})</a></h2>
 <div class="clear-right"></div>
     <div class="profile-wrap">
-    <form action="" method="post">
+    <form action="" method="post">{% csrf_token %}
     
 	<div class="field-wrapper">
 		<label for="id_user_groups" style="float:left; padding-right: 1em;"><b>Groups:</b></label>

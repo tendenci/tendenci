@@ -32,7 +32,7 @@
 		</div>
 		
 		<!-- delete-corp_memb form -->
-	    <form name="corp-memb-delete" method="POST" action="{% url corp_memb.delete corporate_membership.pk %}">
+	    <form name="corp-memb-delete" method="POST" action="{% url corp_memb.delete corporate_membership.pk %}">{% csrf_token %}
 	        <input type="hidden" name="action" value="delete">
 	    </form>
 

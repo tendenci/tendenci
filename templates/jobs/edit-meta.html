@@ -23,7 +23,7 @@
 				{% job_options request.user job %} 	       
              </div>
 		</div>
-    	<form action="{% url job.edit.meta job.pk %}" method="post">
+    	<form action="{% url job.edit.meta job.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />

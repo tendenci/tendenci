@@ -33,7 +33,7 @@
 	{% endif %}
 </div>
 <br />
-<form action="{% url corp_memb.delete corp_memb.pk %}" method="post">
+<form action="{% url corp_memb.delete corp_memb.pk %}" method="post">{% csrf_token %}
 <input type="hidden" name="id" value="{{ corp_memb.pk }}" />
 <input type="submit" value="Delete Corporate" />
 </form>

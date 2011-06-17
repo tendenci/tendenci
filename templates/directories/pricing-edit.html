@@ -34,7 +34,7 @@
 	{% endif %}
 
     <div class="directory-pricing-wrap">
-    <form action="." method="post">
+    <form action="." method="post">{% csrf_token %}
     	<div class="forms">
 			<div class="pricing-item">
 				<div class="errs">{{ form.duration.errors }}</div>

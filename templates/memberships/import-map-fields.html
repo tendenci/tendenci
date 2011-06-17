@@ -18,7 +18,7 @@
 	<p class="timestamp">Step 2/4 &middot; {{ datetime.now }}</p>
 
 
-    <form method='post' action='{% url membership_import_map_fields %}' enctype="multipart/form-data">
+    <form method='post' action='{% url membership_import_map_fields %}' enctype="multipart/form-data">{% csrf_token %}
     {{ form|styled_form }}
     <input type='submit' value='Submit'>
     </form>

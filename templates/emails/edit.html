@@ -39,7 +39,7 @@
 {% emails_nav email %}
 <h1>{% trans 'E-mail Record '%}{% if email %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}</h1>
 
-<form method="post" action=".">
+<form method="post" action=".">{% csrf_token %}
 	<div class="field-wrapper">
 		{% if form.content_type.errors %}
 			{{ form.content_type.errors }}

@@ -24,7 +24,7 @@
      <div class="content">{{ story.content|safe }}</div>
 	
 	<div class="delete-form">
-    <form action="{% url story.delete story.id %}" method="post">
+    <form action="{% url story.delete story.id %}" method="post">{% csrf_token %}
         <input type="submit" value="Delete Story" />
     </form>
     </div>
