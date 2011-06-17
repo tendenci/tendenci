@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from invoices.models import Invoice
 from site_settings.utils import get_setting
 from perms.utils import is_admin
@@ -187,6 +188,7 @@ class PaymentMethod(models.Model):
     human_name = models.CharField(max_length=200, blank=False)
     machine_name = models.CharField(max_length=200, blank=False)
     is_online = models.BooleanField()
+    admin_only = models.BooleanField(default=0, help_text=_("if checked, it will only show for administrators"))
 
     def __unicode__(self):
         name = "%s (%s)" % (self.human_name, self.machine_name)
