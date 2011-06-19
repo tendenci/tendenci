@@ -23,6 +23,7 @@ from corporate_memberships.utils import (get_corpapp_default_fields_list,
 from corporate_memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from base.fields import SplitDateTimeField
 from perms.utils import is_admin
+from payments.models import PaymentMethod
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -79,6 +80,7 @@ class CorpAppForm(forms.ModelForm):
                   'corp_memb_type',
                   'authentication_method',
                   'memb_app',
+                  'payment_methods',
                   'description',
                   'confirmation_text',
                   'notes',
@@ -219,6 +221,11 @@ class CorpMembForm(forms.ModelForm):
             if corp_membs:
                 raise forms.ValidationError(_("This secret code is already taken. Please use a different one."))
         return self.cleaned_data['secret_code']
+    
+    def clean_payment_method(self):
+        if self.cleaned_data['payment_method']:
+            return PaymentMethod.objects.get(pk=int(self.cleaned_data['payment_method']))
+        return self.cleaned_data['payment_method']
         
     def save(self, user,  **kwargs):
         """

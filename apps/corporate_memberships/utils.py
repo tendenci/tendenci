@@ -68,15 +68,17 @@ def get_indiv_membs_choices(corp):
     
     return im_list        
    
-def get_payment_method_choices(user):
-    if is_admin(user):
-        return (('paid - check', 'User paid by check'),
-                ('paid - cc', 'User paid by credit card'),
-                ('Credit Card', 'Make online payment NOW'),)
-    else:
-        return (('check', 'Check'),
-                ('cash', 'Cash'),
-                ('cc', 'Credit Card'),)
+
+def get_payment_method_choices(user, corp_app):
+    payment_methods = corp_app.payment_methods.all()
+    
+    if not is_admin(user):
+        payment_methods = payment_methods.filter(admin_only=False)
+    
+    pm_choices = []    
+    for pm in payment_methods:
+        pm_choices.append((pm.pk, pm.human_name))
+    return pm_choices
     
         
 def corp_memb_inv_add(user, corp_memb, **kwargs): 
@@ -133,8 +135,9 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         
         
         if is_admin(user):
-            if corp_memb.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
-                inv.tender(user) 
+            #if corp_memb.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
+            if not corp_memb.payment_method.is_online:
+                inv.tender(user) # tendered the invoice for admin if offline
                 
                 # payment
                 payment = Payment()
