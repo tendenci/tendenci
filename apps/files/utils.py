@@ -2,11 +2,14 @@ import Image
 from os import stat
 from cStringIO import StringIO
 from django.core.cache import cache as django_cache
-
+from stat import ST_MODE
+from os.path import exists
+from base.utils import image_rescale
+from photos.cache import PHOTO_PRE_KEY
 from files.cache import FILE_IMAGE_PRE_KEY
 
 
-def get_image(file, size, constrain=False, cache=False, unique_key=None):
+def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None):
     """
     Gets resized-image-object from cache or rebuilds
     the resized-image-object using the original image-file.
@@ -15,21 +18,24 @@ def get_image(file, size, constrain=False, cache=False, unique_key=None):
     binary = None
 
     if cache:
-        key = generate_image_cache_key(file, size, unique_key)
+        key = generate_image_cache_key(file, size, pre_key, crop, unique_key)
         binary = django_cache.get(key) # check if key exists
+        
     if not binary:
         kwargs = {
-            'constrain': constrain,
+            'crop': crop,
             'cache': cache,
-            'unique_key': unique_key
+            'quality': quality,
+            'unique_key': unique_key,
+    
         }
-        binary = build_image(file, size, **kwargs)
+        binary = build_image(file, size, pre_key, **kwargs)
 
     try: return Image.open(StringIO(binary))
     except: return ''
 
 
-def build_image(file, size, constrain=False, cache=False, unique_key=None):
+def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None):
     """
     Builds a resized image based off of the original image.
     """
@@ -42,20 +48,19 @@ def build_image(file, size, constrain=False, cache=False, unique_key=None):
     # IOError: cannot write mode P as JPEG
     if image.mode != "RGB":
         image = image.convert("RGB")
-
-    if constrain:
-        image.thumbnail(size, Image.ANTIALIAS) # thumbnail image
+    if crop:
+        image = image_rescale(image, size) # thumbnail image
     else:
         image = image.resize(size, Image.ANTIALIAS) # resize image
 
     # mission: get binary
     output = StringIO()
-    image.save(output, "JPEG", quality=100)
+    image.save(output, "JPEG", quality=quality)
     binary = output.getvalue() # mission accomplished
     output.close()
 
     if cache:
-        key = generate_image_cache_key(file, size, unique_key)
+        key = generate_image_cache_key(file, size, pre_key, crop, unique_key)
         django_cache.add(key, binary, 60*60*24*30) # cache for 30 days #issue/134
 
     return binary
@@ -78,20 +83,25 @@ def validate_image_size(size):
     return new_size
 
 
-def generate_image_cache_key(file, size, unique_key):
+def generate_image_cache_key(file, size, pre_key, crop, unique_key):
     """
     Generates image cache key. You can use this for adding,
     retrieving or removing a cache record.
     """
     str_size = 'x'.join([str(i) for i in size])
 
+    if crop: 
+        str_crop = "cropped"
+    else:
+        str_crop = ""
+
     # e.g. file_image.1294851570.200x300 file_image.<file-system-modified-time>.<width>x<height>
     if unique_key:
-        key = '.'.join((FILE_IMAGE_PRE_KEY, unique_key, str_size))
+        key = '.'.join((pre_key, unique_key, str_size, str_crop))
     else:
         if hasattr(file,'path'):
-            key = '.'.join((FILE_IMAGE_PRE_KEY, str(stat(file.path).st_mtime), str_size))
+            key = '.'.join((pre_key, str(stat(file.path).st_mtime), str_size, str_crop))
         else:
-            key = '.'.join((FILE_IMAGE_PRE_KEY, str(stat(file.name).st_mtime), str_size))
+            key = '.'.join((pre_key, str(stat(file.name).st_mtime), str_size, str_crop))
 
     return key
