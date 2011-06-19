@@ -6,7 +6,7 @@
             "human_name": "Credit Card", 
             "machine_name": "credit-card", 
             "is_online": true,
-            "admin_only": false;
+            "admin_only": false
         }
     }, 
     {
@@ -16,7 +16,7 @@
             "human_name": "Check", 
             "machine_name": "check", 
             "is_online": false,
-            "admin_only": false;
+            "admin_only": false
         }
     }, 
     {
@@ -26,7 +26,7 @@
             "human_name": "Cash", 
             "machine_name": "cash", 
             "is_online": false,
-            "admin_only": false;
+            "admin_only": false
         }
     }
 ]

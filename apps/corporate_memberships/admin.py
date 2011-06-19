@@ -119,14 +119,16 @@ class CorpAppAdmin(admin.ModelAdmin):
         if obj and obj.id:
             return  (
                         (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 
-                                           'memb_app', 'description', 'confirmation_text', 'notes')}),
+                                           'memb_app', 'payment_methods', 'description', 
+                                           'confirmation_text', 'notes')}),
                         ('Other Options', {'fields': (
                             'status', 'status_detail')}),
                     ) 
         else:
             return (
                         (None, {'fields': ('name', 'slug', 'corp_memb_type', 'authentication_method', 
-                                           'memb_app', 'description', 'confirmation_text', 'notes')}),
+                                           'memb_app', 'payment_methods', 'description', 
+                                           'confirmation_text', 'notes')}),
                         ('Other Options', {'fields': (
                              'status', 'status_detail')}),
                         ('Form Fields', {'fields':(), 

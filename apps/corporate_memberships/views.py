@@ -19,7 +19,7 @@ from corporate_memberships.models import (CorpApp, CorpField, CorporateMembershi
                                           CorpMembRenewEntry, 
                                           IndivMembRenewEntry)
 from corporate_memberships.forms import CorpMembForm, CorpMembRepForm, RosterSearchForm, CorpMembRenewForm
-from corporate_memberships.utils import (get_corporate_membership_type_choices, 
+from corporate_memberships.utils import (get_corporate_membership_type_choices,
                                          get_payment_method_choices,
                                          corp_memb_inv_add, 
                                          dues_rep_emails_list,
@@ -63,7 +63,7 @@ def add(request, slug, template="corporate_memberships/add.html"):
     # corporate_membership_type choices
     form.fields['corporate_membership_type'].choices = get_corporate_membership_type_choices(request.user, corp_app)
     
-    form.fields['payment_method'].choices = get_payment_method_choices(request.user)
+    form.fields['payment_method'].choices = get_payment_method_choices(request.user, corp_app)
     
     # add an admin only block for admin
     if user_is_admin:
@@ -140,7 +140,8 @@ def add(request, slug, template="corporate_memberships/add.html"):
             EventLog.objects.log(**log_defaults)
             
             # handle online payment
-            if corporate_membership.payment_method.lower() in ['credit card', 'cc']:
+            #if corporate_membership.payment_method.lower() in ['credit card', 'cc']:
+            if corporate_membership.payment_method.is_online:
                 if corporate_membership.invoice and corporate_membership.invoice.balance > 0:
                     return HttpResponseRedirect(reverse('payments.views.pay_online', args=[corporate_membership.invoice.id, corporate_membership.invoice.guid])) 
             
@@ -225,7 +226,7 @@ def edit(request, id, template="corporate_memberships/edit.html"):
 #    form.fields['corporate_membership_type'].choices = get_corporate_membership_type_choices(request.user, 
 #                                                                                corp_app)
 #    
-#    form.fields['payment_method'].choices = get_payment_method_choices(request.user)
+#    form.fields['payment_method'].choices = get_payment_method_choices(request.user, corp_app)
     
     # we don't need the captcha on edit because it requires login
     #del form.fields['captcha']
