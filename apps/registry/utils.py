@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 
-from site_settings.utils import get_setting
+from site_settings.utils import check_setting, get_setting
 
 lazy_reverse = lazy(reverse, str)
 
@@ -27,12 +27,19 @@ class RegisteredApps(object):
         # individual lists
         for model, registry in apps.items():
 
-            # module enabled
-            registry.fields['enabled'] = get_setting(
+            setting_tuple = (
                 'module',
                 registry.fields['model']._meta.app_label,
-                'enabled'
-            ) or False
+                'enabled',
+            )
+
+            # enabled / has settings
+            if check_setting(*setting_tuple):
+                registry.fields['enabled'] = get_setting(*setting_tuple)
+                registry.fields['has_settings'] = True
+            else:
+                registry.fields['enabled'] = True
+                registry.fields['has_settings'] = False
 
             registry.fields['url'].update({
                 'settings': lazy_reverse('settings.index', args=[
