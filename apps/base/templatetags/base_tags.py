@@ -417,8 +417,8 @@ class PhotoImageURL(Node):
         if self.crop:
             args.append("crop")
         if self.quality:
-            args.append(90)
-        url = reverse('photo.size', args)
+            args.append(self.quality)
+        url = reverse('photo.size', args=args)
         return url
 
 
