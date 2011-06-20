@@ -578,7 +578,7 @@ div.gallery-photo-thumb img {
     position: absolute;
     top: -5px;
     right: -10px;
-    padding: 7px 10px;
+    padding: 7px 12px;
 
     background: darkgreen;
     background: -moz-linear-gradient(top, #26bc12 0%, darkgreen 100%);
