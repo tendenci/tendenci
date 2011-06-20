@@ -117,6 +117,7 @@ function open_archive(id)
 		var myurl = "/theme-editor/get-version/" + id + "/";
 		var mydata = {};
 		mydata["id"] =id;
+		mydata["csrfmiddlewaretoken"] = "{{ csrf_token }}";
         $.ajax({
            type: "POST",
            url: myurl,
