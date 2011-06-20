@@ -393,7 +393,8 @@
 			post_params: {
 				"storme_app_label" : ImageDialog.storme_app_label,
 				"storme_model" : ImageDialog.storme_model,
-				"storme_instance_id" : ImageDialog.storme_instance_id
+				"storme_instance_id" : ImageDialog.storme_instance_id,
+				"csrfmiddlewaretoken": "{{ csrf_token }}"
 			},
 
 			// File upload settings
