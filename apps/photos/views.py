@@ -376,7 +376,7 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
 
     query = request.GET.get('q', None)
     photo_sets = PhotoSet.objects.search(query, user=request.user)
-    photo_sets = photo_sets.order_by('-update_dt')
+    photo_sets = photo_sets.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 991400,
