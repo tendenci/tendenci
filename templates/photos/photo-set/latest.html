@@ -84,6 +84,11 @@
         color: red;
     }
 
+    td.image a {
+        text-decoration: none;
+        display: block;
+    }
+
 </style>
 
 
@@ -98,9 +103,15 @@
         	<table><tr>
 
             	<td class="image">
-                	<a title="{{ photo_set.image_set.count }} {{ photo_set.name }} Photo{{ photo_set.image_set.count|pluralize }}" 
+                	<a title="{{ photo_set.image_set.count }} Photo{{ photo_set.image_set.count|pluralize }}" 
                         href="{{ photo_set.get_absolute_url }}">
+
+                        {% if photo_set.get_cover_photo.get_album_cover_url %}
                         <img src="{{ photo_set.get_cover_photo.get_album_cover_url }}" />
+                        {% else %}
+                        <img src="{{ STATIC_URL }}/images/default-photo.jpg" />
+                        {% endif %}
+
                         <div class="photo-count">{{ photo_set.image_set.count|intcomma }} </div>
                     </a>
                 </td>
