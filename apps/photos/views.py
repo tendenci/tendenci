@@ -12,12 +12,12 @@ from django.contrib import messages
 from django.forms.models import modelformset_factory
 from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
+from django.middleware.csrf import get_token as csrf_get_token
 
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 
-#from photologue.models import *
 from photos.utils import dynamic_image
 from photos.search_indexes import PhotoSetIndex
 from photos.models import Image, Pool, PhotoSet, AlbumCover
@@ -399,7 +399,7 @@ def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
         "photo_sets": photo_sets,
     }, context_instance=RequestContext(request))
 
-@login_required
+
 def photos_batch_add(request, photoset_id=0):
     """
     params: request, photoset_id
@@ -484,6 +484,7 @@ def photos_batch_add(request, photoset_id=0):
         return render_to_response('photos/batch-add.html', {
             "photoset_id":photoset_id,
             "photo_set": photo_set,
+            "csrf_token": csrf_get_token(request)
              },
             context_instance=RequestContext(request))
 
