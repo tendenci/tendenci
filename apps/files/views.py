@@ -14,6 +14,7 @@ from files.forms import FileForm
 from perms.object_perms import ObjectPermission
 from perms.utils import update_perms_and_save, has_perm
 from event_logs.models import EventLog
+from files.cache import FILE_IMAGE_PRE_KEY
 
 
 def index(request, id=None, size=None, download=False, template_name="files/view.html"):
@@ -41,7 +42,7 @@ def index(request, id=None, size=None, download=False, template_name="files/view
     if file.type()=='image' and size: # if size specified
         size= [int(s) for s in size.split('x')] # convert to list
         # gets resized image from cache or rebuilds
-        image = get_image(file.file, size, cache=True, unique_key=str(file.pk))
+        image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         response = HttpResponse(mimetype='image/jpeg')
         response['Content-Disposition'] = '%s filename=%s'% (attachment, file.file.name)
         image.save(response, "JPEG", quality=100)
