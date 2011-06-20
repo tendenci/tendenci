@@ -5,14 +5,15 @@ from django.core.cache import cache as django_cache
 from stat import ST_MODE
 from os.path import exists
 from base.utils import image_rescale
-from photos.cache import PHOTO_PRE_KEY
-from files.cache import FILE_IMAGE_PRE_KEY
 
 
 def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None):
     """
     Gets resized-image-object from cache or rebuilds
     the resized-image-object using the original image-file.
+    *pre_key is either:
+        from photos.cache import PHOTO_PRE_KEY
+        from files.cache import FILE_IMAGE_PRE_KEY
     """
     size = validate_image_size(size) # make sure it's not too big
     binary = None
