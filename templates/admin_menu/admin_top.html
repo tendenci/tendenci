@@ -82,7 +82,7 @@
                     <ul>
                         <li><a href="/settings/site/global/">Global</a></li>
                         {% for app in registered_apps.core %}
-                            {% if app.enabled %}
+                            {% if app.has_settings %}
                             <li><a href="{{ app.url.settings }}">{{ app|capfirst }}</a></li>
                             {% endif %}
                         {% endfor %}
