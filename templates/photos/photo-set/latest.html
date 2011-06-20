@@ -30,6 +30,11 @@
         position: relative;
     }
 
+    .info {
+        font-size: 12px;
+        line-height: 16px;
+    }
+
     .info .actions {
         font-size: 12px;
         position: absolute;
@@ -45,6 +50,11 @@
 
     .info .actions a {
         text-decoration: underline;
+    }
+
+    .extra-info {
+        font-size: 12px;
+        height: 35px;
     }
 
     .perm-public {
@@ -99,6 +109,8 @@
                 	<h2><a href="{{ photo_set.get_absolute_url }}">{{ photo_set.name }}</a></h2>
                     <div class="description">{{ photo_set.description|striptags|truncatewords_html:25|safe }}</div>
 
+
+                    <div class="extra-info">
                     {% if admin %}
                     <div class="visibility">
                         {% obj_perms photo_set %} &middot; {% obj_status photo_set %}
@@ -108,6 +120,8 @@
                     <div class="actions">
 						{% photo_set_options request.user photo_set %}
                     </div>
+                    </div>
+
                 </td>
 			</tr></table>
         </div>
