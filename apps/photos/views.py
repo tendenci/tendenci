@@ -400,6 +400,7 @@ def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
     }, context_instance=RequestContext(request))
 
 
+@login_required
 def photos_batch_add(request, photoset_id=0):
     """
     params: request, photoset_id
@@ -488,6 +489,7 @@ def photos_batch_add(request, photoset_id=0):
              },
             context_instance=RequestContext(request))
 
+@login_required
 def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.html"):
     """ change multiple photos with one "save button" click """
     photo_set = get_object_or_404(PhotoSet, id=photoset_id)
