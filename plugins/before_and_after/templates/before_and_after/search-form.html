@@ -3,10 +3,10 @@
     {# form.category #}
     {# form.subcategory #}
     {# form.q #}
-      <select name="category" class="category-list" onchange="this.form.submit();">
+      <select name="category" class="category-list">
   <option value="">All Categories ({{ categories|length }})</option>
   {% for cat in categories %}
-    {% if request.GET.category == cat.pk|slugify %}
+    {% if request.GET.category == cat.pk|slugify or bna.category.pk|slugify == cat.pk|slugify %}
     <option selected value="{{ cat.pk }}">{{ cat.name }}</option>
     {% else %}
     <option value="{{ cat.pk }}">{{ cat.name }}</option>
@@ -14,10 +14,10 @@
   {% endfor %}
   </select>
 
-  <select name="subcategory" onchange="this.form.submit();">
-  <option value="">All Subcategories ({{ sub_categories|length }})</option>
+  <select name="subcategory">
+  <option value="">All Subcategories ({{ subcategories|length }})</option>
   {% for subcat in subcategories %}
-    {% if request.GET.subcategory == subcat.pk|slugify %}
+    {% if request.GET.subcategory == subcat.pk|slugify or bna.subcategory.pk|slugify == subcat.pk|slugify %}
     <option selected value="{{ subcat.pk }}">{{ subcat.name }}</option>
     {% else %}
     <option value="{{ subcat.pk }}">{{ subcat.name }}</option>
@@ -29,13 +29,4 @@
     
     <input type="submit" value="Search" />
     </form>
-    <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="/site_media/static/js/jquery_plugins/select-chain.js"></script>
-    <script type="text/javascript">
-        $('#id_category').selectChain({
-            target: $('#id_subcategory'),
-            url: '{% url before_and_after.subcategories %}',
-            type: 'get',
-        });
-    </script>
 </div>
