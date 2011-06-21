@@ -5,7 +5,7 @@
 {% load before_and_after_tags %}
 {% load forms_tags %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Before and After Gallery{% endblock %}
 
 {% block meta_keywords %}
     {% nowhitespace %}
@@ -22,24 +22,27 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ title }}</h1>
+    <h1>Before & After Gallery </h1>
     {% before_and_after_search %}
     <div class="bna-main-desc">
+    The Austin-Weston Center for Cosmetic Surgery serving Northern Virginia, Maryland and Washington DC invites you to learn more about the aesthetic plastic surgery procedures our board certified plastic surgeons offer to change your appearance.
+
+
         {{ description|safe }}
     </div>
     <div class="bna-categories-wrap">
         {% for category in categories %}
-            <div class="bna-category">
+            <div class="bna-category {% cycle "" "" "no-right" %}">
                 <h3>{{ category.name }}</h3>
                 {% if category.image %}
-                    <img src="{{ category.image|thumbnail:'220x120' }}">
+                    <img src="{{ category.image|thumbnail:'228x160' }}">
                 {% else %}
                     <img src="/path/to/default/image">
                 {% endif %}
                 <div class="bna-subcategories">
                     <ul>
                         {% for sub in category.subcategory_set.all %}
-                            <li><a href="{% url before_and_after.search %}?category={{ category.id }}&subcategory={{ sub.id }}">{{ sub.name }}</a></li>
+                            <li><a href="{% url before_and_after.search %}?category={{ category.id }}&subcategory={{ sub.id|safe }}">{{ sub.name|safe }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
