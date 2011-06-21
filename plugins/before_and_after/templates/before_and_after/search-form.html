@@ -1,8 +1,32 @@
 <div class="bna-search">
     <form class="search-form" action="{% url before_and_after.search %}" method="get">
-    {{ form.category }}
-    {{ form.subcategory }}
-    {{ form.q }}
+    {# form.category #}
+    {# form.subcategory #}
+    {# form.q #}
+      <select name="category" class="category-list" onchange="this.form.submit();">
+  <option value="">All Categories ({{ categories|length }})</option>
+  {% for cat in categories %}
+    {% if request.GET.category == cat.pk|slugify %}
+    <option selected value="{{ cat.pk }}">{{ cat.name }}</option>
+    {% else %}
+    <option value="{{ cat.pk }}">{{ cat.name }}</option>
+    {% endif %}
+  {% endfor %}
+  </select>
+
+  <select name="subcategory" onchange="this.form.submit();">
+  <option value="">All Subcategories ({{ sub_categories|length }})</option>
+  {% for subcat in subcategories %}
+    {% if request.GET.subcategory == subcat.pk|slugify %}
+    <option selected value="{{ subcat.pk }}">{{ subcat.name }}</option>
+    {% else %}
+    <option value="{{ subcat.pk }}">{{ subcat.name }}</option>
+    {% endif %}
+  {% endfor %}
+  </select>
+    
+    <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+    
     <input type="submit" value="Search" />
     </form>
     <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
