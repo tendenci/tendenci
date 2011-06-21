@@ -21,6 +21,8 @@ def search(request, template_name='before_and_after/search.html'):
     category = request.GET.get('category', None)
     subcategory = request.GET.get('subcategory', None)
     q = request.GET.get('q', None)
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     
     bnas = BeforeAndAfter.objects.search(query=q, user=request.user)
     
@@ -33,6 +35,8 @@ def search(request, template_name='before_and_after/search.html'):
     
     return render_to_response(template_name, 
         {
+            'categories': categories,
+            'subcategories': subcategories,
             'bnas': bnas,
             'category': category,
             'subcategory': subcategory,
@@ -79,10 +83,12 @@ def detail(request, id, template_name='before_and_after/detail.html'):
 
 def index(request, template_name='before_and_after/index.html'):
     categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
     
     return render_to_response(template_name, 
         {
-            'categories':categories,
+            'categories': categories,
+            'subcategories': subcategories,
             'title': get_setting('module', 'before_and_after', 'mainpagetitle'),
             'title_tag': get_setting('module', 'before_and_after', 'mainpagetitletag'),
             'description': get_setting('module', 'before_and_after', 'mainpagedescription'),
