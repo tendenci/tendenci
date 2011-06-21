@@ -35,6 +35,7 @@
 
 {% block body %}
 <div class="t">
+    {% before_and_after_search %}
     <div class="bna-breadcrumbs">
         {% if bna.category %}
             <h1><a href="{% url before_and_after.search %}?category={{ bna.category.pk}}">{{ bna.category.name }}</a></h1>
@@ -46,6 +47,7 @@
     <div class="bna-detail">
         <div class="photoset-wrap">
             <a href="{% url before_and_after.detail bna.pk %}?order={{ active_photoset.order|add:'-1' }}" class="left">&lsaquo;</a>
+            <div class="photoset-large-border">
             <div class="photoset-large">
                 {% if active_photoset %}
                     <img src="{{ active_photoset.before_photo|thumbnail:'280x500' }}" alt="Before - {{ active_photoset.description }}">
@@ -57,6 +59,7 @@
                 {% if active_photoset.description %}
                     <p>{{ active_photoset.description }}</p>
                 {% endif %}
+            </div>
             </div>
             <a href="{% url before_and_after.detail bna.pk %}?order={{ active_photoset.order|add:'1' }}" class="right">&rsaquo;</a>
             <div style="clear:both"></div>
@@ -70,6 +73,7 @@
         {% if other_photosets %}
             <div class="other-photosets-wrap">
                 <h2>More Photos</h2>
+                <div class="other-photosets-border">
                 <div class="other-photosets">
                     {% for set in other_photosets %}
                         <a href="{% url before_and_after.detail bna.pk %}?active={{ set.id }}">
@@ -80,6 +84,7 @@
                         </a>
                     {% endfor %}
                     <div style="clear:both"></div>
+                </div>
                 </div>
             </div>
         {% endif %}
