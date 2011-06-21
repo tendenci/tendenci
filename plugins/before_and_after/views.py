@@ -28,6 +28,7 @@ def search(request, template_name='before_and_after/search.html'):
     
     if category:
         category = get_object_or_404(Category, pk=category)
+        subcategories = subcategories.filter(category=category.pk)
         bnas = bnas.filter(category=category.pk)
         if subcategory:
             subcategory = get_object_or_404(Subcategory, pk=subcategory)
@@ -72,8 +73,13 @@ def detail(request, id, template_name='before_and_after/detail.html'):
     else:
         other_photosets = []
     
+    categories = Category.objects.all()
+    subcategories = Subcategory.objects.all()
+    
     return render_to_response(template_name,
         {
+            'categories': categories,
+            'subcategories': subcategories,
             'bna': bna,
             'active_photoset': active_photoset,
             'other_photosets': other_photosets,
