@@ -1,0 +1,89 @@
+{% extends "speakers/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load speaker_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+    {% nowhitespace %}
+        {{ speaker.name }}
+        {% if speaker.position %}
+            &nbsp;&ndash;&nbsp;{{ speaker.position }}
+        {% endif %}
+        {% if speaker.company %}
+            &nbsp;&ndash;&nbsp;{{ speaker.company }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        speaker {{ speaker.name }}
+        {% if speaker.position %}
+            {{ speaker.position }}
+        {% endif %}
+        {% if speaker.company %}
+            {{ speaker.company }}
+        {% endif %}
+        {% if speaker.tags %}
+            {{ speaker.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ speaker.name }}
+        {% if speaker.position %}
+            ,{{ speaker.position }}
+        {% endif %}
+        {% if speaker.company %}
+            ,{{ speaker.company }}
+        {% endif %}
+        {{ speaker.biography|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "speakers/media/css/speaker.css" %}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    <div class="view-speaker-member">
+        <div class="quick-options">
+            {% speaker_options request.user speaker %}
+        </div>
+        <div class="member-photo">
+            {% if speaker_member.professional_photo %}
+            <img src="{% url file speaker_member.professional_photo.pk %}128x128/" title="{{ speaker_member.name }}"  />
+            {% endif %}
+            <p>{{ speaker.name }}</p>
+            {%  if speaker.position %}
+            <p class="speaker-position">{{ speaker.position }}</p>
+            {% endif %}
+        </div>
+        <h1>
+            {{ speaker.name }}
+            {% if speaker.position %}
+                {{ speaker.position }}
+            {% endif %}
+            {% if speaker.company %}
+                {{ speaker.company }}
+            {% endif %}
+        </h1>
+        {% if speaker.biography %}
+        <p class="speaker-bio">
+            {{ speaker.biography|safe }}
+        </p>
+        {% endif %}
+        <div class="speaker-meta">
+            <a href="{% url speaker.search %}">&laquo;&nbsp;Search other speakers</a>
+        </div>
+    </div>
+</div>
+{% endblock body %}
