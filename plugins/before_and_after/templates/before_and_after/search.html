@@ -35,23 +35,23 @@
         {% with bna.object as bna %}
             <div class="bna-search-item">
                 <div class="bna-featured">
+                <a href="{{ bna.get_absolute_url }}">
                     {% if bna.featured %}
-                        <img src="{{ bna.featured.before_photo|thumbnail:'140x200'}}" alt="{{ bna.description }}">
-                        <img src="{{ bna.featured.after_photo|thumbnail:'140x200' }}" alt="{{ bna.description }}">
+                        <img src="{{ bna.featured.before_photo|thumbnail:'160x260'}}" alt="{{ bna.description }}">
+                        <img src="{{ bna.featured.after_photo|thumbnail:'160x260' }}" alt="{{ bna.description }}">
                     {% else %}
                         <img src="/path/to/default/image">
                         <img src="/path/to/default/image">
                     {% endif %}
+                </a>
                 </div>
                 <div class="bna-desc">
                     <h3><a href="{{ bna.get_absolute_url }}" title="{{ bna.title }}">{{ bna.title }}</a></h3>
                     <p>
-                        <b>Description</b><br>
-                        {% filter striptags|truncatewords:"60" %}
-                            {{ bna.description|safe }}
-                        {% endfilter %}
+                        <b>Description</b><br>                    
+                            {{ bna.description|safe|truncatewords:"12" }}
                     </p>
-                    <a href="{{ bna.get_absolute_url }}">Read More</a>
+                    <a class="read-more" href="{{ bna.get_absolute_url }}">Read More</a>
                 </div>
                 <div style="clear:both"></div>
             </div>
