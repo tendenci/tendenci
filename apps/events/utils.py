@@ -390,6 +390,9 @@ def add_registration(*args, **kwargs):
     event_price = args
     
     event_price = Decimal(str(event_price))
+    
+    #kwargs
+    admin_notes = kwargs.get('admin_notes', None)
 
     reg8n_attrs = {
         "event": event,
@@ -427,7 +430,7 @@ def add_registration(*args, **kwargs):
     created = True
     
     # create invoice
-    reg8n.save_invoice()
+    reg8n.save_invoice(admin_notes=admin_notes)
     return (reg8n, created)
 
 
