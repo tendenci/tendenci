@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
 from django.contrib.auth.models import User
 from datetime import datetime
+from decimal import Decimal
 
 from profiles.models import Profile
 from site_settings.utils import get_setting
@@ -716,3 +717,26 @@ def registration_has_started(event, pricing=None):
         )
 
     return any(reg_started)
+
+def clean_price(price, user):
+    """
+    Used to validate request.POST.price in the multi-register view.
+    amount is not validated if user is admin.
+    """
+    price_pk, price_type, amount = price.split('-')
+    price = RegConfPricing.objects.get(pk=price_pk)
+    amount = Decimal(str(amount))
+    
+    if price_type == 'early_price':
+        if amount != price.early_price and not is_admin(user):
+            raise ValueError("Invalid price amount")
+    elif price_type == 'regular_price':
+        if amount != price.regular_price and not is_admin(user):
+            raise ValueError("Invalid price amount")
+    elif price_type == 'late_price':
+        if amount != price.late_price and not is_admin(user):
+            raise ValueError("Invalid price amount")
+    else:
+        raise ValueError("Invalid price type: %s" % price_type)
+    
+    return price, price_pk, price_type, amount
