@@ -14,6 +14,12 @@
 {% endblock %}
 
 {% block body %}
+<style type="text/css">
+    .entry-edit {
+        float: right;
+    }
+</style>
+
 <div class="t">
 
     <div class="application-entry-wrap">
@@ -25,7 +31,8 @@
         {% endif %}
         
         
-        <div class="entry_dt">Submitted {{ entry.entry_time|date_short }}</div>
+        <div class="entry_dt">Submitted {{ entry.entry_time|date_short }} 
+            <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">Edit Entry</a></div>
 
         <div class="approval-status {{ entry.status_msg|lower }}">
             {{ entry.status_msg }}

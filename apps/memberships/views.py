@@ -589,6 +589,15 @@ def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
         form = EntryEditForm(request.POST, instance=entry)
         if form.is_valid():
             entry = form.save()
+
+            messages.add_message(
+                request, 
+                messages.INFO, 
+                'Entry Sucessfully Updated',
+            )
+
+            return redirect(reverse('membership.application_entries', args=[entry.pk]))
+
     else:
         form = EntryEditForm(instance=entry)
 
