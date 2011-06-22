@@ -638,10 +638,10 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         raise Http404
 
     # set up pricing
-    #try:
-    price, price_pk, price_type, amount = clean_price(request.POST['price'], request.user)
-    #except:
-    #    return multi_register_redirect(request, event, _('Please choose a price.'))
+    try:
+        price, price_pk, price_type, amount = clean_price(request.POST['price'], request.user)
+    except:
+        return multi_register_redirect(request, event, _('Please choose a price.'))
         
     # set the event price that will be used throughout the view
     event_price = amount
