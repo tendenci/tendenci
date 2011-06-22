@@ -74,16 +74,16 @@
 				    		{{ corp_memb.address }} {{ corp_memb.address2 }} <br />
 				    	{% endif %}
 				    	
-				    	{{ corp_memb.city }} {{ corp_memb.state }} 
-				    	{{ corp_memb.zip }} {{ corp_memb.country }}
+				    	{% if corp_memb.city %}{{ corp_memb.city }}{% endif %} {% if corp_memb.state %}{{ corp_memb.state }}{% endif %} 
+				    	{% if corp_memb.zip %}{{ corp_memb.zip }}{% endif %} {% if corp_memb.country %}{{ corp_memb.country }}{% endif %}
 				    	
 				    	
 			    	</div>
 			    	<div class="clear-left"></div>
 			    	
 			    	<div class="corpmember-left float-left">
-			    		<div><span class="label">Corporate Phone:</span> {{ corp_memb.phone }}</div>
-			    		<div><span class="label">Website:</span> {{ corp_memb.url|safe|urlize }}</div>
+			    		<div><span class="label">Corporate Phone:</span> {% if corp_memb.phone %}{{ corp_memb.phone }}{% endif %}</div>
+			    		<div><span class="label">Website:</span> {% if corp_memb.url %}{{ corp_memb.url|safe|urlize }}{% endif %}</div>
 			    		<div><span class="label">Member Type:</span> {{ corp_memb.corporate_membership_type.name }}
 			    		{% if corp_memb.invoice %}
 			    			- {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corp_memb.invoice.total }}
