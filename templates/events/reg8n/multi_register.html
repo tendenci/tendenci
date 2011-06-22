@@ -216,6 +216,14 @@
 		    				<input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
 						</div>
 		    			</noscript>
+                        
+                        {% if reg_form.amount_for_admin %}
+                            <div class="form-field">
+                                <div class="error">{{ reg_form.amount_for_admin.errors }}</div>
+								<div class="required">Reg Price Override</div>
+								<div class="field">{{ reg_form.amount_for_admin }}</div>
+                            </div>
+                        {% endif %}
 		    			
 		   				{% if reg_form.payment_method %}
 							<div class="form-field">
