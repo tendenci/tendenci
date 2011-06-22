@@ -16,6 +16,7 @@ from django.middleware.csrf import get_token as csrf_get_token
 from django.views.decorators.csrf import csrf_exempt
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save
+from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from files.utils import get_image
 from photos.cache import PHOTO_PRE_KEY
@@ -567,24 +568,16 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 def photoset_details(request, id, template_name="photos/photo-set/details.html"):
     """ View photos in photo set """
     
-    # check photo-set permissions
-    # photo_sets = PhotoSet.objects.search('id:%s' % id, user=request.user)
-    # if not photo_sets: raise Http404
-    # photo_set = photo_sets.best_match().object 
-    
-    # calling .object is a db query,
-    # might as well go straight to the database since it's just one entry. 
-    # if it doesn't match to anything we raise a 404 error.
-    
     photo_set = get_object_or_404(PhotoSet, id=id)
     if not has_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
+        
     
-    # get photos within photoset; newest ones first
-    # this doesn't seem to work. possibly a xapian issue. not tested in solr.
-    # photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by('-photo_pk')
-    
-    photos = photo_set.get_images(user=request.user).order_by('-photo_pk')
+    order = get_setting('module', 'photos', 'photoordering')
+    if order == 'descending':
+        photos = photo_set.get_images(user=request.user).order_by('-photo_pk')
+    else:
+        photos = photo_set.get_images(user=request.user).order_by('photo_pk')
     
     EventLog.objects.log(**{
         'event_id' : 991500,
