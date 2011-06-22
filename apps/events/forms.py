@@ -396,24 +396,7 @@ class RegistrationForm(forms.Form):
 
             self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
                 queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=False)
-
-    def clean_first_name(self):
-        data = self.cleaned_data['first_name']
-
-        # detect markup
-        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
-        markup = markup_pattern.search(data)
-        if markup:
-            raise forms.ValidationError("Markup is not allowed in the name field")
-
-        # detect URL and Email
-        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
-        pattern = re.compile(pattern_string, re.I and re.M)
-        domain_extension = pattern.search(data)
-        if domain_extension or "://" in data:
-            raise forms.ValidationError("URL's and Emails are not allowed in the name field")
-
-        return data
+                
 
 
 class RegistrantForm(forms.Form):
