@@ -1,0 +1,32 @@
+{% extends "memberships/base.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}Membership Application for {{ entry.name }}{% endblock %}
+{% block meta_description %}{{ entry.get_description }}{% endblock %}
+{% block meta_keywords %}{{ entry.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ entry.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<div class="entry-edit">
+    
+    <h1>{{ entry.app.name }} {% if entry.is_renewal %}Renewal{% else %}Submission{% endif %}</h1>
+
+    <form action="" method="post">
+    <div class="forms">
+        {% csrf_token %}
+        {{ form|styled_form }}
+        <input type="submit" value="Save Changes" />
+    </div>
+    </form>
+</div>
+</div>
+{% endblock %}
