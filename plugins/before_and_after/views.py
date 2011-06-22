@@ -25,6 +25,7 @@ def search(request, template_name='before_and_after/search.html'):
     subcategories = Subcategory.objects.all()
     
     bnas = BeforeAndAfter.objects.search(query=q, user=request.user)
+    bnas = bnas.order_by('-create_dt')
     
     if category:
         category = get_object_or_404(Category, pk=category)
