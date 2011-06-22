@@ -46,6 +46,10 @@ div.forms .form-field .field input[type="text"] {
 	color: #777;
 }
 
+div.forms .form-field .field input[readonly="readonly"] {
+	color: #AAA;
+}
+
 div.forms .form-field .field input[type="password"] {
 	padding: 3px;
 	font-size: 16px;
