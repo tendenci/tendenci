@@ -120,6 +120,14 @@
 
 .t .bna-desc a.read-more:hover {background-color: #5F3F30;}
 
+.t .pagination {text-align: right;}
+.t .pagination .prev,
+.t .pagination .next {display: none;}
+.t .pagination .page {font-size: 16px; padding: 2px 4px; margin-right: 4px; background-color: #C6BFB5; color: #4B3428;}
+.t .pagination a.page { text-decoration: none;}
+.t .pagination span.current,
+.t .pagination a.page:hover { color: #C6BFB5; background-color: #4B3428;}
+
 /* detail */
 
 .t .bna-detail {
