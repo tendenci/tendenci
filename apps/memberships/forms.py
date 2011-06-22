@@ -21,10 +21,9 @@ from django.core.files.storage import FileSystemStorage
 from tinymce.widgets import TinyMCE
 
 from perms.forms import TendenciBaseForm
-from models import MembershipType, Notice, App, AppEntry, AppField
+from models import MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry
 from fields import TypeExpMethodField, PriceInput
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from memberships.models import AppFieldEntry
 from memberships.utils import csv_to_dict
 
 from widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
@@ -61,6 +60,27 @@ type_exp_method_widgets = (
     forms.CheckboxInput(),
     forms.TextInput(),
 )
+
+CLASS_AND_WIDGET = {
+    'text': ('CharField', None),
+    'paragraph-text': ('CharField', 'django.forms.Textarea'),
+    'check-box': ('BooleanField', None),
+    'choose-from-list': ('ChoiceField', None),
+    'multi-select': ('MultipleChoiceField', 'django.forms.CheckboxSelectMultiple'),
+    'email-field': ('EmailField', None),
+    'file-uploader': ('FileField', None),
+    'date': ('DateField', 'django.forms.extras.SelectDateWidget'),
+    'date-time': ('DateTimeField', None),
+    'membership-type': ('ChoiceField', 'django.forms.RadioSelect'),
+    'payment-method': ('ChoiceField', None),
+    'first-name': ('CharField', None),
+    'last-name': ('CharField', None),
+    'email': ('EmailField', None),
+    'header': ('CharField', 'memberships.widgets.Header'),
+    'description': ('CharField', 'memberships.widgets.Description'),
+    'horizontal-rule': ('CharField', 'memberships.widgets.Description'),
+    'corporate_membership_id': ('ChoiceField', None),
+}
 
 def get_suggestions(entry):
     """
@@ -156,12 +176,7 @@ class MemberApproveForm(forms.Form):
         self.fields['users'].choices = suggested_users
         self.fields['users'].initial = 0
 
-        if self.entry.is_renewal:
-            # only one choice in choices; selected by default
-            # self.fields['users'].choices = [(entry.user.pk, entry.user)]
-            # self.fields['users'].initial = entry.user.pk
-            # self.fields['users'].widget = forms.MultipleHiddenInput
-            
+        if self.entry.is_renewal:            
             self.fields['users'] = CharField(
                 label='',
                 initial=entry.user.pk, 
@@ -451,6 +466,91 @@ class AppFieldForm(forms.ModelForm):
         if self.instance.field_type == 'payment-method':
             self.fields['field_type'] = CharField(label="Type", widget=HiddenInput)
 
+
+class EntryEditForm(forms.ModelForm):
+
+    class Meta:
+        model = AppEntry
+        exclude = (
+            'entry_time',
+            'allow_anonymous_view',
+            'allow_anonymous_edit',
+            'allow_user_view',
+            'allow_user_edit',
+            'allow_member_view',
+            'allow_member_edit',
+            'creator_username',
+            'owner',
+            'owner_username',
+            'status',
+            'status_detail'
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(EntryEditForm, self).__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+        entry_fields = AppFieldEntry.objects.filter(entry=instance)
+
+        is_corporate = instance.membership_type.corporatemembershiptype_set.exists()
+
+        for entry_field in entry_fields:
+            field_type = entry_field.field.field_type  # shorten
+            field_key = "%s.%s" % (entry_field.field.field_type, entry_field.pk)
+
+            field_class, field_widget = CLASS_AND_WIDGET[field_type]
+            field_class = getattr(forms, field_class)
+
+            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            field_args = {}
+
+            field_args['label'] = entry_field.field.label
+            field_args['initial'] = entry_field.value
+            field_args['required'] = False
+
+            if "max_length" in arg_names:
+                field_args["max_length"] = FIELD_MAX_LENGTH
+
+            if "choices" in arg_names:
+
+                if field_type == 'membership-type':
+                    choices = [t.name for t in instance.app.membership_types.all()]
+                    choices_with_price = ['%s $%s' % (t.name, t.price) for t in instance.app.membership_types.all()]
+                    field_args["choices"] = zip(choices, choices_with_price)
+
+                    if is_corporate:  # membership type; read-only
+                        del field_args["choices"]
+                        field_class = getattr(forms, 'CharField') 
+                        field_args["widget"] = forms.TextInput(attrs={'readonly':'readonly'})
+
+                elif field_type == 'corporate_membership_id':
+                    choices = [c.name for c in CorporateMembership.objects.all()]
+                    field_args["choices"] = zip(choices, choices)
+                else:
+                    choices = entry_field.field.choices.split(',')
+                    choices = [c.strip() for c in choices]
+                    field_args["choices"] = zip(choices, choices)
+
+            self.fields[field_key] = field_class(**field_args)
+
+    def save(self, *args, **kwargs):
+        super(EntryEditForm, self).save(*args, **kwargs)
+
+        for key, value in self.cleaned_data.items():
+            pk = key.split('.')[1]
+
+            if 'corporate_membership' in key:
+                corp_memb = CorporateMembership.objects.get(name=value)  # get corp. via name
+                membership_type_value = corp_memb.corporate_membership_type.membership_type.name
+
+            if 'membership-type' in key:
+                membership_type_entry_pk = pk
+
+            AppFieldEntry.objects.filter(pk=pk).update(value=value)
+
+        AppFieldEntry.objects.filter(pk=membership_type_entry_pk).update(value=membership_type_value)
+
+
+
 class AppEntryForm(forms.ModelForm):
 
     class Meta:
@@ -479,8 +579,8 @@ class AppEntryForm(forms.ModelForm):
         self.app = app
         self.form_fields = app.fields.visible()
         self.types_field = app.membership_types
-        self.user = kwargs.pop('user') or AnonymousUser
-        self.corporate_membership = kwargs.pop('corporate_membership') # id; not object
+        self.user = kwargs.pop('user', None) or AnonymousUser
+        self.corporate_membership = kwargs.pop('corporate_membership', None) # id; not object
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
@@ -693,6 +793,9 @@ class CSVForm(forms.Form):
 
             for app_field in app_fields:
                 for csv_row in csv:
+
+                    if slugify(app_field.label) == 'membership-type':
+                        continue  # skip membership type
 
                     self.fields[app_field.label] = ChoiceField(**{
                         'label':app_field.label,
