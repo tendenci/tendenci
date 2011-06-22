@@ -393,10 +393,12 @@ class RegistrationForm(forms.Form):
                 
 #            if not is_admin(user):
 #                payment_methods = payment_methods.filter(admin_only=False)
-
+            
             self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
                 queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=False)
                 
+            if user and is_admin(user):
+                self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial = event_price)
 
 
 class RegistrantForm(forms.Form):
@@ -505,3 +507,4 @@ class MessageAddForm(forms.ModelForm):
     
     def __init__(self, event_id=None, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
+

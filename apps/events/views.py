@@ -34,7 +34,8 @@ from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
 from events.utils import get_event_spots_taken, update_event_spots_taken
-from perms.utils import has_perm, get_notice_recipients, update_perms_and_save, get_administrators
+from perms.utils import has_perm, get_notice_recipients, \
+    update_perms_and_save, get_administrators, is_admin
 from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
@@ -745,13 +746,22 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if request.method == 'POST':
         if 'submit' in request.POST:
             if reg_form.is_valid() and registrant.is_valid():
+                
+                # override event_price to price specified by admin
+                admin_notes = None
+                if is_admin(request.user):
+                    if event_price != reg_form.cleaned_data['amount_for_admin']:
+                        admin_notes = "Price has been overriden for this registration"
+                    event_price = reg_form.cleaned_data['amount_for_admin']
+                    
                 reg8n, reg8n_created = add_registration(
                     request, 
                     event, 
                     reg_form, 
                     registrant,
                     price,
-                    event_price
+                    event_price,
+                    admin_notes = admin_notes
                 )
                 
                 site_label = get_setting('site', 'global', 'sitedisplayname')
@@ -760,7 +770,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 
                 is_credit_card_payment = reg8n.payment_method and \
                 (reg8n.payment_method.label).lower() == 'credit card'
-                
                 
                 if reg8n_created:
                     # update the spots taken on this event
