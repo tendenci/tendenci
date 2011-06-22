@@ -540,14 +540,22 @@ class EntryEditForm(forms.ModelForm):
 
             if 'corporate_membership' in key:
                 corp_memb = CorporateMembership.objects.get(name=value)  # get corp. via name
-                membership_type_value = corp_memb.corporate_membership_type.membership_type.name
+                membership_type = corp_memb.corporate_membership_type.membership_type
 
             if 'membership-type' in key:
                 membership_type_entry_pk = pk
 
             AppFieldEntry.objects.filter(pk=pk).update(value=value)
 
-        AppFieldEntry.objects.filter(pk=membership_type_entry_pk).update(value=membership_type_value)
+        # update membership entry_field
+        AppFieldEntry.objects.filter(pk=membership_type_entry_pk).update(value=membership_type.name)
+
+        # update membership.membership_type relationship
+        if self.instance.membership:
+            self.instance.membership.membership_type = membership_type
+            self.instance.save()
+
+        return self.instance
 
 
 
