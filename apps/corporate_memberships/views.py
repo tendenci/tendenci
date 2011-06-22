@@ -1,12 +1,15 @@
+import os
 from datetime import datetime, date
 #from django.conf import settings
 #from django.core.urlresolvers import reverse
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.conf import settings
+from django.contrib.auth.models import User
 
 from base.http import Http403
 from perms.utils import has_perm, is_admin
@@ -14,21 +17,31 @@ from site_settings.utils import get_setting
 
 from event_logs.models import EventLog
 
-from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,CorporateMembershipType,
+from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
+                                          CorporateMembershipType,
                                           CorporateMembershipRep, 
                                           CorpMembRenewEntry, 
-                                          IndivMembRenewEntry)
-from corporate_memberships.forms import CorpMembForm, CorpMembRepForm, RosterSearchForm, CorpMembRenewForm
+                                          IndivMembRenewEntry,
+                                          CorpFieldEntry,
+                                          AuthorizedDomain)
+from corporate_memberships.forms import (CorpMembForm, 
+                                         CorpMembRepForm, 
+                                         RosterSearchForm, 
+                                         CorpMembRenewForm,
+                                         CSVForm)
 from corporate_memberships.utils import (get_corporate_membership_type_choices,
                                          get_payment_method_choices,
                                          corp_memb_inv_add, 
                                          dues_rep_emails_list,
-                                         corp_memb_update_perms)
+                                         corp_memb_update_perms,
+                                         validate_import_file,
+                                         new_corp_mems_from_csv)
 #from memberships.models import MembershipType
 from memberships.models import Membership
 
 from perms.utils import get_notice_recipients
 from base.utils import send_email_notification
+from files.models import File
 
 
 def add(request, slug, template="corporate_memberships/add.html"):
@@ -737,5 +750,212 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
             context_instance=RequestContext(request))
     
     
+@login_required
+def corp_import(request, step=None):
+    """
+    Corporate membership import.
+    """
+    if not is_admin(request.user):
+        raise Http403
 
+    if not step:  # start from beginning
+        return redirect('corp_memb_import_upload_file')
+    
+    request.session.set_expiry(0)  # expire when browser is closed
+    step_numeral, step_name = step
 
+    if step_numeral == 1:  # upload-file
+        template_name = 'corporate_memberships/import/upload_file.html'
+        err_msg = ""
+        if request.method == 'POST':
+            form = CSVForm(request.POST, request.FILES, step=step)
+            if form.is_valid():
+                cleaned_data = form.save(step=step)
+                corp_app = cleaned_data['corp_app']
+
+                # check import requirements
+                saved_files = File.objects.save_files_for_instance(request, CorporateMembership)
+                file_path = os.path.join(settings.MEDIA_ROOT, str(saved_files[0].file))
+                is_valid_import, missing_required_fields = validate_import_file(file_path)
+                
+                if is_valid_import:
+                    # store session info
+                    request.session['corp_memb.import.corp_app'] = corp_app
+                    request.session['corp_memb.import.file_path'] = file_path
+                    request.session['corp_memb.import.update_option'] = cleaned_data['update_option']
+    
+                    # move to next wizard page
+                    return redirect('corp_memb_import_map_fields')
+                else:
+                    err_msg = 'The CSV File is missing required field(s): %s' % (', '.join(missing_required_fields))
+        else:  # if not POST
+            form = CSVForm(step=step)
+
+        return render_to_response(template_name, {
+            'form':form,
+            'datetime':datetime,
+            'err_msg': err_msg
+            }, context_instance=RequestContext(request))
+        
+    if step_numeral == 2:  # map-fields
+        template_name = 'corporate_memberships/import/map_fields.html'
+        file_path = request.session.get('corp_memb.import.file_path')
+        corp_app = request.session.get('corp_memb.import.corp_app')
+        update_option = request.session.get('corp_memb.import.update_option')
+
+        if request.method == 'POST':
+            form = CSVForm(
+                request.POST,
+                request.FILES,
+                step=step,
+                corp_app=corp_app,
+                file_path=file_path
+            )
+
+            if form.is_valid():
+                cleaned_data = form.save(step=step)
+                file_path = request.session.get('corp_memb.import.file_path')
+
+                corp_membs = new_corp_mems_from_csv(request, file_path, corp_app, cleaned_data, update_option)
+
+                request.session['corp_memb.import.corp_membs'] = corp_membs
+                request.session['corp_memb.import.fields'] = cleaned_data
+
+                return redirect('corp_memb_import_preview')
+
+        else:  # if not POST
+            form = CSVForm(step=step, corp_app=corp_app, file_path=file_path)
+
+        return render_to_response(template_name, {
+            'form':form,
+            'datetime':datetime,
+            }, context_instance=RequestContext(request))
+        
+    if step_numeral == 3:  # preview
+        template_name = 'corporate_memberships/import/preview.html'
+        corp_membs = request.session.get('corp_memb.import.corp_membs')
+        update_option = request.session.get('corp_memb.import.update_option')
+
+        added, skipped, updated, updated_override = [], [], [], []
+        for corp_memb in corp_membs:
+            if corp_memb.pk:
+                if update_option == 'skip': 
+                    skipped.append(corp_memb)
+                else:
+                    if update_option == 'update':
+                        updated.append(corp_memb)
+                    else:
+                        updated_override.append(corp_memb)
+            else: 
+                added.append(corp_memb)
+
+        return render_to_response(template_name, {
+        'corp_membs':corp_membs,
+        'added': added,
+        'update_option': update_option,
+        'skipped': skipped,
+        'updated': updated,
+        'updated_override': updated_override,
+        'datetime': datetime,
+        }, context_instance=RequestContext(request))
+        
+    if step_numeral == 4:  # confirm
+        template_name = 'corporate_memberships/import/confirm.html'
+
+        corp_app = request.session.get('corp_memb.import.corp_app')
+        corp_membs = request.session.get('corp_memb.import.corp_membs')
+        fields_dict = request.session.get('corp_memb.import.fields')
+        update_option = request.session.get('corp_memb.import.update_option')
+
+        if not all([corp_app, corp_membs, fields_dict]):
+            return redirect('corp_memb_import_upload_file')
+
+        added, skipped, updated, updated_override = [], [], [], []
+        field_keys = [item[0] for item in fields_dict.items() if item[1]]
+        
+        for corp_memb in corp_membs:
+            if not corp_memb.pk: 
+                corp_memb.save()  # create pk
+                
+                added.append(corp_memb)
+            else:
+                if update_option == 'skip': 
+                    skipped.append(corp_memb)
+                else:
+                    if update_option == 'update':
+                        updated.append(corp_memb)
+                    else:
+                        updated_override.append(corp_memb)
+                
+            # take care of authorized_domains and dues_rep
+            # and add custom fields to the field entry
+            for field_key in field_keys:
+                if not hasattr(corp_memb, field_key):
+                    if field_key in ['authorized_domains', 'dues_rep']:
+                        if field_key == 'authorized_domains':
+                            domains = (corp_memb.cm[field_key]).split(',')
+                            domains = [domain.strip() for domain in domains]
+                            for domain in domains:
+                                # check if this domain already exists, if not, add it
+                                try:
+                                    ad = AuthorizedDomain.objects.get(
+                                                           corporate_membership=corp_memb,
+                                                           name= domain
+                                                                      )
+                                except AuthorizedDomain.DoesNotExist:
+                                    AuthorizedDomain.objects.create(
+                                             corporate_membership=corp_memb,
+                                             name= domain      
+                                                                )
+                        if field_key == 'dues_rep':
+                            usernames = (corp_memb.cm[field_key]).split(',')
+                            usernames = [username.strip() for username in usernames]
+                            for username in usernames:
+                                try:
+                                    tmp_user = User.objects.get(username=username)
+                                except User.DoesNotExist:
+                                    continue
+                                try:
+                                    rep = CorporateMembershipRep.objects.get(
+                                                            corporate_membership=corp_memb,
+                                                            user=tmp_user,
+                                                                )
+                                    if not rep.is_dues_rep:
+                                        rep.is_dues_rep = True
+                                        rep.save()
+                                except CorporateMembershipRep.DoesNotExist:
+                                    CorporateMembershipRep.objects.create(
+                                                                corporate_membership=corp_memb,
+                                                                user=tmp_user,
+                                                                is_dues_rep=True
+                                                                          )
+                            
+                    else:
+                        # field_key should have the pattern field_id
+                        field_id = field_key.replace('field_', '')
+                        try:
+                            field_id = int(field_id)
+                        except:
+                            continue # skip if field doesn't exist
+                        try:
+                            corp_field = CorpField.objects.get(pk=field_id)
+                        except CorpField.DoesNotExist:
+                            continue    # skip if field doesn't exist
+                        
+                        CorpFieldEntry.objects.create(
+                                    corporate_membership=corp_memb,
+                                    field=corp_field,
+                                    value=corp_memb.cm[field_key]               
+                                                      )
+
+        return render_to_response(template_name, {
+            'corp_membs': corp_membs,
+            'update_option': update_option,
+            'added': added,
+            'skipped': skipped,
+            'updated': updated,
+            'updated_override': updated_override,
+            'datetime': datetime,
+        }, context_instance=RequestContext(request))
+    
+    

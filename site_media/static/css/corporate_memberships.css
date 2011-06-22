@@ -66,4 +66,20 @@ div.forms div.form-field input.timepicker{
 .pending-info-box{
 	background-color: #F7FFAF;
 }
+
+/* import */
+#corp-import-wrap .form-field {
+    background-color: #F7F7F7;
+    height: 25px;
+    width: 425px;
+}
+#corp-import-wrap .form-field .label {
+    border-bottom: 1px solid #EEEEEE;
+    padding: 5px 10px 5px 0;
+    text-align: right;
+}
+#corp-import-wrap .form-field .label, #corp-import-wrap .form-field .field {
+    float: left;
+    width: 200px;
+}
 	
