@@ -7,33 +7,38 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 {% endblock %}
 
 {% block body %}
  {% corpmemb_nav request.user %}
-<div id="import-wrap" class="finished">
+<div id="corp-import-wrap" class="finished">
 
-	<h1>Corporate Membership Import - Finished!</h1>
-	<p class="timestamp">Step 4/4 &middot; {{ datetime.now }}</p>
-
-	<p class="msg">We attempted <em>{{ corp_membs|length}}</em> import{{ corp_membs|length|pluralize }}; 
-	<em>{{ added|length }}</em> added,
-	and 
-	{% if skipped %}
-		<em>{{ skipped|length }}</em> skipped
-	{% else %}
-		{% if updated %}
-			<em>{{ updated|length }}</em>  updated (only updated the blank fields)
-		{% else %}
-			<em>{{ updated_override|length }}</em> updated (override)
-		{% endif %}
-	{% endif %}
+	<h1>Corporate Membership Import</h1>
+	<div id="corp-import">
+		<p class="import-timestamp">{{ datetime.now }}</p>
+	    <h3 class="corp-import-step">Step 4/4 - Finished!</h3>
+		 <div class="clear-right"></div>   
 	
-	.</p>
-	<br />
-	<p class="link"><a href="{% url corp_memb.search %}">Go to Search &raquo;</a></p>
-	<p class="link"><a href="{% url corp_import %}">More Import &raquo;</a></p>
+		<p class="msg">We attempted <em>{{ corp_membs|length}}</em> import{{ corp_membs|length|pluralize }}; 
+		<em>{{ added|length }}</em> added,
+		and 
+		{% if skipped %}
+			<em>{{ skipped|length }}</em> skipped
+		{% else %}
+			{% if updated %}
+				<em>{{ updated|length }}</em>  updated (for the blank fields)
+			{% else %}
+				<em>{{ updated_override|length }}</em> updated (override)
+			{% endif %}
+		{% endif %}
+		
+		.</p>
+	
+		<p class="link"><a href="{% url corp_memb.search %}">Go to Search &raquo;</a></p>
+		<p class="link"><a href="{% url corp_import %}">More Import &raquo;</a></p>
+		
+	</div>
 
 </div>
 {% endblock %}

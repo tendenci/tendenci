@@ -82,4 +82,19 @@ div.forms div.form-field input.timepicker{
     float: left;
     width: 200px;
 }
+ .corp-import-step{
+ 	padding: 1em 0 0.5em 0;
+ }
+ .import-timestamp{
+ 	float: right;
+ }
+ #corp-import{	
+ 	width: 80%;	
+ }
+ .corp-import-upload{
+ 	border-top: 1px dashed #ccc;
+ }
+#corp-import em{
+	font-weight: bold;
+ }
 	
