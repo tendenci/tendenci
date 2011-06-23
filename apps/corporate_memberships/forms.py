@@ -4,6 +4,9 @@ from datetime import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.core.files.storage import FileSystemStorage
+from django.forms.fields import ChoiceField
+#from django.template.defaultfilters import slugify
+from django.utils.encoding import smart_str
 
 #from captcha.fields import CaptchaField
 from tinymce.widgets import TinyMCE
@@ -19,10 +22,12 @@ from corporate_memberships.utils import (get_corpapp_default_fields_list,
                                          update_auth_domains, 
                                          get_payment_method_choices,
                                          get_indiv_membs_choices,
-                                         get_corporate_membership_type_choices)
+                                         get_corporate_membership_type_choices,
+                                         csv_to_dict)
 from corporate_memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from base.fields import SplitDateTimeField
 from perms.utils import is_admin
+from payments.models import PaymentMethod
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -79,6 +84,7 @@ class CorpAppForm(forms.ModelForm):
                   'corp_memb_type',
                   'authentication_method',
                   'memb_app',
+                  'payment_methods',
                   'description',
                   'confirmation_text',
                   'notes',
@@ -219,6 +225,11 @@ class CorpMembForm(forms.ModelForm):
             if corp_membs:
                 raise forms.ValidationError(_("This secret code is already taken. Please use a different one."))
         return self.cleaned_data['secret_code']
+    
+    def clean_payment_method(self):
+        if self.cleaned_data['payment_method']:
+            return PaymentMethod.objects.get(pk=int(self.cleaned_data['payment_method']))
+        return self.cleaned_data['payment_method']
         
     def save(self, user,  **kwargs):
         """
@@ -341,11 +352,122 @@ class CorpMembRenewForm(forms.ModelForm):
         self.fields['payment_method'].initial = corporate_membership.payment_method
         #self.fields['payment_method'].choices = get_payment_method_choices(user)
     
-    
-        
-    
-        
-        
-        
+
+class CSVForm(forms.Form):
+    """
+    Map CSV import to Membership Application.
+    Create Membership Entry on save() method.
+    """
+    def __init__(self, *args, **kwargs):
+        """
+        Dynamically create fields using the membership
+        application chosen.  The choices provided to these
+        dynamic fields are the csv import columns.
+        """
+        step_numeral, step_name = kwargs.pop('step', (None, None))
+        corp_app = kwargs.pop('corp_app', '')
+        file_path = kwargs.pop('file_path', '')
+
+        super(CSVForm, self).__init__(*args, **kwargs)
+
+        if step_numeral == 1:
+            """
+            Basic Form: Application & File Uploader
+            """
             
+            self.fields['corp_app'] = forms.ModelChoiceField(
+                label=_('Corp Application'), queryset=CorpApp.objects.all())
+            
+            self.fields['update_option'] = forms.CharField(widget=forms.RadioSelect(
+                                                choices=(('skip','Skip'),
+                                                         ('update','Update Blank Fields'),
+                                                        ('override','Override All Fields'),)), 
+                                                initial='skip', 
+                                                label=_('Select an Option for the Existing Records:'))
+
+            self.fields['csv'] = forms.FileField(label=_("CSV File"))
+            
+            
+        if step_numeral == 2:
+            """
+            Basic Form + Mapping Fields
+            """
+
+            # file to make field-mapping form
+            csv = csv_to_dict(file_path)
+
+            # choices list
+            choices = csv[0].keys()
+
+            # make tuples; sort tuples (case-insensitive)
+            choice_tuples = [(c,c) for c in csv[0].keys()]
+
+            choice_tuples.insert(0, ('',''))  # insert blank option
+            choice_tuples = sorted(choice_tuples, key=lambda c: c[0].lower())
+
+            app_fields = CorpField.objects.filter(corp_app=corp_app)
+            required_fields = ['name', 'corporate_membership_type']
+            for field in app_fields:
+                if field.field_type not in ['section_break', 'page_break']:
+                    if field.field_name:
+                        field_key = field.field_name
+                    else:
+                        field_key = "field_%s" % field.id
+                    is_required = False
+                    if field_key in required_fields:
+                        is_required = True
+                    self.fields[field_key] = ChoiceField(**{
+                                                'label':field.label,
+                                                'choices': choice_tuples,
+                                                'required': is_required,
+                                                })
+                    for choice in choices:
+                        if (field.label).lower() == choice.lower() or field_key.lower() == choice.lower():
+                            self.fields[field_key].initial = choice
+                    
+
+            extra_fields = (('secret_code', 'Secret Code'),
+                            ('join_dt', 'Join Date'),
+                            ('renew_dt', 'Renew Date'),
+                            ('expiration_dt', 'Expiration Date'),
+                            ('approved','Approved'),
+                            ('dues_rep','Dues Representative'),
+                            ('status', 'Status'),
+                            ('status_detail', 'Status Detail'))
+            #corp_memb_field_names = [smart_str(field.name) for field in CorporateMembership._meta.fields]
+            for key, label in extra_fields:
+                if key not in self.fields.keys():
+                    self.fields[key] = ChoiceField(**{
+                                            'label':label,
+                                            'choices': choice_tuples,
+                                            'required': False,
+                                            })
+                    for choice in choices:
+                        if label.lower() == choice.lower() or key.lower() == choice.lower():
+                            self.fields[key].initial = choice
+                    
+
+
+    def save(self, *args, **kwargs):
+        """
+        Loop through the dynamic fields and create a corporate membership record.
+        """
+        step_numeral, step_name = kwargs.pop('step', (None, None))
+
+        if step_numeral == 1:
+            """
+            Basic Form: Application & File Uploader
+            """
+            return self.cleaned_data
+        if step_numeral == 2:
+            """
+            Basic Form + Mapping Fields
+            """
+            return self.cleaned_data
+
+        if step_numeral == 3:
+            pass  # end-user is previewing
+
+
+
         

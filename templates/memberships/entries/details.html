@@ -2,6 +2,9 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load perm_tags %}
+
+{% is_admin user as admin %}
 
 {% block title %}Membership Application for {{ entry.name }}{% endblock %}
 {% block meta_description %}{{ entry.get_description }}{% endblock %}
@@ -14,6 +17,12 @@
 {% endblock %}
 
 {% block body %}
+<style type="text/css">
+    .entry-edit {
+        float: right;
+    }
+</style>
+
 <div class="t">
 
     <div class="application-entry-wrap">
@@ -23,9 +32,12 @@
         {% else %}
         <h1>{{ entry.app.name }} Submission</h1>
         {% endif %}
-        
-        
-        <div class="entry_dt">Submitted {{ entry.entry_time|date_short }}</div>
+
+        <div class="entry_dt">Submitted {{ entry.entry_time|date_short }} 
+            {% if admin %}
+            <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">Edit Entry</a>
+            {% endif %}
+        </div>
 
         <div class="approval-status {{ entry.status_msg|lower }}">
             {{ entry.status_msg }}

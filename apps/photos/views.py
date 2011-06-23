@@ -13,12 +13,13 @@ from django.forms.models import modelformset_factory
 from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
 from django.middleware.csrf import get_token as csrf_get_token
-
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save
+from site_settings.utils import get_setting
 from event_logs.models import EventLog
-
 from photos.utils import dynamic_image
+from files.utils import get_image
+from photos.cache import PHOTO_PRE_KEY
 from photos.search_indexes import PhotoSetIndex
 from photos.models import Image, Pool, PhotoSet, AlbumCover
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
@@ -107,6 +108,7 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         if photo_next: photo_next_url = reverse("photo", args= [photo_next.id])  
 
         photo_sets = photo.photoset.all()
+        set_id = photo_sets[0].id
 
     # "is me" variable
     is_me = photo.member == request.user
@@ -125,30 +127,29 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         "is_me": is_me,
     }, context_instance=RequestContext(request))
 
-def photo_size(request, id=None, size='', crop=False, download=False):
+def photo_size(request, id, size, crop=False, quality=90, download=False):
     """
     Renders image and returns response
     Does not use template
     Saves resized image within cache system
     Returns 404 if if image rendering fails
     """
-
-    if id and size:
-        photo = get_object_or_404(Image, id=id)
-        size = [int(s) for s in size.split('x')]
+    
+    photo = get_object_or_404(Image, id=id)
+    size = [int(s) for s in size.split('x')]
 
     # check permissions
     if not has_perm(request.user,'photologue.view_photo',photo):
         raise Http403
 
-    if download: attachment = 'attachment;'
-    else: attachment = ''
-
-    if crop: crop = True
-
+    if download: 
+        attachment = 'attachment;'
+    else: 
+        attachment = ''
+    
     # gets resized image from cache or rebuild
-    image = dynamic_image(photo, size, crop)
-
+    image = get_image(photo.image, size, PHOTO_PRE_KEY, crop=crop, quality=quality, unique_key=str(photo.pk))
+    
     # if image not rendered; quit
     if not image: raise Http404
 
@@ -412,13 +413,12 @@ def photos_batch_add(request, photoset_id=0):
     on http request:
         photoset_id is passed via url
     """
-
+    
     # photoset permission required to add photos
     if not has_perm(request.user,'photos.add_photoset'):
         raise Http403
 
     if request.method == 'POST':
-
         for field_name in request.FILES:
             uploaded_file = request.FILES[field_name]
 
@@ -475,7 +475,6 @@ def photos_batch_add(request, photoset_id=0):
                 return HttpResponse("photo is not valid", mimetype="text/plain")
 
     else:
-
         if not photoset_id:
             HttpResponseRedirect(reverse('photoset_latest'))
 
@@ -569,24 +568,16 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 def photoset_details(request, id, template_name="photos/photo-set/details.html"):
     """ View photos in photo set """
     
-    # check photo-set permissions
-    # photo_sets = PhotoSet.objects.search('id:%s' % id, user=request.user)
-    # if not photo_sets: raise Http404
-    # photo_set = photo_sets.best_match().object 
-    
-    # calling .object is a db query,
-    # might as well go straight to the database since it's just one entry. 
-    # if it doesn't match to anything we raise a 404 error.
-    
     photo_set = get_object_or_404(PhotoSet, id=id)
     if not has_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
+        
     
-    # get photos within photoset; newest ones first
-    # this doesn't seem to work. possibly a xapian issue. not tested in solr.
-    # photos = Image.objects.search('set_id:%s' % photo_set.pk, user=request.user).order_by('-photo_pk')
-    
-    photos = photo_set.get_images(user=request.user).order_by('-photo_pk')
+    order = get_setting('module', 'photos', 'photoordering')
+    if order == 'descending':
+        photos = photo_set.get_images(user=request.user).order_by('-photo_pk')
+    else:
+        photos = photo_set.get_images(user=request.user).order_by('photo_pk')
     
     EventLog.objects.log(**{
         'event_id' : 991500,

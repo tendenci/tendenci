@@ -1,0 +1,82 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load corporate_memberships_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}Import Corporate Memberships from CSV file{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+
+	<style type="text/css">
+
+		table {
+			margin-top: 5px;
+			white-space: nowrap;
+			border: 1px solid silver;
+		}
+
+		tr.header {
+			background-color: #DDD;
+			text-align: left;
+		}
+
+		tr.even {
+			background-color: #EEE;
+			border: 1px solid silver;
+			border-top: 0;
+			border-bottom: 0;
+		}
+
+		tr td {
+			padding: 10px;
+		}
+
+	</style>
+
+{% endblock %}
+
+{% block body %}
+ {% corpmemb_nav request.user %}
+<div id="import-wrap" class="preview">
+
+	<h1>Corporate Membership Import - Preview</h1>
+
+	<p class="timestamp">Step 3/4 &middot; {{ datetime.now }}</p>
+
+	<p class="msg"><em>{{ corp_membs|length}}</em> import{{ corp_membs|length|pluralize }}; 
+	<em>{{ added|length }}</em> will be added, 
+	and {% if skipped %}
+		<em>{{ skipped|length }}</em> will be skipped
+	{% else %}
+		{% if updated %}
+			<em>{{ updated|length }}</em> will be updated (only update the blank fields)
+		{% else %}
+			<em>{{ updated_override|length }}</em> will be updated (override)
+		{% endif %}
+	{% endif %}.
+	<em><a title="Looks good!" href="{% url corp_memb_import_confirm %}">Import Now &rarr;</a></em></p>
+
+	<table>
+		<tr class="header">
+			<td></td>
+			<td>Name</td>
+			<td>Type</td>
+			<td>Join Date</td>
+			<td>Expiration Date</td>
+		</tr>
+
+	{% for corp_memb in corp_membs|slice:":25" %}
+		<tr class="{% cycle 'odd' 'even' as rowcolors %}">
+			<td>{{ forloop.counter }}</td>
+			<td><div>{{ corp_memb.name }}</div></td>
+			<td><div>{{ corp_memb.corporate_membership_type.name }}</div></td>
+			<td><div>{{ corp_memb.join_dt|date:"M d, Y" }}</div></td>
+			<td><div>{{ corp_memb.expiration_dt|date:"M d, Y" }}</div></td>
+		</tr>
+	{% endfor %}
+	</table>
+
+</div>
+{% endblock %}

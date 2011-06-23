@@ -21,6 +21,7 @@ from corporate_memberships.managers import CorporateMembershipManager
 from perms.utils import is_admin
 #from site_settings.utils import get_setting
 from user_groups.models import GroupMembership
+from payments.models import PaymentMethod
 
 from base.utils import send_email_notification
 
@@ -231,7 +232,8 @@ class CorporateMembership(TendenciBaseModel):
     approved = models.BooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
-    payment_method = models.CharField(_("Payment Method"), max_length=50)
+    #payment_method = models.CharField(_("Payment Method"), max_length=50)
+    payment_method = models.ForeignKey(PaymentMethod, verbose_name=_("Payment Method"), null=True)
     
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     
@@ -629,7 +631,8 @@ class CorporateMembershipArchive(TendenciBaseModel):
     approved = models.BooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
     approved_denied_user = models.ForeignKey(User, null=True)
-    payment_method = models.CharField(_("Payment Method"), max_length=50)
+    #payment_method = models.CharField(_("Payment Method"), max_length=50)
+    payment_method = models.ForeignKey(PaymentMethod, verbose_name=_("Payment Method"))
 
     corp_memb_create_dt = models.DateTimeField()
     corp_memb_update_dt = models.DateTimeField()
@@ -723,6 +726,7 @@ class CorpApp(TendenciBaseModel):
     
     memb_app = models.OneToOneField(App, help_text=_("App for individual memberships."), 
                                     related_name='corp_app', verbose_name=_("Membership Application")) 
+    payment_methods = models.ManyToManyField(PaymentMethod, verbose_name="Payment Methods")
    
     #use_captcha = models.BooleanField(_("Use Captcha"), default=1)
     #require_login = models.BooleanField(_("Require User Login"), default=0)

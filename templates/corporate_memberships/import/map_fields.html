@@ -1,0 +1,27 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+
+{% block title %}Import Corporate Memberships from CSV file{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+{% endblock %}
+
+{% block body %}
+ {% corpmemb_nav request.user %}
+<div id="corp-import-wrap">
+    
+    <h1>Corporate Membership Import - Map Fields</h1>
+	<p class="timestamp">Step 2/4 &middot; {{ datetime.now }}</p>
+
+
+    <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
+    {{ form|styled_form }}
+    <input type='submit' value='Submit'>
+    </form>
+</div>
+{% endblock %}
