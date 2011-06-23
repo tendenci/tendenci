@@ -1,8 +1,4 @@
 {% extends page.template %}
-{% load page_tags %}
-{% load tagging_tags %}
-{% load category_tags %}
-{% load base_filters %}
 
 {% block title %}{{ page.get_title }}{% endblock %}
 {% block meta_description %}{{ page.get_description }}{% endblock %}
@@ -14,75 +10,14 @@
 {% endblock %}
 
 {% block body %}
-{% tags_for_object page as tags %}
-
 <div class="t">
-
     <div class="page-wrap">
 
 		{% if page.title %}
         <h1>{{ page.title }}</h1> 
 		{% endif %}
-
         <div class="content">{{ page.content|safe }}</div>
-        <div class="meta">
-			<div class="categories">
-				{% get_category_for_object page as category %}
-				{% if category %}
-					Category:&nbsp;<a href="{% url page.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
-				{% endif %}
-				{% get_sub_category_for_object page as sub_category %}
-				{% if sub_category %}
-					Sub Category:&nbsp;<a href="{% url page.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
-				{% endif %}				
-			</div>
-			
-			<div class="tags">
-				{% if tags %}
-					Tags: 
-					{% for tag in tags %}
-						<a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>
-					{% endfor %}
-				{% endif %}
-			</div>
-
-        </div>
-
-        <div class="view-options">
-            <div class="quick-options">
-				{% page_options request.user page %}
-            </div>
-        </div>
-
-	    <!-- delete-page form -->
-	    <form name="page-delete" method="POST" action="{% url page.delete page.pk %}">{% csrf_token %}
-	        <input type="hidden" name="action" value="delete">
-	    </form>
-
+        {% include "pages/meta.html" %}
     </div>
-
 </div>
-{% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript">
-		$(document).ready(function(){
-
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_page = confirm("Permenantly delete {% firstof MODULE_PAGES_LABEL 'Page' %}?");	// confirm
-				if(delete_page) $(this).parents('.page-wrap').find('form[name="page-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-		var iconrow = new dropdown({
-			container:	'more-options-wrap',
-			trigger:	'more-options-trigger',
-			target:		'more-options-target'
-		});
-	</script>
 {% endblock %}

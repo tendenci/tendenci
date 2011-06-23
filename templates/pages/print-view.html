@@ -1,18 +1,17 @@
-{% extends "pages/base-print.html" %}
-{% load page_tags %}
+{% extends "base-print.html" %}
 {% load base_filters %}
 
 {% block title %}{{ page.get_title }}{% endblock %}
 {% block meta_description %}{{ page.get_description }}{% endblock %}
 {% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ page.get_canonical_url }}" />{% endblock %}
+
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
 {% endblock %}
 
 {% block body %}
-
 <div class="t-print">
 
 	<div class='hide-this'>
@@ -25,12 +24,9 @@
 	</div>
 
     <div class="page-wrap">
-
+        <p>{{SITE_GLOBAL_SITEURL}}{{ page.get_absolute_url }}</p>
         <h2>{{ page.title }}</h2>
         <div class="content">{{ page.content|safe }}</div>
-        <div class="meta">
-            <div class="submitted">Submitted on {{ page.create_dt|date:"long" }} by {{ page.creator }}</div>
-        </div>
     </div>
 
 </div>
