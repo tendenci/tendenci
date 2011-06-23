@@ -1291,7 +1291,7 @@ def registrant_details(request, id=0, hash='', template_name='events/registrants
         raise Http403
 
 
-def registration_confirmation(request, id=0, registation_id=0, hash='', 
+def registration_confirmation(request, id=0, reg8n_id=0, hash='', 
     template_name='events/reg8n/register-confirm.html'):
     """ Registration confirmation """
 
@@ -1299,11 +1299,11 @@ def registration_confirmation(request, id=0, registation_id=0, hash='',
     registrants_count = 1
     registrant_hash = hash
 
-    if registation_id:
+    if reg8n_id:
         try:
             registration = Registration.objects.get(
                 event=event,
-                pk=registation_id,
+                pk=reg8n_id,
             )
     
             # check permission
