@@ -92,7 +92,7 @@ def user_upload_preview(request, id, template_name="imports/users_preview.html")
     
 @login_required
 def user_upload_process(request, id, template_name="imports/users_process.html"):
-    if not is_admin(request.user):raise Http403   # admin only page
+    if not is_admin(request.user): raise Http403   # admin only page
 
     id = str(id)
     import_dict = get_user_import_settings(request, id)
@@ -108,14 +108,15 @@ def user_upload_process(request, id, template_name="imports/users_process.html")
     #reset group - delete all members in the group
     if import_dict['clear_group_membership'] and import_dict['group']:
         GroupMembership.objects.filter(group=import_dict['group']).delete()
-    
-    #import_dict['next_starting_point'] = 0
 
     d = request.session[id]
-    d.update({'is_completed': False,
-              'count_insert': 0,
-              'count_update': 0,
-              'total_done':0})
+    d.update({
+        'is_completed': False,
+        'count_insert': 0,
+        'count_update': 0,
+        'total_done':0
+    })
+
     request.session[id] = d
     d = None
     

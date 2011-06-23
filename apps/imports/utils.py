@@ -4,7 +4,7 @@ import uuid
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
-from django.db.models.fields import AutoField
+from django.db.models.fields import AutoField, FieldDoesNotExist
 from django.utils.encoding import smart_str
 
 import xlrd
@@ -12,6 +12,7 @@ from xlwt import Workbook, XFStyle
 
 from user_groups.models import Group, GroupMembership
 from profiles.models import Profile
+
 
 # number rows to process per request
 ROWS_TO_PROCESS = 10 
@@ -292,13 +293,10 @@ def do_user_import(request, user, user_object_dict, setting_dict):
     """
         the real work is here - do the insert or update
     """
-    
-    if not user:
-        user = User()
-        insert = True
-    else:
-        insert = False
-    override = setting_dict['override'] # if True, update all fields, otherwise, update blank field
+
+    insert = not bool(user)  # insert or update
+    user = user or User()  # existing or new user
+    override = setting_dict['override']  # update ALL fields
 
     # insert/update user
     for field in user_field_names:
@@ -311,44 +309,47 @@ def do_user_import(request, user, user_object_dict, setting_dict):
                 # fill out the blank field only
                 if getattr(user, field) == '':
                     setattr(user, field, user_object_dict[field])
-                    
+
     if insert:
-        if user_object_dict.has_key('username') and user_object_dict['username']:
+        if 'username' in user_object_dict:  # set username
             user.username = user_object_dict['username']
-            
-        # generate the unique username
+        # generate if not username
         get_unique_username(user)
-        
-    if user_object_dict.has_key('password') and user_object_dict['password'] and (override or insert):
-        # override the password, then hash the password
-        #user.password = user_object_dict['password']
+
+    if 'password' in user_object_dict and (insert or override):
         user.set_password(user_object_dict['password'])
-        
+
     if not user.password:
-        #user.password = User.objects.make_random_password(length=8)
         user.set_password(User.objects.make_random_password(length=8))
-            
-    if setting_dict['interactive']:
-        user.is_active = 1
-    else:
-        user.is_active = 0
-   
+
+    user.is_active = bool(setting_dict['interactive'])
+
+    for key, value in user.__dict__.items():
+
+        try:
+            max_length = User._meta.get_field_by_name(key)[0].max_length
+        except FieldDoesNotExist as e:
+            max_length = None
+
+        if max_length:  # truncate per max_length field attribute
+            setattr(user, key, value[:max_length])
+
     if insert:
         user.save(force_insert=True)
     else:
         user.save(force_update=True)
-    
-    # insert/update profile
-    try:
+
+    try:  # get or create
         profile = user.get_profile()
     except Profile.DoesNotExist:
         profile = Profile.objects.create(user=user, 
-                           creator=request.user, 
-                           creator_username=request.user.username,
-                           owner=request.user, 
-                           owner_username=request.user.username, 
-                           email=user.email)
-        
+           creator=request.user, 
+           creator_username=request.user.username,
+           owner=request.user, 
+           owner_username=request.user.username, 
+           email=user.email
+        )
+
     for field in profile_field_names:
         if user_object_dict.has_key(field):
 

@@ -32,43 +32,43 @@
 <script text="text/javascript">
 $(document).ready(function(){
 
-    var myurl = "{% url import.user_upload_subprocess id %}";
-    var retval;
-    var i = 0;
-    var doc_h;
-    var completed = false;
-  	while(!completed){
-	    $.ajax({
-		    type: "GET",
-		    url: myurl, 
-		    async: false,
-		    success: function(data){
-		    	data = data.replace(/^\s+|\s+$/g, '');
-		    	if (i == 0){
+    var the_loop = function(){
+	    var myurl = "{% url import.user_upload_subprocess id %}";
+	    var retval;
+	    var i = 0;
+	    var doc_h;
+	    var completed = false;
+
+		$.ajax({
+			type: "GET",
+			url: myurl, 
+			async: true,
+			success: function(data){
+				data = data.replace(/^\s+|\s+$/g, '');
+				if (i == 0){
 					$(".results").html(data);
-		    	}
-		    	else{
-		    		$('.loading-icon').remove();
-		    		$(".results").append(data);
-		    	}
-		    	
-		    	//doc_h = document.body.clientHeight;
-		    	//window.scrollTo(0, doc_h);
-		    	
-		    	if (data == ''){ 
+				}
+				else{
+					$('.loading-icon').remove();
+					$(".results").append(data);
+				}
+				
+				if (data == ''){ 
 			    	completed = true;
-			    	//$('.loading-icon').remove();
+			    	$('.loading-icon').remove();
 			    }
-	    	},
-	    	error: function(errmsg){
-	    		$('.loading-icon').remove();
-	    		$(".results").append(errmsg);
-	    		completed = true;
-	    		
-	    	}
-	    });
-	   	i++;
-  	}
+			},
+			error: function(errmsg){
+				$('.loading-icon').remove();
+				$(".results").append(errmsg);
+				completed = true;
+			}
+		});
+		i++;
+		t = setTimeout(the_loop, 1000);
+	}
+
+	the_loop();
     
 }); 
 
