@@ -66,7 +66,7 @@ def search(request, template_name="invoices/search.html"):
     else:
         if request.user.is_authenticated():
             from django.db.models import Q
-            invoices = invoices.objects.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
+            invoices = invoices.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
         else:
             raise Http403
     
