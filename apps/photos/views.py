@@ -17,7 +17,6 @@ from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
-from photos.utils import dynamic_image
 from files.utils import get_image
 from photos.cache import PHOTO_PRE_KEY
 from photos.search_indexes import PhotoSetIndex
