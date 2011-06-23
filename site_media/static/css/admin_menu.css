@@ -4,7 +4,7 @@ html { margin-top: 30px !important; padding-bottom: 26px !important;  }
 	#admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 12px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
 	#admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
 	#admin-bar a { display: block; padding: 8px 8px 6px; font-size: 12px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #6A120D; text-decoration: none; border-right: 1px solid #4B0D09; color: #ebebeb; }
-	#admin-bar h4 a { background: none; border: 0; }
+	#admin-bar h4 a { background: none; border: 0; font-size: 14px;}
 	#admin-bar li.app, #admin-bar h4 { font-size: 12px; line-height: 14px; margin: 0; border-bottom: 1px solid #4B0D09; }
 	#admin-bar li li a { background: #810D00; border-bottom: 1px dashed #4B0D09; border-right: none; padding: 4px 8px 4px;}
 	#admin-bar li li.app {clear: left; }
@@ -15,21 +15,21 @@ html { margin-top: 30px !important; padding-bottom: 26px !important;  }
     #admin-bar .app-list ul li a {border: none;}
 	#admin-bar .app-list ul li {float: right;}
 	#admin-bar .app-list ul li.app {float: left;}
-	#admin-bar h4 {padding: 0 0 8px; font-size: 14px; font-weight: bold;}
+	#admin-bar h4 {padding: 0 0 4px; font-size: 14px; font-weight: bold; font-family: Verdana, Geneva, sans-serif;}
 	#admin-bar li a.admin-logo {padding: 2px 8px 0;}
 	
 	#admin-bar .sub { background: #810D00; position: absolute; left: -999em; display: none; }
 	#admin-bar li:hover .sub { left: auto; display: block; }
 	#admin-bar li .sub .column { float: left; padding: 10px; }
 	#admin-bar li .sub .column .column.app-list { padding: 0 5px 0 0; }
-	#admin-bar li ul { width: 180px; }
+	#admin-bar li ul { min-width: 180px; }
 	#admin-bar li li { float: none; background: #6A120D; }
 	
 	#admin-bar li.right { float: right; }
 	#admin-bar li.right.search ul { width: auto; }
 	#admin-bar input#admin-search-bar { margin: 0 4px 0 0; line-height:14px; }
 	#admin-bar li #admin-search-box {margin: 3px 0 0 0; padding: 0 4px 0 0; border-right: 1px solid #4B0D09; }
-	#admin-bar #admin-search-box input#admin-search-submit {border: 1px solid #eee; color: #eee; background-color: #6A120D;}
+	#admin-bar #admin-search-box input#admin-search-submit {border: 1px solid #eee; color: #eee; background-color: #6A120D;font-family: Verdana, Geneva, sans-serif;}
 	
 	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #6A120D; color: #ebebeb; height: 26px; z-index: 99999 !important; }
 	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
