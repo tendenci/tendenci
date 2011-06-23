@@ -469,6 +469,7 @@ class Registration(models.Model):
 
     def save_invoice(self, *args, **kwargs):
         status_detail = kwargs.get('status_detail', 'tendered')
+        admin_notes = kwargs.get('admin_notes', None)
         
         object_type = ContentType.objects.get(app_label=self._meta.app_label, 
             model=self._meta.module_name)
@@ -494,6 +495,7 @@ class Registration(models.Model):
         invoice.tender_date = datetime.now()
         invoice.due_date = datetime.now()
         invoice.ship_date = datetime.now()
+        invoice.admin_notes = admin_notes
         invoice.save()
 
         self.invoice = invoice

@@ -19,7 +19,7 @@ from base.http import Http403
 from memberships.models import App, AppEntry, Membership, \
     MembershipType, Notice, AppField, AppFieldEntry
 from memberships.forms import AppForm, AppEntryForm, \
-    AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm
+    AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm, EntryEditForm
 from memberships.utils import new_mems_from_csv, is_import_valid
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
@@ -559,6 +559,47 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
     else:
         form = MemberApproveForm(entry)
+
+    return render_to_response(template_name, {
+        'entry': entry,
+        'form': form,
+        }, context_instance=RequestContext(request))
+
+@login_required
+def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
+    """
+    Edit membership application entry page.
+    """
+    entry = get_object_or_404(AppEntry, id=id)  # exists
+
+    if not is_admin(request.user):
+        raise Http303  # not permitted
+
+    # log entry view
+    EventLog.objects.log(**{
+        'event_id' : 1085000,
+        'event_data': '%s (%d) viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
+        'description': '%s viewed' % entry._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': entry,
+    })
+
+    if request.method == "POST":
+        form = EntryEditForm(request.POST, instance=entry)
+        if form.is_valid():
+            entry = form.save()
+
+            messages.add_message(
+                request, 
+                messages.INFO, 
+                'Entry Sucessfully Updated',
+            )
+
+            return redirect(reverse('membership.application_entries', args=[entry.pk]))
+
+    else:
+        form = EntryEditForm(instance=entry)
 
     return render_to_response(template_name, {
         'entry': entry,

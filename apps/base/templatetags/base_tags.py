@@ -402,3 +402,49 @@ def nowhitespace(parser, token):
     nodelist = parser.parse(('endnowhitespace',))
     parser.delete_first_token()
     return NoWhiteSpaceNode(nodelist)
+    
+    
+class PhotoImageURL(Node):
+    def __init__(self, photo, *args, **kwargs):
+        self.size = kwargs.get("size", "100x100")
+        self.crop = kwargs.get("crop", False)
+        self.quality = kwargs.get("quality", 90)
+        self.photo = Variable(photo)
+
+    def render(self, context):
+        photo = self.photo.resolve(context)
+        args = [photo.pk, self.size]
+        if self.crop:
+            args.append("crop")
+        if self.quality:
+            args.append(self.quality)
+        url = reverse('photo.size', args=args)
+        return url
+
+
+@register.tag
+def photo_image_url(parser, token):
+    """
+    Example:
+        {% list_photos as photos user=user limit=3 %}
+        {% for photo in photos %}
+            <img src="{% photo_image_url photo size=100x100 crop=True %}" />
+        {% endfor %}
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    photo = bits[1]
+
+    for bit in bits:
+        if "size=" in bit:
+            kwargs["size"] = bit.split("=")[1]
+        if "crop=" in bit:
+            kwargs["crop"] = bool(bit.split("=")[1])
+        if "quality=" in bit:
+            kwargs["quality"] = bit.split("=")[1]
+
+    if len(bits) < 1:
+        message = "'%s' tag requires more than 1 argument" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    return PhotoImageURL(photo, *args, **kwargs)
