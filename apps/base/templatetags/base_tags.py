@@ -472,11 +472,11 @@ def do_non_hash_tags_for_object(parser, token):
     
     Usage::
     
-       {% tags_for_object [object] as [varname] %}
+       {% tags_strip_hash [object] as [varname] %}
     
     Example::
     
-        {% tags_for_object foo_object as tag_list %}
+        {% tags_strip_hash foo_object as tag_list %}
     """
     bits = token.contents.split()
     if len(bits) != 4:
@@ -487,16 +487,16 @@ def do_non_hash_tags_for_object(parser, token):
     
 def do_hash_tags_for_object(parser, token):
     """
-    Retrieves a list of ``Tag`` objects that DO NOT start with '#'
+    Retrieves a list of ``Tag`` objects that START with '#'
     associated with an object and stores them in a context variable.
     
     Usage::
     
-       {% tags_for_object [object] as [varname] %}
+       {% tags_hash_tags[object] as [varname] %}
     
     Example::
     
-        {% tags_for_object foo_object as tag_list %}
+        {% tags_hash_tags foo_object as tag_list %}
     """
     bits = token.contents.split()
     if len(bits) != 4:
