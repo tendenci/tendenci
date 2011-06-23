@@ -1,4 +1,4 @@
-{% extends "corporate_memberships/base.html" %}
+{% extends "corporate_memberships/base-wide.html" %}
 {% load corporate_memberships_tags %}
 {% load base_tags %}
 {% load base_filters %}
@@ -15,13 +15,17 @@
  {% corpmemb_nav request.user %}
 <div id="corp-import-wrap">
     
-    <h1>Corporate Membership Import - Map Fields</h1>
-	<p class="timestamp">Step 2/4 &middot; {{ datetime.now }}</p>
-
-
-    <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
-    {{ form|styled_form }}
-    <input type='submit' value='Submit'>
-    </form>
+    <h1>Corporate Membership Import </h1>
+    <div id="corp-import">
+	    <p class="import-timestamp">{{ datetime.now }}</p>
+	    <h3 class="corp-import-step">Step 2/4 - Map Fields</h3>
+		 <div class="clear-right"></div>   
+	
+	
+	    <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
+	    {{ form|styled_form }}
+	    <input type='submit' value='Submit'>
+	    </form>
+    </div>
 </div>
 {% endblock %}
