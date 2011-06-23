@@ -1,6 +1,6 @@
 import random
 
-from django.template import Node, Variable
+from django.template import Node, Variable, Context, loader
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AnonymousUser
@@ -137,4 +137,15 @@ class ListNode(Node):
                 objects = [item.object for item in items[:limit]]
 
         context[self.context_var] = objects
+        
+        if 'template' in self.kwargs:
+            try:
+                template = Variable(self.kwargs['template'])
+                template = unicode(template.resolve(context))
+            except:
+                template = self.kwargs['template']
+                
+            t = loader.get_template(template)
+            return t.render(Context(context, autoescape=context.autoescape))
+            
         return ""
