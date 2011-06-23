@@ -1,0 +1,37 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}Import Corporate Memberships from CSV file{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+ <style>
+ #corp-import-wrap ul{
+ 	list-style: none;
+ 	margin-bottom: 1em;
+ }
+ .errorlist{
+ 	color: #990000;
+ }
+ 
+ </style>
+{% endblock %}
+
+{% block body %}
+ {% corpmemb_nav request.user %}
+<div id="corp-import-wrap">
+    
+    <h1>Corporate Membership Import - Upload File</h1>
+    <p class="timestamp">Step 1/4 &middot; {{ datetime.now }}</p>
+	{% if err_msg %}
+	<div style="color:red;">{{ err_msg }}</div>
+	{% endif %}
+    <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
+    {{ form.as_p }}
+    <input type='submit' value='Submit'>
+    </form>
+</div>
+{% endblock %}

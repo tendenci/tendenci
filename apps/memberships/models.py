@@ -753,12 +753,11 @@ class AppEntry(TendenciBaseModel):
     @property
     def membership_type(self):
         """Get MembershipType object"""
-        # TODO: don't like this; would prefer object column in field_entry
-        # TODO: Prone to error; We're depending on a string membership type name
+        # Getting membership_type object via membership_type name
+        # Membership names are assumed to be unique.  :/
         try:
             entry_field = self.fields.get(field__field_type="membership-type")
-            membership_type_class = entry_field.field.content_type.model_class()
-            return membership_type_class.objects.get(name__exact=entry_field.value.strip())
+            return MembershipType.objects.get(name__exact=entry_field.value.strip())
         except:
             return None
 

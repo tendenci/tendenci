@@ -2,6 +2,7 @@ import re
 import calendar
 from datetime import datetime
 from datetime import date, timedelta
+from decimal import Decimal
 
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -31,9 +32,10 @@ from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     Reg8nConfPricingEditForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
-from events.utils import registration_has_started, get_pricing
+from events.utils import registration_has_started, get_pricing, clean_price
 from events.utils import get_event_spots_taken, update_event_spots_taken
-from perms.utils import has_perm, get_notice_recipients, update_perms_and_save, get_administrators
+from perms.utils import has_perm, get_notice_recipients, \
+    update_perms_and_save, get_administrators, is_admin
 from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
@@ -618,6 +620,17 @@ def multi_register_redirect(request, event, msg):
 
 
 def multi_register(request, event_id=0, template_name="events/reg8n/multi_register.html"):
+    """
+    This view has 2 POST states. Instead of a GET and a POST.
+    Attempting to access this view via GET will redirect to the event 
+    page. The 2 POST states both require 'pricing' in request.POST.
+    The first POST state comes from the event page where the price 
+    selections take place.
+    It is identified by the presence of 'from_price_form' in request.POST.
+    The second POST state comes from the page rendered by this form.
+    It is identified by the presense of 'submit' in request.POST and 
+    absence of 'from_price_form'.
+    """
     event = get_object_or_404(Event, pk=event_id)
 
     # check if event allows registration
@@ -626,33 +639,20 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         raise Http404
 
     # set up pricing
-    price_pk, price_type, amount = None, None, None
-    if 'price' in request.POST:
-        try:
-            price_pk, price_type, amount = request.POST['price'].split('-')
-        except:
-            return multi_register_redirect(request, event, _('Please choose a price.'))
-    else:
-        return multi_register_redirect(request, event, _('Please choose a price.')) 
-        
-    # test for an float amount
     try:
-        amount = float(amount)
-    except ValueError:
+        price, price_pk, price_type, amount = clean_price(request.POST['price'], request.user)
+    except:
         return multi_register_redirect(request, event, _('Please choose a price.'))
-
-    # get price instance
-    if price_pk.isdigit():
-        price = RegConfPricing.objects.get(pk=price_pk)
-    else:
-        return multi_register_redirect(request, event, _('Please choose a price.'))           
-
+        
+    # set the event price that will be used throughout the view
+    event_price = amount
+    
     # get all pricing
     pricing = RegConfPricing.objects.filter(
         reg_conf=event.registration_configuration
     )
-
-    # check is this person is qualified to see this pricing
+    
+    # check is this person is qualified to see this pricing and event_price
     qualified_pricing = get_pricing(request.user, event, pricing=pricing)
     qualifies = False
     for q_price in qualified_pricing:
@@ -682,9 +682,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         spots_taken = get_event_spots_taken(event)
         if spots_taken > limit:
             return multi_register_redirect(request, event, _('Registration is full.'))
-
-    # set the event price that will be used throughout the view
-    event_price = amount
 
     # start the form set factory    
     RegistrantFormSet = formset_factory(
@@ -749,13 +746,22 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if request.method == 'POST':
         if 'submit' in request.POST:
             if reg_form.is_valid() and registrant.is_valid():
+                
+                # override event_price to price specified by admin
+                admin_notes = None
+                if is_admin(request.user):
+                    if event_price != reg_form.cleaned_data['amount_for_admin']:
+                        admin_notes = "Price has been overriden for this registration"
+                    event_price = reg_form.cleaned_data['amount_for_admin']
+                    
                 reg8n, reg8n_created = add_registration(
                     request, 
                     event, 
                     reg_form, 
                     registrant,
                     price,
-                    event_price
+                    event_price,
+                    admin_notes = admin_notes
                 )
                 
                 site_label = get_setting('site', 'global', 'sitedisplayname')
@@ -764,7 +770,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 
                 is_credit_card_payment = reg8n.payment_method and \
                 (reg8n.payment_method.label).lower() == 'credit card'
-                
                 
                 if reg8n_created:
                     # update the spots taken on this event
@@ -821,7 +826,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     # if not free event, store price in the list for each registrant
     price_list = []
     count = 0
-    total_price = 0.00
+    total_price = Decimal(str(0.00))
     free_event = event_price <= 0
 
     for form in registrant.forms:

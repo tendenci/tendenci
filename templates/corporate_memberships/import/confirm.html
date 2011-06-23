@@ -1,0 +1,39 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}Import Corporate Memberships from CSV file{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+ {% corpmemb_nav request.user %}
+<div id="import-wrap" class="finished">
+
+	<h1>Corporate Membership Import - Finished!</h1>
+	<p class="timestamp">Step 4/4 &middot; {{ datetime.now }}</p>
+
+	<p class="msg">We attempted <em>{{ corp_membs|length}}</em> import{{ corp_membs|length|pluralize }}; 
+	<em>{{ added|length }}</em> added,
+	and 
+	{% if skipped %}
+		<em>{{ skipped|length }}</em> skipped
+	{% else %}
+		{% if updated %}
+			<em>{{ updated|length }}</em>  updated (only updated the blank fields)
+		{% else %}
+			<em>{{ updated_override|length }}</em> updated (override)
+		{% endif %}
+	{% endif %}
+	
+	.</p>
+	<br />
+	<p class="link"><a href="{% url corp_memb.search %}">Go to Search &raquo;</a></p>
+	<p class="link"><a href="{% url corp_import %}">More Import &raquo;</a></p>
+
+</div>
+{% endblock %}

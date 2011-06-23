@@ -8,6 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 
+from tinymce.widgets import TinyMCE
 from forms_builder.forms.models import FormEntry, Field, Form
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from perms.forms import TendenciBaseForm
@@ -88,6 +89,16 @@ class FormForForm(forms.ModelForm):
 class FormAdminForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('draft','Draft'),('published','Published'),))
+
+    intro = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Form._meta.app_label, 
+        'storme_model':Form._meta.module_name.lower()}))
+
+    response = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Form._meta.app_label, 
+        'storme_model':Form._meta.module_name.lower()}))
 
     class Meta:
         model = Form

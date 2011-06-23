@@ -304,6 +304,16 @@ class Reg8nEditForm(BetterModelForm):
           })
         ]
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(Reg8nEditForm, self).__init__(*args, **kwargs)
+        
+#        if not is_admin(user):
+#            qs = PaymentMethod.objects.filter(admin_only=0)
+#        else:
+#            qs = PaymentMethod.objects.all()
+#        self.fields['payment_method'].queryset = qs
+            
 
 class Reg8nForm(forms.Form):
     """
@@ -380,27 +390,15 @@ class RegistrationForm(forms.Form):
                     'label': 'Credit Card'
                 }
                 payment_methods = reg_conf.payment_method.exclude(**filters)
-
+                
+#            if not is_admin(user):
+#                payment_methods = payment_methods.filter(admin_only=False)
+            
             self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
                 queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=False)
-
-    def clean_first_name(self):
-        data = self.cleaned_data['first_name']
-
-        # detect markup
-        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
-        markup = markup_pattern.search(data)
-        if markup:
-            raise forms.ValidationError("Markup is not allowed in the name field")
-
-        # detect URL and Email
-        pattern_string = '\w\.(com|net|org|co|cc|ru|ca|ly|gov)$'
-        pattern = re.compile(pattern_string, re.I and re.M)
-        domain_extension = pattern.search(data)
-        if domain_extension or "://" in data:
-            raise forms.ValidationError("URL's and Emails are not allowed in the name field")
-
-        return data
+                
+            if user and is_admin(user):
+                self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial = event_price)
 
 
 class RegistrantForm(forms.Form):
@@ -509,3 +507,4 @@ class MessageAddForm(forms.ModelForm):
     
     def __init__(self, event_id=None, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
+

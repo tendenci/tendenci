@@ -259,6 +259,11 @@
 	    	</a>
 	    {% endfor %}
     {% endif %}
+    {% if request.user.is_admin %}
+        {% if registrant.registration.invoice.admin_notes %}
+            admin notes: {{ registrant.registration.invoice.admin_notes }}
+        {% endif %}
+    {% endif %}
     </td>
     <td colspan="5">
 
