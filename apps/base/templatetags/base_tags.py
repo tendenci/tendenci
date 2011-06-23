@@ -10,7 +10,7 @@ from django.core.cache import cache
 
 from base.utils import url_exists
 from profiles.models import Profile
-from tagging.templatetags.tagging_tags import TagsForObjectNode, do_tags_for_object
+from tagging.templatetags.tagging_tags import TagsForObjectNode
 from tagging.models import Tag
 
 register = Library()
