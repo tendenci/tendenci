@@ -7,7 +7,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 
 	<style type="text/css">
 
@@ -32,18 +32,28 @@
 		tr td {
 			padding: 10px;
 		}
-
+		.action-insert{
+			color: red;
+		}
+		.action-update{
+			color: green;
+		}
+		.action-skip{
+			color: purple;
+		}
 	</style>
 
 {% endblock %}
 
 {% block body %}
  {% corpmemb_nav request.user %}
-<div id="import-wrap" class="preview">
+<div id="corp-import-wrap" class="preview">
 
-	<h1>Corporate Membership Import - Preview</h1>
-
-	<p class="timestamp">Step 3/4 &middot; {{ datetime.now }}</p>
+	<h1>Corporate Membership Import</h1>
+	<div id="corp-import">
+		<p class="import-timestamp">{{ datetime.now }}</p>
+	    <h3 class="corp-import-step">Step 3/4 - Preview</h3>
+		 <div class="clear-right"></div>  
 
 	<p class="msg"><em>{{ corp_membs|length}}</em> import{{ corp_membs|length|pluralize }}; 
 	<em>{{ added|length }}</em> will be added, 
@@ -51,7 +61,7 @@
 		<em>{{ skipped|length }}</em> will be skipped
 	{% else %}
 		{% if updated %}
-			<em>{{ updated|length }}</em> will be updated (only update the blank fields)
+			<em>{{ updated|length }}</em> will be updated (for the blank fields)
 		{% else %}
 			<em>{{ updated_override|length }}</em> will be updated (override)
 		{% endif %}
@@ -65,6 +75,7 @@
 			<td>Type</td>
 			<td>Join Date</td>
 			<td>Expiration Date</td>
+			<td>Action to Take</td>
 		</tr>
 
 	{% for corp_memb in corp_membs|slice:":25" %}
@@ -74,9 +85,11 @@
 			<td><div>{{ corp_memb.corporate_membership_type.name }}</div></td>
 			<td><div>{{ corp_memb.join_dt|date:"M d, Y" }}</div></td>
 			<td><div>{{ corp_memb.expiration_dt|date:"M d, Y" }}</div></td>
+			<td><div class="{% if corp_memb.pk %}{%if update_option == 'skip' %}action-skip{% else %}action-update{% endif %}{% else %}action-insert{% endif %}">
+			{% if corp_memb.pk %}{%if update_option == 'skip' %}Skip{% else %}Update{% endif %}{% else %}Insert{% endif %}</div></td>
 		</tr>
 	{% endfor %}
 	</table>
-
+	</div>
 </div>
 {% endblock %}

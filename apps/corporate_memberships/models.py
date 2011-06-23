@@ -209,8 +209,8 @@ class CorporateMembershipType(TendenciBaseModel):
     
 class CorporateMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
-    corporate_membership_type = models.ForeignKey("CorporateMembershipType", verbose_name=_("MembershipType")) 
     name = models.CharField(max_length=250, unique=True)
+    corporate_membership_type = models.ForeignKey("CorporateMembershipType", verbose_name=_("MembershipType")) 
     address = models.CharField(_('address'), max_length=150, blank=True)
     address2 = models.CharField(_('address2'), max_length=100, default='', blank=True, null=True)
     city = models.CharField(_('city'), max_length=50, blank=True)
