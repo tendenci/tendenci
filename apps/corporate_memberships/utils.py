@@ -374,9 +374,12 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
                     except:
                         cm[field_name] = 0
                         
-                old_value = eval('corp_memb.%s' % field_name)
+                if corp_memb.pk:      
+                    old_value = eval('corp_memb.%s' % field_name)
+                else:
+                    old_value = None
                 
-                if corp_memb.pk and update_option == 'update' or old_value:
+                if corp_memb.pk and update_option == 'update' and old_value:
                     # this is an existing record but the field is not blank 
                     pass
                 else:

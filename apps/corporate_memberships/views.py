@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils.encoding import smart_str
 
 from base.http import Http403
 from perms.utils import has_perm, is_admin
@@ -755,7 +756,7 @@ def corp_import(request, step=None):
     """
     Corporate membership import.
     """
-    if not is_admin(request.user):
+    if not is_admin(request.user):  # admin only page
         raise Http403
 
     if not step:  # start from beginning
@@ -802,6 +803,9 @@ def corp_import(request, step=None):
         file_path = request.session.get('corp_memb.import.file_path')
         corp_app = request.session.get('corp_memb.import.corp_app')
         update_option = request.session.get('corp_memb.import.update_option')
+        
+        if not all([corp_app, file_path, update_option]):
+            return redirect('corp_memb_import_upload_file')
 
         if request.method == 'POST':
             form = CSVForm(
@@ -835,6 +839,8 @@ def corp_import(request, step=None):
         template_name = 'corporate_memberships/import/preview.html'
         corp_membs = request.session.get('corp_memb.import.corp_membs')
         update_option = request.session.get('corp_memb.import.update_option')
+        if not all([corp_membs, update_option]):
+            return redirect('corp_memb_import_upload_file')
 
         added, skipped, updated, updated_override = [], [], [], []
         for corp_memb in corp_membs:
@@ -874,9 +880,10 @@ def corp_import(request, step=None):
         field_keys = [item[0] for item in fields_dict.items() if item[1]]
         
         for corp_memb in corp_membs:
+            is_insert = False
             if not corp_memb.pk: 
                 corp_memb.save()  # create pk
-                
+                is_insert = True
                 added.append(corp_memb)
             else:
                 if update_option == 'skip': 
@@ -886,6 +893,11 @@ def corp_import(request, step=None):
                         updated.append(corp_memb)
                     else:
                         updated_override.append(corp_memb)
+                        
+                    corp_memb.save()
+                        
+            if not is_insert and update_option == 'skip':
+                continue
                 
             # take care of authorized_domains and dues_rep
             # and add custom fields to the field entry
@@ -893,21 +905,45 @@ def corp_import(request, step=None):
                 if not hasattr(corp_memb, field_key):
                     if field_key in ['authorized_domains', 'dues_rep']:
                         if field_key == 'authorized_domains':
+                            # if auth domains exist for this corp memb
+                            #     if update_option == 'update', skip
+                            #     if update_option == 'override',
+                            #            1) delete existing auth domains
+                            if not is_insert:
+                                existing_auth_domains = AuthorizedDomain.objects.filter(
+                                                        corporate_membership=corp_memb)
+                                if existing_auth_domains:
+                                    if update_option == 'update':
+                                        continue
+                                    elif update_option == 'override':
+                                        # delete existing auth domains
+                                        for auth_domain in existing_auth_domains:
+                                            auth_domain.delete()
+                                    
+                            # add new auth domains
                             domains = (corp_memb.cm[field_key]).split(',')
                             domains = [domain.strip() for domain in domains]
                             for domain in domains:
-                                # check if this domain already exists, if not, add it
-                                try:
-                                    ad = AuthorizedDomain.objects.get(
-                                                           corporate_membership=corp_memb,
-                                                           name= domain
-                                                                      )
-                                except AuthorizedDomain.DoesNotExist:
-                                    AuthorizedDomain.objects.create(
-                                             corporate_membership=corp_memb,
-                                             name= domain      
-                                                                )
+                                AuthorizedDomain.objects.create(
+                                         corporate_membership=corp_memb,
+                                         name= domain      
+                                                            )
                         if field_key == 'dues_rep':
+                            # same as auth domains, check for existing dues reps
+                            if not is_insert:
+                                existing_dues_reps = CorporateMembershipRep.objects.filter(
+                                                                corporate_membership=corp_memb,
+                                                                is_dues_rep=True
+                                                                    )
+                                if existing_dues_reps:
+                                    if update_option == 'update':
+                                        continue
+                                    elif update_option == 'override':
+                                        # delete existing auth domains
+                                        for dues_rep in existing_dues_reps:
+                                            dues_rep.delete()
+                            
+                            # add new dues_reps
                             usernames = (corp_memb.cm[field_key]).split(',')
                             usernames = [username.strip() for username in usernames]
                             for username in usernames:
@@ -915,38 +951,77 @@ def corp_import(request, step=None):
                                     tmp_user = User.objects.get(username=username)
                                 except User.DoesNotExist:
                                     continue
-                                try:
-                                    rep = CorporateMembershipRep.objects.get(
+                                
+                                CorporateMembershipRep.objects.create(
                                                             corporate_membership=corp_memb,
                                                             user=tmp_user,
-                                                                )
-                                    if not rep.is_dues_rep:
-                                        rep.is_dues_rep = True
-                                        rep.save()
-                                except CorporateMembershipRep.DoesNotExist:
-                                    CorporateMembershipRep.objects.create(
-                                                                corporate_membership=corp_memb,
-                                                                user=tmp_user,
-                                                                is_dues_rep=True
-                                                                          )
+                                                            is_dues_rep=True
+                                                                      )
                             
                     else:
-                        # field_key should have the pattern field_id
+                        # custom field - field_key should have the pattern field_id
                         field_id = field_key.replace('field_', '')
                         try:
                             field_id = int(field_id)
                         except:
                             continue # skip if field doesn't exist
+                        
                         try:
                             corp_field = CorpField.objects.get(pk=field_id)
                         except CorpField.DoesNotExist:
                             continue    # skip if field doesn't exist
                         
-                        CorpFieldEntry.objects.create(
-                                    corporate_membership=corp_memb,
-                                    field=corp_field,
-                                    value=corp_memb.cm[field_key]               
-                                                      )
+                        
+                        # if this custom field entry exists
+                        #     if update_option == 'update', skip
+                        #     if update_option == 'override',
+                        #            1) override the value
+                        add_custom_field = False
+                        if is_insert:
+                            add_custom_field = True
+                        else: # not is_insert:
+                            try:
+                                cfe = CorpFieldEntry.objects.get(
+                                        corporate_membership=corp_memb,
+                                        field=corp_field          
+                                                                 )
+                                if update_option == 'update' and cfe.value:
+                                    continue
+                                else:
+                                    cfe.value =corp_memb.cm[field_key]
+                                    cfe.save() 
+                                    
+                            except CorpFieldEntry.DoesNotExist:
+                                add_custom_field = True
+                                
+                        if add_custom_field:
+                            CorpFieldEntry.objects.create(
+                                        corporate_membership=corp_memb,
+                                        field=corp_field,
+                                        value=corp_memb.cm[field_key]               
+                                                         )
+        # we're done. clear the session variables related to this import
+        del request.session['corp_memb.import.corp_app']
+        del request.session['corp_memb.import.corp_membs']
+        del request.session['corp_memb.import.fields']
+        del request.session['corp_memb.import.update_option']
+        
+        total_added = len(added)
+        total_updated = len(updated) + len(updated_override)
+        totals = total_added + total_updated
+        
+        # log an event here
+        log_defaults = {
+            'event_id' : 689005,
+            'event_data': 'corporate membership imported by %s - INSERTS: %d, UPDATES: %d, TOTAL: %d ' \
+                                % (request.user, total_added, total_updated, totals),
+            'description': 'corporate membership import',
+            'user': request.user,
+            'request': request,
+            #'instance': corp_memb,
+        }
+        
+        EventLog.objects.log(**log_defaults)
 
         return render_to_response(template_name, {
             'corp_membs': corp_membs,
@@ -957,5 +1032,44 @@ def corp_import(request, step=None):
             'updated_override': updated_override,
             'datetime': datetime,
         }, context_instance=RequestContext(request))
+        
+@login_required
+def download_csv_import_template(request, file_ext='.csv'):
+    from django.db.models.fields import AutoField
+    from imports.utils import render_excel
+    if not is_admin(request.user):raise Http403   # admin only page
+    
+    filename = "import_corporate_membershis.csv"
+    
+    corp_memb_field_names = [smart_str(field.name) for field in CorporateMembership._meta.fields 
+                             if field.editable and (not field.__class__==AutoField)]
+   
+    fields_to_exclude = ['guid',
+                         'allow_anonymous_view',
+                         'allow_user_view',
+                         'allow_member_view',
+                         'allow_anonymous_edit',
+                         'allow_user_edit',
+                         'allow_member_edit',
+                         'creator_username',
+                         'owner',
+                         'owner_username',
+                         'renew_entry_id',
+                         'approved_denied_dt',
+                         'approved_denied_user',
+                         'payment_method',
+                         'invoice',
+                         'corp_app'
+                         ]
+    for field in fields_to_exclude:
+        if field in corp_memb_field_names:
+            corp_memb_field_names.remove(field)
+            
+    corp_memb_field_names.extend(['authorized_domains', 'dues_rep'])
+    
+            
+    data_row_list = []
+    
+    return render_excel(filename, corp_memb_field_names, data_row_list, file_ext)
     
     

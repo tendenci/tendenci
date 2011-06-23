@@ -26,4 +26,6 @@ urlpatterns = patterns('corporate_memberships.views',
         name="corp_memb_import_preview"),
     url(r"^import/confirm/$", "corp_import", kwargs={'step':(4,'confirm')}, 
         name="corp_memb_import_confirm"),
+    url(r'^import/download-csv-template/$', 'download_csv_import_template', 
+        name="corp_memb_import_download_template"),
 )
