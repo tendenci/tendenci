@@ -26,10 +26,12 @@
 
 .t .pages-wrap .page-wrap-search {
 	border: 1px solid #CCC;
-	padding: 10px;
 	margin-bottom: 20px;
-	position: relative;
 	background-color: white;
+}
+
+.t .pages-wrap .page-content {
+    padding: 10px 10px 0 10px;
 }
 
 .t .pages-wrap .page-wrap h2 {
@@ -90,17 +92,7 @@
 	cursor: pointer;
 }
 
-/* Page View
- ------------------------- */
-.t .page-wrap .meta, .t .page-wrap-search .meta {
-	border: 1px solid silver;
-	padding: 10px;
-	background-color: #F7F7F7;
-	margin-top: 10px;
-}
-.t .page-wrap .meta .tags {
-	margin-bottom: 5px;
-}
+
 
 /* Page Print View
  ------------------------- */
