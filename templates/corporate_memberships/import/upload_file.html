@@ -7,14 +7,23 @@
 
 {% block extra_head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
  <style>
- #corp-import-wrap ul{
+ #corp-import-wrap form ul{
  	list-style: none;
  	margin-bottom: 1em;
  }
  .errorlist{
  	color: #990000;
+ }
+ #download-csv{
+ 	float: left;
+ 	font-size: 1.5em; 
+ 	padding: 1em;
+ }
+
+ .indented-block{
+ 	margin-left: 1em;
  }
  
  </style>
@@ -24,14 +33,43 @@
  {% corpmemb_nav request.user %}
 <div id="corp-import-wrap">
     
-    <h1>Corporate Membership Import - Upload File</h1>
-    <p class="timestamp">Step 1/4 &middot; {{ datetime.now }}</p>
-	{% if err_msg %}
-	<div style="color:red;">{{ err_msg }}</div>
-	{% endif %}
-    <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
-    {{ form.as_p }}
-    <input type='submit' value='Submit'>
-    </form>
+    <h1>Corporate Membership Import</h1>
+    <p>The entire process includes <b>4</b> steps:</p>
+    <div class="indented-block">
+    <i>Upload file &middot; Map fields &middot; Preview &middot; Process and confirm</i>
+    </div>
+    
+    <p><b>Spread Sheet Guidelines:</b></p>
+    <ul>
+    	<li><b>Name</b> and <b>corporate_membership_type</b> are required fields and should be included.</li>
+    	<li>The corporate_membership_type should be filled out with <b>corporate membership type name</b>.</li>
+    	<li>The <b>authorized_domains</b> is comma delimited.</li>
+    	<li>The <b>dues_rep</b> should be filled out with username, and separated with a comma if there are mutiple reps.</li>
+    	<li>You can add more fields or remove fields as needed.</li>
+    </ul>
+   <br />
+   <div>
+    <div style="float:left;">
+    <img src="/site_media/static/images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+    </div>
+    
+    <div id="download-csv"><a href="{% url corp_memb_import_download_template%}">Download Template</a></div>
+     
+     <div style="clear: left;"></div>
+    </div>
+   
+    <div id="corp-import" class="corp-import-upload">
+    	<p class="import-timestamp">{{ datetime.now }}</p>
+	    <h3 class="corp-import-step">Step 1/4 - Upload File</h3>
+	    <div class="clear-right"></div>
+		{% if err_msg %}
+		<div style="color:red;">{{ err_msg }}</div>
+		{% endif %}
+	    <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
+	    {{ form.as_p }}
+	    <input type='submit' value='Submit'>
+	    </form>
+    
+    </div>
 </div>
 {% endblock %}
