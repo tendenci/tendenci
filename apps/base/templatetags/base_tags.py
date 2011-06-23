@@ -10,6 +10,8 @@ from django.core.cache import cache
 
 from base.utils import url_exists
 from profiles.models import Profile
+from tagging.templatetags.tagging_tags import TagsForObjectNode, do_tags_for_object
+from tagging.models import Tag
 
 register = Library()
 
@@ -448,3 +450,60 @@ def photo_image_url(parser, token):
         raise TemplateSyntaxError(message)
 
     return PhotoImageURL(photo, *args, **kwargs)
+    
+class NonHashedTagsNode(TagsForObjectNode):
+    def render(self, context):
+        context[self.context_var] = \
+            Tag.objects.get_for_object(self.obj.resolve(context)).exclude(
+            name__startswith='#')
+        return ''
+        
+class HashedTagsNode(TagsForObjectNode):
+    def render(self, context):
+        context[self.context_var] = \
+            Tag.objects.get_for_object(self.obj.resolve(context)).filter(
+            name__startswith='#')
+        return ''
+        
+def do_non_hash_tags_for_object(parser, token):
+    """
+    Retrieves a list of ``Tag`` objects that DO NOT start with '#'
+    associated with an object and stores them in a context variable.
+    
+    Usage::
+    
+       {% tags_for_object [object] as [varname] %}
+    
+    Example::
+    
+        {% tags_for_object foo_object as tag_list %}
+    """
+    bits = token.contents.split()
+    if len(bits) != 4:
+        raise TemplateSyntaxError(_('%s tag requires exactly three arguments') % bits[0])
+    if bits[2] != 'as':
+        raise TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
+    return NonHashedTagsNode(bits[1], bits[3])
+    
+def do_hash_tags_for_object(parser, token):
+    """
+    Retrieves a list of ``Tag`` objects that DO NOT start with '#'
+    associated with an object and stores them in a context variable.
+    
+    Usage::
+    
+       {% tags_for_object [object] as [varname] %}
+    
+    Example::
+    
+        {% tags_for_object foo_object as tag_list %}
+    """
+    bits = token.contents.split()
+    if len(bits) != 4:
+        raise TemplateSyntaxError(_('%s tag requires exactly three arguments') % bits[0])
+    if bits[2] != 'as':
+        raise TemplateSyntaxError(_("second argument to %s tag must be 'as'") % bits[0])
+    return HashedTagsNode(bits[1], bits[3])
+    
+register.tag('tags_strip_hash', do_non_hash_tags_for_object)
+register.tag('tags_hash_tags', do_hash_tags_for_object)
