@@ -305,6 +305,18 @@ colors = {
     '904000':'FF6D00', # search view
     '905000':'FF4900', # details view
     '906000':'FF2400', # print view
+    
+    # corporate membership
+    '680000':'3300FF', # base
+    '681000':'3300FF', # add
+    '681001':'471DEF', # renew
+    '682000':'1F85FF', # edit
+    '682001':'4D29DF', # join approval
+    '682002':'5233CF', # renewal approval
+    '682003':'563BBF', # join dis-approval
+    '682004':'7A6DAF', # renewal dis-approval
+    '683000':'B0A8CF', # delete
+    '689005':'47A0BF', # import
 }
 
 def get_color(event_id):

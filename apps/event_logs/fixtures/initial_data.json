@@ -1546,5 +1546,87 @@
             "source": "membership_notice",
             "hex_color": "FFFF00"
         }
-    }
+    },
+    {
+        "pk": 33,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 681000,
+            "source": "corporate_membership",
+            "hex_color": "3300FF"
+        }
+    },
+    {
+        "pk": 34,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 681001,
+            "source": "corporate_membership",
+            "hex_color": "471DEF"
+        }
+    },
+    {
+        "pk": 35,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 682000,
+            "source": "corporate_membership",
+            "hex_color": "1F85FF"
+        }
+    },
+    {
+        "pk": 36,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 682001,
+            "source": "corporate_membership",
+            "hex_color": "4D29DF"
+        }
+    },
+    {
+        "pk": 37,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 682002,
+            "source": "corporate_membership",
+            "hex_color": "5233CF"
+        }
+    },
+    {
+        "pk": 38,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 682003,
+            "source": "corporate_membership",
+            "hex_color": "563BBF"
+        }
+    },
+    {
+        "pk": 39,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 682004,
+            "source": "corporate_membership",
+            "hex_color": "7A6DAF"
+        }
+    },
+    {
+        "pk": 40,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 683000,
+            "source": "corporate_membership",
+            "hex_color": "B0A8CF"
+        }
+    },
+    {
+        "pk": 41,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 689005,
+            "source": "corporate_membership",
+            "hex_color": "47A0BF"
+        }
+    }  
 ]
+
