@@ -327,7 +327,7 @@ def do_user_import(request, user, user_object_dict, setting_dict):
     user.is_active = bool(setting_dict['interactive'])
 
     if not bool(email_re.match(user.email)):
-    user.email = ''  # if not valid; empty it out
+        user.email = ''  # if not valid; empty it out
 
     # loop through user properties; truncate at max_length
     for key, value in user.__dict__.items():
