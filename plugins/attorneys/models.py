@@ -17,10 +17,12 @@ CATEGORY_CHOICES = (
 )
 
 class Attorney(TendenciBaseModel):
-    category = models.CharField(_('category'), max_length=2, choices=CATEGORY_CHOICES, blank=True)
+    category = models.CharField(_('category'), max_length=2, choices=CATEGORY_CHOICES)
     
     first_name = models.CharField(_('first name'), max_length=36)
+    middle_initial = models.CharField(_('middle initial'), max_length=36, blank=True)
     last_name = models.CharField(_('last name'), max_length=36)
+    slug = models.SlugField(max_length=75, unique=True)
     position = models.CharField(_('position'), max_length=36, blank=True)
     address = models.CharField(_('address'), max_length=200, blank=True)
     address2 = models.CharField(_('address 2'), max_length=200, blank=True)
@@ -45,11 +47,14 @@ class Attorney(TendenciBaseModel):
     
     @models.permalink
     def get_absolute_url(self):
-        return ('attorneys.detail', [self.pk])
+        return ('attorneys.detail', [self.slug])
         
     @property
     def name(self):
-        return "%s %s" % (self.first_name, self.last_name)
+        if self.middle_initial:   
+            return "%s %s. %s" % (self.first_name, self.middle_initial, self.last_name)
+        else:
+            return "%s %s" % (self.first_name, self.last_name)
         
     @property
     def photo(self):
