@@ -8,6 +8,15 @@ from site_settings.utils import get_setting
 from perms.utils import has_perm
 from attorneys.models import Attorney
 
+def index(request, template_name='attorneys/index.html'):
+    attorneys = Attorney.objects.order_by('-create_dt')
+    
+    return render_to_response(template_name, 
+        {
+            'attorneys':attorneys,
+        },
+        context_instance=RequestContext(request))
+
 def search(request, template_name='attorneys/search.html'):
     category = request.GET.get('category', None)
     q = request.GET.get('q', None)
@@ -23,8 +32,8 @@ def search(request, template_name='attorneys/search.html'):
         },
         context_instance=RequestContext(request))
 
-def detail(request, id, template_name='attorneys/detail.html'):
-    attorney = get_object_or_404(Attorney, id=id)
+def detail(request, slug=None, template_name='attorneys/detail.html'):
+    attorney = get_object_or_404(Attorney, slug=slug)
     
     if not has_perm(request.user, 'attorneys.view_attorney', attorney):
         raise Http403

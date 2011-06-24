@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from attorneys.models import Attorney, Photo
 from attorneys.forms import AttorneyForm, PhotoForm
@@ -18,15 +19,18 @@ class AttorneyAdmin(admin.ModelAdmin):
     class Meta:
         model = Attorney
         
-    list_display = ["last_name", "first_name", "position", "category"]
+    list_display = ['view_on_site', 'edit_link',  "last_name", "first_name", "position", "category"]
     list_filter = ["category"]
+    prepopulated_fields = {'slug': ['first_name','last_name']}
     form = AttorneyForm
     inlines = [PhotoInline,]
     
     fieldsets = (
         (None, {'fields': (
             'first_name',
+            'middle_initial',
             'last_name',
+            'slug',
             'category',
             'position',
             'address',
@@ -56,6 +60,23 @@ class AttorneyAdmin(admin.ModelAdmin):
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
+
+    def edit_link(self, obj):
+        link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:attorneys_attorney_change', args=[obj.pk])
+        return link
+    edit_link.allow_tags = True
+    edit_link.short_description = 'edit'
+
+    def view_on_site(self, obj):
+        link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
+        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+            reverse('attorneys.detail', args=[obj.slug]),
+            obj.name,
+            link_icon,
+        )
+        return link
+    view_on_site.allow_tags = True
+    view_on_site.short_description = 'view'
     
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
