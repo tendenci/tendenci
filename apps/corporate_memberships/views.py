@@ -842,23 +842,27 @@ def corp_import(request, step=None):
         if not all([corp_membs, update_option]):
             return redirect('corp_memb_import_upload_file')
 
-        added, skipped, updated, updated_override = [], [], [], []
+        added, skipped, updated, updated_override, invalid_skipped = [], [], [], [], []
         for corp_memb in corp_membs:
-            if corp_memb.pk:
-                if update_option == 'skip': 
-                    skipped.append(corp_memb)
-                else:
-                    if update_option == 'update':
-                        updated.append(corp_memb)
+            if not corp_memb.is_valid:
+                invalid_skipped.append(corp_memb)
+            else:
+                if corp_memb.pk:
+                    if update_option == 'skip': 
+                        skipped.append(corp_memb)
                     else:
-                        updated_override.append(corp_memb)
-            else: 
-                added.append(corp_memb)
+                        if update_option == 'update':
+                            updated.append(corp_memb)
+                        else:
+                            updated_override.append(corp_memb)
+                else: 
+                    added.append(corp_memb)
 
         return render_to_response(template_name, {
         'corp_membs':corp_membs,
         'added': added,
         'update_option': update_option,
+        'invalid_skipped': invalid_skipped,
         'skipped': skipped,
         'updated': updated,
         'updated_override': updated_override,
@@ -872,14 +876,20 @@ def corp_import(request, step=None):
         corp_membs = request.session.get('corp_memb.import.corp_membs')
         fields_dict = request.session.get('corp_memb.import.fields')
         update_option = request.session.get('corp_memb.import.update_option')
+        file_path = request.session.get('corp_memb.import.file_path')
 
         if not all([corp_app, corp_membs, fields_dict]):
             return redirect('corp_memb_import_upload_file')
 
-        added, skipped, updated, updated_override = [], [], [], []
+        added, skipped, updated, updated_override, invalid_skipped = [], [], [], [], []
         field_keys = [item[0] for item in fields_dict.items() if item[1]]
         
         for corp_memb in corp_membs:
+            if not corp_memb.is_valid:
+                invalid_skipped.append(corp_memb)
+                
+                continue
+            
             is_insert = False
             if not corp_memb.pk: 
                 corp_memb.save()  # create pk
@@ -1000,6 +1010,11 @@ def corp_import(request, step=None):
                                         field=corp_field,
                                         value=corp_memb.cm[field_key]               
                                                          )
+                            
+        if invalid_skipped:
+            request.session['corp_memb.import.invalid_skipped'] = invalid_skipped
+            
+        
         # we're done. clear the session variables related to this import
         del request.session['corp_memb.import.corp_app']
         del request.session['corp_memb.import.corp_membs']
@@ -1026,6 +1041,7 @@ def corp_import(request, step=None):
         return render_to_response(template_name, {
             'corp_membs': corp_membs,
             'update_option': update_option,
+            'invalid_skipped': invalid_skipped,
             'added': added,
             'skipped': skipped,
             'updated': updated,
@@ -1039,7 +1055,7 @@ def download_csv_import_template(request, file_ext='.csv'):
     from imports.utils import render_excel
     if not is_admin(request.user):raise Http403   # admin only page
     
-    filename = "import_corporate_membershis.csv"
+    filename = "corporate_memberships_import.csv"
     
     corp_memb_field_names = [smart_str(field.name) for field in CorporateMembership._meta.fields 
                              if field.editable and (not field.__class__==AutoField)]
@@ -1059,7 +1075,9 @@ def download_csv_import_template(request, file_ext='.csv'):
                          'approved_denied_user',
                          'payment_method',
                          'invoice',
-                         'corp_app'
+                         'corp_app',
+                         'status',
+                         'status_detail'
                          ]
     for field in fields_to_exclude:
         if field in corp_memb_field_names:
@@ -1071,5 +1089,48 @@ def download_csv_import_template(request, file_ext='.csv'):
     data_row_list = []
     
     return render_excel(filename, corp_memb_field_names, data_row_list, file_ext)
+
+@login_required
+def corp_import_invalid_records_download(request):
+    import csv
+    from imports.utils import render_excel
+    if not is_admin(request.user):raise Http403   # admin only page
+    
+    file_path = request.session.get('corp_memb.import.file_path')
+    invalid_corp_membs = request.session.get('corp_memb.import.invalid_skipped')
+    #print invalid_corp_membs
+    
+    if not file_path or not invalid_corp_membs:
+        raise Http403
+    
+    data = csv.reader(open(file_path))
+    title_fields = data.next()
+    title_fields = [smart_str(field) for field in title_fields]
+    
+    item_list = []
+    for corp_memb in invalid_corp_membs:
+        item = []
+        for field in title_fields:
+            value = corp_memb.cm.get(field)
+            if not value: value = ' '
+            item.append(value)
+            
+        if item:
+            item.append('\n')
+            item.insert(0, corp_memb.err_msg)
+            item_list.append(item)
+            
+    filename = "invalid_records.csv"
+    title_fields.append('\n')
+    title_fields.insert(0, 'Invalid Reason?')
+    
+    filebase, filename = os.path.split(file_path)
+    filename = "Invalid_records_%s" % filename
+    
+    # clear the session now
+    #del request.session['corp_memb.import.file_path']
+    #del request.session['corp_memb.import.invalid_skipped']
+    
+    return render_excel(filename, title_fields, item_list, '.csv')
     
     

@@ -8,6 +8,12 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+<style>
+.action-invalid{
+	color: red;
+	background-color: yellow
+}
+</style>
 {% endblock %}
 
 {% block body %}
@@ -20,11 +26,14 @@
 	    <h3 class="corp-import-step">Step 4/4 - Finished!</h3>
 		 <div class="clear-right"></div>   
 	
-		<p class="msg">We attempted <em>{{ corp_membs|length}}</em> import{{ corp_membs|length|pluralize }}; 
+		<p class="msg">Total <em>{{ corp_membs|length}}</em> processed;
+		 {% if invalid_skipped %}
+			<em class="action-invalid">{{ invalid_skipped|length }}</em> invalid - skipped,
+		{% endif %}
 		<em>{{ added|length }}</em> added,
 		and 
 		{% if skipped %}
-			<em>{{ skipped|length }}</em> skipped
+			<em>{{ skipped|length }}</em> skipped (existing record)
 		{% else %}
 			{% if updated %}
 				<em>{{ updated|length }}</em>  updated (for the blank fields)
@@ -34,6 +43,10 @@
 		{% endif %}
 		
 		.</p>
+		
+		{% if invalid_skipped %}
+			<p style="background-color: yellow;"><a href="{% url corp_memb_import_download_invalid %}">Download the Invalid Records?</a></p>
+		{% endif %}
 	
 		<p class="link"><a href="{% url corp_memb.search %}">Go to Search &raquo;</a></p>
 		<p class="link"><a href="{% url corp_import %}">More Import &raquo;</a></p>
