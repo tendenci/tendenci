@@ -628,6 +628,7 @@ class AppField(models.Model):
     default_value = models.CharField(_("Default Value"), max_length=200, blank=True)
     css_class = models.CharField(_("CSS Class"), max_length=200, blank=True)
 
+    field_name = models.CharField(max_length=100, blank=True, default='')
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=100)
     vital = models.BooleanField(_("Vital"), default=False, blank=True)
     required = models.BooleanField(_("Required"), default=False, blank=True)
