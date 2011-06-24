@@ -24,6 +24,8 @@
     	<form action="{% url page.add %}" method="post">{% csrf_token %}
     	<div class="forms">			
 			{{ form|styled_form }}
+            <h1>Page Meta</h1>
+            {{ metaform|styled_form }}
         	<input type="submit" value="Add {% firstof MODULE_PAGES_LABEL 'Page' %}" />
 		</div>
         </form>
