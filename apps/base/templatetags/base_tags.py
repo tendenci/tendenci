@@ -455,14 +455,14 @@ class NonHashedTagsNode(TagsForObjectNode):
     def render(self, context):
         context[self.context_var] = \
             Tag.objects.get_for_object(self.obj.resolve(context)).exclude(
-            name__startswith='#')
+            name__contains='#')
         return ''
         
 class HashedTagsNode(TagsForObjectNode):
     def render(self, context):
         context[self.context_var] = \
             Tag.objects.get_for_object(self.obj.resolve(context)).filter(
-            name__startswith='#')
+            name__contains='#')
         return ''
         
 def do_non_hash_tags_for_object(parser, token):
