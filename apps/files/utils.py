@@ -40,6 +40,12 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
     """
     Builds a resized image based off of the original image.
     """
+    
+    try:
+        quality = int(quality)
+    except:
+        quality = 90
+    
     if hasattr(file,'path'):
         image = Image.open(file.path) # get image
     else:
