@@ -9,7 +9,7 @@ from perms.utils import has_perm
 from attorneys.models import Attorney
 
 def index(request, template_name='attorneys/index.html'):
-    attorneys = Attorney.objects.order_by('-create_dt')
+    attorneys = Attorney.objects.order_by('create_dt')
     
     return render_to_response(template_name, 
         {
