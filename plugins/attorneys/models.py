@@ -22,7 +22,7 @@ class Attorney(TendenciBaseModel):
     first_name = models.CharField(_('first name'), max_length=36)
     middle_initial = models.CharField(_('middle initial'), max_length=36, blank=True)
     last_name = models.CharField(_('last name'), max_length=36)
-    slug = models.SlugField(max_length=75, unique=True)
+    slug = models.SlugField(max_length=75, unique=True, default="")
     position = models.CharField(_('position'), max_length=36, blank=True)
     address = models.CharField(_('address'), max_length=200, blank=True)
     address2 = models.CharField(_('address 2'), max_length=200, blank=True)
