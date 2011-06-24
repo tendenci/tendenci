@@ -87,50 +87,61 @@ def print_view(request, slug, template_name="pages/print-view.html"):
         raise Http403
 
 @login_required
-def edit(request, id, form_class=PageForm, template_name="pages/edit.html"):
+def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, template_name="pages/edit.html"):
 
     page = get_object_or_404(Page, pk=id)
 
-    if has_perm(request.user,'pages.change_page',page):    
-        if request.method == "POST":
-            form = form_class(request.POST, instance=page, user=request.user)
-            if form.is_valid():
-                page = form.save(commit=False)
-
-                # update all permissions and save the model
-                page = update_perms_and_save(request, form, page)
-
-                log_defaults = {
-                    'event_id' : 582000,
-                    'event_data': '%s (%d) edited by %s' % (page._meta.object_name, page.pk, request.user),
-                    'description': '%s edited' % page._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': page,
-                }
-                EventLog.objects.log(**log_defaults)               
-  
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % page)
-                
-                if not is_admin(request.user):
-                    # send notification to administrators
-                    recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
-                    if recipients:
-                        if notification:
-                            extra_context = {
-                                'object': page,
-                                'request': request,
-                            }
-                            notification.send_emails(recipients,'page_edited', extra_context)
-                                                              
-                return HttpResponseRedirect(reverse('page', args=[page.slug]))             
-        else:
-            form = form_class(instance=page, user=request.user)
-
-        return render_to_response(template_name, {'page': page, 'form':form}, 
-            context_instance=RequestContext(request))
-    else:
+    if not has_perm(request.user,'pages.change_page',page):
         raise Http403
+        
+    defaults = {
+        'title': page.get_title(),
+        'description': page.get_description(),
+        'keywords': page.get_keywords(),
+        'canonical_url': page.get_canonical_url(),
+    }
+    page.meta = MetaTags(**defaults)
+    
+    if request.method == "POST":
+        form = form_class(request.POST, instance=page, user=request.user, prefix='page')
+        metaform = meta_form_class(request.POST, instance=page.meta, prefix='meta')
+        if form.is_valid() and metaform.is_valid():
+            page = form.save(commit=False)
+            # update all permissions and save the model
+            page = update_perms_and_save(request, form, page)
+            
+            meta = metaform.save()
+            
+            log_defaults = {
+                'event_id' : 582000,
+                'event_data': '%s (%d) edited by %s' % (page._meta.object_name, page.pk, request.user),
+                'description': '%s edited' % page._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': page,
+            }
+            EventLog.objects.log(**log_defaults)               
+
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % page)
+            
+            if not is_admin(request.user):
+                # send notification to administrators
+                recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
+                if recipients:
+                    if notification:
+                        extra_context = {
+                            'object': page,
+                            'request': request,
+                        }
+                        notification.send_emails(recipients,'page_edited', extra_context)
+                                                          
+            return HttpResponseRedirect(reverse('page', args=[page.slug]))             
+    else:
+        form = form_class(instance=page, user=request.user, prefix='page')
+        metaform = meta_form_class(instance=page.meta, prefix='meta')
+    
+    return render_to_response(template_name, {'page': page, 'form':form, 'metaform':metaform}, 
+        context_instance=RequestContext(request))
 
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.html"):
@@ -164,16 +175,21 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
         context_instance=RequestContext(request))
 
 @login_required
-def add(request, form_class=PageForm, template_name="pages/add.html"):
+def add(request, form_class=PageForm, meta_form_class=MetaForm, template_name="pages/add.html"):
 
     if has_perm(request.user,'pages.add_page'):
         if request.method == "POST":
-            form = form_class(request.POST, user=request.user)
-            if form.is_valid():           
+            form = form_class(request.POST, user=request.user, prefix='page')
+            metaform = meta_form_class(request.POST, prefix='meta')
+            if form.is_valid() and metaform.is_valid():
                 page = form.save(commit=False)
                 
                 # add all permissions and save the model
                 page = update_perms_and_save(request, form, page)
+                
+                meta = metaform.save()
+                page.meta = meta
+                page.save()
  
                 log_defaults = {
                     'event_id' : 581000,
@@ -200,10 +216,14 @@ def add(request, form_class=PageForm, template_name="pages/add.html"):
                     
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))
         else:
-            form = form_class(user=request.user)
-           
-        return render_to_response(template_name, {'form':form}, 
-            context_instance=RequestContext(request))
+            form = form_class(user=request.user, prefix='page')
+            metaform = meta_form_class(prefix='meta')
+        return render_to_response(template_name, 
+                {
+                    'form':form,
+                    'metaform':metaform,
+                },
+                context_instance=RequestContext(request))
     else:
         raise Http403
 
