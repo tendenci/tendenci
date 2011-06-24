@@ -81,8 +81,7 @@
 			           <td width="61%" class="body_copy">
 							<font face="Arial, Helvetica, sans-serif" size="2" class="subtitles">
 								{% if u.ACTION == 'update' %}
-									<a href="{% url profiles.views.index u.username %}">{{ u.first_name }} {{u.last_name }}</a>
-								
+									<a href="{% url profile u.username %}">{{ u.first_name }} {{u.last_name }}</a>
 								{% else %}
 									{{ u.first_name }} {{u.last_name }}
 								{% endif %}
