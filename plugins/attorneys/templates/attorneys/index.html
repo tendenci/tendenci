@@ -1,0 +1,72 @@
+{% extends "attorneys/base.html" %}
+{% load pagination_tags %}
+{% load attorneys_tags %}
+{% load perm_tags %}
+{% load box_tags %}
+
+{% block title %}Attorneys{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "attorneys/media/css/attorneys.css" %}
+</style>
+{% endblock %}
+
+{% block body %}
+
+{% has_perm user attorneys.add_attorney as can_add_attorney %}
+<div class="t">
+    <h1>Attorneys</h1>
+    {% list_boxes as boxes limit=1 tags="attorneyheader" %}
+    {% for box in boxes %}
+        <div class="boxes">{{ box.safe_content }}
+        {% include 'boxes/edit-link.html' %}</div>
+    {% endfor %}
+    <div class="attorneys">
+        {% for attorney in attorneys %}
+        <div class="attorney-item" id="attorney-{{ attorney.pk }}">    
+            <div class="name">
+                <h3><a href="{{ attorney.get_absolute_url }}">{{ attorney.name }}</a></h3>
+            </div>
+            <div class="photo" id="attorney-{{ attorney.pk }}-photo" style="display: none;">
+                {% if attorney.photo %}
+                    <img src="{% url file attorney.photo.pk %}128x128/" title="{{ attorney.name }}"  />
+                {% else %}
+                    <img src="/path/to/default/photo" />
+                {% endif %}
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        {% empty %}
+            <p>0 Attorneys Found</p>
+        {% endfor %}
+    </div>
+    
+    {% if can_add_attorney %}
+    <div><a href="{% url admin:attorneys_attorney_add %}">Add Attorney</a></div>
+    {% endif %}
+</div>
+{% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+$(".attorney-item").hover(
+  function () {
+    $("#"+this.id+"-photo").show();
+  }, 
+  function () {
+    $("#"+this.id+"-photo").hide();
+  }
+);
+</script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
+		});
+	</script>
+{% endblock %}
