@@ -1,15 +1,16 @@
 import os
 import datetime
 import uuid
+import re
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
 from django.db.models.fields import AutoField, FieldDoesNotExist
 from django.utils.encoding import smart_str
+from django.core.validators import email_re
 
 import xlrd
 from xlwt import Workbook, XFStyle
-
 from user_groups.models import Group, GroupMembership
 from profiles.models import Profile
 
@@ -237,7 +238,7 @@ def user_import_process(request, setting_dict, preview=True, id=''):
                 user_import_dict['user'] = user
                 user_import_dict['ROW_NUM'] = user_object_dict['ROW_NUM']
                 user_obj_list.append(user_import_dict)
-                
+
         if preview:
             user_obj_list.append(user_object_dict)
             
@@ -313,8 +314,9 @@ def do_user_import(request, user, user_object_dict, setting_dict):
     if insert:
         if 'username' in user_object_dict:  # set username
             user.username = user_object_dict['username']
+
         # generate if not username
-        get_unique_username(user)
+        user.username = get_unique_username(user)
 
     if 'password' in user_object_dict and (insert or override):
         user.set_password(user_object_dict['password'])
@@ -324,85 +326,87 @@ def do_user_import(request, user, user_object_dict, setting_dict):
 
     user.is_active = bool(setting_dict['interactive'])
 
+    if not bool(email_re.match(user.email)):
+    user.email = ''  # if not valid; empty it out
+
+    # loop through user properties; truncate at max_length
     for key, value in user.__dict__.items():
-
-        try:
-            max_length = User._meta.get_field_by_name(key)[0].max_length
-        except FieldDoesNotExist as e:
-            max_length = None
-
+        try: max_length = User._meta.get_field_by_name(key)[0].max_length
+        except FieldDoesNotExist as e: max_length = None
         if max_length:  # truncate per max_length field attribute
             setattr(user, key, value[:max_length])
 
-    if insert:
-        user.save(force_insert=True)
-    else:
-        user.save(force_update=True)
+    # username and email required
+    if user.username and user.email:
 
-    try:  # get or create
-        profile = user.get_profile()
-    except Profile.DoesNotExist:
-        profile = Profile.objects.create(user=user, 
-           creator=request.user, 
-           creator_username=request.user.username,
-           owner=request.user, 
-           owner_username=request.user.username, 
-           email=user.email
-        )
+        # insert/update record
+        if insert: user.save(force_insert=True)
+        else: user.save(force_update=True)
 
-    for field in profile_field_names:
-        if user_object_dict.has_key(field):
+        try:  # get or create
+            profile = user.get_profile()
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create(user=user, 
+               creator=request.user, 
+               creator_username=request.user.username,
+               owner=request.user, 
+               owner_username=request.user.username, 
+               email=user.email
+            )
 
-            if override:
-                setattr(profile, field, user_object_dict[field])
-            else:
-                # fill out the blank field only
-                if getattr(profile, field) == '':
+        for field in profile_field_names:
+            if user_object_dict.has_key(field):
+
+                if override:
                     setattr(profile, field, user_object_dict[field])
+                else:
+                    # fill out the blank field only
+                    if getattr(profile, field) == '':
+                        setattr(profile, field, user_object_dict[field])
 
-    profile.save()
-    
-    # add to group
-    if setting_dict['group']:
-        try:
-            gm = GroupMembership.objects.get(group=setting_dict['group'], member=user)
-        except GroupMembership.DoesNotExist:
-            gm = GroupMembership()
-            gm.member = user
-            gm.group = setting_dict['group']
-            gm.creator_id = request.user.id
-            gm.creator_username = request.user.username
-            gm.owner_id =  request.user.id
-            gm.owner_username = request.user.username
-            gm.status =1
-            gm.status_detail = 'active'
-            gm.save()
-    
+        profile.save()
+
+        # add to group
+        if setting_dict['group']:
+            try:
+                gm = GroupMembership.objects.get(group=setting_dict['group'], member=user)
+            except GroupMembership.DoesNotExist:
+                gm = GroupMembership()
+                gm.member = user
+                gm.group = setting_dict['group']
+                gm.creator_id = request.user.id
+                gm.creator_username = request.user.username
+                gm.owner_id =  request.user.id
+                gm.owner_username = request.user.username
+                gm.status =1
+                gm.status_detail = 'active'
+                gm.save()
+
     return user
 
 def get_unique_username(user):
+
     if not user.username:
         if user.email:
             user.username = user.email
+
     if not user.username:
         if user.first_name and user.last_name:
             user.username = '%s%s' % (user.first_name[0], user.last_name)
-    if not user.username:
-        user.username = str(uuid.uuid1())[:7]
-    if len(user.username) > 20:
-        user.username = user.username[:7]
-        
+
+    p = re.compile(r'[^\w.@+-]+', re.IGNORECASE)
+    user.username = p.sub('', user.username)
+
     # check if this username already exists
     users = User.objects.filter(username__istartswith=user.username)
-    
+
     if users:
         t_list = [u.username[len(user.username):] for u in users]
         num = 1
         while str(num) in t_list:
             num += 1
-            
         user.username = '%s%s' % (user.username, str(num))
-   
+
     return user.username
                      
 
