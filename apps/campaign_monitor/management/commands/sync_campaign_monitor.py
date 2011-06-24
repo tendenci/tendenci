@@ -23,9 +23,12 @@ class Command(BaseCommand):
             try:
                 subscriber = subscriber_obj.get(list_id, email)
             except BadRequest as br:
-                email_address = subscriber_obj.add(list_id, email, name, [], True)
-                if verbosity >=2:
-                        print "%s (%s)" % (name, email)
+                try:
+                    email_address = subscriber_obj.add(list_id, email, name, [], True)
+                    if verbosity >=2:
+                            print "%s (%s)" % (name, email)
+                except:
+                    print name, email, ' - NOT ADDED'
         
         
         api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
