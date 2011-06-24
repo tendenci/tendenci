@@ -133,7 +133,10 @@ def photo_size(request, id, size, crop=False, quality=90, download=False):
     Saves resized image within cache system
     Returns 404 if if image rendering fails
     """
-    
+
+    if isinstance(quality,unicode) and quality.isalnum():
+        quality = int(quality)
+
     photo = get_object_or_404(Image, id=id)
     size = [int(s) for s in size.split('x')]
 
