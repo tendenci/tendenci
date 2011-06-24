@@ -35,6 +35,9 @@
 	display: none;
 }
 
+.t .attorney-item { position: relative; }
+.t .attorney-item .photo {position: absolute; left: 200px;top: 0;}
+
 /* search form */
 .t form.search-form input[type="text"] {
 	width: 60%;
