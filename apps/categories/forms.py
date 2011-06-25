@@ -40,6 +40,8 @@ class CategoryForm(forms.Form):
             post_data = args[0]
         else:
             post_data = None
+            
+        prefix = kwargs.get('prefix', None)
         
         # set up the category choices
         categories = CategoryItem.objects.filter(content_type=content_type,
@@ -48,7 +50,10 @@ class CategoryForm(forms.Form):
         categories = [[cat, cat] for cat in categories]
         categories.insert(0,[0,'------------'])
         if post_data:
-            new_category = post_data.get('category','0')
+            if prefix:
+                new_category = post_data.get('%s-category'%prefix,'0')
+            else:
+                new_category = post_data.get('category','0')
             if new_category != '0':
                 categories.append([new_category,new_category])
         self.fields['category'].choices = tuple(categories)
@@ -60,7 +65,10 @@ class CategoryForm(forms.Form):
         sub_categories = [[cat, cat] for cat in sub_categories]
         sub_categories.insert(0,[0,'------------'])
         if post_data:
-            new_sub_category = post_data.get('sub_category','0')
+            if prefix:
+                new_sub_category = post_data.get('%s-sub_category'%prefix,'0')
+            else:
+                new_sub_category = post_data.get('sub_category','0')
             if new_sub_category != '0':
                 sub_categories.append([new_sub_category,new_sub_category])
         self.fields['sub_category'].choices = tuple(sub_categories)  
