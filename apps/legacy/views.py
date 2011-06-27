@@ -17,6 +17,8 @@ def redirect_for_search(content_type):
         name = 'help_files.search'
     if content_type == 'news':
         name = 'news.search'
+    if content_type == 'jobs':
+        name = 'job.search'
     if content_type == 'pages':
         name = 'page.search'
     if content_type == 'photo_sets':
@@ -62,6 +64,12 @@ def redirect_for_view(content_type, id):
         redirect_name = 'news.view'
         sql = "SELECT slug FROM mig_news_news_t4_to_t5 as mig " \
               "JOIN news_news as nw on nw.id = mig.t5_id "\
+              "WHERE t4_id = %s"
+    
+    if content_type == 'jobs':
+        redirect_name = 'job'
+        sql = "SELECT slug FROM mig_jobs_job_t4_to_t5 as mig " \
+              "JOIN jobs_job as j on j.id = mig.t5_id "\
               "WHERE t4_id = %s"
 
     if content_type == 'pages':
