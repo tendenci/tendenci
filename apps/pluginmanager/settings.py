@@ -1,5 +1,6 @@
 import os
 from django.utils import simplejson
+from django.utils.encoding import smart_str
 
 def rel(*x):
     #return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
@@ -33,7 +34,7 @@ def get_apps():
     return json_data
 
 def plugin_apps(installed_apps):
-    apps = tuple(i['package'] for i in get_apps() if i['is_enabled'])
+    apps = tuple(smart_str(i['package']) for i in get_apps() if i['is_enabled'])
     #print 'apps = ', apps
     return installed_apps + apps
     
