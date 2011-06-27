@@ -119,25 +119,25 @@
 {% if job.experience %}
 <div class="section-block">
 	<div class="label">Experience</div>
-	<div class="value">{{ job.experience }}</div>
+	<div class="value">{{ job.experience|striptags }}</div>
 </div>
 {% endif %}
 {% if job.skills %}
 <div class="section-block">
 	<div class="label">Skills</div>
-	<div class="value">{{ job.skills }}</div>
+	<div class="value">{{ job.skills|striptags }}</div>
 </div>
 {% endif %}
 {% if job.computer_skills %}
 <div class="section-block">
 	<div class="label">Computer Skills</div>
-	<div class="value">{{ job.computer_skills }}</div>
+	<div class="value">{{ job.computer_skills|striptags }}</div>
 </div>
 {% endif %}
 {% if job.education %}
 <div class="section-block">
 	<div class="label">Education Required</div>
-	<div class="value">{{ job.education }}</div>
+	<div class="value">{{ job.education|striptags }}</div>
 </div>
 {% endif %}
 
