@@ -749,7 +749,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 
                 # override event_price to price specified by admin
                 admin_notes = None
-                if is_admin(request.user):
+                if is_admin(request.user) and event_price > 0:
                     if event_price != reg_form.cleaned_data['amount_for_admin']:
                         admin_notes = "Price has been overriden for this registration"
                     event_price = reg_form.cleaned_data['amount_for_admin']
