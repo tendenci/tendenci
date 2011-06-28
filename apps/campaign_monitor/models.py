@@ -23,7 +23,44 @@ class SubscriberQueue(models.Model):
     group = models.ForeignKey(Group)
     user = models.ForeignKey(User, null=True)
     subscriber = models.ForeignKey(FormEntry, null=True)
-
+    
+class Template(models.Model):
+    """
+    This represents a Template in Campaign Monitor.
+    """
+    template_id = models.CharField(max_length=100, unique=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    preview_url = models.URLField()
+    screenshot_url = models.URLField()
+    
+class Campaign(models.Model):
+    """
+    This represents a Campaign. It is considered as a "Draft" if it is 
+    not yet sent.
+    """
+    STATUS_CHOICES = (
+        ('S','Sent'),
+        ('C', 'Scheduled'),
+        ('D', 'Draft'),
+    )
+    
+    campaign_id = models.CharField(max_length=100, unique=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='D')
+    
+    #fields for sync
+    sent_date = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(max_length=100)
+    subject =  models.CharField(max_length=100)
+    lists = models.ManyToManyField(ListMap)
+    
+    #fields for post only
+    from_name = models.CharField(max_length=100, null=True, blank=True)
+    from_email = models.EmailField(null=True, blank=True)
+    reply_to = models.EmailField(null=True, blank=True)
+    template = models.ForeignKey(Template, null=True, blank=True)
 
 # create post_save and pre_delete signals to sync with campaign monitor
 # http://www.campaignmonitor.com/api/getting-started/
