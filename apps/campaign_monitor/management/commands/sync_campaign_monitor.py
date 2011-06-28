@@ -12,8 +12,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from user_groups.models import Group
         from subscribers.models import GroupSubscription as GS
-        from campaign_monitor.models import ListMap
-        from createsend import CreateSend, Client, List, Subscriber, BadRequest, Unauthorized
+        from campaign_monitor.models import ListMap, Campaign
+        from createsend import CreateSend, Client, List, Subscriber, \
+            BadRequest, Unauthorized
         
         verbosity = 1
         if 'verbosity' in options:
@@ -40,7 +41,7 @@ class Command(BaseCommand):
         list_ids = [list.ListID for list in lists]
         list_names = [list.Name for list in lists]
         list_ids_d = dict(zip(list_names, list_ids))
-
+        
         groups = Group.objects.filter(status=1, status_detail='active')
         listmaps = ListMap.objects.all()
         syncd_groups = [listmap.group for listmap in listmaps]
@@ -110,5 +111,45 @@ class Command(BaseCommand):
                 subscribe_to_list(subscriber_obj, list_id, name, email)
                     
         print 'Done'
-                    
+        
+        print 'Starting to sync campaigns with campaign monitor...'
+        
+        print 'Syncing sent campaigns...'
+        sent = cl.campaigns()
+        for c in sent:
+            try:
+                campaign = Campaign.objects.get(campaign_id = c.CampaignID)
+            except Campaign.DoesNotExist:
+                print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
+                campaign = Campaign(campaign_id = c.CampaignID)
+            campaign.subject = c.Subject
+            campaign.name = c.Name
+            campaign.sent_date = c.SentDate
+            campaign.status = 'S'
+            campaign.save()
+        
+        print 'Syncing scheduled campaigns...'
+        scheduled = cl.scheduled()
+        for c in scheduled:
+            try:
+                campaign = Campaign.objects.get(campaign_id = c.CampaignID)
+            except Campaign.DoesNotExist:
+                print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
+                campaign = Campaign(campaign_id = c.CampaignID)
+            campaign.subject = c.Subject
+            campaign.name = c.Name
+            campaign.status = 'C'
+            campaign.save()
+        
+        print 'Syncing draft campaigns...'
+        drafts = cl.drafts()
+        for c in drafts:
+            try:
+                campaign = Campaign.objects.get(campaign_id = c.CampaignID)
+            except Campaign.DoesNotExist:
+                print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
+                campaign = Campaign(campaign_id = c.CampaignID)
+            campaign.subject = c.Subject
+            campaign.name = c.Name
+            campaign.save()
                 
