@@ -27,7 +27,7 @@ def index(request, pk=None, template_name="quotes/view.html"):
     
     if has_perm(request.user, 'quotes.view_quote', quote):
         log_defaults = {
-            'event_id' : 435000,
+            'event_id' : 155000,
             'event_data': '%s (%d) viewed by %s' % (quote._meta.object_name, quote.pk, request.user),
             'description': '%s viewed' % quote._meta.object_name,
             'user': request.user,
@@ -46,7 +46,7 @@ def search(request, template_name="quotes/search.html"):
     quotes = quotes.order_by('-create_dt')
 
     log_defaults = {
-        'event_id' : 434000,
+        'event_id' : 154000,
         'event_data': '%s searched by %s' % ('Quote', request.user),
         'description': '%s searched' % 'Quote',
         'user': request.user,
