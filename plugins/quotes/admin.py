@@ -12,7 +12,12 @@ class QuoteAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('quote', 'author', 'source', 'tags')}),
         ('Administrative', {'fields': (
-            'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail' )}),
     )
     form = QuoteForm
     actions = ['update_quotes']
@@ -20,7 +25,7 @@ class QuoteAdmin(admin.ModelAdmin):
     def log_deletion(self, request, object, object_repr):
         super(QuoteAdmin, self).log_deletion(request, object, object_repr)
         log_defaults = {
-            'event_id' : 1000300,
+            'event_id' : 150300,
             'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, 
                                                     object.pk, request.user),
             'description': '%s deleted' % object._meta.object_name,
@@ -33,7 +38,7 @@ class QuoteAdmin(admin.ModelAdmin):
     def log_change(self, request, object, message):
         super(QuoteAdmin, self).log_change(request, object, message)
         log_defaults = {
-            'event_id' : 1000200,
+            'event_id' : 150200,
             'event_data': '%s (%d) edited by %s' % (object._meta.object_name, 
                                                     object.pk, request.user),
             'description': '%s edited' % object._meta.object_name,
@@ -46,7 +51,7 @@ class QuoteAdmin(admin.ModelAdmin):
     def log_addition(self, request, object):
         super(QuoteAdmin, self).log_addition(request, object)
         log_defaults = {
-            'event_id' : 1000100,
+            'event_id' : 150100,
             'event_data': '%s (%d) added by %s' % (object._meta.object_name, 
                                                    object.pk, request.user),
             'description': '%s added' % object._meta.object_name,
