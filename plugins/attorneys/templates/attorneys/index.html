@@ -24,7 +24,10 @@
         {% include 'boxes/edit-link.html' %}</div>
     {% endfor %}
     <div class="attorneys">
+        <h3>Shareholders</h3>
         {% for attorney in attorneys %}
+        {% with attorney.object as attorney %}
+        {% ifequal "SH" attorney.category %}
         <div class="attorney-item" id="attorney-{{ attorney.pk }}">    
             <div class="name">
                 <h3><a href="{{ attorney.get_absolute_url }}">{{ attorney.name }}</a></h3>
@@ -38,8 +41,52 @@
             </div>
             <div style="clear:both"></div>
         </div>
-        {% empty %}
-            <p>0 Attorneys Found</p>
+        {% endifequal %}
+        {% endwith %}
+        {% endfor %}
+    </div>
+    <div class="attorneys">
+        <h3>Associates</h3>
+        {% for attorney in attorneys %}
+        {% with attorney.object as attorney %}
+        {% ifequal "AS" attorney.category %}
+        <div class="attorney-item" id="attorney-{{ attorney.pk }}">    
+            <div class="name">
+                <h3><a href="{{ attorney.get_absolute_url }}">{{ attorney.name }}</a></h3>
+            </div>
+            <div class="photo" id="attorney-{{ attorney.pk }}-photo" style="display: none;">
+                {% if attorney.photo %}
+                    <img src="{% url file attorney.photo.pk %}128x128/" title="{{ attorney.name }}"  />
+                {% else %}
+                    <img src="/path/to/default/photo" />
+                {% endif %}
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        {% endifequal %}
+        {% endwith %}
+        {% endfor %}
+    </div>
+    <div class="attorneys">
+        <h3>Of Counsel</h3>
+        {% for attorney in attorneys %}
+        {% with attorney.object as attorney %}
+        {% ifequal "OF" attorney.category %}
+        <div class="attorney-item" id="attorney-{{ attorney.pk }}">    
+            <div class="name">
+                <h3><a href="{{ attorney.get_absolute_url }}">{{ attorney.name }}</a></h3>
+            </div>
+            <div class="photo" id="attorney-{{ attorney.pk }}-photo" style="display: none;">
+                {% if attorney.photo %}
+                    <img src="{% url file attorney.photo.pk %}128x128/" title="{{ attorney.name }}"  />
+                {% else %}
+                    <img src="/path/to/default/photo" />
+                {% endif %}
+            </div>
+            <div style="clear:both"></div>
+        </div>
+        {% endifequal %}
+        {% endwith %}
         {% endfor %}
     </div>
     
@@ -61,12 +108,4 @@ $(".attorney-item").hover(
   }
 );
 </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-		var iconrow = new dropdown({
-			container:	'more-options-wrap',
-			trigger:	'more-options-trigger',
-			target:		'more-options-target'
-		});
-	</script>
 {% endblock %}
