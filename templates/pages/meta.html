@@ -13,17 +13,7 @@
 
             <div class="meta {% if not user.is_authenticated and not category and not tags %}anon{% endif %}">
     			<div class="meta-left">
-                	{% if user.is_authenticated %}
-                	<div class="submitted">Created {{ page.create_dt|date:"long" }}
-                	by <a href="{{ page.creator.get_absolute_url }}">
-                	{% if page.creator.first_name %}{{ page.creator.first_name }} {{ page.creator.last_name }}
-                    {% else %}
-                    {{ page.creator }}
-                   {% endif %}</a>
-                    </div>
-                    {% endif %}
-                	
-    				{% if category %}
+                	{% if category %}
     				<div class="categories">
     					<strong>Category: </strong><a href="{% url page.search %}?q=category:{{ category }}">{{ category }}</a>
     				{% if sub_category %}
@@ -39,6 +29,26 @@
     					{% endfor %}
     				</div>
     				{% endif %}
+                	
+                	{% if user.is_authenticated %}
+                	<div class="submitted">Created {{ page.create_dt|date:"long" }}
+                	by <a href="{{ page.creator.get_absolute_url }}">
+                	{% if page.creator.first_name %}{{ page.creator.first_name }} {{ page.creator.last_name }}
+                    {% else %}
+                    {{ page.creator }}
+                   {% endif %}</a>
+                    </div>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                	<div class="submitted">Last updated {{ page.update_dt|date:"long" }}
+                	by <a href="{{ page.owner.get_absolute_url }}">
+                	{% if page.owner.first_name %}{{ page.owner.first_name }} {{ page.owner.last_name }}
+                    {% else %}
+                    {{ page.owner }}
+                   {% endif %}</a>
+                    </div>
+                    {% endif %}
+                	
                 </div>
                 <div class="meta-right">
     				<a class="print-link" href="{% url page.print_view page.slug %}">Print</a>

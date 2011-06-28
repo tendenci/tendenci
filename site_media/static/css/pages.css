@@ -24,12 +24,6 @@
 	position: relative;
 }
 
-.t .pages-wrap .page-wrap-search {
-	border: 1px solid #CCC;
-	margin-bottom: 20px;
-	background-color: white;
-}
-
 .t .pages-wrap .page-content {
     padding: 10px 10px 0 10px;
 }
