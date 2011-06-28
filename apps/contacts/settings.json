@@ -1,0 +1,20 @@
+[
+	{
+        "default_value": "", 
+        "description": "A list of email address that recieve an email when the contact form is submitted", 
+        "data_type": "string", 
+        "update_dt": "2010-08-12 17:19:11", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "contactrecipients", 
+        "value": "", 
+        "label": "Contact Form Recipients", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "contacts", 
+        "store": true, 
+        "updated_by": ""
+    }
+
+]

@@ -1,0 +1,36 @@
+[
+	{
+        "default_value": "true", 
+        "description": "Module is enabled or not.", 
+        "data_type": "boolean", 
+        "update_dt": "2010-08-13 09:33:29", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "enabled", 
+        "value": "true", 
+        "label": "Enabled", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "forms", 
+        "store": true, 
+        "updated_by": ""
+    }, 
+    {
+        "default_value": "Forms", 
+        "description": "The name of the module.", 
+        "data_type": "string", 
+        "update_dt": "2010-08-13 09:33:29", 
+        "input_type": "text", 
+        "client_editable": false, 
+        "name": "label", 
+        "value": "Forms", 
+        "label": "Label", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "forms", 
+        "store": true, 
+        "updated_by": ""
+    }
+]
