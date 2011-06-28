@@ -11,7 +11,7 @@ from attorneys.models import Attorney
 
 def index(request, template_name='attorneys/index.html'):
     attorneys = Attorney.objects.search(query=None, user=request.user)
-    attorneys = attorneys.order_by('-create_dt')
+    attorneys = attorneys.order_by('create_dt')
     
     log_defaults = {
         'event_id' : 496000,
