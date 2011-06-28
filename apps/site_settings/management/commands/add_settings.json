@@ -1936,22 +1936,6 @@
         "scope_category": "service", 
         "store": true, 
         "updated_by": ""
-    },
-    {
-        "default_value": "descending", 
-        "description": "Ordering used for photos", 
-        "data_type": "string",
-        "update_dt": "2011-06-01 12:00:00",
-        "input_type": "select",
-        "client_editable": true, 
-        "name": "photoordering", 
-        "value": "descending",
-        "label": "Photo Ordering", 
-        "input_value": "ascending, descending", 
-        "parent_id": 0, 
-        "scope": "module", 
-        "scope_category": "photos", 
-        "store": true, 
-        "updated_by": ""
     }
+    
 ]

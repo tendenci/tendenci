@@ -1,0 +1,53 @@
+[
+	{
+        "default_value": "true", 
+        "description": "Module is enabled or not.", 
+        "data_type": "boolean", 
+        "update_dt": "2010-08-12 17:19:11", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "enabled", 
+        "value": "true", 
+        "label": "Enabled", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "payments", 
+        "store": true, 
+        "updated_by": ""
+    }, 
+    {
+        "default_value": "Payments", 
+        "description": "The name of the module.", 
+        "data_type": "string", 
+        "update_dt": "2010-08-12 17:19:11", 
+        "input_type": "text", 
+        "client_editable": false, 
+        "name": "label", 
+        "value": "Payments", 
+        "label": "Label", 
+        "input_value": " ", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "payments", 
+        "store": false, 
+        "updated_by": ""
+    }, 
+    {
+        "default_value": "", 
+        "description": "A list of email addresses that receive admin notices from payments module on the site. Comma delimited.", 
+        "data_type": "string", 
+        "update_dt": "2011-06-01 12:00:00", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "paymentrecipients", 
+        "value": "", 
+        "label": "Payments admin notice recipients", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "payments", 
+        "store": true, 
+        "updated_by": ""
+    }
+ ]

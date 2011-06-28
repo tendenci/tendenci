@@ -1,5 +1,7 @@
 from django.db import models
+from django.utils.encoding import smart_str
 from perms.utils import update_admin_group_perms
+
 
 class PluginApp(models.Model):
     title = models.CharField(max_length=255)
@@ -18,7 +20,7 @@ from django.core.management import call_command
 post_save = models.signals.post_save
 post_delete = models.signals.post_delete
 
-def _update_apps():
+def _update_apps(instance=None, created=False):
     db2json()
     from django.conf import settings
     from django.db.models.loading import cache as app_cache
@@ -27,9 +29,12 @@ def _update_apps():
     app_cache.loaded = False # clear cache
     call_command('syncdb', interactive=False, migrate_all=True)
     call_command('touch_settings')
+    # update the site settings (in database) if any
+    if instance:
+        call_command('update_settings', smart_str(instance.package))
 
-def post_save_pluginapp(sender, **kwargs):
-    _update_apps()
+def post_save_pluginapp(sender, instance=None, created=False, **kwargs):
+    _update_apps(instance=instance, created=created)
     # assign permission to the admin auth group
     update_admin_group_perms()
     
