@@ -1,5 +1,5 @@
 .t {
-	width: 90%;
+	width: 96%;
 }
 
 /* general */
@@ -35,15 +35,15 @@
 	display: none;
 }
 
+/* Index page */
+.t .attorneys {width: 45%; float: left; margin-bottom: 20px;}
+.t .attorneys h2 {font-weight: bold;}
+
 .t .attorney-item { position: relative; }
-.t .attorney-item .photo {position: absolute; left: 200px;top: 0;}
+.t .attorney-item .photo {position: absolute; left: 200px;top: -50px;}
 
 /* search form */
-.t form.search-form input[type="text"] {
-	width: 60%;
-	margin-bottom: 10px;
-	padding: 5px;
-}
+.t form.search-form input[type="text"] attorney-wrap
 
 .t form.search-form input[type="submit"] {
 	padding: 5px;
@@ -51,90 +51,90 @@
 	cursor: pointer;
 }
 
-.t .attorneys-search-wrap {
-    width: 90%;
+.t .attorneys-wrap {
+	margin-bottom: 20px;
 }
 
-.t .attorneys-search {
-    border-bottom: 1px solid #ccc;
+.t .attorney-search-item {
     padding: 10px 0 10px 0;
     margin-bottom: 10px;
     position: relative;
 }
 
-.t .attorneys-search .photo {
+.t .attorney-search-item .photo {
     padding: 5px 15px 15px 5px;
     float: left;
     text-align: center;
 }
 
-.t .attorneys-search .photo img {
-    width: 128px;
-    height: 128px;
+.t .attorney-search-item .photo img {
+    width: 140px;
+    height: 180px;
     border: 6px solid #f2f2f2;
 }
 
-.t .attorneys-search .info {
+.t .attorney-search-item .info {
     padding-top: 5px;
+    float: left;
 }
 
-.t .attorneys-search .info .position {
+.t .attorney-search-item .info .position {
     font-style: italic;
     font-size: 12px;
     padding-top: 5px;
 }
 
-.t .attorneys-search .info .contact {
+.t .attorney-search-item .info .contact {
     margin-top: 10px;
     font-size: 12px;
 }
 
-.t .view-attorney {
-    width: 100%;
+.t .attorney-wrap {
+    padding: 0 10px;
     position: relative;
 }
 
-.t .view-attorney h1 {
+.t .attorney-wrap h1 {
     color: #888;
     font-size: 18px;
     padding: 10px;
 }
 
-.t .view-attorney .top-wrap { 
+.t .attorney-wrap .top-wrap { 
     
 }
 
-.t .view-attorney .top-wrap .photo {
+.t .attorney-wrap .top-wrap .photo {
     padding: 5px 15px 15px 5px;
     float: left;
     text-align: center;
 }
 
-.t .view-attorney .top-wrap .photo img {
-    width: 128px;
-    height: 128px;
+.t .attorney-wrap .top-wrap .photo img {
+    width: 140px;
+    height: 180px;
     border: 6px solid #f2f2f2;
 }
 
-.t .view-attorney .top-wrap .position {
+.t .attorney-wrap .top-wrap .position {
     font-style: italic;
     font-size: 12px;
     font-weight: bold;
 }
 
-.t .view-attorney .top-wrap .contact {
+.t .attorney-wrap .top-wrap .contact {
     margin-top: 10px;
     font-size: 12px;
 }
 
-.t .view-attorney .bottom-wrap {
+.t .attorney-wrap .bottom-wrap {
     margin-top: 10px;
 }
 
-.t .view-attorney .bottom-wrap .left-wrap{
+.t .attorney-wrap .bottom-wrap .left-wrap{
     float: left;
     padding-right: 15px
 }
 
-.t .view-attorney .bottom-wrap .right-wrap {
+.t .attorney-wrap .bottom-wrap .right-wrap {
 }

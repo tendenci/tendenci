@@ -1,0 +1,27 @@
+        <div class="wrap-search-item">
+            <div class="search-item attorney-search-item">
+                <div class="photo">
+                    {% if attorney.photo %}
+                        <img src="{% url file attorney.photo.pk %}140x180/" title="{{ attorney.name }}"  />
+                    {% endif %}
+                </div>
+                <div class="info">
+                    <a href="{{ attorney.get_absolute_url }}"><h3>{{ attorney.name }}</h3></a>
+                    <div class="position">
+                        <a href="{% url attorneys.search %}?q=category:{{ attorney.category }}">{{ attorney.get_category_display }}</a>{% if attorney.category %}, {% endif %}
+                        <a href="{% url attorneys.search %}?q=position:{{ attorney.position }}">{{ attorney.position }}</a>
+                        {% if attorney.position %}&nbsp;&mdash;&nbsp;{% endif %}{{ attorney.city }}{% if attorney.city %}, {% endif %}{{ attorney.state }}
+                    </div>
+                    <div class="contact">
+                        {% if attorney.phone %}Phone: {{ attorney.phone }}{% endif %}<br/>
+                        {% if attorney.fax %}Fax: {{ attorney.fax }}{% endif %}<br/>
+                        {% if attorney.email %}Email: <a href="mailto:{{ attorney.email }}">{{ attorney.email }}</a>{% endif %}<br/>
+                    </div>
+                    {% if attorney.bio %}
+                        <p>{{ attorney.bio|striptags|truncatewords:"80" }}</p>
+                    {% endif %}
+                </div>
+                <div style="clear:both"></div>
+            </div>
+            {% include "attorneys/meta.html" %}
+        </div>
