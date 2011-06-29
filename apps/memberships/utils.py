@@ -172,7 +172,7 @@ def new_mems_from_csv(file_path, app, columns):
             membership.owner = user
             membership.creator = user
             membership.subscribe_dt = subscribe_dt
-            membership.payment_method = m.get('payment-method') or ''
+            membership.payment_method = m.get('payment-method')
             membership.renewal = m.get('renewal')
             membership.status = m.get('status') or True
             membership.status_detail = m.get('status-detail') or 'Active'
