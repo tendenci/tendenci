@@ -71,16 +71,19 @@ div.forms div.form-field input.timepicker{
 #corp-import-wrap .form-field {
     background-color: #F7F7F7;
     height: 25px;
-    width: 425px;
+    width: 725px;
 }
 #corp-import-wrap .form-field .label {
     border-bottom: 1px solid #EEEEEE;
     padding: 5px 10px 5px 0;
     text-align: right;
 }
-#corp-import-wrap .form-field .label, #corp-import-wrap .form-field .field {
+#corp-import-wrap .form-field .label {
     float: left;
-    width: 200px;
+   	width: 365px;
+}
+#corp-import-wrap .form-field .field{
+	float: left;
 }
  .corp-import-step{
  	padding: 1em 0 0.5em 0;

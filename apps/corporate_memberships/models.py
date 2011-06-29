@@ -250,7 +250,7 @@ class CorporateMembership(TendenciBaseModel):
         return "%s" % (self.name)
     
     def save(self, *args, **kwargs):
-        if not self.id:
+        if not self.guid:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
         
