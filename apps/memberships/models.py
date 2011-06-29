@@ -276,9 +276,9 @@ class Membership(TendenciBaseModel):
     subscribe_dt = models.DateTimeField(_("Subscribe Date"))
     expire_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
-    payment_method = models.CharField(_("Payment Method"), max_length=50, default='')
+    # payment_method = models.CharField(_("Payment Method"), max_length=50, default='')
     # payment_method_temp = models.CharField(_("Payment Method"), max_length=50, default='')
-    # payment_method = models.ForeignKey(PaymentMethod, null=True)
+    payment_method = models.ForeignKey(PaymentMethod, null=True)
     ma = models.ForeignKey("App")
     objects = MembershipManager()
 
