@@ -276,8 +276,6 @@ class Membership(TendenciBaseModel):
     subscribe_dt = models.DateTimeField(_("Subscribe Date"))
     expire_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
-    # payment_method = models.CharField(_("Payment Method"), max_length=50, default='')
-    # payment_method_temp = models.CharField(_("Payment Method"), max_length=50, default='')
     payment_method = models.ForeignKey(PaymentMethod, null=True)
     ma = models.ForeignKey("App")
     objects = MembershipManager()
@@ -394,7 +392,7 @@ class MembershipArchive(TendenciBaseModel):
     expire_dt = models.DateTimeField(_("Expire Date Time"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     invoice = models.ForeignKey(Invoice, null=True)
-    payment_method = models.CharField(_("Payment Method"), max_length=50)
+    payment_method = models.ForeignKey(PaymentMethod, null=True)
     ma = models.ForeignKey("App")
     
     membership_create_dt = models.DateTimeField()   # original create dt for the membership entry
@@ -862,7 +860,7 @@ class AppEntry(TendenciBaseModel):
                 'renewal': self.membership_type.renewal,
                 'subscribe_dt':datetime.now(),
                 'expire_dt': expire_dt,
-                'payment_method':'',
+                'payment_method': None,
                 'ma':self.app,
                 'corporate_membership_id': self.corporate_membership_id,
                 'creator':user,
