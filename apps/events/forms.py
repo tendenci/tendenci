@@ -9,8 +9,10 @@ from django.forms.util import ErrorList
 
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
-    Payment, PaymentMethod, Sponsor, Organizer, Speaker, Type, \
+    Payment, Sponsor, Organizer, Speaker, Type, \
     TypeColorSet, Registrant, RegConfPricing
+
+from payments.models import PaymentMethod
 from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
@@ -307,12 +309,6 @@ class Reg8nEditForm(BetterModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(Reg8nEditForm, self).__init__(*args, **kwargs)
-        
-#        if not is_admin(user):
-#            qs = PaymentMethod.objects.filter(admin_only=0)
-#        else:
-#            qs = PaymentMethod.objects.all()
-#        self.fields['payment_method'].queryset = qs
             
 
 class Reg8nForm(forms.Form):
@@ -387,12 +383,9 @@ class RegistrationForm(forms.Form):
                 payment_methods = reg_conf.payment_method.all()
             else:
                 filters = {
-                    'label': 'Credit Card'
+                    'machine_name': 'credit-card'
                 }
                 payment_methods = reg_conf.payment_method.exclude(**filters)
-                
-#            if not is_admin(user):
-#                payment_methods = payment_methods.filter(admin_only=False)
             
             self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
                 queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=False)
