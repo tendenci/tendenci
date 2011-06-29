@@ -24,10 +24,14 @@
     	<form action="{% url page.add %}" method="post">{% csrf_token %}
     	<div class="forms">			
 			{{ form|styled_form }}
-            <h1>Page Category</h1>
-            {{ categoryform|styled_form }}
-            <h1>Page Meta</h1>
-            {{ metaform|styled_form }}
+            <fieldset class="boxy-grey">
+                <legend>Page Category</legend>
+                {{ categoryform|styled_form }}
+            </fieldset>
+            <fieldset class="boxy-grey">
+                <legend>Page Meta</legend>
+                {{ metaform|styled_form }}
+            </fieldset>
         	<input type="submit" value="Add {% firstof MODULE_PAGES_LABEL 'Page' %}" />
 		</div>
         </form>
