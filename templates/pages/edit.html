@@ -30,12 +30,16 @@
     	<div class="forms">
 			{{ form|styled_form }}
             <fieldset class="boxy-grey" >
-                <legend>Page Category</legend>
-                {{ categoryform|styled_form }}
+                <legend id="category-title" style="cursor: pointer">Category</legend>
+                <div id="category-form">
+                    {{ categoryform|styled_form }}
+                </div>
             </fieldset>
             <fieldset class="boxy-grey">
-                <legend>Page Meta</legend>
-                {{ metaform|styled_form }}
+                <legend id="meta-title" style="cursor: pointer">Meta</legend>
+                <div id="meta-form">
+                    {{ metaform|styled_form }}
+                </div>
             </fieldset>
         	<input type="submit" value="Save Changes" />
 		</div>
@@ -93,5 +97,15 @@
 				return false;
 			});
 		});
+    </script>
+    <script type="text/javascript">
+        $('#meta-form').hide();
+        $('#category-form').hide();
+        $('#meta-title').click(function() {
+            $('#meta-form').toggle('slow');
+        });
+        $('#category-title').click(function() {
+            $('#category-form').toggle('slow');
+        });
     </script>
 {% endblock %}
