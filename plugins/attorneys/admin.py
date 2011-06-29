@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
@@ -160,7 +161,21 @@ class AttorneyAdmin(admin.ModelAdmin):
             ObjectPermission.objects.assign(instance.creator, instance) 
         
         return instance
-    
+
+    def save_formset(self, request, form, formset, change):
+
+        for f in formset.forms:
+            file = f.save(commit=False)
+            if file.file:
+                file.staff = form.save()
+                file.content_type = ContentType.objects.get_for_model(file.attorney)
+                file.object_id = file.attorney.pk
+                file.creator = request.user
+                file.owner = request.user
+                file.save()
+
+        formset.save()
+
     def get_form(self, request, obj=None, **kwargs):
         """
         inject the user in the form.
