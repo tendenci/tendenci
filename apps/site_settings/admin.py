@@ -21,4 +21,4 @@ class SettingAdminDev(admin.ModelAdmin):
     search_fields = ['name','label']
     list_filter = ['scope_category']
     
-admin.site.register(Setting, SettingAdminDev)
+# admin.site.register(Setting, SettingAdminDev)
