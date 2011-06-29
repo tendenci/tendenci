@@ -12,7 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from user_groups.models import Group
         from subscribers.models import GroupSubscription as GS
-        from campaign_monitor.models import ListMap, Campaign
+        from campaign_monitor.models import ListMap, Campaign, Template
         from createsend import CreateSend, Client, List, Subscriber, \
             BadRequest, Unauthorized
         
@@ -152,4 +152,19 @@ class Command(BaseCommand):
             campaign.subject = c.Subject
             campaign.name = c.Name
             campaign.save()
-                
+            
+        print "Done"
+            
+        print 'Syncing templates...'
+        templates = cl.templates()
+        for t in templates:
+            try:
+                template = Template.objects.get(template_id = t.TemplateID)
+            except Template.DoesNotExist:
+                print "Creating template (%s - %s)" % (t.TemplateID, t.Name)
+                template = Template(template_id = t.TemplateID)
+            template.name = t.Name
+            template.preview_url = t.PreviewURL
+            template.screenshot_url = t.ScreenshotURL
+        
+        print "Done"
