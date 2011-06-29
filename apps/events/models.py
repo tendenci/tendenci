@@ -212,7 +212,7 @@ class RegistrationConfiguration(models.Model):
     # TODO: use shorter name
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
-    payment_method = models.ManyToManyField('PaymentMethod')    
+    payment_method = models.ManyToManyField(GlobalPaymentMethod)    
     payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
     
     limit = models.IntegerField(_('Registration Limit'), default=0)
@@ -330,7 +330,7 @@ class Registration(models.Model):
     
     # TODO: Payment-Method must be soft-deleted
     # so that it may always be referenced
-    payment_method = models.ForeignKey('PaymentMethod', null=True)
+    payment_method = models.ForeignKey(GlobalPaymentMethod, null=True)
     amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
 
     creator = models.ForeignKey(User, related_name='created_registrations', null=True)
