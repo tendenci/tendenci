@@ -34,7 +34,7 @@ def index(request, slug=None):
 def search(request, template_name="speakers/search.html"):
     query = request.GET.get('q', None)
     speakers = Speaker.objects.search(query, user=request.user)
-    speakers = speakers.order_by('order')
+    speakers = speakers.order_by('-order')
 
     return render_to_response(template_name, {'speakers':speakers},
         context_instance=RequestContext(request))
