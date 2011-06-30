@@ -62,7 +62,13 @@ class Speaker(TendenciBaseModel):
         
     def professional_photo(self):
         try:
-            return self.speakerfile_set.get(photo_type='Professional')
+            return self.speakerfile_set.filter(photo_type='Professional')[0]
+        except:
+            return False
+    
+    def fun_photo(self):
+        try:
+            return self.speakerfile_set.filter(photo_type='Fun')[0]
         except:
             return False
 
