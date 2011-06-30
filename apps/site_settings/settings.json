@@ -86,7 +86,7 @@
     }, 
     {
         "default_value": "Ed Schipul", 
-        "description": "Name of the person that appears in the signature of the contact form submission email. The contact form submission email is received by the email addresses listed under sitecontactrecipients.", 
+        "description": "Name of the person that appears in the signature of the contact form submission email.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
