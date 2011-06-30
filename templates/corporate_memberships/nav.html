@@ -60,8 +60,8 @@
 		</ul>
 		
 	</li>
-	{% if MODULE_MEMBERSHIPS_ENABLED %}
-	<li><a href="{% url news %}">{% firstof MODULE_MEMBERSHIPS_LABEL 'Memberships' %}</a></li>
-	{% endif %}
+	
+	<li><a href="{% url membership.index %}">{% firstof MODULE_MEMBERSHIPS_LABEL 'Memberships' %}</a></li>
+	
 	</ul>
 </div>
