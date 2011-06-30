@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block body %}
-{% autopaginate speaker 5 %}
+{% autopaginate speakers 5 %}
 {% has_perm user speaker.add_speaker as can_add_speaker %}
 <div class="t">
     <h1>Speakers</h1>
@@ -23,7 +23,7 @@
     <div><a href="{% url admin:speakers_speaker_add %}">Add Speaker</a></div>
     {% endif %}
     <div class="speaker-search-wrap">
-        {% for speaker_member in speaker %}
+        {% for speaker_member in speakers %}
         {% with speaker_member.object as speaker_member %}
         <div class="speaker-search-member">
             <div class="quick-options">
