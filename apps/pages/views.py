@@ -120,7 +120,7 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
     page.meta = MetaTags(**defaults)
     
     if request.method == "POST":
-        form = form_class(request.POST, instance=page, user=request.user, prefix='page')
+        form = form_class(request.POST, instance=page, user=request.user)
         metaform = meta_form_class(request.POST, instance=page.meta, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
@@ -178,7 +178,7 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
                                                           
             return HttpResponseRedirect(reverse('page', args=[page.slug]))             
     else:
-        form = form_class(instance=page, user=request.user, prefix='page')
+        form = form_class(instance=page, user=request.user)
         metaform = meta_form_class(instance=page.meta, prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
     
@@ -231,7 +231,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
     content_type = get_object_or_404(ContentType, app_label='pages',model='page')
     
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user, prefix='page')
+        form = form_class(request.POST, user=request.user)
         metaform = meta_form_class(request.POST, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
@@ -299,7 +299,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
             'model': 'page',
             'pk': 0, #not used for this view but is required for the form
         }
-        form = form_class(user=request.user, prefix='page')
+        form = form_class(user=request.user)
         metaform = meta_form_class(prefix='meta')
         categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
     return render_to_response(template_name, 
