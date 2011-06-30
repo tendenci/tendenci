@@ -16,6 +16,9 @@ class ListMap(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     last_sync_dt = models.DateTimeField(null=True)
     
+    def __unicode__(self):
+        return self.group.name
+    
 class GroupQueue(models.Model):
     group = models.ForeignKey(Group)
     
@@ -29,10 +32,15 @@ class Template(models.Model):
     This represents a Template in Campaign Monitor.
     """
     template_id = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     preview_url = models.URLField()
     screenshot_url = models.URLField()
+    
+    #post only
+    html_url = models.URLField(null=True, blank=True)
+    zip_url = models.URLField(null=True, blank=True)
     
 class Campaign(models.Model):
     """
