@@ -6,6 +6,7 @@
 {{ object.company }}
 {{ object.position }}
 {{ object.track }}
+{{ object.order }}
 
 {% tags_for_object object as tags %}
 {% for tag in tags %}
