@@ -218,12 +218,13 @@ class JobForm(TendenciBaseForm):
             fields_to_pop += [
                'captcha'
             ]
-        print is_admin(self.user)
+
         if not is_admin(self.user):
             fields_to_pop += [
                 'entity',
                 'allow_anonymous_view',
                 'user_perms',
+                'member_perms',
                 'group_perms',
                 'post_dt',
                 'activation_dt',
