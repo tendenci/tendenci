@@ -24,10 +24,10 @@ class FileAdmin(admin.StackedInline):
     extra = 0
 
 class SpeakerAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'edit_link', 'order', 'name', 'track', 'company', 'position']
+    list_display = ['view_on_site', 'edit_link', 'ordering', 'name', 'track', 'company', 'position']
     list_filter = ['company', 'track']
     search_fields = ['name','biography']
-    ordering = ('-order',)
+    ordering = ('-ordering',)
     prepopulated_fields = {'slug': ['name']}
     fieldsets = (
         (None, {'fields': (
@@ -36,7 +36,7 @@ class SpeakerAdmin(admin.ModelAdmin):
             'company',
             'position',
             'track',
-            'order',
+            'ordering',
             'biography',        
             'email',
             'personal_sites',
