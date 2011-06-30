@@ -24,9 +24,8 @@ class FileAdmin(admin.StackedInline):
     extra = 0
 
 class SpeakerAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'order', 'name', 'slug', 'company', 'position']
-    list_display_links = ['name']
-    list_filter = ['company']
+    list_display = ['view_on_site', 'edit_link', 'order', 'name', 'track', 'company', 'position']
+    list_filter = ['company', 'track']
     search_fields = ['name','biography']
     ordering = ('-order',)
     prepopulated_fields = {'slug': ['name']}
@@ -63,6 +62,7 @@ class SpeakerAdmin(admin.ModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
+    
     def view_on_site(self, obj):
         link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
@@ -73,7 +73,15 @@ class SpeakerAdmin(admin.ModelAdmin):
         return link
     view_on_site.allow_tags = True
     view_on_site.short_description = 'view'
-
+    
+    
+    def edit_link(self, obj):
+        link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:speakers_speaker_change', args=[obj.pk])
+        return link
+    edit_link.allow_tags = True
+    edit_link.short_description = 'edit'
+    
+    
     def years(self, obj):
         return obj.years()
 
