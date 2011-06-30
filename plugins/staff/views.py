@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.core.files.images import ImageFile
 
 from base.http import Http403
+from event_logs.models import EventLog
 from files.utils import get_image
 from perms.utils import has_perm
 from perms.utils import is_admin
@@ -27,6 +28,16 @@ def index(request, slug=None, cv=None):
         template_name="staff/cv.html"
     else:
         template_name="staff/view.html"
+        
+     log_defaults = {
+        'event_id' : 1060500,
+        'event_data': '%s (%d) viewed by %s' % (staff._meta.object_name, staff.pk, request.user),
+        'description': '%s viewed' % staff._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': staff,
+    }
+    EventLog.objects.log(**log_defaults)
     
     if has_perm(request.user, 'staff.view_staff', staff):
         return render_to_response(template_name, {'staff': staff},
@@ -38,6 +49,16 @@ def search(request, template_name="staff/search.html"):
     query = request.GET.get('q', None)
     staff = Staff.objects.search(query, user=request.user)
     staff = staff.order_by('start_date')
+    
+    log_defaults = {
+        'event_id' : 1060400,
+        'event_data': '%s searched by %s' % ('Staff', request.user),
+        'description': '%s searched' % 'Staff',
+        'user': request.user,
+        'request': request,
+        'source': 'staff'
+    }
+    EventLog.objects.log(**log_defaults)
 
     return render_to_response(template_name, {'staff':staff},
         context_instance=RequestContext(request))
