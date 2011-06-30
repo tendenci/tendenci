@@ -27,7 +27,7 @@ class Speaker(TendenciBaseModel):
         ))
     biography = models.TextField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
-    order = models.IntegerField(blank=True, max_length=3)
+    order = models.IntegerField(max_length=3)
 
     facebook = models.CharField(blank=True, max_length=100)
     twitter = models.CharField(blank=True, max_length=100)
