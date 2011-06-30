@@ -25,13 +25,13 @@
     	<div class="forms">			
 			{{ form|styled_form }}
             <fieldset class="boxy-grey" >
-                <legend id="category-title" style="cursor: pointer">Category</legend>
+                <legend id="category-title" style="cursor: pointer"><span>+</span> Category</legend>
                 <div id="category-form">
                     {{ categoryform|styled_form }}
                 </div>
             </fieldset>
             <fieldset class="boxy-grey">
-                <legend id="meta-title" style="cursor: pointer">Meta</legend>
+                <legend id="meta-title" style="cursor: pointer"><span>+</span> SEO Meta</legend>
                 <div id="meta-form">
                     {{ metaform|styled_form }}
                 </div>
@@ -82,10 +82,16 @@
         $('#meta-form').hide();
         $('#category-form').hide();
         $('#meta-title').click(function() {
-            $('#meta-form').toggle('slow');
+            $('#meta-form').slideToggle('fast');
+            if ($('#meta-title span').text() == '+') {
+                $('#meta-title span').text('-');}
+            else {$('#meta-title span').text('+');}
         });
         $('#category-title').click(function() {
-            $('#category-form').toggle('slow');
+            $('#category-form').slideToggle('fast');
+             if ($('#category-title span').text() == '+') {
+                $('#category-title span').text('-');}
+            else {$('#category-title span').text('+');}
         });
     </script>
 {% endblock %}
