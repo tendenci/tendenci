@@ -1,5 +1,12 @@
 from django.contrib import admin
 from campaign_monitor.models import Campaign, Template
+from campaign_monitor.forms import CampaignForm, TemplateForm
 
-admin.site.register(Template)
-admin.site.register(Campaign)
+class TemplateAdmin(admin.ModelAdmin):
+    form = TemplateForm
+    
+class CampaignAdmin(admin.ModelAdmin):
+    form = CampaignForm
+
+admin.site.register(Template, TemplateAdmin)
+admin.site.register(Campaign, CampaignAdmin)
