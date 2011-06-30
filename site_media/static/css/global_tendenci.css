@@ -30,7 +30,7 @@
 .meta .print-link {float: right;}
 .meta .share-link {float: right; margin-right: 40px; display: none;}
 
-.editor-bar {background-color: #efd; padding:0 5px 0; border-top: solid 1px #ccc;font-size: 12px; min-height: 28px; line-height: 18px;}
+.editor-bar {background-color: #efd; padding:0 5px 0; border-top: solid 1px #ccc;font-size: 12px; min-height: 28px; line-height: 18px; font-family: arial, tahoma, sans-serif;}
 .editor-bar .bar-label {font-size: 10px; color: #999; display: block;}
 .editor-bar .perm-status {float: left;padding-top: 5px;margin-left: 5px;}
 .editor-bar .perm-status ul {margin: 0;}
