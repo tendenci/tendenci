@@ -30,7 +30,11 @@ class TemplateForm(forms.ModelForm):
         
         if name and html_url and zip_url and screenshot_url:
             try:
-                CST.create(client_id, name, html_url, zip_url, screenshot_url)
+                if self.instance:
+                    CST(template_id = self.instance.template_id)
+                    CST.update(name, html_url, zip_url, screenshot_url)
+                else:
+                    CST.create(client_id, name, html_url, zip_url, screenshot_url)
             except Exception, e:
                 raise forms.ValidationError(e)
                 
