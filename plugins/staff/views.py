@@ -29,7 +29,7 @@ def index(request, slug=None, cv=None):
     else:
         template_name="staff/view.html"
         
-     log_defaults = {
+    log_defaults = {
         'event_id' : 1060500,
         'event_data': '%s (%d) viewed by %s' % (staff._meta.object_name, staff.pk, request.user),
         'description': '%s viewed' % staff._meta.object_name,
