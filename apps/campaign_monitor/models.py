@@ -7,6 +7,7 @@ from django.db.models.signals import post_save, pre_delete
 from user_groups.models import Group, GroupMembership
 from forms_builder.forms.models import FormEntry
 from subscribers.models import GroupSubscription
+from files.models import file_directory
 
 class ListMap(models.Model):
     group = models.ForeignKey(Group)
@@ -16,6 +17,9 @@ class ListMap(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     last_sync_dt = models.DateTimeField(null=True)
     
+    def __unicode__(self):
+        return self.group.name
+    
 class GroupQueue(models.Model):
     group = models.ForeignKey(Group)
     
@@ -23,7 +27,52 @@ class SubscriberQueue(models.Model):
     group = models.ForeignKey(Group)
     user = models.ForeignKey(User, null=True)
     subscriber = models.ForeignKey(FormEntry, null=True)
-
+    
+class Template(models.Model):
+    """
+    This represents a Template in Campaign Monitor.
+    """
+    template_id = models.CharField(max_length=100, unique=True, null=True)
+    name = models.CharField(max_length=100)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    
+    #get only
+    cm_preview_url = models.URLField(null=True)
+    cm_screenshot_url = models.URLField(null=True)
+    
+    #post only
+    html_file = models.FileField(upload_to=file_directory, null=True)
+    zip_file = models.FileField(upload_to=file_directory, null=True)
+    screenshot_file = models.FileField(upload_to=file_directory, null=True)
+    
+class Campaign(models.Model):
+    """
+    This represents a Campaign. It is considered as a "Draft" if it is 
+    not yet sent.
+    """
+    STATUS_CHOICES = (
+        ('S','Sent'),
+        ('C', 'Scheduled'),
+        ('D', 'Draft'),
+    )
+    
+    campaign_id = models.CharField(max_length=100, unique=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='D')
+    
+    #fields for sync
+    sent_date = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(max_length=100)
+    subject =  models.CharField(max_length=100)
+    lists = models.ManyToManyField(ListMap)
+    
+    #fields for post only
+    from_name = models.CharField(max_length=100, null=True, blank=True)
+    from_email = models.EmailField(null=True, blank=True)
+    reply_to = models.EmailField(null=True, blank=True)
+    template = models.ForeignKey(Template, null=True, blank=True)
 
 # create post_save and pre_delete signals to sync with campaign monitor
 # http://www.campaignmonitor.com/api/getting-started/

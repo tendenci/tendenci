@@ -64,7 +64,7 @@ div.admin-links {
   -webkit-border-top-right-radius:5px;
 
   font:normal 11px/20px "Lucida Grande",Verdana,sans-serif !important;
-  background:#444 url(sprite.png) 0px -110px repeat-x !important;
+  background:#444 !important;
 
   position:absolute;
   top:-20px;
@@ -81,9 +81,6 @@ div.admin-links {
 div.admin-links a,
 div.admin-links a:hover {
   background-color:transparent !important;
-  background-image:url(sprite.png);
-  background-repeat:no-repeat;
-  background-position:25px 25px;
 
   color:#fff !important;
   text-transform:none !important;

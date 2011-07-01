@@ -1,5 +1,6 @@
 [
     {
+        "field_name": "first_name",
         "field_type": "first-name",
         "attribute_name": "",
         "description": "",
@@ -11,6 +12,7 @@
         "choices": ""
     },
     {
+        "field_name": "last_name",
         "field_type": "last-name",
         "attribute_name": "",
         "description": "",
@@ -22,6 +24,7 @@
         "choices": ""
     },
     {
+        "field_name": "email",
         "field_type": "email",
         "attribute_name": "",
         "description": "",
@@ -33,6 +36,7 @@
         "choices": ""
     },
     {
+        "field_name": "membership_type",
         "field_type": "membership-type",
         "attribute_name": "",
         "description": "",
@@ -44,6 +48,7 @@
         "choices": ""
     },
     {
+        "field_name": "payment_method",
         "field_type": "payment-method",
         "attribute_name": "",
         "description": "",

@@ -9,7 +9,7 @@
 {% is_admin request.user as isadmin %}
 <body bgcolor="#ffffff" text="#000000">
 <p>The following job was added 
-  to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Online Job Bank by {{request.user.get_full_name}}
+  to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Online Job Bank by <a href="{{ SITE_GLOBAL_SITEURL }}{% url profile request.user.username %}">{{request.user.get_full_name}}</a>
   {% if isadmin %}(administrator){% else %} and needs to be activated{% endif %}:</p>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -30,10 +30,7 @@
   job, go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
 
 {% if not isadmin %}
-    <br>
-<p>To activate this job, go 
-  to: <b>[jobactivatelink]</b> 
-  </p>
+<p>You can activate this job at <a href="{{ SITE_GLOBAL_SITEURL }}{% url job.approve object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url job.approve object.pk %}</a>.</p>
   {% endif %} 
  
 <P>Time submitted: {% now "D d M Y P" %}</P>

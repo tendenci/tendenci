@@ -128,7 +128,7 @@ class GroupMembershipBulkForm(forms.Form):
         super(GroupMembershipBulkForm, self).__init__(*args, **kwargs)
         self.fields['members'].initial = group.members.all()
     
-    members = forms.ModelMultipleChoiceField(queryset = User.objects.filter(is_active=1))
+    members = forms.ModelMultipleChoiceField(queryset = User.objects.filter(is_active=1), required=False)
     role = forms.CharField(required=False, max_length=255)
     status = forms.BooleanField(required=False, initial=True)
     status_detail = forms.ChoiceField(choices=(('active','Active'), ('inactive','Inactive'),), initial='active')

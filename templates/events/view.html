@@ -91,7 +91,11 @@
 		<div class="vitals">
             <div class="time-period">
                 <h4 class="vital-header">When?</h4>
+                {% ifequal event.start_dt|date:"M j, Y" event.end_dt|date:"M j, Y" %}
                 <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
+                {% else %}
+                <div class="line">{{ event.start_dt|date:"M j" }} - {{ event.end_dt|date:"M j, Y" }} </div>
+                {% endifequal %} 
                 <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
             </div>
 
