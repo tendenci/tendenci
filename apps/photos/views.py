@@ -20,7 +20,7 @@ from event_logs.models import EventLog
 from files.utils import get_image
 from photos.cache import PHOTO_PRE_KEY
 from photos.search_indexes import PhotoSetIndex
-from photos.models import Image, Pool, PhotoSet, AlbumCover
+from photos.models import Image, Pool, PhotoSet, AlbumCover, License
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 
 
@@ -554,17 +554,19 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
             messages.add_message(request, messages.INFO, 'Photo changes saved')
             return HttpResponseRedirect(reverse('photoset_details', args=(photoset_id,)))  
 
-    else:
-        # if not request.method == POST
+    else:  # if request.method != POST
 
         # i would like to use the search index here; but it appears that
         # the formset class only accepts a queryset; not a searchqueryset or list
         photo_qs = Image.objects.filter(photoset=photo_set).order_by("-update_dt")
         photo_formset = PhotoFormSet(queryset=photo_qs)
 
+    cc_licenses = License.objects.all()
+
     return render_to_response(template_name, {
         "photo_formset": photo_formset,
         "photo_set": photo_set,
+        "cc_licenses": cc_licenses,
     }, context_instance=RequestContext(request))
 
 

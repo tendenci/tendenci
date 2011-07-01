@@ -211,7 +211,7 @@ class License(models.Model):
     legal_code = models.URLField(_('legal code'), blank=True)
     
     def __unicode__(self):
-       return "%s %s" % (self.author, self.name)
+       return "%s" % (self.name)
 
 
 class Pool(models.Model):
