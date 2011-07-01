@@ -294,7 +294,7 @@ table.photo-form select {
 	border: 1px solid silver;
 	background-color: #FDFDFD;
 	padding: 10px;
-	margin-bottom: 20px;
+	margin-bottom: 5px;
 	-webkit-border-radius: 8px;
 	-moz-border-radius: 8px;
 	border-radius: 8px;
@@ -308,6 +308,16 @@ table.photo-form select {
 .photo-bulk-editor textarea,
 .photo-bulk-editor input[type="text"] {
 	width: 300px;
+}
+
+.bulk-license {
+	border: 1px solid silver;
+	background-color: #FDFDFD;
+	padding: 10px;
+	margin-bottom: 5px;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
 }
 
 .edit-wrap {
