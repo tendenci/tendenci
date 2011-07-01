@@ -563,10 +563,13 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     cc_licenses = License.objects.all()
 
+    tag_help_text = Image._meta.get_field_by_name('tags')[0].help_text
+
     return render_to_response(template_name, {
         "photo_formset": photo_formset,
         "photo_set": photo_set,
         "cc_licenses": cc_licenses,
+        "tag_help_text": tag_help_text,
     }, context_instance=RequestContext(request))
 
 

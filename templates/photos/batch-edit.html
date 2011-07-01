@@ -34,6 +34,7 @@
                         <div><textarea class="caption"></textarea></div>
                         <div>Replace all tags</div>
                         <div><input class="tags" type="text" /></div>
+                        <div>{{ tag_help_text }}</div>
                     </div>
 
                     <div class="bulk-license">
@@ -84,6 +85,7 @@
                         <div class="tags-wrap">
                             <div class="label">{{ photo_form.tags.label_tag }}</div>
                             <div class="field">{{ photo_form.tags }}</div>
+                            <div class="field help-text">{{ photo_form.tags.help_text }}</div>
                         </div>
                         <div class="license-wrap">
                             <div class="label">{{ photo_form.license.label_tag }}</div>
