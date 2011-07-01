@@ -7,6 +7,7 @@ from django.db.models.signals import post_save, pre_delete
 from user_groups.models import Group, GroupMembership
 from forms_builder.forms.models import FormEntry
 from subscribers.models import GroupSubscription
+from files.models import file_directory
 
 class ListMap(models.Model):
     group = models.ForeignKey(Group)
@@ -31,16 +32,19 @@ class Template(models.Model):
     """
     This represents a Template in Campaign Monitor.
     """
-    template_id = models.CharField(max_length=100, unique=True)
+    template_id = models.CharField(max_length=100, unique=True, null=True)
     name = models.CharField(max_length=100)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    preview_url = models.URLField()
-    screenshot_url = models.URLField()
+    
+    #get only
+    cm_preview_url = models.URLField(null=True)
+    cm_screenshot_url = models.URLField(null=True)
     
     #post only
-    html_url = models.URLField(null=True, blank=True)
-    zip_url = models.URLField(null=True, blank=True)
+    html_file = models.FileField(upload_to=file_directory, null=True)
+    zip_file = models.FileField(upload_to=file_directory, null=True)
+    screenshot_file = models.FileField(upload_to=file_directory, null=True)
     
 class Campaign(models.Model):
     """
