@@ -350,6 +350,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
         form = form_class(instance=photo_set, user=request.user)
 
     return render_to_response(template_name, {
+        'photo_set': photo_set,
         "photoset_form": form,
     }, context_instance=RequestContext(request))
 
