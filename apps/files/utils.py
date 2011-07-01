@@ -40,6 +40,12 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
     """
     Builds a resized image based off of the original image.
     """
+    
+    try:
+        quality = int(quality)
+    except:
+        quality = 90
+    
     if hasattr(file,'path'):
         image = Image.open(file.path) # get image
     else:
@@ -101,8 +107,8 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key):
         key = '.'.join((pre_key, unique_key, str_size, str_crop))
     else:
         if hasattr(file,'path'):
-            key = '.'.join((pre_key, str(stat(file.path).st_mtime), str_size, str_crop))
+            key = '.'.join((pre_key, str(stat(file.path).st_mtime), file.name, str_size, str_crop))
         else:
-            key = '.'.join((pre_key, str(stat(file.name).st_mtime), str_size, str_crop))
+            key = '.'.join((pre_key, str(stat(file.name).st_mtime), file.name, str_size, str_crop))
 
     return key

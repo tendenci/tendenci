@@ -1,0 +1,37 @@
+{% extends "campaign_monitor/base.html" %}
+{% load pagination_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }} Index{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    
+    <h1>Template Index</h1>  
+    
+    {% autopaginate templates 10 %}
+	
+	<div class="templates-wrap">
+    {% for template in templates %}
+        <div class="template-wrap">
+            <h2>{{ template.name }}</h2>
+            Preview: <a href="{{ template.cm_preview_url }}">{{ template.cm_preview_url }}</a>
+            Screenshot: <a href="{{ template.cm_screenshot_url }}">{{ template.cm_screenshot_url }}</a>
+        </div>
+	{% empty %}
+		<div>0 Templates Found</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}

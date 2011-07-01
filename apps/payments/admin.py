@@ -7,5 +7,5 @@ class PaymentAdmin(admin.ModelAdmin):
 class PaymentMethodAdmin(admin.ModelAdmin):
     list_display = ['human_name', 'machine_name', 'is_online', 'admin_only']
 
-admin.site.register(Payment, PaymentAdmin)
-admin.site.register(PaymentMethod, PaymentMethodAdmin)
+# admin.site.register(Payment, PaymentAdmin)
+# admin.site.register(PaymentMethod, PaymentMethodAdmin)

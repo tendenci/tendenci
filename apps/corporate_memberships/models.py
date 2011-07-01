@@ -233,7 +233,7 @@ class CorporateMembership(TendenciBaseModel):
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
     #payment_method = models.CharField(_("Payment Method"), max_length=50)
-    payment_method = models.ForeignKey(PaymentMethod, verbose_name=_("Payment Method"), null=True)
+    payment_method = models.ForeignKey(PaymentMethod, verbose_name=_("Payment Method"), null=True, default=None)
     
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     
@@ -250,7 +250,7 @@ class CorporateMembership(TendenciBaseModel):
         return "%s" % (self.name)
     
     def save(self, *args, **kwargs):
-        if not self.id:
+        if not self.guid:
             self.guid = str(uuid.uuid1())
         super(self.__class__, self).save(*args, **kwargs)
         

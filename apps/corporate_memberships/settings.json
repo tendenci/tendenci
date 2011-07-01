@@ -1,0 +1,19 @@
+[
+	{
+        "default_value": "", 
+        "description": "A list of email addresses that receive admin notices from corporatememberships module on the site. Comma delimited.", 
+        "data_type": "string", 
+        "update_dt": "2011-06-01 12:00:00", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "corporatemembershiprecipients", 
+        "value": "", 
+        "label": "Corporate Membersip admin notice recipients", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "corporatememberships", 
+        "store": true, 
+        "updated_by": ""
+    }
+]

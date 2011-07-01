@@ -1,0 +1,31 @@
+{% extends "campaign_monitor/base.html" %}
+{% load perm_tags %}
+{% load styled_forms %}
+
+{% block title %}Template Edit{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    <h1>Template Edit</h1>
+
+    <div class="template-wrap">  
+    	<form action="{% url campaign_monitor.template_edit %}" method="post">{% csrf_token %}
+    	<div class="forms">
+			{{ form|styled_form }}
+        	<input type="submit" value="Save Template" />
+		</div>
+        </form>
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}
