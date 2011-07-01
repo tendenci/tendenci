@@ -168,6 +168,9 @@ class Migration(SchemaMigration):
             'regular_dt': ('django.db.models.fields.DateTimeField', [], {}),
             'regular_price': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '21', 'decimal_places': '2'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'})
+            'allow_anonymous': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'allow_member': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'allow_user': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         'events.registrant': {
             'Meta': {'object_name': 'Registrant'},
