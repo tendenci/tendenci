@@ -3,7 +3,6 @@ from django.conf import settings
 from campaign_monitor.models import Template, Campaign, ListMap
 from createsend import CreateSend
 from createsend import Campaign as CSC
-from createsend import Template as CST
 
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
@@ -12,33 +11,13 @@ CreateSend.api_key = api_key
 class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
+        exclude = ["create_date", "update_date", "cm_preview_url", "cm_screenshot_url"]
     
     name = forms.CharField()
-    preview_url = forms.URLField()
-    screenshot_url = forms.URLField()
-    html_url = forms.URLField()
-    zip_url = forms.URLField()
+    screenshot_file = forms.FileField()
+    html_file = forms.FileField()
+    zip_file = forms.FileField()
     
-    def clean(self):
-        super(TemplateForm, self).clean()
-        data = self.cleaned_data
-        
-        name = data.get('name', None)
-        html_url = data.get('html_url', None)
-        zip_url = data.get('zip_url', None)
-        screenshot_url = data.get('screenshot_url', None)
-        
-        if name and html_url and zip_url and screenshot_url:
-            try:
-                if self.instance:
-                    CST(template_id = self.instance.template_id)
-                    CST.update(name, html_url, zip_url, screenshot_url)
-                else:
-                    CST.create(client_id, name, html_url, zip_url, screenshot_url)
-            except Exception, e:
-                raise forms.ValidationError(e)
-                
-        return data
     
 class CampaignForm(forms.ModelForm):
     class Meta:

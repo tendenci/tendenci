@@ -1,0 +1,25 @@
+{% extends "campaign_monitor/base.html" %}
+{% load base_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ template.name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+
+    <div class="template-wrap">
+
+        <h2>{{ template.name }}</h2>
+        ID: {{ template.template_id }}
+        Preview: <a href="{{ template.cm_preview_url }}">{{ template.cm_preview_url }}</a>
+        Screenshot: <a href="{{ template.cm_screenshot_url }}">{{ template.cm_screenshot_url }}</a>
+        
+    </div>
+
+</div>
+{% endblock %}
