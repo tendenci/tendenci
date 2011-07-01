@@ -361,9 +361,16 @@ table.photo-form select {
 	height: 100px;
 }
 
+.tags-wrap {
+	margin-bottom: 5px;
+}
+
 .tags-wrap input {
 	width: 80%;
-    margin-bottom: 5px
+    margin-bottom: 0
+}
+.tags-wrap .help-text {
+	font-size: 12px;
 }
 
 .delete-wrap {
