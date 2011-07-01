@@ -24,7 +24,7 @@
 <div class="t">
     <div class="form-wrap">
         <h1>{{ form.title }}</h1>
-        <p>{{ form.intro|safe }}</p>
+        <p>{{ form.intro|safe|urlize|linebreaks }}</p>
     
     	<div class="form-builder-wrap">
         	<form method="post" enctype="multipart/form-data">{% csrf_token %}

@@ -1,0 +1,53 @@
+[
+	{
+        "default_value": "true", 
+        "description": "Module is enabled or not.", 
+        "data_type": "boolean", 
+        "update_dt": "2011-05-27 15:38:23", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "enabled", 
+        "value": "true", 
+        "label": "enabled", 
+        "input_value": "true, false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "memberships", 
+        "store": true, 
+        "updated_by": ""
+    }, 
+    {
+        "default_value": "", 
+        "description": "A list of email addresses that receive admin notices from memberships module on the site. Comma delimited.", 
+        "data_type": "string", 
+        "update_dt": "2011-05-27 15:38:23", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "membershiprecipients", 
+        "value": "", 
+        "label": "Membersip admin notice recipients", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "memberships", 
+        "store": true, 
+        "updated_by": ""
+    }, 
+    {
+        "default_value": "private", 
+        "description": "Default protection set on a member once they are approved. Members can be as public or private as you want. Changing this setting will only affect future members.<ul><li>Public - Everyone can see this member</li><li>Private - Only administrators can see this member</li><li>All-members - All members can see this member</li><li>Member-type - Only members of that membership type can see this member</li></ul>", 
+        "data_type": "string", 
+        "update_dt": "2011-05-27 15:38:23", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "memberprotection", 
+        "value": "private", 
+        "label": "Member Protection", 
+        "input_value": "public, private, all-members, member-type", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "memberships", 
+        "store": true, 
+        "updated_by": ""
+    }
+]

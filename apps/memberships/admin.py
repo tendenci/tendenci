@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from django.contrib import admin
 from django.conf import settings
@@ -406,6 +407,15 @@ class AppAdmin(admin.ModelAdmin):
 
         form.save_m2m()
 
+        reserved_names = (
+            'membership_type',
+            'payment_method',
+            'first_name',
+            'last_name',
+            'email',
+            'corporate_membership'
+        )
+
         for field in app.fields.visible():
 
             if 'membership-type' in field.field_type:
@@ -424,6 +434,14 @@ class AppAdmin(admin.ModelAdmin):
                 field.content_type = ContentType.objects.get_for_model(User)
             elif 'corporate_membership_id' in field.field_type:
                 field.content_type = ContentType.objects.get_for_model(Membership)
+
+            if not field.field_name in reserved_names:
+                field.field_name = slugify(field.label).replace('-','_')
+
+                # check field_name after slugify
+                if field.field_name in reserved_names:
+                    hex_tail = uuid.uuid1().get_hex()[:3]
+                    field.field_name = '%s_%s' % (field.field_name, hex_tail)
 
             field.save()
 

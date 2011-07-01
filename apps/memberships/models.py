@@ -276,7 +276,7 @@ class Membership(TendenciBaseModel):
     subscribe_dt = models.DateTimeField(_("Subscribe Date"))
     expire_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
-    payment_method = models.CharField(_("Payment Method"), max_length=50)
+    payment_method = models.ForeignKey(PaymentMethod, null=True)
     ma = models.ForeignKey("App")
     objects = MembershipManager()
 
@@ -392,7 +392,7 @@ class MembershipArchive(TendenciBaseModel):
     expire_dt = models.DateTimeField(_("Expire Date Time"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     invoice = models.ForeignKey(Invoice, null=True)
-    payment_method = models.CharField(_("Payment Method"), max_length=50)
+    payment_method = models.ForeignKey(PaymentMethod, null=True)
     ma = models.ForeignKey("App")
     
     membership_create_dt = models.DateTimeField()   # original create dt for the membership entry
@@ -628,6 +628,7 @@ class AppField(models.Model):
     default_value = models.CharField(_("Default Value"), max_length=200, blank=True)
     css_class = models.CharField(_("CSS Class"), max_length=200, blank=True)
 
+    field_name = models.CharField(max_length=100, blank=True, default='')
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=100)
     vital = models.BooleanField(_("Vital"), default=False, blank=True)
     required = models.BooleanField(_("Required"), default=False, blank=True)
@@ -859,7 +860,7 @@ class AppEntry(TendenciBaseModel):
                 'renewal': self.membership_type.renewal,
                 'subscribe_dt':datetime.now(),
                 'expire_dt': expire_dt,
-                'payment_method':'',
+                'payment_method': None,
                 'ma':self.app,
                 'corporate_membership_id': self.corporate_membership_id,
                 'creator':user,

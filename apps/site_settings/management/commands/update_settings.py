@@ -1,6 +1,7 @@
 import os
 import simplejson as json
 
+from django.conf import settings as django_settings
 from django.core.management.base import BaseCommand, CommandError
 
 from site_settings.models import Setting
@@ -8,15 +9,17 @@ from site_settings.models import Setting
 
 class Command(BaseCommand):
     """
-    Use this command to update settings in the database
-
-    Reads from the json file located in the same
-    directory as this file and loops though it. If an
-    incorrect column is being update then it will not
-    update the setting
-
-    Optional Command Arguments:
-        `json`: path to the json file
+    Update site settings in the database. It reads the settings.json 
+    under each installed app or apps specified in the arguments,
+    and add or update the settings accordingly.
+    
+    Usage:
+        manage.py update_settings <appname appname ...> 
+        
+    Example:   
+        manage.py update_settings articles plugins.donations
+        
+    If no appname specified, it updates for ALL installed apps. 
 
     Json required fields (for lookups):
         `scope`
@@ -89,11 +92,11 @@ class Command(BaseCommand):
                         is a settings that doesn't apply to a django
                         application use 'global'
     """
-    help = 'Update a setting in the site_settings_setting table'
+    help = 'Update settings in the site_settings_setting table'
 
-    def update_settings(self, settings):
+    def update_settings(self, settings, verbosity=1):
         """
-        Loop through the settings and add them
+        Loop through the settings and add or update them
         """
         required_keys = [
             'scope',
@@ -118,36 +121,66 @@ class Command(BaseCommand):
 
             # update the setting
             if (current_setting):
+                # skip the value for the existing setting
+                if setting.has_key('value'):
+                    del setting['value']
                 current_setting.__dict__.update(setting)
                 current_setting.save()
-                print '%s (%s) updated.' % (
+                #if verbosity >= 2:
+                print '%s (%s)  - updated.' % (
                     setting['name'],
                     setting['scope_category']
                 )
             else:
-                print '%s (%s) does not exist ... skipping.' % (
+                # insert
+                new_setting = Setting(**setting)
+                new_setting.save()
+                #if verbosity >= 2:
+                print '%s (%s)  - added.' % (
                     setting['name'],
                     setting['scope_category']
                 )
+                
 
     def handle(self, *args, **options):
-        json_file = os.path.abspath(os.path.join(
-            os.path.dirname(__file__),
-            'update_settings.json')
-        )
-
-        if 'json' in options:
-            json_file = options['json']
-
-        if os.path.isfile(json_file):
-            with open(json_file, 'r') as f:
-                try:
-                    settings = json.loads(f.read())
-                except ValueError as e:
-                    raise CommandError(e)
-                self.update_settings(settings)
+        try:
+            verbosity = int(options['verbosity'])
+        except:
+            verbosity = 1
+        
+        if args:
+            appnames = args
         else:
-            raise CommandError('%s: Could not find json file %s' % (
-                __file__,
-                json_file,
-            ))
+            appnames = django_settings.INSTALLED_APPS
+            # exclude django native apps
+            appnames = [app for app in appnames if not app.startswith('django.')]
+            
+        for appname in appnames:
+            print
+            print 'Processing for %s ...' % appname
+            if appname.startswith('plugins.'):
+                json_file = os.path.abspath(os.path.join(
+                            django_settings.PROJECT_ROOT,
+                            '/'.join(appname.split('.')),
+                            'settings.json'           
+                            ))
+            else:
+                if appname.find('.') <> -1:
+                    appname = appname.replace('.', '/')
+                json_file = os.path.abspath(os.path.join(
+                            django_settings.APPS_PATH,
+                            appname,
+                            'settings.json'           
+                            ))
+            if os.path.isfile(json_file):
+                with open(json_file, 'r') as f:
+                    try:
+                        settings = json.loads(f.read())
+                    except ValueError as e:
+                        print "Error updating setting for %s/settings.json" % appname
+                        print e
+                        continue
+                        
+                if settings:
+                    self.update_settings(settings, verbosity=verbosity)
+        

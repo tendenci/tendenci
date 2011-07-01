@@ -16,7 +16,7 @@
 	height: 100px;
 	float: left;
 	margin: 5px;
-	background: no-repeat 20px 5px white;
+	background: no-repeat 20px 5px;
 	position: relative;
 }
 .modules li a {

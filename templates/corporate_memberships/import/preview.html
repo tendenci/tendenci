@@ -88,7 +88,7 @@
 			<td>Action to Take</td>
 		</tr>
 
-	{% for corp_memb in corp_membs|slice:":25" %}
+	{% for corp_memb in corp_membs %}
 		<tr class="{% cycle 'odd' 'even' as rowcolors %}">
 			<td>{{ forloop.counter }}</td>
 			<td><div>{{ corp_memb.name }}</div></td>

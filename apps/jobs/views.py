@@ -95,13 +95,11 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
     else:
         raise Http403
 
-
+@login_required
 def add(request, form_class=JobForm, template_name="jobs/add.html"):
     require_payment = get_setting('module', 'jobs', 'jobsrequirespayment')
 
-    user_is_authenticated = request.user.is_authenticated()
-    user_is_admin = is_admin(request.user)
-    can_add_active = user_is_authenticated or user_is_admin
+    can_add_active = has_perm(request.user, 'jobs.add_job')
 
     if request.method == "POST":
         form = form_class(request.POST, user=request.user)
@@ -149,8 +147,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             }
             EventLog.objects.log(**log_defaults)
 
-            if user_is_authenticated:
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % job)
+            messages.add_message(request, messages.INFO, 'Successfully added %s' % job)
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'jobs', 'jobrecipients')
@@ -172,10 +169,10 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                         )
 
             # send user to thank you or view page
-            if not user_is_admin:
-                return HttpResponseRedirect(reverse('job.thank_you'))
-            else:
+            if is_admin(request.user):
                 return HttpResponseRedirect(reverse('job', args=[job.slug]))
+            else:
+                return HttpResponseRedirect(reverse('job.thank_you'))
     else:
         form = form_class(user=request.user)
 

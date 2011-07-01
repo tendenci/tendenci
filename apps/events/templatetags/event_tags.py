@@ -128,6 +128,8 @@ class EventListNode(Node):
             user=context['user']).order_by('start_dt')
         events = [sq.object for sq in sqs]
 
+        print 'sqs', sqs
+
         context[self.context_var] = events
         return ''
 

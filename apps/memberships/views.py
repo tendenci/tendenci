@@ -96,6 +96,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     is_corp_ind = False
     corporate_membership = None
     if hasattr(app, 'corp_app') and app.corp_app:
+        if not cmb_id:
+            # redirect them to the corp_pre page
+            return redirect(reverse('membership.application_details_corp_pre', args=[app.slug]))
+        
         is_corp_ind = True
         corporate_membership = get_object_or_404(CorporateMembership, id=cmb_id)
         # check if they have verified their email or entered the secret code

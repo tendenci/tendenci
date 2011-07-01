@@ -294,7 +294,7 @@ def save_registration(*args, **kwargs):
 
     user = kwargs.get('user', None)
     event = kwargs.get('event', None)
-    payment_method = kwargs.get('payment_method', None)
+    payment_method = kwargs.get('payment_method')
     price = kwargs.get('price', None)
 
     if not isinstance(user, User):
@@ -396,7 +396,7 @@ def add_registration(*args, **kwargs):
 
     reg8n_attrs = {
         "event": event,
-        "payment_method": reg_form.cleaned_data.get('payment_method', None),
+        "payment_method": reg_form.cleaned_data.get('payment_method'),
         "amount_paid": str(total_amount),
         "reg_conf_price": price
     }

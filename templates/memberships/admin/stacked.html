@@ -21,12 +21,12 @@
         {% if inline_admin_form.original.field_type == 'Page_break' %}
             Page
         {% else %}
-            {{ inline_admin_formset.opts.verbose_name|title }}
+            Field Name
         {% endif %}
     {% endif %}:
     &nbsp;<span class="inline_label">
     {% if inline_admin_form.original %}
-        {{ inline_admin_form.original }}
+        {{ inline_admin_form.original.field_name }}
     {% else %}
         #{{ forloop.counter }}
     {% endif %}

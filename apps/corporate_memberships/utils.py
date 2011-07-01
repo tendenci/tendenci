@@ -445,7 +445,9 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
             corp_memb.corp_app = corp_app 
             corp_memb.status = bool(cm.get('status', True))
             corp_memb.status_detail = cm.get('status-detail', 'active')
-        
+  
+        if not corp_memb.secret_code:
+            corp_memb.assign_secret_code()
 
         corp_memb_set.append(corp_memb)
         
