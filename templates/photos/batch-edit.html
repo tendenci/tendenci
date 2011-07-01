@@ -15,7 +15,7 @@
 	<div class="t" style="width: 105%;">
 
         <div class="photos-nav">
-            {% photo_set_nav request.user %}
+            {% photo_set_nav request.user photo_set %}
         </div>
 
 		<h1>Bulk edit photos</h1>
@@ -119,7 +119,7 @@
 	$(window).scroll(function(){
 		if  ($(window).scrollTop() > $(".float-anchor").offset().top){
 			$(".float-window").css("position", "fixed");
-			$(".float-window").css("top", "8px");
+			$(".float-window").css("top", "40px");
 		}
 		
 		if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
