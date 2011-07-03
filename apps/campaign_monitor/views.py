@@ -2,8 +2,10 @@ from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 from createsend import CreateSend
 from createsend import Template as CST
+from createsend.createsend import BadRequest
 from perms.utils import has_perm
 from campaign_monitor.models import Template
 from campaign_monitor.forms import TemplateForm
@@ -29,6 +31,12 @@ def template_view(request, template_id, template_name='campaign_monitor/template
         
     return render_to_response(template_name, {'template':template}, 
         context_instance=RequestContext(request))
+        
+def template_html(request, template_id):
+    template = get_object_or_404(Template, template_id=template_id)
+    
+    return render_to_response(template.html.name, {}, 
+        context_instance=RequestContext(request))
 
 def template_add(request, form_class=TemplateForm, template_name='campaign_monitor/templates/add.html'):
     
@@ -36,7 +44,7 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
         raise Http403
         
     if request.method == "POST":
-        form = form_class(request.POST)
+        form = form_class(request.POST, request.FILES)
         if form.is_valid():
             #save template to generate urls
             template = form.save()
@@ -44,8 +52,8 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
             #sync with campaign monitor
             try:
                 t = CST.create(
-                        client_id, template.name, template.html_url(),
-                        template.zip_url(), template.screenshot_url()
+                        client_id, template.name, template.get_html_url(),
+                        template.get_zip_url(), template.screenshot_url()
                     )
             except BadRequest, e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
@@ -77,17 +85,17 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
     
     if not has_perm(request.user,'campaign_monitor.change_template', template):
         raise Http403
-        
+    
     if request.method == "POST":
-        form = form_class(request.POST, instance=template)
+        form = form_class(request.POST, request.FILES, instance=template)
         if form.is_valid():
             #save template to generate urls
             template = form.save()
             
             #sync with campaign monitor
             try:
-                t = CST(template_id = self.instance.template_id)
-                t.update(name, html, zip, screenshot)
+                t = CST(template_id = form.instance.template_id)
+                t.update(template.name, template.get_html_url(), template.get_zip_url(), template.get_screenshot_url())
             except BadRequest, e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
                 return render_to_response(template_name, {'form':form}, 
