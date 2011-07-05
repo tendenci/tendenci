@@ -770,9 +770,10 @@ class CSVForm(forms.Form):
 
             app_fields = AppField.objects.filter(app=app)
 
-            req_fields = [
+            native_fields = [
                 'User Name',
                 'Membership Type',
+                'Corp. Membership Name',
                 'Member Number',
                 'Payment Method',
                 'Join Date',
@@ -784,17 +785,17 @@ class CSVForm(forms.Form):
                 'Status Detail',
             ]
 
-            for req_field in req_fields:
-                self.fields[slugify(req_field)] = ChoiceField(**{
-                    'label': req_field,
+            for native_field in native_fields:
+                self.fields[slugify(native_field)] = ChoiceField(**{
+                    'label': native_field,
                     'choices': choice_tuples,
                     'required': False,
                 })
 
                 # compare required field with choices
                 # if they match; set initial
-                if req_field in choices:
-                    self.fields[slugify(req_field)].initial = req_field
+                if native_field in choices:
+                    self.fields[slugify(native_field)].initial = native_field
 
             self.fields['user-name'].required = True
             self.fields['membership-type'].required = True
