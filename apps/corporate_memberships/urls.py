@@ -30,4 +30,7 @@ urlpatterns = patterns('corporate_memberships.views',
         name="corp_memb_import_download_template"),
     url(r'^import/download-invalid_records/$', 'corp_import_invalid_records_download', 
         name="corp_memb_import_download_invalid"),
+        
+    # export 
+    url(r"^export/$", "corp_export", name="corp_export"),
 )
