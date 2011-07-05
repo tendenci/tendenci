@@ -161,6 +161,15 @@ def new_mems_from_csv(file_path, app, columns):
         # get subscribe_dt
         subscribe_dt = renew_dt or join_dt or datetime.now()
 
+        if 'cc' in m.get('payment-method', ''):
+            payment_method_id = 1
+        elif 'check' in m.get('payment-method', ''):
+            payment_method_id = 2
+        elif 'cash' in m.get('payment-method', ''):
+            payment_method_id = 3
+        else:
+            payment_method_id = None
+
         if memberships:  # get membership record
             membership = memberships[0]
         else:  # create membership record
@@ -172,13 +181,21 @@ def new_mems_from_csv(file_path, app, columns):
             membership.owner = user
             membership.creator = user
             membership.subscribe_dt = subscribe_dt
-            membership.payment_method = m.get('payment-method')
+
+            membership.payment_method_id = payment_method_id
+
             membership.renewal = m.get('renewal')
             membership.status = m.get('status') or True
             membership.status_detail = m.get('status-detail') or 'Active'
             membership.expire_dt = expire_dt
 
-        membership.m = m
+        try:  # bind corporate membership with membership
+            corp_memb = CorporateMembership.objects.get(name=m.get('corp-membership-name'))
+            membership.membership_type = corp_memb.corporate_membership_type.membership_type
+        except:
+            pass
+
+        membership.m = m  # temp append dict
 
         membership_set.append(membership)
 
