@@ -468,6 +468,9 @@ class CSVForm(forms.Form):
         if step_numeral == 3:
             pass  # end-user is previewing
 
-
+class ExportForm(forms.Form):
+    corp_app = forms.ModelChoiceField(
+                label=_('Corp Application'), 
+                queryset=CorpApp.objects.all())
 
         

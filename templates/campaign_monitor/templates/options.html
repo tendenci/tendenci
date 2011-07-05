@@ -1,0 +1,18 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load campaign_monitor_tags %}
+
+{% has_perm user campaign_monitor.change_template as can_change %}
+{% has_perm user campaign_monitor.delete_template as can_delete %}
+
+<div class="t-iconrow">
+
+	{% if can_change %}
+		<a class="option-link edit" href="{% url campaign_monitor.template_edit opt_object.template_id %}">Edit</a>
+	{% endif %}
+    
+    {% if can_delete %}
+        <a class="option-link delete" href="#">Delete</a>
+    {% endif %}
+
+</div>

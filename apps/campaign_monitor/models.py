@@ -46,6 +46,28 @@ class Template(models.Model):
     zip_file = models.FileField(upload_to=file_directory, null=True)
     screenshot_file = models.FileField(upload_to=file_directory, null=True)
     
+    @property
+    def content_type(self):
+        return 'template'
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ("campaign_monitor.template_view", [self.template_id])
+    
+    @models.permalink
+    def get_html_url(self):
+        return ("campaign_monitor.template_html", [self.template_id])
+    
+    def get_zip_url(self):
+        if self.zip_file:
+            return self.zip_file.url
+        return ''
+    
+    def get_screenshot_url(self):
+        if self.screenshot_file:
+            return self.screenshot_file.url
+        return ''
+    
 class Campaign(models.Model):
     """
     This represents a Campaign. It is considered as a "Draft" if it is 
