@@ -4,20 +4,17 @@ from campaign_monitor.models import Template, Campaign, ListMap
 from createsend import CreateSend
 from createsend import Campaign as CSC
 
-api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
+api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 CreateSend.api_key = api_key
 
 class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
-        exclude = ["create_date", "update_date", "cm_preview_url", "cm_screenshot_url"]
+        exclude = ["template_id", "create_date", "update_date", "cm_preview_url", "cm_screenshot_url"]
     
-    name = forms.CharField()
-    screenshot_file = forms.FileField()
-    html_file = forms.FileField()
-    zip_file = forms.FileField()
-    
+    screenshot_file = forms.FileField(required=False)
+    zip_file = forms.FileField(required=False)
     
 class CampaignForm(forms.ModelForm):
     class Meta:
