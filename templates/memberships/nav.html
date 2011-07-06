@@ -3,7 +3,7 @@
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user memberships.change_notice as can_edit_notice %}
-
+ {% is_admin request.user as is_admin %}
 <div id="showh">
     <ul id="primary">
 
@@ -23,6 +23,10 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "memberships" %}">Settings</a></li>
             {% endif %}
+            
+            {% if is_admin %}
+				<li><a href="{% url membership_export %}">Export</a></li>
+			{% endif %}
 
             <!-- permissions are set per entry -->
             <li><a href="{% url membership.application_entries_search %}">Entries</a></li>

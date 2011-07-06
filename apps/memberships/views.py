@@ -14,12 +14,14 @@ from django.contrib.contenttypes.models import ContentType, ContentTypeManager
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.template.defaultfilters import slugify
 from event_logs.models import EventLog
 from base.http import Http403
 from memberships.models import App, AppEntry, Membership, \
     MembershipType, Notice, AppField, AppFieldEntry
 from memberships.forms import AppForm, AppEntryForm, \
-    AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm, EntryEditForm
+    AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm, EntryEditForm, \
+    ExportForm
 from memberships.utils import new_mems_from_csv, is_import_valid
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
@@ -29,6 +31,7 @@ from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri
 from geraldo.generators import PDFGenerator
 from reports import ReportNewMems
 from files.models import File
+from imports.utils import render_excel
 
 try:
     from notification import models as notification
@@ -835,6 +838,87 @@ def membership_join_report(request):
                     'mem_stat': mem_stat,
                 },
                 context_instance=RequestContext(request))
+    
+@staff_member_required
+def membership_export(request):
+    #if not is_admin(request.user):raise Http403   # admin only page
+    
+    template_name = 'memberships/export.html'
+    form = ExportForm(request.POST or None, user=request.user)
+    
+    if request.method == 'POST':
+        if form.is_valid():
+            app = form.cleaned_data['app']
+            
+            filename = "memberships_%d_export.csv" % app.id
+            
+            fields = AppField.objects.filter(app=app).exclude(field_type__in=('section_break', 
+                                                               'page_break')).order_by('position')
+            label_list = [field.label for field in fields]
+            extra_field_labels = ['Subscribe Date', 'Expiration Date', 'Status', 'Status Detail']
+            extra_field_names = ['subscribe_dt', 'expire_dt', 'status', 'status_detail']
+            
+            label_list.extend(extra_field_labels)
+            label_list.append('\n')
+            
+            data_row_list = []
+            memberships = Membership.objects.filter(ma=app)
+            for memb in memberships:
+                data_row = []
+                field_entry_d = memb.entry_items
+                print field_entry_d
+                for field in fields:
+                    field_name = slugify(field.label).replace('-','_')
+                    value = ''
+                    
+                    if field.field_type in ['first-name', 'last-name', 'email', 
+                                            'membership-type', 'payment-method',
+                                            'corporate_membership_id']:
+                        if field.field_type == 'first-name':
+                            value = memb.user.first_name
+                        elif field.field_type == 'last-name':
+                            value = memb.user.last_name
+                        elif field.field_type == 'email':
+                            value = memb.user.email
+                        elif field.field_type == 'membership-type':
+                            value = memb.membership_type.name
+                        elif field.field_type == 'payment-method':
+                            if memb.payment_method:
+                                value = memb.payment_method.human_name
+                        elif field.field_type == 'corporate_membership_id':
+                            value = memb.corporate_membership_id
+                    
+                    if field_entry_d.has_key(field_name):
+                        value = field_entry_d[field_name]
+                        
+                    if value == None:
+                        value = ''
+                    value_type = type(value)
+                    if (value_type is bool) or (value_type is long) or (value_type is int):
+                        value = str(value)
+                    if (value_type is unicode) or (value_type is str):
+                        value = value.replace(',', ' ')
+                    data_row.append(value)
+                
+                for field in extra_field_names:
+                    value = ''
+                    
+                    exec('value=memb.%s' % field)
+                    if field == 'expire_dt' and (not memb.expire_dt):
+                        value = 'never expire'
+                    value_type = type(value)
+                    if value_type is bool or value_type is long or value_type is int:
+                        value = str(value)
+                    data_row.append(value)
+                    
+                data_row.append('\n')
+                data_row_list.append(data_row)
+                
+            return render_excel(filename, label_list, data_row_list, '.csv')
+                    
+    return render_to_response(template_name, {
+            'form':form
+            }, context_instance=RequestContext(request))
 
 @staff_member_required
 def membership_join_report_pdf(request):
