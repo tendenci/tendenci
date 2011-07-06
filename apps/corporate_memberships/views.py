@@ -1140,7 +1140,8 @@ def corp_export(request):
     if not is_admin(request.user):raise Http403   # admin only page
     
     template_name = 'corporate_memberships/export.html'
-    form = ExportForm(request.POST or None)
+    form = ExportForm(request.POST or None, user=request.user)
+    
     if request.method == 'POST':
         if form.is_valid():
             corp_app = form.cleaned_data['corp_app']
@@ -1198,7 +1199,7 @@ def corp_export(request):
                         dues_reps = CorporateMembershipRep.objects.filter(corporate_membership=corp_memb,
                                                                         is_dues_rep=True)
                         if dues_reps:
-                            value = '; '.join([dues_rep.user.username for dues_rep in dues_reps])
+                            value = '; '.join(['%s (%s)' % (dues_rep.user.get_full_name(), dues_rep.user.username) for dues_rep in dues_reps])
                     else:
                         exec('value=corp_memb.%s' % field)
                         if field == 'expiration_dt' and (not corp_memb.expiration_dt):
