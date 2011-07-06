@@ -191,7 +191,7 @@ class JobPricing(models.Model):
     status = models.BooleanField(default=True)
 
     class Meta:
-        permissions = (("view_job_pricing", "Can view job pricing"),)
+        permissions = (("view_jobpricing", "Can view job pricing"),)
 
     def save(self, user=None, *args, **kwargs):
         if not self.id:
