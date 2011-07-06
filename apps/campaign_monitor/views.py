@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.template import RequestContext, TemplateDoesNotExist
 from django.template import Template as DTemplate
 from django.contrib import messages
@@ -8,7 +9,7 @@ from createsend import CreateSend
 from createsend import Template as CST
 from createsend.createsend import BadRequest
 from perms.utils import has_perm
-from campaign_monitor.models import Template
+from campaign_monitor.models import Template, Campaign
 from campaign_monitor.forms import TemplateForm
 from campaign_monitor.utils import temporary_id
 from site_settings.utils import get_setting
@@ -18,19 +19,21 @@ api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 CreateSend.api_key = api_key
 
+@login_required
 def template_index(request, template_name='campaign_monitor/templates/index.html'):
-    if not has_perm(request.user, 'campaign_monitor.change_template'):
+    if not has_perm(request.user, 'campaign_monitor.view_template'):
         raise Http403
     
-    templates = Template.objects.all().order_by('id')
+    templates = Template.objects.all().order_by('name')
     
     return render_to_response(template_name, {'templates':templates}, 
         context_instance=RequestContext(request))
 
+@login_required
 def template_view(request, template_id, template_name='campaign_monitor/templates/view.html'):
     template = get_object_or_404(Template, template_id=template_id)
     
-    if not has_perm(request.user,'campaign_monitor.change_template', template):
+    if not has_perm(request.user,'campaign_monitor.view_template', template):
         raise Http403
         
     return render_to_response(template_name, {'template':template}, 
@@ -49,7 +52,21 @@ def template_html(request, template_id):
     response['Content-Disposition'] = 'attachment; file=page.html'
     
     return response
+    
+def template_render(request, template_id):
+    template = get_object_or_404(Template, template_id=template_id)
+    
+    if not template.html_file:
+        raise Http404
+    
+    text = DTemplate(template.html_file.file.read())
+    context = RequestContext(request)
+    
+    response = HttpResponse(text.render(context))
+    
+    return response
 
+@login_required
 def template_add(request, form_class=TemplateForm, template_name='campaign_monitor/templates/add.html'):
     
     if not has_perm(request.user,'campaign_monitor.add_template'):
@@ -109,6 +126,7 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
     
+@login_required
 def template_edit(request, template_id, form_class=TemplateForm, template_name='campaign_monitor/templates/edit.html'):
     
     template = get_object_or_404(Template, template_id=template_id)
@@ -163,4 +181,47 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
         form = form_class(instance=template)
         
     return render_to_response(template_name, {'form':form}, 
+        context_instance=RequestContext(request))
+
+@login_required
+def template_delete(request, template_id):
+    template = get_object_or_404(Template, template_id=template_id)
+    
+    if not has_perm(request.user,'campaign_monitor.delete_template', template):
+        raise Http403
+    
+    t_id = template.template_id
+    
+    try:
+        CST(template_id=t_id).delete()
+    except BadRequest, e:
+        messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+        return redirect(template)
+    except Exception, e:
+        messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+        return redirect(template)
+    
+    template.delete()
+    messages.add_message(request, messages.INFO, 'Successfully deleted Template : %s' % t_id)
+    
+    return redirect("campaign_monitor.template_index")
+
+@login_required
+def campaign_index(request, template_name='campaign_monitor/campaigns/index.html'):
+    if not has_perm(request.user, 'campaign_monitor.view_campaigns'):
+        raise Http403
+    
+    campaigns = Campaign.objects.all().order_by('name')
+    
+    return render_to_response(template_name, {'campaigns':campaigns}, 
+        context_instance=RequestContext(request))
+
+@login_required
+def campaign_view(request, campaign_id, template_name='campaign_monitor/campaigns/view.html'):
+    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
+    
+    if not has_perm(request.user,'campaign_monitor.view_campaign', campaign):
+        raise Http403
+    
+    return render_to_response(template_name, {'campaign':campaign}, 
         context_instance=RequestContext(request))
