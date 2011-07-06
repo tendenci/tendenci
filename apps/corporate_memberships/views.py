@@ -1,5 +1,7 @@
 import os
 from datetime import datetime, date
+import csv
+
 #from django.conf import settings
 #from django.core.urlresolvers import reverse
 from django.template import RequestContext
@@ -11,6 +13,8 @@ from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
+
+from imports.utils import render_excel
 
 from base.http import Http403
 from perms.utils import has_perm, is_admin
@@ -29,7 +33,8 @@ from corporate_memberships.forms import (CorpMembForm,
                                          CorpMembRepForm, 
                                          RosterSearchForm, 
                                          CorpMembRenewForm,
-                                         CSVForm)
+                                         CSVForm,
+                                         ExportForm)
 from corporate_memberships.utils import (get_corporate_membership_type_choices,
                                          get_payment_method_choices,
                                          corp_memb_inv_add, 
@@ -1052,7 +1057,6 @@ def corp_import(request, step=None):
 @login_required
 def download_csv_import_template(request, file_ext='.csv'):
     from django.db.models.fields import AutoField
-    from imports.utils import render_excel
     if not is_admin(request.user):raise Http403   # admin only page
     
     filename = "corporate_memberships_import.csv"
@@ -1092,8 +1096,7 @@ def download_csv_import_template(request, file_ext='.csv'):
 
 @login_required
 def corp_import_invalid_records_download(request):
-    import csv
-    from imports.utils import render_excel
+    
     if not is_admin(request.user):raise Http403   # admin only page
     
     file_path = request.session.get('corp_memb.import.file_path')
@@ -1120,7 +1123,6 @@ def corp_import_invalid_records_download(request):
             item.insert(0, corp_memb.err_msg)
             item_list.append(item)
             
-    filename = "invalid_records.csv"
     title_fields.append('\n')
     title_fields.insert(0, 'Invalid Reason?')
     
@@ -1132,5 +1134,94 @@ def corp_import_invalid_records_download(request):
     #del request.session['corp_memb.import.invalid_skipped']
     
     return render_excel(filename, title_fields, item_list, '.csv')
+
+@login_required
+def corp_export(request):
+    if not is_admin(request.user):raise Http403   # admin only page
+    
+    template_name = 'corporate_memberships/export.html'
+    form = ExportForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            corp_app = form.cleaned_data['corp_app']
+            
+            filename = "corporate_memberships_%d_export.csv" % corp_app.id
+            
+            corp_fields = CorpField.objects.filter(corp_app=corp_app).exclude(field_type__in=('section_break', 
+                                                               'page_break')).order_by('order')
+            label_list = [corp_field.label for corp_field in corp_fields]
+            extra_field_labels = ['Dues reps', 'Join Date', 'Expiration Date', 'Status', 'Status Detail']
+            extra_field_names = ['dues_reps', 'join_dt', 'expiration_dt', 'status', 'status_detail']
+            
+            label_list.extend(extra_field_labels)
+            label_list.append('\n')
+            
+            data_row_list = []
+            corp_membs = CorporateMembership.objects.all()
+            for corp_memb in corp_membs:
+                data_row = []
+                field_entries = CorpFieldEntry.objects.filter(corporate_membership=corp_memb).values('field', 'value')
+                field_entries_d = {}
+                for entry in field_entries:
+                    field_entries_d[entry['field']] = entry['value']
+                for corp_field in corp_fields:
+                    value = ''
+                    if corp_field.field_name and corp_field.object_type == 'corporate_membership':
+                        if corp_field.field_name in ['corporate_membership_type',
+                                                     'authorized_domains',
+                                                     'payment_method']:
+                            if corp_field.field_name == "corporate_membership_type":
+                                value = corp_memb.corporate_membership_type.name
+                            elif corp_field.field_name == "authorized_domains":
+                                auth_domains = AuthorizedDomain.objects.filter(corporate_membership=corp_memb)
+                                value = '; '.join([auth_domain.name for auth_domain in auth_domains])
+                            elif corp_field.field_name == 'payment_method':
+                                if corp_memb.payment_method:
+                                    value = corp_memb.payment_method.human_name
+                                
+                        else:
+                            exec('value=corp_memb.%s' % corp_field.field_name)
+                        
+                    else:
+                        if field_entries_d.has_key(corp_field.id):
+                            value = field_entries_d[corp_field.id]
+                        
+                    if value == None:
+                        value = ''
+                    if type(value) is bool:
+                        value = str(value)
+                    data_row.append(value.replace(',', ' '))
+                
+                for field in extra_field_names:
+                    value = ''
+                    if field == 'dues_reps':
+                        dues_reps = CorporateMembershipRep.objects.filter(corporate_membership=corp_memb,
+                                                                        is_dues_rep=True)
+                        if dues_reps:
+                            value = '; '.join([dues_rep.user.username for dues_rep in dues_reps])
+                    else:
+                        exec('value=corp_memb.%s' % field)
+                        if field == 'expiration_dt' and (not corp_memb.expiration_dt):
+                            value = 'never expire'
+                    if type(value) is bool:
+                        value = str(value)
+                    data_row.append(value)
+                    
+                data_row.append('\n')
+                data_row_list.append(data_row)
+                
+            return render_excel(filename, label_list, data_row_list, '.csv')
+                    
+    return render_to_response(template_name, {
+            'form':form
+            }, context_instance=RequestContext(request))
+            
+            
+            
+    
+    
+    
+    
+    
     
     
