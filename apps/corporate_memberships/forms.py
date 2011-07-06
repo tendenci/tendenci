@@ -472,5 +472,18 @@ class ExportForm(forms.Form):
     corp_app = forms.ModelChoiceField(
                 label=_('Corp Application'), 
                 queryset=CorpApp.objects.all())
+    passcode = forms.CharField(label=_("Type Your Password"), 
+                               widget=forms.PasswordInput(render_value=False))
+    
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', '')
+        super(ExportForm, self).__init__(*args, **kwargs)
+        
+    def clean_passcode(self):
+        value = self.cleaned_data['passcode']
+        
+        if not self.user.check_password(value):
+            raise forms.ValidationError(_("Invalid password."))
+        return value
 
         
