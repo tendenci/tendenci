@@ -1310,7 +1310,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
             if not has_perm(request.user, 'events.view_registration', registration):
                 raise Http403
 
-            registrant = registrants[0]
+            registrant = registration.registrant
         except:
             raise Http404
     elif registrant_hash:
