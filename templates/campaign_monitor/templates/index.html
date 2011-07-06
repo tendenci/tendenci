@@ -16,7 +16,7 @@
     {% template_nav request.user %}
     
     <h1>Campaign Monitor Templates</h1>
-    {% autopaginate templates 10 %}
+    {% autopaginate templates 5 %}
 	
 	<div class="templates-wrap">
     {% for template in templates %}
@@ -27,11 +27,17 @@
                 </div>
 			</div>
             <h2><a href="{{ template.get_absolute_url }}">{{ template.name }}</a></h2>
-            <div class="screenshot">
-                <a href="{{ template.cm_preview_url }}">
-                    <img src="{{ template.cm_screenshot_url }}">
-                </a>
-            </div>
+            {% if template.cm_screenshot_url %}
+                <div class="screenshot">
+                    <p><b>Screenshot:</b></p>
+                    <a href="{{ template.cm_preview_url }}">
+                        <img src="{{ template.cm_screenshot_url }}">
+                    </a>
+                </div>
+            {% else %}
+                <p><b>Screenshot:</b> Not Available</p>
+            {% endif %}
+            <p><a href="{{ template.cm_preview_url }}">Preview</a></p>
         </div>
 	{% empty %}
 		<div>0 Templates Found</div>
