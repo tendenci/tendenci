@@ -6,13 +6,16 @@
 {% has_perm user campaign_monitor.delete_template as can_delete %}
 
 <div class="t-iconrow">
+    {% if opt_object.html_file %}
+        <a class="option-link" href="{% url campaign_monitor.template_render opt_object.template_id %}">Preview</a>
+    {% endif %}
 
 	{% if can_change %}
 		<a class="option-link edit" href="{% url campaign_monitor.template_edit opt_object.template_id %}">Edit</a>
 	{% endif %}
     
     {% if can_delete %}
-        <a class="option-link delete" href="#">Delete</a>
+        <a class="option-link delete" href="{% url campaign_monitor.template_delete opt_object.template_id %}">Delete</a>
     {% endif %}
 
 </div>

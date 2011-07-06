@@ -24,3 +24,20 @@ def template_nav(context, user, template=None):
     })
     return context
     
+@register.inclusion_tag("campaign_monitor/campaigns/options.html", takes_context=True)
+def campaign_options(context, user, campaign):
+    context.update({
+        "opt_object": campaign,
+        "user": user
+    })
+    return context
+
+
+@register.inclusion_tag("campaign_monitor/campaigns/nav.html", takes_context=True)
+def campaign_nav(context, user, campaign=None):
+    context.update({
+        "nav_object": campaign,
+        "user": user
+    })
+    return context
+    
