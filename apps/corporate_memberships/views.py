@@ -4,6 +4,7 @@ import csv
 
 #from django.conf import settings
 #from django.core.urlresolvers import reverse
+from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.http import HttpResponseRedirect
@@ -756,13 +757,13 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
             context_instance=RequestContext(request))
     
     
-@login_required
+@staff_member_required
 def corp_import(request, step=None):
     """
     Corporate membership import.
     """
-    if not is_admin(request.user):  # admin only page
-        raise Http403
+    #if not is_admin(request.user):  # admin only page
+    #    raise Http403
 
     if not step:  # start from beginning
         return redirect('corp_memb_import_upload_file')
@@ -1054,10 +1055,10 @@ def corp_import(request, step=None):
             'datetime': datetime,
         }, context_instance=RequestContext(request))
         
-@login_required
+@staff_member_required
 def download_csv_import_template(request, file_ext='.csv'):
     from django.db.models.fields import AutoField
-    if not is_admin(request.user):raise Http403   # admin only page
+    #if not is_admin(request.user):raise Http403   # admin only page
     
     filename = "corporate_memberships_import.csv"
     
@@ -1094,10 +1095,10 @@ def download_csv_import_template(request, file_ext='.csv'):
     
     return render_excel(filename, corp_memb_field_names, data_row_list, file_ext)
 
-@login_required
+@staff_member_required
 def corp_import_invalid_records_download(request):
     
-    if not is_admin(request.user):raise Http403   # admin only page
+    #if not is_admin(request.user):raise Http403   # admin only page
     
     file_path = request.session.get('corp_memb.import.file_path')
     invalid_corp_membs = request.session.get('corp_memb.import.invalid_skipped')
@@ -1189,7 +1190,8 @@ def corp_export(request):
                         
                     if value == None:
                         value = ''
-                    if type(value) is bool:
+                    value_type = type(value)
+                    if (value_type is bool) or (value_type is long) or (value_type is int):
                         value = str(value)
                     data_row.append(value.replace(',', ' '))
                 
@@ -1204,7 +1206,8 @@ def corp_export(request):
                         exec('value=corp_memb.%s' % field)
                         if field == 'expiration_dt' and (not corp_memb.expiration_dt):
                             value = 'never expire'
-                    if type(value) is bool:
+                    value_type = type(value)
+                    if (value_type is bool) or (value_type is long) or (value_type is int):
                         value = str(value)
                     data_row.append(value)
                     
