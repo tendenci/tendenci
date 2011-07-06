@@ -120,7 +120,7 @@ def new_mems_from_csv(file_path, app, columns):
     for m in membership_dicts:
 
         # detect if renewal
-        m['renewal'] = bool(m['renew-date'])
+        m['renewal'] = bool(m.get('renew-date'))
 
         try: # if user exists; import membership
             user = User.objects.get(username = m['user-name'])
