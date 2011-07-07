@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.encoding import iri_to_uri
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -183,5 +184,12 @@ class AttorneyAdmin(admin.ModelAdmin):
         form = super(AttorneyAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
         return form
+
+    def change_view(self, request, object_id, extra_context=None):
+		result = super(AttorneyAdmin, self).change_view(request, object_id, extra_context)
+
+		if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
+			result['Location'] = iri_to_uri("%s") % request.GET.get('next')
+		return result
 
 admin.site.register(Attorney, AttorneyAdmin)

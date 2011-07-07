@@ -109,6 +109,9 @@
     float: left;
     text-align: center;
 }
+.t .attorney-wrap .top-wrap .info {
+    float: left;
+}
 
 .t .attorney-wrap .top-wrap .photo img {
     width: 140px;
