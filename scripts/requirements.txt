@@ -27,6 +27,7 @@ Geraldo==0.4.12-stable
 reportlab==2.5
 oauth2>=1.5.167
 python_openid>=2.2
+ordereddict==1.1
 
 # git repositories
 git+http://github.com/notanumber/xapian-haystack.git
