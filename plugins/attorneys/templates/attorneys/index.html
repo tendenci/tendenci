@@ -45,26 +45,6 @@
         {% endfor %}
     </div>
     <div class="attorneys">
-        <h2>Associates</h2>
-        {% for attorney in attorneys %}
-        {% with attorney.object as attorney %}
-        {% ifequal "AS" attorney.category %}
-        <div class="attorney-item" id="attorney-{{ attorney.pk }}">    
-            <div class="name">
-                <h3><a href="{{ attorney.get_absolute_url }}">{{ attorney.name }}</a></h3>
-            </div>
-            {% if attorney.photo %}
-            <div class="photo" id="attorney-{{ attorney.pk }}-photo" style="display: none;">
-                <img src="{% url file attorney.photo.pk %}120x148/" title="{{ attorney.name }}"  />
-            </div>
-            {% endif %}
-            <div style="clear:both"></div>
-        </div>
-        {% endifequal %}
-        {% endwith %}
-        {% endfor %}
-    </div>
-    <div class="attorneys">
         <h2>Of Counsel</h2>
         {% for attorney in attorneys %}
         {% with attorney.object as attorney %}
@@ -84,7 +64,27 @@
         {% endwith %}
         {% endfor %}
     </div>
-    
+    <div class="attorneys">
+        <h2>Associates</h2>
+        {% for attorney in attorneys %}
+        {% with attorney.object as attorney %}
+        {% ifequal "AS" attorney.category %}
+        <div class="attorney-item" id="attorney-{{ attorney.pk }}">    
+            <div class="name">
+                <h3><a href="{{ attorney.get_absolute_url }}">{{ attorney.name }}</a></h3>
+            </div>
+            {% if attorney.photo %}
+            <div class="photo" id="attorney-{{ attorney.pk }}-photo" style="display: none;">
+                <img src="{% url file attorney.photo.pk %}120x148/" title="{{ attorney.name }}"  />
+            </div>
+            {% endif %}
+            <div style="clear:both"></div>
+        </div>
+        {% endifequal %}
+        {% endwith %}
+        {% endfor %}
+    </div>
+        
     {% if can_add_attorney %}
     <div><a href="{% url admin:attorneys_attorney_add %}">Add Attorney</a></div>
     {% endif %}
