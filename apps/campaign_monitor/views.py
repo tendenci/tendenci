@@ -7,10 +7,11 @@ from django.contrib import messages
 from django.http import Http404, HttpResponse
 from createsend import CreateSend
 from createsend import Template as CST
+from createsend import Campaign as CSC
 from createsend.createsend import BadRequest
 from perms.utils import has_perm
 from campaign_monitor.models import Template, Campaign
-from campaign_monitor.forms import TemplateForm
+from campaign_monitor.forms import TemplateForm, CampaignForm
 from campaign_monitor.utils import temporary_id
 from site_settings.utils import get_setting
 from base.http import Http403
@@ -65,6 +66,12 @@ def template_render(request, template_id):
     response = HttpResponse(text.render(context))
     
     return response
+    
+def template_text(request, template_id):
+    template = get_object_or_404(Template, template_id=template_id)
+    
+    # return dummy data temporarily
+    return HttpResponse("Lorem Ipsum")
 
 @login_required
 def template_add(request, form_class=TemplateForm, template_name='campaign_monitor/templates/add.html'):
@@ -224,4 +231,63 @@ def campaign_view(request, campaign_id, template_name='campaign_monitor/campaign
         raise Http403
     
     return render_to_response(template_name, {'campaign':campaign}, 
+        context_instance=RequestContext(request))
+
+@login_required
+def campaign_add(request, form_class=CampaignForm, template_name='campaign_monitor/campaigns/add.html'):
+    
+    if not has_perm(request.user,'campaign_monitor.add_campaign'):
+        raise Http403
+        
+    if request.method == "POST":
+        form = form_class(request.POST)
+        if form.is_valid():
+            campaign = form.save(commit=False)
+            
+            #prepare data
+            list_ids = [list.list_id for list in form.cleaned_data['lists']]
+            site_url = get_setting('site', 'global', 'siteurl')
+            html_url = "%s%s" % (site_url, campaign.template.get_render_url())
+            text_url = "%s%s" % (site_url, campaign.template.get_text_url())
+            
+            try:
+                c_id = CSC().create(
+                    client_id, campaign.subject, campaign.name, 
+                    campaign.from_name, campaign.from_email,
+                    campaign.reply_to, html_url, text_url, 
+                    list_ids, []
+                )
+            except BadRequest, e:
+                messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+                return render_to_response(template_name, {'form':form}, 
+                    context_instance=RequestContext(request))
+            except Exception, e:
+                messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+                return render_to_response(template_name, {'form':form}, 
+                    context_instance=RequestContext(request))
+            
+            campaign.campaign_id = c_id
+            campaign.save()
+            messages.add_message(request, messages.INFO, 'Successfully created Campaign: %s' % c_id)
+            return redirect(campaign)
+    else:
+        copy_id = request.GET.get('copy', None)
+        
+        if copy_id:
+            #get campaign to be copied
+            copy = get_object_or_404(Campaign, campaign_id=campaign_id)
+            copy_data = {
+                "name": copy.name,
+                "subject": copy.subject,
+                "from_name": copy.from_name,
+                "from_email": copy.from_email,
+                "reply_to": copy.reply_to,
+                "template": copy.template,
+                "lists": copy.lists
+            }
+            form = form_class(initial=copy_data)
+        else:
+            form = form_class()
+        
+    return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
