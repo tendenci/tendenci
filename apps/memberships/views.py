@@ -47,6 +47,15 @@ def membership_search(request, template_name="memberships/search.html"):
     members = Membership.objects.search(query, user=request.user)
     types = MembershipType.objects.all()
 
+    EventLog.objects.log(**{
+        'event_id' : 474000,
+        'event_data': '%s searched by %s' % ('Membership', request.user),
+        'description': '%s searched' % 'Membership',
+        'user': request.user,
+        'request': request,
+        'source': 'memberships'
+    })
+
     return render_to_response(template_name, {'members': members, 'types': types},
         context_instance=RequestContext(request))    
 
