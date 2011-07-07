@@ -312,4 +312,8 @@ def datedelta(dt, range_):
         dt = dt - timedelta(**set_range)
 
     return dt
-    
+
+
+@register.filter
+def split(str,splitter):
+    return str.split(splitter)
