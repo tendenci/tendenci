@@ -68,12 +68,14 @@
                     {% if attorney.position %}&nbsp;&mdash;&nbsp;{% endif %}{{ attorney.city }}{% if attorney.state %}, {{ attorney.state }}{% endif %}
                 </div>
                 <div class="contact">
-                    {% if attorney.address %}Address: {{ attorney.address }}{% endif %}<br/>
-                    {% if attorney.address2 %}Address 2: {{ attorney.address2 }}{% endif %}<br/>
-                    {% if attorney.city and attorney.state %}{{ attorney.city }},&nbsp;{{ attorney.state }}{% if attorney.zip %}&nbsp;{{ attorney.zip }}{% endif %}{% endif %}<br/>
-                    {% if attorney.phone %}Phone: {{ attorney.phone }}{% endif %}<br/>
-                    {% if attorney.fax %}Fax: {{ attorney.fax }}{% endif %}<br/>
-                    {% if attorney.email %}Email: <a href="mailto:{{ attorney.email }}">{{ attorney.email }}</a>{% endif %}<br/>
+                    <table>
+                    {% if attorney.address %}<tr><td style="width: 90px;">Address:</td><td>{{ attorney.address }}</td></tr>{% endif %}
+                    {% if attorney.address2 %}<tr><td></td><td>{{ attorney.address2 }}</td></tr>{% endif %}
+                    {% if attorney.city and attorney.state %}<tr><td></td><td>{{ attorney.city }},&nbsp;{{ attorney.state }}{% if attorney.zip %}&nbsp;{{ attorney.zip }}{% endif %}</td></tr>{% endif %}
+                    {% if attorney.phone %}<tr><td>Phone:</td><td>{{ attorney.phone }}</td></tr>{% endif %}
+                    {% if attorney.fax %}<tr><td>Fax:</td><td>{{ attorney.fax }}</td></tr>{% endif %}
+                    {% if attorney.email %}<tr><td>Email:</td><td><a href="mailto:{{ attorney.email }}">{{ attorney.email }}</a></td></tr>{% endif %}
+                    </table>
                 </div>
             </div>
             <div style="clear:both"></div>
