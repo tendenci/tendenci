@@ -3,7 +3,7 @@ Tendenci 5.0 README
 
 XAPIAN REQUIREMENTS (Development Only)
 --------------------------------------
-Since some fields are faceted in the search indexes so xapian is required.
+Since some fields are faceted in the search indexes, xapian is required.
 For Ubuntu:
 sudo apt-get install libxapian15
 sudo apt-get install python-xapian
