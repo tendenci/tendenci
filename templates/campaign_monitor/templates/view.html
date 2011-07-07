@@ -1,3 +1,4 @@
+
 {% extends "campaign_monitor/base.html" %}
 {% load base_tags %}
 {% load perm_tags %}
@@ -31,7 +32,6 @@
                 {% else %}
                     <p><b>Screenshot:</b> Not Available</p>
                 {% endif %}
-                <p><a href="{{ template.cm_preview_url }}">Preview</a></p>
                 {% if template.html_file %}
                     <p><b>Html File:</b> <a href="{{ template.get_html_url }}">Download</a></p>
                 {% endif %}
@@ -40,6 +40,16 @@
                 {% endif %}
                 {% if template.screenshot_file %}
                     <p><b>Screenshot File:</b><a href="{{ template.get_screenshot_url }}">Download</a></p>
+                {% endif %}
+                {% if template.html_file %}
+                <p>
+                    Click <a href="{% url campaign_monitor.template_render template.template_id %}">here</a>
+                    to view a rendered version of the html with the latest data.
+                </p>
+                <p>
+                    Click <a href="{% url campaign_monitor.template_update template.template_id %}">here</a>
+                    to use the same files to update this template.
+                </p>
                 {% endif %}
             </div>
             <div style="clear: both"></div>

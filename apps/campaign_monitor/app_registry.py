@@ -25,4 +25,4 @@ class CampaignRegistry(CoreRegistry):
     }
 
 site.register(Template, TemplateRegistry)
-site.register(Campaign, CampaignRegistry)
+#site.register(Campaign, CampaignRegistry)
