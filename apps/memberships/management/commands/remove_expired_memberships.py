@@ -2,26 +2,28 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
 	"""
-	example: python manage.py remove_expired_memberships
+	example: python manage.py update_expired_memberships
 	"""
 	def handle(self, *args, **kwargs):
 		from datetime import datetime
 		from memberships.models import Membership
 		from user_groups.models import GroupMembership
 
-		## get list of expired memberships
-		memberships = Membership.objects.filter(expire_dt__lt = datetime.now())
+		## get list of newly expired memberships
+		expired_memberships = Membership.objects.filter(
+			expire_dt__lt = datetime.now()).exclude(
+			status_detail = 'expired'
+			)
 
-		# # Change status_detail to expired
-		# # My only problem with this currently is having
-		# # to check 2 locations to deciper whether someone is expired
-		# members = []
-		# for member in memberships:
-		# 	member.status_detail = 'expired'
-		# 	member.save()
-		# 	members.append(member)
+		# update status detail
+		for membership in expired_memberships:
 
-		members = [m.user for m in memberships]
+			# update status detail
+			membership.status_detail = 'expired'
+			membership.save()
 
-		group_memberships = GroupMembership.objects.filter(member__in = members)
-		group_memberships.delete()  # remove records
+			# remove groupmembership
+			GroupMembership.objects.filter(
+				member=membership.user, 
+				group=membership.membership_type.group
+			).delete()

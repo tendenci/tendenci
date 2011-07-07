@@ -1,0 +1,38 @@
+{% load base_tags %}
+{% load perm_tags %}
+
+{% has_perm user campaign_monitor.add_template as can_add_template %}
+
+
+
+<div id="showh">
+	<ul id="primary">
+	
+    {% if user.is_authenticated %}
+	<li>
+	    <a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif"
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+    {% endif %}
+    
+    <li>
+        <a href="{% url campaign_monitor.campaign_index %}">
+            Campaigns
+		</a>
+    </li>
+
+	<li>
+		<span>Templates</span>
+		<ul id="secondary">
+			<li><a href="{% url campaign_monitor.template_index %}">Templates:</a></li> 
+            {% if can_add_template %}
+                <li><a href="{% url campaign_monitor.template_add %}">Add Template</a></li>
+            {% endif %}
+			{% if user.is_authenticated %}
+                <li><a href="{% url auth_logout %}">Log Off</a></li>
+			{% endif %}
+		</ul>
+	</li>
+	</ul>
+</div>

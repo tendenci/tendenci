@@ -306,7 +306,8 @@ class Membership(TendenciBaseModel):
         items = {}
 
         try:  # membership was created when entry was approved
-            entry = self.entries.get(decision_dt=self.subscribe_dt)
+            #entry = self.entries.get(decision_dt=self.subscribe_dt)
+            entry = self.entries.filter(is_approved=True).order_by('decision_dt')[0]
         except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
             return items  # return {}
 

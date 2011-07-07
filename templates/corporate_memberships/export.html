@@ -1,0 +1,33 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+{% load base_tags %}
+{% load base_filters %}
+
+{% block title %}Export Corporate Memberships{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+ <style>
+ 	.errorlist{
+ 		color: red;
+ 	}
+ </style>
+{% endblock %}
+
+{% block body %}
+ {% corpmemb_nav request.user %}
+<div id="corp-import-wrap">
+    
+    <h1>Corporate Membership CSV Export</h1>
+   
+    <div id="corp-export">
+    	
+	    <form method="post" action="">{% csrf_token %}
+	    {{ form.as_p }}
+	    <input type='submit' value='Export'>
+	    </form>
+    
+    </div>
+</div>
+{% endblock %}
