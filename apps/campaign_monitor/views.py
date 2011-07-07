@@ -189,7 +189,53 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
         
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
-
+    
+@login_required
+def template_update(request, template_id):
+    """
+    This method makes use of the same files to update the CM Template.
+    Useful for updating data/content only and retaining design.
+    """
+    
+    template = get_object_or_404(Template, template_id=template_id)
+    
+    if not has_perm(request.user,'campaign_monitor.change_template', template):
+        raise Http403
+    
+    #set up urls
+    site_url = get_setting('site', 'global', 'siteurl')
+    html_url = str("%s%s"%(site_url, template.get_html_url()))
+    if template.zip_file:
+        zip_url = str("%s%s"%(site_url, template.get_zip_url()))
+    else:
+        zip_url = ""
+    if template.screenshot_file:
+        screenshot_url = str("%s%s"%(site_url, template.get_screenshot_url()))
+    else:
+        screenshot_url = ""
+    
+    #sync with campaign monitor
+    try:
+        t = CST(template_id = template.template_id)
+        t.update(str(template.name), html_url, zip_url, screenshot_url)
+    except BadRequest, e:
+        messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+        return redirect(template)
+    except Exception, e:
+        messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+        return redirect(template)
+            
+    #get campaign monitor details
+    t = t.details()
+    template.name = t.Name
+    template.cm_preview_url = t.PreviewURL
+    template.cm_screenshot_url = t.ScreenshotURL
+    template.save()
+    
+    messages.add_message(request, messages.INFO, 'Successfully updated Template : %s' % template.template_id)
+    
+    return redirect(template)
+    
 @login_required
 def template_delete(request, template_id):
     template = get_object_or_404(Template, template_id=template_id)
