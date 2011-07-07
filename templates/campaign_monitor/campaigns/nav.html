@@ -18,7 +18,7 @@
             <ul id="secondary">
                 <li><a href="{% url campaign_monitor.campaign_index %}">Campaigns:</a></li> 
                 {% if can_add_campaign %}
-                    <li><a href="#">Add Campaign</a></li>
+                    <li><a href="{% url campaign_monitor.campaign_add %}">Add Campaign</a></li>
                 {% endif %}
                 <li><a href="{% url auth_logout %}">Log Off</a></li>
             </ul>

@@ -19,6 +19,7 @@ class TemplateForm(forms.ModelForm):
 class CampaignForm(forms.ModelForm):
     class Meta:
         model = Campaign
+        exclude = ["campaign_id", "status", "sent_date"]
         
     name = forms.CharField()
     subject =  forms.CharField()
@@ -26,30 +27,6 @@ class CampaignForm(forms.ModelForm):
     from_email = forms.EmailField()
     reply_to = forms.EmailField()
     template = forms.ModelChoiceField(queryset=Template.objects.all())
-    lists = forms.ModelMultipleChoiceField(queryset=ListMap.objects.all())
-        
-    def clean(self):
-        super(CampaignForm, self).clean()
-        data = self.cleaned_data
-        
-        lists = data.get('lists', None)
-        if lists:
-            list_ids = [list.list_id for list in lists]
-        else:
-            list_ids = []
-        subject = data.get('subject', None)
-        name = data.get('name', None)
-        from_name = data.get('from_name', None)
-        from_email = data.get('from_email', None)
-        reply_to = data.get('reply_to', None)
-        template = data.get('template', None)
-        
-        if lists and subject and name and from_name and from_email and reply_to and template:
-            try:
-                CSC.create(client_id, subject, name, from_name, from_email, 
-                    reply_to, template.html_url, template.template_url,
-                    list_ids,[])
-            except Exception, e:
-                raise forms.ValidationError(e)
-        
-        return data
+    lists = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=ListMap.objects.all())
+
+
