@@ -11,7 +11,7 @@
 {% endblock %}
         
 {% block body %}
-	{% photo_set_nav user %}
+	{% photo_set_nav user photo_set %}
 	<h1>{{ MODULE_PHOTOS_LABEL }} Set Edit</h1>
 	<div class="forms">
     <form method="POST" action="">{% csrf_token %}

@@ -106,7 +106,7 @@ class Command(BaseCommand):
             elif notice.notice_type == 'renew':
                 memberships = memberships.filter(subscribe_dt__year=start_dt.year,
                                                 subscribe_dt__month=start_dt.month,
-                                                subscribe_dt__day=start_dt.day
+                                                subscribe_dt__day=start_dt.day,
                                                 renewal=True)
             else: # 'expire'
                 memberships = memberships.filter(expire_dt__year=start_dt.year,

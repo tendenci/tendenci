@@ -32,6 +32,9 @@ class Template(models.Model):
     """
     This represents a Template in Campaign Monitor.
     """
+    class Meta:
+        permissions = (("view_template","Can view template"),)
+    
     template_id = models.CharField(max_length=100, unique=True, null=True)
     name = models.CharField(max_length=100)
     create_dt = models.DateTimeField(auto_now_add=True)
@@ -46,11 +49,41 @@ class Template(models.Model):
     zip_file = models.FileField(upload_to=file_directory, null=True)
     screenshot_file = models.FileField(upload_to=file_directory, null=True)
     
+    @property
+    def content_type(self):
+        return 'template'
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ("campaign_monitor.template_view", [self.template_id])
+    
+    @models.permalink
+    def get_html_url(self):
+        return ("campaign_monitor.template_html", [self.template_id])
+    
+    @models.permalink
+    def get_render_url(self):
+        return ("campaign_monitor.template_render", [self.template_id])
+    
+    def get_zip_url(self):
+        if self.zip_file:
+            return self.zip_file.url
+        return ''
+    
+    def get_screenshot_url(self):
+        if self.screenshot_file:
+            return self.screenshot_file.url
+        return ''
+    
 class Campaign(models.Model):
     """
     This represents a Campaign. It is considered as a "Draft" if it is 
     not yet sent.
     """
+    
+    class Meta:
+        permissions = (("view_campaign","Can view campaign"),)
+    
     STATUS_CHOICES = (
         ('S','Sent'),
         ('C', 'Scheduled'),
@@ -73,6 +106,10 @@ class Campaign(models.Model):
     from_email = models.EmailField(null=True, blank=True)
     reply_to = models.EmailField(null=True, blank=True)
     template = models.ForeignKey(Template, null=True, blank=True)
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ("campaign_monitor.campaign_view", [self.campaign_id])
 
 # create post_save and pre_delete signals to sync with campaign monitor
 # http://www.campaignmonitor.com/api/getting-started/

@@ -1,0 +1,30 @@
+{% extends "campaign_monitor/base.html" %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load campaign_monitor_tags %}
+
+{% block title %}{{ campaign.name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="/site_media/static/css/campaign_monitor.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    {% campaign_nav request.user %}
+    <div class="template-wrap">
+
+        <div class="options options-search">
+            <div class="quick-options">
+                {% campaign_options request.user campaign %}
+            </div>
+        </div>
+        <h1>{{ campaign.name }}</h1>
+        <div class="content">
+        </div>
+    </div>
+
+</div>
+{% endblock %}

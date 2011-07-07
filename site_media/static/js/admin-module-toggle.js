@@ -5,6 +5,7 @@ django.jQuery('document').ready(function() {
         var hidden_modules = [
             'Avatar', 
             'Notification',
+            'Payments',
             'Photologue',
             'Photos',
             'Social_Auth',
