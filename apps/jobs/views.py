@@ -6,6 +6,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.template.defaultfilters import slugify
 
 from base.http import Http403
 from base.utils import now_localized
@@ -133,6 +134,12 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             job.expiration_dt = job.activation_dt + timedelta(days=job.requested_duration)
 
             job = update_perms_and_save(request, form, job)
+
+            # semi-anon job posts don't get a slug field on the form
+            # see __init__ method in JobForm
+            if not job.slug:
+                job.slug = '%s-%s' % (slugify(job.title), job.pk)
+                job.save()
 
             # create invoice
             job_set_inv_payment(request.user, job)
