@@ -2,6 +2,14 @@ from django.conf import settings
 from django.utils.translation import ugettext_noop as _
 from django.db.models.signals import post_syncdb
 
+# The post_syncdb signal is not being called because
+# this profile application has migration files via
+# the schemamigration command.
+# TODO: The profiles application must use startmigration
+# command in order to continue using the post_syncdb signal
+# TODO: Or we can create a migration file for this function,
+# as suggested by the site.
+# http://south.aeracode.org/docs/commands.html?highlight=post_syncdb#initial-data-and-post-syncdb
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
 
