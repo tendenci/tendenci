@@ -164,7 +164,8 @@ class Command(BaseCommand):
                 print "Creating template (%s - %s)" % (t.TemplateID, t.Name)
                 template = Template(template_id = t.TemplateID)
             template.name = t.Name
-            template.preview_url = t.PreviewURL
-            template.screenshot_url = t.ScreenshotURL
+            template.cm_preview_url = t.PreviewURL
+            template.cm_screenshot_url = t.ScreenshotURL
+            template.save()
         
         print "Done"

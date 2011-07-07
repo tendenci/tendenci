@@ -108,7 +108,7 @@ class Image(ImageModel, TendenciBaseModel):
     member = models.ForeignKey(User, related_name="added_photos", blank=True, null=True)
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
-    tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
+    tags = TagField(blank=True, help_text="Comma delimited (eg. mickey, donald, goofy)")
     license = models.ForeignKey('License', null=True, blank=True)
     
     # html-meta tags
@@ -211,7 +211,7 @@ class License(models.Model):
     legal_code = models.URLField(_('legal code'), blank=True)
     
     def __unicode__(self):
-       return "%s %s" % (self.author, self.name)
+       return "%s" % (self.name)
 
 
 class Pool(models.Model):

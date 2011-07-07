@@ -15,7 +15,7 @@
 	<div class="t" style="width: 105%;">
 
         <div class="photos-nav">
-            {% photo_set_nav request.user %}
+            {% photo_set_nav request.user photo_set %}
         </div>
 
 		<h1>Bulk edit photos</h1>
@@ -28,12 +28,23 @@
                 <div class="float-window">
         
                     <div class="photo-bulk-editor">
-                        <p>Replace all titles</p>
+                        <div>Replace all titles</div>
                         <div><input class="title" type="text" /></div>
-                        <p>Replace all captions</p>
+                        <div>Replace all captions</div>
                         <div><textarea class="caption"></textarea></div>
-                        <p>Replace all tags</p>
+                        <div>Replace all tags</div>
                         <div><input class="tags" type="text" /></div>
+                        <div>{{ tag_help_text }}</div>
+                    </div>
+
+                    <div class="bulk-license">
+                        <div>Replace all Licenses</div>
+                        <select>
+                            <option value=""> --- SELECT A LICENSE --- </option>
+                            {% for l in cc_licenses %}
+                            <option value="{{ l.pk }}">{{ l.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
         
                     <div class="save-wrap">
@@ -74,6 +85,7 @@
                         <div class="tags-wrap">
                             <div class="label">{{ photo_form.tags.label_tag }}</div>
                             <div class="field">{{ photo_form.tags }}</div>
+                            <div class="field help-text">{{ photo_form.tags.help_text }}</div>
                         </div>
                         <div class="license-wrap">
                             <div class="label">{{ photo_form.license.label_tag }}</div>
@@ -115,11 +127,15 @@
 		$('.tags-wrap input').val($(this).val())
 	});
 
+    $(".bulk-license select").change(function(event) {
+        $(".license-wrap select").val($(this).val());
+    });
+
 
 	$(window).scroll(function(){
 		if  ($(window).scrollTop() > $(".float-anchor").offset().top){
 			$(".float-window").css("position", "fixed");
-			$(".float-window").css("top", "8px");
+			$(".float-window").css("top", "40px");
 		}
 		
 		if  ($(window).scrollTop() <= $(".float-anchor").offset().top){

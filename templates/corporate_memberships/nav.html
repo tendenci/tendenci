@@ -47,6 +47,7 @@
 			{% if is_admin %}
 				<li><a href="{% url corp_memb.search %}?q=is_pending:true">Pendings</a></li>
 				<li><a href="{% url corp_import %}">Import</a></li>
+				<li><a href="{% url corp_export %}">Export</a></li>
 			{% endif %}
 			
 			{% if user.is_authenticated %}
