@@ -945,16 +945,19 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
 def cancel_registration(request, event_id, registration_id, hash='', template_name="events/reg8n/cancel_registration.html"):
     event = get_object_or_404(Event, pk=event_id)
-    registration = Registration.objects.get(
-        event=event,
-        pk=registration_id,
-    )
-       
+
+    try:
+        registration = Registration.objects.get(
+            event=event,
+            pk=registration_id,
+        )
+    except Registration.DoesNotExist as e:
+        raise Http404
+
     if hash:
-        if not hash == registration.hash:
+        if hash != registration.hash:
             raise Http404
-    else:
-        # check permission
+    else:  # check permission
         if not has_perm(request.user, 'events.view_registration', registration):
             raise Http403     
 
