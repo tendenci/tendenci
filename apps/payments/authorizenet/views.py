@@ -4,16 +4,19 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.conf import settings
 from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
 from payments.authorizenet.utils import authorizenet_thankyou_processing
 
 
+@csrf_exempt
 def sim_thank_you(request, payment_id, template_name='payments/authorizenet/thankyou.html'):
     payment = authorizenet_thankyou_processing(request, dict(request.POST.items()))
     
     return render_to_response(template_name,{'payment':payment}, 
                               context_instance=RequestContext(request))
-    
-    
+
+   
+@csrf_exempt
 def silent_post(request):
     payment = authorizenet_thankyou_processing(request, dict(request.POST.items()))
     
@@ -51,4 +54,3 @@ def silent_post(request):
     fd.close()
     
     return HttpResponse('ok')
-    
