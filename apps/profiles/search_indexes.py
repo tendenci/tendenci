@@ -28,7 +28,7 @@ class ProfileIndex(TendenciBaseSearchIndex):
             obj.user.username
         )
 
-    def get_queryset(self):
+    def index_queryset(self):
         return Profile.objects.all().order_by('user')
 
 site.register(Profile, ProfileIndex)
