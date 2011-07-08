@@ -13,6 +13,7 @@ from django.conf import settings
 
 # local
 from base.cache import IMAGE_PREVIEW_CACHE
+from perms.utils import is_admin
 
 
 def image_preview(request, app_label, model, id,  size):
@@ -217,4 +218,6 @@ def memcached_status(request):
 
 
 def feedback(request, template_name="base/feedback.html"):
+    if not is_admin(request.user):
+        raise Http404
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
