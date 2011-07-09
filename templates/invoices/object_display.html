@@ -1,26 +1,21 @@
 {% load base_filters %}
 
-{# user info #}
 {% if object_display %}
 	{{ object_display|safe }}
 {% else %}
-	<div class="invoice-view-box">
-		{# make 3 blocks in the first box #}
-		<div class="invoice-view-detail-left">
-			{% if obj %}
-				<a href="{{ obj.get_absolute_url }}" title="View {{ obj }} Payment">{{ obj.id }}</a>
-			{% else %}
-				{{ invoice.object_id }}
-			{% endif%}
-		</div>
-		
-		<div class="invoice-view-detail-middle">
-			{{ invoice.title }}
-		</div>
-		
-		<div class="invoice-view-detail-right">
-			Amount: {{ invoice.total|format_currency }}
-		</div>
-		<div class="clear-both"></div>
-	</div>
+<tr>
+    <td>
+    	{{ invoice.title }}
+    	{% if obj %}
+    		{% if obj.get_absolute_url %}
+    		&nbsp;<a href="{{ obj.get_absolute_url }}" title="View {{ obj }}">#{{ obj.pk }}</a>
+    		{% else %}
+    		&nbsp;#{{ obj.pk }}
+    		{% endif %}
+    	{% endif %}
+	</td>
+	<td class="td-right">
+	    {{ invoice.total|format_currency }}
+	</td>
+</td>
 {% endif %}

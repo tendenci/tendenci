@@ -33,10 +33,12 @@ class MakePayment(models.Model):
     status_detail = models.CharField(max_length=50, default='estimate')
     status = models.BooleanField(default=True)
 
-    
     class Meta:
         verbose_name = _("General Payment")
         verbose_name_plural = _("General Payments")
+
+    def __unicode__(self):
+        return 'Payment'
     
     def save(self, user=None):
         if not self.id:
@@ -100,6 +102,3 @@ class MakePayment(models.Model):
             return 466700
         else:
             return 406700
-
-        
-    
