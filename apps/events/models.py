@@ -338,6 +338,9 @@ class Registration(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
+    def __unicode__(self):
+        return 'Registration - %s' % self.event.title
+
     @property
     def hash(self):
         return md5(".".join([str(self.event.pk), str(self.pk)])).hexdigest()

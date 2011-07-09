@@ -1,43 +1,14 @@
 {% load base_filters %}
 
-{# user info #}
-<div class="invoice-view-box">
-	{# make 3 blocks in the first box #}
-	<div class="invoice-view-detail-left">
+<tr>
+    <td>
 		{% if obj %}
-			<a href="{% url job obj.slug %}" title="View Job">{{ obj.id }}</a>
+			Job #<a href="{% url job obj.slug %}">{{ obj.pk }}</a> {{ obj.title|truncatewords:5 }}
 		{% else %}
-			{{ invoice.object_id }}
+			Job information not available
 		{% endif%}
-	</div>
-	
-	<div class="invoice-view-detail-middle">
-		<table width="400px">
-		<tr>
-		 <td width="60%">
-			<div class="invoice-item">
-				{% if obj %}
-					Title: <a href="{% url job obj.slug %}">{{ obj.title|truncatewords:5 }}</a>
-				{% else %}
-					Job Information not available
-				{% endif%}
-			</div>
-			<div class="invoice-item">{{ obj.contact_name }}</div>
-			<div class="invoice-item">Description: {{ obj.description|striptags|truncatewords:5 }}</div>
-		 </td>
-		 <td width="40%">
-			<div class="invoice-item">List Type: {{ obj.list_type }}</div>
-			<div class="invoice-item">Duration: {{ obj.requested_duration }}</div>
-		 </td>
-		</tr>
-		</table>
-	</div>
-	
-	<div class="invoice-view-detail-right">
-		Amount: {{ invoice.total|format_currency }}
-	</div>
-	<div class="clear-both"></div>
-</div>
-
-	
-
+	</td>
+	<td class="td-right">
+	    {{ invoice.total|format_currency }}
+	</td>
+</td>

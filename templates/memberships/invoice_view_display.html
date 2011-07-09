@@ -1,32 +1,18 @@
 {% load base_filters %}
 
-{# user info #}
-<div class="invoice-view-box">
-	{# make 3 blocks in the first box #}
-	<div class="invoice-view-detail-left">
+<tr>
+    <td>
 		{% if obj %}
-			<a href="{% url membership.application_entries obj.pk %}" title="View Membership Application">{{ obj.pk }}</a>
+			Membership #<a href="{% url membership.application_entries obj.pk %}" title="Membership Application">{{ obj.pk }}</a>&nbsp;
+			{{ obj.membership_type.name|truncatewords:30 }}
+			{% if obj.first_name or obj.last_name or obj.email %}
+				&nbsp;&ndash;&nbsp;{{ obj.first_name }} {{ obj.last_name }} {{ obj.email }}
+			{% endif %}
 		{% else %}
-			{{ invoice.object_id }}
+			Membership information not available
 		{% endif%}
-	</div>
-
-	<div class="invoice-view-detail-middle">
-		<div class="invoice-item">
-			{% if obj %}
-				{{ obj.first_name }} {{ obj.last_name }} {{ obj.email }}
-			{% else %}
-				Membership Application Not Available
-			{% endif%}
-		</div>
-		<div class="invoice-item">Membership Type: {{ obj.membership_type.name|truncatewords:30 }}</div>
-	</div>
-
-	<div class="invoice-view-detail-right">
-		Amount: {{ invoice.total|format_currency }}
-	</div>
-	<div class="clear-both"></div>
-</div>
-
-
-
+	</td>
+	<td class="td-right">
+	    {{ invoice.total|format_currency }}
+	</td>
+</td>
