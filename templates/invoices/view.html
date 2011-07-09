@@ -3,7 +3,7 @@
 {% load perm_tags %}
 {% load base_filters %}
 
-{% block title %}{{ block.super }}Invoice View{% endblock %}
+{% block title %}{{ block.super }}{% if obj_name %}{{ obj_name|capfirst }}{% endif %} Invoice{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -12,68 +12,94 @@
 
 {% block body %}
 <div class="t">
- {% invoice_nav  invoice %}
-<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice View 
-{% if obj_name %}
-	for {{ obj_name|capfirst }}
+{% invoice_nav  invoice %}
+{% is_admin request.user as user_is_admin %}
+
+<h1>{% if obj_name %}{{ obj_name|capfirst }}{% endif %} Invoice</h1>
+
+{% if SITE_GLOBAL_SITEMAILINGADDRESS %}
+<address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address>
 {% endif %}
-</h1>
-<div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ SITE_GLOBAL_SITEMAILINGADDRESS }}</div>
-<div>{{ SITE_GLOBAL_NONPROFITSTATEMENT }}</div>
 
-<div>{{ notify }}</div>
-<div class="invoice-view-display">
-
-{% is_admin request.user as isadmin %}
-<div class="invoice-view-wrap">
-	{% if invoice.is_tendered %}
-		<span>TENDERED: {{ invoice.tender_date|date:'N j, Y h:i a' }}</span>
-	{% else %}
-		<div class="subtitles">E-S-T-I-M-A-T-E &nbsp;&nbsp;</div>
-	{% endif %}
-	
-	{% invoice_object_display request invoice %}
-
-	{% invoice_total_display request invoice %}
-	
-	{% if invoice.balance > 0 and merchant_login %}
-		<div class="invoice-view-box">   
-        <div class="invoice-view-payonline">
-        <a href="{% url payments.views.pay_online invoice.id invoice.guid %}" class="body_copy_yellow" title="Pay Online">Pay Online Now</a>
-        </div>
-        <div class="clear-right"></div>
-       </div>
-	{% endif %}
-</div>
-
-{% payment_history_display request invoice %}
-
-
-<br />
-<div class="">
-<a href="{% url invoice.print_view invoice.id guid%}">Click here for a printer friendly version of this invoice.</a>
-</div>
-
-{% is_admin request.user as isadmin %}
-{% if isadmin %}
-<br />
-<div class="">
-<a href="{% url invoice.detail invoice.id%}">View accounting entries associated with this invoice.</a>
+{% if user_is_admin %}
+<div class="invoice-options">
+	<ul>
+		{% if invoice.is_tendered %}
+			<li><a class="admin-option" href="{%url invoice.adjust invoice.id %}">Adjust Invoice</a></li>
+		{% endif%}
+		<li><a class="admin-option" href="{% url invoice.detail invoice.id%}">Accounting Entries</a></li>
+		<li><a class="admin-option" href="{% url invoice.detail invoice.id%}" onclick="$('.invoice-admin-notes').toggle(); return false;">Make Notes</a></li>
+	</ul>
 </div>
 {% endif %}
 
-{% if form %}
-{# admin notes form #}
-<div style="margin-top: 1em;">
-<form method="post" action=".">{% csrf_token %}
-<div><label for="id_admin_notes" class="field-label">Admin Notes:</label></div>
-<div>{{ form.admin_notes }}</div>
-<input type="submit" name="submit" value="Add/Update Notes" />
-</form>
+<div class="invoice-options">
+	<ul>
+		<li><a href="{% url invoice.print_view invoice.id guid%}">Print Invoice</a></li>
+	</ul>
+</div>
+
+{% if user_is_admin %}
+<div class="invoice-admin-notes">
+	<form method="post" action=".">
+	{% csrf_token %}
+	<p>{{ form.admin_notes }}</p>
+	<input type="submit" name="submit" value="Update Notes" />
+	</form>
 </div>
 {% endif %}
 
+{% with invoice.get_object as object %}
+<div class="invoice-meta">
+	<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td>Invoice #</td>
+			<td class="td-right">{{ invoice.id }}</td>
+		</tr>
+		{% if object %}
+			<tr>
+				<td>Invoice For</td>
+				<td class="td-right">{{ object }}</td>
+			</tr>
+		{% endif %}
+		<tr>
+			<td>Invoice Date</td>
+			<td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
+		</tr>
+		<tr>
+			<td>Invoice Status</td>
+			{% if invoice.is_tendered %}
+				<td class="invoice-status td-right">Tendered {{ invoice.tender_date|date:'N j, Y h:i a' }}</td>
+			{% else %}
+				<td class="invoice-status-red td-right">Estimate</td>
+			{% endif %}
+		</tr>
+		<tr class="invoice-meta-amount">
+			<td>Invoice Amount</td>
+			<td class="td-right">{{ invoice.total|format_currency }}</td>
+		</tr>
+	</table>
+</div>
+{% endwith %}
+
+<div class="invoice-table">
+	<table border="0" cellspacing="0" cellpadding="0">
+		<tr class="invoice-table-header">
+			<td>Description</td>
+			<td class="td-right">Line Amount</td>
+		</tr>
+		{% invoice_object_display request invoice %}
+	</table>
 </div>
 
+<div class="invoice-total-wrap">
+	<div class="invoice-total">
+		{% invoice_total_display request invoice %}
+	</div>
+</div>
+<div style="clear: both"></div>
+<div class="payment-table">
+	{% payment_history_display request invoice %}
+</div>
 </div>
 {% endblock %}

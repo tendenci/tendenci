@@ -1,33 +1,14 @@
 {% load base_filters %}
 
-{# user info #}
-<div class="invoice-view-box">
-	{# make 3 blocks in the first box #}
-	<div class="invoice-view-detail-left">
+<tr>
+    <td>
 		{% if obj %}
-			<a href="{% url directory obj.slug %}" title="View Directory">{{ obj.id }}</a>
+			Directory #<a href="{% url directory obj.slug %}" title="View Directory">{{ obj.id }}</a> {{ obj.headline|truncatewords:5 }}
 		{% else %}
-			{{ invoice.object_id }}
+			Directory information not available
 		{% endif%}
-	</div>
-	
-	<div class="invoice-view-detail-middle">
-		<div class="invoice-item">
-			{% if obj %}
-				{{ obj.headline|truncatewords:5 }}
-			{% else %}
-				Directory Information not available
-			{% endif%}
-		</div>
-		<div class="invoice-item">Duration: {{ obj.requested_duration }}</div>
-		<div class="invoice-item">Summary: {{ obj.summary|truncatewords:30 }}</div>
-	</div>
-	
-	<div class="invoice-view-detail-right">
-		Amount: {{ invoice.total|format_currency }}
-	</div>
-	<div class="clear-both"></div>
-</div>
-
-	
-
+	</td>
+	<td class="td-right">
+	    {{ invoice.total|format_currency }}
+	</td>
+</td>
