@@ -1,41 +1,14 @@
 {% load base_filters %}
 
-{# user info #}
-<div class="invoice-view-box">
-	{# make 3 blocks in the first box #}
-	<div class="invoice-view-detail-left">
+<tr>
+    <td>
 		{% if obj %}
-			<a href="{% url make_payment.view obj.id %}" title="View Make Payment">{{ obj.id }}</a>
+			Payment #<a href="{% url make_payment.view obj.id %}" title="Payment">{{ obj.pk }}</a> made by {{ obj.first_name }} {{obj.last_name}}
 		{% else %}
-			{{ invoice.object_id }}
+			{{ invoice.title }}
 		{% endif%}
-	</div>
-	
-	<div class="invoice-view-detail-middle">
-		<div class="invoice-item">
-			{% if obj %}
-				Payment Made by {{ obj.first_name }} {{obj.last_name}}
-			{% else %}
-				Make Payment Information not available
-			{% endif%}
-		</div>
-		<div class="invoice-item">Phone: {{ obj.phone }}</div>
-		<div class="invoice-item">Email: {{ obj.email }}</div>
-		{% if obj.company %}
-			<div class="invoice-item">Company: {{ obj.company }}</div>
-		{% endif%}
-		{% if obj.address or obj.address2 or obj.city or obj.state or obj.zip_code  %}
-			<div class="invoice-item">Address: {{ obj.address }} {{ obj.address2 }}
-				{{ obj.city }} {{ obj.state }} {{ obj.zip_code }}
-			</div>
-		{% endif%}
-	</div>
-	
-	<div class="invoice-view-detail-right">
-		Amount: {{ invoice.total|format_currency }}
-	</div>
-	<div class="clear-both"></div>
-</div>
-
-	
-
+	</td>
+	<td class="td-right">
+	    {{ invoice.total|format_currency }}
+	</td>
+</td>

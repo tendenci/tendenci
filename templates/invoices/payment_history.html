@@ -1,54 +1,60 @@
 {% load base_filters %}
-{% if payments %}
-    {% for payment in payments %}
-        <div class="invoice-view-payment-wrap {% if payment.is_paid %}{% if payment.amount < 0 %}body_copy_alerts{%endif%}{%else%}{%if payment.status_detail == 'void'%}body_copy_gray{%else%}body_copy_yellow{%endif%}{%endif%}"> 
-	        {# make 3 blocks in the payment box #}
-	        <div class="invoice-view-detail-left">
-		        {# block #1 - payment_id #}
-		        <a href="{%url payment.view payment.id%}" title="View Payment">{{ payment.id }}</a>
-	        </div>
-        
-	        {# block #2 - payment transaction details #}
-	        <div class="invoice-view-detail-middle">
-		        <div class="invoice-item">{{payment.last_name}}, {{ payment.first_name }}</div>
-		        {%  if payment.creator %}
-		            <div class="invoice-item">Creator: <a href="{{ payment.creator.get_absolute_url }}">{{ payment.creator_username }}</a></div>
-		        {% endif %}
-		        {%  if payment.trans_id and payment.trans_id != '0' %}
-		            <div class="invoice-item">Trans_ID: {{ payment.trans_id }}</div>
-		       {% else %}
-		            {% if payment.trans_string and payment.trans_string != '' %}
-		                <div class="invoice-item">Trans_String: {{payment.trans_string}}</div>
-		             {% else %}
-		                <div class="invoice-item">Trans_ID not available</div>
-		            {% endif %}
-		        {% endif %}
-		        {% if payment.response_reason_text and payment.response_reason_text != '' %}
-		            <div class="invoice-item">{{payment.response_reason_text}}</div>
-		        {% endif %}
-		        <div class="invoice-item">{{payment.description}}</div>
-	        </div>
-        
-	        {# block #3 -payment status #}
-	        <div class="invoice-view-detail-right">
-		        <div class="invoice-item">{{ payment.create_dt|date:'long' }}</div>
-		        <div class="invoice-item">Invoice: <a href="{% url invoice.view payment.invoice.id %}">{{payment.invoice.id}}</a></div>
-		    
-		        <div class="invoice-item">[Payment Status: 
-		         {% if not payment.status_detail or  payment.status_detail == '' %}
-		         {% if not payment.verified %}ABANDON{% else %}Verified, Not Received{% endif %}
-		       {% else %}
-		            {% if payment.status_detail == 'void' %}VOID{% else %}{{payment.status_detail}}{% endif %}
-		         {% endif %}]
-		        </div>
-		       
-		        <div class="invoice-item">{{ payment.method }} {{ payment.amount|format_currency }}{%  if not payment.status_detail or payment.status_detail == '' %}**{% endif %}</div>
-	       </div>
-        
-        <div class="clear-both"></div>
-        
-        </div>
-   
-    {% endfor %}
 
+{% if payments %}
+	<p class="payment-history-header">Payment History</p>
+	<table border="0" cellspacing="0" cellpadding="0">
+	<tr class="payment-table-header">
+		<td>Information</td>
+		<td class="td-right">Line Amount</td>
+	</tr>
+    {% for payment in payments %}
+		<tr>
+			<td>
+				Payment #<a href="{%url payment.view payment.id%}" title="View Payment">{{ payment.id }}</a>
+				by {{payment.last_name|capfirst }}, {{ payment.first_name|capfirst }}&nbsp;&ndash;&nbsp;
+				{% if not payment.status_detail %}
+		         	{% if not payment.verified %}
+		         		abandoned
+		         	{% else %}
+		         		verified, not received
+		         	{% endif %}
+	       		{% else %}
+		            {% if payment.status_detail == 'void' %}
+		            	voided
+		            {% else %}
+		            	{{ payment.status_detail }}
+		            {% endif %}
+		         {% endif %}
+				&nbsp;<a href="#" onclick="$(this).next().toggle(); return false;">(details)</a>
+				<div class="payment-details">
+					<p><strong>Description:</strong> {{ payment.description }}</p>
+					{% if payment.trans_id %}
+						<p><strong>Transaction ID:</strong> {{ payment.trans_id }}</p>
+					{% endif %}
+					{% if payment.trans_string %}
+						<p><strong>Transaction String:</strong> {{ payment.trans_string }}</p>
+					{% endif %}
+					{% if payment.response_reason_text %}
+						<p><strong>Response:</strong> {{ payment.response_reason_text }}</p>
+					{% endif %}
+					<p><strong>Payment Status:</strong>
+		         	{% if not payment.status_detail %}
+			         	{% if not payment.verified %}
+			         		abandoned
+			         	{% else %}
+			         		verified, not received
+			         	{% endif %}
+		       		{% else %}
+			            {% if payment.status_detail == 'void' %}
+			            	voided
+			            {% else %}
+			            	{{ payment.status_detail }}
+			            {% endif %}
+		         	{% endif %}</p>
+				<div>
+			</td>
+			<td class="td-right">{{ payment.amount|format_currency }}</td>
+		</tr>
+    {% endfor %}
+    </table>
 {% endif %}

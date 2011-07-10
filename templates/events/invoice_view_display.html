@@ -1,32 +1,29 @@
 {% load base_filters %}
 
-{# user info #}
-{% if obj %}
-	<div class="invoice-view-box">
-		<div>Event Title: <a href="{% url events.views.index obj.event.id %}">{{ obj.event.title }}</a></div>
-		<div>Time: {{obj.event.dt_display}}</div>
-		<div>Price: {{obj.amount_paid|format_currency}}</div>
-		{% with obj.registrant_set.all as registrants %}
-		{% if registrants %}
-		<b>Registrants...({{registrants.count}})</b><br />
-			<ol>
-			{% for reg in registrants %}
-				<li>
-				{% if reg.user %}
-					<a href="{% url profile reg.user.username %}">
-				{% endif %}
-				{% if reg.first_name or reg.last_name or reg.email %}
-					{{ reg.first_name }} {{ reg.last_name }} ({{ reg.email }})
-				{% else %}
-					Registrant {{ forloop.counter }} (name not available)
-				{% endif %}
-				{% if reg.user %}
-					</a>
-				{% endif %}
-				</li>
-			{% endfor %}
-			</ol>
-		{% endif %}
-		{% endwith %}
-	</div>
-{% endif %}
+{% with obj.registrant_set.all as registrants %}
+	{% if registrants %}
+		{% for reg in registrants %}
+			<tr>
+			    <td>
+					{% if reg.user %}
+						<a href="{% url profile reg.user.username %}">
+					{% endif %}
+					{% if reg.first_name or reg.last_name or reg.email %}
+						{{ reg.first_name }} {{ reg.last_name }}
+						{% if reg.email %} 
+							({{ reg.email }})
+						{% endif %}
+					{% else %}
+						Registrant {{ forloop.counter }} (name not available)
+					{% endif %}
+					{% if reg.user %}
+						</a>
+					{% endif %}
+				</td>
+				<td class="td-right">
+				    {{ reg.amount|format_currency }}
+				</td>
+			</td>
+		{% endfor %}
+	{% endif %}
+{% endwith %}
