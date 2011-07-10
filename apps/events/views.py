@@ -833,10 +833,10 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         deleted = False
         if form.data.get('registrant-%d-DELETE' % count, False):
             deleted = True
-        if price.quantity > 1 and count >= 1:
-            price_list.append({'price': 0.00, 'deleted':deleted})
+        if count % price.quantity == 0:
+            price_list.append({'price': event_price, 'deleted':deleted})
         else:
-            price_list.append({'price':event_price, 'deleted':deleted})
+            price_list.append({'price': 0.00 , 'deleted':deleted})
         if not deleted:
             if price.quantity > 1:
                 total_price = event_price
