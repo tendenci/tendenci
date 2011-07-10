@@ -49,29 +49,40 @@ def invoice_search(context):
 def invoice_object_display(request, invoice):
     obj = invoice.get_object()
     object_display = None
+
     if invoice.object_type:
         from django.template.loader import render_to_string
         from django.template import RequestContext
         from django.template import TemplateDoesNotExist
-        
+
         app_label = invoice.object_type.app_label
         template_name = "%s/invoice_view_display.html" % (app_label)
-        
+        print template_name
         try:
-            object_display = render_to_string(template_name, {'obj':obj,
-                                                              'invoice':invoice},
-                                                            context_instance=RequestContext(request))
+            object_display = render_to_string(
+                template_name,
+                {'obj': obj, 'invoice': invoice},
+                context_instance=RequestContext(request)
+            )
         except TemplateDoesNotExist:
             pass
-  
-    return {'request':request, 'invoice':invoice, 'obj':obj, 'object_display':object_display}
+
+    context = {
+        'request': request,
+        'invoice': invoice,
+        'obj': obj,
+        'object_display': object_display
+    }
+    return context
 
 
 # display invoice total on invoice view
 @register.inclusion_tag("invoices/total_display.html")
 def invoice_total_display(request, invoice):
     tmp_total = 0
-    if invoice.variance and invoice.variance <> 0:
+    payment_method = ""
+
+    if invoice.variance and invoice.variance != 0:
         tmp_total = invoice.subtotal
         if invoice.tax:
             tmp_total += invoice.tax
@@ -81,16 +92,22 @@ def invoice_total_display(request, invoice):
             tmp_total += invoice.shipping_surcharge
         if invoice.box_and_packing:
             tmp_total += invoice.box_and_packing
-            
-    payment_method = ""
+
     if invoice.balance <= 0:
         if invoice.payment_set:
             payment_set = invoice.payment_set.order_by('-id')
             if payment_set:
                 payment = payment_set[0]
                 payment_method = payment.method
-                
-    return {'request':request, 'invoice':invoice, 'tmp_total':tmp_total, 'payment_method':payment_method}
+    
+    context = {
+        'request': request,
+        'invoice': invoice,
+        'tmp_total': tmp_total,
+        'payment_method': payment_method
+    } 
+    return context
+
 
 # display payment history on invoice view
 @register.inclusion_tag("invoices/payment_history.html")
@@ -100,7 +117,4 @@ def payment_history_display(request, invoice):
     return {'request':request,
             'invoice':invoice,
             'payments': payments}
-
-        
-    
     
