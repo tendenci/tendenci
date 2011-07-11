@@ -340,15 +340,18 @@
         {% for membership in memberships %}
         <div class="membership-wrap">
             <div>Membership Type: <strong>{{ membership.membership_type }}</strong></div>
-            <div>Joined: <strong>{{ membership.join_dt|date }} ({{ membership.join_dt|timesince }})</strong></div>
+            <div>Joined: <strong>{{ membership.subscribe_dt|date }} ({{ membership.subscribe_dt|timesince }})</strong></div>
 
             {% if membership.expiration_dt %}
-            <div>Expires: <strong>{{ membership.expiration_dt|date }}</strong></div>
+	            <div>Expires: <strong>{{ membership.expiration_dt|date }}</strong></div>
+				{% renew_button %}
             {% else %}
                 <div>Never Expires</div>
             {% endif %}
 
-            {% renew_button %}
+            {% if membership.get_entry %}
+            <div>Entry: <strong><a href="{{ membership.get_entry.get_absolute_url }}">Link to Membership Entry</a></strong>
+            {% endif %}
 
         </div>
         {% endfor %}

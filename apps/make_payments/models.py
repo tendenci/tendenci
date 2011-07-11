@@ -48,7 +48,7 @@ class MakePayment(models.Model):
             self.owner=user
             self.owner_username=user.username
             
-        super(self.__class__, self).save()
+        super(MakePayment, self).save()
         
     def allow_view_by(self, user2_compare):
         boo = False

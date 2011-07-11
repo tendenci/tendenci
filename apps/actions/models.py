@@ -51,7 +51,7 @@ class Action(TendenciBaseModel):
             self.owner=user
             self.owner_username=user.username
             
-        super(self.__class__, self).save()
+        super(Action, self).save()
         
 class ActionRecap(models.Model):
     action = models.ForeignKey(Action)
