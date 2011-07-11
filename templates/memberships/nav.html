@@ -39,7 +39,7 @@
             <li><a href="{% url auth_logout %}">Log Off</a></li>
             {% endif %}
         </ul>
-
+<li><a href="{% url corp_memb.index %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corp. Mem.' %}</a></li>
     </li>
     </ul>
 </div>
