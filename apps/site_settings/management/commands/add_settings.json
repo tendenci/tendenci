@@ -1936,6 +1936,22 @@
         "scope_category": "service", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "staff", 
+        "description": "A global site setting for a url for the staff plugin", 
+        "data_type": "string",
+        "update_dt": "2011-05-27 15:38:23",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "staff_url", 
+        "value": "staff", 
+        "label": "Staff URL", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "staff", 
+        "store": true, 
+        "updated_by": ""
     }
-    
 ]
