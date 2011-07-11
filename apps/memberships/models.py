@@ -148,7 +148,7 @@ class MembershipType(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(MembershipType, self).save(*args, **kwargs)
     
 
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
@@ -295,7 +295,16 @@ class Membership(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Membership, self).save(*args, **kwargs)
+
+    def get_entry(self):
+        try:  # membership was created when entry was approved
+            #entry = self.entries.get(decision_dt=self.create_dt)
+            entry = self.entries.filter(is_approved=True).order_by('decision_dt')[0]
+        except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
+            entry = None
+
+        return entry
 
     @property
     def entry_items(self):
@@ -304,16 +313,12 @@ class Membership(TendenciBaseModel):
         The approved entry that is associated with this membership.
         """
         items = {}
+        entry = self.get_entry()
 
-        try:  # membership was created when entry was approved
-            #entry = self.entries.get(decision_dt=self.subscribe_dt)
-            entry = self.entries.filter(is_approved=True).order_by('decision_dt')[0]
-        except (ObjectDoesNotExist, MultipleObjectsReturned) as e:
-            return items  # return {}
-
-        for field in entry.fields.all():
-            label = slugify(field.field.label).replace('-','_')
-            items[label] = field.value
+        if entry:
+            for field in entry.fields.all():
+                label = slugify(field.field.label).replace('-','_')
+                items[label] = field.value
 
         return items
 
@@ -548,7 +553,7 @@ class Notice(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Notice, self).save(*args, **kwargs)
         
 
 class NoticeLog(models.Model):
@@ -596,7 +601,7 @@ class App(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(App, self).save(*args, **kwargs)
 
     def get_prefill_kwargs(self, membership=None):
         """
@@ -786,7 +791,7 @@ class AppEntry(TendenciBaseModel):
         # Bind user and membership
         # Place user in membership group
         # Update user profile with membership data (fn,ln,email)
-        # Update application as approved, bind to membership, update decition_dt
+        # Update application as approved, bind to membership, update decision_dt
 
         order of candidates (for user-binding)
             authenticated user
@@ -820,6 +825,7 @@ class AppEntry(TendenciBaseModel):
                 'membership':membership,
                 'member_number': membership.member_number,
                 'membership_type': membership.membership_type,
+                'user': membership.user,
                 'directory':membership.directory,
                 'subscribe_dt':membership.subscribe_dt,
                 'expire_dt':membership.expire_dt,
@@ -831,6 +837,8 @@ class AppEntry(TendenciBaseModel):
                 'creator_username':membership.creator_username,
                 'owner_id':membership.owner_id,
                 'owner_username':membership.owner_username,
+                'membership_create_dt':membership.create_dt,
+                'membership_update_dt':membership.update_dt,
             })
 
         try: # get membership
@@ -851,8 +859,9 @@ class AppEntry(TendenciBaseModel):
                     expire_dt = corp_memb.expiration_dt
                 except CorporateMembership.DoesNotExist:
                     self.corporate_membership_id = 0
-            if not expire_dt:
-                expire_dt = self.membership_type.get_expiration_dt(subscribe_dt=datetime.now())
+
+            if not expire_dt:  # membership record not found; new membership (join; not renewal)
+                expire_dt = self.membership_type.get_expiration_dt(join_dt=datetime.now())
                 
             membership = Membership.objects.create(**{
                 'member_number': self.app.entries.count(),
@@ -899,7 +908,7 @@ class AppEntry(TendenciBaseModel):
         user.save()
 
         self.is_approved = True
-        self.decision_dt = datetime.now()
+        self.decision_dt = membership.create_dt
         self.membership = membership
         self.save()
 
