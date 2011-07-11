@@ -33,73 +33,73 @@
 	width: 100%;
 }
 .modules li.users {
-	background-image: url('/site_media/static/images/icons/users-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/users-color-64x64.png');
 }
 .modules li.groups {
-	background-image: url('/site_media/static/images/icons/groups-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/groups-color-64x64.png');
 }
 .modules li.events {
-	background-image: url('/site_media/static/images/icons/events-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/events-color-64x64.png');
 }
 .modules li.articles {
-	background-image: url('/site_media/static/images/icons/articles-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/articles-color-64x64.png');
 }
 .modules li.jobs {
-	background-image: url('/site_media/static/images/icons/jobs-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/jobs-color-64x64.png');
 }
 .modules li.resumes {
-	background-image: url('/site_media/static/images/icons/resumes-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/resumes-color-64x64.png');
 }
 .modules li.news {
-	background-image: url('/site_media/static/images/icons/news-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/news-color-64x64.png');
 }
 .modules li.memberships {
-	background-image: url('/site_media/static/images/icons/memberships-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/memberships-color-64x64.png');
 }
 .modules li.directories {
-	background-image: url('/site_media/static/images/icons/directories-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/directories-color-64x64.png');
 }
 .modules li.photo-albums {
-	background-image: url('/site_media/static/images/icons/photo-albums-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/photo-albums-color-64x64.png');
 }
 .modules li.stories {
-	background-image: url('/site_media/static/images/icons/stories-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/stories-color-64x64.png');
 }
 .modules li.pages {
-	background-image: url('/site_media/static/images/icons/pages-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/pages-color-64x64.png');
 }
 .modules li.entities {
-	background-image: url('/site_media/static/images/icons/entities-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/entities-color-64x64.png');
 }
 .modules li.files {
-	background-image: url('/site_media/static/images/icons/files-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/files-color-64x64.png');
 }
 .modules li.contributions {
-	background-image: url('/site_media/static/images/icons/contributions-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/contributions-color-64x64.png');
 }
 .modules li.contacts {
-	background-image: url('/site_media/static/images/icons/contacts-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/contacts-color-64x64.png');
 }
 .modules li.settings {
-	background-image: url('/site_media/static/images/icons/settings-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/settings-color-64x64.png');
 }
 .modules li.event-logs {
-	background-image: url('/site_media/static/images/icons/event-logs-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/event-logs-color-64x64.png');
 }
 .modules li.locations {
-	background-image: url('/site_media/static/images/icons/locations-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/locations-color-64x64.png');
 }
 .modules li.invoices {
-	background-image: url('/site_media/static/images/icons/invoicing-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/invoicing-color-64x64.png');
 }
 .modules li.forms {
-	background-image: url('/site_media/static/images/icons/cms-forms-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/cms-forms-color-64x64.png');
 }
 .modules li.rss {
-	background-image: url('/site_media/static/images/icons/rss-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/rss-color-64x64.png');
 }
 .modules li.redirects {
-	background-image: url('/site_media/static/images/icons/redirects-bw-64x64.png');
+	background-image: url('/site_media/static/images/icons/redirects-color-64x64.png');
 }
 
 .side-panel {
