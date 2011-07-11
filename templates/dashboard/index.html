@@ -75,6 +75,10 @@
         <li class="memberships">
             <a href="{% url membership.search %}"><span>{% firstof MODULE_EVENTS_LABEL "Memberships" %}</span></a></li>
         {% endif %}
+        {% if MODULE_CORPORATEMEMBERSHIPS_ENABLED %}
+        <li class="corporatememberships">
+            <a href="{% url corp_memb.search %}"><span>{% firstof MODULE_EVENTS_LABEL "Corp. Memberships" %}</span></a></li>
+        {% endif %}
 
         {% if MODULE_EVENTS_ENABLED %}
         <li class="events"><a href="{% url event.month %}"><span>{% firstof MODULE_EVENTS_LABEL "Events" %}</span></a></li>
