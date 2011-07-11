@@ -110,7 +110,7 @@ class EventForm(TendenciBaseForm):
                     ]
         
     def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -356,7 +356,7 @@ class Reg8nForm(forms.Form):
 
     def __init__(self, event_id=None, *args, **kwargs):
         user = kwargs.pop('user', None)
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(Reg8nForm, self).__init__(*args, **kwargs)
 
         event = Event.objects.get(pk=event_id)
         payment_method = event.registration_configuration.payment_method.all()
@@ -405,7 +405,7 @@ class RegistrationForm(forms.Form):
         event_price: integer of the event amount
         """
         user = kwargs.pop('user', None)
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(RegistrationForm, self).__init__(*args, **kwargs)
 
         free_event = event_price <= 0
         if not free_event:
@@ -441,7 +441,7 @@ class RegistrantForm(forms.Form):
         self.event = kwargs.pop('event', None)
         self.form_index = kwargs.pop('form_index', None)
         
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(RegistrantForm, self).__init__(*args, **kwargs)
         
         # make the fields in the subsequent forms as not required
         if self.form_index and self.form_index > 0:
@@ -530,5 +530,5 @@ class MessageAddForm(forms.ModelForm):
         fields = ('body',)
     
     def __init__(self, event_id=None, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(MessageAddForm, self).__init__(*args, **kwargs)
 

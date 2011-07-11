@@ -72,7 +72,7 @@ class Payment(models.Model):
             self.owner=user
             self.owner_username=user.username
             
-        super(self.__class__, self).save()
+        super(Payment, self).save()
 
     @property
     def is_approved(self):
