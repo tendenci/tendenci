@@ -41,7 +41,7 @@ class PhotoSet(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
             
-        super(self.__class__, self).save()
+        super(PhotoSet, self).save()
     
     def get_cover_photo(self, *args, **kwargs):
         """ get latest thumbnail url """

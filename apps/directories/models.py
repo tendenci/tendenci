@@ -96,7 +96,7 @@ class Directory(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
             
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Directory, self).save(*args, **kwargs)
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -177,5 +177,5 @@ class DirectoryPricing(models.Model):
         if not self.premium_price: self.premium_price = 0
         if not self.category_threshold: self.category_threshold = 0
             
-        super(self.__class__, self).save(*args, **kwargs)
+        super(DirectoryPricing, self).save(*args, **kwargs)
 

@@ -90,7 +90,7 @@ class CorporateMembershipType(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(CorporateMembershipType, self).save(*args, **kwargs)
       
     # added here temporarily because i cannot use the one in memberships now
     # switch later if the function in memberships is restored.
@@ -252,7 +252,7 @@ class CorporateMembership(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.guid:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(CorporateMembership, self).save(*args, **kwargs)
         
     @property   
     def module_name(self):
@@ -650,7 +650,7 @@ class CorporateMembershipArchive(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(CorporateMembershipArchive, self).save(*args, **kwargs)
         
 class CorpMembRenewEntry(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership")
@@ -699,7 +699,7 @@ class IndivMembEmailVeri8n(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)    
+        super(IndivMembEmailVeri8n, self).save(*args, **kwargs)    
     
     
 class CorpFieldEntry(models.Model):
@@ -747,7 +747,7 @@ class CorpApp(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(CorpApp, self).save(*args, **kwargs)
  
        
 class CorpField(models.Model):
