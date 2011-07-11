@@ -244,14 +244,32 @@ class Reg8nConfPricingEditForm(BetterModelForm):
         super(Reg8nConfPricingEditForm, self).__init__(*args, **kwargs)
         self.fields['reg8n_dt_price'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
+        
+    def clean_quantity(self):
+        # make sure that quantity is always a positive number
+        quantity = self.cleaned_data['quantity']
+        if quantity <= 0:
+            quantity = 1
+        
+        return quantity
 
     def clean(self):
-        # make sure that quantity is always a positive number
-        quantity = self.cleaned_data.get('quantity')
-        if quantity <= 0:
-            self.cleaned_data['quantity'] = 1
+        cleaned_data = self.cleaned_data
+        early_dt = cleaned_data.get("early_dt")
+        regular_dt = cleaned_data.get("regular_dt")
+        late_dt = cleaned_data.get("late_dt")
 
-        return self.cleaned_data
+        if early_dt > regular_dt:
+            errors = self._errors.setdefault("regular_dt", ErrorList())
+            errors.append(u"This cannot be \
+                earlier than the early date.")
+        if regular_dt > late_dt:
+            errors = self._errors.setdefault("late_dt", ErrorList())
+            errors.append(u"This cannot be \
+                earlier than the regular date.")
+
+        # Always return the full collection of cleaned data.
+        return cleaned_data
 
     class Meta:
         model = RegistrationConfiguration
