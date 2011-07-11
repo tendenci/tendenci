@@ -93,7 +93,7 @@ class Profile(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
             
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Profile, self).save(*args, **kwargs)
 
         
     # if this profile allows view by user2_compare
