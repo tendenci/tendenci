@@ -65,7 +65,7 @@ class Type(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Type, self).save(*args, **kwargs)
 
 class Place(models.Model):
     """
@@ -265,7 +265,7 @@ class RegConfPricing(models.Model):
         return '%s' % self.pk
 
     def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(RegConfPricing, self).__init__(*args, **kwargs)
         self.PERIODS = {
             'early': (self.early_dt, self.regular_dt),
             'regular': (self.regular_dt, self.late_dt),
@@ -465,7 +465,7 @@ class Registration(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Registration, self).save(*args, **kwargs)
 
     def save_invoice(self, *args, **kwargs):
         status_detail = kwargs.get('status_detail', 'tendered')
@@ -629,7 +629,7 @@ class Event(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Event, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.title

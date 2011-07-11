@@ -114,7 +114,7 @@ class Job(models.Model):
         if not self.id:
             self.guid = str(uuid.uuid1())
 
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Job, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.title
@@ -211,4 +211,4 @@ class JobPricing(models.Model):
         if not self.premium_price:
             self.premium_price = 0
 
-        super(self.__class__, self).save(*args, **kwargs)
+        super(JobPricing, self).save(*args, **kwargs)

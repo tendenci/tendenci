@@ -27,7 +27,7 @@ class EmailBlock(TendenciBaseModel):
             self.owner=user
             self.owner_username=user.username
             
-        super(self.__class__, self).save()
+        super(EmailBlock, self).save()
         
     # if this email allows view by user2_compare
     def allow_view_by(self, user2_compare):

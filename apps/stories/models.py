@@ -41,7 +41,7 @@ class Story(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
             
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Story, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         url = self.full_story_link

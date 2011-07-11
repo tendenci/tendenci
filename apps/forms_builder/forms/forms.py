@@ -159,7 +159,7 @@ class FormForm(TendenciBaseForm):
                     })]
                 
     def __init__(self, *args, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(FormForm, self).__init__(*args, **kwargs)
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
