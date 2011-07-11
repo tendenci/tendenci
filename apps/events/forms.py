@@ -120,6 +120,19 @@ class EventForm(TendenciBaseForm):
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+            
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        start_dt = cleaned_data.get("start_dt")
+        end_dt = cleaned_data.get("end_dt")
+
+        if start_dt > end_dt:
+            errors = self._errors.setdefault("end_dt", ErrorList())
+            errors.append(u"This cannot be \
+                earlier than the start date.")
+
+        # Always return the full collection of cleaned data.
+        return cleaned_data
 
 
 class TypeChoiceField(forms.ModelChoiceField):
