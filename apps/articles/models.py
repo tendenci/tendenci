@@ -67,7 +67,7 @@ class Article(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Article, self).save(*args, **kwargs)
     
     def age(self):
         return datetime.now() - self.create_dt

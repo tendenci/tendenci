@@ -110,7 +110,7 @@ class Invoice(models.Model):
             self.owner=user
             self.owner_username=user.username
             
-        super(self.__class__, self).save()
+        super(Invoice, self).save()
         
     def get_object(self):
         obj = None

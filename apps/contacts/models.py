@@ -81,7 +81,7 @@ class Contact(TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
             
-        super(self.__class__, self).save(*args, **kwargs)
+        super(Contact, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return "%s %s" % (self.first_name, self.last_name)

@@ -56,7 +56,7 @@ class Group(TendenciBaseModel):
             if not self.slug:
                 self.slug = slugify(name)
             
-        super(self.__class__, self).save(force_insert, force_update)
+        super(Group, self).save(force_insert, force_update)
 
     def is_member(self, user):
         if user:
