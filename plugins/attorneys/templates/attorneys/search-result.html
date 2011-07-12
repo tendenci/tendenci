@@ -8,8 +8,7 @@
                 <div class="info">
                     <a href="{{ attorney.get_absolute_url }}"><h3>{{ attorney.name }}</h3></a>
                     <div class="position">
-                        <a href="{% url attorneys.search %}?q=category:{{ attorney.category }}">{{ attorney.get_category_display }}</a>{% if attorney.position %}, 
-                        <a href="{% url attorneys.search %}?q=position:{{ attorney.position }}">{{ attorney.position }}</a>{% endif %}
+                        <a href="{% url attorneys.search %}?q=category:{{ attorney.category }}">{{ attorney.get_category_display }}</a>
                     </div>
                     <div class="contact">
                     <table>

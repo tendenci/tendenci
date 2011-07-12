@@ -30,7 +30,7 @@ class FormForForm(forms.ModelForm):
         instance and its related field model instances.
         """
         self.form = form
-        self.form_fields = form.fields.visible()
+        self.form_fields = form.fields.visible().order_by('position')
         super(FormForForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
             field_key = "field_%s" % field.id
