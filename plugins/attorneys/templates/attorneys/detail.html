@@ -8,9 +8,6 @@
 {% block title %}
     {% nowhitespace %}
         {{ attorney.name }}
-        {% if attorney.position %}
-            &nbsp;&ndash;&nbsp;{{ attorney.position }}
-        {% endif %}
         {% if attorney.category %}
             &nbsp;&ndash;&nbsp;{{ attorney.category }}
         {% endif %}
@@ -20,9 +17,6 @@
 {% block meta_keywords %}
     {% nowhitespace %}
         attorney {{ attorney.name }}
-        {% if attorney.position %}
-            {{ attorney.position }}
-        {% endif %}
         {% if attorney.category %}
             {{ attorney.category }}
         {% endif %}
@@ -35,9 +29,6 @@
 {% block meta_description %}
     {% nowhitespace %}
         {{ attorney.name }}
-        {% if attorney.position %}
-            ,{{ attorney.position }}
-        {% endif %}
         {% if attorney.category %}
             ,{{ attorney.category }}
         {% endif %}
@@ -64,8 +55,7 @@
             <div class="info">
                 <h1>{{ attorney.name }}</h1>
                 <div class="position">
-                    {{ attorney.get_category_display }}{% if attorney.position %}, {{ attorney.position }}{% endif %}
-                    {% if attorney.position %}&nbsp;&mdash;&nbsp;{% endif %}{{ attorney.city }}{% if attorney.state %}, {{ attorney.state }}{% endif %}
+                    {{ attorney.get_category_display }}
                 </div>
                 <div class="contact">
                     <table>
