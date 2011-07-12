@@ -13,7 +13,7 @@
 	{% block meta_canonical_url %}{% endblock %} 
 	<link rel="stylesheet" href="{{ THEME_URL }}media/css/styles.css" type="text/css" media="screen" />  
 	<link href="{{ STATIC_URL }}css/global_tendenci.css" rel="stylesheet" type="text/css" />
-	
+	<link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
 	{% block extra_head %}{% endblock %}
 	
 	{% if admin %}<link href="{{ STATIC_URL }}css/admin_menu.css" rel="stylesheet" type="text/css" />{% endif %}

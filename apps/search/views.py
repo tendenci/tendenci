@@ -8,8 +8,11 @@ from search.forms import ModelSearchForm
 RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
 
 def open_search(request, template_name="search/open_search_xml.html"):
-    return render_to_response(template_name, mimetype="application/opensearchdescription+xml",
-                              context_instance=RequestContext(request))
+    return render_to_response(
+        template_name, 
+        mimetype="application/opensearchdescription+xml",
+        context_instance=RequestContext(request)
+    )
     
 
 class SearchView(object):
