@@ -1,6 +1,10 @@
 Tendenci 5.0 README
 -------------------
 
+WHOOSH REQUIREMENTS (Development Only)
+--------------------------------------
+pip install whoosh
+
 XAPIAN REQUIREMENTS (Development Only)
 --------------------------------------
 Since some fields are faceted in the search indexes, xapian is required.
