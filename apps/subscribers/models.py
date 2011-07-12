@@ -5,7 +5,7 @@ from user_groups.models import Group
 # Create your models here.
 class GroupSubscription(models.Model):
     group = models.ForeignKey(Group)
-    subscriber = models.ForeignKey(FormEntry, related_name='group_subscriber')
+    subscriber = models.ForeignKey(FormEntry, related_name='subscriptions')
     
     create_dt = models.DateTimeField(auto_now_add=True, editable=False)
     update_dt = models.DateTimeField(auto_now=True)
