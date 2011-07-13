@@ -260,12 +260,12 @@ class Reg8nConfPricingEditForm(BetterModelForm):
         late_dt = cleaned_data.get("late_dt")
 
         if early_dt > regular_dt:
-            errors = self._errors.setdefault("regular_dt", ErrorList())
-            errors.append(u"This cannot be \
+            errors = self._errors.setdefault("reg8n_dt_price", ErrorList())
+            errors.append(u"The regular cannot be \
                 earlier than the early date.")
         if regular_dt > late_dt:
-            errors = self._errors.setdefault("late_dt", ErrorList())
-            errors.append(u"This cannot be \
+            errors = self._errors.setdefault("reg8n_dt_price", ErrorList())
+            errors.append(u"The late date cannot be \
                 earlier than the regular date.")
 
         # Always return the full collection of cleaned data.
