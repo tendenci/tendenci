@@ -543,7 +543,7 @@ def get_pricing(user, event, pricing=None):
     # on dates and permissions
     # get_pricing_dict(price_instance, qualifies)
     for price in pricing:
-        qualifies = True
+        qualifies = False
 
         # limits
         if limit > 0:
@@ -555,6 +555,16 @@ def get_pricing(user, event, pricing=None):
                 'limit')
               )
               continue
+        
+        # public pricing
+        if price.allow_anonymous:
+            qualifies = True
+            pricing_list.append(get_pricing_dict(
+               price, 
+               qualifies, 
+               '')
+            )
+            continue
 
         # Admins are always true
         if is_admin(user):
@@ -601,13 +611,6 @@ def get_pricing(user, event, pricing=None):
                'member')
             )
             continue
-
-        # public pricing
-        pricing_list.append(get_pricing_dict(
-           price, 
-           qualifies, 
-           '')
-        )
 
     # pop out the empty ones if they exist
     pricing_list = [i for i in pricing_list if i]
