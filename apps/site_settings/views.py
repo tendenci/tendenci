@@ -7,11 +7,12 @@ from site_settings.models import Setting
 from site_settings.forms import build_settings_form
 from perms.utils import has_perm
 
+
 def list(request, scope, scope_category, template_name="site_settings/list.html"):
     if not has_perm(request.user,'site_settings.change_setting'):
         raise Http403
     
-    settings = Setting.objects.filter(scope=scope, scope_category=scope_category)
+    settings = Setting.objects.filter(scope=scope, scope_category=scope_category).order_by('label')
     if not settings:
         raise Http404
     
@@ -25,9 +26,9 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
         
     return render_to_response(template_name, {'form': form }, context_instance=RequestContext(request))
 
+
 def index(request, template_name="site_settings/settings.html"):
     if not has_perm(request.user,'site_settings.change_setting'):
         raise Http403
-    settings = Setting.objects.all().order_by('scope_category')
+    settings = Setting.objects.values().order_by('scope_category')
     return render_to_response(template_name, {'settings':settings}, context_instance=RequestContext(request))
-    
