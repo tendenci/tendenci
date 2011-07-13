@@ -107,7 +107,8 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         if photo_next: photo_next_url = reverse("photo", args= [photo_next.id])  
 
         photo_sets = photo.photoset.all()
-        set_id = photo_sets[0].id
+        if photo_sets:
+            set_id = photo_sets[0].id
 
     # "is me" variable
     is_me = photo.member == request.user
