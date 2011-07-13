@@ -108,9 +108,13 @@
     <div class="back-to-photo-sets"><a href="{% url photoset_latest %}">&larr; Back to Albums</a></div>
     <table class="wrap">
         <tr><td class="set-info">
-            <div class="cover-photo"><a href="{% url photo photo_set.get_cover_photo.pk photo_set.pk %}">
-            <img src="{{ photo_set.get_cover_photo.get_small_url }}" />
-            </a></div>
+            <div class="cover-photo">
+            {% if photo_set.get_cover_photo %}
+                <a href="{% url photo photo_set.get_cover_photo.pk photo_set.pk %}"><img src="{{ photo_set.get_cover_photo.get_small_url }}" /></a>
+            {% else %}
+                <img src="{{ photo_set.get_default_cover_photo_small }}" />
+            {% endif %}
+            </div>
 
             <div class="quick-info">
             {{ photo_set.image_set.count }} Photo{{ photo_set.image_set.count|pluralize }}
