@@ -1,11 +1,14 @@
 import uuid
-# django
+
+
 from django.db import models
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
-# local
+from django.core.urlresolvers import reverse
+
+
 from photologue.models import *
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
@@ -14,6 +17,7 @@ from photos.managers import PhotoManager, PhotoSetManager
 from meta.models import Meta as MetaTags
 from photos.module_meta import PhotoMeta
 from haystack.query import SearchQuerySet
+
 
 class PhotoSet(TendenciBaseModel):
     """
@@ -42,17 +46,29 @@ class PhotoSet(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
             
         super(PhotoSet, self).save()
-    
+
+    def get_default_cover_photo_small(self):
+        return settings.STATIC_URL + "/images/default-photo-small.jpg"
+
+    def get_default_cover_photo(self):
+        return settings.STATIC_URL + "/images/default-photo-album-cover.jpg"
+
     def get_cover_photo(self, *args, **kwargs):
         """ get latest thumbnail url """
-        default_cover = settings.STATIC_URL + "/images/default-photo.jpg"
+        cover_photo = None
+
+        if hasattr(self, 'cover_photo'):
+            return self.cover_photo
+
         try:
-            cover_photo = AlbumCover.objects.get(photoset = self).photo
+            cover_photo = AlbumCover.objects.get(photoset=self).photo
+            self.cover_photo = cover_photo
         except AlbumCover.DoesNotExist:
             try:
                 cover_photo = self.image_set.latest('id')
+                self.cover_photo = cover_photo
             except:
-                cover_photo = default_cover
+                pass
         return cover_photo
 
     def check_perm(self, user, permission, *args, **kwargs):
