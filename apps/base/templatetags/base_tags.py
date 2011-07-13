@@ -450,6 +450,49 @@ def photo_image_url(parser, token):
         raise TemplateSyntaxError(message)
 
     return PhotoImageURL(photo, *args, **kwargs)
+
+
+class ImageURL(Node):
+    def __init__(self, file, *args, **kwargs):
+        self.size = kwargs.get("size", "100x100")
+        self.crop = kwargs.get("crop", False)
+        self.quality = kwargs.get("quality", 90)
+        self.file = Variable(file)
+
+    def render(self, context):
+        file = self.file.resolve(context)
+        args = [file.pk, self.size]
+        if self.crop:
+            args.append("crop")
+        if self.quality:
+            args.append(self.quality)
+        url = reverse('file', args=args)
+        return url
+
+  
+@register.tag
+def image_url(parser, token):
+    """
+    Example:
+        <img src="{% image_url file size=100x100 crop=True quality=90 %}" />
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    file = bits[1]
+
+    for bit in bits:
+        if "size=" in bit:
+            kwargs["size"] = bit.split("=")[1]
+        if "crop=" in bit:
+            kwargs["crop"] = bool(bit.split("=")[1])
+        if "quality=" in bit:
+            kwargs["quality"] = bit.split("=")[1]
+
+    if len(bits) < 1:
+        message = "'%s' tag requires more than 1 argument" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    return ImageURL(file, *args, **kwargs)
     
 class NonHashedTagsNode(TagsForObjectNode):
     def render(self, context):
