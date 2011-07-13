@@ -268,7 +268,7 @@ def groupmembership_bulk_add(request, group_slug,
     group = get_object_or_404(Group, slug=group_slug)
     
     if request.method == 'POST':
-        form = form_class(group, request.POST, member_label = 'email')
+        form = form_class(group, request.POST)
         if form.is_valid():
             members = form.cleaned_data['members']
             
@@ -330,7 +330,8 @@ def groupmembership_bulk_add(request, group_slug,
                 EventLog.objects.log(**log_defaults)
             return HttpResponseRedirect(group.get_absolute_url())
     else:
-        form = form_class(group, member_label='email')
+        member_label = request.GET.get('member_label', 'username')
+        form = form_class(group, member_label=member_label)
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
     
