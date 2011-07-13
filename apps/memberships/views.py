@@ -573,7 +573,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
             return redirect(reverse('membership.application_entries', args=[entry.pk]))
 
-    else:
+    else:  # if request != POST
         form = MemberApproveForm(entry)
 
     return render_to_response(template_name, {
