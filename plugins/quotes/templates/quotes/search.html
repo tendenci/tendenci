@@ -4,51 +4,68 @@
 {% load tagging_tags %}
 {% load perm_tags %}
 
-{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Quotes, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }} Quotes{% endblock %}
+{% block title %}{{ SITE_GLOBAL_SITEDISPLAYNAME }} Quotes - {{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Quotes, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }} Quotes{% endblock %}
 {% block meta_description %}{{ request.GET.q|striptags }} Quotes from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
 <style>
 form.search-form input[type="text"] {width: 60%; margin-bottom: 10px;}
-.quote {margin-bottom: 10px;}
+.quotes-wrap { margin-bottom: 20px; }
+.quotes-wrap ul { list-style: none; margin: 0; padding: 0; }
+.quotes-wrap ul li { padding: 10px 0; border-bottom: 1px dashed #444; }
+.quotes-wrap .quote li {padding: 0; border: none;}
+  .quote-text a { color: #444; text-decoration: none; }
+.quote-text a:hover { text-decoration: underline; }
+#add-quote { display: block; float: right; text-align: right; padding: 6px 8px; background: #ebebeb; text-decoration: none; margin-bottom: 20px; }
+#add-quote:hover { background: #444; color: #fff; }
 </style>
 {% endblock %}
 
 {% block body %}
 {% has_perm user quotes.add_quote as can_add_quote %}
 
-<h1>{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Quotes</h1>
+<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Business Quotes</h1>
 <form class="search-form" action="{% url quote.search %}" method="get">
 <input type="text" id="" name="q" value="{{ request.GET.q|striptags }}" />
 <input type="submit" value="Search" />
 </form>
 {% autopaginate quotes 20 %}
 {% if can_add_quote %}
-    <div><a href="{% url admin:quotes_quote_add %}">Add a Quote</a></div>
+    <div class="clearfix"><a id="add-quote" href="{% url admin:quotes_quote_add %}">Add a Quote</a></div>
     {% endif %}
 
 <div class="quotes-wrap">
+<ul>
 {% for quote in quotes %}
     {% with quote.object as quote %}
     {% tags_for_object quote as tags %}
+    <li>
     <div class="quote">
-        {{ quote.quote|truncatewords:20 }}
-        &nbsp;<a href="{{ quote.get_absolute_url }}">Full Quote</a><br />
-        {% spaceless %}&mdash; <a href="{% url quote.search %}?q=author:{{ quote.author }}">{{ quote.author }}</a> 
+      <p class="quote-text">{{ quote.quote|safe|linebreaks }}</p>
+          <p><strong>&mdash;<a href="{% url quote.search %}?q=author:{{ quote.author }}">{{ quote.author }}</a></strong></p>
         {% if tags %}
-            {% for tag in tags %}{% if forloop.first %}(<a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag|title }}</a>){% endif %}{% endfor %}
-        {% endif %}{% endspaceless %}
-        <div class="meta">	
+            <p>Tags: {% for tag in tags %}{% if not tag.name|slice:":3" == "zzz" %}<a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag|title }}</a>{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}</p>
+        {% endif %}
+        <small><a href="{{ quote.get_absolute_url }}">Quote Link</a></small>
+        <div class="meta">  
             {% if quote.status_detail == 'pending' %}
-           	 <span class="copyright body-copy-alerts"><em>Pending</em></span>
+              <span class="copyright body-copy-alerts"><em>Pending</em></span>
             {% endif %}   
         </div>   
     </div>
+    </li>
     {% endwith %}
     {% empty %}
-		<div>0 {{ request.GET.q|striptags }} Quotes Found</div>
+    <li>0 {{ request.GET.q|striptags }} Quotes Found</li>
     {% endfor %}
+</ul>
 </div>
 {% paginate %}
 {% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+    <script type="text/javascript" src="{{ THEME_URL }}/js/jquery.isotope.min.js"></script>
+    
+{% endblock %}
