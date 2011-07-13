@@ -106,10 +106,10 @@
                 	<a title="{{ photo_set.image_set.count }} Photo{{ photo_set.image_set.count|pluralize }}" 
                         href="{{ photo_set.get_absolute_url }}">
 
-                        {% if photo_set.get_cover_photo.get_album_cover_url %}
-                        <img src="{{ photo_set.get_cover_photo.get_album_cover_url }}" />
+                        {% if photo_set.get_cover_photo %}
+                            <img src="{{ photo_set.get_cover_photo.get_album_cover_url }}" />
                         {% else %}
-                        <img src="{{ STATIC_URL }}/images/default-photo.jpg" />
+                            <img src="{{ photo_set.get_default_cover_photo }}" />
                         {% endif %}
 
                         <div class="photo-count">{{ photo_set.image_set.count|intcomma }} </div>
