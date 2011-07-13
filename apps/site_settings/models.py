@@ -11,6 +11,7 @@ DATA_TYPE_CHOICES = (
     ('integer','int'),         
 )
 
+
 class Setting(models.Model):
     name = models.CharField(max_length=50)
     label = models.CharField(max_length=255)
@@ -31,8 +32,7 @@ class Setting(models.Model):
     def get_absolute_url(self):
         return ("setting.permalink", 
                 [self.scope, self.scope_category, "%s%s" % ('#id_', self.name)])
-        
     get_absolute_url = models.permalink(get_absolute_url)
-        
+
     def __unicode__(self):
         return "(%s) %s" %(self.name, self.label)
