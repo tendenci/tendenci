@@ -642,7 +642,7 @@ def application_entries_search(request, template_name="memberships/entries/searc
         'description': '%s searched' % 'Membership Entries',
         'user': request.user,
         'request': request,
-        #'instance': app,
+        'source': 'memberships',
     })
 
     return render_to_response(template_name, {
