@@ -157,7 +157,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False):
 
     response = HttpResponse(mimetype='image/jpeg')
     response['Content-Disposition'] = '%s filename=%s'% (attachment, photo.image.file.name)
-    image.save(response, "JPEG", quality=100)
+    image.save(response, "JPEG", quality=quality)
 
     return response
 

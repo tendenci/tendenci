@@ -9,6 +9,8 @@ urlpatterns = patterns('files',
     url(r'^(?P<id>\d+)/$', 'views.index', name="file"),
     url(r'^(?P<id>\d+)/(?P<download>[download/]*)$', 'views.index', name="file"),
     url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<download>[download/]*)$', 'views.index', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/?$', 'views.index', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/(?P<quality>\d+)/?$', 'views.index', name="file"),
 
     url(r'^search/$', 'views.search', name="file.search"),
     url(r'^add/$', 'views.add', name="file.add"),
