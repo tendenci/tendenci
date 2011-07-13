@@ -17,8 +17,13 @@ from event_logs.models import EventLog
 from files.cache import FILE_IMAGE_PRE_KEY
 
 
-def index(request, id=None, size=None, download=False, template_name="files/view.html"):
+def index(request, id=None, size=None, crop=False, quality=90, download=False, template_name="files/view.html"):
     if not id: return HttpResponseRedirect(reverse('file.search'))
+
+    try:
+        quality=int(quality)
+    except:
+        pass
 
     file = get_object_or_404(File, pk=id)
     if not has_perm(request.user, 'files.view_file', file):
@@ -43,9 +48,10 @@ def index(request, id=None, size=None, download=False, template_name="files/view
         size= [int(s) for s in size.split('x')] # convert to list
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
+        image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(mimetype='image/jpeg')
         response['Content-Disposition'] = '%s filename=%s'% (attachment, file.file.name)
-        image.save(response, "JPEG", quality=100)
+        image.save(response, "JPEG", quality=quality)
 
         return response
 
