@@ -593,19 +593,16 @@ def get_pricing(user, event, pricing=None):
 
         # Group and Member permissions
         if price.group and price.allow_member:
-            if not price.group.is_member(user):
-                qualifies = False
-                _type = 'group'
-            elif not is_member(user):
-                qualifies = False
-                _type = 'member'
-
-            pricing_list.append(get_pricing_dict(
-               price, 
-               qualifies, 
-               _type)
-            )
-            continue
+            qualifies = False
+            
+            if price.group.is_member(user) or is_member(user):
+                qualifies = True            
+                pricing_list.append(get_pricing_dict(
+                   price, 
+                   qualifies, 
+                   '')
+                )
+                continue
 
         # Group permissions
         if price.group and not price.group.is_member(user):
