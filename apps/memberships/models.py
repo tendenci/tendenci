@@ -940,7 +940,7 @@ class AppEntry(TendenciBaseModel):
         """
         user_set = {}
 
-        if self.user:
+        if self.user:  # suggest authenticated user
             user_set[self.user.pk] = ' '.join([
                 self.user.first_name,
                 self.user.last_name,
@@ -948,8 +948,10 @@ class AppEntry(TendenciBaseModel):
                 self.user.email,
             ])
 
-        query_list = [Q(content=' '.join([getattr(self, item) for item in group])) for group in grouping]
-        sqs = SearchQuerySet().models(User)
+        #  e.g. [<Q object>, <Q object>]; Example <Q object> 'eloy zuniga ezuniga@schipul.com'
+        query_list = [Q(content=' '.join([getattr(self, i) for i in g])) for g in grouping]
+
+        sqs = SearchQuerySet().models(Profile)
         sqs = sqs.filter(reduce(operator.or_, query_list))
         sqs_users = [sq.object.user for sq in sqs]
 
