@@ -191,6 +191,7 @@
 	<th width="6%" class='attended' title="Attendance Checkbox"></th>
 	<th width="26%" title="Name and Phone Number">Name & Phone</th>
 	<th width="26%" title="Title and Company">Title &amp; Company</th>
+    <th width="8%" title="Price Chosen">Price Type</th>
 	<th width="8%" title="Invoice Number">Inv#</th>
 	<th width="8%" title="Invoice Amount">Inv$</th>
 	<th width="8%" title="Registration Number">Reg#</th>
@@ -211,9 +212,9 @@
 
 	<td> <!-- name & phone -->
 	{% if registrant.user %}
-	<div title="View {{ registrant.first_name}}'s profile"><a href="{{ registrant.user.get_absolute_url }}">
-	{% firstof registrant.lastname_firstname registrant.email %}
-	</a></div>
+	<div title="View {{ registrant.first_name}}'s profile">
+        <a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.lastname_firstname registrant.email %}</a>
+    </div>
 	{% else %}
 	<div title="{{ registrant.name }} does not have a user-account">
 	{% if registrant.lastname_firstname or registrant.email%}
@@ -231,6 +232,7 @@
 	<div>{{ registrant.company_name }}</div>
 	</td>
 
+    <td>{% firstof registrant.registration.reg_conf_price.title 'Untitled' %}</td>
 	<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">I-{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
 	<td>${{ registrant.registration.invoice.total }}</td> <!-- invoice amount -->
 	<td><a href="{% url event.registration_confirmation event.pk registrant.registration.pk %}">R-{{ registrant.registration.pk }}</a></td> <!-- registration number -->
@@ -265,6 +267,7 @@
         {% endif %}
     {% endif %}
     </td>
+    <td>&nbsp;</td>
     <td colspan="5">
 
         {% if registrant.registration.invoice.tender_date %}
@@ -279,7 +282,7 @@
 {% endwith %}
 
 {% endfor %}
-<tr class='row-spacer'><td colspan="9"></td></tr>
+<tr class='row-spacer'><td colspan="10"></td></tr>
 <tr class="bottom-row">
 	<td></td>
 	<td colspan="2" class="total-label">Total</td>
