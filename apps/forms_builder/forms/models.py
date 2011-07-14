@@ -142,6 +142,8 @@ class Field(models.Model):
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
     position = models.PositiveIntegerField(_('position'), default=0)
+    default = models.CharField(_("Default"), max_length=1000, blank=True,
+        help_text="Default value of the field")
         
     objects = FieldManager()
 
