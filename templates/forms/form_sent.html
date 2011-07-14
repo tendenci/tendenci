@@ -5,6 +5,6 @@
 {% block body %}
 <div class="t">
     <h2>{{ form.title }}</h2>
-    {{ form.response|safe }}	
+    {{ form.response|safe|urlize|linebreaks }}	
 </div>
 {% endblock %}

@@ -32,7 +32,7 @@
 {% if not isadmin %}
     <br>
 <p>To activate this resume, go 
-  to: <b>[resumeactivatelink]</b> 
+  to: <b>{% url resume.approve object.pk %}</b> 
   </p>
   {% endif %} 
  

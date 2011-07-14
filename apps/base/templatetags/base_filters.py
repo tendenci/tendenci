@@ -313,7 +313,10 @@ def datedelta(dt, range_):
 
     return dt
 
+@register.filter
+def split(str, splitter):
+    return str.split(splitter)
 
 @register.filter
-def split(str,splitter):
-    return str.split(splitter)
+def format_string(value, arg):
+    return arg % value

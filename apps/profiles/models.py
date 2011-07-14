@@ -19,7 +19,7 @@ class Profile(TendenciBaseModel):
     pl_id = models.IntegerField(default=1)
     member_number = models.CharField(_('member number'), max_length=50, blank=True)
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
-    
+
     # profile meta data
     time_zone = TimeZoneField(_('timezone'))
     language = models.CharField(_('language'), max_length=10, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)

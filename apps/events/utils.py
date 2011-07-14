@@ -409,7 +409,7 @@ def add_registration(*args, **kwargs):
     
     for form in registrant_formset.forms:
         amount = event_price
-        if price.quantity > 1 and count >= 1:
+        if not count % price.quantity == 0:
             amount = Decimal('0.00')
         if not form in registrant_formset.deleted_forms:
             registrant_args = [

@@ -1,8 +1,11 @@
+from ordereddict import OrderedDict
+
 from django import forms
 from django.core.cache import cache
 
 from site_settings.utils import delete_setting_cache, cache_setting, delete_all_settings_cache
 from site_settings.cache import SETTING_PRE_KEY
+
 
 def clean_settings_form(self):
     """
@@ -21,6 +24,7 @@ def clean_settings_form(self):
         except KeyError:
             pass
     return self.cleaned_data
+
     
 def save_settings_form(self):
     """
@@ -52,7 +56,7 @@ def build_settings_form(user, settings):
         Create a set of fields and builds a form class
         returns SettingForm class
     """
-    fields = {}
+    fields = OrderedDict()
     for setting in settings:
         if setting.input_type == 'text':
             options = {

@@ -522,7 +522,7 @@ def group_member_export(request, group_slug):
     # Append the heading to the list of values that will
     # go into the excel sheet
     values_list.insert(0, group_mappings.keys())
-
+    
     # excel date styles
     default_style = xlwt.Style.default_style
     datetime_style = xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm')
@@ -545,3 +545,69 @@ def group_member_export(request, group_slug):
     response['Content-Disposition'] = 'attachment; filename=group_%s_member_export.xls' % group.pk
     book.save(response)
     return response
+
+def group_subscriber_export(request, group_slug):
+    """
+    Export all group members for a specific group
+    """
+    group = get_object_or_404(Group, slug=group_slug)
+    
+    # if they can edit it, they can export it
+    if not has_perm(request.user,'user_groups.change_group', group):
+        raise Http403
+    
+    import xlwt
+    from ordereddict import OrderedDict
+    from django.db import connection
+    from forms_builder.forms.models import FieldEntry
+    
+    # create the excel book and sheet
+    book = xlwt.Workbook(encoding='utf8')
+    sheet = book.add_sheet('Group Members')
+    
+    # excel date styles
+    default_style = xlwt.Style.default_style
+    datetime_style = xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm')
+    date_style = xlwt.easyxf(num_format_str='mm/dd/yyyy')
+    
+    entries = FieldEntry.objects.filter(entry__subscriptions__group=group).distinct()
+    row_index = {}
+    col_index = {}
+    
+    for entry in entries:
+        val = entry.value
+        
+        if entry.entry.pk in row_index:
+            # get the subscriber's row number
+            row = row_index[entry.entry.pk]
+        else:
+            # assign the row if it is not yet available
+            row = len(row_index.keys()) + 1
+            row_index[entry.entry.pk] = row
+            
+        if entry.field.label in col_index:
+            # get the entry's col number
+            col = col_index[entry.field.label]
+        else:
+            # assign the col if it is not yet available
+            # and label the new column
+            col = len(col_index.keys())
+            col_index[entry.field.label] = col
+            sheet.write(0, col, entry.field.label, style=default_style)
+            
+        # styles the date/time fields
+        if isinstance(val, datetime):
+            style = datetime_style
+        elif isinstance(val, date):
+            style = date_style
+        else:
+            style = default_style
+            
+        print row, col, val
+        sheet.write(row, col, val, style=style)
+
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=group_%s_subscriber_export.xls' % group.pk
+    book.save(response)
+    return response
+
