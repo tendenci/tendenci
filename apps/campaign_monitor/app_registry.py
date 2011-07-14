@@ -1,6 +1,6 @@
 from registry import site
 from registry.base import CoreRegistry, lazy_reverse
-from models import Template
+from models import Template, Campaign
 
 
 # class TemplateRegistry(CoreRegistry):

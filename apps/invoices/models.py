@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 
 from perms.utils import is_admin
 from invoices.managers import InvoiceManager
@@ -14,18 +15,13 @@ from event_logs.models import EventLog
 
 class Invoice(models.Model):
     guid = models.CharField(max_length=50)
-    #invoice_object_type = models.CharField(_('object_type'), max_length=50, blank=True, null=True)
-    #invoice_object_type_id = models.IntegerField(blank=True, null=True)
-    object_type = models.ForeignKey(ContentType, verbose_name=_("Object Type"), blank=True, null=True)
+
+    object_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(default=0, blank=True, null=True)
-    
-    #job_id = models.IntegerField(null=True)
+    _object = generic.GenericForeignKey('object_type', 'object_id')
+
     title = models.CharField(max_length=150, blank=True, null=True)
     tender_date = models.DateTimeField(null=True)
-    #session_id = models.CharField(max_length=40, null=True) # used to replace rmid in T4
-    # priceasofdate and invoice_number seem like not being used in T4
-    #priceasofdate = models.DateTimeField(null=True)
-    #invoice_number = models.IntegerField(null=True)
     bill_to = models.CharField(max_length=120, blank=True)
     bill_to_first_name = models.CharField(max_length=100, blank=True, null=True)
     bill_to_last_name = models.CharField(max_length=100, blank=True, null=True)
@@ -94,7 +90,7 @@ class Invoice(models.Model):
     objects = InvoiceManager()
     
     def __unicode__(self):
-        return u'Invoice: %s' % (self.title)
+        return u'%s' % (self.title)
     
     @models.permalink
     def get_absolute_url(self):
@@ -113,14 +109,12 @@ class Invoice(models.Model):
         super(Invoice, self).save()
         
     def get_object(self):
-        obj = None
-        if self.object_type:
-            try:
-                obj = self.object_type.get_object_for_this_type(pk=self.object_id)
-            except:
-                pass
-                
-        return obj
+        _object = None
+        try:
+            _object = self._object
+        except:
+            pass
+        return _object
     
     @property
     def is_tendered(self):

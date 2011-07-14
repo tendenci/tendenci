@@ -26,3 +26,9 @@ if quotes:
     urlpatterns += patterns('legacy.views',
         url(r'^(q|quotes)/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'quotes'}),
     )
+
+attorneys = PluginApp.objects.filter(is_enabled=True).filter(package__contains='attorneys')
+if attorneys:
+    urlpatterns += patterns('legacy.views',
+        url(r'^attorneys/?(v/)?((?P<view>(view|search)))\.asp/$', 'redirect', {'content_type': 'attorneys'}),
+    )

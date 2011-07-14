@@ -126,7 +126,6 @@ class Command(BaseCommand):
                     del setting['value']
                 current_setting.__dict__.update(setting)
                 current_setting.save()
-                #if verbosity >= 2:
                 print '%s (%s)  - updated.' % (
                     setting['name'],
                     setting['scope_category']
@@ -147,30 +146,30 @@ class Command(BaseCommand):
             verbosity = int(options['verbosity'])
         except:
             verbosity = 1
-        
+
         if args:
             appnames = args
         else:
             appnames = django_settings.INSTALLED_APPS
             # exclude django native apps
             appnames = [app for app in appnames if not app.startswith('django.')]
-            
+
         for appname in appnames:
             print
             print 'Processing for %s ...' % appname
             if appname.startswith('plugins.'):
                 json_file = os.path.abspath(os.path.join(
-                            django_settings.PROJECT_ROOT,
-                            '/'.join(appname.split('.')),
-                            'settings.json'           
+                                django_settings.PROJECT_ROOT,
+                                '/'.join(appname.split('.')),
+                                'settings.json'  
                             ))
             else:
-                if appname.find('.') <> -1:
+                if appname.find('.') != -1:
                     appname = appname.replace('.', '/')
                 json_file = os.path.abspath(os.path.join(
-                            django_settings.APPS_PATH,
-                            appname,
-                            'settings.json'           
+                                django_settings.APPS_PATH,
+                                appname,
+                                'settings.json'           
                             ))
             if os.path.isfile(json_file):
                 with open(json_file, 'r') as f:
@@ -180,7 +179,6 @@ class Command(BaseCommand):
                         print "Error updating setting for %s/settings.json" % appname
                         print e
                         continue
-                        
+      
                 if settings:
                     self.update_settings(settings, verbosity=verbosity)
-        

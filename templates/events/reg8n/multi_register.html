@@ -350,6 +350,11 @@
 				 <input class="add-registrants-button" title='Add registrant(s)' type='submit' name='add_registrant'  onClick="add_registrants(this, 'registrant'); return false;"
 			 	  value='Add' />
 			</div>
+            {% else %}
+            <div class="add-registrant-box">
+				 <input class="add-registrants-button" title='Add registrant(s)' type='submit' name='add_registrant'  onClick="add_registrant_set(this, 'registrant'); return false;"
+			 	  value='Add {{ price.quantity }} more registrants' />
+			</div>
 			{% endif %}
 			
 			<div class="clear"></div>
@@ -445,11 +450,13 @@
 			}
 		}	
 	}
-	function addSummaryEntry(this_form, prefix, idx){
+	function addSummaryEntry(this_form, prefix, idx, zero){
 		idx = idx + 1;
 		var row = $('#summary-price').find('tr:first').clone(true).get(0);
 		$(row).find('.item-counter').html(idx);
-
+        if (zero) {
+            $(row).find('.reg-price').html('0.00');
+        }
 		var id_regex = new RegExp('(registrant_\\d+)');
 		var replacement = prefix + '_' + idx
 		if (row.id) {row.id = row.id.replace(id_regex, replacement);}
@@ -462,7 +469,7 @@
 		$("span.summary-total-amount").html(total_amount);
 	}
 
-	function addRegistrant(ele, prefix) {
+	function addRegistrant(ele, prefix, zero) {
 		var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 		var row = $('.registrant-form:first').clone(true).get(0);
 		$('.registrant-form:first').find('.registrant-header').removeClass('hidden');
@@ -485,9 +492,9 @@
 		$('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
 
 		updateFormHeader(row, prefix, formCount);
-
-		addSummaryEntry(row, prefix, formCount);
-
+        
+        addSummaryEntry(row, prefix, formCount, zero);
+        
 		return false;
 	}
 
@@ -496,7 +503,18 @@
 		extra_count = parseInt(extra_count);
 		if (extra_count > 0) {
 			for (var i=0; i<extra_count; i++) {
-				addRegistrant(e, prefix);
+				addRegistrant(e, prefix, false);
+			}
+		}
+		return false;
+	}
+    
+    function add_registrant_set(e, prefix) {
+		extra_count = {{ price.quantity }};
+		if (extra_count > 0) {
+            addRegistrant(e, prefix, false);
+			for (var i=1; i<extra_count; i++) {
+				addRegistrant(e, prefix, true);
 			}
 		}
 		return false;

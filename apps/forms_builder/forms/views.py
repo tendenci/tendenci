@@ -12,7 +12,7 @@ from django.utils.encoding import smart_str
 from base.http import Http403
 from forms_builder.forms.forms import FormForForm, FormForm, FormForField
 from forms_builder.forms.models import Form, Field, FormEntry
-from forms_builder.forms.utils import generate_email_body
+from forms_builder.forms.utils import generate_email_body, generate_email_subject
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
@@ -297,19 +297,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 email_headers.update({'Reply-To':form.email_from})
 #            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k]) 
 #                for (k, v) in form_for_form.fields.items()]
-            
-            subject = "%s:" % (form.title)
-            if entry.get_first_name():
-                subject = "%s %s" % (subject, entry.get_first_name())
-            if entry.get_last_name():
-                subject = "%s %s" % (subject, entry.get_last_name())
-            if entry.get_full_name():
-                subject = "%s %s" % (subject, entry.get_full_name())
-            if entry.get_phone_number():
-                subject = "%s - %s" % (subject, entry.get_phone_number())
-            if entry.get_email_address():
-                subject = "%s - %s" % (subject, entry.get_email_address())
-            
+                
+            subject = generate_email_subject(form, entry)
                 
             # body = "\n".join(fields)
             body = generate_email_body(entry)

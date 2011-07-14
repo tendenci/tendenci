@@ -8,7 +8,7 @@ class RobotManager(Manager):
         robots = cache.get(CACHE_PRE_KEY + '.all')
         if not robots:
             cache_all_robots()
-            robots = cache.get(CACHE_PRE_KEY + '.all')
+            robots = cache.get(CACHE_PRE_KEY + '.all', [])
         
         for robot in robots:
             if robot.name.lower() in user_agent.lower():
