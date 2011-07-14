@@ -29,7 +29,7 @@
 }
 .modules li a span {
 	position: absolute;
-	left:0; bottom:10px;
+	left:0; top:72px;
 	width: 100%;
 }
 .modules li.users {
@@ -55,6 +55,9 @@
 }
 .modules li.memberships {
 	background-image: url('/site_media/static/images/icons/memberships-color-64x64.png');
+}
+.modules li.corporatememberships {
+	background-image: url('/site_media/static/images/icons/corporate-membership-color-64x64.png');
 }
 .modules li.directories {
 	background-image: url('/site_media/static/images/icons/directories-color-64x64.png');
