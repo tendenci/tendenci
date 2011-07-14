@@ -1,4 +1,5 @@
 {% extends "staff/base.html" %}
+{% load base_filters %}
 {% load pagination_tags %}
 {% load staff_tags %}
 {% load perm_tags %}
@@ -9,76 +10,49 @@
 {{ block.super }}
 <style type="text/css">
 {% include "staff/media/css/staff.css" %}
+.t .staff-search-wrap {width: 100%}
 </style>
 <link rel="alternate" type="application/rss+xml" title="Latest Staff" href="{% url staff.feed %}" />
 {% endblock %}
 
 {% block body %}
-{% autopaginate staff 5 %}
+{# list_staff as staff limit=30 order="-update_dt" #}
+
+{% autopaginate staff 9 %}
 {% has_perm user staff.add_staff as can_add_staff %}
 <div class="t">
-    <h1>Staff Search</h1>
+    <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Staff List</h1>
     {% staff_search %}
     {% if can_add_staff %}
     <div><a href="{% url admin:staff_staff_add %}">Add Staff</a></div>
     {% endif %}
-    <div class="staff-search-wrap">
+    <div class="staff-search-wrap-list clearfix">
         {% for staff_member in staff %}
         {% with staff_member.object as staff_member %}
-        <div class="staff-search-member">
-            <div class="quick-options">
-                {% staff_options request.user staff_member %}
-            </div>
-            <table border="0" width="100%" cellspacing="0" cellpadding="0">
-                <tr>
-                    <td class="member-photo">
-                        {% if staff_member.professional_photo %}
-                        <a href="{{ staff_member.get_absolute_url }}">
-                        <img src="{% url file staff_member.professional_photo.pk %}128x128/" title="{{ staff_member.name }}"  />
-                        </a>
-                        {% endif %}
-                        <p><a href="{{ staff_member.get_absolute_url }}">{{ staff_member.name }}</a></p>
-                    </td>
-                    <td class="member-info">
-                        <p>
-                            {% spaceless %}
-                            <a href="{{ staff_member.get_absolute_url }}">{{ staff_member.name }}</a>
-                            {% if staff_member.department %}
-                            &nbsp;&ndash;&nbsp;
-                                <a href="{% url staff.search %}?q=department:{{ staff_member.department }}">
-                                    {{  staff_member.department }}
-                                </a>
-                            {%  endif %}
-                            {% if staff_member.position %}
-                            &nbsp;&ndash;&nbsp;
-                                <a href="{% url staff.search %}?q=position:{{ staff_member.position }}">
-                                    {{  staff_member.position }}
-                                </a>
-                            {%  endif %}
-                            {% endspaceless %}
-                        </p>
-                        {% if staff_member.biography %}
-                        <p>{{ staff_member.biography|striptags|truncatewords:"80" }}</p>
-                        {% endif %}
-                        <p>
-                           {% if staff_member.years == 0 %}
-                               <strong>New Employee!</strong>
-                           {% else %}
-                               Employee for <strong>{{ staff_member.years }}</strong> year{{ staff_member.years|pluralize:"s" }}
-                           {% endif %}
-                        </p>
-                    </td>
-                </tr>
-            </table>
-        </div>
+            <div class="staff-item">
+            {% for img in staff_member.stafffile_set.all %}
+                {% if img.photo_type == "professional" %}
+                <div class="member-photo">  
+                    <a href="{{ staff_member.get_absolute_url }}"><img alt="Contact {{ staff_member.name }}" src="{% url file img.pk %}184x184" /></a><br />
+                    <h4><a href="{{ staff_member.get_absolute_url }}">{{ staff_member.name }}</a></h4>
+                    <p>{% if staff_member.position %}<strong>{{ staff_member.position }}</strong><br />{% endif %}
+                    {% if staff_member.department %}{{ staff_member.department }}{% endif %}</p>
+                </div>
+                {% endif %}
+            {% endfor %}
+            </div><!-- /staff-item -->
         {% endwith %}
         {% empty %}
+                
             <p>0 Staff Found</p>
         {% endfor %}
     </div>
     {% paginate %}
 </div>
 {% endblock body %}
+
+{% block featured_staff %}
+{% endblock %}
 
 {% block extra_body %}
 {{ block.super }}

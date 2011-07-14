@@ -73,11 +73,11 @@
  
         {% if MODULE_MEMBERSHIPS_ENABLED %}
         <li class="memberships">
-            <a href="{% url membership.search %}"><span>{% firstof MODULE_EVENTS_LABEL "Memberships" %}</span></a></li>
+            <a href="{% url membership.search %}"><span>{% firstof MODULE_MEMBERSHIPS_LABEL "Memberships" %}</span></a></li>
         {% endif %}
         {% if MODULE_CORPORATEMEMBERSHIPS_ENABLED %}
         <li class="corporatememberships">
-            <a href="{% url corp_memb.search %}"><span>{% firstof MODULE_EVENTS_LABEL "Corp. Memberships" %}</span></a></li>
+            <a href="{% url corp_memb.search %}"><span>{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL "Corp. Memb." %}</span></a></li>
         {% endif %}
 
         {% if MODULE_EVENTS_ENABLED %}

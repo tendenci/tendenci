@@ -47,7 +47,7 @@ class FormAdmin(admin.ModelAdmin):
 #    radio_fields = {"status": admin.HORIZONTAL}
     fieldsets = (
         (None, {"fields": ("title", "intro", "response")}),
-        (_("Email"), {"fields": ("email_from", "email_copies")}),
+        (_("Email"), {"fields": ('subject_template', "email_from", "email_copies")}),
         ('Administrative', {'fields': (
             'allow_anonymous_view',
             'user_perms',

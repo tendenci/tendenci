@@ -330,7 +330,8 @@ def groupmembership_bulk_add(request, group_slug,
                 EventLog.objects.log(**log_defaults)
             return HttpResponseRedirect(group.get_absolute_url())
     else:
-        form = form_class(group)
+        member_label = request.GET.get('member_label', 'username')
+        form = form_class(group, member_label=member_label)
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
     
@@ -563,7 +564,7 @@ def group_subscriber_export(request, group_slug):
     
     # create the excel book and sheet
     book = xlwt.Workbook(encoding='utf8')
-    sheet = book.add_sheet('Group Members')
+    sheet = book.add_sheet('Group Subscribers')
     
     # excel date styles
     default_style = xlwt.Style.default_style
@@ -602,8 +603,7 @@ def group_subscriber_export(request, group_slug):
             style = date_style
         else:
             style = default_style
-            
-        print row, col, val
+        
         sheet.write(row, col, val, style=style)
 
     response = HttpResponse(mimetype='application/vnd.ms-excel')
@@ -611,3 +611,141 @@ def group_subscriber_export(request, group_slug):
     book.save(response)
     return response
 
+def group_all_export(request, group_slug):
+    """
+    Export all group members for a specific group
+    """
+    group = get_object_or_404(Group, slug=group_slug)
+
+    # if they can edit it, they can export it
+    if not has_perm(request.user,'user_groups.change_group', group):
+        raise Http403
+
+    import xlwt
+    from ordereddict import OrderedDict
+    from django.db import connection
+    from forms_builder.forms.models import FieldEntry
+
+    # create the excel book and sheet
+    book = xlwt.Workbook(encoding='utf8')
+    sheet = book.add_sheet('Group Members and Subscribers')
+    
+    #initialize indexes
+    row_index = {}
+    col_index = {}
+    
+    #---------
+    # MEMBERS
+    #---------
+    # excel date styles
+    default_style = xlwt.Style.default_style
+    datetime_style = xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm')
+    date_style = xlwt.easyxf(num_format_str='mm/dd/yyyy')
+    
+    # the key is what the column will be in the
+    # excel sheet. the value is the database lookup
+    # Used OrderedDict to maintain the column order
+    group_mappings = OrderedDict([
+        ('user_id', 'au.id'),
+        ('first_name', 'au.first_name'),
+        ('last_name', 'au.last_name'),
+        ('email', 'au.email'),
+        ('receives email', 'pp.direct_mail'),
+        ('company', 'pp.company'),
+        ('address', 'pp.address'),
+        ('address2', 'pp.address2'),
+        ('city', 'pp.city'),
+        ('state', 'pp.state'),
+        ('zipcode', 'pp.zipcode'),
+        ('country', 'pp.country'),
+        ('phone', 'pp.phone'),
+        ('is_active', 'au.is_active'),
+        ('date', 'gm.create_dt'),
+    ])
+    group_lookups = ','.join(group_mappings.values())
+
+    # Use custom sql to fetch the rows because we need to
+    # populate the user profiles information and you
+    # cannot do that with django's ORM without using
+    # get_profile() for each user query
+    # pulling 13,000 group members can be done in one
+    # query using Django's ORM but then you need
+    # 13,000 individual queries :(
+    cursor = connection.cursor()
+    sql = "SELECT %s FROM user_groups_groupmembership gm \
+           INNER JOIN auth_user au ON (au.id = gm.member_id) \
+           LEFT OUTER JOIN profiles_profile pp \
+           on (pp.user_id = gm.member_id) WHERE group_id = %%s;"
+    sql =  sql % group_lookups
+    cursor.execute(sql, [group.pk])
+    values_list = list(cursor.fetchall())
+
+    # index the group key mappings and insert them into the sheet.
+    for key in group_mappings.keys():
+        if not key in col_index:
+            col = len(col_index.keys())
+            col_index[key] = col
+            sheet.write(0, col, key, style=default_style)
+
+    if values_list:
+        # Write the data enumerated to the excel sheet
+        for row, row_data in enumerate(values_list):
+            for col, val in enumerate(row_data):
+                
+                if not row in row_index:
+                    # assign the row if it is not yet available
+                    row_index[row] = row + 1
+                
+                # styles the date/time fields
+                if isinstance(val, datetime):
+                    style = datetime_style
+                elif isinstance(val, date):
+                    style = date_style
+                else:
+                    style = default_style
+                    
+                #print "member:", row + 1, col, val
+                sheet.write(row + 1, col, val, style=style)
+    
+    #-------------
+    # Subscribers
+    #-------------
+    entries = FieldEntry.objects.filter(entry__subscriptions__group=group).distinct()
+    
+    for entry in entries:
+        val = entry.value
+        field = entry.field.label.lower().replace(" ", "_")
+        
+        if "subscriber %s" % str(entry.entry.pk) in row_index:
+            # get the subscriber's row number
+            row = row_index["subscriber %s" % str(entry.entry.pk)]
+        else:
+            # assign the row if it is not yet available
+            row = len(row_index.keys()) + 1
+            row_index["subscriber %s" % str(entry.entry.pk)] = row
+        
+        if field in col_index:
+            # get the entry's col number
+            col = col_index[field]
+        else:
+            # assign the col if it is not yet available
+            # and label the new column
+            col = len(col_index.keys())
+            col_index[field] = col
+            sheet.write(0, col, field, style=default_style)
+            
+        # styles the date/time fields
+        if isinstance(val, datetime):
+            style = datetime_style
+        elif isinstance(val, date):
+            style = date_style
+        else:
+            style = default_style
+        
+        #print "subscriber", row, col, val
+        sheet.write(row, col, val, style=style)
+
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=group_%s_all_export.xls' % group.pk
+    book.save(response)
+    return response
