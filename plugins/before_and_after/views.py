@@ -85,6 +85,8 @@ def detail(request, id, template_name='before_and_after/detail.html'):
             'active_photoset': active_photoset,
             'other_photosets': other_photosets,
             'embed_form': get_setting('module', 'before_and_after', 'mainembedform'),
+            'next': bna.next(request.user),
+            'prev': bna.prev(request.user),
         },
         context_instance=RequestContext(request))
 
@@ -102,3 +104,4 @@ def index(request, template_name='before_and_after/index.html'):
             'embed_form': get_setting('module', 'before_and_after', 'mainembedform'),
         },
         context_instance=RequestContext(request))
+        
