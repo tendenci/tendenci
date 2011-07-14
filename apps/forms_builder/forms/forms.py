@@ -116,6 +116,7 @@ class FormAdminForm(TendenciBaseForm):
                   'intro',
                   'response',
                   # 'send_email', removed per ed's request
+                  'subject_template',
                   'email_from',
                   'email_copies',
                   'user_perms',
