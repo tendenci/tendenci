@@ -344,7 +344,7 @@ class TendenciBaseManager(models.Manager):
         user_q = SQ(allow_user_view=True)
         member_q = SQ(allow_member_view=True)
         status_q = SQ(status=1, status_detail=status_detail)
-        user_perm_q = SQ(users_can_view__in=user.pk)
+        user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)
 
         if groups:
@@ -377,7 +377,7 @@ class TendenciBaseManager(models.Manager):
         anon_q = SQ(allow_anonymous_view=True)
         user_q = SQ(allow_user_view=True)
         status_q = SQ(status=1, status_detail=status_detail)
-        user_perm_q = SQ(users_can_view__in=user.pk)
+        user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)
 
         if groups:
