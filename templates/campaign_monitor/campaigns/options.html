@@ -8,12 +8,15 @@
 <div class="t-iconrow">
 
 	{% if can_change %}
-		<a class="option-link edit" href="#">Copy</a>
+		
         {% if opt_object.status == 'S' %}
         {% else %}
             <a class="option-link" href="#">Send</a>
             <a class="option-link" href="#">Schedule</a>
         {% endif %}
+        
+        <a class="option-link edit" href="{% url campaign_monitor.campaign_add %}?copy={{ opt_object.campaign_id }}">Copy</a>
+        
 	{% endif %}
     
     {% if can_delete %}

@@ -40,6 +40,7 @@
             <p>This group currently has {{ group.groupsubscription_set.all.count }} subscribers.</p>
             {% if can_edit %}
                 <p><a href="{% url group.member_export group.slug %}">Export all members</a></p>
+                <p><a href="{% url group.subscriber_export group.slug %}">Export all subscribers</a></p>
             {% endif %}
             <!-- <p><a href="">View all members</a>. <a href="">View editors only</a></p>
             <p><a href="">Add/Remove Members of this Group</a></p>
@@ -101,9 +102,9 @@
         <div class="group-member-list">
         {% for gs in group.groupsubscription_set.all %}
             <div class="group-member {% cycle 'gray' '' %}">
-                <a href="{{ gs.subscriber.get_absolute_url }}">{{ gs.subscriber }}</a>
+                <a href="{{ gs.subscriber.get_absolute_url }}">{{ gs.first_name }} {{ gs.last_name }} ({{ gs.email }})</a>
                 {% if can_delete %}
-                &nbsp;<span>- <a href="{% url delete_subscriber gs.id %}">Remove</a></span>
+                &nbsp;<span class="delete"><a href="{% url delete_subscriber gs.id %}">Remove</a></span>
                 {% endif %}
             </div>
         {% endfor %}

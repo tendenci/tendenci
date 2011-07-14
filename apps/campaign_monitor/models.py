@@ -65,6 +65,10 @@ class Template(models.Model):
     def get_render_url(self):
         return ("campaign_monitor.template_render", [self.template_id])
     
+    @models.permalink
+    def get_text_url(self):
+        return ("campaign_monitor.template_text", [self.template_id])
+    
     def get_zip_url(self):
         if self.zip_file:
             return self.zip_file.url
@@ -74,6 +78,9 @@ class Template(models.Model):
         if self.screenshot_file:
             return self.screenshot_file.url
         return ''
+        
+    def __unicode__(self):
+        return self.name
     
 class Campaign(models.Model):
     """
@@ -110,6 +117,9 @@ class Campaign(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("campaign_monitor.campaign_view", [self.campaign_id])
+        
+    def __unicode__(self):
+        return self.name
 
 # create post_save and pre_delete signals to sync with campaign monitor
 # http://www.campaignmonitor.com/api/getting-started/

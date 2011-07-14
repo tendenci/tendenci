@@ -10,7 +10,7 @@ class LatestEntriesFeed(SubFeed):
     description =  "Latest Speaker"
 
     def items(self):
-        sqs = SearchQuerySet().models(Speaker).order_by('-order')[:20]
+        sqs = SearchQuerySet().models(Speaker).order_by('ordering')[:20]
         return [sq.object for sq in sqs]
 
     def item_title(self, item):
@@ -31,4 +31,4 @@ class SpeakerSitemap(TendenciSitemap):
         return [sq.object for sq in sqs]
     
     def lastmod(self, obj):
-        return obj.start_date
+        return obj.update_dt

@@ -243,7 +243,7 @@ class RegConfPricing(models.Model):
     reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
 
     title = models.CharField(max_length=50, blank=True)
-    quantity = models.IntegerField(default=1, blank=True)
+    quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
     group = models.ForeignKey(Group, blank=True, null=True)
 
     early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
@@ -337,6 +337,9 @@ class Registration(models.Model):
     owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return 'Registration - %s' % self.event.title
 
     @property
     def hash(self):

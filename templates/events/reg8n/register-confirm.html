@@ -34,18 +34,6 @@
 	.regconf-section div {
 		margin: 10px;
 	}	
-	
-	.registration .avatar {
-		float: left;
-	}
-	.registration .info {
-		margin-top: 20px;
-	}
-	.registration .info .name,
-	.registration .info .email {
-		margin: 0;
-	}
-	
 	.cancel-notice {
 		background-color: #FFC;
 		border: 1px solid #fcd574;
@@ -57,7 +45,7 @@
 		margin-bottom: 10px;
 		padding: 2px;
 	}
-	.canceled-amount{
+	.canceled {
 		text-decoration: line-through;
 	}
     div.event-desc-long {
@@ -67,6 +55,20 @@
     div.event-desc-toggle {
         margin: 10px 0 0 0;
         display: block;
+    }
+
+    table.registrants-table {
+    	width: 100%;
+    }
+    table.registrants-table td {
+    	padding: 8px 20px 8px 20px;
+    	border-bottom: 1px solid #D1D1D1;
+    }
+    table.registrants-table td.td-right {
+    	text-align: right;
+    }
+    div.register-more {
+    	padding-left: 10px;
     }
 </style>
 
@@ -159,53 +161,46 @@
 	    {% if registrants_count > 1 %}
 	    	<div style="font-weight: bold;">Registrants ... ({{ registrants_count }})</div>
 	    {% endif %}
-	            
-        {% for registrant in registrants %}
-			<div class='avatar'>{% avatar registrant.user 56 %}</div>
-			<div class="info">
-	            
-				<div class="name">
-				{% if registrant.first_name or registrant.last_name %}
-	                {% if registrant.first_name %}
-	                    {{ registrant.first_name }}
-	                {% endif %}
-	                {%  if registrant.last_name %}
-	                    {{ registrant.last_name }}
-	                {% endif %}
-	            {% else %}
-	            	Guest #{{ forloop.counter0 }}
-	            {% endif %}
-	            </div>
-	            
-				<div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
-				<div class="amount">Amount: 
-				<span{% if registrant.cancel_dt %} class="canceled-amount"{% endif %}>
-						{{ registrant.amount|format_currency }}
-				</span>
-				
-				
-				
-				{% if registrant.cancel_dt %}
-					<span class="cancel-notice2">
-						Canceled on {{ registrant.cancel_dt|date_short }}
+
+    	<table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
+    		{% for registrant in registrants %}
+    		<tr>
+    			<td>
+    				<span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
+					{% if registrant.first_name or registrant.last_name %}
+		                {% if registrant.first_name %}
+		                    {{ registrant.first_name }}
+		                {% endif %}
+		                {%  if registrant.last_name %}
+		                    {{ registrant.last_name }}
+		                {% endif %}
+		            {% else %}
+		            	Guest #{{ forloop.counter0 }}
+		            {% endif %}
+		            </span>
+					{% if registrant.cancel_dt %}
+						<span class="cancel-notice2">
+							Canceled on {{ registrant.cancel_dt|date_short }}
+						</span>
+					{% else %}
+	                    {% if registration.reg_conf_price.quantity == 1 %}
+						  {% if user.is_authenticated %}
+					          <a href="{% url event.cancel_registrant event.pk registrant.pk %}">Cancel</a>
+					      {% else %}
+					          <a href="{% url event.cancel_registrant event.pk registrant.hash %}">Cancel</a>
+					      {% endif %}
+	                    {% endif %}
+					{% endif %}
+    			</td>
+    			<td class="td-right">
+					<span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
+							{{ registrant.amount|format_currency }}
 					</span>
-				{% else %}
-                    {% if registration.reg_conf_price.quantity == 1 %}
-					  {% if user.is_authenticated %}
-				          <a href="{% url event.cancel_registrant event.pk registrant.pk %}">Cancel</a>
-				      {% else %}
-				          <a href="{% url event.cancel_registrant event.pk registrant.hash %}">Cancel</a>
-				      {% endif %}
-                    {% endif %}
-				{% endif %}
-				
-				
-				</div>
-				
-			</div>
-			<div style="clear:both;"></div>
-		 {% endfor %}
-		<div class="info">
+    			</td>
+    		</tr>
+    		{% endfor %}
+    	</table>      		            
+		<div class="register-more">
             <a href="{% url event event.pk %}">Register More People</a>
         </div>
 	</div>

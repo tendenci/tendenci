@@ -103,7 +103,7 @@
     }, 
     {
         "default_value": "bleblanc@schipul.com", 
-        "description": "E-mail address of the person that appears in the signature of the contact form submission email. The contact form submission email is received by the email addresses listed under sitecontactrecipients in <a href=\"/en/siteconstants/search.asp\">Site Constants</a>.", 
+        "description": "E-mail address of the person that appears in the signature of the contact form submission email.", 
         "data_type": "string", 
         "update_dt": "2011-01-06 15:46:41", 
         "input_type": "text", 

@@ -50,6 +50,13 @@ class Form(TendenciBaseModel):
     response = models.TextField(_("Confirmation Text"), max_length=2000)
 #    status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
 #        default=STATUS_PUBLISHED)
+    subject_template = models.CharField(_("Template for email subject "),  
+        help_text=_("""The field names (except for title) in the square brackets [ ] 
+                        must exist on your form. Preferably, only use
+                        the required fields. NOT case sensitive"""), 
+        default="[title] - [first name]  [last name] - [phone]",
+        max_length=200,
+        blank=True, null=True)
     send_email = models.BooleanField(_("Send email"), default=False, help_text=
         _("If checked, the person entering the form will be sent an email"))
     email_from = models.EmailField(_("From address"), blank=True, 

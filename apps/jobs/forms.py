@@ -4,6 +4,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import slugify
 
 from captcha.fields import CaptchaField
 from jobs.models import Job
@@ -13,6 +14,7 @@ from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from jobs.models import JobPricing
 from jobs.utils import get_duration_choices, get_payment_method_choices
+
 
 request_duration_defaults = {
     'help_text': mark_safe('<a href="%s">Add pricing options</a>' % '/jobs/pricing/add/')
@@ -221,6 +223,7 @@ class JobForm(TendenciBaseForm):
 
         if not is_admin(self.user):
             fields_to_pop += [
+                'slug',
                 'entity',
                 'allow_anonymous_view',
                 'user_perms',
@@ -236,6 +239,7 @@ class JobForm(TendenciBaseForm):
         for f in list(set(fields_to_pop)):
             if f in self.fields:
                 self.fields.pop(f)
+
 
 
 class JobPricingForm(forms.ModelForm):

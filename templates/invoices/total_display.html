@@ -2,53 +2,42 @@
 {% load base_filters %}
 
 {% is_admin request.user as isadmin %}
-
-<div class="invoice-view-box">
-<div class="invoice-view-totals">
-	<div class="invoice-item">Totals</div>
-	<table>
+<table border="0" cellspacing="0" cellpadding="0">
+    {% if payment_method %}
+         <tr> 
+         	<td>Method</td>
+         	<td class="td-right">{{ payment_method }}</td>
+         </tr>
+    {% endif%}
+    {% if invoice.variance and invoice.variance != 0 %}
+        {% if invoice.total != tmp_total %}
+            <tr>
+            	<td>Adjustment</td> 
+            	<td class="td-right">{{ invoice.variance|format_currency }}</td>
+            </tr>
+        {% endif%}
+    {% endif%}
 	<tr>
-	    
-	<td>Sub Total:</td> <td>{{ invoice.subtotal|format_currency }}</td>
+		<td>Sub Total</td>
+		<td class="td-right">{{ invoice.subtotal|format_currency }}</td>
 	</tr>
-	    {% if invoice.variance and invoice.variance != 0 %}
-	        {% if invoice.total != tmp_total %}
-	            <tr>
-	            <td>Adjustment:</td> <td>{{ invoice.variance|format_currency }}</td>
-	            </tr>
-	        {% endif%}
-	    {% endif%}
-	     
-	    <tr>   
-	      <td>Total:</td> <td>{{ invoice.total|format_currency }}</td>
-	    </tr>
-	       <tr>   
-	    <td>Payments/Credits:</td> <td>{{ invoice.payments_credits|format_currency }}</td>
-	    </tr>  
-	    <tr>   
-	   
-	    <td>Balance due:</td> <td>{{ invoice.balance|format_currency }}</td>
-	    </tr>
-	    
-	    {% if payment_method %}
-	         <tr> 
-	         
-	         <td>Payment method:</td> <td>{{ payment_method }}</td>
-	         </tr>
-	    {% endif%}
-      
-	    </table>
-	            
-	    {% if isadmin %}
-	        {% if invoice.is_tendered %}
-	            <br />
-	            <div class="invoice-item">
-	            <a href="{%url invoice.adjust invoice.id %}" class="body_copy_yellow">Admin: Adjust Invoice</a>
-	            </div> 
-	         {% endif%}   
-	    {% endif%}   
-	             
-</div>  
-<div class="clear-right"></div>
-</div>
+	<tr>
+		<td>Total</td>
+		<td class="td-right">{{ invoice.total|format_currency }}</td>
+	</tr>
+	<tr>
+		<td>Payments/Credits</td>
+		<td class="td-right">{{ invoice.payments_credits|format_currency }}</td>
+	</tr>
+	<tr class="invoice-total-balance">
+		<td>Balance due</td>
+		<td class="td-right">{{ invoice.balance|format_currency }}</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			{% if invoice.balance > 0 and merchant_login %}
+		     <a class="invoice-pay" href="{% url payments.views.pay_online invoice.id invoice.guid %}" title="Pay Invoice">Pay Invoice</a>
+			{% endif %}
+		</td>
+</table>
     
