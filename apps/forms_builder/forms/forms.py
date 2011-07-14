@@ -46,6 +46,16 @@ class FormForForm(forms.ModelForm):
             if "choices" in arg_names:
                 choices = field.choices.split(",")
                 field_args["choices"] = zip(choices, choices)
+            if "initial" in arg_names:
+                default = field.default.lower()
+                if field_class == "BooleanField":
+                    if default == "checked" or default == "true" or \
+                        default == "on" or default == "1":
+                            default = True
+                    else:
+                        default = False
+                field_args["initial"] = field.default
+                print default
             #if "queryset" in arg_names:
             #    field_args["queryset"] = field.queryset()
             if field_widget is not None:
@@ -106,6 +116,7 @@ class FormAdminForm(TendenciBaseForm):
                   'intro',
                   'response',
                   # 'send_email', removed per ed's request
+                  'subject_template',
                   'email_from',
                   'email_copies',
                   'user_perms',
