@@ -88,6 +88,14 @@
                 </div>
             </div>
         {% endif %}
+        <div>
+        {% if prev %}
+            <a href="{% url before_and_after.detail prev.pk %}">Prev</a>
+        {% endif %}
+        {% if next %}
+            <a href="{% url before_and_after.detail next.pk %}">Next</a>
+        {% endif %}
+        </div>
     </div>
     <div class="bna-embed-form">
         {% embed_form embed_form %}
