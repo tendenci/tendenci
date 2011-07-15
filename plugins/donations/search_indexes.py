@@ -1,11 +1,9 @@
 from haystack import indexes
 from haystack import site
 
-from perms.indexes import TendenciBaseSearchIndex
-
 from donations.models import Donation
 
-class DonationIndex(TendenciBaseSearchIndex):
+class DonationIndex(indexes.RealTimeSearchIndex):
     donation_amount = indexes.FloatField(model_attr='donation_amount')
     allocation = indexes.CharField(model_attr='allocation')
     payment_method = indexes.CharField(model_attr='payment_method')
