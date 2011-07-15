@@ -51,9 +51,9 @@ class Form(TendenciBaseModel):
 #    status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
 #        default=STATUS_PUBLISHED)
     subject_template = models.CharField(_("Template for email subject "),  
-        help_text=_("""The field names (except for title) in the square brackets [ ] 
-                        must exist on your form. Preferably, only use
-                        the required fields. NOT case sensitive"""), 
+        help_text=_("""Options include [title] for form title, and  
+                        name of form fields inside brackets [ ]. E.x. [first name] or 
+                        [email address]"""), 
         default="[title] - [first name]  [last name] - [phone]",
         max_length=200,
         blank=True, null=True)
