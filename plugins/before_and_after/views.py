@@ -53,27 +53,6 @@ def detail(request, id, template_name='before_and_after/detail.html'):
     if not has_perm(request.user, 'before_and_after.view_beforeandafter', bna):
         raise Http403
     
-    active = request.GET.get('active', None)
-    order = request.GET.get('order', None)
-    
-    if active:
-        try:
-            active_photoset = PhotoSet.objects.get(pk=active, before_and_after=bna)
-        except:
-            active_photoset = bna.featured
-    elif order:
-        try:
-            active_photoset = bna.photoset_set.get(order=order)
-        except:
-            active_photoset = bna.featured
-    else:
-        active_photoset = bna.featured
-        
-    if active_photoset:
-        other_photosets = bna.photoset_set.exclude(pk=active_photoset.pk).order_by('order')[0:6]
-    else:
-        other_photosets = []
-    
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
     
@@ -82,8 +61,6 @@ def detail(request, id, template_name='before_and_after/detail.html'):
             'categories': categories,
             'subcategories': subcategories,
             'bna': bna,
-            'active_photoset': active_photoset,
-            'other_photosets': other_photosets,
             'embed_form': get_setting('module', 'before_and_after', 'mainembedform'),
             'next': bna.next(request.user),
             'prev': bna.prev(request.user),
