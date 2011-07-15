@@ -173,6 +173,8 @@
     text-align:center;
     background-color: #D9BF67;
     padding: 5px;
+    width: 600px;
+    height: 400px;
 }
 
 .t .bna-detail .photoset-large img{
