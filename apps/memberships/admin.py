@@ -250,7 +250,8 @@ class NoticeAdmin(admin.ModelAdmin):
 class AppFieldAdmin(admin.StackedInline):
     fieldsets = (
         (None, {'fields': (
-            ('label','field_type',),
+            ('label','field_type', ),
+            ('field_function', 'function_params'),
             (
                 'required',
                 'unique',
