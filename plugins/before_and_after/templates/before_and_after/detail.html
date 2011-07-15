@@ -69,17 +69,19 @@
             <b>Description</b>
             <p>{{ bna.description|safe }}</p>
         </div>
-        {% if other_photosets %}
+        {% if bna.photoset_set.all %}
             <div class="other-photosets-wrap">
                 <h2>More Photos</h2>
                 <div class="other-photosets-border">
                     <ul id="more-photos-carousel" class="jcarousel-skin-tango">
-                    {% for set in other_photosets %}
+                    {% for set in bna.photoset_set.all %}
                         <li>
-                            <div class="photoset-small">
-                                <img src="{{ set.before_photo|thumbnail:'80x80' }}">
-                                <img src="{{ set.after_photo|thumbnail:'80x80' }}">
-                            </div>
+                            <a id="set-{{ forloop.counter }}" class="set-link" href="#featured-carousel">
+                                <div class="photoset-small">
+                                    <img src="{{ set.before_photo|thumbnail:'80x80' }}">
+                                    <img src="{{ set.after_photo|thumbnail:'80x80' }}">
+                                </div>
+                            </a>
                         </li>
                     {% endfor %}
                     </ul>
@@ -113,6 +115,10 @@
             });
             jQuery('#more-photos-carousel').jcarousel({
                 visible: 4,
+            });
+            jQuery('.set-link').click(function(event) {
+                number = parseInt(event.currentTarget.id.split('-')[1]);
+                jQuery('#featured-carousel').jcarousel('scroll', number, true);
             });
         });
     </script>
