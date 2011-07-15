@@ -131,8 +131,8 @@
 
 			<div class="hr"></div>
 
-            <div class="map">
             {% if event.place.address and event.place.city_state %}
+            <div class="map">
 <iframe width="250" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?q={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?q={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;ll=29.784544,-95.593006&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small>
             </div>
             {% endif %}
