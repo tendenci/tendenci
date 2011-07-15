@@ -32,6 +32,7 @@
         {% include "before_and_after/media/css/before_and_after.css" %}
     </style>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jcarousel/skins/bna/skin.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jcarousel/skins/tango/skin.css" />
 {% endblock %}
 
 {% block body %}
@@ -48,7 +49,7 @@
     <div class="bna-detail">
         <div class="photoset-wrap">
             <div class="photoset-large-border">
-                <ul id="mycarousel" class="jcarousel-skin-bna">
+                <ul id="featured-carousel" class="jcarousel-skin-bna">
                     {% for photoset in bna.photoset_set.all %}
                         <li>
                         <div class="photoset-large">
@@ -72,17 +73,16 @@
             <div class="other-photosets-wrap">
                 <h2>More Photos</h2>
                 <div class="other-photosets-border">
-                <div class="other-photosets">
+                    <ul id="more-photos-carousel" class="jcarousel-skin-tango">
                     {% for set in other_photosets %}
-                        <a href="{% url before_and_after.detail bna.pk %}?active={{ set.id }}">
+                        <li>
                             <div class="photoset-small">
                                 <img src="{{ set.before_photo|thumbnail:'80x80' }}">
                                 <img src="{{ set.after_photo|thumbnail:'80x80' }}">
                             </div>
-                        </a>
+                        </li>
                     {% endfor %}
-                    <div style="clear:both"></div>
-                </div>
+                    </ul>
                 </div>
             </div>
         {% endif %}
@@ -107,9 +107,12 @@
     <script src="{{ STATIC_URL }}jcarousel/lib/jquery.jcarousel.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         jQuery(document).ready(function() {
-            jQuery('#mycarousel').jcarousel({
+            jQuery('#featured-carousel').jcarousel({
                 scroll: 1,
                 visible: 1,
+            });
+            jQuery('#more-photos-carousel').jcarousel({
+                visible: 4,
             });
         });
     </script>
