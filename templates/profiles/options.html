@@ -4,6 +4,7 @@
 <div class="t-iconrow">
 {% get_or_create_profile_for user_this as "user_this_profile" %}
 {% assign can_edit_user user_this_profile|args:request.user|call:'allow_edit_by' %}
+{% is_admin user_this as admin %}
 
 	{% if user_this.id %}
 		{% if can_edit_user %} 
@@ -11,8 +12,7 @@
 			{% if is_developer %}
 				<span class="copyright body-copy-alerts"><em>DEVELOPER</em></span>
 			{% else %}
-				{% is_admin user_this as is_admin %}
-				{% if is_admin %}
+				{% if admin %}
 				<span class="copyright body-copy-alerts"><em>ADMINISTRATOR</em></span>
 				{% endif %}
 			{% endif %}
@@ -47,7 +47,7 @@
 				 <a href="{% url group.search %}" class="usergroups" title=="Edit Groups">Edit Groups</a>
 				</li>
 				
-				{% if user_current.is_superuser %}
+				{% if admin %}
 				<li>
 				<a href="{% url profile.edit_perms user_this.id %}" class="permissions" title=="Edit Permissions">Permissions</a>
 				</li>
