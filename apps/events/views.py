@@ -769,7 +769,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 self_reg8n = get_setting('module', 'users', 'selfregistration')
                 
                 is_credit_card_payment = reg8n.payment_method and \
-                (reg8n.payment_method.machine_name).lower() == 'credit-card'
+                (reg8n.payment_method.machine_name).lower() == 'credit-card' \
+                and event_price > 0
                 
                 if reg8n_created:
                     # update the spots taken on this event
