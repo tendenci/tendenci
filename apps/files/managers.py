@@ -1,5 +1,6 @@
 import os
 import re
+from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
 from haystack.query import SearchQuerySet
@@ -58,10 +59,9 @@ class FileManager(TendenciBaseManager):
         Return list of files saved.
         """
 
-        if not len(request.FILES) and not kwargs.get('files'):
-            return []
-
-        files = kwargs.get('files') or request.FILES.values()
+        files = request.FILES.values()
+        if 'files' in kwargs:  # 'files' key overwrites request
+            files = kwargs.get('files') or []
 
         # loop; save file; save file record in db
         # ----------------------------------------
@@ -83,6 +83,7 @@ class FileManager(TendenciBaseManager):
                 file.name = file.name
                 file.owner = request.user
                 file.owner_username = request.user.username
+                file.update_dt = datetime.now()
             except:
                 file = self.model(**{
                     'file':file_path,
