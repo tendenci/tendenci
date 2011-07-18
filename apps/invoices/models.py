@@ -141,21 +141,16 @@ class Invoice(models.Model):
     
     # if this invoice allows view by user2_compare
     def allow_view_by(self, user2_compare, guid=''):
-        boo = False
         if is_admin(user2_compare):
-            boo = True
-        else: 
-            if user2_compare and user2_compare.id > 0:
-                if self.creator == user2_compare or self.owner == user2_compare:
-                    if self.status == 1:
-                        boo = True
-            else: 
-                # anonymous user
-                if self.guid and self.guid == guid:
-                    boo = True
-            
-        return boo
-    
+            return True
+
+        if self.guid == guid:
+            return True
+
+        if user2_compare.is_authenticated():
+            if user2_compare in [self.creator, self.owner]:
+                return self.status
+
     def allow_payment_by(self, user2_compare,  guid=''):
         return self.allow_view_by(user2_compare,  guid)
     
