@@ -11,7 +11,7 @@ class HelpFileIndex(TendenciBaseSearchIndex):
     question = indexes.CharField(model_attr='question')
     answer = indexes.CharField(model_attr='answer')
     syndicate = indexes.BooleanField(model_attr='syndicate')
-    topic = indexes.CharField()
+    topic = indexes.MultiValueField()
     
     # RSS field
     can_syndicate = indexes.BooleanField()
@@ -24,10 +24,7 @@ class HelpFileIndex(TendenciBaseSearchIndex):
         return answer
     
     def prepare_topic(self, obj):
-        topics = obj.topics.all()
-        if topics:
-            return ','.join([t.title for t in topics])
-        return ''
+        return [topic.pk for topic in obj.topics.all()]
 
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view and obj.syndicate \
