@@ -412,6 +412,7 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
         }
         EventLog.objects.log(**log_defaults)
         group_membership.delete()
+        messages.add_message(request, messages.INFO, 'Successfully removed %s from group %s' % (user.get_full_name(), group))
         return HttpResponseRedirect(group.get_absolute_url())
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
@@ -703,8 +704,7 @@ def group_all_export(request, group_slug):
                     style = date_style
                 else:
                     style = default_style
-                    
-                #print "member:", row + 1, col, val
+                
                 sheet.write(row + 1, col, val, style=style)
     
     #-------------
@@ -742,7 +742,6 @@ def group_all_export(request, group_slug):
         else:
             style = default_style
         
-        #print "subscriber", row, col, val
         sheet.write(row, col, val, style=style)
 
     response = HttpResponse(mimetype='application/vnd.ms-excel')
