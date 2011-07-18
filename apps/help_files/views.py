@@ -10,10 +10,19 @@ from perms.utils import has_perm
 from models import Topic, HelpFile, HelpFileMigration
 from forms import RequestForm
 
+
 def index(request, template_name="help_files/index.html"):
     "List all topics and all links"
-    
-    topics = list(Topic.objects.all())
+    topic_pks = []
+    help_files = HelpFile.objects.search(None, user=request.user)
+
+    # consolidate all the topics
+    for hf in help_files:
+        if hf.topic:
+            topic_pks.extend(hf.topic)
+    topic_pks = sorted(list(set(topic_pks)))
+
+    topics = Topic.objects.filter(pk__in=topic_pks)
     m = len(topics)/2
     topics = topics[:m], topics[m:] # two columns
     most_viewed = HelpFile.objects.filter(allow_anonymous_view=True).order_by('-view_totals')[:5]
@@ -22,6 +31,7 @@ def index(request, template_name="help_files/index.html"):
 
     return render_to_response(template_name, locals(), 
         context_instance=RequestContext(request))
+
 
 def search(request, template_name="help_files/search.html"):
     """ Help Files Search """
@@ -42,15 +52,18 @@ def search(request, template_name="help_files/search.html"):
     return render_to_response(template_name, {'help_files':help_files}, 
         context_instance=RequestContext(request))
 
+
 def topic(request, id, template_name="help_files/topic.html"):
     "List of topic help files"
     topic = get_object_or_404(Topic, pk=id)
-    query = '"topic:%s"' % topic
+    query = None
 
     help_files = HelpFile.objects.search(query, user=request.user)
+    help_files = help_files.filter(topic__in=[topic.pk])
 
     return render_to_response(template_name, {'topic':topic, 'help_files':help_files}, 
         context_instance=RequestContext(request))
+
 
 def details(request, slug, template_name="help_files/details.html"):
     "Help file details"
@@ -73,6 +86,7 @@ def details(request, slug, template_name="help_files/details.html"):
     else:
         raise Http403
 
+
 def request_new(request, template_name="help_files/request_new.html"):
     "Request new file form"
     if request.method == 'POST':
@@ -86,7 +100,8 @@ def request_new(request, template_name="help_files/request_new.html"):
         
     return render_to_response(template_name, {'form': form}, 
         context_instance=RequestContext(request))
-    
+
+
 def redirects(request, id):
     """
         Redirect old Tendenci 4 IDs to new Tendenci 5 slugs
@@ -100,6 +115,3 @@ def redirects(request, id):
             return HttpResponsePermanentRedirect(reverse('help_files'))
     except:
         return HttpResponsePermanentRedirect(reverse('help_files'))
-
-        
-    
