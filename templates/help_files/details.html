@@ -12,46 +12,16 @@
 
 {% block body %}
 <div class="t">
+    {% help_file_search %}
 	<div class="breadcrumbs"><p><a href="{% url help_files %}">All Help Files</a> > {{ help_file.question|striptags|safe }}</p></div>
     <div class="help-file-wrap">
         <h1>{{ help_file.question|striptags|safe }}</h1>
-
-		<div class="options">
-             <div class="quick-options">
-				{% help_file_options request.user help_file %} 	       
-             </div>
-		</div>
 
 		<div class="content">
 			{{ help_file.answer|safe }}  
 		</div>
 
-        <div class="meta">
-        	<div class="level">
-        	<ul>
-        	{% for level in help_file.LEVELS %}
-        		<li class="{% ifequal level help_file.level %}active{% endifequal %}">
-        			{{ level|title }}
-        		</li>
-        	{% endfor %}
-        	</ul>
-        	</div>
-        	{% if help_file.topics.exists %}
-        	<div class="topics">
-                {% if not help_file.allow_anonymous_view %}
-                    <p><strong>Private Helpfile</strong></p>
-                {% endif %}                
-        		Help Topics: 
-        		{% for topic in help_file.topics.all %}
-        			<a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>{% if not forloop.last %}, {% endif %}	
-        		{% endfor %}
-        	</div>
-        	{% endif %}
-            <div class="submitted">
-            	Created on {{ help_file.create_dt|date:"long" }} by 
-				{% firstof help_file.creator.get_profile.display_name help_file.creator %}
-			</div>
-        </div>
+        {% include "help_files/meta.html" %}
     </div>
 </div>
 {% endblock %}

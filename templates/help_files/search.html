@@ -20,31 +20,9 @@
 	<div class="help-files-wrap">
     {% for help_file in help_files %}
 		<div class="help-file-wrap">
-            <div class="quick-options">
-			{% help_file_options request.user help_file %}
-		    </div>
-		    <h3><a href="{{ help_file.object.get_absolute_url }}" alt="{{ help_file.question|striptags|safe }}">{{ help_file.question|striptags|safe }}</a></h3>
-		    <p>{{ help_file.answer|striptags|safe|truncatewords:60 }}</p>
-		    <div class="level">
-        	<ul>
-        	{% for level in help_file.object.LEVELS %}
-        		<li class="{% ifequal level help_file.object.level %}active{% endifequal %}">
-        			{{ level|title }}
-        		</li>
-        	{% endfor %}
-        	</ul>
-        	</div>
-		    {% if help_file.object.topics.exists %}
-        	<div class="topics">
-                {% if not help_file.object.allow_anonymous_view %}
-                    <p><strong>Private Helpfile</strong></p>
-                {% endif %}
-        		Help Topics: 
-        		{% for topic in help_file.object.topics.all %}
-        			<a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a>{% if not forloop.last %}, {% endif %}	
-        		{% endfor %}
-        	</div>
-        	{% endif %}
+            {% with help_file.object as help_file %}      
+                {% include "help_files/search-result.html" %}
+            {% endwith %}
 		</div>
 	{% empty %}
 		<div>0 Results Found</div>
