@@ -9,7 +9,7 @@ from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from forms_builder.forms.managers import FormManager
 from perms.utils import is_admin
 from perms.models import TendenciBaseModel
-from user_groups.models import Group
+from user_groups.models import Group, GroupMembership
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -164,12 +164,23 @@ class Field(models.Model):
     #    groups = Group.objects.filter(name__in=group_names)
     #    return groups
         
-    def execute_function(self, entry, value):
+    def execute_function(self, entry, value, user=None):
         if self.field_function == "GroupSubscription":
             if value:
                 for val in self.function_params.split(','):
                     group = Group.objects.get(name=val)
                     entry.subscribe(group)
+                    if user:
+                        try:
+                            group_membership = GroupMembership.objects.get(group=group, member=user)
+                        except GroupMembership.DoesNotExist:
+                            group_membership = GroupMembership(group=group, member=user)
+                            group_membership.creator_id = user.id
+                            group_membership.creator_username = user.username
+                            group_membership.role='subscriber'
+                            group_membership.owner_id =  user.id
+                            group_membership.owner_username = user.username
+                            group_membership.save()
 
 class FormEntry(models.Model):
     """
@@ -199,7 +210,10 @@ class FormEntry(models.Model):
         """
         # avoiding circular imports
         from subscribers.models import GroupSubscription as GS
-        GS.objects.create(group=group, subscriber=self)
+        try:
+            GS.objects.get(group=group, subscriber=self)
+        except GS.DoesNotExist:
+            GS.objects.create(group=group, subscriber=self)
 
     def unsubscribe(self, group):
         """
@@ -301,6 +315,7 @@ class FieldEntry(models.Model):
         return ('%s: %s' % (self.field.label, self.value))
     
     def save(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super(FieldEntry, self).save(*args, **kwargs)
-        self.field.execute_function(self.entry, self.value)
+        self.field.execute_function(self.entry, self.value, user=user)
     
