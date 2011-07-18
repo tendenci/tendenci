@@ -33,7 +33,7 @@
         <h1>{{ entry.app.name }} Submission</h1>
         {% endif %}
 
-        {% if is_confirmation %}
+        {% if is_confirmation and entry.app.confirmation_text %}
             <div>{{ entry.app.confirmation_text|safe|urlize }}</div>
             <hr />
         {% endif %}
