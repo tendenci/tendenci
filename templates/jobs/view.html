@@ -119,25 +119,25 @@
 {% if job.experience %}
 <div class="section-block">
 	<div class="label">Experience</div>
-	<div class="value">{{ job.experience|striptags }}</div>
+	<div class="value">{{ job.experience|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 {% if job.skills %}
 <div class="section-block">
 	<div class="label">Skills</div>
-	<div class="value">{{ job.skills|striptags }}</div>
+	<div class="value">{{ job.skills|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 {% if job.computer_skills %}
 <div class="section-block">
 	<div class="label">Computer Skills</div>
-	<div class="value">{{ job.computer_skills|striptags }}</div>
+	<div class="value">{{ job.computer_skills|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 {% if job.education %}
 <div class="section-block">
 	<div class="label">Education Required</div>
-	<div class="value">{{ job.education|striptags }}</div>
+	<div class="value">{{ job.education|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 
@@ -152,7 +152,7 @@
 		</div>
 {% endif %}
 
-{% if job.contact_name and job.contact_phone and job.contact_email and job.contact_fax  %}
+{% if job.contact_name or job.contact_phone or job.contact_email or job.contact_fax or job.contact_website %}
 		<h2>Contact Information</h2>
 		<div class="contact-wrap">
 			<div>{{ job.contact_name }}</div>
@@ -165,7 +165,7 @@
 		{% if job.contact_method %}
 				<div class="section-line">
 					<div class="label">Contact Method</div>
-					<div class="value">{{ job.contact_method }}</div>
+					<div class="value">{{ job.contact_method|striptags|linebreaks }}</div>
 					<div class="clear"></div>
 				</div>
 		{% endif %}
