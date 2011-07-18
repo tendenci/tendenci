@@ -31,11 +31,11 @@
             {% for speaker in speakers %}
                 {% if speaker.name %}
                 <div class="speaker-wrap">
-                    {% for img in speaker.files %}
+                    {% if speaker.get_photo %}
                     <div class="speaker-photo">
-                      <img alt="Speaker: {{ speaker.name }}" src="{% url file img.pk %}"  width="100" />
+                      <img alt="Speaker: {{ speaker.name }}" src="{% url file speaker.get_photo.pk %}"  width="100" />
                     </div>
-                    {% endfor %}
+                    {% endif %}
                     <div class="speaker">
                         <strong>Speaker</strong> {{ speaker.name }}
                     </div>
