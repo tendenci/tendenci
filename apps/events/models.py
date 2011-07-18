@@ -581,6 +581,21 @@ class Speaker(models.Model):
     def files(self):
         return File.objects.get_for_model(self)
 
+    def get_photo(self):
+
+        if hasattr(self,'cached_photo'):
+            return self.cached_photo
+
+        files = File.objects.get_for_model(self).order_by('-update_dt')
+        photos = [f for f in files if f.type() == 'image']
+
+        photo = None
+        if photos:
+            photo = photos[0]  # most recent
+            self.cached_photo = photo
+
+        return photo
+
 
 class Event(TendenciBaseModel):
     """
