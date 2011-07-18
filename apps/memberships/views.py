@@ -419,7 +419,7 @@ def application_confirmation(request, hash=None, template_name="memberships/entr
     else:
         raise Http404
 
-    return render_to_response(template_name, {'entry': entry},
+    return render_to_response(template_name, {'is_confirmation':True, 'entry': entry},
         context_instance=RequestContext(request))
 
 @login_required
