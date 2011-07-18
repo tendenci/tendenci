@@ -33,6 +33,11 @@
         <h1>{{ entry.app.name }} Submission</h1>
         {% endif %}
 
+        {% if is_confirmation %}
+            <div>{{ entry.app.confirmation_text|safe|urlize }}</div>
+            <hr />
+        {% endif %}
+
         <div class="entry_dt">Submitted {{ entry.entry_time|date_short }} 
             {% if admin %}
             <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">Edit Entry</a>
