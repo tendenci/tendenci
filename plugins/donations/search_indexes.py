@@ -4,6 +4,7 @@ from haystack import site
 from donations.models import Donation
 
 class DonationIndex(indexes.RealTimeSearchIndex):
+    text = indexes.CharField(document=True, use_template=True)
     donation_amount = indexes.FloatField(model_attr='donation_amount')
     allocation = indexes.CharField(model_attr='allocation')
     payment_method = indexes.CharField(model_attr='payment_method')
