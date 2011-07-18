@@ -14,28 +14,12 @@ class GroupSubscription(models.Model):
         return "%s - %s" % (self.subscriber.pk , self.group.name)
         
     @property
-    def first_name(self):
-        try:
-            first_name = self.subscriber.fields.get(field__label__iexact="first name").value
-        except FieldEntry.DoesNotExist:
-            first_name = ''
-        return first_name
-    
-    @property
-    def last_name(self):
-        try:
-            last_name = self.subscriber.fields.get(field__label__iexact="last name").value
-        except FieldEntry.DoesNotExist:
-            last_name = ''
-        return last_name
+    def name(self):
+        return self.subscriber.get_name_email()[0]
         
     @property
     def email(self):
-        try:
-            email = self.subscriber.fields.get(field__label__iexact="email").value
-        except FieldEntry.DoesNotExist:
-            email = ''
-        return email
+        return self.subscriber.get_name_email()[1]
     
     class Meta:
         unique_together = ('group', 'subscriber',)
