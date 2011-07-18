@@ -151,6 +151,8 @@ class Invoice(models.Model):
             if user2_compare in [self.creator, self.owner]:
                 return self.status
 
+        return False
+
     def allow_payment_by(self, user2_compare,  guid=''):
         return self.allow_view_by(user2_compare,  guid)
     
