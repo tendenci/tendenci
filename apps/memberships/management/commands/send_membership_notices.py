@@ -12,7 +12,7 @@ class Command(BaseCommand):
     Get a list of membership notices from the notice table,
     and send each notice to members who meet the criteria. 
     
-    To run the command: python manage.py send_membership_notices --verbosity 1
+    Usage: python manage.py send_membership_notices --verbosity 1
     """
     
     def handle(self, *args, **options):
@@ -112,6 +112,11 @@ class Command(BaseCommand):
                 memberships = memberships.filter(expire_dt__year=start_dt.year,
                                                 expire_dt__month=start_dt.month,
                                                 expire_dt__day=start_dt.day)
+                
+            # filter by membership type
+            if notice.membership_type:
+                memberships = memberships.filter(membership_type=notice.membership_type)
+                
             if memberships:
                 email.content_type = notice.content_type
                 notice.email_content = notice.email_content.replace("[sitedisplayname]", site_display_name)
