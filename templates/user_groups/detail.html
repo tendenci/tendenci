@@ -122,7 +122,7 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_member = confirm('Remove this member from the group?');	// confirm
-				if(delete_member) $(this).parents('.group-member-list').find('form[name="member-delete"]').submit() // delete: if OK
+				if(delete_member) $(this).parent().find('form[name="member-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});
