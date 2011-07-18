@@ -14,7 +14,7 @@
 {% block body %}
 <div class="t">
     <h2>{{ app.name }}</h2>
-    <p>{{ app.description|urlize }}</p>
+    <p>{{ app.description|safe|urlize }}</p>
 
 	<div class="form-builder-wrap">
     	<form method="post">{% csrf_token %}
