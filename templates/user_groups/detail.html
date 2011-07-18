@@ -103,9 +103,9 @@
         <div class="group-member-list">
         {% for gs in group.groupsubscription_set.all %}
             <div class="group-member {% cycle 'gray' '' %}">
-                <a href="{{ gs.subscriber.get_absolute_url }}">{{ gs.first_name }} {{ gs.last_name }} ({{ gs.email }})</a>
+                <a href="{{ gs.subscriber.get_absolute_url }}">{{ gs.name }} ({{ gs.email }})</a>
                 {% if can_delete %}
-                &nbsp;<span class="delete"><a href="{% url delete_subscriber gs.id %}">Remove</a></span>
+                &nbsp;<span class="delete-subscriber"><a href="{% url subscriber_delete gs.id %}">Remove</a></span>
                 {% endif %}
             </div>
         {% endfor %}
@@ -118,8 +118,7 @@
 <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
-
-			// delete confirmation
+			// delete confirmation for members
 			$('.delete').click(function(){
 				var delete_member = confirm('Remove this member from the group?');	// confirm
 				if(delete_member) $(this).parent().find('form[name="member-delete"]').submit() // delete: if OK

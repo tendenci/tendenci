@@ -1,0 +1,46 @@
+{% extends "user_groups/base.html" %}
+{% load user_group_tags %}
+{% load perm_tags %}
+{% load forms_tags %}
+{% load base_filters %}
+
+{% block title %}{{ grp_sub.name }} - Subscriber{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% user_group_nav request.user %}
+    <h1>Delete a Subscriber from {{ grp_sub.group.label }}</h1>
+    {% for field in grp_sub.subscriber.fields.all %}
+        {% if field.field.field_type == 'FileField' %}
+            <p>
+                <strong>{{ field.field.label }}</strong><br />
+                <a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
+            </p>   		
+        {% else %}
+            <p>
+                <strong>{{ field.field.label }}</strong><br />
+                <em>{{ field.value }}</em>
+            </p>
+        {% endif %}
+    {% endfor %}
+    <div style="color:red;font-weight:bold;">Are you sure you want to delete this Subscriber?</div>
+    <div>
+        Clicking Delete Subscriber will 
+        <ul>
+            <li>remove all members from the group</li>
+            <li>the group will be deleted from the system</li> <li>Deleted items cannot be recovered!</li>
+        </ul>
+    </div>
+    <form action="{% url subscriber_delete grp_sub.id %}" method="post">{% csrf_token %}
+        <input type="submit" value="Delete Subscriber" />
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+
+{% endblock %}
