@@ -1267,7 +1267,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     # paid or non-paid or total
     registrations = Registration.objects.filter(event=event)
     if roster_view == 'paid':
-        registrations = registrations.filter(invoice__balance=0)
+        registrations = registrations.filter(invoice__balance__lte=0)
     elif roster_view == 'non-paid':
         registrations = registrations.filter(invoice__balance__gt=0)
 
