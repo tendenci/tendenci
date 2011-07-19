@@ -9,8 +9,11 @@
 {{ object.email }}
 {{ object.company_name }}
 
-{% if not object.cancel_dt %}
-is:confirmed
+{% if object.cancel_dt %}
+is:canceled
+is:cancelled
+{% else %}
+is:active
 {% endif %}
 
 {% if object.registration.invoice.balance <= 0 %}
