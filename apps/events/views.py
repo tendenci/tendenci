@@ -1239,8 +1239,18 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
     registrants = Registrant.objects.search(
         query, user=request.user, event=event).order_by("-update_dt")
 
-    return render_to_response(template_name, {'event':event, 'registrants':registrants}, 
-        context_instance=RequestContext(request))
+    active_registrants = Registrant.objects.search(
+        "is:active", user=request.user, event=event).order_by("-update_dt")
+
+    canceled_registrants = Registrant.objects.search(
+        "is:canceled", user=request.user, event=event).order_by("-update_dt")
+
+    return render_to_response(template_name, {
+        'event':event, 
+        'registrants':registrants,
+        'active_registrants':active_registrants,
+        'canceled_registrants':canceled_registrants,
+        }, context_instance=RequestContext(request))
 
 # http://127.0.0.1/events/4/registrants/roster/total
 @login_required
