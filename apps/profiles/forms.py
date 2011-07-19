@@ -3,7 +3,10 @@ from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
+from user_groups.models import Group, GroupMembership
+from event_logs.models import EventLog
 from profiles.models import Profile
+from profiles.utils import get_groups, get_memberships, group_choices
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin, is_developer
 
@@ -279,4 +282,57 @@ class UserPermissionForm(forms.ModelForm):
         
         self.fields['user_permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
     
+class UserGroupsForm(forms.Form):
+    groups = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required=False)
+    
+    def __init__(self, user, editor, request, *args, **kwargs):
+        self.user = user
+        self.editor = editor
+        self.request = request
+        super(UserGroupsForm, self).__init__(*args, **kwargs)
+        self.old_groups = get_groups(self.user, filter=Group.objects.search(user=editor))
+        self.old_memberships = get_memberships(self.user, filter=Group.objects.search(user=editor))
+        self.fields['groups'].initial = self.old_groups
+        self.fields['groups'].choices = group_choices(editor)
         
+    def save(self):
+        data = self.cleaned_data
+        
+        #delete old memberships
+        for old_m in self.old_memberships:
+            if old_m.group not in data['groups']:
+                print "membership to %s deleted" % old_m.group
+                log_defaults = {
+                    'event_id' : 223000,
+                    'event_data': '%s (%d) deleted by %s' % (old_m._meta.object_name, old_m.pk, self.editor),
+                    'description': '%s deleted' % old_m._meta.object_name,
+                    'user': self.editor,
+                    'request': self.request,
+                    'instance': old_m,
+                }
+                EventLog.objects.log(**log_defaults)
+                old_m.delete()
+        
+        #create new memberships
+        for group in data['groups']:
+            try:
+                group_membership = GroupMembership.objects.get(group=group, member=self.user)
+            except GroupMembership.DoesNotExist:
+                group_membership = GroupMembership(group=group, member=self.user)
+                group_membership.creator_id = self.editor.id
+                group_membership.creator_username = self.editor.username
+                
+            group_membership.owner_id =  self.editor.id
+            group_membership.owner_username = self.editor.username
+            
+            group_membership.save()
+            
+            log_defaults = {
+                'event_id' : 221000,
+                'event_data': '%s (%d) added by %s' % (group_membership._meta.object_name, group_membership.pk, self.editor),
+                'description': '%s added' % group_membership._meta.object_name,
+                'user': self.editor,
+                'request': self.request,
+                'instance': group_membership,
+            }
+            EventLog.objects.log(**log_defaults)

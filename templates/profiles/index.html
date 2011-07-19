@@ -315,7 +315,7 @@
 	
 	<div id="userview-groups">
 		{% if can_edit_user %}
-			<div><a href="{% url group.search %}" class="body-copy-yellow">Edit Available Groups</a></div>
+			<div><a href="{% url profile.edit_groups user_this.id %}" class="body-copy-yellow">Edit Available Groups</a></div>
 		{% endif %}
 		
 		{% if group_memberships %}
