@@ -55,7 +55,8 @@
 	}
 	
 	.t .speaker-wrap,
-	.t .organizer-wrap {
+	.t .organizer-wrap,
+	.t .filter-wrap {
 		margin: 10px 0;
 		padding: 10px;
 	}
@@ -108,6 +109,13 @@
 			</div>
 			{% endwith %}
 			{% endif %}
+
+			<div class="filter-wrap">
+				<div><strong>Filters</strong></div>
+				<div><a href="{% url event.registrant.search event.pk %}?q=is:active">
+					{{ active_registrants|length }} Active</a></div>
+				<div><a href="{% url event.registrant.search event.pk %}?q=is:canceled">{{ canceled_registrants|length }} Canceled</a></div>
+			</div>
 
 			
 		</td> <!-- END #event-wrap -->
