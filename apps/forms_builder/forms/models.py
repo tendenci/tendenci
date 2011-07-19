@@ -152,22 +152,25 @@ class Field(models.Model):
     
     def __unicode__(self):
         return self.label
-        
-    #def queryset(self):
-    #    group_names = []
-    #    if self.field_type == "ModelMultipleChoiceField/django.forms.CheckboxSelectMultiple":
-    #        for val in self.choices.split(','):
-    #            group_name = val.strip()
-    #            group_names.append(group_name)
-    #    groups = Group.objects.filter(name__in=group_names)
-    #    return groups
-        
-    def execute_function(self, entry, value):
+
+    def execute_function(self, entry, value, user=None):
         if self.field_function == "GroupSubscription":
             if value:
                 for val in self.function_params.split(','):
                     group = Group.objects.get(name=val)
-                    entry.subscribe(group)
+                    if user:
+                        try:
+                            group_membership = GroupMembership.objects.get(group=group, member=user)
+                        except GroupMembership.DoesNotExist:
+                            group_membership = GroupMembership(group=group, member=user)
+                            group_membership.creator_id = user.id
+                            group_membership.creator_username = user.username
+                            group_membership.role='subscriber'
+                            group_membership.owner_id =  user.id
+                            group_membership.owner_username = user.username
+                            group_membership.save()
+                    else:
+                        entry.subscribe(group)  # subscribe form-entry to a group
 
 class FormEntry(models.Model):
     """
