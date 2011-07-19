@@ -20,7 +20,7 @@
 
     <h1>Add Members to Group</h1>
     <div class="clear-right"></div>
-     <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+    <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
 
     <form method="post" action=".">{% csrf_token %}
         {% if form.non_field_errors %}

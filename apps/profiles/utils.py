@@ -1,5 +1,6 @@
 from django.conf import settings
 from site_settings.utils import get_setting
+from user_groups.models import GroupMembership, Group
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
     from django.core.mail.message import EmailMessage
@@ -73,3 +74,46 @@ def user_add_remove_admin_auth_group(user, auth_group=None):
             user.groups = []
             user.save()
         
+def get_groups(user, filter=None):
+    """
+        Returns the groups of a given user.
+        if filter is given it will filter the user's groups based on it.
+        filter is assumed to be a QuerySet or a SearchQuerySet of Group.
+    """
+    memberships = GroupMembership.objects.filter(member=user)
+    
+    if filter:
+        pks = [group.pk for group in filter]
+        print pks
+        memberships = memberships.filter(group__pk__in = pks)
+        
+    groups = []
+    for member in memberships:
+        groups.append(member.group)
+        
+    return groups
+    
+def get_memberships(user, filter=None):
+    """
+        Returns the memberships of a given user.
+        if filter is given it will filter the user's memberships based on it.
+        filter is assumed to be a QuerySet or a SearchQuerySet of Group.
+    """
+    memberships = GroupMembership.objects.filter(member=user)
+    
+    if filter:
+        pks = [group.pk for group in filter]
+        print pks
+        memberships = memberships.filter(group__pk__in = pks)
+        
+    return memberships
+    
+def group_choices(user):
+    """
+        returns a list of (group.pk, group.label) for groups viewable
+        for the given user.
+    """
+    groups = Group.objects.search(user=user)
+    choices = [(group.pk, "%s (%s)" % (group.label, group.name)) for group in groups]
+    
+    return choices

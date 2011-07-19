@@ -11,6 +11,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import ugettext as _
 from django.db.models import get_app
 from django.core.exceptions import ImproperlyConfigured
+from django.contrib import messages
 
 # for password change
 from django.contrib.auth.forms import PasswordChangeForm
@@ -33,7 +34,7 @@ friends = False
 #    from friends.models import Friendship
 
 from profiles.models import Profile
-from profiles.forms import ProfileForm, UserPermissionForm
+from profiles.forms import ProfileForm, UserPermissionForm, UserGroupsForm
 from profiles.utils import user_add_remove_admin_auth_group
 from base.http import Http403
 #from user_groups.models import Group, GroupMembership
@@ -663,3 +664,30 @@ def admin_list(request, template_name='profiles/admin_list.html'):
     
     return render_to_response(template_name, {'admins': admins},
                               context_instance=RequestContext(request))
+
+@login_required
+def user_groups_edit(request, id, form_class=UserGroupsForm, template_name="profiles/add_delete_groups.html"):
+    user = get_object_or_404(User, pk=id)
+    
+    try:
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user)
+        
+    if not profile.allow_edit_by(request.user):
+        raise Http403
+        
+    if request.method == 'POST':
+        form = form_class(user, request.user, request, request.POST)
+        if form.is_valid():
+            print "valid"
+            form.save()
+            messages.add_message(request, messages.INFO, 'Successfully edited groups for %s' % user.get_full_name())
+            return HttpResponseRedirect(reverse('profile', args=[user.username]))
+    else:
+        form = form_class(user, request.user, request)
+
+    return render_to_response(template_name, {
+                            'form': form,
+                            'user_this': user,
+                            }, context_instance=RequestContext(request))

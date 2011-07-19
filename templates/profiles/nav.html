@@ -21,7 +21,7 @@
 				{% has_perm user_current site_settings.change_setting as can_edit_setting %}
 				{% if can_edit_setting %}
 					<li>	
-					<a href="{% url site_settings.views.list "module" "users" %}">Settings</a>
+					<a href="{% url site_settings.views.list 'module' 'users' %}">Settings</a>
 					</li>
 				{% endif %}
 				
