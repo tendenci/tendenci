@@ -864,7 +864,7 @@ class AppEntry(TendenciBaseModel):
                 expire_dt = self.membership_type.get_expiration_dt(join_dt=datetime.now())
                 
             membership = Membership.objects.create(**{
-                'member_number': self.app.entries.count(),
+                'member_number': self.app.entries.count() + 1000,
                 'membership_type': self.membership_type,
                 'user':user,
                 'renewal': self.membership_type.renewal,

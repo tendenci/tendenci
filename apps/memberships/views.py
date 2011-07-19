@@ -775,7 +775,7 @@ def membership_import(request, step=None):
                     app = app,
                     user = membership.user,
                     entry_time = datetime.now(),
-                    membership = membership,
+                    membership = membership,  # pk required here
                     is_renewal = membership.renewal,
                     is_approved = True,
                     decision_dt = membership.subscribe_dt,
@@ -795,7 +795,10 @@ def membership_import(request, step=None):
                             field=app_fields[0],
                             value=membership.m.get(value),
                         )
-                membership.save()  # creates pk
+
+                if not membership.member_number:
+                    membership.member_number = AppEntry.objects.count() + 1000
+                    membership.save()
 
                 added.append(membership)
             else:
