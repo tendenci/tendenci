@@ -315,7 +315,7 @@
 	
 	<div id="userview-groups">
 		{% if can_edit_user %}
-			<div><a href="{% url profile.edit_groups user_this.id %}" class="body-copy-yellow">Edit Available Groups</a></div>
+			<div><a href="{% url profile.edit_groups user_this.username %}">Edit Available Groups</a></div>
 		{% endif %}
 		
 		{% if group_memberships %}
@@ -326,7 +326,7 @@
 			</div>
 			{% for gm in group_memberships %}
 				<div class="group">
-					<div class="content-type"><a href="{% url group.detail gm.group.slug %}">{{ gm.group.label }}</a></div>
+					<div class="content-type"><a href="{% url group.detail gm.group.slug %}">{{ gm.group.label }} ({{gm.group.name}})</a></div>
 					<div class="content-title">{{ gm.role }}</div>
 					<div class="clear-both"></div>
 				</div>
