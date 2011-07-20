@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from django.db.models.query import QuerySet
 from django.middleware.csrf import get_token as csrf_get_token
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save
+from perms.utils import has_perm, update_perms_and_save, is_admin
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from files.utils import get_image
@@ -26,15 +26,6 @@ from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoS
 
 def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     """ Show all photo sizes """
-
-    # check permissions & get photo queryset
-    # photo = Image.objects.search("id:%s" % id)
-    # assume protect image
-    # if not photo:
-    #    raise Http403
-    # get image object
-    # photo = photo.best_match().object
-    
     photo = get_object_or_404(Image, id=id)
     if not has_perm(request.user, 'photologue.view_photo', photo):
         raise Http403
@@ -58,12 +49,20 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
 
     original_source_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % (photo.image.width, photo.image.height)})
 
+    view_original_requirments = [
+        is_admin(request.user),
+        request.user == photo.creator,
+        request.user == photo.owner,
+        photo.get_license().name != 'All Rights Reserved',
+    ]
+
     return render_to_response(template_name, {
         "photo": photo,
         "size_name": size_name.replace("_"," "),
         "download_url": download_url,
         "source_url": source_url,
         "original_source_url": original_source_url,
+        "can_view_original": any(view_original_requirments),
     }, context_instance=RequestContext(request))
 
 def photo(request, id, set_id=0, partial=False, template_name="photos/details.html"):
