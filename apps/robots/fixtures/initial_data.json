@@ -658,5 +658,269 @@
             "name": "FAST Enterprise", 
             "status_detail": "active"
         }
+    }, 
+    {
+        "pk": 61, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "ezooms@gmail.com", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "Ezooms", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 62, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.bing.com/bingbot.htm", 
+            "status": true, 
+            "version": "2.0", 
+            "name": "bingbot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 63, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://yandex.com/bots", 
+            "status": true, 
+            "version": "3.0", 
+            "name": "Yandex", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 64, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://spinn3r.com/robot", 
+            "status": true, 
+            "version": "3.1", 
+            "name": "Spinn3r", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 65, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.google.com/adsbot.html", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "AdsBot-Google", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 66, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.sitebot.org/robot/", 
+            "status": true, 
+            "version": "0.1", 
+            "name": "SiteBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 67, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "Issbot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 68, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.sogou.com/docs/help/webmasters.htm#07", 
+            "status": true, 
+            "version": "4.0", 
+            "name": "Sogou", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 69, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.sengine.info", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "netEstate", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 70, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.scoutjet.com", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "ScoutJet", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 71, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://sites.google.com/site/bendercrawler", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "Bender", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 72, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://sindice.com/developers/bot", 
+            "status": true, 
+            "version": "0.1.0", 
+            "name": "sindice-fetcher", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 73, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.puritysearch.net", 
+            "status": true, 
+            "version": "1.1", 
+            "name": "Purebot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 74, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "0.1", 
+            "name": "Twitterbot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 75, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.metadatalabs.com/mlbot", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "MLBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 76, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "2.1", 
+            "name": "PaperLiBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 77, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "6.1.7221.49", 
+            "name": "System Center Operations", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 78, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "2.0", 
+            "name": "PostRank", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 79, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.facebook.com/externalhit_uatext.php", 
+            "status": true, 
+            "version": "1.1", 
+            "name": "facebookexternalhit", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 80, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.dotnetdotcom.org/", 
+            "status": true, 
+            "version": "1.1", 
+            "name": "DotBot", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 81, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.tweetedtimes.com", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "TweetedTimes", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 82, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://help.soso.com/webspider.htm", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "Sosospider", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 83, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "http://www.radian6.com/crawler", 
+            "status": true, 
+            "version": "0.0", 
+            "name": "R6_CommentReader", 
+            "status_detail": "active"
+        }
+    }, 
+    {
+        "pk": 84, 
+        "model": "robots.robot", 
+        "fields": {
+            "url": "", 
+            "status": true, 
+            "version": "1.0", 
+            "name": "LexxeBot", 
+            "status_detail": "active"
+        }
     }
 ]
