@@ -683,7 +683,7 @@ def user_groups_edit(request, id, form_class=UserGroupsForm, template_name="prof
             print "valid"
             form.save()
             messages.add_message(request, messages.INFO, 'Successfully edited groups for %s' % user.get_full_name())
-            return HttpResponseRedirect(reverse('profile', args=[user.username]))
+            return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
     else:
         form = form_class(user, request.user, request)
 
