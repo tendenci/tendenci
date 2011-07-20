@@ -9,11 +9,11 @@ from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from stories.managers import StoryManager
 from entities.models import Entity
+from files.models import file_directory
 
-
-def file_directory(instance, filename):
-    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
-    return 'stories/%s' % (filename)
+#def file_directory(instance, filename):
+#    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+#    return 'stories/%s' % (filename)
 
 # Create your models here.
 class Story(TendenciBaseModel):
