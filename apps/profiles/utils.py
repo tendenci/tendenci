@@ -84,7 +84,6 @@ def get_groups(user, filter=None):
     
     if filter:
         pks = [group.pk for group in filter]
-        print pks
         memberships = memberships.filter(group__pk__in = pks)
         
     groups = []
@@ -103,7 +102,6 @@ def get_memberships(user, filter=None):
     
     if filter:
         pks = [group.pk for group in filter]
-        print pks
         memberships = memberships.filter(group__pk__in = pks)
         
     return memberships
