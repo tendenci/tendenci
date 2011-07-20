@@ -19,6 +19,8 @@ class Command(BaseCommand):
             if file:
                 src = file.name
                 dest = file.name.replace(settings.MEDIA_ROOT + '/stories', settings.MEDIA_ROOT + '/files/stories')
-                shutil.move(src, dest)
-                story.photo.save(dest.replace(settings.MEDIA_ROOT + '/files/stories', ''), File(open(dest)))
-                story.save()
+                if src != dest:
+                    print "Moving %s to %s" % (src, dest)
+                    shutil.move(src, dest)
+                    story.photo.save(dest.replace(settings.MEDIA_ROOT + '/files/stories', ''), File(open(dest)))
+                    story.save()
