@@ -666,8 +666,8 @@ def admin_list(request, template_name='profiles/admin_list.html'):
                               context_instance=RequestContext(request))
 
 @login_required
-def user_groups_edit(request, id, form_class=UserGroupsForm, template_name="profiles/add_delete_groups.html"):
-    user = get_object_or_404(User, pk=id)
+def user_groups_edit(request, username, form_class=UserGroupsForm, template_name="profiles/add_delete_groups.html"):
+    user = get_object_or_404(User, username=username)
     
     try:
         profile = Profile.objects.get(user=user)
@@ -691,3 +691,7 @@ def user_groups_edit(request, id, form_class=UserGroupsForm, template_name="prof
                             'form': form,
                             'user_this': user,
                             }, context_instance=RequestContext(request))
+
+#@login_required
+#def user_role_edit(request, username, form_class=UserGroupsForm, template_name="profiles/edit_role.html"):
+    
