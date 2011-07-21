@@ -282,11 +282,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     if not has_perm(request.user,'forms.view_form',form):
         raise Http403
     
-    form_for_form = FormForForm(form, request.POST or None, request.FILES or None)
-    
-    # delete the captcha field if they are logged in
-    if request.user.is_authenticated():
-        del form_for_form.fields['captcha']
+    form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
         
     if request.method == "POST":
         if form_for_form.is_valid():

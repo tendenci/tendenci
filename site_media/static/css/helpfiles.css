@@ -62,14 +62,19 @@
 	display: inline;
 }
 
+.t form.search-form {
+	padding: 10px 0 10px 0;
+}
+
 .t form.search-form input[type="text"] {
 	width: 60%;
-	margin-bottom: 10px;
+	margin-top: 5px;
 	padding: 5px;	
 }
 
 .t form.search-form input[type="submit"] {
-	padding: 5px;	
+	margin: 0;
+	padding: 5px;
 	cursor: pointer;
 }
 
@@ -185,4 +190,8 @@ div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
 	width: 80px;
 }
 
+.t .meta .topics {
+	margin-bottom: 2px;
+	line-height: 16px;
+}
 

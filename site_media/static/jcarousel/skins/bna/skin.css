@@ -1,0 +1,177 @@
+.jcarousel-skin-bna .jcarousel-container {
+
+}
+
+.jcarousel-skin-bna .jcarousel-direction-rtl {
+	direction: rtl;
+}
+
+.jcarousel-skin-bna .jcarousel-container-horizontal {
+    width: 600px;
+}
+
+.jcarousel-skin-bna .jcarousel-container-vertical {
+    width: 600px;
+    height: 400px;
+}
+
+.jcarousel-skin-bna .jcarousel-clip {
+    overflow: hidden;
+}
+
+.jcarousel-skin-bna .jcarousel-clip-horizontal {
+    width:  600px;
+    height: 400px;
+}
+
+.jcarousel-skin-bna .jcarousel-clip-vertical {
+    width:  600px;
+    height: 400px;
+}
+
+.jcarousel-skin-bna .jcarousel-item {
+    width: 600px;
+    height: 400px;
+}
+
+.jcarousel-skin-bna .jcarousel-item-horizontal {
+
+}
+
+.jcarousel-skin-bna .jcarousel-direction-rtl .jcarousel-item-horizontal {
+
+}
+
+.jcarousel-skin-bna .jcarousel-item-vertical {
+
+}
+
+.jcarousel-skin-bna .jcarousel-item-placeholder {
+
+}
+
+/**
+ *  Horizontal Buttons
+ */
+.jcarousel-skin-bna .jcarousel-next-horizontal {
+    position: absolute;
+    top: 180px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    background: transparent url(next-horizontal.png) no-repeat 0 0;
+}
+
+.jcarousel-skin-bna .jcarousel-direction-rtl .jcarousel-next-horizontal {
+    left: 5px;
+    right: auto;
+    background-image: url(prev-horizontal.png);
+}
+
+.jcarousel-skin-bna .jcarousel-next-horizontal:hover,
+.jcarousel-skin-bna .jcarousel-next-horizontal:focus {
+    background-position: -32px 0;
+}
+
+.jcarousel-skin-bna .jcarousel-next-horizontal:active {
+    background-position: -64px 0;
+}
+
+.jcarousel-skin-bna .jcarousel-next-disabled-horizontal,
+.jcarousel-skin-bna .jcarousel-next-disabled-horizontal:hover,
+.jcarousel-skin-bna .jcarousel-next-disabled-horizontal:focus,
+.jcarousel-skin-bna .jcarousel-next-disabled-horizontal:active {
+    cursor: default;
+    background-position: -96px 0;
+}
+
+.jcarousel-skin-bna .jcarousel-prev-horizontal {
+    position: absolute;
+    top: 180px;
+    left: 5px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    background: transparent url(prev-horizontal.png) no-repeat 0 0;
+}
+
+.jcarousel-skin-bna .jcarousel-direction-rtl .jcarousel-prev-horizontal {
+    left: auto;
+    right: 5px;
+    background-image: url(next-horizontal.png);
+}
+
+.jcarousel-skin-bna .jcarousel-prev-horizontal:hover, 
+.jcarousel-skin-bna .jcarousel-prev-horizontal:focus {
+    background-position: -32px 0;
+}
+
+.jcarousel-skin-bna .jcarousel-prev-horizontal:active {
+    background-position: -64px 0;
+}
+
+.jcarousel-skin-bna .jcarousel-prev-disabled-horizontal,
+.jcarousel-skin-bna .jcarousel-prev-disabled-horizontal:hover,
+.jcarousel-skin-bna .jcarousel-prev-disabled-horizontal:focus,
+.jcarousel-skin-bna .jcarousel-prev-disabled-horizontal:active {
+    cursor: default;
+    background-position: -96px 0;
+}
+
+/**
+ *  Vertical Buttons
+ */
+.jcarousel-skin-bna .jcarousel-next-vertical {
+    position: absolute;
+    bottom: 5px;
+    left: 43px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    background: transparent url(next-vertical.png) no-repeat 0 0;
+}
+
+.jcarousel-skin-bna .jcarousel-next-vertical:hover,
+.jcarousel-skin-bna .jcarousel-next-vertical:focus {
+    background-position: 0 -32px;
+}
+
+.jcarousel-skin-bna .jcarousel-next-vertical:active {
+    background-position: 0 -64px;
+}
+
+.jcarousel-skin-bna .jcarousel-next-disabled-vertical,
+.jcarousel-skin-bna .jcarousel-next-disabled-vertical:hover,
+.jcarousel-skin-bna .jcarousel-next-disabled-vertical:focus,
+.jcarousel-skin-bna .jcarousel-next-disabled-vertical:active {
+    cursor: default;
+    background-position: 0 -96px;
+}
+
+.jcarousel-skin-bna .jcarousel-prev-vertical {
+    position: absolute;
+    top: 5px;
+    left: 43px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    background: transparent url(prev-vertical.png) no-repeat 0 0;
+}
+
+.jcarousel-skin-bna .jcarousel-prev-vertical:hover,
+.jcarousel-skin-bna .jcarousel-prev-vertical:focus {
+    background-position: 0 -32px;
+}
+
+.jcarousel-skin-bna .jcarousel-prev-vertical:active {
+    background-position: 0 -64px;
+}
+
+.jcarousel-skin-bna .jcarousel-prev-disabled-vertical,
+.jcarousel-skin-bna .jcarousel-prev-disabled-vertical:hover,
+.jcarousel-skin-bna .jcarousel-prev-disabled-vertical:focus,
+.jcarousel-skin-bna .jcarousel-prev-disabled-vertical:active {
+    cursor: default;
+    background-position: 0 -96px;
+}

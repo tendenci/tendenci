@@ -9,7 +9,7 @@ from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 
 from tinymce.widgets import TinyMCE
-from forms_builder.forms.models import FormEntry, Field, Form
+from forms_builder.forms.models import FormEntry, FieldEntry, Field, Form
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
@@ -24,11 +24,12 @@ class FormForForm(forms.ModelForm):
         model = FormEntry
         exclude = ("form", "entry_time")
 
-    def __init__(self, form, *args, **kwargs):
+    def __init__(self, form, user, *args, **kwargs):
         """
         Dynamically add each of the form fields for the given form model 
         instance and its related field model instances.
         """
+        self.user = user
         self.form = form
         self.form_fields = form.fields.visible().order_by('position')
         super(FormForForm, self).__init__(*args, **kwargs)
@@ -46,13 +47,24 @@ class FormForForm(forms.ModelForm):
             if "choices" in arg_names:
                 choices = field.choices.split(",")
                 field_args["choices"] = zip(choices, choices)
+            if "initial" in arg_names:
+                default = field.default.lower()
+                if field_class == "BooleanField":
+                    if default == "checked" or default == "true" or \
+                        default == "on" or default == "1":
+                            default = True
+                    else:
+                        default = False
+                field_args["initial"] = field.default
             #if "queryset" in arg_names:
             #    field_args["queryset"] = field.queryset()
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
             self.fields[field_key] = field_class(**field_args)
-        self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
+            
+        if not self.user.is_authenticated(): # add captcha if not logged in
+            self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
 
     def save(self, **kwargs):
         """
@@ -72,7 +84,11 @@ class FormForForm(forms.ModelForm):
             if isinstance(value,list):
                 value = ','.join(value)
             if not value: value=''
-            entry.fields.create(field_id=field.id, value=value)
+            field_entry = FieldEntry(field_id = field.id, entry=entry, value = value)
+            if self.user.is_authenticated():
+                field_entry.save(user = self.user)
+            else:
+                field_entry.save()
         return entry
         
     def email_to(self):
@@ -106,6 +122,7 @@ class FormAdminForm(TendenciBaseForm):
                   'intro',
                   'response',
                   # 'send_email', removed per ed's request
+                  'subject_template',
                   'email_from',
                   'email_copies',
                   'user_perms',

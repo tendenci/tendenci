@@ -585,6 +585,7 @@ input.short_text_input{
 .event-item {
 	word-wrap: break-word;
 	position: relative;
+	background-color: #777;
 }
 
 .event-item a {

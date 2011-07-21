@@ -28,6 +28,7 @@ from memberships.utils import csv_to_dict
 
 from widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
 from corporate_memberships.models import CorporateMembership, AuthorizedDomain
+from user_groups.models import Group
 
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -465,6 +466,35 @@ class AppFieldForm(forms.ModelForm):
         # user hidden widget for payment-method
         if self.instance.field_type == 'payment-method':
             self.fields['field_type'] = CharField(label="Type", widget=HiddenInput)
+            
+    
+    def clean_function_params(self):
+        function_params = self.cleaned_data['function_params']
+        clean_params = ''
+        for val in function_params.split(','):
+            clean_params = val.strip() + ',' + clean_params
+        return clean_params[0:len(clean_params)-1]
+        
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        field_function = cleaned_data.get("field_function")
+        function_params = cleaned_data.get("function_params")
+        field_type = cleaned_data.get("field_type")
+        
+        if field_function == "Group":
+            if field_type != "check-box":
+                raise forms.ValidationError("This field's function requires Checkbox as a field type")
+            if not function_params:
+                raise forms.ValidationError("This field's function requires at least 1 group specified.")
+            else:
+                for val in function_params.split(','):
+                    try:
+                        Group.objects.get(name=val)
+                    except Group.DoesNotExist:
+                        raise forms.ValidationError("The group \"%s\" does not exist" % (val))
+        
+        return cleaned_data
+
 
 
 class EntryEditForm(forms.ModelForm):

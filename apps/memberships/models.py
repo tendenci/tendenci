@@ -71,6 +71,9 @@ PERIOD_UNIT_CHOICES = (
     ("months", _("Months")),
     ("years", _("Years")),
 )
+FIELD_FUNCTIONS = (
+    ("Group", _("Subscribe to Group")),
+)
 
 class MembershipType(TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -636,6 +639,10 @@ class AppField(models.Model):
 
     field_name = models.CharField(max_length=100, blank=True, default='')
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, max_length=100)
+    field_function = models.CharField(_("Special Functionality"),
+        choices=FIELD_FUNCTIONS, max_length=64, null=True, blank=True)
+    function_params = models.CharField(_("Group Name or Names"),
+        max_length=100, null=True, blank=True, help_text="Comma separated if more than one")
     vital = models.BooleanField(_("Vital"), default=False, blank=True)
     required = models.BooleanField(_("Required"), default=False, blank=True)
     visible = models.BooleanField(_("Visible"), default=True, blank=True)
@@ -667,7 +674,8 @@ class AppField(models.Model):
 
     def __unicode__(self):
         return self.label
-
+    
+    
 class AppEntry(TendenciBaseModel):
     """
     An entry submitted via a membership application.
@@ -906,6 +914,30 @@ class AppEntry(TendenciBaseModel):
             pass
 
         user.save()
+        
+        # take care of the special functionality - Groups
+        # add user to the groups they checked
+        field_entries = self.fields.all()
+        for field_entry in field_entries:
+            value = field_entry.value
+            if field_entry.field.field_function == "Group" and value:
+                for val in field_entry.field.function_params.split(','):
+                    group = Group.objects.get(name=val)
+                    try:
+                        GroupMembership.objects.create(**{
+                                    'group':group,
+                                    'member':user,
+                                    'creator_id': judge_pk,
+                                    'creator_username': judge_username,
+                                    'owner_id':judge_pk,
+                                    'owner_username':judge_username,
+                                    'status':True,
+                                    'status_detail':'active',
+                                })
+                    except:
+                        pass
+                    
+        
 
         self.is_approved = True
         self.decision_dt = membership.create_dt
