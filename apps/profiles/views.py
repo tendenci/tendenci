@@ -37,7 +37,8 @@ from profiles.models import Profile
 from profiles.forms import ProfileForm, UserPermissionForm, UserGroupsForm
 from profiles.utils import user_add_remove_admin_auth_group
 from base.http import Http403
-#from user_groups.models import Group, GroupMembership
+from user_groups.models import GroupMembership
+from user_groups.forms import GroupMembershipEditForm
 
 from perms.utils import is_admin
 
@@ -680,7 +681,6 @@ def user_groups_edit(request, username, form_class=UserGroupsForm, template_name
     if request.method == 'POST':
         form = form_class(user, request.user, request, request.POST)
         if form.is_valid():
-            print "valid"
             form.save()
             messages.add_message(request, messages.INFO, 'Successfully edited groups for %s' % user.get_full_name())
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
@@ -692,6 +692,32 @@ def user_groups_edit(request, username, form_class=UserGroupsForm, template_name
                             'user_this': user,
                             }, context_instance=RequestContext(request))
 
-#@login_required
-#def user_role_edit(request, username, form_class=UserGroupsForm, template_name="profiles/edit_role.html"):
+@login_required
+def user_role_edit(request, username, membership_id, form_class=GroupMembershipEditForm, template_name="profiles/edit_role.html"):
+    user = get_object_or_404(User, username=username)
+    membership = get_object_or_404(GroupMembership, id=membership_id)
     
+    try:
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user)
+    
+    if not profile.allow_edit_by(request.user):
+        raise Http403
+    
+    if not has_perm(request.user,'user_groups.view_group', membership.group):
+        raise Http403
+        
+    if request.method == 'POST':
+        form = form_class(request.POST, instance=membership)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.INFO, 'Successfully edited membership for %s' % membership.group)
+            return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
+    else:
+        form = form_class(instance=membership)
+
+    return render_to_response(template_name, {
+                            'form': form,
+                            'membership': membership,
+                            }, context_instance=RequestContext(request))
