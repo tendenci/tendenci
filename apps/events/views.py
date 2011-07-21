@@ -516,23 +516,23 @@ def add(request, year=None, month=None, day=None, \
             event_init = {}
 
             today = datetime.today()
-            four_hours = timedelta(hours=4)
-
-            start_dt = today
-            end_dt = today + four_hours
-
-            event_init['start_dt'] = today
-            event_init['end_dt'] = today + four_hours
-
+            offset = timedelta(hours=2)
+            
             if all((year, month, day)):
                 date_str = '-'.join([year,month,day])
                 time_str = '10:00 AM'
                 dt_str = "%s %s" % (date_str, time_str)
                 dt_fmt = '%Y-%m-%d %H:%M %p'
-
+                
                 start_dt = datetime.strptime(dt_str, dt_fmt)
-                end_dt = datetime.strptime(dt_str, dt_fmt) + four_hours
-
+                end_dt = datetime.strptime(dt_str, dt_fmt) + offset
+                
+                event_init['start_dt'] = start_dt
+                event_init['end_dt'] = end_dt
+            else:
+                start_dt = datetime.now()
+                end_dt = datetime.now() + offset
+                
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
 
@@ -786,7 +786,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 self_reg8n = get_setting('module', 'users', 'selfregistration')
                 
                 is_credit_card_payment = reg8n.payment_method and \
-                (reg8n.payment_method.machine_name).lower() == 'credit-card'
+                (reg8n.payment_method.machine_name).lower() == 'credit-card' \
+                and event_price > 0
                 
                 if reg8n_created:
                     # update the spots taken on this event
@@ -1266,7 +1267,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     # paid or non-paid or total
     registrations = Registration.objects.filter(event=event)
     if roster_view == 'paid':
-        registrations = registrations.filter(invoice__balance=0)
+        registrations = registrations.filter(invoice__balance__lte=0)
     elif roster_view == 'non-paid':
         registrations = registrations.filter(invoice__balance__gt=0)
 

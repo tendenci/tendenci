@@ -50,7 +50,7 @@ class Command(BaseCommand):
         def email_admins_recap(notices, total_sent):
             """Send admins recap after the notices were processed.
             """
-            email.recipient = get_script_support_emails()
+            email.recipient = get_admin_emails()
             if email.recipient:
                 template_name = "memberships/notices/email_recap.html"
                 try:
@@ -86,6 +86,16 @@ class Command(BaseCommand):
                 return ','.join(recipients_list)
             
             return None
+        
+        def get_admin_emails():
+            admin_emails = (get_setting('module', 'memberships', 'membershiprecipients')).split(',')
+            if not admin_emails:
+                admin_emails = (get_setting('site', 'global', 'admincontactemail')).split(',')
+                
+            if admin_emails:
+                admin_emails = ','.join(admin_emails)
+                
+            return admin_emails
             
             
         

@@ -1,6 +1,6 @@
 import uuid
 from hashlib import md5
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -250,10 +250,10 @@ class RegConfPricing(models.Model):
     regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
     late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
     
-    early_dt = models.DateTimeField(_('Early Registration Starts'))
-    regular_dt = models.DateTimeField(_('Regular Registration Starts'))
-    late_dt = models.DateTimeField(_('Late Registration Starts'))
-    end_dt = models.DateTimeField(_('Registration Ends'), default=0)
+    early_dt = models.DateTimeField(_('Early Registration Starts'), default=datetime.now())
+    regular_dt = models.DateTimeField(_('Regular Registration Starts'), default=datetime.now()+timedelta(hours=2))
+    late_dt = models.DateTimeField(_('Late Registration Starts'), default=datetime.now()+timedelta(hours=4))
+    end_dt = models.DateTimeField(_('Registration Ends'), default=datetime.now()+timedelta(hours=6))
 
     allow_anonymous = models.BooleanField(_("Public can use"))
     allow_user = models.BooleanField(_("Signed in user can use"))
@@ -611,7 +611,7 @@ class Event(TendenciBaseModel):
 
     all_day = models.BooleanField()
     start_dt = models.DateTimeField(default=datetime.now())
-    end_dt = models.DateTimeField(default=datetime.now())
+    end_dt = models.DateTimeField(default=datetime.now()+timedelta(hours=2))
     timezone = TimeZoneField(_('Time Zone'))
 
     place = models.ForeignKey('Place', null=True)

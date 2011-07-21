@@ -8,6 +8,7 @@ from django.contrib import messages
 
 from base.http import Http403
 from perms.utils import has_perm
+from event_logs.models import EventLog
 from subscribers.models import GroupSubscription
 from forms_builder.forms.models import Form
 
@@ -28,13 +29,28 @@ def subscribers(request, id, template_name="subscribers/subscribers.html"):
                         context_instance=RequestContext(request))
 
 @login_required
-def delete_subscriber(request, id):
-    sub = get_object_or_404(GroupSubscription, id=id)
+def subscriber_delete(request, id, template_name="subscribers/delete.html"):
+    grp_sub = get_object_or_404(GroupSubscription, id=id)
     
     # check permission
     if not has_perm(request.user,'subscribers.delete_groupsubscriptions'):
         raise Http403
         
-    sub.delete()
-        
-    return redirect('group.detail', sub.group.slug)
+    if request.method == 'POST':
+        log_defaults = {
+            'event_id' : 223000,
+            'event_data': '%s (%d) deleted by %s' % (grp_sub._meta.object_name, grp_sub.pk, request.user),
+            'description': '%s deleted' % grp_sub._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': grp_sub,
+        }
+        EventLog.objects.log(**log_defaults)
+        messages.add_message(request, messages.INFO, 'Successfully removed subscriber %s (%s) from group %s' % (grp_sub.name, grp_sub.email, grp_sub.group))
+        grp_sub.delete()
+        return HttpResponseRedirect(grp_sub.group.get_absolute_url())
+    return render_to_response(template_name, {
+                        'grp_sub': grp_sub,
+                        },
+                        context_instance=RequestContext(request))
+    

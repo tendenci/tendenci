@@ -44,7 +44,7 @@
 	    <div class="more-options-target">
 	        <ul>
 				<li class="divider">
-				 <a href="{% url group.search %}" class="usergroups" title=="Edit Groups">Edit Groups</a>
+				 <a href="{% url profile.edit_groups user_this.username %}" class="usergroups" title=="Edit Groups">Edit Groups</a>
 				</li>
 				
 				{% if admin %}

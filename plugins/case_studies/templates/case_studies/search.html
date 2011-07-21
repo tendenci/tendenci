@@ -9,38 +9,72 @@
 {{ block.super }}
 <style type="text/css">
 {% include "case_studies/media/css/casestudy.css" %}
+.t .cs-search-wrap { width: 100%; }
+.t .cs-search-item { border: 0; margin: 0; padding: 0; }
+.cs-search-wrap ul { list-style: none; margin: 0 10px 10px 0; padding: 0; float: left; width: 200px; }
+.cs-search-wrap ul li.cs-search-item { background: #bebebe; margin: 0; position: relative; }
+.cs-search-wrap ul li.cs-search-item:hover { z-index: 99; }
+.cs-search-wrap ul li.cs-search-item .cs-item { position: relative; background: #ebebeb; padding: 10px; width: 180px; min-height: 178px; height:auto !important; height: 178px; }
+.cs-search-wrap ul li.cs-search-item .cs-item a.cs-img-link { display: block; width: 180px; height: 130px; box-shadow: 0 0 4px #333; -moz-box-shadow: 0 0 4px #333; -webkit-box-shadow: 0 0 4px #333; position: relative; z-index: 10; margin-bottom: 10px; }
+.cs-search-wrap ul li.cs-search-item .cs-item h3 { font-size: 14px; line-height: 18px; margin: 0 0 2px 0; padding: 0; }
+.cs-search-wrap ul li.cs-search-item .cs-item h3 a { color: #D8A02F; font-size: 14px; line-height: 18px; }
+
+.cs-search-wrap ul li.cs-search-item .cs-full { width: 180px; display: none; position: absolute; top: 0; left: 0; }
+
+.cs-search-wrap ul li.cs-search-item:hover { background: #D7A030; color: #fff; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-item h3 a { color: #444; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-item h3 a:hover { color: #000; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-item { background: #D7A030; z-index: 999; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full { background: #D7A030; display: block; padding: 210px 10px 10px 10px; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p { color: #444; margin: 0; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p.services { padding-top: 6px; border-top: 1px dashed #444; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p a { color: #fff; text-decoration: none; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p a:hover { text-decoration: underline; }
+
+#add-case-study { display: block; float: right; text-align: right; padding: 6px 8px; background: #ebebeb; text-decoration: none; margin-bottom: 20px; }
+#add-case-study:hover { background: #444; color: #fff; }
 </style>
 <link rel="alternate" type="application/rss+xml" title="Latest Case Studies" href="{% url case_study.feed %}" />
 {% endblock %}
 
 {% block body %}
-{% autopaginate case_studies 5 %}
+{% autopaginate case_studies 12 %}
 {% has_perm user case_studies.add_casestudy as can_add_case_study %}
 
 <div class="t">
     <h1>Case Studies Search</h1>
     {% case_study_search %}
     {% if can_add_case_study %}
-    <div><a href="{% url admin:case_studies_casestudy_add %}">Add Case Study</a></div>
+    <div class="clearfix"><a id="add-case-study" href="{% url admin:case_studies_casestudy_add %}">Add Case Study &raquo;</a></div>
     {% endif %}
-    <div class="cs-search-wrap">
+    <div class="cs-search-wrap clearfix">
         {% for case_study in case_studies %}
+        <ul>
         {% with case_study.object as case_study %}
-        <div class="cs-search-item">
-            <div class="quick-options">
-                {% case_study_options request.user case_study %}
+        <li class="cs-search-item">
+            <div class="cs-item">
+                {% for img in case_study.featured_screenshots %}
+                        {% if forloop.first %}
+                    <a class="cs-img-link" href="{{ case_study.get_absolute_url }}"><img alt="{{ case_study.client }}" src="{% url file img.pk %}180x130" /></a>
+                    {% endif %}
+                {% endfor %}
+                <h3><a href="{{ case_study.get_absolute_url }}" title="{{ case_study.client }}">{{ case_study.client }}</a></h3>
             </div>
-            <h3><a href="{{ case_study.get_absolute_url }}" title="{{ case_study.client }}">{{ case_study.client }}</a></h3>
-
-            {% if case_study.overview or case_study.execution or case_study.results %}
-            <p class="cs-search-item-desc">
-                {% filter striptags|truncatewords:"60" %}
-                {% firstof case_study.overview case_study.execution case_study.results %}
-                {% endfilter %}
-            </p>
-            {%  endif %}
-        </div>
+            <div class="cs-full">
+                {% spaceless %}<p class="services"><span><strong>Services</strong>: </span>
+                {% for service in case_study.services.all %}
+                <a href="{% url case_study.search %}?q={{ service.title }}">{{ service.title }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}</p>{% endspaceless %}
+                
+                {% spaceless %}<p class="technology"><span><strong>Technology</strong>: </span>
+                {% for tech in case_study.technologies.all %}
+                <a href="{% url case_study.search %}?q={{ tech.title }}">{{ tech.title }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}</p>{% endspaceless %}
+                <p style="margin-top: 6px; border-top: 1px dashed #fff; padding-top: 6px;"><a href="{{ case_study.url }}">View this Website &raquo;</a></p>
+            </div>
+        </li>
         {% endwith %}
+        </ul>
         {% empty %}
             <p>0 Case Studies Found</p>
         {% endfor %}
@@ -51,12 +85,17 @@
 
 {% block extra_body %}
 {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-		var iconrow = new dropdown({
-			container:	'more-options-wrap',
-			trigger:	'more-options-trigger',
-			target:		'more-options-target'
-		});
-	</script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+  <script type="text/javascript">
+    var iconrow = new dropdown({
+      container:  'more-options-wrap',
+      trigger:  'more-options-trigger',
+      target:    'more-options-target'
+    });
+	var lis = $('.cs-search-wrap ul');
+	for(var i = 0; i < lis.length; i+=3) {
+	  lis.slice(i, i+3)
+		 .wrapAll('<div class="row clearfix"></div>');
+	}
+  </script>
 {% endblock %}

@@ -41,7 +41,7 @@
                                             Sorry, no more of these available.
                                         {% endif %}
                                         {% if price.failure_type == 'group' %}
-                                            You must be in the group '{{ price.price.group.label }}' to qualify.
+                                            You must be in the group '{% firstof price.price.group.label price.price.group.name 'Untitled' %}' to qualify.
                                         {% endif %}
                                         {% if price.failure_type == 'member' %}
                                             You must be a member to qualify.

@@ -17,6 +17,8 @@ class Payment(models.Model):
     response_page = models.CharField(max_length=200)
     trans_id = models.CharField(max_length=100, default='')
     trans_string = models.CharField(max_length=100)
+    card_type = models.CharField(max_length=50, default='', null=True)
+    account_number = models.CharField(max_length=4, default='', null=True)    # the last 4 digits of credit card
     po_num = models.CharField(max_length=50, blank=True)
     auth_code = models.CharField(max_length=10)
     avs_code = models.CharField(max_length=10)

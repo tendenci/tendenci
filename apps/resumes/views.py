@@ -78,14 +78,18 @@ def print_view(request, slug, template_name="resumes/print-view.html"):
     else:
         raise Http403
 
+@login_required
 def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
+
+    can_add_active = has_perm(request.user, 'resumes.add_resume')
+
     if request.method == "POST":
         form = form_class(request.POST, user=request.user)
         if form.is_valid():
             resume = form.save(commit=False)
 
-            # set it to pending if the user is anonymous
-            if not request.user.is_authenticated():
+            # set it to pending if the user does not have add permission
+            if not can_add_active:
                 resume.status = 0
                 resume.status_detail = 'pending'
 
@@ -229,6 +233,7 @@ def delete(request, id, template_name="resumes/delete.html"):
     else:
         raise Http403
 
+@login_required
 def pending(request, template_name="resumes/pending.html"):
     if not is_admin(request.user):
         raise Http403
@@ -236,6 +241,7 @@ def pending(request, template_name="resumes/pending.html"):
     return render_to_response(template_name, {'resumes': resumes},
             context_instance=RequestContext(request))
 
+@login_required
 def approve(request, id, template_name="resumes/approve.html"):
     if not is_admin(request.user):
         raise Http403

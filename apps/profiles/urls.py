@@ -10,4 +10,7 @@ urlpatterns = patterns('profiles.views',
     url(r'^avatar/(?P<id>\d+)/$', 'change_avatar', name="profile.change_avatar"),
     url(r'^delete/(?P<id>\d+)/$', 'delete', name="profile.delete"),
     url(r'^(?P<username>[+-.\w\d@]+)/$','index', name='profile'),
+    url(r'^(?P<username>[+-.\w\d@]+)/groups/edit/$','user_groups_edit', name='profile.edit_groups'),
+    url(r'^(?P<username>[+-.\w\d@]+)/groups/(?P<membership_id>\d+)/edit/$','user_role_edit', name='profile.edit_role'),
+
 )

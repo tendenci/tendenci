@@ -9,7 +9,7 @@ from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from forms_builder.forms.managers import FormManager
 from perms.utils import is_admin
 from perms.models import TendenciBaseModel
-from user_groups.models import Group
+from user_groups.models import Group, GroupMembership
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -51,9 +51,9 @@ class Form(TendenciBaseModel):
 #    status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
 #        default=STATUS_PUBLISHED)
     subject_template = models.CharField(_("Template for email subject "),  
-        help_text=_("""The field names (except for title) in the square brackets [ ] 
-                        must exist on your form. Preferably, only use
-                        the required fields. NOT case sensitive"""), 
+        help_text=_("""Options include [title] for form title, and  
+                        name of form fields inside brackets [ ]. E.x. [first name] or 
+                        [email address]"""), 
         default="[title] - [first name]  [last name] - [phone]",
         max_length=200,
         blank=True, null=True)
@@ -142,6 +142,8 @@ class Field(models.Model):
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
     position = models.PositiveIntegerField(_('position'), default=0)
+    default = models.CharField(_("Default"), max_length=1000, blank=True,
+        help_text="Default value of the field")
         
     objects = FieldManager()
 
@@ -200,7 +202,10 @@ class FormEntry(models.Model):
         """
         # avoiding circular imports
         from subscribers.models import GroupSubscription as GS
-        GS.objects.create(group=group, subscriber=self)
+        try:
+            GS.objects.get(group=group, subscriber=self)
+        except GS.DoesNotExist:
+            GS.objects.create(group=group, subscriber=self)
 
     def unsubscribe(self, group):
         """
@@ -302,6 +307,7 @@ class FieldEntry(models.Model):
         return ('%s: %s' % (self.field.label, self.value))
     
     def save(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super(FieldEntry, self).save(*args, **kwargs)
-        self.field.execute_function(self.entry, self.value)
+        self.field.execute_function(self.entry, self.value, user=user)
     

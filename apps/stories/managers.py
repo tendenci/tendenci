@@ -5,3 +5,4 @@ class StoryManager(TendenciBaseManager):
     Model Manager
     """
     pass
+    
