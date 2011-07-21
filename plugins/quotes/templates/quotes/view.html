@@ -7,7 +7,7 @@
 
 {% tags_for_object quote as tags %}
 
-{% block title %}{% spaceless %}{{ quote.quote|truncatewords:"12" }} - {{ quote.author }} Quotes{% endspaceless %}{% endblock %}
+{% block title %}{% spaceless %}{{ quote.quote|striptags|truncatewords:"12" }} - {{ quote.author }} Quotes{% endspaceless %}{% endblock %}
 {% block meta_description %}
 {% spaceless %}
 Quotes from {{ quote.author}} - {{ quote.quote }}, 
@@ -20,16 +20,24 @@ Quotes from {{ quote.author}} - {{ quote.quote }},
 {% block extra_head %}
 {{ block.super }}
 <style>
+.lower-container .related-quotes h3, .lower-container .tags h3 { padding: 0; margin: 0; }
 .related-quotes {margin-bottom: 10px;}
+.related-quotes ul, .lower-container .tags ul { list-style: none; margin: 0; padding: 0; }
+.lower-container .tags { margin-bottom: 20px; }
+.related-quotes ul li { display: block; padding: 10px 0; border-bottom: 1px dashed #444; }
+.related-quotes ul li a {  }
+.quote-main blockquote { margin: 0; padding: 26px 0 26px 18px; font-size: 24px; line-height: 28px; margin-bottom: 20px; background: url(/themes/schipul/media/images/quote-bg.jpg) no-repeat scroll 0 0 transparent; }
+.quote-main blockquote p { margin: 0 0 16px 0; }
+.quote-text a { color: #444; text-decoration: none; }
+.quote-text a:hover { text-decoration: underline; }
 </style>
 {% endblock extra_head %}
 
 {% block body %}
 {% tags_for_object quote as tags %}
-<h1>Quote by {{ quote.author }}</h1>
-<div class="quote">
-        <blockquote>{% spaceless %}{{ quote.quote|linebreaks }}{% endspaceless %}</blockquote>
-        <h3>&mdash; {{ quote.author }}</h3>
+    <div class="quote-main">
+        <blockquote>{% spaceless %}{{ quote.quote|safe|linebreaks }}{% endspaceless %}</blockquote>
+        <h1 style="border: none; margin: 0;"><a style="display: block; padding: 10px; font-size: 16px; line-height: 20px; font-family: Arial, Helvetica, sans-serif; background: url(/themes/schipul/media/images/inspire-bg.jpg) repeat scroll 0 0 transparent;" href="{% url quote.search %}?q=author:{{ quote.author }}">&mdash; {{ quote.author }}</a></h1>
         {% if quote.source %}<strong>Source: </strong>
             {% ifequal quote.source|slice:"4" "http" %}
                 {{ quote.source|urlize }}
@@ -37,43 +45,55 @@ Quotes from {{ quote.author}} - {{ quote.quote }},
                 {{ quote.source }}
             {% endifequal %}
         {% endif %}
+        <span style="display: block; margin-bottom: 20px;"></span>
     </div>
-<div class="meta">
-	{% if tags %}
-    <div class="tags">
-<strong>Quote Tags: </strong> {% for tag in tags %}
-<a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
-{% endfor %}
-		</div>
-	{% endif %}		
-<ul>	
-    {% has_perm request.user quote.change_quote quote as can_edit %}
-    {% if quote.status_detail == 'pending' %}
-   	 <span class="copyright body-copy-alerts"><em>Pending</em></span>
-    {% endif %}
-    {% if can_edit %} 
-    	<li><a href="{% url admin:quotes_quote_change quote.pk %}" title="Edit Quote" class="option-link edit">Edit</a></li>
-    {% endif %}    
-</ul>
-<div class="related-quotes">
-{% if tags %}
-    {% for tag in tags %}
-        {% if forloop.first %}
-            {% list_quotes as quotes_list tags=tag.name limit=5 %}
-                {% if quotes_list %}
-                    <h3>More {{ tag.name|title }} Quotes</h3>
-                    {% for quote in quotes_list %}
-                        <div class="quote">
-                            {{ quote.quote|truncatewords:20 }}
-                            &nbsp;<a href="{{ quote.get_absolute_url }}">Full Quote</a><br />
-                            {% spaceless %}&mdash; <a href="{% url quote.search %}?q=author:{{ quote.author }}">{{ quote.author }}</a>{% endspaceless %} 
-                        </div>
-                    {% endfor %}
-                {% endif %}
+    
+    <div class="meta">
+        {% if tags %}
+            <div class="tags">
+                
+                <h3>Quote Tags</h3>
+                {% spaceless %}
+                    <ul>
+                      {% for tag in tags %}
+                            <li><a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag|title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% endspaceless %}
+            </div>
+        {% endif %}  
+                
+        {% has_perm request.user quote.change_quote quote as can_edit %}
+        {% if quote.status_detail == 'pending' %}
+         <span class="copyright body-copy-alerts"><em>Pending</em></span>
         {% endif %}
-    {% endfor %}
-{% endif %}
-</div>
+        {% if can_edit %} 
+            <p><a href="{% url admin:quotes_quote_change quote.pk %}" title="Edit Quote" class="option-link edit">Edit</a></p>
+        {% endif %}    
+        
+        <div class="related-quotes">
+        {% if tags %}
+            {% for tag in tags %}
+                {% if forloop.first %}
+                    {% list_quotes as quotes_list tags=tag.name limit=6 %}
+                        {% if quotes_list %}
+                            <h3>More '{{ tag.name|title|capfirst }}' Quotes</h3>
+                            <div class="quote">
+                            <ul>
+                            {% for quote in quotes_list %}
+                                <li>
+                                    <p class="quote-text">{{ quote.quote|linebreaks }}<br />
+                                    <strong>&mdash;<a href="{% url quote.search %}?q=author:{{ quote.author }}">{{ quote.author }}</a></strong></p>
+                                    <small><a href="{{ quote.get_absolute_url }}">Quote Link</a></small>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                            </div>
+                        {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
 
 <a href="{% url quote.search %}">View more quotes</a>
 </div>

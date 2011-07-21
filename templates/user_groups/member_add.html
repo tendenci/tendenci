@@ -20,7 +20,7 @@
 
     <h1>Add Members to Group</h1>
     <div class="clear-right"></div>
-     <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+    <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
 
     <form method="post" action=".">{% csrf_token %}
         {% if form.non_field_errors %}
@@ -34,7 +34,13 @@
                 {% if form.members.errors %}
                     <div class="errors">{{ form.members.errors|striptags }}</div>
                 {% endif %}
-                <label for="id_members" style="float:left; padding-right: 1em;"><b>{{ form.members.label }}:</b></label>
+                <label for="id_members" style="float:left; padding-right: 1em;">
+                    <b>{{ form.members.label }}:</b>
+                    view by 
+                    <a href="?member_label=full_name">name</a>,
+                    <a href="?member_label=email">email</a>,
+                    <a href="?member_label=username">username</a>.
+                </label>
                 <br>
                 {{ form.members }}
             </div>

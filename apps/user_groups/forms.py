@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
 
 from user_groups.models import Group, GroupMembership
+from user_groups.utils import member_choices
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
 
@@ -125,8 +126,10 @@ class GroupMembershipForm(forms.ModelForm):
         
 class GroupMembershipBulkForm(forms.Form):
     def __init__(self, group, *args, **kwargs):
+        member_label = kwargs.pop('member_label', 'username')
         super(GroupMembershipBulkForm, self).__init__(*args, **kwargs)
         self.fields['members'].initial = group.members.all()
+        self.fields['members'].choices = member_choices(group, member_label)
     
     members = forms.ModelMultipleChoiceField(queryset = User.objects.filter(is_active=1), required=False)
     role = forms.CharField(required=False, max_length=255)
@@ -146,3 +149,7 @@ class GroupPermissionForm(forms.ModelForm):
         
         self.fields['permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
         
+class GroupMembershipEditForm(forms.ModelForm):
+    class Meta:
+        model = GroupMembership
+        fields = ('role', 'status', 'status_detail')

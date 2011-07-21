@@ -151,6 +151,7 @@ class ResumeForm(TendenciBaseForm):
             fields_to_pop += [
                 'allow_anonymous_view',
                 'user_perms',
+                'member_perms',               
                 'group_perms',
                 'activation_dt',
                 'expiration_dt',
@@ -164,6 +165,13 @@ class ResumeForm(TendenciBaseForm):
             ]
         if not is_admin(self.user):
             fields_to_pop += [
+                'allow_anonymous_view',
+                'user_perms',
+                'member_perms',
+                'group_perms',
+                'activation_dt',
+                'expiration_dt',
+                'syndicate',
                 'status',
                 'status_detail'
             ]

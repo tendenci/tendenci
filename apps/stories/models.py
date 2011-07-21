@@ -6,14 +6,10 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from site_settings.utils import get_setting
 from tagging.fields import TagField
+from files.models import file_directory
 from perms.models import TendenciBaseModel
 from stories.managers import StoryManager
 from entities.models import Entity
-
-
-def file_directory(instance, filename):
-    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
-    return 'stories/%s' % (filename)
 
 # Create your models here.
 class Story(TendenciBaseModel):
@@ -36,6 +32,10 @@ class Story(TendenciBaseModel):
     class Meta:
         permissions = (("view_story","Can view story"),)
         verbose_name_plural = "stories"
+    
+    @property
+    def content_type(self):
+        return 'stories'
         
     def save(self, *args, **kwargs):
         if not self.id:

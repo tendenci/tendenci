@@ -12,6 +12,7 @@
 
 {% block body %}
 <div class="t">
+	{% help_file_search %}
 	<div class="breadcrumbs"><p><a href="{% url help_files %}">All Help Files</a> > {{ topic }} help files</p></div>
 	<h2>{{ topic|title }} Help Files</h2>
 	{% if topic.content %}

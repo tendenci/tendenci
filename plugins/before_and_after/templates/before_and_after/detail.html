@@ -31,6 +31,8 @@
     <style type="text/css">
         {% include "before_and_after/media/css/before_and_after.css" %}
     </style>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jcarousel/skins/bna/skin.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jcarousel/skins/tango/skin.css" />
 {% endblock %}
 
 {% block body %}
@@ -46,22 +48,19 @@
     </div>
     <div class="bna-detail">
         <div class="photoset-wrap">
-            <a href="{% url before_and_after.detail bna.pk %}?order={{ active_photoset.order|add:'-1' }}" class="left">&lsaquo;</a>
             <div class="photoset-large-border">
-            <div class="photoset-large">
-                {% if active_photoset %}
-                    <img src="{{ active_photoset.before_photo|thumbnail:'280x500' }}" alt="Before - {{ active_photoset.description }}">
-                    <img src="{{ active_photoset.after_photo|thumbnail:'280x500' }}" alt="After - {{ active_photoset.description }}">
-                {% else %}
-                    <img src="/path/to/default/image">
-                    <img src="/path/to/default/image">
-                {% endif %}
-                {% if active_photoset.description %}
-                    <p>{{ active_photoset.description }}</p>
-                {% endif %}
+                <ul id="featured-carousel" class="jcarousel-skin-bna">
+                    {% for photoset in bna.photoset_set.all %}
+                        <li>
+                        <div class="photoset-large">
+                            <img src="{{ photoset.before_photo|thumbnail:'280x500' }}" alt="Before - {{ photoset.description }}">
+                            <img src="{{ photoset.after_photo|thumbnail:'280x500' }}" alt="After - {{ photoset.description }}">
+                            <p>{{ photoset.description }}</p>
+                        </div>
+                        </li>
+                    {% endfor %}
+                </ul>
             </div>
-            </div>
-            <a href="{% url before_and_after.detail bna.pk %}?order={{ active_photoset.order|add:'1' }}" class="right">&rsaquo;</a>
             <div style="clear:both"></div>
         </div>
         <h1>{{ bna.title }}</h1>
@@ -70,27 +69,57 @@
             <b>Description</b>
             <p>{{ bna.description|safe }}</p>
         </div>
-        {% if other_photosets %}
+        {% if bna.photoset_set.all %}
             <div class="other-photosets-wrap">
                 <h2>More Photos</h2>
                 <div class="other-photosets-border">
-                <div class="other-photosets">
-                    {% for set in other_photosets %}
-                        <a href="{% url before_and_after.detail bna.pk %}?active={{ set.id }}">
-                            <div class="photoset-small">
-                                <img src="{{ set.before_photo|thumbnail:'80x80' }}">
-                                <img src="{{ set.after_photo|thumbnail:'80x80' }}">
-                            </div>
-                        </a>
+                    <ul id="more-photos-carousel" class="jcarousel-skin-tango">
+                    {% for set in bna.photoset_set.all %}
+                        <li>
+                            <a id="set-{{ forloop.counter }}" class="set-link" href="#featured-carousel">
+                                <div class="photoset-small">
+                                    <img src="{{ set.before_photo|thumbnail:'80x80' }}">
+                                    <img src="{{ set.after_photo|thumbnail:'80x80' }}">
+                                </div>
+                            </a>
+                        </li>
                     {% endfor %}
-                    <div style="clear:both"></div>
-                </div>
+                    </ul>
                 </div>
             </div>
         {% endif %}
+        <div>
+        {% if prev %}
+            <a href="{% url before_and_after.detail prev.pk %}">Prev</a>
+        {% endif %}
+        {% if next %}
+            <a href="{% url before_and_after.detail next.pk %}">Next</a>
+        {% endif %}
+        </div>
     </div>
     <div class="bna-embed-form">
         {% embed_form embed_form %}
     </div>
 </div>
 {% endblock body %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.min.js"></script>
+    <script src="{{ STATIC_URL }}jcarousel/lib/jquery.jcarousel.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            jQuery('#featured-carousel').jcarousel({
+                scroll: 1,
+                visible: 1,
+            });
+            jQuery('#more-photos-carousel').jcarousel({
+                visible: 4,
+            });
+            jQuery('.set-link').click(function(event) {
+                number = parseInt(event.currentTarget.id.split('-')[1]);
+                jQuery('#featured-carousel').jcarousel('scroll', number, true);
+            });
+        });
+    </script>
+{% endblock extra_body %}
