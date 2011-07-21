@@ -327,7 +327,7 @@
 			{% for gm in group_memberships %}
 				<div class="group">
 					<div class="content-type"><a href="{% url group.detail gm.group.slug %}">{{ gm.group.label }} ({{gm.group.name}})</a></div>
-					<div class="content-title">{{ gm.role }}</div>
+					<div class="content-title">{{ gm.role }} (<a href="{% url profile.edit_role user_this.username gm.id %}">Edit</a>)</div>
 					<div class="clear-both"></div>
 				</div>
 			{% endfor %}

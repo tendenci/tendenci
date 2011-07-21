@@ -149,3 +149,7 @@ class GroupPermissionForm(forms.ModelForm):
         
         self.fields['permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
         
+class GroupMembershipEditForm(forms.ModelForm):
+    class Meta:
+        model = GroupMembership
+        fields = ('role', 'status', 'status_detail')
