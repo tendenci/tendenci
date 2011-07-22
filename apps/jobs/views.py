@@ -197,19 +197,23 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
     job = get_object_or_404(Job, pk=id)
 
     if has_perm(request.user, 'jobs.change_job', job):
-        if request.method == "POST":
-            form = form_class(request.POST, instance=job, user=request.user)
-
-            # delete admin only fields for non-admin on edit - GJQ 8/25/2010
-            if not is_admin(request.user):
-                del form.fields['requested_duration']
-                del form.fields['list_type']
+        form = form_class(request.POST or None, instance=job, user=request.user)
+        # delete admin only fields for non-admin on edit - GJQ 8/25/2010
+        if not is_admin(request.user):
+            del form.fields['requested_duration']
+            del form.fields['list_type']
+            if form.fields.has_key('activation_dt'):
                 del form.fields['activation_dt']
+            if form.fields.has_key('post_dt'):
                 del form.fields['post_dt']
+            if form.fields.has_key('expiration_dt'):
                 del form.fields['expiration_dt']
+            if form.fields.has_key('entity'):
                 del form.fields['entity']
-            del form.fields['payment_method']
-
+        del form.fields['payment_method']
+        
+        
+        if request.method == "POST":
             if form.is_valid():
                 job = form.save(commit=False)
 
@@ -228,16 +232,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % job)
 
                 return HttpResponseRedirect(reverse('job', args=[job.slug]))
-        else:
-            form = form_class(instance=job, user=request.user)
-            if not is_admin(request.user):
-                del form.fields['requested_duration']
-                del form.fields['list_type']
-                del form.fields['activation_dt']
-                del form.fields['post_dt']
-                del form.fields['expiration_dt']
-                del form.fields['entity']
-            del form.fields['payment_method']
+        
 
         return render_to_response(template_name, {'job': job, 'form': form},
             context_instance=RequestContext(request))
