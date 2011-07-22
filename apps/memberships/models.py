@@ -96,15 +96,10 @@ class MembershipType(TendenciBaseModel):
     renewal = models.BooleanField(_('Renewal Only'), default=0)
     renewal_require_approval = models.BooleanField(_('Renewal Requires Approval'), default=1)
 
-    # renew_approval_required
-    # join_approval_required
-
     order = models.IntegerField(_('Order'), default=0, 
         help_text='Types will be displayed in ascending order based on this field')
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
-    
-    #expiration_method = models.CharField(_('Expiration Method'), max_length=50)
-    #expiration_method_custom_dt = models.DateTimeField()
+
     never_expires = models.BooleanField(_("Never Expires"), default=0,
                                         help_text='If selected, skip the Renewal Options.')
     period = models.IntegerField(_('Period'), default=0)
@@ -134,12 +129,6 @@ class MembershipType(TendenciBaseModel):
             help_text="How long (in days) after the memberships expires can the member renew their membership.")
     expiration_grace_period = models.IntegerField(_('Expiration Grace Period'), default=0, 
             help_text="The number of days after the membership expires their membership is still active.")
-   
-    #corporate_membership_only = models.BooleanField(_('Corporate Membership Only'), default=0)
-    #corporate_membership_type_id = models.IntegerField(_('Corporate Membership Type'), default=0,
-    #        help_text='If corporate membership only is checked, select a corporate membership type to associate with.')
-
-    #ma = models.ForeignKey("App", blank=True, null=True)
 
     class Meta:
         verbose_name = "Membership Type"

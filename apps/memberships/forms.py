@@ -521,7 +521,8 @@ class EntryEditForm(forms.ModelForm):
         instance = kwargs.get('instance')
         entry_fields = AppFieldEntry.objects.filter(entry=instance)
 
-        is_corporate = instance.membership_type.corporatemembershiptype_set.exists()
+        is_corporate = instance.membership_type and \
+            instance.membership_type.corporatemembershiptype_set.exists()
 
         for entry_field in entry_fields:
             field_type = entry_field.field.field_type  # shorten
@@ -568,6 +569,9 @@ class EntryEditForm(forms.ModelForm):
         for key, value in self.cleaned_data.items():
             pk = key.split('.')[1]
 
+            membership_type = None
+            Membership_type_entry_pk = 0
+
             if 'corporate_membership' in key:
                 corp_memb = CorporateMembership.objects.get(name=value)  # get corp. via name
                 membership_type = corp_memb.corporate_membership_type.membership_type
@@ -577,11 +581,12 @@ class EntryEditForm(forms.ModelForm):
 
             AppFieldEntry.objects.filter(pk=pk).update(value=value)
 
-        # update membership entry_field
-        AppFieldEntry.objects.filter(pk=membership_type_entry_pk).update(value=membership_type.name)
+            # update membership entry_field
+            if membership_type and membership_type_entry_pk:
+                AppFieldEntry.objects.filter(pk=membership_type_entry_pk).update(value=membership_type.name)
 
         # update membership.membership_type relationship
-        if self.instance.membership:
+        if self.instance.membership and membership_type:
             self.instance.membership.membership_type = membership_type
             self.instance.save()
 
