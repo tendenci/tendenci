@@ -1331,19 +1331,12 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     registrant_hash = hash
 
     if reg8n_id:
-        try:
-            registration = Registration.objects.get(
-                event=event,
-                pk=reg8n_id,
-            )
-    
-            # check permission
-            if not has_perm(request.user, 'events.view_registration', registration):
-                raise Http403
+        registration = get_object_or_404(Registration, event=event, pk=reg8n_id)
+        if not has_perm(request.user, 'events.view_registration', registration):
+            raise Http403
 
-            registrant = registration.registrant
-        except:
-            raise Http404
+        registrant = registration.registrant
+
     elif registrant_hash:
         sqs = SearchQuerySet()
         sqs = sqs.models(Registrant)
