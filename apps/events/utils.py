@@ -478,32 +478,14 @@ def create_registrant_from_form(*args, **kwargs):
 
 def gen_pricing_dict(price, qualifies):
     now = datetime.now()
-    pricing = {}
-
-    if price.end_dt >= now:
-        if now >= price.early_dt and now <= price.regular_dt:
-            pricing.update({
-                'price': price,
-                'amount': price.early_price,
-                'qualifies': qualifies,
-                'type': 'early_price'
-            })
-        if now >= price.regular_dt and now <= price.late_dt:
-            pricing.update({
-                'price': price,
-                'amount': price.regular_price,
-                'qualifies': qualifies,
-                'type': 'regular_price'
-            })
-        if now >= price.late_dt and now <= price.end_dt:
-            pricing.update({
-                'price': price,
-                'amount': price.late_price,
-                'qualifies': qualifies,
-                'type': 'late_price'
-            })
-
-    return pricing
+    if now >= price.start_dt and now <= price.end_dt:
+        pricing = {
+            'price': price,
+            'amount': price.price,
+            'qualifies': qualifies,
+        }
+        return pricing
+    return {}
 
 
 def get_pricing_dict(price, qualifies, failure_type):
@@ -707,22 +689,15 @@ def registration_earliest_time(event, pricing=None):
     """
     Get the earlist time out of all the pricing
     """
-    earliest_time = []
+    
     if not pricing:
         pricing = RegConfPricing.objects.filter(
             reg_conf=event.registration_configuration
         )
-
-    for price in pricing:
-        earliest_time.append(price.early_dt)    
-
-    try:
-        earliest_time = sorted(earliest_time)[0]
-    except IndexError:
-        earliest_time = None
-
-    return earliest_time
-
+    
+    pricing = pricing.order_by('start_dt')
+    
+    return pricing[0]
 
 def registration_has_started(event, pricing=None):
     """
@@ -730,17 +705,17 @@ def registration_has_started(event, pricing=None):
     started
     """
     reg_started = []
-
+    
     if not pricing:
         pricing = RegConfPricing.objects.filter(
             reg_conf=event.registration_configuration
         )
-
+    
     for price in pricing:
         reg_started.append(
             price.registration_has_started
         )
-
+    
     return any(reg_started)
 
 def clean_price(price, user):

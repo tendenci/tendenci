@@ -260,16 +260,6 @@ class RegConfPricing(models.Model):
             return '%s' % self.title
         return '%s' % self.pk
 
-    #def __init__(self, *args, **kwargs):
-        #super(RegConfPricing, self).__init__(*args, **kwargs)
-        #self.PERIODS = dict()
-        #dates = self.dates.all().order_by('start_dt')
-        #for i in range(0, dates.count()-1):
-        #    self.PERIODS[dates[i].label] = (dates[i].start_dt, dates[i+1].start_dt, dates[i].price)
-        #if dates.count() > 0:
-        #    last = dates[dates.count()-1]
-        #    self.PERIODS[last.label] = (last.start_dt, self.end_dt, last.price)
-
     def available(self):
         if not self.reg_conf.enabled:
             return False
@@ -280,13 +270,10 @@ class RegConfPricing(models.Model):
     
     @property
     def registration_has_started(self):
-        has_started = []
-        for period in self.PERIODS:
-            if datetime.now() >= self.PERIODS[period][0]:
-                has_started.append(True)
-            has_started.append(False)
-        return any(has_started)
-
+        if datetime.now() >= self.end_dt:
+            return True
+        return False
+    
     @property
     def is_open(self):
         status = [
@@ -294,14 +281,13 @@ class RegConfPricing(models.Model):
             self.within_time,
         ]
         return all(status)
-
+    
     @property
     def within_time(self):
-        for period in self.PERIODS:
-            if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
-                return True
+        if self.start_dt <= datetime.now() <= self.end_dt:
+            return True
         return False
-
+    
 class Registration(models.Model):
 
     guid = models.TextField(max_length=40, editable=False)
