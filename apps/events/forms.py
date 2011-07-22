@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django import forms
 from django.forms.widgets import RadioSelect
@@ -10,7 +10,7 @@ from django.forms.util import ErrorList
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, Sponsor, Organizer, Speaker, Type, \
-    TypeColorSet, Registrant, RegConfPricing, RegistrationDate
+    TypeColorSet, Registrant, RegConfPricing
 
 from payments.models import PaymentMethod
 from perms.utils import is_admin
@@ -231,12 +231,12 @@ class PaymentForm(forms.ModelForm):
         model = Payment
 
 
-class Reg8nConfPricingEditForm(BetterModelForm):
-    label = 'Pricing'
-    end_dt = SplitDateTimeField(label=_('End Date/Time'))
+class Reg8nConfPricingForm(BetterModelForm):
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(hours=6))
     
     def __init__(self, *args, **kwargs):
-        super(Reg8nConfPricingEditForm, self).__init__(*args, **kwargs)
+        super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
         
     def clean_quantity(self):
@@ -245,6 +245,12 @@ class Reg8nConfPricingEditForm(BetterModelForm):
         if quantity <= 0:
             quantity = 1
         return quantity
+        
+    def clean(self):
+        data = self.cleaned_data
+        if data['start_dt'] > data['end_dt']:
+            raise forms.ValidationError('Start Date/Time should come after End Date/Time')
+        return data
     
     class Meta:
         model = RegConfPricing
@@ -252,8 +258,10 @@ class Reg8nConfPricingEditForm(BetterModelForm):
         fields = [
             'title',
             'quantity',
-            'group',
+            'price',
+            'start_dt',
             'end_dt',
+            'group',
             'allow_anonymous',
             'allow_user',
             'allow_member'
@@ -262,33 +270,13 @@ class Reg8nConfPricingEditForm(BetterModelForm):
         fieldsets = [('Registration Pricing', {
           'fields': ['title',
                     'quantity',
+                    'price',
+                    'start_dt',
+                    'end_dt',
                     'group',
                     'allow_anonymous',
                     'allow_user',
                     'allow_member'
-                    ],
-          'legend': '',
-          'classes': ['boxy-grey'],
-          })
-        ]
-        
-class Reg8nDateForm(BetterModelForm):
-    start_dt = SplitDateTimeField(label=_('Date/Time'))
-    
-    class Meta:
-        model = RegistrationDate
-        
-        fields = [
-            'label',
-            'price',
-            'start_dt',
-         ]
-
-        fieldsets = [('Registration Pricing and Date/Time', {
-          'fields': [
-                    'label',
-                    'price',
-                    'start_dt',
                     ],
           'legend': '',
           'classes': ['boxy-grey'],

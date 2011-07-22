@@ -29,7 +29,7 @@ from events.models import Event, RegistrationConfiguration, \
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
-    Reg8nConfPricingEditForm
+    Reg8nConfPricingForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
@@ -193,7 +193,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     )
     RegConfPricingSet = modelformset_factory(
         RegConfPricing, 
-        form=Reg8nConfPricingEditForm,
+        form=Reg8nConfPricingForm,
         extra=1,
         can_delete=True
     )
@@ -410,7 +410,7 @@ def add(request, year=None, month=None, day=None, \
     )
     RegConfPricingSet = modelformset_factory(
         RegConfPricing, 
-        form=Reg8nConfPricingEditForm, 
+        form=Reg8nConfPricingForm, 
         extra=1
     )
 
