@@ -194,7 +194,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     RegConfPricingSet = modelformset_factory(
         RegConfPricing, 
         form=Reg8nConfPricingEditForm,
-        extra=0,
+        extra=1,
         can_delete=True
     )
 
@@ -516,7 +516,6 @@ def add(request, year=None, month=None, day=None, \
             event_init = {}
 
             today = datetime.today()
-            offset = timedelta(hours=2)
             
             if all((year, month, day)):
                 date_str = '-'.join([year,month,day])
@@ -536,19 +535,12 @@ def add(request, year=None, month=None, day=None, \
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
 
-            reg_init = {
-                'early_dt': start_dt,
-                'regular_dt': start_dt,
-                'late_dt': start_dt,
-                'end_dt': end_dt,
-             }
-
             # single forms
             form_event = form_class(user=request.user, initial=event_init)
             form_place = PlaceForm(prefix='place')
             form_organizer = OrganizerForm(prefix='organizer')
-            form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf')
-
+            form_regconf = Reg8nEditForm(prefix='regconf')
+            
             # form sets
             form_speaker = SpeakerFormSet(
                 queryset=Speaker.objects.none(),

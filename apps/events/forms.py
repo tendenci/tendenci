@@ -10,7 +10,7 @@ from django.forms.util import ErrorList
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, Sponsor, Organizer, Speaker, Type, \
-    TypeColorSet, Registrant, RegConfPricing
+    TypeColorSet, Registrant, RegConfPricing, RegistrationDate
 
 from payments.models import PaymentMethod
 from perms.utils import is_admin
@@ -233,16 +233,10 @@ class PaymentForm(forms.ModelForm):
 
 class Reg8nConfPricingEditForm(BetterModelForm):
     label = 'Pricing'
-    early_dt = SplitDateTimeField(label=_('Early Date/Time'))
-    regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
-    late_dt = SplitDateTimeField(label=_('Late Date/Time'))
     end_dt = SplitDateTimeField(label=_('End Date/Time'))
-
-    reg8n_dt_price = Reg8nDtField(label=_('Pricing and Times'), required=False)
-
+    
     def __init__(self, *args, **kwargs):
         super(Reg8nConfPricingEditForm, self).__init__(*args, **kwargs)
-        self.fields['reg8n_dt_price'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
         
     def clean_quantity(self):
@@ -250,50 +244,24 @@ class Reg8nConfPricingEditForm(BetterModelForm):
         quantity = self.cleaned_data['quantity']
         if quantity <= 0:
             quantity = 1
-        
         return quantity
-
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        early_dt = cleaned_data.get("early_dt")
-        regular_dt = cleaned_data.get("regular_dt")
-        late_dt = cleaned_data.get("late_dt")
-
-        if early_dt > regular_dt:
-            errors = self._errors.setdefault("reg8n_dt_price", ErrorList())
-            errors.append(u"The regular cannot be \
-                earlier than the early date.")
-        if regular_dt > late_dt:
-            errors = self._errors.setdefault("reg8n_dt_price", ErrorList())
-            errors.append(u"The late date cannot be \
-                earlier than the regular date.")
-
-        # Always return the full collection of cleaned data.
-        return cleaned_data
-
+    
     class Meta:
-        model = RegistrationConfiguration
+        model = RegConfPricing
 
         fields = [
             'title',
             'quantity',
             'group',
-            'early_price',
-            'regular_price',
-            'late_price',
-            'early_dt',
-            'regular_dt',
-            'late_dt',
             'end_dt',
             'allow_anonymous',
             'allow_user',
             'allow_member'
          ]
-
+        
         fieldsets = [('Registration Pricing', {
           'fields': ['title',
                     'quantity',
-                    'reg8n_dt_price',
                     'group',
                     'allow_anonymous',
                     'allow_user',
@@ -302,8 +270,30 @@ class Reg8nConfPricingEditForm(BetterModelForm):
           'legend': '',
           'classes': ['boxy-grey'],
           })
-        ]         
+        ]
+        
+class Reg8nDateForm(BetterModelForm):
+    start_dt = SplitDateTimeField(label=_('Date/Time'))
+    
+    class Meta:
+        model = RegistrationDate
+        
+        fields = [
+            'label',
+            'price',
+            'start_dt',
+         ]
 
+        fieldsets = [('Registration Pricing and Date/Time', {
+          'fields': [
+                    'label',
+                    'price',
+                    'start_dt',
+                    ],
+          'legend': '',
+          'classes': ['boxy-grey'],
+          })
+        ]
 
 class Reg8nEditForm(BetterModelForm):
     label = 'Registration'
