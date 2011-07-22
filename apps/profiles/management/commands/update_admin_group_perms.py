@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 
 class Command(BaseCommand):
-    # create an admin auth group if not exists, and assign all permissions 
+    # create an admin auth group if it doesn't exists, and assign all permissions 
     # (except 4 auth permission the auth_user, auth_groups..) to this group
     # command to run: python manage.py update_admin_group_perms
     def handle(self, *args, **options):
