@@ -246,13 +246,13 @@ class RegConfPricing(models.Model):
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
     group = models.ForeignKey(Group, blank=True, null=True)
 
-    #early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
-    #regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
-    #late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
+    early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
+    regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
+    late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
     
-    #early_dt = models.DateTimeField(_('Early Registration Starts'), default=datetime.now())
-    #regular_dt = models.DateTimeField(_('Regular Registration Starts'), default=datetime.now()+timedelta(hours=2))
-    #late_dt = models.DateTimeField(_('Late Registration Starts'), default=datetime.now()+timedelta(hours=4))
+    early_dt = models.DateTimeField(_('Early Registration Starts'), default=datetime.now())
+    regular_dt = models.DateTimeField(_('Regular Registration Starts'), default=datetime.now()+timedelta(hours=2))
+    late_dt = models.DateTimeField(_('Late Registration Starts'), default=datetime.now()+timedelta(hours=4))
     
     end_dt = models.DateTimeField(_('Registration Ends'), default=datetime.now()+timedelta(hours=6))
 
@@ -270,9 +270,10 @@ class RegConfPricing(models.Model):
         self.PERIODS = dict()
         dates = self.dates.all().order_by('start_dt')
         for i in range(0, dates.count()-1):
-            self.PERIODS[date.label] = (dates[i].start_dt, dates[i+1].start_dt, dates[i].price)
-        last = date[dates.count()-1]
-        self.PERIODS[last.label] = (last.start_dt, self.end_dt, last.price)
+            self.PERIODS[dates[i].label] = (dates[i].start_dt, dates[i+1].start_dt, dates[i].price)
+        if dates.count() > 0:
+            last = dates[dates.count()-1]
+            self.PERIODS[last.label] = (last.start_dt, self.end_dt, last.price)
 
     def available(self):
         if not self.reg_conf.enabled:
@@ -314,11 +315,17 @@ class RegConfPricing(models.Model):
                 return True
         return False
 
-class RegistrationDate(models.Model):
-    reg_conf_price = models.ForeignKey(RegConfPricing, related_name="dates")
-    label = models.CharField(_('Label'), max_length=50)
-    price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
-    start_dt = models.DateTimeField(_('Registration Starts'), default=datetime.now())
+#class RegistrationDate(models.Model):
+#    class Meta:
+#        unique_together = (("reg_conf_price", "label"),)
+    
+#    reg_conf_price = models.ForeignKey(RegConfPricing, related_name="dates")
+#    label = models.CharField(_('Label'), max_length=50)
+#    price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
+#    start_dt = models.DateTimeField(_('Registration Starts'), default=datetime.now())
+    
+#    def __unicode__(self):
+#        return "%s: %s" % (self.reg_conf_price, self.label)
 
 class Registration(models.Model):
 
