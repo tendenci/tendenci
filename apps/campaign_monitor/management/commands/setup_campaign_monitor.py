@@ -54,14 +54,16 @@ class Command(BaseCommand):
                 CreateSend.api_key = api_key
                 
                 # check if this company already exists on campaign monitor
+                # if it does, raise an error
                 
                 clients = cs.clients()
                 cm_client_id = None
                 
                 for cl in clients:
                     if cl.Name == company_name:
-                        cm_client_id = cl.ClientID
-                        break
+                        #cm_client_id = cl.ClientID
+                        #break
+                        raise ValueError('Company name "%s" already exists on campaign monitor.' % company_name)
                     
                 if not cm_client_id:
                     # 1) Create an account
