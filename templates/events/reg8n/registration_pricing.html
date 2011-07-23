@@ -16,7 +16,7 @@
                     <form action="{% url event.multi_register event.pk %}" method="post">{% csrf_token %}
                     <input type="hidden" name="from_price_form" value="1" />       
                     {% if pricing|length == 1 and pricing.0.amount == 0 %}
-                        <input type="hidden" name="price" value="{{ pricing.0.price.pk }}-{{ pricing.0.type}}-{{ pricing.0.amount }}" />
+                        <input type="hidden" name="price" value="{{ pricing.0.price.pk }}-{{ pricing.0.amount }}" />
                         <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register for Free' %}" />
                     {% else %}
                         <table class="pricing-list" border="0" cellspacing="0" cellpadding="0">
@@ -24,7 +24,7 @@
                             {% if price.qualifies %}
                                 <tr>
                                     <td>
-                                        <input id="label-{{ price.price.pk }}" type="radio" name="price" value="{{ price.price.pk }}-{{ price.type}}-{{ price.amount }}" 
+                                        <input id="label-{{ price.price.pk }}" type="radio" name="price" value="{{ price.price.pk }}-{{ price.amount }}" 
                                         {% if price.default %}checked{% endif %} />
                                     </td>
                                     <td>
@@ -34,7 +34,7 @@
                             {% else %}
                                 <tr>
                                     <td>
-                                        <input id="label-{{ price.price.pk }}" type="radio" name="price" value="{{ price.price.pk }}-{{ price.type}}-{{ price.amount }}" disabled="disabled" />
+                                        <input id="label-{{ price.price.pk }}" type="radio" name="price" value="{{ price.price.pk }}-{{ price.amount }}" disabled="disabled" />
                                     </td>
                                     <td class="price-disabled" title="
                                         {% if price.failure_type == 'limit' %}
