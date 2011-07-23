@@ -723,20 +723,11 @@ def clean_price(price, user):
     Used to validate request.POST.price in the multi-register view.
     amount is not validated if user is admin.
     """
-    price_pk, price_type, amount = price.split('-')
+    price_pk, amount = price.split('-')
     price = RegConfPricing.objects.get(pk=price_pk)
     amount = Decimal(str(amount))
     
-    if price_type == 'early_price':
-        if amount != price.early_price and not is_admin(user):
-            raise ValueError("Invalid price amount")
-    elif price_type == 'regular_price':
-        if amount != price.regular_price and not is_admin(user):
-            raise ValueError("Invalid price amount")
-    elif price_type == 'late_price':
-        if amount != price.late_price and not is_admin(user):
-            raise ValueError("Invalid price amount")
-    else:
-        raise ValueError("Invalid price type: %s" % price_type)
+    if amount != price.price and not is_admin(user):
+        raise ValueError("Invalid price amount")
     
-    return price, price_pk, price_type, amount
+    return price, price_pk, amount
