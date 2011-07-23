@@ -516,6 +516,7 @@ def add(request, year=None, month=None, day=None, \
             event_init = {}
 
             today = datetime.today()
+            offset = timedelta(hours=2)
             
             if all((year, month, day)):
                 date_str = '-'.join([year,month,day])
@@ -649,7 +650,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
 
     # set up pricing
     try:
-        price, price_pk, price_type, amount = clean_price(request.POST['price'], request.user)
+        price, price_pk, amount = clean_price(request.POST['price'], request.user)
     except:
         return multi_register_redirect(request, event, _('Please choose a price.'))
         
@@ -866,7 +867,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
 
     return render_to_response(template_name, {'event':event,
                                               'event_price': event_price,
-                                              'price_type':  price_type,
                                               'free_event': free_event,
                                               'price_list':price_list,
                                               'total_price':total_price,
