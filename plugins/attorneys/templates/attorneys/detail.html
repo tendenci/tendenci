@@ -49,7 +49,7 @@
         <div class="top-wrap">
             <div class="photo">
                 {% if attorney.photo %}
-                    <img src="{% url file attorney.photo.pk %}140x180/" title="{{ attorney.name }}"  />
+                    <img src="{% image_url attorney.photo size=130x180 crop=true quality=90 %}" title="{{ attorney.name }}"  />
                 {% endif %}
             </div>
             <div class="info">
