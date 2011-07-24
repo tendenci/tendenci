@@ -270,7 +270,7 @@ class RegConfPricing(models.Model):
     
     @property
     def registration_has_started(self):
-        if datetime.now() >= self.end_dt:
+        if datetime.now() >= self.start_dt:
             return True
         return False
     
