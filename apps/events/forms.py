@@ -261,7 +261,6 @@ class Reg8nConfPricingForm(BetterModelForm):
             'title',
             'quantity',
             'price',
-            'dates',
             'start_dt',
             'end_dt',
             'group',
