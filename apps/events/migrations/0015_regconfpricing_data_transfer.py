@@ -16,7 +16,7 @@ class Migration(DataMigration):
                 group = pricing.group,
                 price = pricing.regular_price,
                 start_dt = pricing.regular_dt,
-                end_dt = pricing.end_dt,
+                end_dt = pricing.late_dt,
                 allow_anonymous = pricing.allow_anonymous,
                 allow_user = pricing.allow_user,
                 allow_member = pricing.allow_member)
@@ -35,6 +35,7 @@ class Migration(DataMigration):
             #Early Pricing
             pricing.price = pricing.early_price
             pricing.start_dt = pricing.early_dt
+            pricing.end_dt = pricing.regular_dt
             pricing.save()
 
 
