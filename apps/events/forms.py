@@ -234,9 +234,11 @@ class PaymentForm(forms.ModelForm):
 class Reg8nConfPricingForm(BetterModelForm):
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(hours=6))
+    dates = Reg8nDtField(label=_("Start and End"), required=False)
     
     def __init__(self, *args, **kwargs):
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
+        self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
         
     def clean_quantity(self):
@@ -259,6 +261,7 @@ class Reg8nConfPricingForm(BetterModelForm):
             'title',
             'quantity',
             'price',
+            'dates',
             'start_dt',
             'end_dt',
             'group',
@@ -271,8 +274,7 @@ class Reg8nConfPricingForm(BetterModelForm):
           'fields': ['title',
                     'quantity',
                     'price',
-                    'start_dt',
-                    'end_dt',
+                    'dates',
                     'group',
                     'allow_anonymous',
                     'allow_user',
