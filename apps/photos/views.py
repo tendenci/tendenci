@@ -37,6 +37,7 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     if size_name == 'original':
         sizes = (photo.image.width, photo.image.height)
     else:  # use photologue size table
+        if not photo.file_exists(): raise Http404
         sizes = getattr(photo, 'get_%s_size' % size_name)()
 
     # get download url

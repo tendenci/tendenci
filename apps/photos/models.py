@@ -211,6 +211,10 @@ class Image(ImageModel, TendenciBaseModel):
     def default_license(self):
         return License.objects.get(id=1)
 
+    def file_exists(self):
+        import os
+        return os.path.exists(self.image.path)
+
     objects = PhotoManager()
 
     def __unicode__(self):
