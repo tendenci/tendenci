@@ -697,7 +697,10 @@ def registration_earliest_time(event, pricing=None):
     
     pricing = pricing.order_by('start_dt')
     
-    return pricing[0]
+    try:
+        return pricing[0]
+    except IndexError:
+        return None
 
 def registration_has_started(event, pricing=None):
     """
