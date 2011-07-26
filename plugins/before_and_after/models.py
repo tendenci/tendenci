@@ -74,7 +74,6 @@ class BeforeAndAfter(TendenciBaseModel):
             return None
             
     def next(self, user):
-        print "next"
         bnas = BeforeAndAfter.objects.search(user=user)
         
         bnas = bnas.filter(category=self.category.pk)
@@ -88,19 +87,16 @@ class BeforeAndAfter(TendenciBaseModel):
         # we'll avoid calling .object so we won't hit the database
         i = 0
         for x in bnas:
-            print i, x.pk, self.pk
             if x.pk == self.pk:
                 break
             i = i + 1
         
-        print i
-        if i == bnas.count()-1:
+        try:
+            return bnas[i+1].object
+        except (IndexError, AssertionError):
             return None
-        
-        return bnas[i+1].object
         
     def prev(self, user):
-        print "prev"
         bnas = BeforeAndAfter.objects.search(user=user)
         
         bnas = bnas.filter(category=self.category.pk)
@@ -114,15 +110,14 @@ class BeforeAndAfter(TendenciBaseModel):
         # we'll avoid calling .object so we won't hit the database
         i = 0
         for x in bnas:
-            print i, x.pk, self.pk
             if x.pk == self.pk:
                 break
             i = i + 1
         
-        if i == 0:
+        try:
+            return bnas[i-1].object
+        except (IndexError, AssertionError):
             return None
-        
-        return bnas[i-1].object
     
     def get_meta(self, name):
         """
