@@ -108,7 +108,7 @@ If there is no matching user record, then that option won't appear. Similarly, i
 
 Once a membership application entry is approved, the profile for the paired user will have a new tab for memberships which will include their membership details. 
 
-### [Membership Listing Pages (still in development)](listings)
+### [Membership Listing Pages](listings)
 
 **Membership listing pages, or membership directories are currently still in development.**
 
