@@ -687,15 +687,16 @@ def get_event_spots_taken(event):
 
 def registration_earliest_time(event, pricing=None):
     """
-    Get the earlist time out of all the pricing
+    Get the earlist time out of all the pricing.
+    This will not consider any registrations that have ended.
     """
     
     if not pricing:
         pricing = RegConfPricing.objects.filter(
-            reg_conf=event.registration_configuration
+            reg_conf=event.registration_configuration,
         )
     
-    pricing = pricing.order_by('start_dt')
+    pricing = pricing.filter(end_dt__gt=datetime.now()).order_by('start_dt')
     
     try:
         return pricing[0].start_dt
@@ -720,6 +721,25 @@ def registration_has_started(event, pricing=None):
         )
     
     return any(reg_started)
+    
+def registration_has_ended(event, pricing=None):
+    """
+    Check all times and make sure the registration has
+    ended
+    """
+    reg_ended = []
+    
+    if not pricing:
+        pricing = RegConfPricing.objects.filter(
+            reg_conf=event.registration_configuration
+        )
+    
+    for price in pricing:
+        reg_ended.append(
+            price.registration_has_ended
+        )
+    
+    return all(reg_ended)
 
 def clean_price(price, user):
     """

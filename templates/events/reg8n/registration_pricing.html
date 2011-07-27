@@ -64,17 +64,15 @@
                 </div>
             {% endif %}
 
-            {% if not reg_started %}
-                 <div class="registration-green">
-                    <div>{% trans "Registration starts on " %}</div>
-                    <div><strong>{{ earliest_time }}</strong></div>
-                </div>
-            {% endif %}
-
-            {% if reg_started and not pricing %}      
-                <div class="registration-red">
-                    {% trans "Registration has ended" %}
-                </div>
+            {% if not reg_ended %}
+                    <div class="registration-green">
+                        <div>{% trans "Registration starts on " %}</div>
+                        <div><strong>{{ earliest_time }}</strong></div>
+                    </div>
+            {% else %}
+                    <div class="registration-red">
+                        {% trans "Registration has ended" %}
+                    </div>
             {% endif %}
         {% endif %}
     {% endif %}
