@@ -69,8 +69,12 @@ def search(request, template_name="directories/search.html"):
         'source': 'directories'
     }
     EventLog.objects.log(**log_defaults)
-
-    categories, sub_categories = Directory.objects.get_categories(category=request.GET.get('category'))
+    category = request.GET.get('category')
+    try:
+        category = int(category)
+    except:
+        category = 0
+    categories, sub_categories = Directory.objects.get_categories(category=category)
 
     return render_to_response(template_name, {
         'directories':directories,

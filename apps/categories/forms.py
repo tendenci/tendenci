@@ -73,6 +73,10 @@ class CategoryForm(forms.Form):
                 sub_categories.append([new_sub_category,new_sub_category])
         self.fields['sub_category'].choices = tuple(sub_categories)  
               
-        
-        
-    
+
+class CategoryForm2(CategoryForm):
+    """
+        CategoryForm with no Add Category and Add Subcategory links.
+    """
+    category = CategoryField(label=_('Category'), choices = [])
+    sub_category = CategoryField(label=_('Sub Category'), choices = [])
