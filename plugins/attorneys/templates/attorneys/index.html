@@ -4,6 +4,7 @@
 {% load perm_tags %}
 {% load box_tags %}
 {% load base_filters %}
+{% load base_tags %}
 
 {% block title %}Attorneys{% endblock %}
 
@@ -35,7 +36,7 @@
             </div>
             {% if attorney.photo %}
             <div class="photo" id="attorney-{{ attorney.pk }}-photo" style="display: none;">
-                <img src="{% url file attorney.photo.pk %}120x148/" title="{{ attorney.name }}"  />
+                <img src="{% image_url attorney.photo size=120x165 crop=true quality=80 %}" title="{{ attorney.name }}"  />
             </div>
             {% endif %}
             <div style="clear:both"></div>
@@ -55,7 +56,7 @@
             </div>
             {% if attorney.photo %}
             <div class="photo" id="attorney-{{ attorney.pk }}-photo" style="display: none;">
-                <img src="{% url file attorney.photo.pk %}120x148/" title="{{ attorney.name }}"  />
+                <img src="{% image_url attorney.photo size=120x165 crop=true quality=80 %}" title="{{ attorney.name }}"  />
             </div>
             {% endif %}
             <div style="clear:both"></div>
@@ -75,7 +76,7 @@
             </div>
             {% if attorney.photo %}
             <div class="photo" id="attorney-{{ attorney.pk }}-photo" style="display: none;">
-                <img src="{% url file attorney.photo.pk %}120x148/" title="{{ attorney.name }}"  />
+                <img src="{% image_url attorney.photo size=120x165 crop=true quality=80 %}" title="{{ attorney.name }}"  />
             </div>
             {% endif %}
             <div style="clear:both"></div>

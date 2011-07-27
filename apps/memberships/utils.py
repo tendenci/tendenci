@@ -117,15 +117,29 @@ def new_mems_from_csv(file_path, app, columns):
 
     membership_set = []
 
+    def clean_username(un):
+        import re
+
+        # clean username
+        un = re.sub(r'[^a-zA-Z0-9._]+', '', un)
+
+        # soft truncate
+        if len(un) > 30:
+            un = un.split('@')[0]  # pray for email address
+
+        # hard truncate
+        return un[:30]
+
     for m in membership_dicts:
 
         # detect if renewal
         m['renewal'] = bool(m.get('renew-date'))
 
-        try: # if user exists; import membership
-            user = User.objects.get(username = m['user-name'])
-        except:
-            continue  # on to the next one
+        # clean username
+        username = clean_username(m['user-name'])
+
+        # note: cannot return multiple; usernames are unique
+        user, created = User.objects.get_or_create(username = username)
 
         try:  # if membership type exists; import membership
             membership_type = MembershipType.objects.get(name = m['membership-type'])
@@ -140,14 +154,15 @@ def new_mems_from_csv(file_path, app, columns):
         try: expire_dt = dt_parse(m['expire-date'])
         except: expire_dt = membership_type.get_expiration_dt(join_dt=join_dt, renew_dt=renew_dt, renewal=m.get('renewal'))
 
-        user_attrs = (
-            m.get('First Name'),
-            m.get('Last Name'),
-            m.get('Email'),
+        user_attrs = (  # temp tuple
+            m.get('First Name'),  # guess at column header
+            m.get('Last Name'),  # guess at column header
+            m.get('Email'),  # guess at column header
         )
 
-        # update user; TODO use field types for more optimal import
+        # update user;
         if any(user_attrs):
+            # TODO: use field types for more valid import
             user.first_name = m.get('First Name') or user.first_name
             user.last_name = m.get('Last Name') or user.last_name
             user.email = m.get('Email') or user.email

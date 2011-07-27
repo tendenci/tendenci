@@ -69,6 +69,11 @@ class PhotoSet(TendenciBaseModel):
                 self.cover_photo = cover_photo
             except:
                 pass
+
+        # photo record exists; check if file exists
+        if not cover_photo.file_exists():
+            return None
+
         return cover_photo
 
     def check_perm(self, user, permission, *args, **kwargs):
@@ -210,6 +215,10 @@ class Image(ImageModel, TendenciBaseModel):
         
     def default_license(self):
         return License.objects.get(id=1)
+
+    def file_exists(self):
+        import os
+        return os.path.exists(self.image.path)
 
     objects = PhotoManager()
 

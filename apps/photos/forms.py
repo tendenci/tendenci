@@ -36,12 +36,6 @@ class PhotoUploadForm(TendenciBaseForm):
     class Meta:
         model = Image
         exclude = ('member', 'photoset', 'title_slug', 'effect', 'crop_from')
-        
-    def clean_image(self):
-        if '#' in self.cleaned_data['image'].name:
-            raise forms.ValidationError(
-                _("Image filename contains an invalid character: '#'. Please remove the character and try again."))
-        return self.cleaned_data['image']
 
     def __init__(self, *args, **kwargs):
         super(PhotoUploadForm, self).__init__(*args, **kwargs)
