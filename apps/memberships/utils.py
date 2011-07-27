@@ -104,6 +104,9 @@ def new_mems_from_csv(file_path, app, columns):
     An extra field called columns can be passed in for field mapping
     A membership application is required
     """
+    from profiles.models import Profile
+    from django.db import IntegrityError
+    NOW = datetime.now()
 
     membership_dicts = []
     for membership in csv_to_dict(file_path):  # field mapping
@@ -138,8 +141,11 @@ def new_mems_from_csv(file_path, app, columns):
         # clean username
         username = clean_username(m['user-name'])
 
-        # note: cannot return multiple; usernames are unique
-        user, created = User.objects.get_or_create(username = username)
+        try:
+            # note: cannot return multiple; usernames are unique
+            user, created = User.objects.get_or_create(username = username)
+        except (User.MultipleObjectsReturned, IntegrityError) as e:
+            user = User.objects.filter(username = username)[0]
 
         try:  # if membership type exists; import membership
             membership_type = MembershipType.objects.get(name = m['membership-type'])
@@ -151,22 +157,56 @@ def new_mems_from_csv(file_path, app, columns):
         try: renew_dt = dt_parse(m['renew-date'])
         except: renew_dt = None
 
+        # tendenci 4 null date: 1951-01-01
+        tendenci4_null_date = datetime(1951,1,1,0,0,0)
+        if join_dt <= tendenci4_null_date: join_dt = None
+        if renew_dt <= tendenci4_null_date: renew_dt = None
+
         try: expire_dt = dt_parse(m['expire-date'])
         except: expire_dt = membership_type.get_expiration_dt(join_dt=join_dt, renew_dt=renew_dt, renewal=m.get('renewal'))
 
-        user_attrs = (  # temp tuple
-            m.get('First Name'),  # guess at column header
-            m.get('Last Name'),  # guess at column header
-            m.get('Email'),  # guess at column header
-        )
+        # update user
+        user.first_name = m.get('First Name') or user.first_name
+        user.last_name = m.get('Last Name') or user.last_name
+        user.email = m.get('E-Mail') or m.get('Email') or user.email
+        user.save()
 
-        # update user;
-        if any(user_attrs):
-            # TODO: use field types for more valid import
-            user.first_name = m.get('First Name') or user.first_name
-            user.last_name = m.get('Last Name') or user.last_name
-            user.email = m.get('Email') or user.email
-            user.save()
+        try:
+            # get profile
+            profile = Profile.objects.get(user=user)
+        except Profile.DoesNotExist as e:
+            # create profile
+            profile = Profile.objects.create(
+                user=user,
+                creator=user,
+                owner=user,
+            )
+        except Profile.MultipleObjectsReturned as e:
+            # or get first profile
+            profile = Profile.objects.filter(
+                user=user,
+                creator=user,
+                owner=user,
+            )[0]
+
+        # update profile
+        profile.company = m.get('Company') or profile.company
+        profile.position_title = m.get('Position Title') or profile.position_title
+        profile.address = m.get('Mailing Address') or profile.address
+        profile.address2 = m.get('Address 2') or profile.address2
+        profile.city = m.get('City') or profile.city
+        profile.state = m.get('State') or profile.state
+        profile.zipcode = m.get('Zip Code') or profile.zipcode
+        profile.county = m.get('County') or profile.county
+        profile.address_type = m.get('Address Type') or profile.address_type
+        profile.work_phone = m.get('Work Phone') or profile.work_phone
+        profile.home_phone = m.get('Home Phone') or profile.home_phone
+        profile.mobile_phone = m.get('Mobile Phone') or profile.mobile_phone
+        profile.email = user.email
+        profile.email2 = m.get('E-mail 2') or profile.email2
+        profile.url = m.get('Web Site') or profile.url
+        profile.dob = m.get('DOB') or profile.dob
+        profile.save()
 
         memberships = Membership.objects.filter(
             user=user,
