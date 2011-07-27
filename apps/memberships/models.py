@@ -768,13 +768,17 @@ class AppEntry(TendenciBaseModel):
     @property
     def payment_method(self):
         """Get PaymentMethod object"""
+        from payments_payment import PaymentMethod
         # TODO: don't like this; would prefer object column in field_entry
         # TODO: Prone to error; We're depending on a string membership type name
         try:
             entry_field = self.fields.get(field__field_type="payment-method")
-            payment_method_class = entry_field.field.content_type.model_class()
-            return payment_method_class.objects.get(human_name__exact=entry_field.value.strip())
-        except:
+            return PaymentMethod.objects.get(human_name__exact=entry_field.value.strip())
+        except PaymentMethod.MultipleObjectsReturned as e:
+            return PaymentMethod.objects.filter(
+                human_name__exact=entry_field.value.strip()
+            )[0]
+        except PaymentMethod.DoesNotExist as e:
             return None
 
     def applicant(self):
