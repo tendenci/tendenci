@@ -273,6 +273,12 @@ class RegConfPricing(models.Model):
         if datetime.now() >= self.start_dt:
             return True
         return False
+        
+    @property
+    def registration_has_ended(self):
+        if datetime.now() >= self.end_dt:
+            return True
+        return False
     
     @property
     def is_open(self):

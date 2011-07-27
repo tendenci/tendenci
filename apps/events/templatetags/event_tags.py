@@ -11,6 +11,7 @@ from django.contrib.auth.models import AnonymousUser
 from events.models import Event, Registrant, Type, RegConfPricing
 from events.utils import get_pricing, registration_earliest_time
 from events.utils import registration_has_started, get_event_spots_taken
+from events.utils import registration_has_ended
 from base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
@@ -71,6 +72,7 @@ def registration_pricing_and_button(context, event, user):
         reg_conf=event.registration_configuration
     )
     reg_started = registration_has_started(event, pricing=pricing)
+    reg_ended = registration_has_ended(event, pricing=pricing)
     earliest_time = registration_earliest_time(event, pricing=pricing)
 
     # dictionary with helpers, not a queryset
@@ -88,6 +90,7 @@ def registration_pricing_and_button(context, event, user):
         'spots_taken': spots_taken,
         'registration': registration,
         'reg_started': reg_started,
+        'reg_ended': reg_ended,
         'earliest_time': earliest_time,
         'pricing': q_pricing,
         'user': user
