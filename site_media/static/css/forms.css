@@ -133,6 +133,10 @@ div.forms fieldset.permissions {
     overflow: hidden;
 }
 
+.id_allow_anonymous_view {
+    margin-bottom: 5px;
+}
+
 .required {
 	font-weight: bold;
 }
