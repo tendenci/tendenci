@@ -1,3 +1,6 @@
+SCRIPT=`readlink -f $0`
+SCRIPT_PATH=`dirname $SCRIPT`
+
 # setup pip environment variables
 export PIP_REQUIRE_VIRTUALENV=true
 export PIP_RESPECT_VIRTUALENV=true
@@ -7,5 +10,4 @@ if [ -z "$WORKON_HOME" ]; then
 fi
 
 # run pip
-pip install -r requirements_server.txt
-
+pip install -r $SCRIPT_PATH/requirements_server.txt
