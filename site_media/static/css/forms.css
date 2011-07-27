@@ -129,6 +129,10 @@ div.forms div.formset-delete {
 	display: none;
 }
 
+div.forms fieldset.permissions {
+    overflow: hidden;
+}
+
 .required {
 	font-weight: bold;
 }
