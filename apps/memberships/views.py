@@ -796,9 +796,12 @@ def membership_import(request, step=None):
                             value=membership.m.get(value),
                         )
 
+                # update membership number
                 if not membership.member_number:
                     membership.member_number = AppEntry.objects.count() + 1000
                     membership.save()
+
+                
 
                 added.append(membership)
             else:

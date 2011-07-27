@@ -19,13 +19,14 @@ class PageAdmin(admin.ModelAdmin):
     search_fields = ('title','content',)
     fieldsets = (
         (None, {'fields': ('title', 'slug', 'content', 'tags')}),
-        ('Flags', {'fields': 
-            ('syndicate',)}),
-        ('Administrative', {'fields': (
-            'allow_anonymous_view',
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
+        )}),
+        ('Publishing Status', {'fields': (
+            'syndicate',
             'status',
             'status_detail'
         )}),
