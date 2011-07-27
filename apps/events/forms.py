@@ -232,6 +232,7 @@ class PaymentForm(forms.ModelForm):
 
 
 class Reg8nConfPricingForm(BetterModelForm):
+    label = "Pricing"
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(hours=6))
     dates = Reg8nDtField(label=_("Start and End"), required=False)
