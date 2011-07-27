@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from site_settings.utils import get_setting
 from tagging.fields import TagField
-from files.models import file_directory
+from files.models import File, file_directory
 from perms.models import TendenciBaseModel
 from stories.managers import StoryManager
 from entities.models import Entity
@@ -24,6 +24,8 @@ class Story(TendenciBaseModel):
     ncsortorder = models.IntegerField(null=True, blank=True)
     entity = models.ForeignKey(Entity,null=True)
     photo = models.FileField(max_length=260, upload_to=file_directory, 
+        help_text=_('Photo that represents this story.'), null=True, blank=True)
+    image = models.ForeignKey('StoryPhoto', 
         help_text=_('Photo that represents this story.'), null=True, blank=True)
     tags = TagField(blank=True, default='')
 
@@ -54,3 +56,10 @@ class Story(TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
+
+class StoryPhoto(File):
+    
+    @property
+    def content_type(self):
+        return 'stories'
+    
