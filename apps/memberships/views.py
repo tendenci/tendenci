@@ -207,7 +207,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                 return redirect(reverse('membership.application_entries', args=[entry.pk]))
 
             # online payment
-            if entry.payment_method.is_online:
+            if entry.payment_method and entry.payment_method.is_online:
                 return HttpResponseRedirect(reverse(
                     'payments.views.pay_online',
                     args=[entry_invoice.pk, entry_invoice.guid]
@@ -796,9 +796,12 @@ def membership_import(request, step=None):
                             value=membership.m.get(value),
                         )
 
+                # update membership number
                 if not membership.member_number:
                     membership.member_number = AppEntry.objects.count() + 1000
                     membership.save()
+
+                
 
                 added.append(membership)
             else:

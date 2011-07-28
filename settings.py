@@ -17,6 +17,8 @@ ADMINS = (
     ('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
     ('JMO', 'jmoswalt@schipul.com'),
+    ('Loren Lugosch', 'llugosch@schipul.com'),
+    ('Nabil Bani', 'nbani@schipul.com'),
 )
 
 MANAGERS = ADMINS

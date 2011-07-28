@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
+from django.contrib.contenttypes.models import ContentType
 
 from base.http import Http403
 from base.utils import now_localized
@@ -22,6 +23,8 @@ from site_settings.utils import get_setting
 
 from perms.utils import get_notice_recipients, is_admin, update_perms_and_save, has_perm
 
+from categories.forms import CategoryForm, CategoryForm2
+from categories.models import Category
 
 try:
     from notification import models as notification
@@ -99,18 +102,29 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
 @login_required
 def add(request, form_class=JobForm, template_name="jobs/add.html"):
     require_payment = get_setting('module', 'jobs', 'jobsrequirespayment')
-
+    
     can_add_active = has_perm(request.user, 'jobs.add_job')
-
+    
+    content_type = get_object_or_404(ContentType, app_label='jobs',model='job')
+    
+    if is_admin(request.user):
+        category_form_class = CategoryForm
+    else:
+        category_form_class = CategoryForm2
+    
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
+        form = form_class(request.POST, user=request.user, prefix='job')
+        categoryform = category_form_class(
+                        content_type, 
+                        request.POST,
+                        prefix='category')
 
         # adjust the fields depending on user type
         if not require_payment:
             del form.fields['payment_method']
             del form.fields['list_type']
 
-        if form.is_valid():
+        if form.is_valid() and categoryform.is_valid():
             job = form.save(commit=False)
 
             # set it to pending if the user is anonymous or not an admin
@@ -143,7 +157,32 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
 
             # create invoice
             job_set_inv_payment(request.user, job)
-
+            
+            #setup categories
+            category = Category.objects.get_for_object(job,'category')
+            sub_category = Category.objects.get_for_object(job,'sub_category')
+            
+            ## update the category of the article
+            category_removed = False
+            category = categoryform.cleaned_data['category']
+            if category != '0': 
+                Category.objects.update(job,category,'category')
+            else: # remove
+                category_removed = True
+                Category.objects.remove(job,'category')
+                Category.objects.remove(job,'sub_category')
+            
+            if not category_removed:
+                # update the sub category of the article
+                sub_category = categoryform.cleaned_data['sub_category']
+                if sub_category != '0': 
+                    Category.objects.update(job, sub_category,'sub_category')
+                else: # remove
+                    Category.objects.remove(job,'sub_category') 
+            
+            #save relationships
+            job.save()
+            
             log_defaults = {
                 'event_id': 251000,
                 'event_data': '%s (%d) added by %s' % (job._meta.object_name, job.pk, request.user),
@@ -181,68 +220,119 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             else:
                 return HttpResponseRedirect(reverse('job.thank_you'))
     else:
-        form = form_class(user=request.user)
-
+        form = form_class(user=request.user, prefix='job')
+        initial_category_form_data = {
+            'app_label': 'pages',
+            'model': 'page',
+            'pk': 0, #not used for this view but is required for the form
+        }
+        categoryform = category_form_class(
+                        content_type,
+                        initial=initial_category_form_data,
+                        prefix='category')
+        
         # adjust the fields depending on user type
         if not require_payment:
             del form.fields['payment_method']
             del form.fields['list_type']
-
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    
+    return render_to_response(template_name, 
+            {'form': form, 'categoryform':categoryform},
+            context_instance=RequestContext(request))
 
 
 @login_required
 def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
     job = get_object_or_404(Job, pk=id)
-
-    if has_perm(request.user, 'jobs.change_job', job):
-        if request.method == "POST":
-            form = form_class(request.POST, instance=job, user=request.user)
-
-            # delete admin only fields for non-admin on edit - GJQ 8/25/2010
-            if not is_admin(request.user):
-                del form.fields['requested_duration']
-                del form.fields['list_type']
-                del form.fields['activation_dt']
-                del form.fields['post_dt']
-                del form.fields['expiration_dt']
-                del form.fields['entity']
-            del form.fields['payment_method']
-
-            if form.is_valid():
-                job = form.save(commit=False)
-
-                job = update_perms_and_save(request, form, job)
-
-                log_defaults = {
-                    'event_id': 252000,
-                    'event_data': '%s (%d) edited by %s' % (job._meta.object_name, job.pk, request.user),
-                    'description': '%s edited' % job._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': job,
-                }
-                EventLog.objects.log(**log_defaults)
-
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % job)
-
-                return HttpResponseRedirect(reverse('job', args=[job.slug]))
-        else:
-            form = form_class(instance=job, user=request.user)
-            if not is_admin(request.user):
-                del form.fields['requested_duration']
-                del form.fields['list_type']
-                del form.fields['activation_dt']
-                del form.fields['post_dt']
-                del form.fields['expiration_dt']
-                del form.fields['entity']
-            del form.fields['payment_method']
-
-        return render_to_response(template_name, {'job': job, 'form': form},
-            context_instance=RequestContext(request))
-    else:
+    
+    if not has_perm(request.user, 'jobs.change_job', job):
         raise Http403
+        
+    form = form_class(request.POST or None,
+                        instance=job,
+                        user=request.user,
+                        prefix='job')
+    
+    #setup categories
+    content_type = get_object_or_404(ContentType, app_label='jobs',model='job')
+    category = Category.objects.get_for_object(job,'category')
+    sub_category = Category.objects.get_for_object(job,'sub_category')
+    initial_category_form_data = {
+        'app_label': 'jobs',
+        'model': 'job',
+        'pk': job.pk,
+        'category': getattr(category,'name','0'),
+        'sub_category': getattr(sub_category,'name','0')
+    }
+    if is_admin(request.user):
+        category_form_class = CategoryForm
+    else:
+        category_form_class = CategoryForm2
+    categoryform = category_form_class(
+                        content_type, 
+                        request.POST or None,
+                        initial= initial_category_form_data,
+                        prefix='category')
+    
+    # delete admin only fields for non-admin on edit - GJQ 8/25/2010
+    if not is_admin(request.user):
+        del form.fields['requested_duration']
+        del form.fields['list_type']
+        if form.fields.has_key('activation_dt'):
+            del form.fields['activation_dt']
+        if form.fields.has_key('post_dt'):
+            del form.fields['post_dt']
+        if form.fields.has_key('expiration_dt'):
+            del form.fields['expiration_dt']
+        if form.fields.has_key('entity'):
+            del form.fields['entity']
+    del form.fields['payment_method']
+    
+    if request.method == "POST":
+        if form.is_valid() and categoryform.is_valid():
+            job = form.save(commit=False)
+
+            job = update_perms_and_save(request, form, job)
+            
+            ## update the category of the job
+            category_removed = False
+            category = categoryform.cleaned_data['category']
+            if category != '0': 
+                Category.objects.update(job ,category,'category')
+            else: # remove
+                category_removed = True
+                Category.objects.remove(job ,'category')
+                Category.objects.remove(job ,'sub_category')
+            
+            if not category_removed:
+                # update the sub category of the article
+                sub_category = categoryform.cleaned_data['sub_category']
+                if sub_category != '0': 
+                    Category.objects.update(job, sub_category,'sub_category')
+                else: # remove
+                    Category.objects.remove(job,'sub_category')
+                    
+            #save relationships
+            job.save()
+
+            log_defaults = {
+                'event_id': 252000,
+                'event_data': '%s (%d) edited by %s' % (job._meta.object_name, job.pk, request.user),
+                'description': '%s edited' % job._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': job,
+            }
+            EventLog.objects.log(**log_defaults)
+
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % job)
+
+            return HttpResponseRedirect(reverse('job', args=[job.slug]))
+
+    return render_to_response(template_name,
+                {'job': job, 'form': form, 'categoryform':categoryform},
+                context_instance=RequestContext(request))
+    
 
 
 @login_required
