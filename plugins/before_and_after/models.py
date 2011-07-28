@@ -81,12 +81,13 @@ class BeforeAndAfter(TendenciBaseModel):
         if self.subcategory:
             bnas = bnas.filter(subcategory=self.subcategory.pk)
         
-        bnas = bnas.order_by('-create_dt')
+        bnas = bnas.order_by('-primary_key')
         
         # since bnas is a generator we have no choice but to iterate.
         # we'll avoid calling .object so we won't hit the database
         i = 0
         for x in bnas:
+            print x.pk, x.object.pk
             if x.pk == self.pk:
                 break
             i = i + 1
@@ -104,12 +105,13 @@ class BeforeAndAfter(TendenciBaseModel):
         if self.subcategory:
             bnas = bnas.filter(subcategory=self.subcategory.pk)
         
-        bnas = bnas.order_by('-create_dt')
+        bnas = bnas.order_by('-primary_key')
         
         # since bnas is a generator we have no choice but to iterate.
         # we'll avoid calling .object so we won't hit the database
         i = 0
         for x in bnas:
+            print x.pk, x.object.pk
             if x.pk == self.pk:
                 break
             i = i + 1
