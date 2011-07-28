@@ -1,8 +1,11 @@
 import uuid
 import re
+import os
+
 from parse_uri import ParseUri
 
 from django.db import models
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from site_settings.utils import get_setting
 from tagging.fields import TagField
@@ -35,9 +38,30 @@ class Story(TendenciBaseModel):
         permissions = (("view_story","Can view story"),)
         verbose_name_plural = "stories"
 
+    def __unicode__(self):
+        return self.title
+
     @property
     def content_type(self):
         return 'stories'
+
+    # def photo(self):
+    #     photo = {}
+
+    #     if self.pk:
+    #         photo_qs = Story.objects.raw('SELECT id, photo FROM stories_story WHERE id = %s' % self.pk)
+    #         if photo_qs: photo['url'] = os.path.join(settings.MEDIA_URL, photo_qs[0].photo)
+
+    #     return photo
+
+    def get_absolute_url(self):
+        url = self.full_story_link
+        parsed_url = ParseUri().parse(url)
+
+        if not parsed_url.protocol:  # if relative URL
+            url = '%s%s' % (get_setting('site','global','siteurl'), url)
+
+        return url
 
     def save(self, *args, **kwargs):
         self.guid = self.guid or unicode(uuid.uuid1())
@@ -60,18 +84,6 @@ class Story(TendenciBaseModel):
             self.image = image  # set image
 
             self.save()
-
-    def get_absolute_url(self):
-        url = self.full_story_link
-        parsed_url = ParseUri().parse(url)
-
-        if not parsed_url.protocol:  # if relative URL
-            url = '%s%s' % (get_setting('site','global','siteurl'), url)
-
-        return url
-
-    def __unicode__(self):
-        return self.title
 
 class StoryPhoto(File):
     
