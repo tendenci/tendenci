@@ -22,8 +22,8 @@ class Command(BaseCommand):
             try:
                 photo = story.photo
                 file = photo.file
+
             except (ValueError, IOError) as e:
-                print e
                 file = None
 
             if file:
