@@ -33,6 +33,7 @@ class StoryForm(TendenciBaseForm):
     )
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+    photo_upload = forms.FileField(label=_('Photo'), required=False)
 
     class Meta:
         model = Story
@@ -40,9 +41,9 @@ class StoryForm(TendenciBaseForm):
         fields = (
             'title',
             'content',
-            'photo',
             'full_story_link',
             'tags',
+            'photo_upload',
             'start_dt',
             'end_dt',
             'expires',
@@ -58,7 +59,7 @@ class StoryForm(TendenciBaseForm):
         fieldsets = [('Story Information', {
                       'fields': ['title',
                                  'content',
-                                 'photo',
+                                 'photo_upload',
                                  'full_story_link',
                                  'tags',
                                  'start_dt',
@@ -82,28 +83,27 @@ class StoryForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })]   
 
-    def clean_photo(self):
-        photo = self.cleaned_data['photo']
-        if photo:
-            extension = splitext(photo.name)[1]
+    def clean_photo_upload(self):
+        photo_upload = self.cleaned_data['photo_upload']
+        if photo_upload:
+            extension = splitext(photo_upload.name)[1]
             
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
             
             # check the image header
-            image_type = '.%s' % imghdr.what('', photo.read())
+            image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
 
-        return photo
+        return photo_upload
                  
     def __init__(self, *args, **kwargs):
         super(StoryForm, self).__init__(*args, **kwargs)
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-
       
 class UploadStoryImageForm(forms.Form):
     file  = forms.FileField(label=_("File Path"))

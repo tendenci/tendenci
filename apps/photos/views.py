@@ -1,4 +1,5 @@
 import os
+import re
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
@@ -37,6 +38,7 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     if size_name == 'original':
         sizes = (photo.image.width, photo.image.height)
     else:  # use photologue size table
+        if not photo.file_exists(): raise Http404
         sizes = getattr(photo, 'get_%s_size' % size_name)()
 
     # get download url
@@ -416,7 +418,9 @@ def photos_batch_add(request, photoset_id=0):
     on http request:
         photoset_id is passed via url
     """
-    
+    import uuid
+
+
     # photoset permission required to add photos
     if not has_perm(request.user,'photos.add_photoset'):
         raise Http403
@@ -428,6 +432,12 @@ def photos_batch_add(request, photoset_id=0):
             # use file to create title; remove extension
             filename, extension = os.path.splitext(uploaded_file.name)
             request.POST.update({'title': filename, })
+
+            filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+
+            # truncate; make unique; append extension
+            request.FILES[field_name].name = \
+                filename[:90] + '-' + unicode(uuid.uuid1())[:5] + extension
 
             # photoset_id set in swfupload
             photoset_id = int(request.POST["photoset_id"])
