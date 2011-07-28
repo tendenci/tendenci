@@ -23,7 +23,7 @@ class AttorneyAdmin(admin.ModelAdmin):
     class Meta:
         model = Attorney
         
-    list_display = ['view_on_site', 'edit_link',  "last_name", "first_name", "position", "category"]
+    list_display = ['view_on_site', 'edit_link', "last_name", "first_name", "position", "category"]
     list_filter = ["category"]
     prepopulated_fields = {'slug': ['first_name','last_name']}
     form = AttorneyForm
@@ -51,11 +51,13 @@ class AttorneyAdmin(admin.ModelAdmin):
             'admissions',
             'tags',
         )}),
-        ('Administrative', {'fields': (
-            'allow_anonymous_view',
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
+        )}),
+        ('Publishing Status', {'fields': (
             'status',
             'status_detail'
         )}),
