@@ -62,9 +62,12 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
             form = form_class(request.POST, request.FILES, user=request.user)
             if form.is_valid():           
                 story = form.save(commit=False)
-
                 story = update_perms_and_save(request, form, story)
-    
+
+                # save photo
+                photo = form.cleaned_data['photo_upload']
+                if photo: story.save(photo=photo)
+
                 log_defaults = {
                     'event_id' : 1060100,
                     'event_data': '%s (%d) added by %s' % (story._meta.object_name, story.pk, request.user),
@@ -96,10 +99,14 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
             form = form_class(request.POST, request.FILES,
                               instance=story, user=request.user)
             if form.is_valid():
-                story = form.save(commit=False)
 
+                story = form.save(commit=False)
                 story = update_perms_and_save(request, form, story)
-                
+
+                # save photo
+                photo = form.cleaned_data['photo_upload']
+                if photo: story.save(photo=photo)
+
                 log_defaults = {
                     'event_id' : 1060200,
                     'event_data': '%s (%d) edited by %s' % (story._meta.object_name, story.pk, request.user),
