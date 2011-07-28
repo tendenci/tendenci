@@ -1,5 +1,6 @@
 import os
 import shutil
+import commands
 from django.conf import settings
 from django.core.files import File
 from django.core.management.base import BaseCommand
@@ -10,7 +11,13 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **kwargs):
         from stories.models import Story, StoryPhoto
-        
+
+        status, output = commands.getstatusoutput('sudo chown -R ubuntu:www-data %s' % settings.MEDIA_ROOT)
+
+        if status > 0:
+            print output
+            return
+
         stories = Story.objects.all()
         for story in stories:
             try:
