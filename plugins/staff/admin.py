@@ -24,8 +24,7 @@ class FileAdmin(admin.StackedInline):
     extra = 0
 
 class StaffAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'name', 'slug', 'department','position', 'start_date', 'years']
-    list_display_links = ['name']
+    list_display = ['view_on_site', 'edit_link', 'name', 'slug', 'department','position', 'start_date', 'years']
     list_filter = ['start_date']
     search_fields = ['name','biography']
     ordering = ('-start_date',)
@@ -52,8 +51,16 @@ class StaffAdmin(admin.ModelAdmin):
         'fields': (
              ('facebook','twitter','linkedin','get_satisfaction','flickr','slideshare'),
         )}),
-        ('Administrative', {'fields': (
-            'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
+            'user_perms',
+            'member_perms',
+            'group_perms',
+        )}),
+        ('Publishing Status', {'fields': (
+            'status',
+            'status_detail'
+        )}),
     )
     form = StaffForm
     inlines = (FileAdmin,)
@@ -67,7 +74,14 @@ class StaffAdmin(admin.ModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
+    def edit_link(self, obj):
+        link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:staff_staff_change', args=[obj.pk])
+        return link
+    edit_link.allow_tags = True
+    edit_link.short_description = 'edit'
+    
     def view_on_site(self, obj):
+        print reverse('staff.view', args=[obj.slug])
         link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
             reverse('staff.view', args=[obj.slug]),

@@ -13,15 +13,22 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class VideoAdmin(admin.ModelAdmin):
 
-    list_display = ['view_on_site','title', 'category']
-    list_display_links = ['title']
+    list_display = ['view_on_site', 'edit_link' ,'title', 'category']
     list_filter = ['category']
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['question','answer']
     fieldsets = (
         (None, {'fields': ('title','slug','category','image','video_url','tags','description')}),
-        ('Administrative', {'fields': (
-            'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
+            'user_perms',
+            'member_perms',
+            'group_perms',
+        )}),
+        ('Publishing Status', {'fields': (
+            'status',
+            'status_detail'
+        )}),
     )
     form = VideoForm
 
@@ -29,6 +36,12 @@ class VideoAdmin(admin.ModelAdmin):
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
+    
+    def edit_link(self, obj):
+        link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:videos_video_change', args=[obj.pk])
+        return link
+    edit_link.allow_tags = True
+    edit_link.short_description = 'edit'
     
     def view_on_site(self, obj):
         link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
@@ -111,6 +124,12 @@ class VideoAdmin(admin.ModelAdmin):
         
         return instance
 
+    def change_view(self, request, object_id, extra_context=None):
+		result = super(VideoAdmin, self).change_view(request, object_id, extra_context)
+
+		if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
+			result['Location'] = iri_to_uri("%s") % request.GET.get('next')
+		return result
 
 admin.site.register(Video, VideoAdmin)
 admin.site.register(Category, CategoryAdmin)
