@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {% load perm_tags %}
 {% is_admin user as admin %}
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US"> 
  
 <head profile="http://gmpg.org/xfn/11">   
 	<title>{% block title %}{% endblock %} - {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
@@ -28,7 +28,7 @@
 {% if admin %}{% include "admin_menu/admin_bottom.html" %}{% endif %}
 </body>
 
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.6.2.min.js"></script>
 {% if admin %}<script type="text/javascript" src="{{ STATIC_URL }}js/admin_menu.js"></script>{% endif %}
 {% if user.is_authenticated %}<script type="text/javascript" src="{{ STATIC_URL }}js/global/authenticated.js"></script>{% endif %}
 {% block extra_body %}{% endblock %}
