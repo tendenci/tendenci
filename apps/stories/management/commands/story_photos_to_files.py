@@ -12,18 +12,18 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         from stories.models import Story, StoryPhoto
 
-        status, output = commands.getstatusoutput('sudo chown -R ubuntu:www-data %s' % settings.MEDIA_ROOT)
-
-        if status > 0:
-            print output
-            return
+        # status, output = commands.getstatusoutput('sudo chown -R ubuntu:www-data %s' % settings.MEDIA_ROOT)
+        # if status > 0:
+        #     print output
+        #     return
 
         stories = Story.objects.all()
         for story in stories:
             try:
                 photo = story.photo
                 file = photo.file
-            except (ValueError, IOError):
+            except (ValueError, IOError) as e:
+                print e
                 file = None
 
             if file:
@@ -32,7 +32,8 @@ class Command(BaseCommand):
                 if src != dest:
                     print "Moving %s to %s" % (src, dest)
 
-                    if not os.path.exists(dest):
+                    dir = os.path.dirname(dest)
+                    if not os.path.exists(dir):
                         os.makedirs(dir)
 
                     shutil.move(src, dest)
