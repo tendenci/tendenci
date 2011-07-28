@@ -23,7 +23,7 @@ class Command(BaseCommand):
             try:
                 photo = story.photo
                 file = photo.file
-            except IOError:
+            except (ValueError, IOError):
                 file = None
 
             if file:
