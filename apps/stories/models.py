@@ -30,20 +30,36 @@ class Story(TendenciBaseModel):
     tags = TagField(blank=True, default='')
 
     objects = StoryManager()
-    
+
     class Meta:
         permissions = (("view_story","Can view story"),)
         verbose_name_plural = "stories"
-    
+
     @property
     def content_type(self):
         return 'stories'
-        
+
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
-            
+        self.guid = self.guid or unicode(uuid.uuid1())
+        photo_upload = kwargs.pop('photo', None)
+
         super(Story, self).save(*args, **kwargs)
+
+        if photo_upload and self.pk:
+            image = StoryPhoto(
+                        creator = self.creator,
+                        creator_username = self.creator_username,
+                        owner = self.owner,
+                        owner_username = self.owner_username
+                    )
+
+            image.file.save(photo_upload.name, photo_upload)  # save file row
+            image.save()  # save image row
+
+            if self.image: self.image.delete()  # delete image and file row
+            self.image = image  # set image
+
+            self.save()
 
     def get_absolute_url(self):
         url = self.full_story_link
