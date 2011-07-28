@@ -26,8 +26,7 @@ class FileAdmin(admin.StackedInline):
     extra = 0
 
 class CaseStudyAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'client', 'slug', 'overview_parsed', 'create_dt']
-    list_display_links = ['client']
+    list_display = ['view_on_site', 'edit_link', 'client', 'slug', 'overview_parsed', 'create_dt']
     list_filter = ['create_dt']
     search_fields = ['client','overview', 'execution', 'results']
     ordering = ('-create_dt',)
@@ -44,8 +43,16 @@ class CaseStudyAdmin(admin.ModelAdmin):
             'results',
             'tags'
         )}),
-        ('Administrative', {'fields': (
-            'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
+            'user_perms',
+            'member_perms',
+            'group_perms',
+        )}),
+        ('Publishing Status', {'fields': (
+            'status',
+            'status_detail'
+        )}),
     )
     form = CaseStudyForm
     inlines = (FileAdmin,)
@@ -59,6 +66,12 @@ class CaseStudyAdmin(admin.ModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
+    def edit_link(self, obj):
+        link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:case_studies_casestudy_change', args=[obj.pk])
+        return link
+    edit_link.allow_tags = True
+    edit_link.short_description = 'edit'
+    
     def view_on_site(self, obj):
         link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (

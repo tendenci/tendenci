@@ -47,8 +47,16 @@ class SpeakerAdmin(admin.ModelAdmin):
         'fields': (
              ('facebook','twitter','linkedin','get_satisfaction','flickr','slideshare'),
         )}),
-        ('Administrative', {'fields': (
-            'allow_anonymous_view','user_perms','group_perms','status','status_detail' )}),
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
+            'user_perms',
+            'member_perms',
+            'group_perms',
+        )}),
+        ('Publishing Status', {'fields': (
+            'status',
+            'status_detail'
+        )}),
     )
     form = SpeakerForm
     inlines = (FileAdmin,)
@@ -110,7 +118,7 @@ class SpeakerAdmin(admin.ModelAdmin):
             'instance': object,
         }
         EventLog.objects.log(**log_defaults)
-
+        
     def log_addition(self, request, object):
         super(SpeakerAdmin, self).log_addition(request, object)
         log_defaults = {

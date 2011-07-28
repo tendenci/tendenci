@@ -3,6 +3,8 @@ from feeds import LatestEntriesFeed
 from site_settings.utils import get_setting
 
 urlpath = get_setting('module', 'staff', 'staff_url')
+if not urlpath:
+    urlpath = "staff"
 
 urlpatterns = patterns('staff.views',
     url(r'^%s/$' % urlpath, 'index', name="staff"),
