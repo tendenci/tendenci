@@ -1,3 +1,4 @@
+import os
 import shutil
 from django.conf import settings
 from django.core.files import File
@@ -17,11 +18,16 @@ class Command(BaseCommand):
                 file = photo.file
             except IOError:
                 file = None
+
             if file:
                 src = photo.path
                 dest = photo.path.replace(settings.MEDIA_ROOT + '/stories', settings.MEDIA_ROOT + '/files/stories')
                 if src != dest:
                     print "Moving %s to %s" % (src, dest)
+
+                    if not os.path.exists(dest):
+                        os.makedirs(dir)
+
                     shutil.move(src, dest)
                     story.photo.save(dest.replace(settings.MEDIA_ROOT + '/files/stories/', ''), File(open(dest)))
                     story.save()
