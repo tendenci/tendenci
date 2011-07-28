@@ -1,7 +1,8 @@
 import os
 import csv
 from dateutil.parser import parse as dt_parse
-from datetime import datetime
+from datetime import datetime, date, timedelta
+from django.utils.datastructures import SortedDict
 from django.conf import settings
 from django.utils import simplejson
 from django.contrib.auth.models import User
@@ -85,7 +86,7 @@ def csv_to_dict(file_path):
     """
     Returns a list of dicts. Each dict represents record.
     """
-    csv_file = csv.reader(open(file_path))
+    csv_file = csv.reader(open(file_path, 'rU'))
     col = csv_file.next()
     lst = []
 
@@ -267,4 +268,57 @@ def is_import_valid(file_path):
     requirements = [r in membership_keys for r in required]
 
     return all(requirements)
+    
+def count_active_memberships(date):
+    """
+    Counts all active memberships in a given date
+    """
+    count = Membership.objects.filter(
+                subscribe_dt__gte=date,
+                expire_dt__lt=date,
+            ).count()
+    
+    return count
 
+def prepare_chart_data(days, height=300):
+    """
+    Creates a list of tuples of a day and membership count per day.
+    """
+    
+    data = []
+    max_count = 0
+    
+    #append mem count per day
+    for day in days:
+        count = count_active_memberships(day)
+        if count > max_count:
+            max_count = count
+        data.append({
+                'day':day,
+                'count':count,
+            })
+    
+    # normalize height
+    try:
+        kH = height*1.0/max_count
+    except Exception:
+        kH = 1.0
+    for d in data:
+        d['height'] = int(d['count']*kH)
+        
+    return data
+
+def month_days(year, month):
+    "Returns iterator for days in selected month"
+    day = date(year, month, 1)
+    while day.month == month:
+        yield day
+        day += timedelta(days=1) 
+
+def get_days(request):
+    "returns a list of days in a month"
+    now = date.today()
+    year = int(request.GET.get('year') or str(now.year))
+    month = int(request.GET.get('month') or str(now.month))
+    days = list(month_days(year, month)) 
+    return days
