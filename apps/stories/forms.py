@@ -6,7 +6,7 @@ from datetime import timedelta
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from stories.models import Story, StoryPhoto
+from stories.models import Story
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
 from base.fields import SplitDateTimeField
@@ -104,28 +104,6 @@ class StoryForm(TendenciBaseForm):
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-            
-    def save(self, *args, **kwargs):
-        story = super(StoryForm, self).save(*args, **kwargs)
-        photo_upload = self.cleaned_data['photo_upload']
-        if photo_upload:
-            image = StoryPhoto(
-                        creator = story.creator,
-                        creator_username = story.creator_username,
-                        owner = story.owner,
-                        owner_username = story.owner_username)
-            image.file.save(photo_upload.name, photo_upload)
-            image.save()
-            
-            if story.image:
-                old_image = story.image
-                story.image = None
-                old_image.delete()
-                
-            story.image = image
-            story.save()
-        
-        return story
       
 class UploadStoryImageForm(forms.Form):
     file  = forms.FileField(label=_("File Path"))
