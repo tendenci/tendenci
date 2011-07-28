@@ -36,6 +36,7 @@ class Command(BaseCommand):
                 if story.image:
                     old_image = story.image
                     story.image = None
+                    story.save()
                     old_image.delete()
                 story.image = image
                 story.save()
