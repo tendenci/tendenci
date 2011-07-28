@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.utils import is_admin, get_notice_recipients
@@ -13,19 +15,20 @@ except:
     notification = None
     
 class PageAdmin(admin.ModelAdmin):
-    list_display = ('title', 'link', 'syndicate', 
+    list_display = ('view_on_site', 'edit_link', 'title', 'link', 'syndicate', 
                     'allow_anonymous_view', 'status', 
                     'status_detail')
     search_fields = ('title','content',)
     fieldsets = (
         (None, {'fields': ('title', 'slug', 'content', 'tags')}),
-        ('Flags', {'fields': 
-            ('syndicate',)}),
-        ('Administrative', {'fields': (
-            'allow_anonymous_view',
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
+        )}),
+        ('Publishing Status', {'fields': (
+            'syndicate',
             'status',
             'status_detail'
         )}),
@@ -45,6 +48,23 @@ class PageAdmin(admin.ModelAdmin):
             obj.slug                                         
         )
     link.allow_tags = True
+    
+    def edit_link(self, obj):
+        link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:pages_page_change', args=[obj.pk])
+        return link
+    edit_link.allow_tags = True
+    edit_link.short_description = 'edit'
+
+    def view_on_site(self, obj):
+        link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
+        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+            reverse('page', args=[obj.slug]),
+            obj.title,
+            link_icon,
+        )
+        return link
+    view_on_site.allow_tags = True
+    view_on_site.short_description = 'view'
 
     def log_deletion(self, request, object, object_repr):
         super(PageAdmin, self).log_deletion(request, object, object_repr)

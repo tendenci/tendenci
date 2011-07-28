@@ -350,19 +350,18 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
             try:
                 corp_memb = CorporateMembership.objects.get(name=name)
             except CorporateMembership.DoesNotExist:
-                    corp_memb = CorporateMembership(name=name,
-                                                    creator=request.user,
-                                                    creator_username=request.user.username,
-                                                    owner=request.user,
-                                                    owner_username=request.user.username
-                                                    )
+                    corp_memb = CorporateMembership(
+                        name=name,
+                        creator=request.user,
+                        creator_username=request.user.username,
+                        owner=request.user,
+                        owner_username=request.user.username
+                    )
         else:
             corp_memb = CorporateMembership(name=name)
 
         corp_memb.is_valid = is_valid
         corp_memb.err_msg = err_msg
-            
-            
 
         try:  # if membership type exists
             corp_memb_type = CorporateMembershipType.objects.get(name=cm['corporate_membership_type'])
@@ -371,26 +370,20 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
             corp_memb_type  = None
             corp_memb.is_valid = False
             corp_memb.err_msg += "Corporate membership type '%s' does not exist." % cm.get('corporate_membership_type')
-            
-        
-            
+
         corp_memb.cm = cm
-            
+
         if (not corp_memb.is_valid) or (corp_memb.pk and update_option=='skip'):
             corp_memb_set.append(corp_memb)
             continue    # stop processing if not valid 
                         # or if 'skip' is the update option and the record exists
-        
-                
+
         # for each field in the corporate membership, assign the value accordingly
-        # for the existing record, if 
-        #    update_option=='skip' ... skip the record
-        #    update_option=='update' ... update the blank fields
-        #    update_option=='override' ... override all fields
         for field_name in corp_memb_field_names:
             if cm.has_key(field_name):
                 if corp_memb_field_type_dict[field_name] == 'DateTimeField':
-                    
+
+                    # if (empty cell) and (field in renew_dt, expiration_dt)
                     if (not cm[field_name]) and field_name in ['renew_dt', 'expiration_dt']:
                         pass # skip for 'join_dt', 'expiration_dt' - we don't want to auto-assign today's date
                     else:
@@ -400,6 +393,7 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
                             cm[field_name] = datetime(tm.tm_year, tm.tm_mon, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec)
                         except:
                             pass
+
                 if corp_memb_field_type_dict[field_name] == 'BooleanField':
                     cm[field_name] = bool(cm[field_name])
                 if corp_memb_field_type_dict[field_name] == 'IntegerField':
@@ -424,8 +418,7 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
             else:
                 if corp_memb_field_type_dict[field_name] == 'CharField':
                     exec('corp_memb.%s=""' % field_name)
-                
-                
+
         if corp_memb.renew_dt:
             if not corp_memb.renewal:
                 corp_memb.renewal = 1
@@ -435,11 +428,15 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
                 
         if not corp_memb.join_dt:
             corp_memb.join_dt = datetime.now()
-            
-        #if not corp_memb.expiration_dt:
-        corp_memb.expiration_dt = corp_memb_type.get_expiration_dt(join_dt=corp_memb.join_dt, 
-                                                         renew_dt=corp_memb.renew_dt, 
-                                                         renewal=corp_memb.renewal)
+
+        corp_memb.expiration_dt = cm.get('expiration_dt')
+
+        if not corp_memb.expiration_dt:
+            corp_memb.expiration_dt = corp_memb_type.get_expiration_dt(
+                join_dt=corp_memb.join_dt,
+                renew_dt=corp_memb.renew_dt,
+                renewal=corp_memb.renewal
+            )
 
         if not corp_memb.pk:
             corp_memb.corp_app = corp_app 

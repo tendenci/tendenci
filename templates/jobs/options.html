@@ -3,6 +3,8 @@
 
 {% has_perm user jobs.change_job opt_object as can_edit %}
 {% has_perm user jobs.delete_job opt_object as can_delete %}
+{% is_admin user as admin %}
+
 
 <div class="t-iconrow">
 
@@ -28,13 +30,15 @@
 				  <a href="{% url job.edit.meta opt_object.pk %}">Edit Meta</a>
 				</li>
 				
-				<li>
-				{% if opt_object.object %}
-					<a href="{% url category.update opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk %}">Edit Categories</a>
-				{% else %}
-					<a href="{% url category.update opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">Edit Categories</a>
-				{% endif %}
-				</li>
+                {% if admin %}
+                    <li>
+                    {% if opt_object.object %}
+                        <a href="{% url category.update opt_object.object.opt_app_label opt_object.object.opt_module_name opt_object.pk %}">Edit Categories</a>
+                    {% else %}
+                        <a href="{% url category.update opt_object.opt_app_label opt_object.opt_module_name opt_object.pk %}">Edit Categories</a>
+                    {% endif %}
+                    </li>
+                {% endif %}
 				
 				{% if can_delete %}
 					<li>

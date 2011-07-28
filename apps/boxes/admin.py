@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.utils.encoding import iri_to_uri
+from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.utils import is_admin, get_notice_recipients, update_perms_and_save
@@ -9,12 +11,20 @@ import settings
 
 
 class BoxAdmin(admin.ModelAdmin):
-    list_display = ('title','pk', 'tags')
+    list_display = ('edit_link', 'pk', 'title', 'tags', 'content')
     search_fields = ('title','content','tags',)
     fieldsets = (
         (None, {'fields': ('title', 'content', 'tags')}),
-        ('Administrative', {'fields': (
-            'allow_anonymous_view','user_perms', 'member_perms', 'group_perms','status','status_detail' )}),
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
+            'user_perms',
+            'member_perms',
+            'group_perms',
+        )}),
+        ('Publishing Status', {'fields': (
+            'status',
+            'status_detail'
+        )}),
     )
     form = BoxForm
 
@@ -22,6 +32,12 @@ class BoxAdmin(admin.ModelAdmin):
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
+
+    def edit_link(self, obj):
+        link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:boxes_box_change', args=[obj.pk])
+        return link
+    edit_link.allow_tags = True
+    edit_link.short_description = 'edit'
 
     def log_deletion(self, request, object, object_repr):
         super(BoxAdmin, self).log_deletion(request, object, object_repr)
