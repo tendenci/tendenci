@@ -1,0 +1,37 @@
+{% extends "reports/base.html" %}
+
+{% block content %}
+    
+    {% if active %}
+        <h1>Active Memberships Report</h1>
+        Lists all memberships that are still active.
+    {% else %}
+        <h1>Expired Memberships Report</h1>
+        Lists all memberships that have expired.
+    {% endif %}
+
+    <table>
+        <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Fullname</th>
+            <th>Email</th>
+            <th>Application</th>
+            <th>Type</th>
+            <th>Subscription</th>
+            <th>Expiration</th>
+        </tr>
+        {% for mem in mems %}
+            <tr class="{% cycle 'odd' '' %}">
+                <td>{{ forloop.counter }}</td>
+                <td><a href="{% url profile mem.user.username %}">{{ mem.user.username }}</a></td>
+                <td>{{ mem.user.get_full_name }}</td>
+                <td><a href="mailto:{{ mem.user.email }}">{{ mem.user.email }}</td>
+                <td>{{ mem.ma }}</td>
+                <td>{{ mem.membership_type }}</td>
+                <th>{{ mem.subscribe_dt }}</th>
+                <th>{{ mem.expire_dt }}</th>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}
