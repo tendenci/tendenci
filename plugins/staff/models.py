@@ -116,7 +116,6 @@ class StaffFile(File):
 def post_save_setting(sender, **kwargs):
     instance = kwargs.get('instance', None)
     if instance and instance.name=='staff_url':
-        print "touching settings for staff_url"
         call_command('touch_settings')
 
 post_save.connect(post_save_setting, sender=Setting)
