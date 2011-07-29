@@ -14,11 +14,11 @@
         
 {% block body %}
     <div id="right_files_list">
-    <a href="{% url theme_editor %}" style="float:right">Back to Theme-Editor</a>
+    <a href="{% url theme_editor %}" style="float:right">{% trans "Back to Theme-Editor" %}</a>
    <h2>Choose a folder or file:</h2>
    {% if prev_dir %}
        <p class="prev_dir">
-           <a href="{% url original_templates %}?dir={{ prev_dir }}">&laquo;&nbsp;back to {{ prev_dir_name }}</a>
+           <a href="{% url original_templates %}?dir={{ prev_dir }}">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
        </p>
    {% endif %}
    {% if dirs %}
@@ -32,13 +32,13 @@
        <ul class="files_list">
             {% for file in files %}
                 <li>
-                    {{ file|safe }}<a class="copy" href="{% url copy_to_theme %}?dir={{ current_dir }}&file={{ file }}">&laquo;&nbsp;copy to theme templates</a>
+                    {{ file|safe }}<a class="copy" href="{% url copy_to_theme %}?dir={{ current_dir }}&file={{ file }}">&laquo;&nbsp;{% trans "copy to theme templates" %}</a>
                 </li>
             {% endfor %}
        </ul>
    {% endif %}
    {% if not files and not dirs %}
-        <p>No editable files</p>
+        <p>{% trans "No editable files" %}</p>
    {% endif %}
    </div>
 {% endblock %}

@@ -1,5 +1,6 @@
 {% extends "base-print.html" %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ page.get_title }}{% endblock %}
 {% block meta_description %}{{ page.get_description }}{% endblock %}
@@ -15,11 +16,11 @@
 <div class="t-print">
 
 	<div class='hide-this'>
-		<h1>Print View</h1>
+		<h1>{% trans "Print View" %}</h1>
 
 		<div class="guide">
-			<div><a href="{{ page.get_absolute_url }}">&laquo; Back to regular page view</a></div>
-			<div>Your printed page will look <em>something</em> like this.</div>
+			<div><a href="{{ page.get_absolute_url }}">&laquo; {% trans "Back to regular page view" %}</a></div>
+			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
 		</div>
 	</div>
 

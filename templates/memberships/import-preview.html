@@ -2,6 +2,7 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}Import Memberships from CSV file{% endblock %}
 
@@ -41,29 +42,29 @@
 
 <div id="import-wrap" class="preview">
 
-	<h1>Membership Import Preview</h1>
+	<h1>{% trans "Membership Import Preview" %}</h1>
 
-	<p class="timestamp">Step 3/4 &middot; {{ datetime.now }}</p>
+	<p class="timestamp">{% trans "Step 3/4" %} &middot; {{ datetime.now }}</p>
 
-	<p class="msg"><em>{{ memberships|length}}</em> import{{ memberships|length|pluralize }}; 
-	<em>{{ added|length }}</em> will be added, and <em>{{ skipped|length }}</em> will be skipped.
-	<em><a title="Looks good!" href="{% url membership_import_confirm %}">Import Now &rarr;</a></em></p>
+	<p class="msg">
+	{% blocktrans count memberships|length as mem_length and with added|length as added_length and skipped|length as skipped_length %}<em>{{ mem_length}}</em> import; <em>{{ added_length }}</em> will be added, and <em>{{ skipped_length }}</em> will be skipped.{% plural %}<em>{{ mem_length}}</em> imports; <em>{{ added_length }}</em> will be added, and <em>{{ skipped_length }}</em> will be skipped.{% endblocktrans %}
+	<em><a title="Looks good!" href="{% url membership_import_confirm %}">{% trans "Import Now" %} &rarr;</a></em></p>
 
 	<table>
 		<tr class="header">
 			<td></td>
-			<td>Name</td>
-			<td>Number</td>
-			<td>Email</td>
-			<td>Type</td>
-			<td>Join Date</td>
-			<td>Expire Date</td>
+			<td>{% trans "Name" %}</td>
+			<td>{% trans "Number" %}</td>
+			<td>{% trans "Email" %}</td>
+			<td>{% trans "Type" %}</td>
+			<td>{% trans "Join Date" %}</td>
+			<td>{% trans "Expire Date" %}</td>
 		</tr>
 
 	{% for membership in memberships|slice:":25" %}
 		<tr class="{% cycle 'odd' 'even' as rowcolors %}">
 			<td>{{ forloop.counter }}</td>
-			<td><div>{% firstof membership.user.get_full_name "No Name" %}</div></td>
+			<td><div>{% firstof membership.user.get_full_name trans "No Name" %}</div></td>
 			<td><div>{{ membership.member_number }}</div></td>
 			<td><div>{{ membership.user.email }}</div></td>
 			<td><div>{{ membership.membership_type }}</div></td>

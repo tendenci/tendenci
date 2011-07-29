@@ -8,6 +8,10 @@ from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from managers import StaffManager
 from files.models import File
+from site_settings.models import Setting
+
+from django.core.management import call_command
+post_save = models.signals.post_save
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
@@ -108,3 +112,11 @@ class StaffFile(File):
 
     class Meta:
         ordering = ('position',)
+        
+def post_save_setting(sender, **kwargs):
+    instance = kwargs.get('instance', None)
+    if instance and instance.name=='staff_url':
+        print "touching settings for staff_url"
+        call_command('touch_settings')
+
+post_save.connect(post_save_setting, sender=Setting)

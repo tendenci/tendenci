@@ -1,7 +1,8 @@
 {% extends "corporate_memberships/base.html" %}
 {% load corporate_memberships_tags %}
+{% load i18n %}
 
-{% block title %}Corporate Membership Add{% endblock %}
+{% block title %}{% trans "Corporate Membership Add" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -22,7 +23,7 @@
 	<div class="forms">
 	{% if form.errors.values %}
 		<div class="errors">
-		There were some problems in the form. Please review. Thanks!
+		{% trans "There were some problems in the form. Please review. Thanks!" %}
 		
 		{% for field in form %}
 			{% if field.errors %}

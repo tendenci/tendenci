@@ -3,6 +3,7 @@
 {% load page_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
@@ -17,7 +18,7 @@
 {% block body %}
 <div class="t">
 	{% page_nav request.user %}
-    <h1>{% firstof MODULE_PAGES_LABEL 'Pages' %} Search</h1>
+    <h1>{% firstof MODULE_PAGES_LABEL trans 'Pages' %} {% trans "Search" %}</h1>
 	
 	{% page_search %}
     {% autopaginate pages 10 %}
@@ -28,7 +29,7 @@
 		{% include "pages/search-result.html" %}
 		{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

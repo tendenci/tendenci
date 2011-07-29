@@ -1,6 +1,7 @@
 {% extends "profiles/base.html" %}
 {% load avatar_tags %}
 {% load profile_tags %}
+{% load i18n %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,13 +19,13 @@
 {{ block.super }}
 {% users_nav request.user user_this %}
 	{% users_options request.user user_this %}
-	<h1>Upload / Change Avatar</h1>
+	<h1>{% trans "Upload / Change Avatar" %}</h1>
 	 <div class="clear-right"></div>
-	<h2>User: <a href="{{ user_this.get_absolute_url }}">{{user_this.first_name }} {{ user_this.last_name }}</a></h2>
-    <p>Current avatar: </p>
+	<h2>{% trans "User:" %} <a href="{{ user_this.get_absolute_url }}">{{user_this.first_name }} {{ user_this.last_name }}</a></h2>
+    <p>{% trans "Current avatar:" %} </p>
     {% avatar user_this %}
     {% if not avatars %}
-        <p>You do not yet have an avatar.  Please upload one now.</p>
+        <p>{% trans "You do not yet have an avatar.  Please upload one now." %}</p>
     {% else %}
         <form method="POST" action="">{% csrf_token %}
             <ul class="list-avatars">

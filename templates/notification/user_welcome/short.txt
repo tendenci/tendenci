@@ -1,1 +1,3 @@
-{{ site_name }} - Account Information
+{% load i18n %}
+
+{% blocktrans %}{{ site_name }} - Account Information{% endblocktrans %}

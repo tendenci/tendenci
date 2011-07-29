@@ -1,5 +1,6 @@
 {% extends "user_groups/base.html" %}
 {% load user_group_tags %}
+{% load i18n %}
 
 {% block title %}Edit Group Permissions{% endblock %}
 
@@ -29,8 +30,8 @@
 {% user_group_nav request.user %}
 
 
-    <h1>Add/Remove Permissions</h1>
-    <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+    <h1>{% trans "Add/Remove Permissions" %}</h1>
+    <h2>{% trans "Group" %}: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
     <div class="clear-right"></div>
     <div class="quick-options">
 		{% user_group_options request.user group %} 	
@@ -43,7 +44,7 @@
 		{% if form.permissions.errors %}
 			{{ form.permissions.errors }}
 		{% endif %}
-		<label for="id_permissions" style="float:left; padding-right: 1em;"><b>Group Permissions:</b></label>
+		<label for="id_permissions" style="float:left; padding-right: 1em;"><b>{% trans "Group Permissions" %}:</b></label>
 		{{ form.permissions }}
 	</div>
 	<div style="clear:left;"></div>

@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user memberships.change_notice as can_edit_notice %}
@@ -17,28 +18,28 @@
     {% endif %}
 
     <li>
-        <span>Memberships</span>
+        <span>{% trans "Memberships" %}</span>
         <ul id="secondary">
-            <li><a href="{% url membership.application_entries %}">Members:</a></li>
+            <li><a href="{% url membership.application_entries %}">{% trans "Members:" %}</a></li>
 
             {% if can_edit_setting %}
-                <li><a href="{% url settings.index "module" "memberships" %}">Settings</a></li>
+                <li><a href="{% url settings.index "module" "memberships" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             
             {% if admin %}
-                <li><a href="{% url membership_import %}">Import</a></li>
-				<li><a href="{% url membership_export %}">Export</a></li>
+                <li><a href="{% url membership_import %}">{% trans "Import" %}</a></li>
+				<li><a href="{% url membership_export %}">{% trans "Export" %}</a></li>
 			{% endif %}
 
             <!-- permissions are set per entry -->
-            <li><a href="{% url membership.application_entries_search %}">Entries</a></li>
+            <li><a href="{% url membership.application_entries_search %}">{% trans "Entries" %}</a></li>
 
             {% if can_edit_notice %}
-                <li><a href="{% url admin:memberships_notice_changelist %}">Notices</a></li>
+                <li><a href="{% url admin:memberships_notice_changelist %}">{% trans "Notices" %}</a></li>
             {% endif %}
 
             {% if user.is_authenticated %}
-            <li><a href="{% url auth_logout %}">Log Off</a></li>
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
             {% endif %}
         </ul>
 <li><a href="{% url corp_memb.index %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corp. Mem.' %}</a></li>

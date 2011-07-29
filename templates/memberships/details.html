@@ -2,6 +2,7 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}Membership for {{ membership.user }}{% endblock %}
 {% block meta_description %}{{ membership.get_description }}{% endblock %}
@@ -16,15 +17,15 @@
 {% block body %}
 <div class="membership-wrap">
 
-    <h1>Membership for {{ membership.user.get_full_name }}</h1>
+    <h1>{% blocktrans %}Membership for {{ membership.user.get_full_name }}{% endblocktrans %}</h1>
     <div><a href="{{ membership.user.get_absolute_url }}">View profile</a><div>
 
-    <div>Joined {{ membership.join_dt|date }} ({{ membership.join_dt|timesince }})</div>
+    <div>{% blocktrans %}Joined {{ membership.join_dt|date }} ({{ membership.join_dt|timesince }}){% endblocktrans %}</div>
 
     {% if membership.expiration_dt %}
-        <div>Expires {{ membership.expiration_dt }}</div>
+        <div>{% blocktrans %}Expires {{ membership.expiration_dt }}{% endblocktrans %}</div>
     {% else %}
-        <div>Never expires</div>
+        <div>{% trans "Never expires" %}</div>
     {% endif %}
 
 </div>

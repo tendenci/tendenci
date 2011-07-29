@@ -2,6 +2,7 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}Import Memberships from CSV file{% endblock %}
 
@@ -13,8 +14,8 @@
 {% block body %}
 <div id="import-wrap">
     
-    <h1>Membership Import Upload File</h1>
-    <p class="timestamp">Step 1/4 &middot; {{ datetime.now }}</p>
+    <h1>{% trans "Membership Import Upload File" %}</h1>
+    <p class="timestamp">{% trans "Step 1/4" %} &middot; {{ datetime.now }}</p>
 
     <form method='post' action='{% url membership_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}
     {{ form.as_p }}

@@ -2,8 +2,9 @@
 {% load article_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
-{% block title %}{% firstof MODULE_ARTICLES_LABEL 'Article' %} Add{% endblock %}
+{% block title %}{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Add" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,7 +19,7 @@
 <div class="t">
     {% article_nav request.user %}
 	
-    <h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} Add</h1>
+    <h1>{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Add" %}</h1>
 
     <div class="article-wrap">  
     	<form action="{% url article.add %}" method="post">{% csrf_token %}

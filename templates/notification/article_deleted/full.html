@@ -1,36 +1,38 @@
+{% load i18n %}
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-<title>Article Delete Notice</title>
+<title>{% trans "Article Delete Notice" %}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
 <body bgcolor="#ffffff" text="#000000">
-<p>A record has been deleted 
-  from the {{ SITE_GLOBAL_SITEDISPLAYNAME }} {% firstof MODULE_ARTICLES_LABEL 'Articles' %} module. The details are given below:</p>
+<p>{% blocktrans %}A record has been deleted 
+  from the {{ SITE_GLOBAL_SITEDISPLAYNAME }} module{% endblocktrans %}{% firstof MODULE_ARTICLES_LABEL 'Articles' %}.  {% trans "The details are given below:" %}</p>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td width="2%">&nbsp;</td>
-    <td width="23%"> Headline:</td>
+    <td width="23%"> {% trans "Headline:" %}</td>
     <td width="75%"><b>{{ object.headline }}</b></td>
   </tr>
   <tr> 
     <td width="2%">&nbsp;</td>
-    <td width="23%"> Deleted 
+    <td width="23%"> {% blocktrans with request.user.get_full_name as requser %}Deleted 
       by:</td>
-    <td width="75%"><b>{{ request.user.get_full_name }}</b></td>
+    <td width="75%"><b>{{ requser }}{% endblocktrans %}</b></td>
   </tr>
 </table>
-<p>All uploaded files associated 
-  with this item have been deleted as well. </p>
-<p>If you would like view all 
-  recently deleted articles, go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url event_log.search %}?q=433000">{{ SITE_GLOBAL_SITEURL }}{% url event_log.search %}?q=433000</a></b><br>
+<p>{% trans "All uploaded files associated 
+  with this item have been deleted as well." %} </p>
+<p>{% trans "If you would like view all 
+  recently deleted articles, go to:" %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url event_log.search %}?q=433000">{{ SITE_GLOBAL_SITEURL }}{% url event_log.search %}?q=433000</a></b><br>
   <br>
   </p>  
 
-<P>Time submitted: {% now "D d M Y P" %}</P>
+<P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
  
 </body>
 </html>

@@ -1,17 +1,18 @@
 {% extends "reports/base.html" %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block content %}
-<h1>Article Reporting Options</h1>
+<h1>{% trans "Article Reporting Options" %}</h1>
 
-Article times read. Click the article headline to view the article. Click the numbers on the left to view those specific views. Blank headlines means the article was probably deleted but the view records are still kept for accurate reporting.
+{% trans "Article times read. Click the article headline to view the article. Click the numbers on the left to view those specific views. Blank headlines means the article was probably deleted but the view records are still kept for accurate reporting." %}"
 
 <table>
 <tr>
-	<th>Viewed</th>
-	<th>Name</th>
-	<th>Views / Day</th>
-	<th>Created</th>
+	<th>{% trans "Viewed" %}</th>
+	<th>{% trans "Name" %}</th>
+	<th>{% trans "Views / Day" %}</th>
+	<th>{% trans "Created" %}</th>
 </tr>
 {% for item in stats %}
 <tr>

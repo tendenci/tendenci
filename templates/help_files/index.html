@@ -1,6 +1,7 @@
 {% extends "help_files/base.html" %}
 {% load help_file_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}{% endblock %}
 
@@ -13,11 +14,11 @@
 
 {% has_perm request.user help_files.add_helpfile as can_add %}
 <div class="t">
-	<h1>Help Files</h1>
+	<h1>{% trans "Help Files" %}</h1>
 	{% help_file_search %}
 	<div class="left-col">
 		<div class="topics">
-			<h3>Help Topics</h3>
+			<h3>{% trans "Help Topics" %}</h3>
 			<div class="col">
 			{% for topic in topics.0 %}
 				<a href="{% url help_files.topic topic.pk %}">{{ topic }}</a>
@@ -36,14 +37,14 @@
 		<div>
 			<ul class="request-help-file">
 				{% if can_add %}
-					<li><a href="{% url admin:help_files_helpfile_add  %}">Add Help File</a></li>
+					<li><a href="{% url admin:help_files_helpfile_add  %}">{% trans "Add Help File" %}</a></li>
 				{% endif %}
-				<li><a href="{% url help_files.request %}">Request Help File</a></li>
+				<li><a href="{% url help_files.request %}">{% trans "Request Help File" %}</a></li>
 			</ul>
 		</div>
 		<div class="sub-column">
 			<div class="featured">
-				<h3>Featured</h3>
+				<h3>{% trans "Featured" %}</h3>
 				<ul>
 				{% for hfile in featured %}
 					<li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
@@ -51,7 +52,7 @@
 				</ul>
 			</div>
 			<div class="faq">
-				<h3>FAQ</h3>
+				<h3>{% trans "FAQ" %}</h3>
 				<ul>
 				{% for hfile in faq %}	
 					<li><a href="{{ hfile.get_absolute_url }}">{{ hfile.question }}</a></li>
@@ -59,7 +60,7 @@
 				</ul>
 			</div>
 			<div class="most_viewed">
-				<h3>Most viewed</h3>
+				<h3>{% trans "Most viewed" %}</h3>
 				<ul>
 				{% for hfile in most_viewed %}
 					<li><a href="{{ hfile.get_absolute_url }}">{{ hfile }}</a></li>

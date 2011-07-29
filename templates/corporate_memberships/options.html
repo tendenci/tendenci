@@ -1,6 +1,7 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
+{% load i18n %}
 
 {% has_perm user corporate_memberships.change_corporatemembership as can_edit %}
 {% allow_edit_corp opt_object user as allow_edit %}
@@ -26,17 +27,17 @@
 
  {% if can_edit or allow_edit %}
 	  <div class="more-options-wrap">
-	    <a href="javascript:;" class="more-options-trigger">More options <small>&#9660;</small></a>
+	    <a href="javascript:;" class="more-options-trigger">{% trans "More options" %} <small>&#9660;</small></a>
 	    <div class="more-options-target">
 	        <ul>
 	        	{% if request.user.is_authenticated %}
 					<li>
-						<a class="option-link roster" href="{% url corp_memb.roster_search %}?name={{opt_object.name|urlencode}}">Roster</a>
+						<a class="option-link roster" href="{% url corp_memb.roster_search %}?name={{opt_object.name|urlencode}}">{% trans "Roster" %}</a>
 					</li>				
 				{% endif %}
 				{% if can_delete %}
 					<li>
-						<a class="option-link delete" href="{% url corp_memb.delete opt_object.pk %}">Delete</a>
+						<a class="option-link delete" href="{% url corp_memb.delete opt_object.pk %}">{% trans "Delete" %}</a>
 					</li>				
 				{% endif %}
 			 </ul>

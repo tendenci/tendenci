@@ -1,6 +1,7 @@
 {% extends "locations/base.html" %}
 {% load locations_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Edit{% endblock %}
 
@@ -14,7 +15,7 @@
 
     {% location_nav request.user location %}
 
-    <h1>{% firstof MODULE_LOCATIONS_LABEL 'Location' %} Edit</h1>
+    <h1>{% firstof MODULE_LOCATIONS_LABEL 'Location' %} {% trans "Edit" %}</h1>
 
     <div class="location-wrap">
          <div class="options">

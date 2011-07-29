@@ -1,5 +1,6 @@
 {% extends "help_files/base.html" %}
 {% load help_file_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}{{ topic }} Topic{% endblock %}
 
@@ -13,8 +14,8 @@
 {% block body %}
 <div class="t">
 	{% help_file_search %}
-	<div class="breadcrumbs"><p><a href="{% url help_files %}">All Help Files</a> > {{ topic }} help files</p></div>
-	<h2>{{ topic|title }} Help Files</h2>
+	<div class="breadcrumbs"><p><a href="{% url help_files %}">{% trans "All Help Files" %}</a> > {% blocktrans %}{{ topic }} help files{% endblocktrans %}</p></div>
+	<h2>{% blocktrans with topic|title as topic_title %}{{ topic_title }} Help Files{% endblocktrans %}</h2>
 	{% if topic.content %}
 		<p>{{ topic.content|safe }}</p>
 	{% endif %}

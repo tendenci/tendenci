@@ -1,3 +1,5 @@
+{% load i18n %}
+
 {% load perm_tags %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd"> 
@@ -15,59 +17,59 @@
   <tr>
     <td align="left" valign="top"><table width="100%" cellpadding="8"  cellspacing="1" bgcolor="#666666">
         <tr>
-          <td bgcolor="#FFFFFF"><p>The following company has renewed for corporate membership on {{ SITE_GLOBAL_SITEDISPLAYNAME }}:</p>
+          <td bgcolor="#FFFFFF"><p>{% blocktrans %}The following company has renewed for corporate membership on {{ SITE_GLOBAL_SITEDISPLAYNAME }}:{% endblocktrans %}</p>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td width="11%">Company:</td>
+                  <td width="11%">{% trans "Company:" %}</td>
                   <td width="87%"><b>{{ object.name }}</b></td>
                 </tr>
                 <tr>
-                  <td width="11%">Address:</td>
+                  <td width="11%">{% trans "Address:" %}</td>
                   <td width="87%"><b>{{ object.address }}</b></td>
                 </tr>
                 <tr>
-                  <td width="11%">City/State/ZIP:</td>
+                  <td width="11%">{% trans "City/State/ZIP:" %}</td>
                   <td width="87%"><b>{{ object.city }} {{ object.state }} {{ object.zip }}</b></td>
                 </tr>
                 <tr>
-                  <td width="11%">Phone:</td>
+                  <td width="11%">{% trans "Phone:" %}</td>
                   <td width="87%"><b>{{ object.phone }}</b></td>
                 </tr>
               </table>
-              <p>This form was submitted by:
+              <p>{% trans "This form was submitted by:" %}
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td width="17%" nowrap>Name:</td>
+                  <td width="17%" nowrap>{% trans "Name:" %}</td>
                   <td width="83%"><b>{{ request.user.get_full_name }}</b></td>
                 </tr>
                 <tr>
-                  <td width="17%" nowrap>Title:</td>
+                  <td width="17%" nowrap>{% trans "Title:" %}</td>
                   <td width="83%"><b>{{ profile.position_title }}</b></td>
                 </tr>
                 <tr>
-                  <td width="17%" nowrap>Phone:</td>
+                  <td width="17%" nowrap>{% trans "Phone:" %}</td>
                   <td width="83%"><b>{{ profile.phone }}</b></td>
                 </tr>
                 <tr>
-                  <td nowrap>Fax:</td>
+                  <td nowrap>{% trans "Fax:" %}</td>
                   <td><b>{{ profile.fax }}</b></td>
                 </tr>
                 <tr>
-                  <td width="17%" nowrap>Email:</td>
+                  <td width="17%" nowrap>{% trans "Email:" %}</td>
                   <td width="83%"><b>{{ profile.email }}</b></td>
                 </tr>
               </table>              <p>                  <br>
-                To view the complete application, go to: <strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}</strong>
+                {% blocktrans %}To view the complete application, go to:{% endblocktrans %} <strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}</strong>
                 {% if object.status_detail == 'pending' and object.payment_method != 'cc' %}
-                	<p>To approve the application, go to: <strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.edit object.pk %}</strong></p>           
+                	<p>{% blocktrans %}To approve the application, go to:{% endblocktrans %} <strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.edit object.pk %}</strong></p>           
                 {% endif %}
-              <p>For more on the person who submitted the application, go to: <strong>{{ SITE_GLOBAL_SITEURL }}{{ profile.get_absolute_url }}</strong></p>
-              <p>If you have received this in error, please contact the webmaster below. </p>
-              <p>                Thanks!</p>
+              <p>{% blocktrans %}For more on the person who submitted the application, go to:{% endblocktrans %} <strong>{{ SITE_GLOBAL_SITEURL }}{{ profile.get_absolute_url }}</strong></p>
+              <p>{% trans "If you have received this in error, please contact the webmaster below." %}" </p>
+              <p>                {% trans "Thanks!" %}</p>
               <p>{{ SITE_GLOBAL_SITECONTACTNAME }}<br>
               {{ SITE_GLOBAL_SITECONTACTEMAIL }}<br>
               {{ SITE_GLOBAL_SITEDISPLAYNAME }} </p>
-              <p>Time submitted: {% now "D d M Y P" %}</p></td>
+              <p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p></td>
         </tr>
     </table></td>
   </tr>

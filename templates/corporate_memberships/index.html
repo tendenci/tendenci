@@ -1,5 +1,6 @@
 {% extends "corporate_memberships/base.html" %}
 {% load corporate_memberships_tags %}
+{% load i18n %}
 
 {% block title %}Corporate Membership{% endblock %}
 
@@ -25,28 +26,28 @@
 <div class="t">
 	{% corpmemb_nav request.user %}
 	<div class="corp-index">
-		<h1>Corporate Memberships</h1>
-	     <h2>Applications:</h2>
+		<h1>{% trans "Corporate Memberships" %}</h1>
+	     <h2>{% trans "Applications:" %}</h2>
 	     {% if corp_apps %}
 	     	<ol>
 	     	{% for corp_app in corp_apps %}
 	     		<li>
 		     		<a href="{% url corp_memb.add corp_app.slug %}">{{ corp_app.name }}</a> 
-		     		(<a href="{% url admin:corporate_memberships_corpapp_change corp_app.id %}">Edit</a>)
+		     		(<a href="{% url admin:corporate_memberships_corpapp_change corp_app.id %}">{% trans "Edit" %}</a>)
 		     		--------------->>
-		     		Individual Member App: 
+		     		{% trans "Individual Member App: " %}
 		     		{% if corp_app.memb_app %}
 		     		<a href="{% url membership.application_details corp_app.memb_app.slug %}">{{ corp_app.memb_app.name }}</a>
-		     		(<a href="{% url admin:memberships_app_change corp_app.memb_app.id %}">Edit</a>)
+		     		(<a href="{% url admin:memberships_app_change corp_app.memb_app.id %}">{% trans "Edit" %}</a>)
 		     		{% else %}
-		     			<a href="{% url admin:memberships_app_add %}?use_for_corp=1">Create it</a>
+		     			<a href="{% url admin:memberships_app_add %}?use_for_corp=1">{% trans "Create it" %}</a>
 		     		{% endif %}
 		     		
-		     		<h2>Types:</h2>
+		     		<h2>{% trans "Types:" %}</h2>
 			     	<table width="90%">
 			     	<tr>
-			     		<td class="header" width="50%">Corporate Member Type</td>
-			     		<td class="header" width="50%">Individual Member Type</td>
+			     		<td class="header" width="50%">{% trans "Corporate Member Type" %}</td>
+			     		<td class="header" width="50%">{% trans "Individual Member Type" %}</td>
 			     	</tr>
 			     	{% for cm_type in corp_app.corp_memb_type.all %}
 			     		<tr>
@@ -63,12 +64,12 @@
 	     	{% endfor %}
 	     	</ol>
 	     	
-	     	<h2>Other links:</h2>
+	     	<h2>{% trans "Other links:" %}</h2>
 	     	<ol>
-	     	<li><a href="{% url corp_memb.search %}">Search Corporate Memberships</a></li>
+	     	<li><a href="{% url corp_memb.search %}">{% trans "Search Corporate Memberships" %}</a></li>
 	     	</ol>
 	     {% else %}
-	    	No applications available. <a href="{% url admin:corporate_memberships_corpapp_add %}">Add one</a>.
+	    	{% trans "No applications available. " %}<a href="{% url admin:corporate_memberships_corpapp_add %}">{% trans "Add one" %}</a>.
 		 {% endif %}
 	</div>
 </div>

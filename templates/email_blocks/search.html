@@ -3,8 +3,9 @@
 {% load email_block_tags %}
 {% load perm_tags %}
 {% load base_filters %}
+{% load i18n %}
 
-{% block title %}{{ block.super }}Search{% endblock %}
+{% block title %}{{ block.super }}{% trans "Search" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,7 +16,7 @@
 {% block body %}
 <div class="t">
 {% email_blocks_nav %}
-    <h1>Email Blocks  Search</h1>
+    <h1>{% trans "Email Blocks Search" %}</h1>
 
     {% autopaginate email_blocks 10 %}
 	
@@ -39,9 +40,9 @@
             </div>
             <div class="clear-right"></div>
            
-            <div class="content"><b>Reason:</b> {{ email_block.reason|striptags|truncatewords:40 }}</div>
+            <div class="content"><b>{% trans "Reason:" %}</b> {{ email_block.reason|striptags|truncatewords:40 }}</div>
 			<div class="meta">
-            	<div class="submitted">Created on {{ email_block.create_dt|date:"long" }} by <a href="{% url profile email_block.creator.id %}">{{ email_block.creator }}</a></div>
+            	{% blocktrans with email_block.create_dt|date:"long" as create_date %} <div class="submitted">Created on {{ create_date }} by:{% endblocktrans %} <a href="{% url profile email_block.creator.id %}">{{ email_block.creator }}</a></div>
             </div>
 
             <!-- delete-email form -->
@@ -52,7 +53,7 @@
 		</div>
 		{% endif %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

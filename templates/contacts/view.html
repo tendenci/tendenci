@@ -1,6 +1,7 @@
 {% extends "contacts/base.html" %}
 {% load contact_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}{{ contact }}{% endblock %}
 
@@ -24,16 +25,16 @@
         </div>
 
 
-        <h2>{{ contact }}'s Contact Form Submission</h2>
+        <h2>{% blocktrans %}{{ contact }}'s Contact Form Submission{% endblocktrans %}</h2>
 
 		<div class="row phone-row">
-			<div class="label">Phone</div>
+			<div class="label">{% trans "Phone" %}</div>
 			<div class="value">{{ contact.phones.all.0.number }} &nbsp;</div>
 			<div style="clear:both;"></div>
 		</div>
 
 		<div class="row email-row">
-			<div class="label">Email</div>
+			<div class="label">{% trans "Email" %}</div>
 			<div class="value">
 				{{ contact.emails.all.0.email|obfuscate_email }}
 			</div>
@@ -42,7 +43,7 @@
 		<div style="clear:both;"></div>
 
 		<div class="row url-row">
-			<div class="label">Website</div>
+			<div class="label">{% trans "Website" %}</div>
 			<div class="value">
 				<a href="{{ contact.urls.all.0.url }}">{{ contact.urls.all.0.url }}</a> &nbsp;
 			</div>
@@ -50,7 +51,7 @@
 		</div>
 
 		<div class="row address-row">
-			<div class="label">Address</div>
+			<div class="label">{% trans "Address" %}</div>
 			<div class="value">
 				<div class="address">{{ contact.addresses.all.0.address }} &nbsp;</div>
 				<div class="city-state-zip"> 
@@ -64,10 +65,10 @@
 		</div>
 
         <div class="the-message">
-        	<div class="label">Message</div>
+        	<div class="label">{% trans "Message" %}</div>
         	<div class="submitted-dt">
-        		Submitted {{ contact.create_dt|date:"long" }}
-        		({{ contact.create_dt|timesince }} ago)
+        		{% blocktrans with contact.create_dt|date:"long" as create_date contact.create_dt|timesince as time_since %}Submitted {{ create_date }}
+        		({{ time_since }} ago){% endblocktrans %}
         	</div>
         	<div class="content">
         		{{ contact.message|linebreaks }}

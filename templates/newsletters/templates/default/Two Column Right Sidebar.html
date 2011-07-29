@@ -1,7 +1,9 @@
+{% load i18n %}
+
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <title>Two Column Right Sidebar</title>
+   <title>{% trans "Two Column Right Sidebar" %}</title>
 
 <style>
 body {
@@ -256,14 +258,14 @@ td.footer p {
                   <table width="710" height="130" border="0" cellspacing="16" cellpadding="0" class="content">
                      <tr>
                         <td class="mainbar" align="left" valign="top">
-                       <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 20px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">Latest Articles</h2>
+                       <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 20px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Latest Articles" %}</h2>
                            
                            <p>[articles]</p>
                            
-                         <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 20px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">Latest Releases</h2>
+                         <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 20px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Latest Releases" %}</h2>
                            <p>[releases]</p>
                            
-                        <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 20px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">Latest Calendar Events</h2>
+                        <h2 style="font-family: 'Times New Roman', Times, serif; font-size: 20px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Latest Calendar Events" %}</h2>
                           <p>[calendarevents]</p>
                            
                         </td>
@@ -271,7 +273,7 @@ td.footer p {
                         <td class="sidebar" align="left" valign="top" width="197">
 <div style="margin-bottom: 15px; padding: 10px; background: #e3e3e3;">
             			<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px;">
-<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">Directories</h2>
+<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Directories" %}</h2>
 <p>[directories]</p>
 
 
@@ -279,14 +281,14 @@ td.footer p {
 
 <div style="margin-bottom: 15px; padding: 10px; background: #e3e3e3;">
             			<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px;">
-<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">Jobs</h2><br/>
+<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Jobs" %}</h2><br/>
 <img src="/site_media/static/newsletters/templates/default/images/Sunset-eschipul-150x200.jpg" alt="Sunset" width="150" height="200">
 <p>[jobs]</p>
 
 </div>
 <div style="margin-bottom: 15px; padding: 10px; background: #e3e3e3;">
             			<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px;">
-<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">Resumes</h2>
+<h2 style="font-family: 'Times New Roman', Times, serif; font-size: 14px; font-weight: bold; color: #3c5691; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom: 1px solid #cbcbcb;">{% trans "Resumes" %}</h2>
 <p>[resumes]</p>
 
 </div>
@@ -304,7 +306,7 @@ td.footer p {
             </tr>
             <tr>
                <td align="center" class="footer"><p>www.changethistoyourdomainname.com<br />
-               Contact us: Replace This With Your Company Address | (555) 555-5555 | info@yourdomainname.com</p></td>
+               {% trans "Contact us: Replace This With Your Company Address" %} | (555) 555-5555 | info@yourdomainname.com</p></td>
             </tr>
          </table>
       </td>

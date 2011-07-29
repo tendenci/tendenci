@@ -1,17 +1,18 @@
 {% load base_filters %}
 {% load invoice_tags %}
+{% load i18n %}
 
 <table width="100%">
    {% invoices_search_line_header request invoice '#cccc33' %}  
      
    {# display directory info #} 
    <tr>
-   	<td>ID</td>
-   	<td>Name</td>
-   	<td>Headline</td>
-   	<td>Date</td>
-   	<td>Amount</td>
-   	<td>Balance</td>
+   	<td>{% trans "ID" %}</td>
+   	<td>{% trans "Name" %}</td>
+   	<td>{% trans "Headline" %}</td>
+   	<td>{% trans "Date" %}</td>
+   	<td>{% trans "Amount" %}</td>
+   	<td>{% trans "Balance" %}</td>
    </tr>
    
    {% if obj %} 

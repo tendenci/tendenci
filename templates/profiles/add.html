@@ -28,7 +28,7 @@
     <h1>{% trans 'Site Registration'%}</h1>
     <p>{% trans 'Complete the fields below and press Submit to add a user. Required fields are designated with an'%} <span class="body-copy-alerts">*</span>.</p>
 {% if form.errors or  form.non_field_errors %}
-<div class="body-copy-alerts">There are some issues on the form, please review.</div>
+<div class="body-copy-alerts">{% trans "There are some issues on the form, please review." %}</div>
 {{form.non_field_errors}}
 {% endif %}
     <div class="profile-wrap">
@@ -306,7 +306,7 @@
                         </tr>
                         <tr >
                           <td class="label"><label for="id_hide_address">{% trans 'Hide address?'%} </td>
-                          <td colspan="2">{{form.hide_address}} Yes 
+                          <td colspan="2">{{form.hide_address}} {% trans "Yes" %} 
                           </td>
                         </tr>
                         </table></td>

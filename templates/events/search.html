@@ -3,6 +3,7 @@
 {% load event_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
@@ -127,17 +128,18 @@
 
 <div class="t search-view">
 {% event_nav request.user %}
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL 'Event' %} Search</h1>  
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Search" %}</h1>  
 
 	{% event_search %}
     {% autopaginate events 10 %}
 
 	{% if not request.GET.q %}
 	<div class="highlight">
-		There {{ events|length|pluralize:"is,are" }} {{ events|length }} upcoming event{{ events|length|pluralize }}. 
+		{% blocktrans count events|length as events_count %}There is 1 upcoming event. {% plural %}There are {{ events_count }} upcoming events. {% endblocktrans %}
 	</div>
 	{% else %}
-	<div class="highlight">You found {{ events|length }} event{{ events|length|pluralize }}</div>
+	<div class="highlight">
+		{% blocktrans count events|length as events_count %}You found {{ events_count }} event.{% plural %}You found {{ events_count }} events.{% endblocktrans %}</div>
 	{% endif %}
 
 	<div class="events-wrap">
@@ -149,7 +151,7 @@
 				
 				{% if event.start_dt < now %}
 				<div class="age-msg" title="about {{ event.start_dt|timesince }} ago">
-				Past event</div>
+				{% trans "Past event" %}</div>
 				{% else %}
 				<div class="age-msg" title ="in about {{ event.start_dt|timeuntil }}">
 					{{ event.start_dt|timeuntil }}
@@ -180,7 +182,7 @@
 					{% if now > event.end_dt or now > event.registration_configuration.end_dt %}
 
 					<div class="attend-wrap closed">
-						<div class="attend"><a href="">Registration Closed</a></div>
+						<div class="attend"><a href="">{% trans "Registration Closed" %}</a></div>
 						<div style="clear:both;"></div>
 					</div>
 					
@@ -189,12 +191,12 @@
 					{% is_registered_user user event as registered_user %}
 					{% if registered_user %}
 					<div class="attend-wrap registered">
-						<div class="attend"><a href="{% url event event.pk %}">You are registered</a></div>
+						<div class="attend"><a href="{% url event event.pk %}">{% trans "You are registered" %}</a></div>
 						<div style="clear:both;"></div>
 					</div>
 					{% else %}
 					<div class="attend-wrap">
-						<div class="attend"><a href="{% url event event.pk %}">Attend this event</a></div>
+						<div class="attend"><a href="{% url event event.pk %}">{% trans "Attend this event" %}</a></div>
 						<div style="clear:both;"></div>
 					</div>
 					{% endif %}
