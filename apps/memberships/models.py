@@ -768,7 +768,7 @@ class AppEntry(TendenciBaseModel):
     @property
     def payment_method(self):
         """Get PaymentMethod object"""
-        from payments_payment import PaymentMethod
+
         # TODO: don't like this; would prefer object column in field_entry
         # TODO: Prone to error; We're depending on a string membership type name
         try:
