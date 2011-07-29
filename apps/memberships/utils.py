@@ -273,10 +273,13 @@ def count_active_memberships(date):
     """
     Counts all active memberships in a given date
     """
-    count = Membership.objects.filter(
-                subscribe_dt__gte=date,
-                expire_dt__lt=date,
-            ).count()
+    mems = Membership.objects.filter(
+                create_dt__lte=date,
+                expire_dt__gt=date,
+            )
+    count = mems.count()
+            
+    print date, count, mems
     
     return count
 
