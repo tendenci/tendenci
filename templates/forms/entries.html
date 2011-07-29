@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load forms_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Entries{% endblock %}
 
@@ -41,7 +42,7 @@
             </form>
 		</div>
 	{% empty %}
-		<div>0 Entries Found</div>
+		<div>{% trans "0 Entries Found" %}</div>
     {% endfor %}
 	</div>
 

@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
@@ -18,7 +19,7 @@
 {% block body %}
 <div class="t">
 {% resume_nav request.user %}
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_RESUMES_LABEL 'Resumes' %} Search</h1>  
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_RESUMES_LABEL trans 'Resumes' %} {% trans "Search" %}</h1>  
 
 	{% resume_search %}
     {% autopaginate resumes 10 %}
@@ -39,7 +40,7 @@
 		</div>
 		{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

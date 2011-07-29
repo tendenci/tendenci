@@ -1,6 +1,7 @@
 {% extends "entities/base.html" %}
 {% load entity_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Print{% endblock %}
 
@@ -11,13 +12,13 @@
 
 {% block body %}
 <div class="t">
-    <h1>{% firstof MODULE_ENTITIES_LABEL 'Entity' %} Print</h1>
+    <h1>{% firstof MODULE_ENTITIES_LABEL 'Entity' %} {% trans "Print" %}</h1>
     
     <div class="entities-wrap">
         <h2>{{ entity.entity_name }}</h2>
         <div class="content">{{ entity.entity_name|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ entity.create_dt|date:"long" }} by {{ entity.creator }}</div>
+            <div class="submitted">{% blocktrans with entity.create_dt|date:"long" submit_date and entity.creator as entity_creator %} Submitted on {{ submit_date }} by {{ entity_creator }}{% endblocktrans %}</div>
         </div>
     </div>
 

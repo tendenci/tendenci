@@ -1,4 +1,7 @@
+
+{% load i18n %}
 {% block body %}
-<h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} Delete Page</h1>
-<div class="back-to-search"><a href="{% url article.search %}">&laquo; Back to articles search</a></div>
+<h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} {% trans "Delete Page" %}</h1>
+<div class="back-to-search"><a href="{% url article.search %}">&laquo; 
+{% trans "Back to articles search" %}</a></div>
 {% endblock %}

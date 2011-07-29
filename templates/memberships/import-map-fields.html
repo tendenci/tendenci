@@ -3,6 +3,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}Import Memberships from CSV file{% endblock %}
 
@@ -14,8 +15,8 @@
 {% block body %}
 <div id="import-wrap">
     
-    <h1>Membership Import Map Fields</h1>
-	<p class="timestamp">Step 2/4 &middot; {{ datetime.now }}</p>
+    <h1>{% trans "Membership Import Map Fields" %}</h1>
+	<p class="timestamp">{% trans "Step 2/4" %} &middot; {{ datetime.now }}</p>
 
 
     <form method='post' action='{% url membership_import_map_fields %}' enctype="multipart/form-data">{% csrf_token %}

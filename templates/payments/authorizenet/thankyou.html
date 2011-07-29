@@ -1,10 +1,11 @@
 {% load payments_tags %}
+{% load i18n %}
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>Payment receipt page</title>
+<title>{% trans "Payment receipt page" %}</title>
 <link rel="stylesheet" href="{{ THEME_URL }}media/css/style.css" type="text/css" media="screen" /> 
 <style>
 	#payment-receipt{
@@ -29,7 +30,7 @@
 	
 	 <p>&nbsp;</p>
 	 <p>&nbsp;</p>
-	 <p><a href="{{ SITE_GLOBAL_SITEURL }}" class="links">Home Page</a></p>
+	 <p><a href="{{ SITE_GLOBAL_SITEURL }}" class="links">{% trans "Home Page" %}</a></p>
 	 
 
 <script language="javascript">

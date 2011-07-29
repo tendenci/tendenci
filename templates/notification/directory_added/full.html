@@ -1,39 +1,42 @@
+{% load i18n %}
+
 {% load perm_tags %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-<title>Article Add Notice</title>
+<title>{% trans "Article Add Notice" %}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 {% is_admin request.user as isadmin %}
 <body bgcolor="#ffffff" text="#000000">
-<p>The following directory was 
-  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Directories module by {{request.user.get_full_name}}
-  {% if isadmin %}(administrator){% else %} and needs to be activated{% endif %}:</p>
+<p>
+  {% if isadmin %}{% blocktrans with request.user.get_full_name as requser %}The following directory was 
+  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Directories module by {{ requser }}{% endblocktrans %} (administrator).{% else %} {% blocktrans with request.user.get_full_name as requser %}The following directory was 
+  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Directories module by {{ requser }} and needs to be activated.{% endblocktrans %}{% endif %}</p>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td width="2%">&nbsp;</td>
-    <td width="23%"> Headline:</td>
+    <td width="23%"> {% trans "Headline:" %}</td>
     <td width="75%"><b>{{ object.headline }}</b></td>
   </tr>
   <tr> 
     <td width="2%">&nbsp;</td>
-    <td width="23%"> Body:</td>
+    <td width="23%"> {% trans "Body:" %}</td>
     <td width="75%"><b>{{ object.body|striptags|safe }}</b></td>
   </tr>
 </table>
-<p>To view the details of this 
-  directory, go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
+<p>{% blocktrans %}To view the details of this 
+  directory, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
 
 {% if not isadmin %} 
   <br>
-<p>To activate this directory, 
-  go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b> </p>
+<p>{% blocktrans %}To activate this directory, 
+  go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b> </p>
 {% endif %}
  
-<P>Time submitted:  {% now "D d M Y P" %}</P>
+<P>{% trans "Time submitted:" %}  {% now "D d M Y P" %}</P>
  
 </body>
 </html>

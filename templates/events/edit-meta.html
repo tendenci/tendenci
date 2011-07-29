@@ -1,6 +1,7 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Edit Meta Information{% endblock %}
 
@@ -13,8 +14,8 @@
 <div class="t">
 
     {% event_nav user %}
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} Meta Information for<br />
-    {{ event.title }}</h1>
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% blocktrans with event.title as event_title %}Meta Information for<br />
+    {{ event_title }}{% endblocktrans %}</h1>
 
     <div class="event-wrap">
 		<div class="options">
@@ -26,7 +27,7 @@
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />
-			 or <a href="javascript:history.go(-1);">Cancel</a>
+			 or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
 		</div>
         </form>
     </div>

@@ -6,12 +6,12 @@
 
 <div class="toggle-all-button">
 		<div class="collapse-all-button">
-			<a href="javascript:;">Collapse ALL</a></div>
-		<div class="expand-all-button" style="display:none;"><a href="javascript:;">Expand ALL</a></div>
+			<a href="javascript:;">{% trans "Collapse ALL" %}</a></div>
+		<div class="expand-all-button" style="display:none;"><a href="javascript:;">{% trans "Expand ALL" %}</a></div>
 </div>
 	
 {% for inline_admin_form in inline_admin_formset %}<div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
-  <h3><b>{% if inline_admin_form.original.field_type == 'section_break' %}Section{% else %}{% if inline_admin_form.original.field_type == 'Page_break' %}Page{% else %}{{ inline_admin_formset.opts.verbose_name|title }}{% endif %}{% endif %}:</b>&nbsp;<span class="inline_label">{% if inline_admin_form.original %}{{ inline_admin_form.original }}{% else %}#{{ forloop.counter }}{% endif %}</span>
+  <h3><b>{% if inline_admin_form.original.field_type == 'section_break' %}{% trans "Section" %}{% else %}{% if inline_admin_form.original.field_type == 'Page_break' %}{% trans "Page" %}{% else %}{{ inline_admin_formset.opts.verbose_name|title }}{% endif %}{% endif %}:</b>&nbsp;<span class="inline_label">{% if inline_admin_form.original %}{{ inline_admin_form.original }}{% else %}#{{ forloop.counter }}{% endif %}</span>
     {% if inline_admin_form.show_url %}<a href="../../../r/{{ inline_admin_form.original_content_type_id }}/{{ inline_admin_form.original.id }}/">{% trans "View on site" %}</a>{% endif %}
     {% if inline_admin_formset.formset.can_delete and inline_admin_form.original and not inline_admin_form.original.object_type %}<span class="delete">{{ inline_admin_form.deletion_field.field }} {{ inline_admin_form.deletion_field.label_tag }}</span>{% endif %}
   </h3>
@@ -66,8 +66,8 @@
     
 	<div class="collapse-expand-button">
 		<div class="collapse-button">
-			<a href="javascript:;">Collapse</a></div>
-		<div class="expand-button" style="display:none;"><a href="javascript:;">Expand</a></div>
+			<a href="javascript:;">{% trans "Collapse" %}</a></div>
+		<div class="expand-button" style="display:none;"><a href="javascript:;">{% trans "Expand" %}</a></div>
 	</div>
   {% endfor %}
   {% if inline_admin_form.has_auto_field %}{{ inline_admin_form.pk_field.field }}{% endif %}

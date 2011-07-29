@@ -2,6 +2,7 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}Import Memberships from CSV file{% endblock %}
 
@@ -13,7 +14,7 @@
 {% block body %}
 <div class="membership-wrap">
     
-    <h1>Import Memberships from CSV file</h1>
+    <h1>{% trans "Import Memberships from CSV file" %}</h1>
     
     <form method='post' action='{% url membership_import %}' enctype="multipart/form-data">{% csrf_token %}
     {{ form.as_p }}

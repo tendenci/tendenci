@@ -16,7 +16,7 @@
 <h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %} - <a href="/">{{ SITE_GLOBAL_SITEURL }}</a></h1>
 {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
 {% if current_file %}
-<div class="file_attrs"><big><b>Currently Editing</b> (<span id="file_name">{{ pwd }}/{{ current_file }}</span>)</big></div>
+<div class="file_attrs"><big><b>{% trans "Currently Editing" %}</b> (<span id="file_name">{{ pwd }}/{{ current_file }}</span>)</big></div>
 {% endif %}
         <table id="file-editor" width="100%">
         <tr>
@@ -39,30 +39,30 @@
                 	<div id="file_versions">
                     	{% for archive in archives %}
                     		<div data-string="{{ archive.file_name }} versioned on {{ archive.create_dt|date:'long' }} by {{ archive.author}}" title="Click to open in the text area above" class="archived_file archived_file_{{ archive.id }}" onclick="open_archive({{ archive.id }}); return false;">
-                    			<a href="#">{{ archive.file_name }}  versioned on {{ archive.create_dt|date:"long" }} by {{ archive.author}}</a>
+                    			<a href="#">{% blocktrans with archive.file_name as archname and archive.create_dt|date:"long" as archdate and archive.author as archauth %}{{ archname }}  versioned on {{ archdate }} by {{ archauth }}{% endblocktrans %}</a>
                     		</div>
                         {% endfor %}
                     </div>
                 {% else %}
-                	<p>No versions available.</p>
+                	<p>{% trans "No versions available." %}</p>
                 {% endif %}
             </div>
         </td>
         <td width="20%" valign="top">
        		<div id="right_files_list">
-               <h2>Choose a folder or file:</h2>
+               <h2>{% trans "Choose a folder or file:" %}</h2>
                {%  if pwd %}
                <div class="pwd" title="{{ pwd }}">
                {% if pwd|length > 20  %}
-                   <p>in ...{{ pwd|slice:"-20:" }}</p>
+                   <p>{% blocktrans with pwd|slice:"-20:" as pslice %}in ...{{ pslice }}{% endblocktrans %}</p>
                {% else %}
-                   <p>in {{ pwd }}</p>
+                   <p>{% blocktrans %}in {{ pwd }}{% endblocktrans %}</p>
                {% endif %}
                </div>
                {% endif %}
                {% if prev_dir %}
                    <p class="prev_dir">
-                       <a href="{% url theme_editor %}?file={{ prev_dir }}#to-editor">&laquo;&nbsp;back to {{ prev_dir_name }}</a>
+                       <a href="{% url theme_editor %}?file={{ prev_dir }}#to-editor">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
                    </p>
                {% endif %}
                {% if dirs %}
@@ -82,10 +82,10 @@
                </ul>
                {% endif %}
                {% if not files and not dirs %}
-               <p>No editable files</p>
+               <p>{% trans "No editable files" %}</p>
                {% endif %}
                <br>
-               <a href="{% url original_templates %}">customize more templates</a>
+               <a href="{% url original_templates %}">{% trans "customize more templates" %}</a>
            </div>
       </td>
       </tr>

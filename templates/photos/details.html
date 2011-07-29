@@ -27,13 +27,13 @@
         </div>
         <div class="photo-nav">
             {% if set_id > 0 %}
-			<div class="photo-back"><a href="{% url photoset_details set_id %}">&laquo; Back to photo set</a></div>
+			<div class="photo-back"><a href="{% url photoset_details set_id %}">&laquo; {% trans "Back to photo set" %}</a></div>
             {% endif %}
         </div>
         <div class="photo-traverse">
             <ul>
-				{% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; Prev</a></li>{% endif %}
-                {% if photo_next_url %}<li><a id="photo-next" href="{{ photo_next_url }}">Next &raquo;</a></li>{% endif %}
+				{% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; {% trans "Prev" %}</a></li>{% endif %}
+                {% if photo_next_url %}<li><a id="photo-next" href="{{ photo_next_url }}">{% trans "Next" %} &raquo;</a></li>{% endif %}
             </ul>
         </div>
         <div class="hr"></div>
@@ -60,9 +60,9 @@
                     {% if photo.get_license == photo.default_license %}
                         {{ photo.default_license.name }}.
                     {% else %}
-                        Licensed under
-                        <a rel="license" href="{{ photo.get_license.deed }}"> 
-                            {{ photo.get_license.name }}</a>.
+                        {% blocktrans with photo.get_license.deed as photo_deed and photo.get_license.name as photo_name %}Licensed under
+                        <a rel="license" href="{{ photo_deed }}"> 
+                            {{ photo_name }}</a>.{% endblocktrans %}
                     {% endif %}
                 </div>
             </div>
@@ -76,7 +76,7 @@
         </div>
         {% if tags %}
         <div class="photo-tags">
-            Tags: {% for tag in tags %} {{ tag }} {% endfor %}
+            {% trans "Tags:" %} {% for tag in tags %} {{ tag }} {% endfor %}
         </div>
         {% endif %}
 	</div><!-- END .photo-instance -->

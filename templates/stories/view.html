@@ -2,6 +2,7 @@
 {% load story_tags %}
 {% load category_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}{{ story.title }}{% endblock %}
 
@@ -27,15 +28,15 @@
 			<div class="categories">
 				{% get_category_for_object story as category %}
 				{% if category %}
-					Category:&nbsp;<a href="{% url story.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
+					{% trans "Category:" %}&nbsp;<a href="{% url story.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
 				{% endif %}
 				{% get_sub_category_for_object story as sub_category %}
 				{% if sub_category %}
-					Sub Category:&nbsp;<a href="{% url story.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
+					{% trans "Sub Category:" %}&nbsp;<a href="{% url story.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
 				{% endif %}				
 			</div>
 
-            <div class="submitted">Submitted on {{ story.create_dt|date:"long" }} by {{ story.creator }}</div>
+            <div class="submitted">{% blocktrans with story.create_dt|date:"long" as storydate and  story.creator as storycreate %}Submitted on {{ storydate }} by {{ storycreate }}{% endblocktrans %}</div>
         </div>
   
 </div>

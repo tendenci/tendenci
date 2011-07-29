@@ -4,7 +4,7 @@
 {% load perm_tags %}
 {% load styled_forms %}
 
-{% block title %}{{ block.super }}Add{% endblock %}
+{% block title %}{{ block.super }}{% trans "Add" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -22,29 +22,29 @@
 
 <div class="t">
 	 {% event_nav request.user event %}
-    <h1>Email to Event Registrants</h1>
+    <h1>{% trans "Email to Event Registrants" %}</h1>
     
 
     <div class="event-message-wrap">
     	<form action="." method="post" name="form1">{% csrf_token %}
     	<div class="message-forms">
-    		<h2>Event Title: <a href="{% url event event.id %}">{{ event.title }}</a></h2>
+    		<h2>{% trans "Event Title: " %}<a href="{% url event event.id %}">{{ event.title }}</a></h2>
 
             <div class="recipient-set">{{ form.payment_status }}</div>
 
-    		<div class="message-item"><a href="{% url event.registrant.roster event.id %}">View all registrant(s)</a></div>
+    		<div class="message-item"><a href="{% url event.registrant.roster event.id %}">{% trans "View all registrant(s)" %}</a></div>
     		
     		<div class="message-item">
     			{{ form.body }}
     		</div>
     		
     		<div class="message-item">
-    			<em><strong>For security a footer will be automatically appended indicating the sender (you!) as well as logging a security event
-                  to prevent abuse of the system</strong></em>.
+    			<em><strong>{% trans "For security a footer will be automatically appended indicating the sender (you!) as well as logging a security event
+                  to prevent abuse of the system" %}</strong></em>.
             </div>
             
             <div class="message-item">
-    			<em><strong><font color="red">This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!</font></strong></em>. 
+    			<em><strong><font color="red">{% trans "This message will be sent IMMEDIATELY. DO NOT HIT REFRESH!" %}</font></strong></em>. 
             </div>
             
 			<input type="submit" value="Send Email" />

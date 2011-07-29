@@ -8,20 +8,20 @@
 
 <div class="toggle-all-button">
 		<div class="collapse-all-button">
-			<a href="javascript:;">Collapse ALL</a></div>
-		<div class="expand-all-button" style="display:none;"><a href="javascript:;">Expand ALL</a></div>
+			<a href="javascript:;">{% trans "Collapse ALL" %}</a></div>
+		<div class="expand-all-button" style="display:none;"><a href="javascript:;">{% trans "Expand ALL" %}</a></div>
 </div>
 
 {% for inline_admin_form in inline_admin_formset %}<div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
   <h3>
 
     {% if inline_admin_form.original.field_type == 'section_break' %}
-        Section
+        {% trans "Section" %}
     {% else %}
         {% if inline_admin_form.original.field_type == 'Page_break' %}
-            Page
+            {% trans "Page" %}
         {% else %}
-            Field Name
+            {% trans "Field Name" %}
         {% endif %}
     {% endif %}:
     &nbsp;<span class="inline_label">
@@ -101,8 +101,8 @@
     
 	<div class="collapse-expand-button">
 		<div class="collapse-button">
-			<a href="javascript:;">Collapse</a></div>
-		<div class="expand-button" style="display:none;"><a href="javascript:;">Expand</a></div>
+			<a href="javascript:;">{% trans "Collapse" %}</a></div>
+		<div class="expand-button" style="display:none;"><a href="javascript:;">{% trans "Expand" %}</a></div>
 	</div>
   {% endfor %}
   {% if inline_admin_form.has_auto_field %}{{ inline_admin_form.pk_field.field }}{% endif %}

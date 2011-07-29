@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}Membership Notice Log Search{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
@@ -34,11 +35,11 @@
 {% block body %}
 <div class="t">
    {% membership_nav request.user %}
-    <h1>Membership Notice Log Search</h1>
+    <h1>{% trans "Membership Notice Log Search" %}</h1>
     <div class="notice-log-form">
 	<form action="" method="get">
-			<p>Sent Start Date/Time: {{ form.start_dt }}</p>
-			<p>Sent End Date/Time: &nbsp;&nbsp;{{ form.end_dt }}</p>
+			<p>{% trans "Sent Start Date/Time:" %} {{ form.start_dt }}</p>
+			<p>{% trans "Sent End Date/Time:" %} &nbsp;&nbsp;{{ form.end_dt }}</p>
 			<p>{{ form.notice_id }}
 	    	<input type="submit" value="Search" /></p>
 	</form>
@@ -54,15 +55,15 @@
 		<h2><a href="{% url membership.notice.log.view log.id%}" title="View log recap">{{ log.id }}</a>
 		<a href="{% url admin:memberships_notice_change log.notice.id %}" title="View notice">{{ log.notice.notice_name }}</a></h2>
           <div class="notice-log">
-          		<div><b>Sent Date</b>: {{ log.notice_sent_dt|date }}</div>
-          		<div>Number emails sent: <b>{{ log.num_sent }}</b></div>
-          		<div><a href="{% url membership.notice.log.view log.id%}" title="View log recap">View recap of emails sent</a></div>
+          		<div><b>{% trans "Sent Date" %}</b>: {{ log.notice_sent_dt|date }}</div>
+          		<div>{% trans "Number emails sent: " %}<b>{{ log.num_sent }}</b></div>
+          		<div><a href="{% url membership.notice.log.view log.id%}" title="View log recap">{% trans "View recap of emails sent" %}</a></div>
           </div>
 
         </div>
        
     {% empty %}
-        <div>0 Logs Found</div>
+        <div>{% trans "0 Logs Found" %}</div>
     {% endfor %}
     </div>
 

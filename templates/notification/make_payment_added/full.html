@@ -1,12 +1,14 @@
+{% load i18n %}
+
 {% load base_filters %}
-<p><font face="Arial, Helvetica, sans-serif" size="2">A payment attempt has been made for 
-	{{ SITE_GLOBAL_SITEDISPLAYNAME }} 
+<p><font face="Arial, Helvetica, sans-serif" size="2">{% blocktrans %}A payment attempt has been made for 
+	{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% endblocktrans %}
 </font></p>
 
 	<table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr> 
 	<td width="2%">&nbsp;</td>
-	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Name: </font></td>
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">{% trans "Name:" %} </font></td>
 	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> 
 	 {{ mp.first_name }} {{ mp.last_name }}
 	</font></b></td>
@@ -14,7 +16,7 @@
 
 	<tr> 
 	<td width="2%">&nbsp;</td>
-	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Company: </font></td>
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">{% trans "Company:" %} </font></td>
 	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> 
 	{{ mp.company }}
 	</font></b></td>
@@ -22,43 +24,43 @@
 
 	<tr>
 	<td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
-	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Payment Amount: 
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">{% trans "Payment Amount: " %} 
 	</font></td>
 	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2">{{ mp.payment_amount|format_currency }}</font></b></td>
 	</tr>
 	
 	<tr>
 	<td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
-	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Payment Method: 
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">{% trans "Payment Method:" %} 
 	</font></td>
 	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> {{ mp.payment_method }}</font></b></td>
 	</tr>
 
 	<tr>
 	<td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
-	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Referred By: 
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">{% trans "Referred By:" %} 
 	</font></td>
 	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> {{ mp.referral_source }}</font></b></td>
 	</tr>
 
 	<tr>
 	<td width="2%"><font face="Arial, Helvetica, sans-serif" size="2"></font></td>
-	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">Comments:
+	<td width="23%"><font face="Arial, Helvetica, sans-serif" size="2">{% trans "Comments:" %}
 	</font></td>
 	<td width="75%"><b><font face="Arial, Helvetica, sans-serif" size="2"> {{ mp.comments }}</font></b></td>
 	</tr>
 	</table>
 	
 	{# to view invoice details #}
-	<p><font face="Arial, Helvetica, sans-serif" size="2">This is a notice to 
-	let you know that a general payment attempt has been made.<br/>
-	View invoice to verify payment received: 
+	<p><font face="Arial, Helvetica, sans-serif" size="2">{% trans "This is a notice to 
+	let you know that a general payment attempt has been made." %}<br/>
+	{% trans "View invoice to verify payment received:" %} 
 	<b><a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.id %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.id %}</a>			
 	</b></font></p>
 	
 	{#to view payment details  #}
-	<p><font face="Arial, Helvetica, sans-serif" size="2">To view the payment details, 
-	go to: <b><font face="Arial, Helvetica, sans-serif" size="2">
+	<p><font face="Arial, Helvetica, sans-serif" size="2">{% trans "To view the payment details, 
+	go to:" %} <b><font face="Arial, Helvetica, sans-serif" size="2">
 	<a href="{{ SITE_GLOBAL_SITEURL }}{% url make_payment.view mp.id %}">{{ SITE_GLOBAL_SITEURL }}{% url make_payment.view mp.id %}</a>			
 	</font></b></font></p>
 	
@@ -66,4 +68,4 @@
 	
 	{# time stamp  #}
 	<p><font face="Arial, Helvetica, sans-serif" size="2">
-	Time submitted: {% now "D d M Y P" %}</font></p>
+	{% trans "Time submitted:" %} {% now "D d M Y P" %}</font></p>

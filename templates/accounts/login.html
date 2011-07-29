@@ -1,6 +1,8 @@
 {% extends "accounts/base.html" %}
+{% load i18n %}
 
-{% block title %}Login{% endblock %}
+
+{% block title %}{% trans "Login" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -8,11 +10,11 @@
 {% endblock %}
  
 {% block body %}
-<h2>Log In to the Site</h2>
+<h2>{% trans "Log In to the Site" %}</h2>
 {% if user.is_authenticated %}
     <p>
-       You are already logged in as {{ user }}.
-        <a href="{% url auth_logout %}">Logout?</a>
+       {% blocktrans %} You are already logged in as {{ user }}. {% endblocktrans %}
+        <a href="{% url auth_logout %}">{% trans "Logout?" %}</a>
     </p>
 {% else %}
  
@@ -24,13 +26,13 @@
 </div>
 </form>
  
-<h3>Forgot your password?</h3>
-<p>Click <a href="{% url auth_password_reset %}">here</a> to reset your password.</p>
+<h3>{% trans "Forgot your password?" %}</h3>
+<p><a href="{% url auth_password_reset %}">{% trans "Check here to reset your password." %}</a></p>
  
 {% if MODULE_USERS_SELFREGISTRATION %}
-<h3>Don't have an account?</h3>
-<p><a href="{% url registration_register %}">Register Now </a></p>
-<!-- <p><a href="{% url social_begin 'facebook' %}">Log in with Facebook</a></p> -->
+<h3>{% trans "Don't have an account?" %}</h3>
+<p><a href="{% url registration_register %}">{% trans "Register Now" %}</a></p>
+<!-- <p><a href="{% url social_begin 'facebook' %}">{% trans "Log in with Facebook" %}</a></p> -->
 {% endif %}
  
 {% endif %}

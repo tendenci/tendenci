@@ -8,16 +8,16 @@
 <div class="t">
 {% dashboard_nav user %}	
 <div class="imports">
-	<b>You ({{ request.user.username }}) are importing the following file at ({% now "D d M Y P" %})</b>: <br> 
+	<b>{% blocktrans with request.user.username as requser %}You ({{ requser }}) are importing the following file at (time) {% endblocktrans %}({% now "D d M Y P" %})</b>: <br> 
 	<font color="red">
 	{{ file_name }}
 	</font>
 	<br>
-	Note: User Logging Will be Suspended for the duration of import for this session only.<br>
+	{% trans "Note: User Logging Will be Suspended for the duration of import for this session only." %}<br>
 	<br>
 	<div class="results">
 		<div class="loading-icon" style="position:absolute;top:100;left:50;width:300px;padding:5px;border:1px solid #071C7F;margin-bottom:3em;">
-			<img src="/site_media/static/images/icons/loading.gif" alt="loading"/> loading ...
+			<img src="/site_media/static/images/icons/loading.gif" alt="loading"/> {% trans "loading ... %}
 		</div>
 	</div>
 	<p>&nbsp;</p>

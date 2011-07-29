@@ -1,8 +1,9 @@
 {% extends "directories/base.html" %}
 {% load directory_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
-{% block title %}Add a New {% firstof MODULE_DIRECTORIES_LABEL 'Job' %} Price{% endblock %}
+{% block title %}{% trans "Add a New Price:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Job' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -14,14 +15,14 @@
 
     {% directory_pricing_nav request.user %}
 
-    <h1>Add a New {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} Price</h1>
-    <p>To add a new directory price, complete the fields below and press Submit.</p>
+    <h1>{% trans "Add a New Price:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}</h1>
+    <p>{% trans "To add a new directory price, complete the fields below and press Submit." %}</p>
     
 	<div class="directory-pricing">
 	
 	{% if form.errors %}
 	<div class="errors">
-		<p>Please review the fields below. Thank you.</p>
+		<p>{% trans "Please review the fields below. Thank you." %}</p>
 		<ul>
 		{% for field in form %}
 			{% if field.errors %}

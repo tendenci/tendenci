@@ -1,15 +1,16 @@
 {% load base_filters %}
+{% load i18n %}
 
 <tr>
     <td>
 		{% if obj %}
-			Membership #<a href="{% url membership.application_entries obj.pk %}" title="Membership Application">{{ obj.pk }}</a>&nbsp;
+			{% trans "Membership #" %}<a href="{% url membership.application_entries obj.pk %}" title="Membership Application">{{ obj.pk }}</a>&nbsp;
 			{{ obj.membership_type.name|truncatewords:30 }}
 			{% if obj.first_name or obj.last_name or obj.email %}
 				&nbsp;&ndash;&nbsp;{{ obj.first_name }} {{ obj.last_name }} {{ obj.email }}
 			{% endif %}
 		{% else %}
-			Membership information not available
+			{% trans "Membership information not available" %}
 		{% endif%}
 	</td>
 	<td class="td-right">

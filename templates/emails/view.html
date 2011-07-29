@@ -22,13 +22,13 @@
 <div class="clear-right"></div>
 
 <p>
-<div class="email-view-item"><b>Sender:</b> {{email.sender}} Reply To: {{ email.reply_to }}</div>
-<div class="email-view-item">Content Type: <b>{{email.content_type}}</b> Created on: <b>{{ email.create_dt|date:'long' }}</b></div>
-<div class="email-view-item">Subject: <b>{{email.subject}}</b> </div>
-<div class="email-view-item"><a href="{% url email.viewbody email.id %}" class="body-copy-yellow" target="_blank">Click here to view the entire e-mail body in the new window </a></div>
-<div class="email-view-item">Recipient: {{email.recipient|obfuscate_email }}</div>
-<div class="email-view-item">Recipient cc: {{email.recipient_cc|obfuscate_email }}</div>
-<div class="email-view-item">Creator: <a href="{% url profile email.creator.username %}">{{email.creator.username}}</a></div>
+<div class="email-view-item"><b>{% trans "Sender:" %}</b> {{email.sender}} {% trans "Reply To: " %}{{ email.reply_to }}</div>
+<div class="email-view-item">{% trans "Content Type: " %}<b>{{email.content_type}}</b>{% trans " Created on: " %}<b>{{ email.create_dt|date:'long' }}</b></div>
+<div class="email-view-item">{% trans "Subject: " %}<b>{{email.subject}}</b> </div>
+<div class="email-view-item"><a href="{% url email.viewbody email.id %}" class="body-copy-yellow" target="_blank">{% trans "Click here to view the entire e-mail body in the new window " %}</a></div>
+<div class="email-view-item">{% trans "Recipient: " %}{{email.recipient|obfuscate_email }}</div>
+<div class="email-view-item">{% trans "Recipient cc: " %}{{email.recipient_cc|obfuscate_email }}</div>
+<div class="email-view-item">{% trans "Creator: " %}<a href="{% url profile email.creator.username %}">{{email.creator.username}}</a></div>
 </p>
 
 

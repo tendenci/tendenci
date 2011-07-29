@@ -3,8 +3,9 @@
 {% load avatar_tags %}
 {% load base_filters %}
 {% load corporate_memberships_tags %}
+{% load i18n %}
 
-{% block title %}{{ block.super }}Corporate Membership Roster Search{% endblock %}
+{% block title %}{{ block.super }}{% trans "Corporate Membership Roster Search" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -59,13 +60,13 @@
 <div class="t-search">
  {% corpmemb_nav request.user corp_memb %}
  
-<h1>Roster - {{ corp_memb.name }}</h1>
+<h1>{% blocktrans with corp_memb.name as member %}Roster - {{ member }}{% endblocktrans %}</h1>
 
 {% if corp_memb %}
 <div id="corp-info">
 	<table width="100%">
 		<tr>
-			<td width="20%">Address:</td>
+			<td width="20%">{% trans "Address:" %}</td>
 			<td width="80%" colspan="3">{{ corp_memb.address }} {{ corp_memb.address2 }}</td>
 		</tr>
 		<tr>
@@ -73,19 +74,19 @@
 			<td width="80%" colspan="3">{{ corp_memb.city }} {{ corp_memb.state }} {{ corp_memb.zip }}</td>
 		</tr>
 		<tr>
-			<td width="20%">Phone:</td>
+			<td width="20%">{% trans "Phone:" %}</td>
 			<td width="40%">{{ corp_memb.phone }}</td>
-			<td width="20%">Join Date:</td>
+			<td width="20%">{% trans "Join Date:" %}</td>
 			<td width="40%">{{ corp_memb.join_dt|date:'Y-n-j' }}</td>
 		</tr>
 		<tr>
-			<td width="20%">Member Type:</td>
+			<td width="20%">{% trans "Member Type: %}</td>
 			<td width="40%">{{ corp_memb.corporate_membership_type.name }}</td>
-			<td width="20%">Expiration Date:</td>
+			<td width="20%">{% trans "Expiration Date:" %}</td>
 			<td width="40%">{% if corp_memb.expiration_dt %}
 			    							{{ corp_memb.expiration_dt|date:'Y-n-j' }}
 			    							{% else %}
-			    							Never Expire
+			    							{% trans "Never Expire" %}
 			    							{% endif %}</td>
 		</tr>
 	</table>
@@ -94,7 +95,7 @@
 {% endif %}
 
 <form class="search-form" action="" method="get">
-<div class="form-field">Corporate Name: {{ form.name }}</div>
+<div class="form-field">{% trans "Corporate Name: " %}{{ form.name }}</div>
 <div class="form-field">
 {{ form.q }}
 <input type="submit" name="search" value="Search" />
@@ -115,15 +116,15 @@
 					</div>
 					
 					<div class="member-left">
-						<div>Email: {{ membership.user.email }}</div>
-						<div>Member Type: {{ membership.membership_type }}</div>
+						<div>{% trans "Email: " %}{{ membership.user.email }}</div>
+						<div>{% trans "Member Type: " %}{{ membership.membership_type }}</div>
 					</div>
 					<div class="member-right">
-						<div>Join Date: {{ membership.join_dt|date:'Y-n-j' }}</div>
-						<div>Expiration Date: {% if membership.expire_dt %}
+						<div>{% trans "Join Date: " %}{{ membership.join_dt|date:'Y-n-j' }}</div>
+						<div>{% trans "Expiration Date: " %}{% if membership.expire_dt %}
 				    							{{ membership.expire_dt|date:'Y-n-j' }}
 				    							{% else %}
-				    							Never Expire
+				    							{% trans "Never Expire" %}
 				    							{% endif %}
 				    	</div>
 					</div>
@@ -135,7 +136,7 @@
 	    	
 		{% endwith %}	
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
 	{% endfor %}
 </div>
 
