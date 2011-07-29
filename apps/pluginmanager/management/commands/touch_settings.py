@@ -8,6 +8,5 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../../../settings.py')
         wsgi = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../../../deploy/deploy.wsgi')
-        print path
         os.system('touch '+path)
         os.system('touch '+wsgi)
