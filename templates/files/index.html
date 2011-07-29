@@ -1,8 +1,10 @@
-<h1>Files Index Page</h1>
+{% load i18n %}
+
+<h1>{% trans "Files Index Page" %}</h1>
 
 <ul>
-	<li><a href="{% url file.search %}">Search</a></li>
-	<li><a href="{% url file.view %}">View</a></li>
-	<li><a href="{% url file.edit %}">Edit</a></li>
-	<li><a href="{% url file.delete %}">Delete</a></li>
+	<li><a href="{% url file.search %}">{% trans "Search" %}</a></li>
+	<li><a href="{% url file.view %}">{% trans "View" %}</a></li>
+	<li><a href="{% url file.edit %}">{% trans "Edit" %}</a></li>
+	<li><a href="{% url file.delete %}">{% trans "Delete" %}</a></li>
 </ul>

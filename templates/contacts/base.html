@@ -1,5 +1,6 @@
 {% extends "site_base.html" %}
+{% load i18n %}
 
-{% block title %}{% firstof MODULE_CONTACTS_LABEL 'Contacts' %} - {% endblock %}
+{% block title %}{% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %} - {% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

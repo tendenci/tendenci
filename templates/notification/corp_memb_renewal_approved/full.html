@@ -1,17 +1,19 @@
-<p>Your corporate membership "{{ object.name }}" has been renewed and approved.
+{% load i18n %}
+
+<p>{% blocktrans with object.name as objname %}Your corporate membership "{{ objname }}" has been renewed and approved.{% endblocktrans %}
 </p>
 
 <p>
-To view this corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
+{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
 </p>
 
 <p>
-	To view the invoice, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+	{% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
 	</p>
 
 <p>
-Total individual memberships renewed: {{ total_individuals_renewed }}
+{% blocktrans total_individuals_renewed as totind %}Total individual memberships renewed: {{ totind }}{% endblocktrans %}
 </p>
-<p>Thanks!</p>
+<p>{% trans "Thanks!" %}</p>
 
-<p>Time submitted: {% now "D d M Y P" %}</p>
+<p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>

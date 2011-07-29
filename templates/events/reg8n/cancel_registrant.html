@@ -3,6 +3,7 @@
 {% load styled_forms %}
 {% load avatar_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ block.super }} {{ event.title }} Cancel Registration{% endblock %}
 
@@ -36,20 +37,19 @@
 </style>
 
 <div class="t">
-    <h1>Cancel Event Registration</h1>
+    <h1>{% trans "Cancel Event Registration" %}</h1>
     <div class="event-info">
         <div class="event-title">{{ event.title }}</div>
         <div class="event-cancel-amount">
-        		Cancelling registration for 
                 {% if registrant.first_name or registrant.last_name %}
                     {% if registrant.first_name %}
-                        {{ registrant.first_name }}
+                        {% blocktrans registrant.first_name as first_name %} Cancelling registration for {{ first_name }}{% endblocktrans %} 
                     {% endif %}
                     {%  if registrant.last_name %}
-                        {{ registrant.last_name }}
+                        {% blocktrans with registrant.last_name as last_name %} Cancelling registration for {{ last_name }}{% endblocktrans %} 
                     {% endif %}
                 {% else %}
-                    Guest #{{ forloop.counter0 }}
+                    {% blocktrans %} Cancelling registration for Guest #: {% endblocktrans %}{{ forloop.counter0 }} 
                 {% endif %}
         </div>
     </div>
@@ -70,8 +70,8 @@
             {% endif %}
             </div>
             
-            <div class="email">{% firstof registrant.email "Email Not Recorded" %}</div>
-            <div class="amount">Amount: 
+            <div class="email">{% firstof registrant.email trans "Email Not Recorded" %}</div>
+            <div class="amount">{% trans "Amount:" %} 
             <span{% if registrant.cancel_dt %} class="canceled-amount"{% endif %}>
                     {{ registrant.amount|format_currency }}
             </span>

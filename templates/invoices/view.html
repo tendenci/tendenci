@@ -2,6 +2,7 @@
 {% load invoice_tags %}
 {% load perm_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}{% if obj_name %}{{ obj_name|capfirst }}{% endif %} Invoice{% endblock %}
 
@@ -25,10 +26,10 @@
 <div class="invoice-options">
 	<ul>
 		{% if invoice.is_tendered %}
-			<li><a class="admin-option" href="{%url invoice.adjust invoice.id %}">Adjust Invoice</a></li>
+			<li><a class="admin-option" href="{%url invoice.adjust invoice.id %}">{% trans "Adjust Invoice" %}</a></li>
 		{% endif%}
-		<li><a class="admin-option" href="{% url invoice.detail invoice.id%}">Accounting Entries</a></li>
-		<li><a class="admin-option" href="{% url invoice.detail invoice.id%}" onclick="$('.invoice-admin-notes').toggle(); return false;">Make Notes</a></li>
+		<li><a class="admin-option" href="{% url invoice.detail invoice.id%}">{% trans "Accounting Entries" %}</a></li>
+		<li><a class="admin-option" href="{% url invoice.detail invoice.id%}" onclick="$('.invoice-admin-notes').toggle(); return false;">{% trans "Make Notes" %}</a></li>
 	</ul>
 </div>
 {% endif %}
@@ -58,24 +59,24 @@
 		</tr>
 		{% if object %}
 			<tr>
-				<td>Invoice For</td>
+				<td>{% trans "Invoice For" %}</td>
 				<td class="td-right">{{ object }}</td>
 			</tr>
 		{% endif %}
 		<tr>
-			<td>Invoice Date</td>
+			<td>{% trans "Invoice Date" %}</td>
 			<td class="td-right">{{ invoice.create_dt|date:'N j, Y h:i a' }}</td>
 		</tr>
 		<tr>
-			<td>Invoice Status</td>
+			<td>{% trans "Invoice Status" %}</td>
 			{% if invoice.is_tendered %}
-				<td class="invoice-status td-right">Tendered {{ invoice.tender_date|date:'N j, Y h:i a' }}</td>
+				<td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %} Tendered {{ tenddate }} {% endblocktrans %}</td>
 			{% else %}
-				<td class="invoice-status-red td-right">Estimate</td>
+				<td class="invoice-status-red td-right">{% trans "Estimate" %}</td>
 			{% endif %}
 		</tr>
 		<tr class="invoice-meta-amount">
-			<td>Invoice Amount</td>
+			<td>{% trans "Invoice Amount" %}</td>
 			<td class="td-right">{{ invoice.total|format_currency }}</td>
 		</tr>
 	</table>

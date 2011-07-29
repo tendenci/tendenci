@@ -1,6 +1,7 @@
 {% extends "entities/base.html" %}
 {% load entity_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Edit{% endblock %}
 
@@ -14,7 +15,7 @@
     
     {% entity_nav request.user entity %}
 
-    <h1>{% firstof MODULE_ENTITIES_LABEL 'Entities' %} Edit</h1>
+    <h1>{% firstof MODULE_ENTITIES_LABEL 'Entities' %} {% trans "Edit" %}</h1>
 
     <div class="entities-wrap">
 		<div class="options">

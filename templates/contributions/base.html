@@ -1,5 +1,5 @@
 {% extends "site_base.html" %}
 
-{% block title %}{% firstof MODULE_CONTRIBUTION_LABEL 'Contributions' %} - {% endblock %}
+{% block title %}{% firstof MODULE_CONTRIBUTION_LABEL trans 'Contributions' %} - {% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

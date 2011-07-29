@@ -1,23 +1,23 @@
 {% extends "reports/base.html" %}
 
 {% block content %}
-	<h1>User Activity Summary Reports (TOP 10s)</h1>
+	<h1>{% trans "User Activity Summary Reports (TOP 10s)" %}</h1>
 
-	<h2>Top 10 Most Active Users - Last 30 days</h2> 
+	<h2>{% trans "Top 10 Most Active Users - Last 30 days" %}</h2> 
 	
 	{% with users30days as users %}
 		{% include "reports/user_activity_table.html" %}
 	{% endwith %}
 	
 	
-	<h2>Top 10 Most Active Users - Last 60 days</h2> 
+	<h2>{% trans "Top 10 Most Active Users - Last 60 days" %}</h2> 
 	
 	{% with users60days as users %}
 		{% include "reports/user_activity_table.html" %}
 	{% endwith %}
 	
 	
-	<h2>Top 10 Most Active Users - Last 90 days</h2> 
+	<h2>{% trans "Top 10 Most Active Users - Last 90 days" %}</h2> 
 	
 	{% with users90days as users %}
 		{% include "reports/user_activity_table.html" %}

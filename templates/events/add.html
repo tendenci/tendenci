@@ -2,6 +2,7 @@
 {% load event_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Add{% endblock %}
 
@@ -16,7 +17,7 @@
 {% block body %}
 
 <div class="t">
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} Add</h1>
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Add" %}</h1>
     
     {% event_nav request.user %}
 

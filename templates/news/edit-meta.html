@@ -1,6 +1,7 @@
 {% extends "news/base.html" %}
 {% load news_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Edit Meta Information{% endblock %}
 
@@ -13,8 +14,8 @@
 <div class="t">
 
     {% news_nav user %}
-    <h1>{% firstof MODULE_NEWS_LABEL 'News' %} Meta Information for<br />
-    {{ news.headline }}</h1>
+    <h1>{% firstof MODULE_NEWS_LABEL 'News' %} {% blocktrans %}Meta Information for <br />
+    {{ news.headline }}{% endblocktrans %}</h1>
 
     <div class="news-wrap">
 		<div class="options">
@@ -27,7 +28,7 @@
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />
-			 or <a href="javascript:history.go(-1);">Cancel</a>
+			 or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
 		</div>
         </form>
     </div>

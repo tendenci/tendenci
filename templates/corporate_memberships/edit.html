@@ -1,5 +1,6 @@
 {% extends "corporate_memberships/base.html" %}
 {% load corporate_memberships_tags %}
+{% load i18n %}
 
 {% block title %}Corporate Membership Edit{% endblock %}
 
@@ -13,13 +14,13 @@
 {% block body %}
 <div class="t">
 {% corpmemb_nav request.user corporate_membership %} 
-     <h1>Edit Corporate Membership</h1>
+     <h1>{% trans "Edit Corporate Membership" %}</h1>
      
     <form method="post" enctype="multipart/form-data">{% csrf_token %}
 	<div class="forms">
 	{% if form.errors.values %}
 		<div class="errors">
-		There were some problems in the form. Please review. Thanks!
+		{% trans "There were some problems in the form. Please review. Thanks!" %}
 		
 		{% for field in form %}
 			{% if field.errors %}

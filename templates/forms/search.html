@@ -1,6 +1,7 @@
 {% extends "forms/base.html" %}
 {% load pagination_tags %}
 {% load forms_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
 
@@ -30,7 +31,7 @@
             </form>
 		</div>
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

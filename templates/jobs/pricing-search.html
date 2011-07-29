@@ -4,8 +4,9 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load base_filters %}
+{% load i18n %}
 
-{% block title %}Job Pricing List{% endblock %}
+{% block title %}{% trans "Job Pricing List" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,7 +16,7 @@
 {% block body %}
 <div class="t">
 {% job_pricing_nav request.user %}
-    <h1>Job Pricing List</h1>  
+    <h1>{% trans "Job Pricing List" %}</h1>  
 
     {% autopaginate job_pricings 10 %}
 	
@@ -31,15 +32,15 @@
                 </div>
 			</div>
 
-            <h2><a href="{% url job_pricing.view jp.pk %}">Duration: {{ jp.duration }}</a></h2>
-            <div class="content">Regular Price: {{ jp.regular_price|format_currency }}</div>
-            <div class="content">Premium Price: {{ jp.premium_price|format_currency }}</div>
-            <div class="content">Member Regular Price: {{ jp.regular_price_member|format_currency }}</div>
-            <div class="content">Member Premium Price: {{ jp.premium_price_member|format_currency }}</div>
-            <div class="content">Show Member Pricing: {{ jp.show_member_pricing }}</div>
-            <div class="content">Status: <b>{% if jp.status %}Active{%else%}Inactive{%endif%}</b></div>
+            <h2><a href="{% url job_pricing.view jp.pk %}">{% trans "Duration:" %} {{ jp.duration }}</a></h2>
+            <div class="content">{% trans "Regular Price:" %} {{ jp.regular_price|format_currency }}</div>
+            <div class="content">{% trans "Premium Price:" %} {{ jp.premium_price|format_currency }}</div>
+            <div class="content">{% trans "Member Regular Price:" %} {{ jp.regular_price_member|format_currency }}</div>
+            <div class="content">{% trans "Member Premium Price:" %} {{ jp.premium_price_member|format_currency }}</div>
+            <div class="content">{% trans "Show Member Pricing:" %} {{ jp.show_member_pricing }}</div>
+            <div class="content">{% trans "Status:" %} <b>{% if jp.status %}Active{%else%}Inactive{%endif%}</b></div>
 			<div class="meta">
-            	<div class="submitted">Created on {{ jp.create_dt|date:"long" }} by {{ jp.creator }}</div>
+            	<div class="submitted">{% blocktrans with jp.create_dt|date:"long" as create_date and jp.creator as creat %}Created on {{ create_date }} by {{ creat }}{% endblocktrans %}</div>
             </div>
 
             <!-- delete-job form -->
@@ -50,7 +51,7 @@
 		{% endif %}
 	
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

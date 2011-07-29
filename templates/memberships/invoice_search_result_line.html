@@ -1,15 +1,16 @@
 {% load base_filters %}
 {% load invoice_tags %}
+{% load i18n %}
 
 <table style="width:100%;">
     {% invoices_search_line_header request invoice '#ff6600' %}
 
     <tr>
-    	<td>Memb. App. ID</td>
-    	<td colspan="2">First Name</td>
-    	<td>Last Name</td>
-    	<td>Price</td>
-    	<td>Balance</td>
+    	<td>{% trans "Memb. App. ID" %}</td>
+    	<td colspan="2">{% trans "First Name" %}</td>
+    	<td>{% trans "Last Name" %}</td>
+    	<td>{% trans "Price" %}</td>
+    	<td>{% trans "Balance" %}</td>
     </tr>
     {% if obj %}
       <tr>

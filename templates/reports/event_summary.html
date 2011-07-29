@@ -1,13 +1,14 @@
 {% extends "reports/base.html" %}
 {% load reports_tags %}
+{% load i18n %}
 
 {% block content %}
-<h1>Tendenci&trade; Marketing Events Summary Report</h1>
+<h1>{% trans "Tendenci&trade; Marketing Events Summary Report" %}</h1>
 
 <div>
-	<a href="./?{% month_url previous %}">Previous</a>
+	<a href="./?{% month_url previous %}">{% trans "Previous" %}</a>
 	{{ date_range.0|date:"M Y" }}
-	<a href="./?{% month_url next %}">Next</a>
+	<a href="./?{% month_url next %}">{% trans "Next" %}</a>
 </div>
 
 <table class="events-summary-chart">

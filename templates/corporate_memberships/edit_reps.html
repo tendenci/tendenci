@@ -2,8 +2,9 @@
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
-{% block title %}Corporate Membership Representatives{% endblock %}
+{% block title %}{% trans "Corporate Membership Representatives" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -30,13 +31,13 @@
 <div class="t">
 {% corpmemb_nav request.user corp_memb %} 
 <div class="corp-reps">
-     <h1>Corporate Membership Representatives</h1>
+     <h1>{% trans "Corporate Membership Representatives" %}</h1>
      {% if reps %}
      <table width="90%">
 	     	<tr>
-	     		<td class="header" width="55%">Representative.</td>
-	     		<td class="header" width="20%">Is Dues Rep.</td>
-	     		<td class="header" width="20%">Is Member Rep.</td>
+	     		<td class="header" width="55%">{% trans "Representative." %}</td>
+	     		<td class="header" width="20%">{% trans "Is Dues Rep." %}</td>
+	     		<td class="header" width="20%">{% trans "Is Member Rep." %}</td>
 	     		<td class="header" width="5%">&nbsp;</td>
 	     	</tr>
 	     	{% for rep in reps %}
@@ -46,19 +47,19 @@
 	            </td>
 	     		<td>
 	     			{% if rep.is_dues_rep %}
-	     				True
+	     				{% trans "True" %}
 	     			{% else %}
 	     				-
 	     			{% endif %}
 	     		</td>
 	     		<td>
 	     		{% if rep.is_member_rep %}
-	     				True
+	     				{% trans "True" %}
 	     			{% else %}
 	     				-
 	     			{% endif %}
 	     		</td>
-	     		<td><a href="{% url corp_memb.delete_rep rep.pk %}"><small class="delete">Delete</small></a>
+	     		<td><a href="{% url corp_memb.delete_rep rep.pk %}"><small class="delete">{% trans "Delete" %}</small></a>
 	     		<!-- delete-corp_memb form -->
 		            <form name="corp-memb-rep-delete" method="POST" action="{% url corp_memb.delete_rep rep.pk %}">{% csrf_token %}
 		                <input type="hidden" name="action" value="delete">
@@ -68,7 +69,7 @@
 	     	{% endfor %}
 	     	</table>
 	 {% else %}
-	 	<div>No representative designated yet.</div>
+	 	<div>{% trans "No representative designated yet." %}</div>
 	 {% endif %}
      
     

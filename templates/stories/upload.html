@@ -22,12 +22,12 @@
         </div>
 
 
-        <h2>Upload a Story Image</h2>
+        <h2>{% trans "Upload a Story Image" %}</h2>
         <p>
-        	Title: <a href="{% url stories.views.index story.pk%}">{{ story.title }}</a>
+        	{% trans "Title:" %} <a href="{% url stories.views.index story.pk%}">{{ story.title }}</a>
         	<br />
         	<br />
-        	To upload image to this story, browse to your document and click Upload Image. 
+        	{% trans "To upload image to this story, browse to your document and click Upload Image." %} 
         </p>
         
         <form method="post" enctype="multipart/form-data" action="" class="add-image">{% csrf_token %}

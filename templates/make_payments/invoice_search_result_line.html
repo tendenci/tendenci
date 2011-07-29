@@ -1,17 +1,18 @@
 {% load base_filters %}
 {% load invoice_tags %}
+{% load i18n %}
 
 <table width="100%">
    {% invoices_search_line_header request invoice '#66cc00' %}  
       
     {# display make payment info #} 
     <tr>
-    	<td>MakePaymentID</td>
-    	<td>First Name</td>
-    	<td>Last Name</td>
-    	<td>Date</td>
-    	<td>Amount</td>
-    	<td>Balance</td>
+    	<td>{% trans "Make Payment ID" %}</td>
+    	<td>{% trans "First Name" %}</td>
+    	<td>{% trans "Last Name" %}</td>
+    	<td>{% trans "Date" %}</td>
+    	<td>{% trans "Amount" %}</td>
+    	<td>{% trans "Balance" %}</td>
     </tr>
     
     {% if obj %} 

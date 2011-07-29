@@ -4,8 +4,9 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load base_filters %}
+{% load i18n %}
 
-{% block title %}Directory Pricing List{% endblock %}
+{% block title %}{% trans "Directory Pricing List" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,7 +16,7 @@
 {% block body %}
 <div class="t">
 {% directory_pricing_nav request.user %}
-    <h1>Directory Pricing List</h1>  
+    <h1>{% trans "Directory Pricing List" %}</h1>  
 
     {% autopaginate directory_pricings 10 %}
 	
@@ -31,14 +32,14 @@
                 </div>
 			</div>
 
-            <h2><a href="{% url directory_pricing.view dp.pk %}">Duration: {{ dp.duration }}</a></h2>
-            <div class="content">Regular Price: {{ dp.regular_price|format_currency }}</div>
-            <div class="content">Premium Price: {{ dp.premium_price|format_currency }}</div>
-            <div class="content">Category Threshold: {{ dp.category_threshold }}</div>
+            <h2><a href="{% url directory_pricing.view dp.pk %}">{% trans "Duration: %}{{ dp.duration }}</a></h2>
+            <div class="content">{% trans "Regular Price: %}{{ dp.regular_price|format_currency }}</div>
+            <div class="content">{% trans "Premium Price: %}{{ dp.premium_price|format_currency }}</div>
+            <div class="content">{% trans "Category Threshold: "%}{{ dp.category_threshold }}</div>
             
-            <div class="content">Status: <b>{% if dp.status %}Active{%else%}Inactive{%endif%}</b></div>
+            <div class="content">{% trans "Status:" %} <b>{% if dp.status %}{% trans "Active" %}{%else%}{% trans "Inactive" %}{%endif%}</b></div>
 			<div class="meta">
-            	<div class="submitted">Created on {{ dp.create_dt|date:"long" }} by {{ dp.creator }}</div>
+            	<div class="submitted">{% blocktrans with dp.create_dt|date:"long" as dp_create and dp.creator as dp_creator %} Created on {{ dp_create }} by {{ dp_creator }}{% endblocktrans %}</div>
             </div>
 
             <!-- delete-directory form -->
@@ -49,7 +50,7 @@
 		{% endif %}
 	
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

@@ -15,55 +15,55 @@
 {% block body %}
 <div id="photo-sizes">
 
-	<h1>{{ photo.title }} &middot; All Photo Sizes</h1>
-	<div id="back-link"><a href="{{ photo.get_absolute_url }}">&larr; Back to photo</a></div>
+	<h1>{{ photo.title }} &middot; {% trans "All Photo Sizes" %}</h1>
+	<div id="back-link"><a href="{{ photo.get_absolute_url }}">&larr; {% trans "Back to photo" %}</a></div>
 
 	<div id="license-wrap">
-		<div class="label">License</div>
-		<div class="value">{{ photo.get_license.name }} by 
+		<div class="label">{% trans "License" %}</div>
+		<div class="value">{% blocktrans %}{{ photo.get_license.name }} by 
 			<a href="{{ photo.creator.get_absolute_url }}">
 				{{ photo.creator.get_full_name }}
-			</a>
+			</a>{% endblocktrans %}
 		</div>
 	</div>
 
 	<div id="download-wrap">
-		<div class="label">Download</div>
-		<div class="link"><a href="{{ download_url }}">Download the {{ size_name|capfirst }} size of this photo</a></div>
+		<div class="label">{% trans "Download" %}</div>
+		<div class="link"><a href="{{ download_url }}">{% blocktrans %}Download the {{ size_name|capfirst }} size of this photo{% endblocktrans %}</a></div>
 	</div>
 	<div id="sizes-wrap">
-		<div class="label">Sizes</div>
+		<div class="label">{% trans "Sizes" %}</div>
 
 		<div class="sizes">
 			<div class="size-wrap{% if size_name == "square" %} highlight{% endif %}">
-				<div class="size-name"><a href="{% url photo_square photo.pk %}">Square</a></div>
+				<div class="size-name"><a href="{% url photo_square photo.pk %}">{% trans "Square" %}</a></div>
 				<div class="size-numerals">{{ photo.get_square_size|join:" x " }}</div>
 			</div>
 			<div class="size-wrap{% if size_name == "thumbnail" %} highlight{% endif %}">
-				<div class="size-name"><a href="{% url photo_thumbnail photo.pk %}">Thumbnail</a></div>
+				<div class="size-name"><a href="{% url photo_thumbnail photo.pk %}">{% trans "Thumbnail" %}</a></div>
 				<div class="size-numerals">{{ photo.get_thumbnail_size|join:" x " }}</div>
 			</div>
 			<div class="size-wrap{% if size_name == "small" %} highlight{% endif %}">
-				<div class="size-name"><a href="{% url photo_small photo.pk %}">Small</a></div>
+				<div class="size-name"><a href="{% url photo_small photo.pk %}">{% trans "Small" %}</a></div>
 				<div class="size-numerals">{{ photo.get_small_size|join:" x " }}</div>
 			</div>
 			<div class="size-wrap{% if size_name == "medium 500" %} highlight{% endif %}">
-				<div class="size-name"><a href="{% url photo_medium_500 photo.pk %}">Medium 500</a></div>
+				<div class="size-name"><a href="{% url photo_medium_500 photo.pk %}">{% trans "Medium 500" %}</a></div>
 				<div class="size-numerals">{{ photo.get_medium_500_size|join:" x " }}</div>
 			</div>
 			<div class="size-wrap{% if size_name == "medium 640" %} highlight{% endif %}">
-				<div class="size-name"><a href="{% url photo_medium_640 photo.pk %}">Medium 640</a></div>
+				<div class="size-name"><a href="{% url photo_medium_640 photo.pk %}">{% trans "Medium 640" %}</a></div>
 				<div class="size-numerals">{{ photo.get_medium_640_size|join:" x " }}</div>
 			</div>
 			<div class="size-wrap{% if size_name == "large" %} highlight{% endif %}">
 				<div class="size-name">
 					<a target="_blank" href="{% url photo.size photo.pk photo.get_large_size|join:"x" %}">
-						Large (opens in new tab)</a></div>
+						{% trans "Large (opens in new tab)" %}</a></div>
 				<div class="size-numerals">{{ photo.get_large_size|join:" x " }}</div>
 			</div>
 			{% if can_view_original %}
 			<div class="size-wrap{% if size_name == "original" %} highlight{% endif %}">
-				<div class="size-name"><a target="_blank" href="{{ original_source_url }}">Original (opens in new tab)</a></div>
+				<div class="size-name"><a target="_blank" href="{{ original_source_url }}">{% trans "Original (opens in new tab)" %}</a></div>
 				<div class="size-numerals">{{ photo.image.width }} x {{ photo.image.height }}</div>
 			</div>
 			{% endif %}
@@ -75,7 +75,7 @@
 	<img id='featured-photo' src="{{ source_url }}" alt="{{ photo.title }}" />
 
 	<div id="embed-photo">
-	<div>Copy &amp; paste HTML into your webpage</div>
+	<div>{% trans "Copy &amp; paste HTML into your webpage" %}</div>
 	<textarea><a href="{{ photo.get_absolute_url }}"><img src="{{ source_url }}" alt="{{ photo.title }}"></a></textarea>
 	</div><!-- #embed-photo -->
 

@@ -1,1 +1,3 @@
-Payment attempt by {{ mp.last_name }}, {{ mp.first_name }} on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+{% load i18n %}
+
+{% blocktrans %}Payment attempt by {{ mp.last_name }}, {{ mp.first_name }} on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

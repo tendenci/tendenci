@@ -1,6 +1,7 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Add{% endblock %}
 
@@ -13,7 +14,7 @@
 {% endblock %}
 
 {% block body %}
-	<p>Step {{ step }} of {{ step_count }}</p>
+	<p>{% blocktrans %}Step {{ step }} of {{ step_count }}{% endblocktrans %}</p>
 	<form action="" method="post">{% csrf_token %}
 		<table>
 			<tr><td>

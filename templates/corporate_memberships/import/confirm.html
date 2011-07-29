@@ -2,8 +2,9 @@
 {% load corporate_memberships_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load i18n %}
 
-{% block title %}Import Corporate Memberships from CSV file{% endblock %}
+{% block title %}{% trans "Import Corporate Memberships from CSV file" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -20,36 +21,35 @@
  {% corpmemb_nav request.user %}
 <div id="corp-import-wrap" class="finished">
 
-	<h1>Corporate Membership Import</h1>
+	<h1>{% trans "Corporate Membership Import" %}</h1>
 	<div id="corp-import">
 		<p class="import-timestamp">{{ datetime.now }}</p>
-	    <h3 class="corp-import-step">Step 4/4 - Finished!</h3>
+	    <h3 class="corp-import-step">{% trans "Step 4/4 - Finished!" %}</h3>
 		 <div class="clear-right"></div>   
 	
-		<p class="msg">Total <em>{{ corp_membs|length}}</em> processed;
+		<p class="msg">{% blocktrans with corp_membs|length as members %} Total <em>{{ members }}</em> processed;{% endblocktrans %}
 		 {% if invalid_skipped %}
-			<em class="action-invalid">{{ invalid_skipped|length }}</em> invalid - skipped,
+			<em class="action-invalid">{% blocktrans with invalid_skipped|length as inval %}{{ inval }}</em>invalid - skipped,{% endblocktrans %}
 		{% endif %}
-		<em>{{ added|length }}</em> added,
-		and 
+		{% blocktrans with added|length as adds %}<em>{{ adds }}</em> added,{% endblocktrans %}
 		{% if skipped %}
-			<em>{{ skipped|length }}</em> skipped (existing record)
+			<em>{% blocktrans with skipped|length as skip %}{{ skip }}</em> skipped (existing record){% endblocktrans %}
 		{% else %}
 			{% if updated %}
-				<em>{{ updated|length }}</em>  updated (for the blank fields)
+				{% blocktrans with updated|length as updates %}<em>{{ updates }}</em>  updated (for the blank fields){% endblocktrans %}
 			{% else %}
-				<em>{{ updated_override|length }}</em> updated (override)
+				{% blocktrans with updated_override|length as over %}<em>{{ over }}</em> updated (override){% endblocktrans %}
 			{% endif %}
 		{% endif %}
 		
 		.</p>
 		
 		{% if invalid_skipped %}
-			<p style="background-color: yellow;"><a href="{% url corp_memb_import_download_invalid %}">Download the Invalid Records?</a></p>
+			<p style="background-color: yellow;"><a href="{% url corp_memb_import_download_invalid %}">{% trans "Download the Invalid Records?" %}</a></p>
 		{% endif %}
 	
-		<p class="link"><a href="{% url corp_memb.search %}">Go to Search &raquo;</a></p>
-		<p class="link"><a href="{% url corp_import %}">More Import &raquo;</a></p>
+		<p class="link"><a href="{% url corp_memb.search %}">{% trans "Go to Search " %}&raquo;</a></p>
+		<p class="link"><a href="{% url corp_import %}">{% trans "More Import " %}&raquo;</a></p>
 		
 	</div>
 

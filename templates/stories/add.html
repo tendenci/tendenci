@@ -1,6 +1,7 @@
 {% extends "stories/base.html" %}
 {% load story_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Add{% endblock %}
 
@@ -15,7 +16,7 @@
 {% block body %}
 <div class="t">
  {% stories_nav request.user %}
-    <h1>{% firstof MODULE_STORIES_LABEL "Story" %} Add</h1>
+    <h1>{% firstof MODULE_STORIES_LABEL "Story" %} {% trans "Add" %}</h1>
    
     <div class="article-wrap">
     	<form action="{% url story.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}

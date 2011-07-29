@@ -1,4 +1,6 @@
+{% load i18n %}
+
 {% block body %}
-<h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} Delete Page</h1>
-<div class="back-to-search"><a href="{% url directory.search %}">&laquo; Back to directories search</a></div>
+<h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} {% trans "Delete Page" %}</h1>
+<div class="back-to-search"><a href="{% url directory.search %}">&laquo;{% trans " Back to directories search" %}</a></div>
 {% endblock %}

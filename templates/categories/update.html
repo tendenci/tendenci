@@ -1,7 +1,8 @@
 {% extends "categories/base.html" %}
 {% load styled_forms %}
+{% load i18n %}
 
-{% block title %}{{ block.super }}Add{% endblock %}
+{% block title %}{{ block.super }}{% trans "Add" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -10,7 +11,7 @@
 
 {% block body %}
 <div class="t">
-    <h1>{{ MODULE_CATEGORIES_LABEL }} Update</h1>
+    <h1>{{ MODULE_CATEGORIES_LABEL }} {% trans "Update" %}</h1>
     <p>{{ model|capfirst }} - <a href="{{ object.get_absolute_url }}">{{ object }}</a></p>
     <div class="article-wrap">
     	<form action="." method="post">{% csrf_token %}

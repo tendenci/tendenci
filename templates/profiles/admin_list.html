@@ -4,6 +4,7 @@
 {% load profile_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}Administrators{% endblock %}
 
@@ -19,7 +20,7 @@
     {% users_nav request.user request.user %}
     {% is_developer request.user as user_is_developer %}
     {% is_admin request.user as user_is_admin %}
-    <h1>Administrators</h1>
+    <h1>{% trans "Administrators" %}</h1>
     {% autopaginate admins 50 %}
 
 	<div class="profiles-wrap">
@@ -44,12 +45,12 @@
                         {% endif %}
                         {% if admin_is_developer %}
                             {% if user_is_developer %}
-                                &ndash;&nbsp;<a href="{% url profile.edit admin.user.pk %}">edit</a>
+                                &ndash;&nbsp;<a href="{% url profile.edit admin.user.pk %}">{% trans "edit" %}</a>
                             {% endif %}
                         {% else %}
                             {% if admin_is_admin %}
                                {% if user_is_developer or user_is_admin %}
-                                    &ndash;&nbsp;<a href="{% url profile.edit admin.user.pk %}">edit</a>
+                                    &ndash;&nbsp;<a href="{% url profile.edit admin.user.pk %}">{% trans "edit" %}</a>
                                {% endif %}
                             {% endif %}
                         {% endif %}
@@ -65,7 +66,7 @@
             <div style="clear: both"></div>
         </div>
 	{% empty %}
-		<div>No administrators found.</div>
+		<div>{% trans "No administrators found." %}</div>
     {% endfor %}
 	</div>
     </div>

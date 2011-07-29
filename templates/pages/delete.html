@@ -1,5 +1,6 @@
 {% extends "pages/base.html" %}
 {% load page_tags %}
+{% load i18n %}
 
 {% block title %}Delete Page - {{ page.get_title }}{% endblock %}
 
@@ -8,15 +9,15 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
 {% endblock %}
 {% block body %}
-<h1>Delete Page:</h1>
+<h1>{% trans "Delete Page:" %}</h1>
 <h2>{{ page.title }} - <a href="{{ page.get_absolute_url }}">{{ page.get_absolute_url }}</a></h2>
 <div class="content">{{ page.content|safe|truncatewords_html:"60" }}</div>
-<p><strong>Are you sure you want to permanently delete this page?</strong></p>
+<p><strong>{% trans "Are you sure you want to permanently delete this page?" %}</strong></p>
  <!-- delete-page form -->
             <form name="page-delete" method="POST" action="{% url page.delete page.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
                 <input type="submit" name="submit" value="Confirm Delete">
             </form>
             <br /><br />
-<div class="back-search"><a href="{% url page.search %}">&laquo; Back to {% firstof MODULE_PAGES_LABEL 'pages' %} search</a></div>
+<div class="back-search"><a href="{% url page.search %}">&laquo; {% blocktrans %}Back to search{% endblocktrans %}{% firstof MODULE_PAGES_LABEL 'pages' %} </a></div>
 {% endblock %}

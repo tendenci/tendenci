@@ -28,7 +28,7 @@
     <h1>{% trans 'Edit '%} {{user_this.first_name }} {{user_this.last_name }}</h1>
     <p>{% trans 'Change the information below as needed and press Submit changes.'%}</p>
 {% if form.errors or  form.non_field_errors %}
-<div class="body-copy-alerts">There are some issues on the form, please review.</div>
+<div class="body-copy-alerts">{% trans "There are some issues on the form, please review." %}</div>
 {{form.non_field_errors}}
 {% endif %}
     <div class="profile-wrap">
@@ -92,7 +92,7 @@
                          <td>&nbsp;</td>
                        </tr>
                        <tr >
-                         <td colspan="2" ><label for="id_hide_in_search">{% trans 'Prevent my record from displaying  in search?'%}</label>&nbsp;&nbsp;&nbsp;{{ form.hide_in_search }} Yes </td>
+                         <td colspan="2" ><label for="id_hide_in_search">{% trans 'Prevent my record from displaying  in search?'%}</label>&nbsp;&nbsp;&nbsp;{{ form.hide_in_search }} {% trans "Yes" %} </td>
                          </tr>
                    </table></td>
                  </tr>
@@ -154,7 +154,7 @@
                               </td>
                             </tr>
                             <tr >
-                              <td colspan="3"><label for="id_hide_phone">{% trans 'Hide phone numbers?'%}</label> &nbsp;&nbsp;&nbsp; {{ form.hide_phone }} Yes </td>
+                              <td colspan="3"><label for="id_hide_phone">{% trans 'Hide phone numbers?'%}</label> &nbsp;&nbsp;&nbsp; {{ form.hide_phone }} {% trans "Yes" %} </td>
 
                               <td>&nbsp;</td>
                             </tr>
@@ -306,7 +306,7 @@
                         </tr>
                         <tr >
                           <td class="label"><label for="id_hide_address">{% trans 'Hide address?'%} </td>
-                          <td colspan="2">{{form.hide_address}} Yes 
+                          <td colspan="2">{{form.hide_address}} {% trans "Yes" %} 
                           </td>
                         </tr>
                         </table></td>
@@ -326,7 +326,7 @@
 									{{ form.username.errors }}
 								{% endif %}
                               <div>{{ form.username }}</div>
-			      <a href="{% url auth_password_change user_this.pk %}">change password</a>
+			      <a href="{% url auth_password_change user_this.pk %}">{% trans "change password" %}</a>
 							 </td>
                            </tr>
                       

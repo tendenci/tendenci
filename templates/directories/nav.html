@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user directories.add_directory as can_add_directory %}
@@ -26,30 +27,30 @@
     {% endif %}
 
 	<li>
-		<span>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</span>
+		<span>{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url directories %}">{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}:</a></li> 
+			<li><a href="{% url directories %}">{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}:</a></li> 
 			{% if can_edit_setting %}
-				<li><a href="{% url settings.index "module" "directories" %}">Settings</a></li>
+				<li><a href="{% url settings.index "module" "directories" %}">{% trans "Settings" %}</a></li>
 			{% endif %}
 			{% if nav_object %}
 				{% if can_view_directory %}
-				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
+				<li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %}</a></li>
 				{% endif %}
 				{% if can_edit_directory %}
-				<li><a href="{% url directory.edit nav_object.pk %}">Edit</a></li>
-				<li><a href="{% url directory.edit.meta nav_object.pk %}">Edit Meta</a></li>
-				<li><a href="{% url category.update nav_object.opt_app_label nav_object.opt_module_name nav_object.pk %}">Edit Categories</a></li>
+				<li><a href="{% url directory.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
+				<li><a href="{% url directory.edit.meta nav_object.pk %}">{% trans "Edit Meta" %}</a></li>
+				<li><a href="{% url category.update nav_object.opt_app_label nav_object.opt_module_name nav_object.pk %}">{% trans "Edit Categories" %}</a></li>
 				{% endif %}
 			{% endif %}
-			<li><a href="{% url directory.search %}">Search</a></li>
+			<li><a href="{% url directory.search %}">{% trans "Search" %}</a></li>
 			{% if can_add_directory %}
-			<li><a href="{% url directory.add %}">Add</a></li>
-			<li><a href="{% url directory_pricing.search %}">Pricing</a></li>
+			<li><a href="{% url directory.add %}">{% trans "Add" %}</a></li>
+			<li><a href="{% url directory_pricing.search %}">{% trans "Pricing" %}</a></li>
 			{% endif %}
 
 			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}
 		</ul>
 		
