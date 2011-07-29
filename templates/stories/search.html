@@ -23,6 +23,7 @@
 	
 	<div class="stories-wrap">
     {% for story in stories %}
+        {% with story.object as story %}
 		<div class="story-wrap">
                 <div class="quick-options">
  					{% stories_options request.user story %}
@@ -40,6 +41,7 @@
             </form>
 
 		</div>
+        {% endwith %}
 	{% empty %}
 		<div>0 Results Found</div>
     {% endfor %}
