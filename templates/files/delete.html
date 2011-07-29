@@ -1,4 +1,6 @@
+{% load i18n %}
+
 {% block body %}
-<h1>File Delete</h1>
-<div class="back-to-search"><a href="{% url file.search %}">&laquo; Back to files search</a></div>
+<h1>{% trans "File Delete" %}</h1>
+<div class="back-to-search"><a href="{% url file.search %}">&laquo; {% trans "Back to files search" %}</a></div>
 {% endblock %}

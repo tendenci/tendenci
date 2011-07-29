@@ -1,19 +1,20 @@
 {% extends "accounts/base.html" %}
+{% load i18n %}
 
 {% block title %}
-	Account Activation
+	{% trans "Account Activation" %}
 {% endblock %}
 
 {% block body %}
 {% if account %}
-Your account has been activated.
+    {% trans "Your account has been activated." %}
 {% if not user.is_authenticated %}
-	<a href="{% url auth_login %}">Log in</a> now.<br />
+	<a href="{% url auth_login %}">{% trans "Log in" %}</a> now.<br />
 {% else %}
-	<a href="{% url dashboard %}">Go to the dashboard</a><br />
+	<a href="{% url dashboard %}">{% trans "Go to the dashboard" %}</a><br />
 {% endif %}
 {% else %}
-Activation failed. <br /><br />
+{% trans "Activation failed." %} <br /><br />
 {% endif %}
 
 {% endblock %}

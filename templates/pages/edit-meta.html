@@ -1,6 +1,7 @@
 {% extends "pages/base.html" %}
 {% load page_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{% firstof MODULE_PAGE_LABEL 'Page' %} Edit Meta Information{% endblock %}
 
@@ -13,8 +14,8 @@
 <div class="t">
 
     {% page_nav user %}
-    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} Meta Information for<br />
-    {{ page.title }}</h1>
+    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% blocktrans %}Meta Information for<br />
+    {{ page.title }}{% endblocktrans %}</h1>
 
     <div class="page-wrap">
         <div class="options">
@@ -27,7 +28,7 @@
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />
-			 or <a href="javascript:history.go(-1);">Cancel</a>
+			 or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
 		</div>
         </form>
     </div>

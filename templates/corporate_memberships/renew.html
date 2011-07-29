@@ -1,8 +1,9 @@
 {% extends "corporate_memberships/base-wide.html" %}
 {% load corporate_memberships_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
-{% block title %}Corporate Membership Renewal{% endblock %}
+{% block title %}{% trans "Corporate Membership Renewal" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -84,7 +85,7 @@ div.id_payment_method ul{
 <div class="t">
 {% corpmemb_nav request.user corporate_membership %} 
 
-     <h1>Corporate Membership Renewal</h1>
+     <h1>{% trans "Corporate Membership Renewal" %}</h1>
   
 <form action="" method="post">{% csrf_token %}
 
@@ -92,16 +93,16 @@ div.id_payment_method ul{
 	<div class="float-anchor"><!-- ie7 fix --></div>
 	<div class="float-window">
 	<div id="summary-form-box">
-		<div id="renew-summary">Summary</div>
+		<div id="renew-summary">{% trans "Summary" %}</div>
 		<table id="summary-price">
 			<tr>
 				<td width="26%" class="summary-header">&nbsp;</td>
-				<td width="20%" class="summary-header">Qty</td>
-				<td width="27%" class="summary-header">Unit Price</td>
-				<td width="27%" class="summary-header">Sub-total</td>
+				<td width="20%" class="summary-header">{% trans "Qty" %}</td>
+				<td width="27%" class="summary-header">{% trans "Unit Price" %}</td>
+				<td width="27%" class="summary-header">{% trans "Sub-total" %}</td>
 			</tr>
 			<tr>
-				<td>Corporate</td>
+				<td>{% trans "Corporate" %}</td>
 				<td class="center">1</td>
 				<td class="right">
 					<span>{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span><span id="corp-price">{{ summary_data.corp_price }}</span>
@@ -111,7 +112,7 @@ div.id_payment_method ul{
 				</td>
 			</tr>
 			<tr>
-				<td>Individuals</td>
+				<td>{% trans "Individuals" %}</td>
 				<td class="center" id="ind-qty">{{ summary_data.individual_count }}</td>
 				<td class="right">
 					{{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="ind-price">{{ summary_data.individual_price }}</span>
@@ -123,7 +124,7 @@ div.id_payment_method ul{
 		</table>
 		<table id="summary-total-price">
 			<tr>
-				<td><div id="total-label">Total</div></td>
+				<td><div id="total-label">{% trans "Total" %}</div></td>
 				<td align="right">
 					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
 					<span id="total-amount">{{ summary_data.total_amount }}</span>
@@ -191,13 +192,13 @@ div.id_payment_method ul{
      	{% if corporate_membership.email %}
      		{{ corporate_membership.email }} <br />
      	{% endif %}
-     	Join Date: {{ corporate_membership.join_dt }}<br />
-     	<b>Expiration Date</b>: {{ corporate_membership.expiration_dt }}
+     	{% trans "Join Date:" %} {{ corporate_membership.join_dt }}<br />
+     	<b>{% trans "Expiration Date" %}</b>: {{ corporate_membership.expiration_dt }}
      	{% if corporate_membership.is_expired %}
      		{% if corporate_membership.is_in_grace_period %}
-     			<span style="color:#F79D3D">(in grace period)</span>
+     			<span style="color:#F79D3D">{% trans "(in grace period)" %}</span>
      		{% else %}
-     			<span style="color:red">(expired)</span>
+     			<span style="color:red">{% trans "(expired)" %}</span>
      		{% endif %}
      	{% endif %}
      	<br />
@@ -205,7 +206,7 @@ div.id_payment_method ul{
      
    <div style="height:1px;width:80%;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
         
-  {% if form.errors %}<h1>Please correct the following errors</h1>{% endif %}
+  {% if form.errors %}<h1>{% trans "Please correct the following errors" %}</h1>{% endif %}
 
 	{% if form.errors.values %}
 		<div class="errors">
@@ -258,7 +259,7 @@ div.id_payment_method ul{
 	          	<li>
 	          	<label for="id_select_all_members">
 	          	{{ form.select_all_members }}
-	          	<span style="background:yellow">Renew all individuals</span>
+	          	<span style="background:yellow">{% trans "Renew all individuals" %}</span>
 	          	</label>
 	          	</li>
 	          	</ul>

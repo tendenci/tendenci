@@ -1,5 +1,6 @@
 {% extends "user_groups/base.html" %}
 {% load user_group_tags %}
+{% load i18n %}
 
 {% block title %}Groups{% endblock %}
 
@@ -17,9 +18,9 @@
 		{% user_group_options request.user group %} 
 	</div>
 
-<h1>{% if groupmembership %}Edit Member <a href="{{ groupmembership.member.get_absolute_url }}">{{groupmembership.member}}</a> in{% else %}Add Member to{% endif %} Group</h1>
+<h1>{% if groupmembership %}{% blocktrans with groupmembership.member.get_absolute_url as urlz and groupmembership.member as group_member %}Edit Member <a href="{{ urlz }}">{{ group_member }}</a> in Group{% endblocktrans %}{% else %}{% blocktrans %}Add Member to Group{% endblocktrans %}{% endif %} </h1>
 <div class="clear-right"></div>
- <h2>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
+ <h2>{% trans "Group:" %} <a href="{{ group.get_absolute_url }}">{{ group.label }}</a></h2>
 
 <form method="post" action=".">{% csrf_token %}
 

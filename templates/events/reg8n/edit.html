@@ -1,6 +1,7 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Edit Registration Form{% endblock %}
 
@@ -13,7 +14,7 @@
 <div class="t">
     {% event_nav user %}
 
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} Registration Form Edit</h1>
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Registration Form Edit" %}</h1>
 
     <div class="event-wrap">
 		<div class="options">

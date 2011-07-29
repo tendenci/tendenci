@@ -1,4 +1,5 @@
 {% extends "payments/base1.html" %}
+{% load i18n %}
 
 {% block body %}
 {% if form %}
@@ -6,8 +7,8 @@
     {{ form.as_p }}
     
     <br><br><br><br>
-    If you are not redirected within 45 secs,<br>
-    please click the button below to submit your payment. Thank you.
+    {% trans "If you are not redirected within 45 secs,<br>
+    please click the button below to submit your payment. Thank you." %}
     <br><br><br>
     <input type="submit" value="Submit Payment" />
     <script language="javascript">
@@ -15,6 +16,6 @@
     </script>
 </form>
 {% else %}
-<p>The online payment is not setup for the site. Check out later.</p>
+<p>{% trans "The online payment is not setup for the site. Check out later." %}</p>
 {% endif %}
 {% endblock %}

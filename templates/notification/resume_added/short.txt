@@ -1,1 +1,3 @@
-New resume ({{ object.title }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+{% load i18n %}
+
+{% blocktrans %}New resume ({{ object.title }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

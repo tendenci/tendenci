@@ -1,3 +1,5 @@
+{% load i18n %}
+
 {% if obj_header %}
 	{{ obj_header }}
 {% else %}
@@ -8,19 +10,19 @@
     <p>
     {% if not payment.is_approved %}
         <b>
-        DO NOT press the back button in your browser.
+        {% trans "DO NOT press the back button in your browser." %}
         </b>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id payment.invoice.guid %}">Try Making Payment Again</a> 
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id payment.invoice.guid %}">{% trans "Try Making Payment Again" %}</a> 
     {% else %}
         <b>
-        DO NOT press the back button in your browser, or your credit card will be charged twice.
+        {% trans "DO NOT press the back button in your browser, or your credit card will be charged twice." %}
         </b>
 	{% endif %}
     </p>
     <p>&nbsp;</p>
-    <p>Status of transaction (with reason if declined):</p>
+    <p>{% trans "Status of transaction (with reason if declined):" %}</p>
     {% if payment.response_code != '1' and payment.response_reason_code != '1' %}
-        <b>Not approved -</b> 
+        <b>{% trans "Not approved -" %}</b> 
 	{% endif %}
     <b> 
     {{ payment.response_reason_text }}
@@ -29,13 +31,13 @@
 	<p>&nbsp;</p>
 	{% if not payment.is_approved %}
         <p>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id payment.invoice.guid %}">Try Making Payment Again</a>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id payment.invoice.guid %}">{% trans "Try Making Payment Again" %}</a>
         </p>
     {% else %}
         <p>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.print_view payment.invoice.id payment.invoice.guid %}">Print Friendly Invoice.</a>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.print_view payment.invoice.id payment.invoice.guid %}">{% trans "Print Friendly Invoice." %}</a>
         </p>
-        <p><a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id payment.invoice.guid %}">View my Invoice</a></p>
+        <p><a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view payment.invoice.id payment.invoice.guid %}">{% trans "View my Invoice" %}</a></p>
        
    {% endif %}
    

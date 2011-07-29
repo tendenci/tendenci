@@ -1,1 +1,3 @@
-Please click here to activate your account: {{ site_url }}/accounts/activate/{{ activation_key }}/. There are {{ expiration_days  }} days left to do it.
+{% load i18n %}
+
+{% blocktrans %}Please click here to activate your account: {{ site_url }}/accounts/activate/{{ activation_key }}/. There are {{ expiration_days  }} days left to do it.{% endblocktrans %}

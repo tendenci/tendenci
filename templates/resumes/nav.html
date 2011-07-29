@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% is_admin user as user_is_admin %}
 {% has_perm user site_settings.change_setting as can_edit_setting %}
@@ -25,30 +26,30 @@
     {% endif %}
 
 	<li>
-		<span>{% firstof MODULE_RESUMES_LABEL 'Resumes' %}</span>
+		<span>{% firstof MODULE_RESUMES_LABEL trans 'Resumes' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url resumes %}">{% firstof MODULE_RESUMES_LABEL 'Resumes' %}:</a></li> 
+			<li><a href="{% url resumes %}">{% firstof MODULE_RESUMES_LABEL trans 'Resumes' %}:</a></li> 
 			{% if can_edit_setting %}
-				<li><a href="{% url settings.index "module" "resumes" %}">Settings</a></li>
+				<li><a href="{% url settings.index "module" "resumes" %}">{% trans "Settings" %}</a></li>
 			{% endif %}
             {% if user_is_admin %}
-            <li><a href="{% url resume.pending %}">Pending</a></li>
+            <li><a href="{% url resume.pending %}">{% trans "Pending" %}</a></li>
             {% endif %}
 			{% if nav_object %}
 				{% if can_view_resume %}
-				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
+				<li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %}</a></li>
 				{% endif %}
 				{% if can_edit_resume %}
-				<li><a href="{% url resume.edit nav_object.pk %}">Edit</a></li>
-				<li><a href="{% url resume.edit.meta nav_object.pk %}">Edit Meta</a></li>
+				<li><a href="{% url resume.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
+				<li><a href="{% url resume.edit.meta nav_object.pk %}">{% trans "Edit Meta" %}</a></li>
 				{% endif %}
 			{% endif %}
-			<li><a href="{% url resume.search %}">Search</a></li>
+			<li><a href="{% url resume.search %}">{% trans "Search" %}</a></li>
 			{% if can_add_resume %}
-			<li><a href="{% url resume.add %}">Add</a></li>
+			<li><a href="{% url resume.add %}">{% trans "Add" %}</a></li>
 			{% endif %}
 			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}
 		</ul>
 		

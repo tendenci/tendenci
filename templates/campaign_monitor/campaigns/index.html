@@ -3,8 +3,9 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load campaign_monitor_tags %}
+{% load i18n %}
 
-{% block title %}{{ block.super }} Index{% endblock %}
+{% block title %}{{ block.super }} {% trans "Index" %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -15,7 +16,7 @@
 <div class="t">
     {% campaign_nav request.user %}
     
-    <h1>Campaign Monitor Campaigns</h1>
+    <h1>{% trans "Campaign Monitor Campaigns" %}</h1>
     {% autopaginate campaigns 5 %}
 	
 	<div class="templates-wrap">
@@ -29,7 +30,7 @@
             <h2><a href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a></h2>
         </div>
 	{% empty %}
-		<div>0 Campaigns Found</div>
+		<div>{% trans "0 Campaigns Found" %}</div>
     {% endfor %}
 	</div>
     

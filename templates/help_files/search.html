@@ -1,6 +1,7 @@
 {% extends "help_files/base.html" %}
 {% load pagination_tags %}
 {% load help_file_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
@@ -12,7 +13,7 @@
 {% block body %}
 <div class="t">
 	<div class="breadcrumbs"><p><a href="{% url help_files %}">All Help Files</a> > <strong>{{ request.GET.q|striptags }}</strong> help files</p></div>
-    <h1>Help Files Search</h1>
+    <h1>{% trans "Help Files Search" %}</h1>
 	 
 	{% help_file_search %}
     {% autopaginate help_files 10 %}
@@ -25,7 +26,7 @@
             {% endwith %}
 		</div>
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

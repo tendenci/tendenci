@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user profiles.view_profile as can_view_user %}
@@ -18,25 +19,25 @@
     {% endif %}
 
 		<li>
-			<span>Users</span>
+			<span>{% trans "Users" %}</span>
 			<ul id="secondary">
 				<li><a href="{% url profile.search %}">{{ MODULE_USERS_LABEL }}:</a></li> 
 				{% if can_edit_setting %}
-					<li><a href="{% url settings.index "module" "users" %}">Settings</a></li>
+					<li><a href="{% url settings.index "module" "users" %}">{% trans "Settings" %}</a></li>
 				{% endif %}
-				<li><a href="{% url profile.index %}">View</a></li>
-				<li><a href="{% url profile.edit user.pk %}">Edit</a></li>
-				<li><a href="{% url profile.search %}">Search</a></li>
+				<li><a href="{% url profile.index %}">{% trans "View" %}</a></li>
+				<li><a href="{% url profile.edit user.pk %}">{% trans "Edit" %}</a></li>
+				<li><a href="{% url profile.search %}">{% trans "Search" %}</a></li>
 				{% if can_add_user %}
-				<li><a href="{% url profile.add %}">Add</a></li>
+				<li><a href="{% url profile.add %}">{% trans "Add" %}</a></li>
 				{% endif %}
 				{% if user.is_authenticated %}
-				<li><a href="{% url auth_logout %}">Log Off</a></li> 
+				<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 				{% endif %}
 			</ul>
 			
 		</li>
-		<li><a href="{% url groups %}">Groups</a></li>
+		<li><a href="{% url groups %}">{% trans "Groups" %}</a></li>
 		{% if MODULE_ARTICLES_ENABLED %}
 		<li><a href="{% url article.search %}">{{ MODULE_ARTICLES_LABEL }}</a></li>
 		{% endif %}

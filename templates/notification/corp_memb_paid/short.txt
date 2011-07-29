@@ -1,1 +1,3 @@
-Payment Received for Corporate Membership Application - ({{ object.name }})
+{% load i18n %}
+
+{% blocktrans %}Payment Received for Corporate Membership Application - ({{ object.name }}){% endblocktrans %}

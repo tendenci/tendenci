@@ -1,5 +1,6 @@
 {% extends "profiles/base.html" %}
 {% load profile_tags %}
+{% load i18n %}
 
 {% block title %}Add/Remove User Groups{% endblock %}
 
@@ -26,15 +27,15 @@
 <div class="t">
 {% users_nav request.user user_this %}
 {% users_options request.user user_this %}
-    <h1>Join/Leave User Groups</h1>
-    <h2>User: <a href="{{ user_this.get_absolute_url}}">
+    <h1>{% trans "Join/Leave User Groups" %}</h1>
+    <h2>{% trans "User:" %} <a href="{{ user_this.get_absolute_url}}">
     {{ user_this.firstname}} {{ user_this.lastname}}({{ user_this.username}})</a></h2>
 <div class="clear-right"></div>
     <div class="profile-wrap">
     <form action="" method="post">{% csrf_token %}
     
 	<div class="field-wrapper">
-		<label for="id_user_groups" style="float:left; padding-right: 1em;"><b>Groups:</b></label>
+		<label for="id_user_groups" style="float:left; padding-right: 1em;"><b>{% trans "Groups:" %}</b></label>
 		<select multiple="multiple" name="user_groups" id="id_user_groups">
 		{% for g in groups %}
 		<option value="{{ g.id }}"{% if g in groups_joined %} selected="selected"{% endif %}>

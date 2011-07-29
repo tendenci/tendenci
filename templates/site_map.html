@@ -1,8 +1,9 @@
 {% extends "default.html" %}
+{% load i18n %}
 
-{% block title %}{{ block.super }} Site Map{% endblock%}
+{% block title %}{{ block.super }} {% trans "Site Map" %}{% endblock%}
 
 {% block body %}
-    <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Sitemap</h1>
+    <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Sitemap" %}</h1>
     {% include "nav.html" %}
 {% endblock %}

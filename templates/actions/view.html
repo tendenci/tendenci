@@ -17,7 +17,7 @@
    <div id="t-add">
 <h1>View Marketing Action</h1>
 	<div class="step-wrap">
-	   	<div class="step-label">Creator</div>
+	   	<div class="step-label">{% trans "Creator" %}</div>
 	   	<div class="step-desc">
 	   		{{ action.creator.get_full_name }} / {{ action.creator.username }}
 	   		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ action.creator.email }}
@@ -26,26 +26,26 @@
    <div class="clear-left"></div> 
 
    <div class="step-wrap">
-	   	<div class="step-label">Step1</div>
-	   	<div class="step-desc">Specify Action Name and General Properties.<br />
+	   	<div class="step-label">{% trans "Step1" %}</div>
+	   	<div class="step-desc">{% trans "Specify Action Name and General Properties." %}<br />
 	   	<b>{{ action.name }}</b> <br />
-	   	Include email2: <b>{% if action.send_to_email2 %}Yes{% else %}No{% endif %}</b>
+	   	{% trans "Include email2: " %}<b>{% if action.send_to_email2 %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</b>
 	   	</div>
    </div>  
    <div class="clear-left"></div> 
    
    
    <div class="step-wrap">
-	   	<div class="step-label">Step2</div>
-	   	<div class="step-desc">E-mail to bind to this Marketing Action.<br />
+	   	<div class="step-label">{% trans "Step2" %}</div>
+	   	<div class="step-desc">{% trans "E-mail to bind to this Marketing Action." %}<br />
 	   		<div style="float:right;">
-	   	<a href="{% url email.view action.email.id %}" class="body-copy-yellow" target="_blank">View Email</a>
+	   	<a href="{% url email.view action.email.id %}" class="body-copy-yellow" target="_blank">{% trans "View Email" %}</a>
 	   	&nbsp;
 	   	{% if action.article %}
-	   	<a href="{% url article action.article.slug %}" class="body-copy-yellow" target="_blank">View article</a> 
+	   	<a href="{% url article action.article.slug %}" class="body-copy-yellow" target="_blank">{% trans "View article" %}</a> 
 	   {% endif %}
 	   	</div>
-	   	Sender: {{ action.email.sender|obfuscate_email }}<br />
+	   	{% trans "Sender: " %}{{ action.email.sender|obfuscate_email }}<br />
 	   
 	   <b>{{ action.email.subject }}</b><br />
 	   	
@@ -54,20 +54,18 @@
    <div class="clear-both"></div> 
    
    <div class="step-wrap">
-	   	<div class="step-label">Step3</div>
+	   	<div class="step-label">{% trans "Step3" %}</div>
 	   	<div class="step-desc">
 	   	{% if action.group %}
-	   	Select a user group<br />
+	   	{% trans "Select a user group" %}<br />
 		<div align="right" style="float: right;">
-	   	<a href="{% url group.detail action.group.slug %}" class="body-copy-yellow" target="_blank">View User Group</a>
+	   	<a href="{% url group.detail action.group.slug %}" class="body-copy-yellow" target="_blank">{% trans "View User Group" %}</a>
 	  	</div> 
 	   	<b>{{ action.group.name }}</b>
-	   	{% with action.group.members.count as count_members %}
-            ({{ count_members  }} member{{count_members|pluralize }})
-            {% endwith %} 
+	   	{% blocktrans count action.group.members.count as count_members %}({{ count_members  }} member{% plural %}({{ count_members  }} members{% endblocktrans %} 
 	   	</div>
 	   	{% else %}
-	   		Members Only
+	   		{% trans "Members Only" %}
 	   	{% endif %}
    </div>  
    <div class="clear-both"></div> 
@@ -75,16 +73,17 @@
    <div class="step-wrap">
 	   	<div class="step-label">Step4</div>
 	   	<div class="step-desc">
-			<div>Confirm acceptance of site policies and common sense.</div>
+			<div>{% trans "Confirm acceptance of site policies and common sense." %}</div>
 			<div class="body-copy-alerts">
+            {% blocktrans with action.group.name as action_group%}
 				I agree that I have permission from all users of the
-				<b>{{ action.group.name }}  </b> user group 
+				<b>{{ action_group }} </b>user group 
 				to send them e-mail. I understand that by sending this e-mail the transaction, 
 				including my IP address, is recorded. Furthermore I am legally bound by 
 				common courtesy, common sense, and the acceptable use 
 				policy (aup) 
 				and privacy policy of this site. <b>SLA = Agreed</b>
-				
+			{% endblocktrans %}	
 			</div>        
 	   	</div>
    </div>  
@@ -92,27 +91,29 @@
  
 
    <div class="step-wrap">
-	   	<div class="step-label">Step5</div>
-	   	<div class="step-desc"><div>Send the E-mail!</div>
+	   	<div class="step-label">{% trans "Step5" %}</div>
+	   	<div class="step-desc"><div>{% trans "Send the E-mail!" %}</div>
 		<div>
+        {% blocktrans %}
 	   		<b>Note:</b> 
 	   		<span class="body-copy-alerts">Depending on the size of your distribution list, the newsletter will take 
 	   		30 minutes or longer to send. Once submitted the e-mail will be put into 
 	   		the queue for processing as soon as possible.</span>
+        {% endblocktrans %}
 	  	</div> 
-	   	<div><span class="body-copy-yellow">Status of e-mail: {{action.status_detail}}</span> </div>
+	   	<div><span class="body-copy-yellow">{% trans "Status of e-mail: " %}{{action.status_detail}}</span> </div>
 	   	{% if action.status_detail == 'closed' %}
-	   	The e-mail has completed processing - ALL emails have been distributed.<br /><br />
-	   	Total emails sent: {{ action.sent }}<br />
-	   	Emails completed sending at: {{ action.finish_dt|date:"long" }} <br />
+	   	{% trans "The e-mail has completed processing - ALL emails have been distributed." %}<br /><br />
+	   	{% trans "Total emails sent: " %}{{ action.sent }}<br />
+	   	{% trans "Emails completed sending at: " %}{{ action.finish_dt|date:"long" }} <br />
 	   	{% else %}
-	   	This e-mail has entered the queue for processing.<br />
+	   	{% trans "This e-mail has entered the queue for processing." %}<br />
 	   	{% endif %}
-	   	Date Created: {{ action.create_dt|date:"long" }} <br />
-	   	Date Submitted: {{ action.submit_dt|date:"long" }}
+	   	{% trans "Date Created: " %}{{ action.create_dt|date:"long" }} <br />
+	   	{% trans "Date Submitted: " %}{{ action.submit_dt|date:"long" }}
 	   	{% if action.status_detail == 'closed' %}
 		   	<div align="right">
-		   	<a href="{% url action.recap action.id %}" class="body-copy-yellow" target="_blank">View Recap</a>
+		   	<a href="{% url action.recap action.id %}" class="body-copy-yellow" target="_blank">{% trans "View Recap" %}</a>
 		   	</div>
 	   	{% endif %}
 	   	</div>

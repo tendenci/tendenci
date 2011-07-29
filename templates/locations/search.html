@@ -3,6 +3,7 @@
 {% load locations_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
@@ -16,7 +17,7 @@
 
     {% location_nav request.user %}
 
-    <h1>{{ MODULE_LOCATIONS_LABEL }} Search</h1>
+    <h1>{{ MODULE_LOCATIONS_LABEL }} {% trans "Search" %}</h1>
 
     {% autopaginate locations 10 %}
 	
@@ -32,7 +33,7 @@
             <h2><a href="{{ location.get_absolute_url }}">{% firstof location.location_name "Untitled" %}</a></h2>
             <div class="content">{{ location.description|striptags|truncatewords:20|safe }}</div>
 			<div class="meta">
-            	<div class="submitted">Released on {{ location.release_dt|date:"D d M Y P" }} by {{ location.creator }}</div>
+            	<div class="submitted">{% blocktrans %}Released on {{ location.release_dt|date:"D d M Y P" }} by {{ location.creator }}{% endblocktrans %}</div>
             </div>
 
             <!-- delete-location form -->
@@ -42,7 +43,7 @@
 		</div>
 		{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

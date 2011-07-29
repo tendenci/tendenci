@@ -1,12 +1,14 @@
+{% load i18n %}
+
 {% if pages %}
 	<font face="Arial" size="3"><b>
 	<font color=#000000>
 	{# named area for jump links #}
 	<a name="pages" id="pages"></a>
 	{% if start_dt %}
-		Pages Updated for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}
+		{% blocktrans %}Pages Updated for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}{% endblocktrans %}
 	{% else %}
-		All Pages
+		{% trans "All Pages" %}
 	{% endif %}
 	
 	</font></b></font>							   
@@ -31,7 +33,7 @@
 		
 		{% if not simplified  %}
 			<tr><td align="left"><font face="Arial" size="2" color="#000000">
-			<b>Updated:</b> {{ page.update_dt|date:"l d-M-Y h:i A" }} </font> 
+			<b>{% trans "Updated:" %}</b> {{ page.update_dt|date:"l d-M-Y h:i A" }} </font> 
 			</td></tr>
 		{% endif %}
 		
@@ -45,8 +47,8 @@
 		{#  posted by #}
 		{% if not simplified  %}
 			<font face="Arial" size="2" color="#000000">
-			<br><b>Posted by</b>: 
-			{{ page.owner.first_name }} {{page.owner.last_name }}
+			<br><b>{% blocktrans %}Posted by</b>: 
+			{{ page.owner.first_name }} {{page.owner.last_name }}{% endblocktrans %}
 			</font>
 		{% endif %}
 		<br>

@@ -4,6 +4,7 @@
 {% load profile_tags %}
 {% load perm_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}Users Search Page{% endblock %}
 
@@ -17,7 +18,7 @@
 {{ block.super }}
 <div class="t">
 {% users_nav request.user user_this %}
-    <h1>Users Search</h1>
+    <h1>{% trans "Users Search" %}</h1>
 	{{ MODULE_USERS_USERSEARCHSTATEMENT }}
 	{% profile_search %}
     {% autopaginate profiles 10 %}
@@ -40,20 +41,20 @@
           
             <div class="content" style="float: left; margin-left:5px;">
             	{% if profile.user.email %}
-            	<b>Email:</b> {{ profile.user.email|obfuscate_email }}<br />
+            	<b>{% trans "Email:" %}</b> {{ profile.user.email|obfuscate_email }}<br />
             	{% endif %}
             	{% if profile.phone %}
-            	<b>Phone:</b> {{ profile.phone }}<br />
+            	<b>{% trans "Phone:" %}</b> {{ profile.phone }}<br />
             	{% endif %}
             	{% if profile.company %}
-            	<b>Company:</b> {{ profile.company }}<br />
+            	<b>{% trans "Company:" %}</b> {{ profile.company }}<br />
             	{% endif %}
             </div>
             
             <div class="clear-left" style="clear: left;"></div>
             
 			<div class="meta">
-            	<div class="submitted"><small>Added on {{ profile.create_dt|date:"long" }} by {{ profile.creator }}</small></div>
+            	<div class="submitted"><small>{% blocktrans with profile.create_dt|date:"long" as create_date and profile.creator as profile_creator %}Added on {{ create_date }} by {{ profile_creator }}{% endblocktrans %}</small></div>
             </div>
 
             <!-- delete-profile form -->
@@ -65,7 +66,7 @@
 		
 	{% endwith %}	
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
 		
     {% endfor %}
 	</div>

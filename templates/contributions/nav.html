@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 <div id="showh">
 	<ul id="primary">
@@ -13,17 +14,17 @@
     {% endif %}
 
 	<li>
-		<span>{% firstof MODULE_CONTRIBUTIONS_LABEL 'Contributions' %}</span>
+		<span>{% firstof MODULE_CONTRIBUTIONS_LABEL trans 'Contributions' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url articles %}">{% firstof MODULE_CONTRIBUTIONS_LABEL 'Contributions' %}:</a></li> 
+			<li><a href="{% url articles %}">{% firstof MODULE_CONTRIBUTIONS_LABEL trans 'Contributions' %}:</a></li> 
 			{% if nav_object %}
 				{% if can_view_article %}
-				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
+				<li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %}</a></li>
 				{% endif %}
 			{% endif %}
-			<li><a href="{% url article.search %}">Search</a></li>
+			<li><a href="{% url article.search %}">{% trans "Search" %}</a></li>
 			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}
 		</ul>
 		

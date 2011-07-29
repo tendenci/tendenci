@@ -1,5 +1,6 @@
 {% extends "forms/base.html" %}
 {% load forms_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Delete{% endblock %}
 
@@ -12,11 +13,11 @@
 
 <div class="t">
  	{% forms_nav request.user %}
-    <h1>{% firstof MODULE_FORMS_LABEL 'Form' %} Delete</h1>
+    <h1>{% firstof MODULE_FORMS_LABEL 'Form' %}{% trans " Delete" %}</h1>
     
     <div class="form-builder-wrap">
 	    <div class="delete-prompt"> 
-	    	Are you sure you want to delete this {% firstof MODULE_FORMS_LABEL 'form' %}?
+	    	{% blocktrans %}Are you sure you want to delete this{% endblocktrans %} {% firstof MODULE_FORMS_LABEL 'form' %}?
 	    </div>
 	    <h2>{{ form }}</h2>
 		

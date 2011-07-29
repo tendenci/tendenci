@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load forms_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ form.title }} Subscribers{% endblock %}
 
@@ -14,7 +15,7 @@
 <div class="t">
  {% forms_nav request.user %}
 
- <h1>{{ form.title }} Subscribers</h1>
+ <h1>{{ form.title }} {% trans "Subscribers" %}</h1>
  {% autopaginate subscribers 10 %}
 	
 	<div class="forms-builder-wrap">
@@ -40,7 +41,7 @@
             </form>
 		</div>
 	{% empty %}
-		<div>0 Subscribers Found</div>
+		<div>{% trans "0 Subscribers Found" %}</div>
     {% endfor %}
     </div>
 {% paginate %}

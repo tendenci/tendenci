@@ -2,8 +2,9 @@
 {% load perm_tags %}
 {% load styled_forms %}
 {% load campaign_monitor_tags %}
+{% load i18n %}
 
-{% block title %}Template Edit{% endblock %}
+{% block title %}{% trans "Template Edit" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -14,7 +15,7 @@
 <div class="t">
     {% template_nav request.user %}
 
-    <h1>Template Edit</h1>
+    <h1>{% trans "Template Edit" %}</h1>
 
     <div class="template-wrap">  
     	<form action="{% url campaign_monitor.template_edit form.instance.template_id %}" method="post" enctype="multipart/form-data">{% csrf_token %}

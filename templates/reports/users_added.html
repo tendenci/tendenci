@@ -1,25 +1,26 @@
 {% extends "reports/base.html" %}
 {% load reports_tags %}
+{% load i18n %}
 
 {% block content %}
 
 <h1>{{ report_title }}</h1>
 
-Site: {{site}}
+{% trans "Site:" %} {{site}}
 <br>
-URL: {{ site.domain }}
+{% trans "URL:" %} {{ site.domain }}
 
 
 <div>
-	<a href="./?{% month_url previous %}">Previous</a>
+	<a href="./?{% month_url previous %}">{% trans "Previous" %}</a>
 	{{ date_range.0|date:"M Y" }}
-	<a href="./?{% month_url next %}">Next</a>
+	<a href="./?{% month_url next %}">{% trans "Next" %}</a>
 	<br>
 	{{ date_range.0|date:"M d, Y" }}:{{ date_range.1|date:"M d, Y" }}
 </div>
 
 <form>{% csrf_token %}
-Entity:
+{% trans "Entity:" %}
 <select name='entity'>
 	<option></option>
 	{% for e in entities %}
@@ -45,13 +46,13 @@ Entity:
 </tr>
 </table>
 
-<h3>User Groups (Referral) report</h3>
+<h3>{% trans "User Groups (Referral) report" %}</h3>
 
 <table>
 <tr>
-	<td>#</td>
-	<td>Group</td>
-	<td># Users</td>
+	<td>{% trans "#" %}</td>
+	<td>{% trans "Group" %}</td>
+	<td>{% trans "# Users" %}</td>
 </tr>
 {% for item in data %}
 <tr class="{% cycle 'odd' '' %}">
