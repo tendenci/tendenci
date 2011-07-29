@@ -1,6 +1,7 @@
 {% extends "jobs/base.html" %}
 {% load job_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Edit Meta Information{% endblock %}
 
@@ -14,8 +15,8 @@
 <div class="t">
 
     {% job_nav user %}
-    <h1>{% firstof MODULE_JOBS_LABEL 'Jobs' %} Meta Information for<br />
-    {{ job.title }}</h1>
+    <h1>{% firstof MODULE_JOBS_LABEL 'Jobs' %} {% blocktrans %} Meta Information for<br />
+    {{ job.title }}{% endblocktrans %}</h1>
 
     <div class="job-wrap">
 		<div class="options">
@@ -27,7 +28,7 @@
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />
-			 or <a href="javascript:history.go(-1);">Cancel</a>
+			 or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
 		</div>
         </form>
     </div>

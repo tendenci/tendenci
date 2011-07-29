@@ -1,6 +1,7 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
+{% load i18n %}
 
  {% is_admin request.user as is_admin %}
 {% has_perm user site_settings.change_setting as can_edit_setting %}
@@ -28,26 +29,26 @@
     {% endif %}
 
 	<li>
-		<span>{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corp. Member' %}</span>
+		<span>{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Member' %}</span>
 		<ul id="secondary">
-			<li><a href="{% url corp_memb.index %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Memberships' %}:</a></li> 
+			<li><a href="{% url corp_memb.index %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corporate Memberships' %}:</a></li> 
 			{% if can_edit_setting %}
-				<li><a href="{% url settings.index "module" "corporatememberships" %}">Settings</a></li>
+				<li><a href="{% url settings.index "module" "corporatememberships" %}">{% trans "Settings" %}</a></li>
 			{% endif %}
 			{% if nav_object %}
 				{% if can_view_corpmemb or allow_view %}
-				<li><a href="{% url corp_memb.view nav_object.pk %}">View</a></li>
+				<li><a href="{% url corp_memb.view nav_object.pk %}">{% trans "View" %}</a></li>
 				{% endif %}
 				{% if can_edit_corpmemb %}
-				<li><a href="{% url corp_memb.edit nav_object.pk %}">Edit</a></li>
+				<li><a href="{% url corp_memb.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
 				{% endif %}
 			{% endif %}
-			<li><a href="{% url corp_memb.search %}">Search</a></li>
+			<li><a href="{% url corp_memb.search %}">{% trans "Search" %}</a></li>
 			
 			{% if is_admin %}
-				<li><a href="{% url corp_memb.search %}?q=is_pending:true">Pendings</a></li>
-				<li><a href="{% url corp_import %}">Import</a></li>
-				<li><a href="{% url corp_export %}">Export</a></li>
+				<li><a href="{% url corp_memb.search %}?q=is_pending:true">{% trans "Pendings" %}</a></li>
+				<li><a href="{% url corp_import %}">{% trans "Import" %}</a></li>
+				<li><a href="{% url corp_export %}">{% trans "Export" %}</a></li>
 			{% endif %}
 			
 			{% if user.is_authenticated %}
@@ -55,14 +56,14 @@
 			{% endif %}
 
 			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}
 			
 		</ul>
 		
 	</li>
 	
-	<li><a href="{% url membership.index %}">{% firstof MODULE_MEMBERSHIPS_LABEL 'Memberships' %}</a></li>
+	<li><a href="{% url membership.index %}">{% firstof MODULE_MEMBERSHIPS_LABEL trans 'Memberships' %}</a></li>
 	
 	</ul>
 </div>

@@ -1,5 +1,6 @@
 {% extends "memberships/base.html" %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{% endblock %}
 {% block meta_description %}{% endblock %}
@@ -14,19 +15,21 @@
 {% block body %}
 <div class="t">
     
-    <h1 style="margin-bottom:15px;">Membership Application</h1>
+    <h1 style="margin-bottom:15px;">{% trans "Membership Application" %}</h1>
     
     <div style="margin-bottom:3px;">
-        We apologize, you must be within your renewal period to view this application.
+        {% trans "We apologize, you must be within your renewal period to view this application." %}
     </div>
     <div style="margin-bottom:12px;">
+    {% blocktrans %}
         Your renewal period starts in 
         {{ membership.get_renewal_period_dt.0|timeuntil }} 
         on {{ membership.get_renewal_period_dt.0|date }}.
+    {% endblocktrans %}
     </div>
 
     <div>
-        You will be notified at {{ user.email }}. 
+        {% blocktrans %}You will be notified at {{ user.email }}. {% endblocktrans %}
         <a style="font-size:.8em;" href="{% url profile.edit user.pk %}">edit email</a>
     </div>
 </div>

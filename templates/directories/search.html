@@ -4,8 +4,9 @@
 {% load category_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
-{% block title %}{{ block.super }} Search{% endblock %}
+{% block title %}{{ block.super }} {% trans "Search" %}{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
 {% block meta_keywords %}{{ block.super }}{% endblock %}
 
@@ -18,7 +19,7 @@
 {% block body %}
 <div class="t">
 {% directory_nav request.user %}
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} Search</h1>  
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Search" %}</h1>  
 
 	{% directory_search %}
     {% autopaginate directories 10 %}
@@ -33,7 +34,7 @@
 					{% directory_options request.user directory %} 	       
                 </div>
 			</div>
-            <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline "Untitled" %}</a></h2>
+            <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline trans "Untitled" %}</a></h2>
             {% if directory.logo %} 
 				<div class="directory-image"><img src="{{ MEDIA_URL }}{{ directory.logo }}" alt="{% firstof directory.headline "Untitled" %}" /></div>
 			{% endif %}
@@ -44,15 +45,15 @@
 			{% endif %}
 
 			<div class="meta">
-            	<div class="submitted">Released on {{ directory.activation_dt|date:"D d M Y P" }} by {{ directory.creator }}</div>
+            	<div class="submitted">{% blocktrans with directory.activation_dt|date:"D d M Y P" as da_create and directory.creator as da_creator %}Released on {{ da_create }} by {{ da_creator }}{% endblocktrans %}</div>
 				<div class="category">
 				{% get_category_for_object directory as category %}
 				{% if category %}
-					Category: <a href="{% url directory.search %}?q=category:{{ category }}">{{ category }}</a> 
+					{% trans "Category: " %}<a href="{% url directory.search %}?q=category:{{ category }}">{{ category }}</a> 
 				{% endif %}
 				{% get_sub_category_for_object directory as sub_category %}
 				{% if sub_category %}
-					Sub Category: <a href="{% url directory.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a> 
+					{% trans "Sub Category: " %}<a href="{% url directory.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a> 
 				{% endif %}
 				</div>
             </div>
@@ -64,7 +65,7 @@
 		</div>
 		{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

@@ -1,17 +1,18 @@
 {% extends "resumes/base.html" %}
 {% load resume_tags %}
+{% load i18n %}
 
 {% block body %}
 <div class="t">
     {% resume_nav request.user resume %}
 
     <div class="resume-wrap">
-        <h1>{% firstof MODULE_RESUMES_LABEL 'Resume' %} Delete</h1>
+        <h1>{% firstof MODULE_RESUMES_LABEL 'Resume' %} {% trans "Delete" %}</h1>
         <p><a href="{{ resume.get_absolute_url }}" title="{{ resume.title }}">{{ resume.title }}</a></p>
-        <p>Are you sure you want to delete this resume?</p>
+        <p>{% trans "Are you sure you want to delete this resume?" %}</p>
         <form action="{% url resume.delete resume.pk %}" method="post">{% csrf_token %}
         <div class="forms">
-            <input type="submit" value="Yes, delete it." /> or <a href="javascript:history.go(-1);">Cancel</a>
+            <input type="submit" value="Yes, delete it." /> {% trans "or" %} <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
         </div>
         </form>
     </div>

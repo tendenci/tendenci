@@ -1,8 +1,9 @@
 {% extends "corporate_memberships/base.html" %}
 {% load corporate_memberships_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
-{% block title %}Corporate Membership Add Confirmation{% endblock %}
+{% block title %}{% trans "Corporate Membership Add Confirmation" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -12,15 +13,15 @@
 {% block body %}
 <div class="t">
 {% corpmemb_nav request.user corporate_membership %} 
-     <h1>Corporate Membership Add Confirmation</h1>
+     <h1>{% trans "Corporate Membership Add Confirmation" %}</h1>
     <p>{% if corporate_membership.corp_app.confirmation_text %}
     	{{ corporate_membership.corp_app.confirmation_text|safe }}
     {% else %}
-    	Thank you for your submitting! <br /><br />
+    	{% trans "Thank you for your submitting! " %}<br /><br />
     	{% is_admin request.user as admin %}
     	{% if not admin %}
-	    	Your membership will be reviewed by an administrator 
-	    	who will be contacting you shortly.
+	    	{% trans "Your membership will be reviewed by an administrator 
+	    	who will be contacting you shortly." %}
     	{% endif %}
     {% endif %}
     </p>
@@ -28,11 +29,11 @@
     {% has_perm request.user corporate_memberships.change_corporatemembership as can_edit %}
    	
    	{% if can_view %}
-    <p><a href="{% url corp_memb.view corporate_membership.id %}">View this Corporate Membership</a></p>
+    <p><a href="{% url corp_memb.view corporate_membership.id %}">{% trans "View this Corporate Membership" %}</a></p>
     {% endif %}
     {% if can_edit %}
-    <p><a href="{% url corp_memb.edit corporate_membership.id %}">Edit this Corporate Membership</a></p>
-    <p><a href="{% url corp_memb.edit_reps corporate_membership.pk %}">Add/Edit Representatives</a></p>
+    <p><a href="{% url corp_memb.edit corporate_membership.id %}">{% trans "Edit this Corporate Membership" %}</a></p>
+    <p><a href="{% url corp_memb.edit_reps corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></p>
     {% endif %}
 </div>
 {% endblock %}

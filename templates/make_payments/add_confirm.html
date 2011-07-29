@@ -1,13 +1,14 @@
 {% extends "make_payments/base.html" %}
+{% load i18n %}
 
 {% block title %}Add a Payment Confirmation{% endblock %}
 
 {% block body %}
 <div class="t">
 
-<h1>Add a Payment Confirmation</h1>
+<h1>{% trans "Add a Payment Confirmation" %}</h1>
 <p>
-Thank you for your payment!
+{% trans "Thank you for your payment!" %}"
 </p>
 
 </div>

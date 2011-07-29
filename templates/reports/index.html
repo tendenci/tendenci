@@ -1,16 +1,17 @@
 {% extends "reports/base.html" %}
+{% load i18n %}
 
 {% block content %}
 <h1>Available reports</h1>
 
 <ul>
-	<li><a href="{% url reports-events-summary %}">Marketing Events Summary</li>
-	<li><a href="{% url reports-admin-users %}">Administrator Security Level</li>
-	<li><a href="{% url reports-user-added %}">Site Users Added</li>
-	<li><a href="{% url reports-user-activity %}">User Activity Summary</li>
-	<li><a href="{% url reports-user-access %}">User Access</li>
-	<li><a href="{% url reports-contacts-referral %}">Contacts Report - Referral Analysis</li>
-	<li><a href="{% url reports-articles %}">Article Reporting Options</li>
+	<li><a href="{% url reports-events-summary %}">{% trans "Marketing Events Summary" %}</li>
+	<li><a href="{% url reports-admin-users %}">{% trans "Administrator Security Level" %}</li>
+	<li><a href="{% url reports-user-added %}">{% trans "Site Users Added" %}</li>
+	<li><a href="{% url reports-user-activity %}">{% trans "User Activity Summary" %}</li>
+	<li><a href="{% url reports-user-access %}">{% trans "User Access" %}</li>
+	<li><a href="{% url reports-contacts-referral %}">{% trans "Contacts Report - Referral Analysis" %}</li>
+	<li><a href="{% url reports-articles %}">{% trans "Article Reporting Options" %}</li>
 </ul>
 
 {% endblock content %}

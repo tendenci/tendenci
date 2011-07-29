@@ -1,8 +1,10 @@
-<p>Thank you for applying for the corporate membership "{{ object.name }}" on {{ SITE_GLOBAL_SITEDISPLAYNAME }}.
+{% load i18n %}
+
+<p>{% blocktrans %}Thank you for applying for the corporate membership "{{ object.name }}" on {{ SITE_GLOBAL_SITEDISPLAYNAME }}.{% endblocktrans %}
 </p>
 {% if object.corp_app.authentication_method == 'secret_code' %}
 <p>
-For individuals to join under your corporate membership, use the following <b>secret code</b>:<br />
+{% blocktrans %}For individuals to join under your corporate membership, use the following <b>secret code</b>:{% endblocktrans %}<br />
 <b>{{ object.secret_code }}</b>
 </p>
 {% endif %}
@@ -10,28 +12,28 @@ For individuals to join under your corporate membership, use the following <b>se
 
 {% if invoice.balance <= 0 %}
 	<p>
-	To view the invoice, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+	{% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
 	</p>
 {% else %}
 	{% if object.payment_method == 'cc' or object.payment_method == 'credit card' %}
 	<p>
-		To make online credit card payment, go to invoice view page 
+		{% blocktrans %}To make online credit card payment, go to the invoice view page and make online payment from there.{% endblocktrans %} 
 		<a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
-		and make online payment from there.
+		
 	</p>
 	{% endif %}
 {% endif %}
 
 <p>
-To view this corporate membership, go to <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
+{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
 </p>
 {% if object.status_detail == "pending" %}
 	<p>
-	Note that the dues representative(s) will be notified by email when your corporate membership is approved.<br />
-	Your corporate membership has to be approved before individuals can join under your corporate membership.
+	{% trans "Note that the dues representative(s) will be notified by email when your corporate membership is approved." %}<br />
+	{% trans "Your corporate membership has to be approved before individuals can join under your corporate membership." %}
 	</p>
 {% endif %}
 
-<p>Thanks!</p>
+<p>{% trans "Thanks!" %}</p>
 <p>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
- <p>Time submitted: {% now "D d M Y P" %}</p>
+ <p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>

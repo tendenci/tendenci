@@ -3,8 +3,9 @@
 {% load user_group_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load i18n %}
 
-{% block title %}{{ block.super }}Search{% endblock %}
+{% block title %}{{ block.super }}{% trans "Search" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -17,7 +18,7 @@
  <div class="t-group">
  <div class="t-search">
  {% user_group_nav request.user %}
- <h1>{{ MODULE_USER_GROUPS_LABEL }} Search</h1>
+ <h1>{{ MODULE_USER_GROUPS_LABEL }} {% trans "Search" %}</h1>
  	{% group_search %}
     {% autopaginate groups 10 %}
 
@@ -32,23 +33,21 @@
 				</div>
 			</div>
 
-            <h2><a href="{{ group.get_absolute_url }}">{% firstof group.name group.label 'Untitled' %}</a></h2>
+            <h2><a href="{{ group.get_absolute_url }}">{% firstof group.name group.label trans 'Untitled' %}</a></h2>
             <div class="clear-right"></div>
             <div class="content">{{ group.notes|striptags|truncatewords:20 }}</div>
 			<div class="meta">
-				<a href="{{ group.get_absolute_url }}">View Group Members: 
-            	{% with group.members.count as count_members %}
-            		{{ count_members  }} member{{count_members|pluralize }}
-            	{% endwith %}
+				<a href="{{ group.get_absolute_url }}">{% trans "View Group Members:" %} 
+            	{% blocktrans count group.members.count as count_members %}{{ count_members  }} member{% plural %}{{ count_members  }} members{% endblocktrans %}
             	</a>
-            	<div class="submitted">Created on {{ group.create_dt|date:"long" }} by {{ group.creator }}</div>
+            	<div class="submitted">{% blocktrans with group.create_dt|date:"long" as create_date and group.creator as group_creator %}Created on {{ create_date }} by {{ group_creator }}{% endblocktrans %}</div>
             </div>
 
             
 		</div>
 		{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

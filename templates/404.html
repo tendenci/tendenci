@@ -1,21 +1,22 @@
 {% extends "default.html" %}
+{% load i18n %}
 
-{% block title %}{{ block.super }}404 NOT FOUND{% endblock%}
+{% block title %}{{ block.super }}{% trans "404 NOT FOUND" %}{% endblock%}
 
 {% block body %}
-    <h1>The page was not found</h1>
-    <p>Possible reasons</p>
+    <h1>{% trans "The page was not found" %}</h1>
+    <p>{% trans "Possible reasons" %}</p>
     <ul>
-    	<li>The page moved from {{ request.get_full_path }} to another path like /cool-stuff/</li>
-        <li>If you came from another site they may have linked this page incorrectly</li>
-        <li>The link expired and the search engine has not updated its database.</li>
-        <li>It just doesn't exist</li>
+    	<li>{% blocktrans with request.get_full_path as reqpath %}The page moved from {{ reqpath }} to another path like /cool-stuff/{% endblocktrans %}</li>
+        <li>{% blocktrans %}If you came from another site they may have linked this page incorrectly{% endblocktrans %}</li>
+        <li>{% blocktrans %}The link expired and the search engine has not updated its database.{% endblocktrans %}</li>
+        <li>{% blocktrans %}It just doesn't exist{% endblocktrans %}</li>
     </ul>
-    <p>You may be able to find what your looking for by</p>
+    <p>{% blocktrans %}You may be able to find what you're looking for by:{% endblocktrans %}</p>
     <ul>
-    	<li><a href="{% url home %}">Visiting the Home Page</a></li>
+    	<li><a href="{% url home %}">{% trans "Visiting the Home Page" %}</a></li>
         <li>
-            Searching the site:&nbsp;&nbsp;
+            {% trans "Searching the site:" %}&nbsp;&nbsp;
             <form method="get" action="{% url haystack_search %}">
             <input type="text" value="" size="18" maxlength="50" name="q" />
             <input type="submit" value="Search" name="submit" />

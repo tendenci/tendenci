@@ -18,7 +18,7 @@
             {% photo_set_nav request.user photo_set %}
         </div>
 
-		<h1>Bulk edit photos</h1>
+		<h1>{% trans "Bulk edit photos" %}</h1>
 
         <form method="POST" action="" class="batch-edit-form">{% csrf_token %}
     
@@ -28,19 +28,19 @@
                 <div class="float-window">
         
                     <div class="photo-bulk-editor">
-                        <div>Replace all titles</div>
+                        <div>{% trans "Replace all titles" %}</div>
                         <div><input class="title" type="text" /></div>
-                        <div>Replace all captions</div>
+                        <div>{% trans "Replace all captions" %}</div>
                         <div><textarea class="caption"></textarea></div>
-                        <div>Replace all tags</div>
+                        <div>{% trans "Replace all tags" %}</div>
                         <div><input class="tags" type="text" /></div>
                         <div>{{ tag_help_text }}</div>
                     </div>
 
                     <div class="bulk-license">
-                        <div>Replace all Licenses</div>
+                        <div>{% trans "Replace all Licenses" %}</div>
                         <select>
-                            <option value=""> --- SELECT A LICENSE --- </option>
+                            <option value=""> {% trans "--- SELECT A LICENSE ---" %} </option>
                             {% for l in cc_licenses %}
                             <option value="{{ l.pk }}">{{ l.name }}</option>
                             {% endfor %}
@@ -104,7 +104,7 @@
                     </div>
                 </div>
             {% empty %}
-                <p>All photos have been approved, nothing to see here.</p>
+                <p>{% trans "All photos have been approved, nothing to see here." %}</p>
             {% endfor %}
         </form>
 

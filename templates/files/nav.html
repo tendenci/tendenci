@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user file.add_file as can_add_file %}
@@ -16,25 +17,25 @@
     {% endif %}
 
 	<li>
-		<span>Files</span>
+		<span>{% trans "Files" %}</span>
 		<ul id="secondary">
-			<li><a href="{% url files %}">Files:</a></li> 
-			<li><a href="{% url file.search %}">Search</a></li>
+			<li><a href="{% url files %}">{% trans "Files:" %}</a></li> 
+			<li><a href="{% url file.search %}">{% trans "Search" %}</a></li>
 			{% if can_add_file %}
-			<li><a href="{% url file.add %}">Add</a></li>
+			<li><a href="{% url file.add %}">{% trans "Add" %}</a></li>
 			{% endif %}
 			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}
 		</ul>
 		
 	</li>
 	{% if MODULE_ARTICLES_ENABLED %}
-	<li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL 'Articles' %}</a></li>
+	<li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
 	{% endif %}
 		
 	{% if MODULE_NEWS_ENABLED %}
-	<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
+	<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
 	{% endif %}
 	</ul>
 </div>

@@ -1,5 +1,6 @@
 {% extends "site_base.html" %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }} Contact Us{% endblock %}
 
@@ -10,11 +11,11 @@
 
 {% block body %}
 <div class="t">
-    <h1>How Can We Help You?</h1>
+    <h1>{% trans "How Can We Help You?" %}</h1>
 
     <div class="contact-form-wrap">
 	
-		<p>Hi there!  Thanks for filling out a contact form, your website is feeling more optimized and marketable already.</p>
+		{% trans '<p>Hi there!  Thanks for filling out a contact form, your website is feeling more optimized and marketable already.</p>
 		<p>Our Tendenci Membership Management software is a great way to power your website, grow your community and make your life easier.  We can't wait to help you get started!</p>
 	
 		<div style="margin-bottom:20px;">
@@ -26,7 +27,7 @@
 				<li>Connect on Twitter:  <a href="http://www.twitter.com/tendenci">www.twitter.com/tendenci</a></li>
 				<li>Friend us on Facebook:  <a href="http://www.facebook.com/tendenci">www.facebook.com/tendenci</a></li>
 			</ul>
-		</div>
+		</div>' %}
 
     	<form action="{% url form %}" method="post">{% csrf_token %}
     	<div class="forms">

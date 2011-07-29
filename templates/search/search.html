@@ -27,11 +27,11 @@
 			</tr>
 		</table>
    
-		<div class="search-adv"><a href="#adv_search">Advanced Search</a></div>
+		<div class="search-adv"><a href="#adv_search">{% trans "Advanced Search" %}</a></div>
 		<div class="search-adv-models">
-			<p class="search-adv-header">Search in:</p>
+			<p class="search-adv-header">{% trans "Search in:" %}</p>
 			<p class="search-adv-header">
-			If no items are selected then all content is searched.
+			{% trans "If no items are selected then all content is searched." %}
 			</p>
 			{{ form.models }}
 		</div>
@@ -59,7 +59,7 @@
             {% endfor %}
              </ul>
         {% else %}
-            <p>No results found.</p>
+            <p>{% trans "No results found." %}</p>
         {% endif %}
     </div>
     

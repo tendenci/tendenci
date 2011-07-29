@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <ul>	
-    <li><a href="{% url event_log.print_view opt_object.pk %}">Print</a></li>
+    <li><a href="{% url event_log.print_view opt_object.pk %}">{% trans "Print" %}</a></li>
 </ul>

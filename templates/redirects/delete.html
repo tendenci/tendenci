@@ -1,5 +1,6 @@
 {% extends "redirects/base.html" %}
 {% load redirect_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Delete{% endblock %}
 
@@ -12,11 +13,11 @@
 
 <div class="t">
  	{% redirect_nav request.user %}
-    <h1>Redirect Delete</h1>
+    <h1>{% trans "Redirect Delete" %}</h1>
     
     <div class="story-wrap">
 	    <div class="delete-prompt"> 
-	    	Are you sure you want to delete this redirect?
+	    	{% trans "Are you sure you want to delete this redirect?" %}"
 	    </div>
 	    <h2>{{ Redirect }}</h2>
 		

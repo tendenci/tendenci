@@ -1,8 +1,10 @@
+{% load i18n %}
+
 <p>{{ user.username }},</p>
 
-<p>The following directory has been edited:</p>
+<p>{% trans "The following directory has been edited:" %}</p>
 
-<div>Headline: {{ object.headline }}</div>
-<div>To view this directory go to: {{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</div>
+<div>{% trans "Headline:" %} {{ object.headline }}</div>
+<div>{% blocktrans %}To view this directory go to: {{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}{% endblocktrans %}</div>
 
-<p>Thanks!</p>
+<p>{% trans "Thanks!" %}</p>

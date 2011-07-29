@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% has_perm request.user site_settings.change_setting as can_edit_setting %}
 
@@ -19,19 +20,19 @@
     {% endif %}
 
 	<li>
-		<span>Invoices</span>
+		<span>{% trans "Invoices" %}</span>
 		<ul id="secondary">
-			<li><a href="{% url invoice.search %}">Invoices:</a></li> 
+			<li><a href="{% url invoice.search %}">{% trans "Invoices:" %}</a></li> 
 			{% if can_edit_setting %}
-				<li><a href="{% url settings.index "module" "invoices" %}">Settings</a></li>
+				<li><a href="{% url settings.index "module" "invoices" %}">{% trans "Settings" %}</a></li>
 			{% endif %}
 			{% if nav_object %}
-				<li><a href="{% url invoice.view nav_object.pk %}">View</a></li>
+				<li><a href="{% url invoice.view nav_object.pk %}">{% trans "View" %}</a></li>
 			{% endif %}
-			<li><a href="{% url invoice.search %}">Search</a></li>
+			<li><a href="{% url invoice.search %}">{% trans "Search" %}</a></li>
 			
 			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}
 		</ul>
 		

@@ -3,8 +3,9 @@
 {% load styled_forms %}
 {% load avatar_tags %}
 {% load base_filters %}
+{% load i18n %}
 
-{% block title %}{{ block.super }}Registration Confirmation {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+{% block title %}{{ block.super }}{% trans "Registration Confirmation" %} {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -74,38 +75,38 @@
 
 <div class="t">    
     {% event_nav user event %}
-    <h1>Registration</h1>
+    <h1>{% trans "Registration" %}</h1>
 
     <div class="registration-status">
 
         {% if registration.canceled %}
-            <div class="not-registered">Registration cancelled.</div>
+            <div class="not-registered">{% trans "Registration cancelled." %}</div>
         {% endif %}
 
         {% if registration.status == 'payment-required' %}
-            <div class="almost-registered">Almost registered. Payment is still required.
+            <div class="almost-registered">{% trans "Almost registered. Payment is still required." %}"
 
             {% if event.registration_configuration.can_pay_online %}
             <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">
-                Complete registration.</a>
+                {% trans "Complete registration." %}</a>
             {% endif %}
             </div>
 
         {% endif %}
 
         {% if registration.status == 'registered-with-balance' %}
-            <div class="registered">You are registered. Balance is ${{ registration.invoice.balance }}.
+            <div class="registered">{% blocktrans %}You are registered. Balance is ${{ registration.invoice.balance }}. {% endblocktrans %}
 
             {% if event.registration_configuration.can_pay_online and registration.invoice.balance > 0 %}
             <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">
-                Pay online.</a>
+                {% trans "Pay online." %}</a>
             {% endif %}
             </div>
 
         {% endif %}
 
         {% if registration.status == 'registered' %}
-            <div class="registered">You are registered. Enjoy the event!</div>
+            <div class="registered">{% trans "You are registered. Enjoy the event!" %}</div>
         {% endif %}
 
     </div>
@@ -113,12 +114,12 @@
 
 	{% if count_registrants == 1 and registration.canceled %}
 		<div class="cancel-notice">
-			Registration Canceled on {{ registrant.cancel_dt|date_short }}
+			{% blocktrans %}Registration Canceled on {{ registrant.cancel_dt|date_short }}{% endblocktrans %}
 		</div>
 	{% endif %}
 
 	<div class="regconf-section event">
-		<h2>Event Details</h2>
+		<h2>{% trans "Event Details" %}</h2>
 		<h3>{{ event.title }}</h3>
 
 		<div class="event-url">
@@ -134,14 +135,14 @@
           <div class="event-desc-short">{{ event.description|safe }}</div>
         {% endif %}
         {% if event.description|striptags|wordcount > 50 %}
-          <div><a class="event-desc-toggle" href="#">Full Description</a></div>
+          <div><a class="event-desc-toggle" href="#">{% trans "Full Description" %}</a></div>
         {% endif %}
 	</div>
 
 	<div class="regconf-section registration">
-		<h2>Your Details</h2>
+		<h2>{% trans "Your Details" %}</h2>
 		<h3>
-            Registration Number: {{ registration.pk }}
+            {% trans "Registration Number: " %}{{ registration.pk }}
         </h3>
 
 		{% if not registration.canceled %}
@@ -150,18 +151,17 @@
 			{% if registrants_count >= 1 or registration.reg_conf_price.quantity > 1 %}
 					&nbsp;&nbsp;
 			      {% if user.is_authenticated %}
-			          <a href="{% url event.cancel_registration event.pk registration.pk %}">Cancel Registation</a>
+			          <a href="{% url event.cancel_registration event.pk registration.pk %}">{% trans "Cancel Registation" %}</a>
 			      {% else %}
-			          <a href="{% url event.cancel_registration event.pk registration.pk registration.hash %}">Cancel Registation</a>
+			          <a href="{% url event.cancel_registration event.pk registration.pk registration.hash %}">{% trans "Cancel Registation" %}</a>
 			      {% endif %}
 		     {% endif %}
 		      </div>
 	     {% endif %}
 	     
 	    {% if registrants_count > 1 %}
-	    	<div style="font-weight: bold;">Registrants ... ({{ registrants_count }})</div>
+	    	<div style="font-weight: bold;">{% trans "Registrants" %} ... ({{ registrants_count }})</div>
 	    {% endif %}
-
     	<table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
     		{% for registrant in registrants %}
     		<tr>
@@ -175,19 +175,19 @@
 		                    {{ registrant.last_name }}
 		                {% endif %}
 		            {% else %}
-		            	Guest #{{ forloop.counter0 }}
+		            	{% trans "Guest #" %}{{ forloop.counter0 }}
 		            {% endif %}
 		            </span>
 					{% if registrant.cancel_dt %}
 						<span class="cancel-notice2">
-							Canceled on {{ registrant.cancel_dt|date_short }}
+							{% blocktrans with registrant.cancel_dt|date_short as cancel_date %} Canceled on {{ cancel_date }}{% endblocktrans %}
 						</span>
 					{% else %}
 	                    {% if registration.reg_conf_price.quantity == 1 %}
 						  {% if user.is_authenticated %}
-					          <a href="{% url event.cancel_registrant event.pk registrant.pk %}">Cancel</a>
+					          <a href="{% url event.cancel_registrant event.pk registrant.pk %}">{% trans "Cancel" %}</a>
 					      {% else %}
-					          <a href="{% url event.cancel_registrant event.pk registrant.hash %}">Cancel</a>
+					          <a href="{% url event.cancel_registrant event.pk registrant.hash %}">{% trans "Cancel" %}</a>
 					      {% endif %}
 	                    {% endif %}
 					{% endif %}
@@ -201,27 +201,27 @@
     		{% endfor %}
     	</table>      		            
 		<div class="register-more">
-            <a href="{% url event event.pk %}">Register More People</a>
+            <a href="{% url event event.pk %}">{% trans "Register More People" %}</a>
         </div>
 	</div>
 
 	<div class="regconf-section payment">
-		<h2>Payment Details</h2>
+		<h2>{% trans "Payment Details" %}</h2>
 
         <div class="payment-links">
 
         	{% if registration.invoice %}
-            <a href="{% url invoice.view registration.invoice.pk registration.invoice.guid %}">View invoice</a>
+            <a href="{% url invoice.view registration.invoice.pk registration.invoice.guid %}">{% trans "View invoice" %}</a>
             {% endif %}
 
             {% if registration.invoice and event.registration_configuration.can_pay_online and registration.invoice.balance > 0 %}
-                <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">Pay online</a>
+                <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">{% trans "Pay online" %}</a>
             {% endif %}
         </div>
 
         <div class="payment-accounting">
-            <div>Total ${{ registration.invoice.total|floatformat:"2" }}</div>
-            <div><strong>Balance ${{ registration.invoice.balance|floatformat:"2" }}</strong></div>
+            <div>{% blocktrans %}Total ${{ registration.invoice.total|floatformat:"2" }}{% endblocktrans %}</div>
+            <div><strong>{% blocktrans %}Balance ${{ registration.invoice.balance|floatformat:"2" }}{% endblocktrans %}</strong></div>
         </div>
 
 		<div style="clear:both;"></div>
