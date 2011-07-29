@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load category_tags %}
+{% load i18n %}
 
 {% block title %}{{ resume.get_title }}{% endblock %}
 {% block meta_description %}{{ resume.get_description }}{% endblock %}
@@ -32,14 +33,14 @@
 
         {% if resume.description %}
                 <div class="section-block">
-                    <div class="label">Description</div>
+                    <div class="label">{% trans "Description" %}</div>
                     <div class="value">{{ resume.description|safe }}</div>
                 </div>
         {% endif %}
 
         {% if resume.location %}
                 <div class="section-block">
-                    <div class="label">Location</div>
+                    <div class="label">{% trans "Location" %}</div>
                     <div class="value">{{ resume.location }}</div>
                     <div class="clear"></div>
                 </div>
@@ -48,21 +49,21 @@
 
         {% if resume.experience %}
                 <div class="section-block">
-                    <div class="label">Experience</div>
+                    <div class="label">{% trans "Experience" %}</div>
                     <div class="value">{{ resume.experience }}</div>
                 </div>
         {% endif %}
 
         {% if resume.skills %}
                 <div class="section-block">
-                    <div class="label">Skills</div>
+                    <div class="label">{% trans "Skills" %}</div>
                     <div class="value">{{ resume.skills }}</div>
                 </div>
         {% endif %}
 
         {% if resume.education %}
                 <div class="section-block">
-                    <div class="label">Education</div>
+                    <div class="label">{% trans "Education" %}</div>
                     <div class="value">{{ resume.education }}</div>
                     <div class="clear"></div>
                 </div>
@@ -83,7 +84,7 @@
         <div class="meta">
 			<div class="tags">
 
-					Tags: 
+					{% trans "Tags:" %} 
 					{% for tag in tags %}
 						<a href="{% url resume.search %}?q={{ tag }}">{{ tag }}</a>
 					{% endfor %}

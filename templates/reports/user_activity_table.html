@@ -1,11 +1,13 @@
+{% load i18n %}
+
 <table style="width: 80%;">
 <tr>
-	<th>#</th>
-	<th>Username</th>
-	<th>Lastname</th>
-	<th>Firstname</th>
-	<th>Email</th>
-	<th>Events</th>
+	<th>{% trans "#" %}</th>
+	<th>{% trans "Username" %}</th>
+	<th>{% trans "Lastname" %}</th>
+	<th>{% trans "Firstname" %}</th>
+	<th>{% trans "Email" %}</th>
+	<th>{% trans "Events" %}</th>
 </tr>
 {% for user in users %}
 <tr class="{% cycle 'odd' '' %}">

@@ -1,9 +1,11 @@
-<p><font face="Arial, Helvetica, sans-serif" size="2">A following user was deleted 
-		  from the {{ SITE_GLOBAL_SITEDISPLAYNAME }}. The details are given below:</font></p>
+{% load i18n %}
+
+<p><font face="Arial, Helvetica, sans-serif" size="2">{% blocktrans %}A following user was deleted 
+		  from the {{ SITE_GLOBAL_SITEDISPLAYNAME }}. The details are given below:{% endblocktrans %}</font></p>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0" height="181">
 		  <tr> 
 		    <td width="100%" colspan="3" height="16"><b>
-		    <font face="Arial, Helvetica, sans-serif" size="2">Deleted User:</font></b></td>
+		    <font face="Arial, Helvetica, sans-serif" size="2">{% trans "Deleted User:" %}</font></b></td>
 		  </tr>
 		  <tr> 
 		    <td width="2%" height="16">&nbsp;</td>
@@ -13,18 +15,18 @@
 		  <tr> 
 		    <td width="2%" height="16"></td>
 		    <td width="23%" height="16"><font face="Arial, Helvetica, sans-serif" size="2">
-		    Name:</font></td>
+		    {% trans "Name:" %}</font></td>
 		    <td width="75%" height="16"><b><font face="Arial, Helvetica, sans-serif" size="2">{{ profile.user.get_full_name }}</font></b></td>
 		  </tr>
 		  <tr> 
 		    <td width="2%" height="19">&nbsp;</td>
-		    <td width="23%" height="19"><font face="Arial, Helvetica, sans-serif" size="2"> Email:</font></td>
+		    <td width="23%" height="19"><font face="Arial, Helvetica, sans-serif" size="2"> {% trans "Email:" %}</font></td>
 		    <td width="75%" height="19"><b><font face="Arial, Helvetica, sans-serif" size="2">{{ profile.user.email }}</font></b></td>
 		  </tr>
 		  <tr> 
 		    <td width="2%" height="19">&nbsp;</td>
 		    <td width="23%" height="19"><font face="Arial, Helvetica, sans-serif" size="2"> 
-		    Username:</font></td>
+		    {% trans "Username:" %}</font></td>
 		    <td width="75%" height="19"><b><font face="Arial, Helvetica, sans-serif" size="2">{{ profile.user.username }}</font></b></td>
 		  </tr>
 		  <tr> 
@@ -34,7 +36,7 @@
 		  </tr>
 		  <tr> 
 		    <td width="100%" colspan="3" height="16"><b><font face="Arial, Helvetica, sans-serif" size="2">
-		    User Deleted By:</font></b></td>
+		    {% trans "User Deleted By:" %}</font></b></td>
 		  </tr>
 		  <tr> 
 		    <td width="2%" height="16">&nbsp;</td>
@@ -44,18 +46,18 @@
 		  <tr>
 		    <td width="2%" height="19">&nbsp;</td>
 		    <td width="23%" height="19"><font face="Arial, Helvetica, sans-serif" size="2">
-		    Name:</font></td>
+		    {% trans "Name:" %}</font></td>
 		    <td width="75%" height="19"><b><font face="Arial, Helvetica, sans-serif" size="2">{{ request.user.get_full_name }}</font></b></td>
 		  </tr>
 		  <tr>
 		    <td width="2%" height="19">&nbsp;</td>
-		    <td width="23%" height="19"><font face="Arial, Helvetica, sans-serif" size="2"> Email:</font></td>
+		    <td width="23%" height="19"><font face="Arial, Helvetica, sans-serif" size="2"> {% trans "Email:" %}</font></td>
 		    <td width="75%" height="19"><b><font face="Arial, Helvetica, sans-serif" size="2">{{ request.user.email }}</font></b></td>
 		  </tr>
 		  <tr>
 		    <td width="2%" height="19">&nbsp;</td>
 		    <td width="23%" height="19"><font face="Arial, Helvetica, sans-serif" size="2"> 
-		    Username:</font></td>
+		    {% trans "Username:" %}</font></td>
 		    <td width="75%" height="19"><b><font face="Arial, Helvetica, sans-serif" size="2">{{ request.user.username }}</font></b></td>
 		  </tr>
 		  <tr> 
@@ -64,12 +66,12 @@
 		    <td width="75%" height="19">&nbsp;</td>
 		  </tr>
 		</table>
-		<p><font face="Arial, Helvetica, sans-serif" size="2">If you would like to view all 
-		  recently deleted users, go to:</font> <b><font face="Arial, Helvetica, sans-serif" size="2">
+		<p><font face="Arial, Helvetica, sans-serif" size="2">{% trans "If you would like to view all 
+		  recently deleted users, go to:" %}</font> <b><font face="Arial, Helvetica, sans-serif" size="2">
 		  <a href="{{ SITE_GLOBAL_SITEURL }}{% url event_log.search %}?q=123000">{{ SITE_GLOBAL_SITEURL }}{% url event_log.search %}?q=123000</a>
 		  </font></b><br>
 		  <br></p>
 		  <font face="Arial, Helvetica, sans-serif" size="2"> </font> 
 		<font face="Arial, Helvetica, sans-serif" size="2">
-		<p>Time submitted: {% now "D d M Y P" %}</p>
+		<p>{% trans "Time submitted:"%} {% now "D d M Y P" %}</p>
 		</font>

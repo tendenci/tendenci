@@ -3,8 +3,9 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load campaign_monitor_tags %}
+{% load i18n %}
 
-{% block title %}{{ block.super }} Index{% endblock %}
+{% block title %}{{ block.super }} {% trans "Index" %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -15,7 +16,7 @@
 <div class="t">
     {% template_nav request.user %}
     
-    <h1>Campaign Monitor Templates</h1>
+    <h1>{% trans "Campaign Monitor Templates" %}</h1>
     {% autopaginate templates 5 %}
 	
 	<div class="templates-wrap">
@@ -29,17 +30,18 @@
             <h2><a href="{{ template.get_absolute_url }}">{{ template.name }}</a></h2>
             {% if template.cm_screenshot_url %}
                 <div class="screenshot">
-                    <p><b>Screenshot:</b></p>
+                    <p><b>{% trans "Screenshot:" %}</b></p>
                     <a href="{{ template.cm_preview_url }}">
                         <img src="{{ template.cm_screenshot_url }}">
                     </a>
                 </div>
             {% else %}
-                <p><b>Screenshot:</b> Not Available</p>
+                <p><b>{% trans "Screenshot:" %}</b>{% trans " Not Available" %}</p>
             {% endif %}
+            <p><a href="{{ template.cm_preview_url }}">{% trans "Preview" %}</a></p>
         </div>
 	{% empty %}
-		<div>0 Templates Found</div>
+		<div>{% trans "0 Templates Found" %}</div>
     {% endfor %}
 	</div>
     

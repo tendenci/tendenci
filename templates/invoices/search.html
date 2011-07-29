@@ -1,6 +1,7 @@
 {% extends "invoices/base.html" %}
 {% load pagination_tags %}
 {% load invoice_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Invoice Search{% endblock %}
 
@@ -14,7 +15,7 @@
 <div class="t-invoice">
 <div class="t-search">
  {% invoice_nav  %}
-<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Invoice Search</h1>
+<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Invoice Search" %}</h1>
 {% invoice_search %}
 {% autopaginate invoices 10 %}
 <div class="invoices-wrap">
@@ -27,7 +28,7 @@
 		</div>
 	{% endwith %}	
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
 	{% endfor %}
 </div>
 

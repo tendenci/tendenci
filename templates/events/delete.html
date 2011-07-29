@@ -1,4 +1,6 @@
+{% load i18n %}
+
 {% block body %}
-<h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} Delete Page</h1>
-<div class="back-to-search"><a href="{% url event.search %}">&laquo; Back to events search</a></div>
+<h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Delete Page" %}</h1>
+<div class="back-to-search"><a href="{% url event.search %}">&laquo; {% trans "Back to events search" %}</a></div>
 {% endblock %}

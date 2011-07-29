@@ -1,5 +1,6 @@
 {% extends "profiles/base.html" %}
 {% load profile_tags %}
+{% load i18n %}
 
 {% block title %}Edit User Permissions{% endblock %}
 
@@ -30,8 +31,8 @@
 <div class="t-perm">
 {% users_nav request.user user_this %}
  {% users_options request.user user_this %}
-    <h1>Grant/Remove Module Level Permissions</h1>
-    <h2>User: <a href="{{ user_this.get_absolute_url}}">
+    <h1>{% trans "Grant/Remove Module Level Permissions" %}</h1>
+    <h2>{% trans "User:" %} <a href="{{ user_this.get_absolute_url}}">
     {{ user_this.firstname}} {{ user_this.lastname}}({{ user_this.username}})</a></h2>
 <div class="clear-right"></div>
 
@@ -51,7 +52,7 @@
 		{% if form.user_permissions.errors %}
 			{{ form.user_permissions.errors }}
 		{% endif %}
-		<label for="id_user_permissions" style="float:left; padding-right: 1em;"><b>User Permissions:</b></label>
+		<label for="id_user_permissions" style="float:left; padding-right: 1em;"><b>{% trans "User Permissions:" %}</b></label>
 		<br />
 		{{ form.user_permissions }}
 	</div>

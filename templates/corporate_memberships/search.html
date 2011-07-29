@@ -3,8 +3,9 @@
 {% load base_filters %}
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
+{% load i18n %}
 
-{% block title %}{{ block.super }}Corporate Membership Search{% endblock %}
+{% block title %}{{ block.super }}{% trans "Corporate Membership Search" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -53,7 +54,7 @@
  {% corpmemb_nav request.user %}
  
  {% is_admin request.user as is_admin %}
-<h1>Corporate Membership Search</h1>
+<h1>{% trans "Corporate Membership Search" %}</h1>
 {% corp_memb_search %}
 {% autopaginate corp_members 10 %}
 <div class="corpmembers-wrap">
@@ -68,7 +69,7 @@
 	                </div>
 				</div>
 		    	<div class="corpmember-box-body">
-			    	<div class="float-left label">Corporate Address: </div>
+			    	<div class="float-left label">{% trans "Corporate Address: " %}</div>
 			    	<div class="float-left">
 				    	{% if corp_memb.address or corp_memb.address2 %}
 				    		{{ corp_memb.address }} {{ corp_memb.address2 }} <br />
@@ -82,42 +83,42 @@
 			    	<div class="clear-left"></div>
 			    	
 			    	<div class="corpmember-left float-left">
-			    		<div><span class="label">Corporate Phone:</span> {% if corp_memb.phone %}{{ corp_memb.phone }}{% endif %}</div>
-			    		<div><span class="label">Website:</span> {% if corp_memb.url %}{{ corp_memb.url|safe|urlize }}{% endif %}</div>
-			    		<div><span class="label">Member Type:</span> {{ corp_memb.corporate_membership_type.name }}
+			    		<div><span class="label">{% trans "Corporate Phone:" %}</span> {% if corp_memb.phone %}{{ corp_memb.phone }}{% endif %}</div>
+			    		<div><span class="label">{% trans "Website:" %}</span> {% if corp_memb.url %}{{ corp_memb.url|safe|urlize }}{% endif %}</div>
+			    		<div><span class="label">{% trans "Member Type:" %}</span> {{ corp_memb.corporate_membership_type.name }}
 			    		{% if corp_memb.invoice %}
 			    			- {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corp_memb.invoice.total }}
 			    		{% endif %}
 			    		</div>
-			    		<div><a href="{% url membership.application_details_corp_pre corp_memb.corp_app.memb_app.slug corp_memb.id %}">Join under this corporation</a></div>
+			    		<div><a href="{% url membership.application_details_corp_pre corp_memb.corp_app.memb_app.slug corp_memb.id %}">{% trans "Join under this corporation" %}</a></div>
 			    	</div>
 			    	
 			    	<div class="corpmember-right float-left">
-			    		<div><span class="label">Join Date:</span> {{ corp_memb.join_dt|date:'Y-n-j' }}</div>
-			    		<div><span class="label">Expiration Date:</span> {% if corp_memb.expiration_dt %}
+			    		<div><span class="label">{% trans "Join Date:" %}</span> {{ corp_memb.join_dt|date:'Y-n-j' }}</div>
+			    		<div><span class="label">{% trans "Expiration Date:" %}</span> {% if corp_memb.expiration_dt %}
 			    							{{ corp_memb.expiration_dt|date:'Y-n-j' }}
 			    							{% else %}
-			    							Never Expire
+			    							{% trans "Never Expire" %}
 			    							{% endif %}
 			    		</div>
 			    		{% with corp_memb.get_pending_renewal_entry as pending_renewal_entry %}
 			    		{% if pending_renewal_entry %}
 			    			<div class="pending-info-box">
-			    			Renewed on {{ pending_renewal_entry.create_dt|date:"d-M-Y" }}<br />
-			    			Status of Renewal: <span class="status-pending">{{ pending_renewal_entry.status_detail }}</span><br />
+			    			{% blocktrans with pending_renewal_entry.create_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
+			    			{% trans "Status of Renewal: " %}<span class="status-pending">{{ pending_renewal_entry.status_detail }}</span><br />
 			    			{% if is_admin %}
-			    				<b>Admin</b>: <a href="{% url corp_memb.approve corp_memb.pk %}">Approve / Disapprove</a>
+			    				<b>{% trans "Admin" %}</b>: <a href="{% url corp_memb.approve corp_memb.pk %}">{% trans "Approve / Disapprove" %}</a>
 			    			{% endif %}
 			    			</div>
 			    		{% else %}
 			    			{% if is_admin and corp_memb.is_join_pending %}
 			    				<div class="pending-info-box">
-			    				<b>Admin</b>: <a href="{% url corp_memb.approve corp_memb.pk %}">Approve / Disapprove</a>
+			    				<b>{% trans "Admin" %}</b>: <a href="{% url corp_memb.approve corp_memb.pk %}">{% trans "Approve / Disapprove" %}</a>
 			    				</div>
 			    			{% endif %}
 			    			
 				    		{% if corp_memb.can_renew %}
-				    			<a href="{% url corp_memb.renew corp_memb.id %}" style="background-color:yellow;">Renew</a>
+				    			<a href="{% url corp_memb.renew corp_memb.id %}" style="background-color:yellow;">{% trans "Renew" %}</a>
 				    		{% endif %}
 			    		{% endif %}
 			    		
@@ -136,7 +137,7 @@
 			</div>
 		{% endwith %}	
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
 	{% endfor %}
 </div>
 

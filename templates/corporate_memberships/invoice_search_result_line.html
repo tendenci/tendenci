@@ -1,5 +1,6 @@
 {% load base_filters %}
 {% load invoice_tags %}
+{% load i18n %}
 
 <table width="100%">
       {% invoices_search_line_header request invoice '#003366' %}  
@@ -7,11 +8,11 @@
       {# display corporate membership info #} 
      
       <tr>
-      	<td>Corp. Memb. ID</td>
-      	<td>Company Name</td>
-      	<td>Date</td>
-      	<td>Amount</td>
-      	<td>Balance</td>
+      	<td>{% trans "Corp. Memb. ID" %}</td>
+      	<td>{% trans "Company Name" %}</td>
+      	<td>{% trans "Date" %}</td>
+      	<td>{% trans "Amount" %}</td>
+      	<td>{% trans "Balance" %}</td>
       </tr>
     {% if obj %}
        <tr>
@@ -25,7 +26,7 @@
        		{% if obj.indiv_memb_renew_entries %}
        			<tr><td colspan="5">&nbsp;</td></tr>
 		       <tr>
-		       	<td colspan="3"><b>Individual memberships renewed in this transaction:</b></td>
+		       	<td colspan="3"><b>{% trans "Individual memberships renewed in this transaction:" %}</b></td>
 		       	<td colspan="2">&nbsp;</td>
 		       </tr>
 		       

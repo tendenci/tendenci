@@ -3,7 +3,8 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
-
+{% load i18n %
+}
 {% is_admin user as admin %}
 
 {% block title %}Membership Application for {{ entry.name }}{% endblock %}
@@ -28,9 +29,9 @@
     <div class="application-entry-wrap">
 
         {% if entry.is_renewal %}
-        <h1>{{ entry.app.name }} Renewal</h1>
+        <h1>{{ entry.app.name }} {% trans "Renewal" %}</h1>
         {% else %}
-        <h1>{{ entry.app.name }} Submission</h1>
+        <h1>{{ entry.app.name }} {% trans "Submission" %}</h1>
         {% endif %}
 
         {% if is_confirmation and entry.app.confirmation_text %}
@@ -38,9 +39,9 @@
             <hr />
         {% endif %}
 
-        <div class="entry_dt">Submitted {{ entry.entry_time|date_short }} 
+        <div class="entry_dt">{% trans "Submitted" %} {{ entry.entry_time|date_short }}
             {% if admin %}
-            <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">Edit Entry</a>
+            <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">{% trans "Edit Entry" %}</a>
             {% endif %}
         </div>
 
@@ -97,7 +98,7 @@
 
     {% if entry.membership %}
     <div class="profile-link">
-        <a href="{% url profile  entry.membership.user %}#userview-memberships">View Profile & Membership</a>
+        <a href="{% url profile  entry.membership.user %}#userview-memberships">{% trans "View Profile & Membership" %}</a>
     </div>
     {% endif %}
 

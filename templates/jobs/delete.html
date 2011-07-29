@@ -1,4 +1,6 @@
+{% load i18n %}
+
 {% block body %}
-<h1>{% firstof MODULE_JOBS_LABEL 'Job' %} Delete Page</h1>
-<div class="back-to-search"><a href="{% url job.search %}">&laquo; Back to jobs search</a></div>
+<h1>{% firstof MODULE_JOBS_LABEL 'Job' %} {% trans "Delete Page" %}</h1>
+<div class="back-to-search"><a href="{% url job.search %}">&laquo; {% trans "Back to jobs search" %}</a></div>
 {% endblock %}

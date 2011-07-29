@@ -1,4 +1,5 @@
 {% load base_filters %}
+{% load i18n %}
 
 {% with obj.registrant_set.all as registrants %}
 	{% if registrants %}
@@ -14,7 +15,7 @@
 							({{ reg.email }})
 						{% endif %}
 					{% else %}
-						Registrant {{ forloop.counter }} (name not available)
+						{% trans "Registrant" %} {{ forloop.counter }} {% trans "(name not available)" %}
 					{% endif %}
 					{% if reg.user %}
 						</a>

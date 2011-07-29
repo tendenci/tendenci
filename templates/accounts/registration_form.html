@@ -1,7 +1,7 @@
 {% extends "accounts/base.html" %}
 {% load i18n %}
 
-{% block title %}User Registration{% endblock %}
+{% block title %}{% trans "User Registration" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -41,15 +41,15 @@
          <td>{{ form.email }}</td>
      </tr>
      <tr>
-         <td><label for="id_password1" class="required">Password:</label></td>
+         <td><label for="id_password1" class="required">{% trans "Password:" %}</label></td>
          <td>{{ form.password1 }}</td>
      </tr>
      <tr>
-         <td><label for="id_password2" class="required">Password (again):</label></td>
+         <td><label for="id_password2" class="required">{% trans "Password (again):" %}</label></td>
          <td>{{ form.password2 }}</td>
      </tr>
      <tr>
-         <td><label for="id_captcha" class="required">Security:</label></td>
+         <td><label for="id_captcha" class="required">{% trans "Security:" %}</label></td>
          <td>{{ form.captcha }}</td>
      </tr>
      <tr>

@@ -1,5 +1,6 @@
 {% load perm_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% is_admin request.user as isadmin %}
 
@@ -15,9 +16,9 @@
                     <a href="{% url invoice.view invoice.pk %}">{{ invoice.pk}}</a>  
                     {% if invoice.estimate  %}
                         {% if 'cancel' in invoice.status_detail %}
-                            <span class="body_copy_yellow">CANCELLED</span>
+                            <span class="body_copy_yellow">{% trans "CANCELLED" %}</span>
                         {% else %}
-                            EST
+                            {% trans "EST" %}
                          {% endif %}
                     {% else %}
                         <a href="{% url invoice.view invoice.pk %}" class="links"><img src="/site_media/static/images/icons/tendered65x12.gif" border="0" width="65"  height="12" alt="Tendered {{ invoice.tender_date|date:'N j, Y h:i a'}}"></a>&nbsp;

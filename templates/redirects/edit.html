@@ -1,6 +1,7 @@
 {% extends "redirects/base.html" %}
 {% load styled_forms %}
 {% load redirect_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }} Edit{% endblock %}
 
@@ -12,7 +13,7 @@
 {% block body %}
 <div class="t">
 {% redirect_nav request.user redirect %}
-    <h1>Redirect Edit</h1>
+    <h1>{% trans "Redirect Edit" %}</h1>
  
     <div class="redirect-wrap">
     	<form action="{% url redirect.edit redirect.pk %}" method="post">{% csrf_token %}

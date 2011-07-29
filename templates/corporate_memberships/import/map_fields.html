@@ -3,8 +3,9 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load styled_forms %}
+{% load i18n %}
 
-{% block title %}Import Corporate Memberships from CSV file{% endblock %}
+{% block title %}{% trans "Import Corporate Memberships from CSV file" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,10 +16,10 @@
  {% corpmemb_nav request.user %}
 <div id="corp-import-wrap">
     
-    <h1>Corporate Membership Import </h1>
+    <h1>{% trans "Corporate Membership Import" %} </h1>
     <div id="corp-import">
 	    <p class="import-timestamp">{{ datetime.now }}</p>
-	    <h3 class="corp-import-step">Step 2/4 - Map Fields</h3>
+	    <h3 class="corp-import-step">{% trans "Step 2/4 - Map Fields" %}</h3>
 		 <div class="clear-right"></div>   
 	
 	

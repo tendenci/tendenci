@@ -1,7 +1,8 @@
 {% extends "corporate_memberships/base.html" %}
 {% load corporate_memberships_tags %}
+{% load i18n %}
 
-{% block title %}Corporate Membership Approve / Disapprove{% endblock %}
+{% block title %}{% trans "Corporate Membership Approve / Disapprove" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -34,7 +35,7 @@
 <div class="t">
 {% corpmemb_nav request.user corporate_membership %} 
 
-     <h1>Corporate Membership Approve / Disapprove</h1>
+     <h1>{% trans "Corporate Membership Approve / Disapprove" %}</h1>
 	<p>
      <a href="{% url corp_memb.view corporate_membership.id %}" target="_blank">{{ corporate_membership.name }}</a><br />
      	{% if corporate_membership.address %}
@@ -60,13 +61,13 @@
      	{% if corporate_membership.email %}
      		{{ corporate_membership.email }} <br />
      	{% endif %}
-     	Join Date: {{ corporate_membership.join_dt }}<br />
-     	<b>Expiration Date</b>: {{ corporate_membership.expiration_dt }}
+     	{% trans "Join Date: " %}{{ corporate_membership.join_dt }}<br />
+     	<b>{% trans "Expiration Date" %}</b>: {{ corporate_membership.expiration_dt }}
      	{% if corporate_membership.is_expired %}
      		{% if corporate_membership.is_in_grace_period %}
-     			<span style="color:#F79D3D">(in grace period)</span>
+     			<span style="color:#F79D3D">{% trans "(in grace period)" %}</span>
      		{% else %}
-     			<span style="color:red">(expired)</span>
+     			<span style="color:red">{% trans "(expired)" %}</span>
      		{% endif %}
      	{% endif %}
      	<br />
@@ -75,20 +76,20 @@
    {% if renew_entry %}
 	   <div style="height:1px;width:80%;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
 	   <div>
-	   	Renewed on {{ renew_entry.create_dt|date:"d-M-Y" }} by <a href="{% url profile renew_entry.creator.username %}">{{ renew_entry.creator.get_full_name  }}</a>
+	   	{% blocktrans with renew_entry.create_dt|date:"d-M-Y" as create_date %}Renewed on {{ create_date }} by:{% endblocktrans %} <a href="{% url profile renew_entry.creator.username %}">{{ renew_entry.creator.get_full_name }}</a>
 	   	<br />
-	   	<a href="{% url invoice.view renew_entry.invoice.id %}">View Invoice</a>
+	   	<a href="{% url invoice.view renew_entry.invoice.id %}">{% trans "View Invoice" %}</a>
 	   	<br />
-	   	New expiration date upon approval: <b>{{ new_expiration_dt }}</b>
+	   	{% trans "New expiration date upon approval: " %}<b>{{ new_expiration_dt }}</b>
 	   	
 	   	<br /><br />
-	   	The number of individual memberships renewed in this transaction: <b>{{ indiv_renew_entries.count }}</b>
+	   	{% trans "The number of individual memberships renewed in this transaction: " %}<b>{{ indiv_renew_entries.count }}</b>
 	   	{% if indiv_renew_entries.count > 0 %}
 	   		
-		   <small>(<span id="toggle-indiv-entries"><a href="javascript:;">Show Details</a></span>)</small>
+		   <small>(<span id="toggle-indiv-entries"><a href="javascript:;">{% trans "Show Details" %}</a></span>)</small>
 		   <div id="indiv-entries">
 			   <table width="70%">
-				<tr><td width="50%" class="indiv-header">Name</td><td width="50%" class="indiv-header">Member Number</td></tr>
+				<tr><td width="50%" class="indiv-header">{% trans "Name" %}</td><td width="50%" class="indiv-header">{% trans "Member Number" %}</td></tr>
 				{% for indiv_renew_entry in indiv_renew_entries %}
 					<tr>
 					<td><a href="{% url profile indiv_renew_entry.membership.user.username %}">{{ indiv_renew_entry.membership.user.get_full_name }}</a></td>

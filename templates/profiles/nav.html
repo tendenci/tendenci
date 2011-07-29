@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 {% is_admin user_current as user_current_is_admin %}
 <div id="showh">
 		<ul id="primary">
@@ -13,15 +14,15 @@
     {% endif %}
 
 		<li>
-			<span>Users</span>
+			<span>{% trans "Users" %}</span>
 			<ul id="secondary">
 				<li>
-				<a href="/users/">Users:</a>
+				<a href="/users/">{% trans "Users:" %}</a>
 				</li> 
 				{% has_perm user_current site_settings.change_setting as can_edit_setting %}
 				{% if can_edit_setting %}
-					<li>	
-					<a href="{% url site_settings.views.list 'module' 'users' %}">Settings</a>
+					<li>
+					<a href="{% url site_settings.views.list 'module' 'users' %}">{% trans "Settings" %}</a>
 					</li>
 				{% endif %}
 				
@@ -29,7 +30,7 @@
 							{% has_perm user_current profiles.view_profile "profile" as can_view_user %}
 							{% if can_view_user %}
 								<li>
-									<a href="{% url profiles.views.index user_this.username %}">View</a>
+									<a href="{% url profiles.views.index user_this.username %}">{% trans "View" %}</a>
 								</li>
 							{% endif %}
 						{% endif %}
@@ -38,36 +39,36 @@
 							{% has_perm user_current profiles.change_profile "profile" as can_edit_user %}
 							{% if can_edit_user %}
 							<li>
-							<a href="{% url profile.edit user_this.id %}">Edit</a>
+							<a href="{% url profile.edit user_this.id %}">{% trans "Edit" %}</a>
 							</li>
 							{% endif %}
 						{% endif %}
 						
 						<li>
-						<a href="{% url profile.search %}">Search</a>
+						<a href="{% url profile.search %}">{% trans "Search" %}</a>
 						</li>
 							
 						{% has_perm user_current profiles.add_profile "profile" as can_add_user %}
 						{% if can_add_user %}
 						<li>
-						<a href="{% url profile.add %}">Add</a>
+						<a href="{% url profile.add %}">{% trans "Add" %}</a>
 						</li>
 						{% endif %}
                         {% if user_current_is_admin %}
      					<li>
-						<a href="{% url profile.admins %}">Admins</a>
+						<a href="{% url profile.admins %}">{% trans "Admins" %}</a>
 						</li>
                         {% endif %}
 					{% if user_current.is_authenticated %}
 					<li>
-					<a href="{% url auth_logout %}">Log Off</a>
+					<a href="{% url auth_logout %}">{% trans "Log Off" %}</a>
 					</li> 
 					{% endif %}
 			</ul>
 			
 		</li>
-		<li><a href="{% url groups %}">Groups</a></li>
-		<li><a href="{% url articles %}">Articles</a></li>
+		<li><a href="{% url groups %}">{% trans "Groups" %}</a></li>
+		<li><a href="{% url articles %}">{% trans "Articles" %}</a></li>
 		
 		</ul>
 		</div>

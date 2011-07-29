@@ -2,6 +2,7 @@
 {% load news_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{% firstof MODULE_NEWS_LABEL 'News' %} Edit{% endblock %}
 
@@ -18,7 +19,7 @@
 
     {% news_nav request.user news %}
 
-    <h1>{% firstof MODULE_NEWS_LABEL 'News' %} Edit</h1>
+    <h1>{% firstof MODULE_NEWS_LABEL 'News' %} {% trans "Edit" %}</h1>
 
     <div class="news-wrap">
  		<div class="options">

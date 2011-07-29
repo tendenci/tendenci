@@ -1,1 +1,3 @@
-Corporate Membership Renewal - {{ object.name }}
+{% load i18n %}
+
+{% blocktrans %}Corporate Membership Renewal - {{ object.name }}{% endblocktrans %}

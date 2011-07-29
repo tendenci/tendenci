@@ -2,8 +2,9 @@
 {% load article_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
-{% block title %}{% firstof MODULE_ARTICLES_LABEL 'Article' %} Edit{% endblock %}
+{% block title %}{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Edit" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -17,7 +18,7 @@
 <div class="t">
     {% article_nav request.user article %}
 
-    <h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} Edit</h1>
+    <h1>{% firstof MODULE_ARTICLES_LABEL trans 'Article' %} {% trans "Edit" %}</h1>
 
     <div class="article-wrap">
 		<div class="options">

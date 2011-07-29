@@ -3,8 +3,9 @@
 {% load contribution_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
-{% block title %}{{ block.super }}Search{% endblock %}
+{% block title %}{{ block.super }}{% trans "Search" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -17,7 +18,7 @@
 
     {% contribution_nav request.user %}
 
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_CONTRIBUTION_LABEL 'Contributions' %} Search</h1>
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_CONTRIBUTION_LABEL trans 'Contributions' %} Search</h1>
 
 	{% contribution_search %}
     {% autopaginate contributions 10 %}
@@ -30,17 +31,17 @@
 		<div class="contribution-wrap">
             <h2>
             	{{ contribution.content_type }}: 
-				<a href="{{ contribution.object.get_absolute_url }}">{% firstof contribution.title "Untitled" %}</a>
+				<a href="{{ contribution.object.get_absolute_url }}">{% firstof contribution.title trans"Untitled" %}</a>
 			</h2>
 			<div class="meta">
-            	<div class="submitted">Updated on {{ contribution.update_dt|date:"D d M Y P" }} 
-				by {{ contribution.creator }}</div>
+            	<div class="submitted">{% blocktrans with contribution.update_dt|date:"D d M Y P" as contrib_date and contribution.creator as contrib_creator %}Updated on {{ contrib_date }} 
+				by {{ contrib_creator }} {% endblocktrans %}</div>
             </div>
 		</div>
 		{% endif %}
 		{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

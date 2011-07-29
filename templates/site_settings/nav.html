@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 <div id="showh">
 	<ul id="primary">
@@ -12,10 +13,10 @@
     {% endif %}
 
 	<li>
-		<span>Settings</span>
+		<span>{% trans "Settings" %}</span>
 		<ul id="secondary">
-			<li><a href="{% url settings %}">Settings:</a></li> 
-			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			<li><a href="{% url settings %}">{% trans "Settings:" %}</a></li> 
+			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 		</ul>
 	</li>
 	</ul>

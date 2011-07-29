@@ -1,5 +1,6 @@
 {% extends "resumes/base-print.html" %}
 {% load resume_tags %}
+{% load i18n %}
 
 {% block title %}{{ resumes.get_title }}{% endblock %}
 {% block meta_description %}{{ resumes.get_description }}{% endblock %}
@@ -14,28 +15,28 @@
 <div class="t-print">
 
 	<div class='hide-this'>
-		<h1>Print View</h1>
+		<h1>{% trans "Print View" %}</h1>
 
 		<div class="guide">
-			<div><a href="{{ resume.get_absolute_url }}">&laquo; Back to regular resume view</a></div>
-			<div>Your printed page will look <em>something</em> like this.</div>
+			<div><a href="{{ resume.get_absolute_url }}">&laquo; {% trans "Back to regular resume view" %}</a></div>
+			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
 		</div>
 	</div>
 
      <div class="resume-wrap">
         <h2>{{ resume.title }}</h2>
-		<h2>Resume Information</h2>
+		<h2>{% trans "Resume Information" %}</h2>
 
 {% if resume.description %}
 		<div class="section-block">
-			<div class="label">Description</div>
+			<div class="label">{% trans "Description" %}</div>
 			<div class="value">{{ resume.description|safe }}</div>
 		</div>
 {% endif %}
 
 {% if resume.location %}
 		<div class="section-block">
-			<div class="label">Location</div>
+			<div class="label">{% trans "Location" %}</div>
 			<div class="value">{{ resume.location }}</div>
 			<div class="clear"></div>
 		</div>
@@ -44,27 +45,27 @@
 
 {% if resume.experience %}
 		<div class="section-block">
-			<div class="label">Experience</div>
+			<div class="label">{% trans "Experience" %}</div>
 			<div class="value">{{ resume.experience }}</div>
 		</div>
 {% endif %}
 
 {% if resume.skills %}
 		<div class="section-block">
-			<div class="label">Skills</div>
+			<div class="label">{% trans "Skills" %}</div>
 			<div class="value">{{ resume.skills }}</div>
 		</div>
 {% endif %}
 
 {% if resume.education %}
 		<div class="section-block">
-			<div class="label">Education</div>
+			<div class="label">{% trans "Education" %}</div>
 			<div class="value">{{ resume.education }}</div>
 			<div class="clear"></div>
 		</div>
 {% endif %}
 
-		<h2>Contact Information</h2>
+		<h2>{% trans "Contact Information" %}</h2>
 {% if resume.contact_name %}
 		<div class="contact-wrap">
 			<div>{{ resume.contact_name }}</div>

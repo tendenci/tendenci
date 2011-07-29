@@ -1,23 +1,24 @@
 {% extends "reports/base.html" %}
+{% load i18n %}
 
 {% block content %}
 
 
-<h1>Administrator Security Level Report</h1>
+<h1>{% trans "Administrator Security Level Report" %}</h1>
 
-Lists all users with a securitylevel of Administrator. This can be helpful as a cross reference when auditing.
+{% trans "Lists all users with a securitylevel of Administrator. This can be helpful as a cross reference when auditing." %}
 
 
 
 <table style="width: 80%;">
 <tr>
-	<th>#</th>
-	<th>Username</th>
-	<th>UserId</th>
-	<th>Lastname</th>
-	<th>Firstname</th>
-	<th>Email</th>
-	<th>Phone</th>
+	<th>{% trans "#" %}</th>
+	<th>{% trans "Username" %}</th>
+	<th>{% trans "UserId" %}</th>
+	<th>{% trans "Lastname" %}</th>
+	<th>{% trans "Firstname" %}</th>
+	<th>{% trans "Email" %}</th>
+	<th>{% trans "Phone" %}</th>
 </tr>
 {% for user in users %}
 <tr class="{% cycle 'odd' '' %}">

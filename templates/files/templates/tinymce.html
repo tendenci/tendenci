@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -42,13 +44,13 @@
 						<div>
 							<span class="select-photos">
 							<span id="spanButtonPlaceholder"></span>
-							<a id="choose-photos" href="javascript:;">Upload Media</a>
+							<a id="choose-photos" href="javascript:;">{% trans "Upload Media" %}</a>
 							</span>
 						</div>
 						<div style="clear:both;"></div>
 
 						<fieldset id="chosen-photos">
-							<legend><span id="photo-queue">{{ media.count }}</span>&nbsp;Files</legend>
+							<legend><span id="photo-queue">{{ media.count }}</span>&nbsp;{% trans "Files" %}</legend>
 							<div class="flash" id="fsUploadProgress">
                                 {% for file in media %}
                                 	<div class="progressWrapper">
@@ -70,10 +72,10 @@
 										</div>
 										<div class="actions">
 											{% if file.type == 'image' %}
-											<a class="insert-btn" onclick="ImageDialog.insert_image(this, {{file.id}});" href="javascript:;">Insert Image</a>
+											<a class="insert-btn" onclick="ImageDialog.insert_image(this, {{file.id}});" href="javascript:;">{% trans "Insert Image" %}</a>
 											{% endif %}
-                                            <a class="insert-btn" onclick="ImageDialog.insert(this, {{file.id}});" href="javascript:;">Insert Attachment</a>  
-                                            <a class="delete-btn" onclick="ImageDialog.delete_image(this, {{file.id}});" href="javascript:;">Delete</a>												
+                                            <a class="insert-btn" onclick="ImageDialog.insert(this, {{file.id}});" href="javascript:;">{% trans "Insert Attachment" %}</a>  
+                                            <a class="delete-btn" onclick="ImageDialog.delete_image(this, {{file.id}});" href="javascript:;">{% trans "Delete" %}</a>												
 										</div>
 
                                     </div> <!-- END photo-wrapper -->
@@ -140,7 +142,7 @@
 											<td>
 												<table cellpadding=5 style="width:120px;" border="0">
 													<tr>
-														<td>Width: <input style="width:40px;" type="text" name="edit_width" /></td>
+														<td>{% trans "Width: " %}<input style="width:40px;" type="text" name="edit_width" /></td>
 													</tr>
 													<tr>
 														<td>Height: <input style="width:40px;" type="text" name="edit_height" /></td>
@@ -148,9 +150,9 @@
 													<tr>
 														<td>
 						                                    <select name="edit_float">
-						                                        <option value="">-- Alignment (Float) --</option>
-						                                        <option value="left">Left</option>
-						                                        <option value="right">Right</option>
+						                                        <option value="">-- {% trans "Alignment (Float) "%} --</option>
+						                                        <option value="left">{% trans "Left" %}</option>
+						                                        <option value="right">{% trans "Right" %}</option>
 						                                    </select>&nbsp;
 														</td>
 													</tr>
@@ -165,8 +167,8 @@
 							<input style="width:30px" type="hidden" name="edit_align" value="-- not set --" />			
                         </table>
                         <div class="actions">
-                            <a class="update-btn" onclick="ImageDialog.update();" href="javascript:;">Update Image</a>  
-                            <a class="delete-btn" onclick="ImageDialog.remove_image();" href="javascript:;">Remove Image</a> 
+                            <a class="update-btn" onclick="ImageDialog.update();" href="javascript:;">{% trans "Update Image" %}</a>  
+                            <a class="delete-btn" onclick="ImageDialog.remove_image();" href="javascript:;">{% trans "Remove Image" %}</a> 
                         </div>
                     </div>
                 </div>

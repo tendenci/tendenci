@@ -1,21 +1,23 @@
+{% load i18n %}
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-<title>User Self Add - Admin Notice</title>
+<title>{% trans "User Self Add - Admin Notice" %}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 
 <body bgcolor="#ffffff" text="#000000">
-<p>The following user's account has been updated/modified at {{ SITE_GLOBAL_SITEDISPLAYNAME }}. The details are listed below: </p>
+<p>{% blocktrans %}The following user's account has been updated/modified at {{ SITE_GLOBAL_SITEDISPLAYNAME }}. The details are listed below: {% endblocktrans %}</p>
 <table width="100%"  border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <td width="11%"><strong>Name:</strong></td>
+    <td width="11%"><strong>{% trans "Name:" %}</strong></td>
     <td width="89%">{{ profile.user.get_full_name}}</td>
   </tr>
 </table>
 <p><br>
-The list of updated items include: </p>
+{% trans "The list of updated items include:" %} </p>
 <p>
 
 	<table width="100%"  border="0" cellspacing="0" cellpadding="0">
@@ -36,14 +38,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				First Name</font></div></td>
+				{% trans "First Name" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_user.first_name %}
 					{{ old_user.first_name }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -57,14 +59,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Initial</font></div></td>
+				{% trans "Initial" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.initials %}
 					{{ old_profile.initials }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -78,14 +80,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Last Name</font></div></td>
+				{% trans "Last Name" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_user.last_name %}
 					{{ old_user.last_name }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -99,14 +101,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Position Title</font></div></td>
+				{% trans "Position Title" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.position_title %}
 					{{ old_profile.position_title }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -121,14 +123,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Display Name</font></div></td>
+				{% trans "Display Name" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.display_name %}
 					{{ old_profile.display_name }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -142,14 +144,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Phone</font></div></td>
+				{% trans "Phone" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.phone %}
 					{{ old_profile.phone }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -162,14 +164,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Phone2</font></div></td>
+				{% trans "Phone2" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.phone2 %}
 					{{ old_profile.phone2 }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -182,14 +184,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Home Phone</font></div></td>
+				{% trans "Home Phone" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.home_phone %}
 					{{ old_profile.home_phone }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -202,14 +204,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Work Phone</font></div></td>
+				{% trans "Work Phone" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.work_phone %}
 					{{ old_profile.work_phone }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -229,7 +231,7 @@ The list of updated items include: </p>
 				{% if old_profile.fax %}
 					{{ old_profile.fax }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -242,14 +244,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Mobile Phone</font></div></td>
+				{% trans "Mobile Phone" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.mobile_phone %}
 					{{ old_profile.mobile_phone }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -263,14 +265,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Email</font></div></td>
+				{% trans "Email" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.email %}
 					{{ old_profile.email }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -283,14 +285,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Email2</font></div></td>
+				{% trans "Email2" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.email2 %}
 					{{ old_profile.email2 }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -303,14 +305,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Website</font></div></td>
+				{% trans "Website" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.url %}
 					{{ old_profile.url }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -323,22 +325,22 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Receive Email</font></div></td>
+				{% trans "Receive Email" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.direct_mail %}
-					Yes</font></div></td>
+					{% trans "Yes" %}</font></div></td>
 				{% else %}
-					No</font></div></td>
+					{% trans "No" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 					 {% if profile.direct_mail %}
-						Yes</font></div></td>
+						{% trans "Yes" %}</font></div></td>
 					{% else %}
-						No</font></div></td>
+						{% trans "No" %}</font></div></td>
 					{% endif %}
 				</tr>
 	{% endif %}
@@ -347,14 +349,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Company</font></div></td>
+				{% trans "Company" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.company %}
 					{{ old_profile.company }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -367,14 +369,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Department</font></div></td>
+				{% trans "Department" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.department %}
 					{{ old_profile.department }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -387,14 +389,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Mailing Name</font></div></td>
+				{% trans "Mailing Name" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.mailing_name %}
 					{{ old_profile.mailing_name }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -407,14 +409,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Address</font></div></td>
+				{% trans "Address" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.address %}
 					{{ old_profile.address }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -427,14 +429,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Address2</font></div></td>
+				{% trans "Address2" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.address2 %}
 					{{ old_profile.address2 }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -447,14 +449,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				City</font></div></td>
+				{% trans "City" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.city %}
 					{{ old_profile.city }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -468,14 +470,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				City</font></div></td>
+				{% trans "City" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.state %}
 					{{ old_profile.state }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -488,14 +490,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Zipcode</font></div></td>
+				{% trans "Zipcode" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.zipcode %}
 					{{ old_profile.zipcode }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -508,14 +510,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Country</font></div></td>
+				{% trans "Country" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.country %}
 					{{ old_profile.country }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -529,14 +531,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Username</font></div></td>
+				{% trans "Username" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_user.username %}
 					{{ old_user.username }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -549,22 +551,22 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Interactive</font></div></td>
+				{% trans "Interactive" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_user.is_active %}
-					Yes</font></div></td>
+					{% trans "Yes" %}</font></div></td>
 				{% else %}
-					No</font></div></td>
+					{% trans "No" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 					 {% if profile.user.is_active %}
-						Yes</font></div></td>
+						{% trans "Yes" %}</font></div></td>
 					{% else %}
-						No</font></div></td>
+						{% trans "No" %}</font></div></td>
 					{% endif %}
 				</tr>
 	{% endif %}
@@ -573,14 +575,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Status</font></div></td>
+				{% trans "Status" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.status %}
 					{{ old_profile.status }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -593,14 +595,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Notes</font></div></td>
+				{% trans "Notes" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.notes %}
 					{{ old_profile.notes }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -613,14 +615,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Time Zone</font></div></td>
+				{% trans "Time Zone" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.time_zone %}
 					{{ old_profile.time_zone }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -633,14 +635,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Language</font></div></td>
+				{% trans "Language" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.language %}
 					{{ old_profile.language }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -653,14 +655,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Gender</font></div></td>
+				{% trans "Gender" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.sex %}
 					{{ old_profile.sex }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -673,14 +675,14 @@ The list of updated items include: </p>
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				Spouse</font></div></td>
+				{% trans "Spouse" %}</font></div></td>
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.spouse %}
 					{{ old_profile.spouse }}</font></div></td>
 				{% else %}
-					BLANK</font></div></td>
+					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
@@ -693,9 +695,9 @@ The list of updated items include: </p>
 
 </p>
 <p><br>
-  To view this user's record, click here: <a href="{{ SITE_GLOBAL_SITEURL }}{% url profile profile.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url profile profile.user.username %}</a>  
+  {% blocktrans %}To view this user's record, click here:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url profile profile.user.username %}">{{ SITE_GLOBAL_SITEURL }}{% url profile profile.user.username %}</a>  
  
-<P>Time submitted:  {% now "D d M Y P" %}</P>
+<P>{% blocktrans %}Time submitted:{% endblocktrans %}  {% now "D d M Y P" %}</P>
  
 </body>
 </html>

@@ -1,3 +1,5 @@
+{% load i18n %}
+
 {% load base_filters %}
 {% load invoice_tags %}
  <table width="100%">
@@ -5,12 +7,12 @@
         
       {# display job info #} 
       <tr>
-      	<td>JobID</td>
-      	<td>Contact</td>
-      	<td>Title</td>
-      	<td>Date</td>
-      	<td>Price</td>
-      	<td>Balance</td>
+      	<td>{% trans "JobID" %}</td>
+      	<td>{% trans "Contact" %}</td>
+      	<td>{% trans "Title" %}</td>
+      	<td>{% trans "Date" %}</td>
+      	<td>{% trans "Price" %}</td>
+      	<td>{% trans "Balance" %}</td>
       </tr>
       
        {% if obj %}  

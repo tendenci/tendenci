@@ -1,8 +1,9 @@
 {% extends "contacts/base.html" %}
 {% load contact_tags %}
 {% load base_filters %}
+{% load i18n %}
 
-{% block title %}{{ block.super }}Print{% endblock %}
+{% block title %}{{ block.super }}{% trans "Print" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -11,7 +12,7 @@
 
 {% block body %}
 <div class="t">
-    <h1>{% firstof MODULE_CONTACTS_LABEL 'Conacts' %} Print</h1>
+    <h1>{% firstof MODULE_CONTACTS_LABEL trans 'Contacts' %} {% trans "Print" %}</h1>
     
     {% contact_nav request.user contact %}
 
@@ -27,7 +28,7 @@
         <h2>{{ contact.headline }}</h2>
         <div class="content">{{ contact.body|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ contact.create_dt|date:"long" }} by {{ contact.creator }}</div>
+            <div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date and contact.creator as contact_creator%}Submitted on {{ create_date }} by {{ contact_creator }}{% endblocktrans %}</div>
         </div>
     </div>
 
