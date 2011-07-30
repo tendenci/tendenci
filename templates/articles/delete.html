@@ -1,7 +1,24 @@
-
+{% extends "articles/base.html" %}
+{% load article_tags %}
 {% load i18n %}
+
+{% block title %}{% trans "Delete Article" %} - {{ article.get_title }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
+{% endblock %}
 {% block body %}
-<h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} {% trans "Delete Page" %}</h1>
-<div class="back-to-search"><a href="{% url article.search %}">&laquo; 
-{% trans "Back to articles search" %}</a></div>
+<h1>{% trans "Delete article?" %}</h1>
+<h2>{{ article.headline }}</h2>
+<div class="content">{{ article.body|safe|truncatewords_html:"100" }}</div>
+<p><strong>{% trans "Are you sure you want to permanently delete this article?" %}</strong></p>
+ <!-- delete-article form -->
+            <form name="article-delete" method="POST" action="{% url article.delete article.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="submit" name="submit" value="Confirm Delete">
+            </form>
+            <br /><br />
+<div class="back-item"><a href="{% url article article.slug %}">&laquo; {% blocktrans %}Back to article {% endblocktrans %}{{ article.headline }}</a></div>
+<div class="back-search"><a href="{% url article.search %}">&laquo; {% blocktrans %}Back to search all {% endblocktrans %}{% firstof MODULE_articleS_LABEL 'articles' %} </a></div>
 {% endblock %}
