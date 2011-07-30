@@ -50,21 +50,21 @@
         {% if resume.experience %}
                 <div class="section-block">
                     <div class="label">{% trans "Experience" %}</div>
-                    <div class="value">{{ resume.experience }}</div>
+                    <div class="value">{{ resume.experience|safe|linebreaks }}</div>
                 </div>
         {% endif %}
 
         {% if resume.skills %}
                 <div class="section-block">
                     <div class="label">{% trans "Skills" %}</div>
-                    <div class="value">{{ resume.skills }}</div>
+                    <div class="value">{{ resume.skills|safe|linebreaks }}</div>
                 </div>
         {% endif %}
 
         {% if resume.education %}
                 <div class="section-block">
                     <div class="label">{% trans "Education" %}</div>
-                    <div class="value">{{ resume.education }}</div>
+                    <div class="value">{{ resume.education|safe|linebreaks }}</div>
                     <div class="clear"></div>
                 </div>
         {% endif %}
