@@ -63,6 +63,7 @@
 .status-pending {font-weight: bold; color: orange;}
 .status-inactive {font-weight: bold; color: red;}
 
+.clear {clear: both;}
 
 .content-wide {
     width: 100% !important;
