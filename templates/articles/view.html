@@ -27,26 +27,7 @@
         <h1>{{ article.headline }}</h1>
 
 		<div class="content">
-			{{ article.body|safe }}
-			{% if article.source %}<p>{% trans "Source: " %}{{ article.source|urlize }}{% endif %}</p>
-			
-			<div class="contact">
-				{% if article.first_name and article.last_name %}
-					<div>{{ article.first_name }} {{ article.last_name }}</div>
-				{% endif %}	
-				{% if article.phone %}
-					<div>{{ article.phone }}</div>	
-				{% endif %}	
-				{% if article.fax %}
-					<div>{{ article.fax }}</div>	
-				{% endif %}	
-				{% if article.email %}
-				<div>{{ article.email|obfuscate_email }}</div>
-				{% endif %}
-				{% if article.website %}	
-				<div>{{ article.website|urlize }}</div>	
-				{% endif %}
-			</div>             
+			{{ article.body|safe }} 
 		</div>
 		<div class="fb-connect">{% fb_like_button_iframe article.get_absolute_url %}</div>
         {% include "articles/meta.html" %}
