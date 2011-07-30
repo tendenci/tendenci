@@ -1,5 +1,6 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.template.loader import get_template
+from django.contrib.auth.models import AnonymousUser
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
@@ -54,7 +55,7 @@ class GetFormNode(Node):
         try:
             form = Form.objects.search(query=query).best_match()
             context['form'] = form.object
-            context['form_for_form'] = FormForForm(form.object)
+            context['form_for_form'] = FormForForm(form.object, AnonymousUser())
             template = get_template('forms/embed_form.html')
             output = '<div class="embed-form">%s</div>' % template.render(context)
             return output
