@@ -2,6 +2,7 @@
 {% load story_tags %}
 {% load category_tags %}
 {% load base_filters %}
+{% load base_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }}{{ story.title }}{% endblock %}
@@ -14,30 +15,17 @@
 {% block body %}
 <div class="t">
     {% stories_nav user story %}
-    <div class="quick-options">
- 	{% stories_options user story %}
- 	</div>
-        <h2>{{ story.title }}</h2>
+    <div class="story-wrap">
         {% if story.image %}
         <div class="photo">
-            <img src="{{ story.image.file.url }}" title="{{ story.title }}" />
+            <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{{ story.title }}" />
         </div>
         {% endif %}
-        <div class="content">{{ story.content|safe }}</div>
-        <div class="meta">
-			<div class="categories">
-				{% get_category_for_object story as category %}
-				{% if category %}
-					{% trans "Category:" %}&nbsp;<a href="{% url story.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
-				{% endif %}
-				{% get_sub_category_for_object story as sub_category %}
-				{% if sub_category %}
-					{% trans "Sub Category:" %}&nbsp;<a href="{% url story.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
-				{% endif %}				
-			</div>
-
-            <div class="submitted">{% blocktrans with story.create_dt|date:"long" as storydate and  story.creator as storycreate %}Submitted on {{ storydate }} by {{ storycreate }}{% endblocktrans %}</div>
+        <div class="content">
+        <h1>{{ story.title }}</h1>
+        {{ story.content|safe }}
         </div>
-  
+        {% include "stories/meta.html" %}
+    </div>
 </div>
 {% endblock %}
