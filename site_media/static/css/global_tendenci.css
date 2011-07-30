@@ -55,9 +55,6 @@
 .editor-bar ul li li a.delete:hover,
 .form-delete-link a.delete:hover {color: #800;}
 
-/* Forms delete links */
-.form-delete-link {text-align: right; width: 90%; font-size: 12px; text-decoration: underline;}
-
 /* Perms and Status styles */
 .perm-public {font-weight: bold; color: green;}
 .perm-users, 
