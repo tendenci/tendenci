@@ -62,7 +62,7 @@ def search(request, template_name="articles/search.html"):
     }
     EventLog.objects.log(**log_defaults)
     
-    return render_to_response(template_name, {'articles':articles}, 
+    return render_to_response(template_name, {'articles':articles, 'search_view': True}, 
         context_instance=RequestContext(request))
 
 def print_view(request, slug, template_name="articles/print-view.html"):
