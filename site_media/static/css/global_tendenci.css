@@ -20,7 +20,8 @@
 
 .meta .submitted,
 .meta .categories,
-.meta .tags {
+.meta .tags,
+.meta .contact {
 	margin-bottom: 2px;
 	line-height: 16px;
 }
@@ -49,9 +50,13 @@
 .editor-bar li li {float: none;}
 .editor-bar li li a { display: block; text-align: right; padding: 3px;margin: 0;}
 
-.editor-bar ul li li a.delete {color: #c00;}
-.editor-bar ul li li a.delete:hover {color: #800;}
+.editor-bar ul li li a.delete,
+.form-delete-link a.delete {color: #c00;}
+.editor-bar ul li li a.delete:hover,
+.form-delete-link a.delete:hover {color: #800;}
 
+/* Forms delete links */
+.form-delete-link {text-align: right; width: 90%; font-size: 12px; text-decoration: underline;}
 
 /* Perms and Status styles */
 .perm-public {font-weight: bold; color: green;}
