@@ -2,22 +2,31 @@
 {% load page_tags %}
 {% load i18n %}
 
-{% block title %}Delete Page - {{ page.get_title }}{% endblock %}
+{% block title %}{% trans "Delete Page" %} - {{ page.get_title }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/delete.css">
 {% endblock %}
+
 {% block body %}
-<h1>{% trans "Delete Page:" %}</h1>
-<h2>{{ page.title }} - <a href="{{ page.get_absolute_url }}">{{ page.get_absolute_url }}</a></h2>
-<div class="content">{{ page.content|safe|truncatewords_html:"60" }}</div>
-<p><strong>{% trans "Are you sure you want to permanently delete this page?" %}</strong></p>
- <!-- delete-page form -->
+<div class="t">   
+    <div class="page-wrap">
+        <h1>{% trans "Delete a Page" %}</h1> 
+        <h2>{{ page.title }} - <a href="{{ page.get_absolute_url }}">{{ page.get_absolute_url }}</a></h2>
+        <div class="content">{{ page.content|safe|truncatewords_html:"60" }}</div>
+        <div class="delete-prompt"> 
+        	{% trans "Are you sure you want to permanently delete this page?" %}
+        </div>
+        <div class="delete-form">
             <form name="page-delete" method="POST" action="{% url page.delete page.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
                 <input type="submit" name="submit" value="Confirm Delete">
             </form>
-            <br /><br />
-<div class="back-search"><a href="{% url page.search %}">&laquo; {% blocktrans %}Back to search{% endblocktrans %}{% firstof MODULE_PAGES_LABEL 'pages' %} </a></div>
+        </div>
+        <div class="back-item"><a href="{{ page.get_absolute_url }}">&laquo; {% trans "Back to page" %} {{ page.title }}</a></div>
+        <div class="back-search"><a href="{% url page.search %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_PAGES_LABEL 'pages' %} </a></div>
+    </div>
+</div>
 {% endblock %}

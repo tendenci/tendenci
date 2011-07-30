@@ -10,8 +10,8 @@
 </head>
 {% is_admin request.user as isadmin %}
 <body bgcolor="#ffffff" text="#000000">
-<p>{% blocktrans %}The following article was 
-  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Articles module by {{request.user.get_full_name}}{% endblocktrans %}.
+<p>{% blocktrans with request.user.get_full_name as author %}The following article was 
+  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Articles module by {{ author }}{% endblocktrans %}.
   {% if isadmin %}(administrator){% else %} {% trans "It needs to be activated" %}{% endif %}:</p>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
