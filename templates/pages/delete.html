@@ -22,7 +22,7 @@
         <div class="delete-form">
             <form name="page-delete" method="POST" action="{% url page.delete page.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
-                <input type="submit" name="submit" value="Confirm Delete">
+                <input type="submit" name="submit" value="{% trans "Confirm Delete" %}">
             </form>
         </div>
         <div class="back-item"><a href="{{ page.get_absolute_url }}">&laquo; {% trans "Back to page" %} {{ page.title }}</a></div>
