@@ -30,7 +30,7 @@ def index(request, slug=None, cv=None):
         template_name="staff/view.html"
         
     log_defaults = {
-        'event_id' : 1060500,
+        'event_id' : 1080500,
         'event_data': '%s (%d) viewed by %s' % (staff._meta.object_name, staff.pk, request.user),
         'description': '%s viewed' % staff._meta.object_name,
         'user': request.user,
@@ -51,7 +51,7 @@ def search(request, template_name="staff/search.html"):
     staff = staff.order_by('start_date')
     
     log_defaults = {
-        'event_id' : 1060400,
+        'event_id' : 1080400,
         'event_data': '%s searched by %s' % ('Staff', request.user),
         'description': '%s searched' % 'Staff',
         'user': request.user,
