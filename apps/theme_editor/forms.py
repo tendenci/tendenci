@@ -29,4 +29,11 @@ class FileForm(forms.Form):
             return True
         else:
             return False
-        
+            
+class ThemeSelectForm(forms.Form):
+    THEME_CHOICES = ((x, x) for x in os.listdir(os.path.join(settings.PROJECT_ROOT, 'themes')))
+    theme = forms.ChoiceField(choices=THEME_CHOICES)
+    
+    def __init__(self, *args, **kwargs):
+        super(ThemeSelectForm, self).__init__(*args, **kwargs)
+    
