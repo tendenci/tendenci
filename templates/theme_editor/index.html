@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load humanize %}
+{% load styled_forms %}
 {% load base_filters %}
 
 {% block title %}{{ block.super }}Theme Editor{% endblock %}
@@ -17,6 +18,12 @@
 {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
 {% if current_file %}
 <div class="file_attrs"><big><b>{% trans "Currently Editing" %}</b> (<span id="file_name">{{ pwd }}/{{ current_file }}</span>)</big></div>
+<div class='theme-selection'>
+    <form method="POST" action="{% url theme_select %}">{% csrf_token %}
+        {{ theme_form|styled_form }}
+        <input type="submit" value="Select"/>
+    </form>
+</div>
 {% endif %}
         <table id="file-editor" width="100%">
         <tr>
