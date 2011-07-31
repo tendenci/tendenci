@@ -151,13 +151,13 @@ def event_summary_report(request):
                 .extra(select={'day': 'DATE(create_dt)'})\
                 .values('day', 'source')\
                 .annotate(count=Count('pk'))\
-                .order_by('day', 'source')
+                .order_by('day', '-count')
     chart_data = day_bars(chart_data, from_date.year, from_date.month, 300, source_colors)
 
     summary_data = queryset\
                 .values('source')\
                 .annotate(count=Count('pk'))\
-                .order_by('source')
+                .order_by('-count')
     source_colors(summary_data)
 
     return render_to_response(
@@ -181,13 +181,13 @@ def event_source_summary_report(request, source):
                 .extra(select={'day': 'DATE(create_dt)'})\
                 .values('day', 'event_id')\
                 .annotate(count=Count('pk'))\
-                .order_by('day', 'event_id')
+                .order_by('day', '-count')
     chart_data = day_bars(chart_data, from_date.year, from_date.month, 300, event_colors)
 
     summary_data = queryset\
                 .values('event_id', 'description')\
                 .annotate(count=Count('pk'))\
-                .order_by('event_id')
+                .order_by('-count')
     event_colors(summary_data)
 
     return render_to_response(
