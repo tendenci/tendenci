@@ -1258,7 +1258,313 @@
             "rgb_color": "0,102,0", 
             "hex_color": "006600"
         }
-    }, 
+    },
+    {
+        "pk": 141, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1100100, 
+            "rgb_color": "17,153,51", 
+            "hex_color": "119933"
+        }
+    },
+    {
+        "pk": 142, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1100200, 
+            "rgb_color": "238,221,85", 
+            "hex_color": "EEDD55"
+        }
+    },
+    {
+        "pk": 143, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1100300, 
+            "rgb_color": "170,34,34", 
+            "hex_color": "AA2222"
+        }
+    },
+    {
+        "pk": 144, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1200100, 
+            "rgb_color": "17,153,51", 
+            "hex_color": "119933"
+        }
+    },
+    {
+        "pk": 145, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1200200, 
+            "rgb_color": "238,221,85", 
+            "hex_color": "EEDD55"
+        }
+    },
+    {
+        "pk": 146, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1200300, 
+            "rgb_color": "170,34,34", 
+            "hex_color": "AA2222"
+        }
+    },
+    {
+        "pk": 147, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1200400, 
+            "rgb_color": "204,85,238", 
+            "hex_color": "CC55EE"
+        }
+    },
+    {
+        "pk": 148, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1200500, 
+            "rgb_color": "85,170,204", 
+            "hex_color": "55AACC"
+        }
+    },    
+    {
+        "pk": 149, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1080100, 
+            "rgb_color": "17,153,51", 
+            "hex_color": "119933"
+        }
+    },
+    {
+        "pk": 150, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1080200, 
+            "rgb_color": "238,221,85", 
+            "hex_color": "EEDD55"
+        }
+    },
+    {
+        "pk": 151, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1080300, 
+            "rgb_color": "170,34,34", 
+            "hex_color": "AA2222"
+        }
+    },
+    {
+        "pk": 152, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1080400, 
+            "rgb_color": "204,85,238", 
+            "hex_color": "CC55EE"
+        }
+    },
+    {
+        "pk": 153, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1080500, 
+            "rgb_color": "85,170,204", 
+            "hex_color": "55AACC"
+        }
+    },    
+    {
+        "pk": 154, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1070100, 
+            "rgb_color": "17,153,51", 
+            "hex_color": "119933"
+        }
+    },
+    {
+        "pk": 155, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1070200, 
+            "rgb_color": "238,221,85", 
+            "hex_color": "EEDD55"
+        }
+    },
+    {
+        "pk": 156, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1070300, 
+            "rgb_color": "170,34,34", 
+            "hex_color": "AA2222"
+        }
+    },
+    {
+        "pk": 157, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1070400, 
+            "rgb_color": "204,85,238", 
+            "hex_color": "CC55EE"
+        }
+    },
+    {
+        "pk": 158, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1070500, 
+            "rgb_color": "85,170,204", 
+            "hex_color": "55AACC"
+        }
+    },    
+    {
+        "pk": 159, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 150100, 
+            "rgb_color": "17,153,51", 
+            "hex_color": "119933"
+        }
+    },
+    {
+        "pk": 160, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 150200, 
+            "rgb_color": "238,221,85", 
+            "hex_color": "EEDD55"
+        }
+    },
+    {
+        "pk": 161, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 150300, 
+            "rgb_color": "170,34,34", 
+            "hex_color": "AA2222"
+        }
+    },
+    {
+        "pk": 162, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 154000, 
+            "rgb_color": "204,85,238", 
+            "hex_color": "CC55EE"
+        }
+    },
+    {
+        "pk": 163, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 155000, 
+            "rgb_color": "85,170,204", 
+            "hex_color": "55AACC"
+        }
+    },    
+    {
+        "pk": 164, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1000100, 
+            "rgb_color": "17,153,51", 
+            "hex_color": "119933"
+        }
+    },
+    {
+        "pk": 165, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1000200, 
+            "rgb_color": "238,221,85", 
+            "hex_color": "EEDD55"
+        }
+    },
+    {
+        "pk": 166, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1000300, 
+            "rgb_color": "170,34,34", 
+            "hex_color": "AA2222"
+        }
+    },
+    {
+        "pk": 167, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1000400, 
+            "rgb_color": "204,85,238", 
+            "hex_color": "CC55EE"
+        }
+    },
+    {
+        "pk": 168, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1000500, 
+            "rgb_color": "85,170,204", 
+            "hex_color": "55AACC"
+        }
+    },    
+    {
+        "pk": 169, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 491000, 
+            "rgb_color": "17,153,51", 
+            "hex_color": "119933"
+        }
+    },
+    {
+        "pk": 170, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 492000, 
+            "rgb_color": "238,221,85", 
+            "hex_color": "EEDD55"
+        }
+    },
+    {
+        "pk": 171, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 493000, 
+            "rgb_color": "170,34,34", 
+            "hex_color": "AA2222"
+        }
+    },
+    {
+        "pk": 172, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 494000, 
+            "rgb_color": "204,85,238", 
+            "hex_color": "CC55EE"
+        }
+    },
+    {
+        "pk": 173, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 495000, 
+            "rgb_color": "85,170,204", 
+            "hex_color": "55AACC"
+        }
+    },
+    {
+        "pk": 174, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 496000, 
+            "rgb_color": "136,102,85", 
+            "hex_color": "55AACC"
+        }
+    },     
     {
         "pk": 1, 
         "model": "event_logs.eventlogbasecolor", 
@@ -1626,6 +1932,69 @@
             "event_id": 689005,
             "source": "corporate_membership",
             "hex_color": "47A0BF"
+        }
+    },
+    {
+        "pk": 42,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1100000,
+            "source": "boxes",
+            "hex_color": "5588AA"
+        }
+    },
+    {
+        "pk": 43,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1200000,
+            "source": "videos",
+            "hex_color": "993355"
+        }
+    },
+    {
+        "pk": 44,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1080000,
+            "source": "staff",
+            "hex_color": "EE7733"
+        }
+    },
+    {
+        "pk": 45,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1070000,
+            "source": "speakers",
+            "hex_color": "99EE66"
+        }
+    },
+    {
+        "pk": 46,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 150000,
+            "source": "quotes",
+            "hex_color": "FFEE44"
+        }
+    },
+    {
+        "pk": 47,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1000000,
+            "source": "case_studies",
+            "hex_color": "EE8877"
+        }
+    },
+    {
+        "pk": 48,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 490000,
+            "source": "attorneys",
+            "hex_color": "773300"
         }
     }  
 ]
