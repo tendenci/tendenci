@@ -1,9 +1,12 @@
 import os
-
 import shutil
+from tempfile import mkstemp
+from shutil import move
+from os import remove, close
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.core.management import call_command
 
 from theme_editor.models import ThemeFileVersion
 
@@ -104,3 +107,27 @@ def archive_file(request, relative_file_path):
                                   relative_file_path=relative_file_path,
                                   author=request.user)
         archive.save()
+
+def change_theme(theme):
+    """
+    Changes the value of the local_setting variable SITE_THEME to theme
+    """
+    fh, abs_path = mkstemp()
+    new_settings = open(abs_path,'w')
+    old_settings = open(os.path.join(settings.PROJECT_ROOT, 'local_settings.py'))
+    for line in old_settings:
+        if line.startswith('SITE_THEME'):
+            #SITE_THEME present and not commented out
+            new_theme = line.replace(line.split('=')[-1], "'%s'\n" % theme)
+            new_settings.write(new_theme)
+        else:
+            new_settings.write(line)
+    #close temp file
+    new_settings.close()
+    close(fh)
+    old_settings.close()
+    #Remove original file
+    remove(os.path.join(settings.PROJECT_ROOT, 'local_settings.py'))
+    #Move new file
+    move(abs_path, os.path.join(settings.PROJECT_ROOT, 'local_settings.py'))
+    call_command('touch_settings')

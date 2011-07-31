@@ -12,9 +12,9 @@ from django.utils.translation import ugettext_lazy as _
 
 # local 
 from theme_editor.models import ThemeFileVersion
-from theme_editor.forms import FileForm
+from theme_editor.forms import FileForm, ThemeSelectForm
 from theme_editor.utils import get_dir_list, get_file_list, get_file_content, qstr_is_dir
-from theme_editor.utils import qstr_is_file, copy
+from theme_editor.utils import qstr_is_file, copy, change_theme
 
 from base.http import Http403
 from perms.utils import has_perm
@@ -88,8 +88,11 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     else:
         content = get_file_content(default_file)
         file_form = form_class({"content":content, "rf_path":default_file})
-
+    
+    theme_form = ThemeSelectForm()
+    
     return render_to_response(template_name, {"file_form": file_form,
+                                              'theme_form': theme_form,
                                               'current_file': current_file,
                                               'prev_dir_name': prev_dir_name,
                                               'prev_dir': prev_dir,
@@ -172,3 +175,20 @@ def copy_to_theme(request):
     messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
     
     return redirect('original_templates')
+
+def theme_select(request):
+    """
+    modify local_settings.py's SITE_THEME
+    then touch settings.
+    If local_settings is not found, retain the current theme.
+    """
+    if request.method == 'POST':
+        form = ThemeSelectForm(request.POST)
+        if form.is_valid():
+            try:
+                change_theme(form.cleaned_data['theme'])
+            except IOError, e:
+                messages.add_message(request, messages.INFO, 'Could not change the theme: %s' % e)
+            return redirect('theme_editor')
+    else:
+        raise Http404
