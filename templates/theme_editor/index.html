@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load humanize %}
+{% load styled_forms %}
 {% load base_filters %}
 
 {% block title %}{{ block.super }}Theme Editor{% endblock %}
@@ -49,6 +50,12 @@
             </div>
         </td>
         <td width="20%" valign="top">
+            <div class='theme-selection'>
+                <h2>{% trans 'Choose your Theme:' %}</h2>
+                <form method="POST" action="{% url theme_select %}">{% csrf_token %}
+                    {{ theme_form.theme }}<input type="submit" value="Submit"/>
+                </form>
+            </div>
        		<div id="right_files_list">
                <h2>{% trans "Choose a folder or file:" %}</h2>
                {%  if pwd %}

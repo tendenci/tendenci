@@ -317,6 +317,78 @@ colors = {
     '682004':'7A6DAF', # renewal dis-approval
     '683000':'B0A8CF', # delete
     '689005':'47A0BF', # import
+    
+    # boxes
+    '1100000':'5588AA', # base
+    '1100100':'119933', # add
+    '1100200':'EEDD55', # edit
+    '1100300':'AA2222', # delete
+
+    ## Plugins ##
+    
+    # videos
+    '1200000':'993355', # base
+    '1200100':'119933', # add
+    '1200200':'EEDD55', # edit
+    '1200300':'AA2222', # delete
+    '1200400':'CC55EE', # search
+    '1200500':'55AACC', # detail
+    
+    # staff
+    '1080000':'EE7733', # base
+    '1080100':'119933', # add
+    '1080200':'EEDD55', # edit
+    '1080300':'AA2222', # delete
+    '1080400':'CC55EE', # search
+    '1080500':'55AACC', # detail
+    
+    # speakers
+    '1070000':'99EE66', # base
+    '1070100':'119933', # add
+    '1070200':'EEDD55', # edit
+    '1070300':'AA2222', # delete
+    '1070400':'CC55EE', # search
+    '1070500':'55AACC', # detail
+    
+    # quotes
+    '150000':'FFEE44', # base
+    '150100':'119933', # add
+    '150200':'EEDD55', # edit
+    '150300':'AA2222', # delete
+    '154000':'CC55EE', # search
+    '155000':'55AACC', # detail
+    
+    # case_studies
+    '1000000':'EE8877', # base
+    '1000100':'119933', # add
+    '1000200':'EEDD55', # edit
+    '1000300':'AA2222', # delete
+    '1000400':'CC55EE', # search
+    '1000500':'55AACC', # detail
+    
+    # attorneys
+    '490000':'773300', # base
+    '491000':'119933', # add
+    '492000':'EEDD55', # edit
+    '493000':'AA2222', # delete
+    '494000':'CC55EE', # search
+    '495000':'55AACC', # detail
+    '496000':'886655', # special list index view
+    
+    # before and afters
+    '1090000':'FFCCBB', # base
+    '1090100':'119933', # add
+    '1090200':'EEDD55', # edit
+    '1090300':'AA2222', # delete
+    '1090400':'CC55EE', # search
+    '1090500':'55AACC', # detail
+    
+#    '':'', # base
+#    '':'119933', # add
+#    '':'EEDD55', # edit
+#    '':'AA2222', # delete
+#    '':'CC55EE', # search
+#    '':'55AACC', # detail
 }
 
 def get_color(event_id):

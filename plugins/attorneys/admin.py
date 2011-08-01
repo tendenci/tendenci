@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from event_logs.models import EventLog
-from perms.object_perms import ObjectPermission
+from perms.utils import update_perms_and_save
 from attorneys.models import Attorney, Photo
 from attorneys.forms import AttorneyForm, PhotoForm
 
@@ -123,54 +123,12 @@ class AttorneyAdmin(admin.ModelAdmin):
             'instance': object,
         }
         EventLog.objects.log(**log_defaults)
-    
+         
     def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            if not instance.pk:
-                instance.creator = request.user
-                instance.creator_username = request.user.username
-            instance.owner = request.user
-            instance.owner_username = request.user.username
-            instance.save()
-    
-    def save_model(self, request, object, form, change):
-        instance = form.save(commit=False)
-
-        # set up user permission
-        instance.allow_user_view, instance.allow_user_edit = form.cleaned_data['user_perms']
-        
-        # adding the attorney
-        if not change:
-            instance.creator = request.user
-            instance.creator_username = request.user.username
-            instance.owner = request.user
-            instance.owner_username = request.user.username
- 
-        # save the object
-        instance.save()
-        form.save_m2m()
-
-        # permissions
-        if not change:
-            # assign permissions for selected groups
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
-            # assign creator permissions
-            ObjectPermission.objects.assign(instance.creator, instance) 
-        else:
-            # assign permissions
-            ObjectPermission.objects.remove_all(instance)
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
-            ObjectPermission.objects.assign(instance.creator, instance) 
-        
-        return instance
-
-    def save_formset(self, request, form, formset, change):
-
         for f in formset.forms:
             file = f.save(commit=False)
             if file.file:
-                file.staff = form.save()
+                file.attorney = form.save()
                 file.content_type = ContentType.objects.get_for_model(file.attorney)
                 file.object_id = file.attorney.pk
                 file.creator = request.user
@@ -186,6 +144,14 @@ class AttorneyAdmin(admin.ModelAdmin):
         form = super(AttorneyAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
         return form
+
+    def save_model(self, request, object, form, change):
+        """
+        update the permissions backend
+        """
+        instance = form.save(commit=False)
+        perms = update_perms_and_save(request, form, instance)
+        return instance
 
     def change_view(self, request, object_id, extra_context=None):
 		result = super(AttorneyAdmin, self).change_view(request, object_id, extra_context)

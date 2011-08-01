@@ -1,4 +1,5 @@
 {% load base_filters %}
+{% load base_tags %}
 {% load page_tags %}
 {% load perm_tags %}
 {% load tagging_tags %}
@@ -9,10 +10,11 @@
 {% has_perm user pages.delete_page page as can_delete %}
 {% get_category_for_object page as category %}
 {% get_sub_category_for_object page as sub_category %}
-{% tags_for_object page as tags %}
+{% tags_hash_tags page as hash_tags %}
+{% tags_strip_hash page as nonhash_tags %}
 
 
-            <div class="meta {% if not user.is_authenticated and not category and not tags %}anon{% endif %}">
+            <div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
     			<div class="meta-left">
                 	{% if category %}
     				<div class="categories">
@@ -23,13 +25,20 @@
     				</div>
     				{% endif %}
     
-                	{% if tags %}
-    				<div class="tags"><strong>{% trans "Tags:" %} </strong>
-    					{% for tag in tags %}
-    						<a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
-    					{% endfor %}
-    				</div>
-    				{% endif %}
+                	{% if nonhash_tags or hash_tags %}
+                    <div class="tags">
+                        {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
+                        {% for tag in nonhash_tags %}
+                            <a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                        
+                        {% if hash_tags and can_edit %}
+                        {% for tag in hash_tags %}
+                            {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 	
                 	{% if user.is_authenticated %}
                 	<div class="submitted">{% blocktrans with page.create_dt|date:"long" as create_date %}Created on {{ create_date }}
