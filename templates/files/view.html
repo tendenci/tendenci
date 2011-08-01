@@ -39,7 +39,7 @@
         <div class="file"><a href="{{ file.file.url }}">{{ file.file }}</a></div>
         <div class="content">{{ file.description }}</div>
         <div class="meta">
-            <div class="submitted">{% blocktrans %}Created on {{ file.create_dt|date:"long" }} by {{ file.creator }}{% endblocktrans %}</div>
+            <div class="submitted">{% blocktrans with file.create_dt|date:"long" as create_date and file.creator as file_creator %}Created on {{ create_date }} by {{ file_creator }}{% endblocktrans %}</div>
         </div>
     </div>
 

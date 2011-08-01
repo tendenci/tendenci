@@ -8,7 +8,7 @@
 {% load i18n %}
 
 {% block title %}
-    {{ event.title }} - {{ event.start_dt|date }} - Registrant Roster {{ roster_view }}
+    {{ event.title }} - {{ event.start_dt|date }} - {% trans "Registrant Roster" %} {{ roster_view }}
 {% endblock %}
 
 {% block extra_head %}

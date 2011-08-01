@@ -20,7 +20,7 @@
 </div>
 {% if invoice.create_dt %}
     <div>
-        {% blocktrans %}Create Date: {{ object.create_dt|date:'long'}} {% endblocktrans %}
+        {% blocktrans with object.create_dt|date:'long' as objdate %}Create Date: {{ objdate }} {% endblocktrans %}
     </div>
 {% endif %}
 {% if not object.estimate and object.total > 0  %}
@@ -28,6 +28,6 @@
        {% trans "Total:" %} {{ object.total|format_currency }}
     </div>
 {% endif %}
-<div>{% blocktrans %}To view this invoice go to: {{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}{% endblocktrans %}</div>
+<div>{% blocktrans with object.get_absolute_url as objget%}To view this invoice go to: {{ SITE_GLOBAL_SITEURL }}{{ objget }}{% endblocktrans %}</div>
 
 <p>{% trans "Thanks!" %}</p>

@@ -15,8 +15,8 @@
 <div class="t">
 
     {% job_nav user %}
-    <h1>{% firstof MODULE_JOBS_LABEL 'Jobs' %} {% blocktrans %} Meta Information for<br />
-    {{ job.title }}{% endblocktrans %}</h1>
+    <h1>{% firstof MODULE_JOBS_LABEL 'Jobs' %} {% blocktrans with job.title as job_title %} Meta Information for<br />
+    {{ job_title }}{% endblocktrans %}</h1>
 
     <div class="job-wrap">
 		<div class="options">

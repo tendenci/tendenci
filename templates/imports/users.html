@@ -63,8 +63,8 @@ Upload your updated spread sheet. Review and adjust settings.  Preview import." 
 <div class="column2">
 
 	<div class="duplicates">
-	{% blocktrans %}<h2>Identify Duplicates by  </h2>
-	<p>{{ form.key }}</p>{% endblocktrans %}
+	{% blocktrans with form.key as form_key %}<h2>Identify Duplicates by  </h2>
+	<p>{{ form_key }}</p>{% endblocktrans %}
 	</div>
 	
 	<div class="usergroup">

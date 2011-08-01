@@ -16,8 +16,8 @@
 	</font></p>
 
 	<p><font face="Arial, Helvetica, sans-serif" size="2">
-	{% blocktrans %}{{ SITE_GLOBAL_SITEDISPLAYNAME }} Thank you for your payment of 
-	{{ make_payment.payment_amount|format_currency }}.{% endblocktrans %}
+	{% blocktrans with make_payment.payment_amount|format_currency as makepay %}{{ SITE_GLOBAL_SITEDISPLAYNAME }} Thank you for your payment of 
+	{{ makepay }}.{% endblocktrans %}
 	{% trans "This e-mail does not confirm payment approval." %}
 	</font></p>
 

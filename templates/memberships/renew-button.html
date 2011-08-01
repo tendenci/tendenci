@@ -21,10 +21,10 @@
 
 {% if membership.can_renew %}
 <div class="membership-renew-button renew-now">
-    <a href="{{ membership.ma.get_absolute_url }}">{% blocktrans %}Renew from now until {{ membership.get_renewal_period_dt.1 }}{% endblocktrans %}</a>
+    <a href="{{ membership.ma.get_absolute_url }}">{% blocktrans with membership.get_renewal_period_dt.1 as memdate %}Renew from now until {{ memdate }}{% endblocktrans %}</a>
 </div>
 {% else %}
 <div class="membership-renew-button renew-soon">
-    {% blocktrans %}Renewal available in {{ membership.get_renewal_period_dt.0|timeuntil }}{% endblocktrans %}
+    {% blocktrans with membership.get_renewal_period_dt.0|timeuntil as memdate %}Renewal available in {{ memdate }}{% endblocktrans %}
 </div>
 {% endif %}

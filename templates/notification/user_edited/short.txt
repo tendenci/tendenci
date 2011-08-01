@@ -1,3 +1,3 @@
 {% load i18n %}
 
-{% blocktrans %}User ({{ object.username }}) edited on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}
+{% blocktrans with object.username as objname %}User ({{ objname }}) edited on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

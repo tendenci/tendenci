@@ -14,8 +14,8 @@
 <div class="t">
 
     {% news_nav user %}
-    <h1>{% firstof MODULE_NEWS_LABEL 'News' %} {% blocktrans %}Meta Information for <br />
-    {{ news.headline }}{% endblocktrans %}</h1>
+    <h1>{% firstof MODULE_NEWS_LABEL 'News' %} {% blocktrans with news.headline as news_head %}Meta Information for <br />
+    {{ news_head }}{% endblocktrans %}</h1>
 
     <div class="news-wrap">
 		<div class="options">

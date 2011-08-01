@@ -2,9 +2,9 @@
 
  {% trans "Powered by Tendenci Software from Schipul" %} (http://www.schipul.com)
  {% if action.group %}
-    {% blocktrans %}To unsubscribe, reply with the subject "remove" or click 
+    {% blocktrans %}To unsubscribe, reply with the subject "remove" or click here:{% endblocktrans %}
 
-    {{ SITE_GLOBAL_SITEURL }}{% url group.deleteuser action.group.slug user_this.id %}{% endblocktrans %}
+    {{ SITE_GLOBAL_SITEURL }}{% url group.deleteuser action.group.slug user_this.id %}
  {% endif %}          
     {% blocktrans %}RSS syndication available for the {{ SITE_GLOBAL_SITEDISPLAYNAME }}:{% endblocktrans %}
     
