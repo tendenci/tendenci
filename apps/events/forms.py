@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django import forms
 from django.forms.widgets import RadioSelect
@@ -231,18 +231,15 @@ class PaymentForm(forms.ModelForm):
         model = Payment
 
 
-class Reg8nConfPricingEditForm(BetterModelForm):
-    label = 'Pricing'
-    early_dt = SplitDateTimeField(label=_('Early Date/Time'))
-    regular_dt = SplitDateTimeField(label=_('Regular Date/Time'))
-    late_dt = SplitDateTimeField(label=_('Late Date/Time'))
-    end_dt = SplitDateTimeField(label=_('End Date/Time'))
-
-    reg8n_dt_price = Reg8nDtField(label=_('Pricing and Times'), required=False)
-
+class Reg8nConfPricingForm(BetterModelForm):
+    label = "Pricing"
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(hours=6))
+    dates = Reg8nDtField(label=_("Start and End"), required=False)
+    
     def __init__(self, *args, **kwargs):
-        super(Reg8nConfPricingEditForm, self).__init__(*args, **kwargs)
-        self.fields['reg8n_dt_price'].build_widget_reg8n_dict(*args, **kwargs)
+        super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
+        self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
         
     def clean_quantity(self):
@@ -250,50 +247,34 @@ class Reg8nConfPricingEditForm(BetterModelForm):
         quantity = self.cleaned_data['quantity']
         if quantity <= 0:
             quantity = 1
-        
         return quantity
-
+        
     def clean(self):
-        cleaned_data = self.cleaned_data
-        early_dt = cleaned_data.get("early_dt")
-        regular_dt = cleaned_data.get("regular_dt")
-        late_dt = cleaned_data.get("late_dt")
-
-        if early_dt > regular_dt:
-            errors = self._errors.setdefault("reg8n_dt_price", ErrorList())
-            errors.append(u"The regular cannot be \
-                earlier than the early date.")
-        if regular_dt > late_dt:
-            errors = self._errors.setdefault("reg8n_dt_price", ErrorList())
-            errors.append(u"The late date cannot be \
-                earlier than the regular date.")
-
-        # Always return the full collection of cleaned data.
-        return cleaned_data
-
+        data = self.cleaned_data
+        if data['start_dt'] > data['end_dt']:
+            raise forms.ValidationError('Start Date/Time should come after End Date/Time')
+        return data
+    
     class Meta:
-        model = RegistrationConfiguration
+        model = RegConfPricing
 
         fields = [
             'title',
             'quantity',
-            'group',
-            'early_price',
-            'regular_price',
-            'late_price',
-            'early_dt',
-            'regular_dt',
-            'late_dt',
+            'price',
+            'start_dt',
             'end_dt',
+            'group',
             'allow_anonymous',
             'allow_user',
             'allow_member'
          ]
-
+        
         fieldsets = [('Registration Pricing', {
           'fields': ['title',
                     'quantity',
-                    'reg8n_dt_price',
+                    'price',
+                    'dates',
                     'group',
                     'allow_anonymous',
                     'allow_user',
@@ -302,8 +283,7 @@ class Reg8nConfPricingEditForm(BetterModelForm):
           'legend': '',
           'classes': ['boxy-grey'],
           })
-        ]         
-
+        ]
 
 class Reg8nEditForm(BetterModelForm):
     label = 'Registration'
