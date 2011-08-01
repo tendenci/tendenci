@@ -11,7 +11,7 @@
 
 <body bgcolor="#FFFFFF" text="#000000">
 
-<p>{% blocktrans %}{{ user.first_name }} {{ user.last_name }} just added the following event from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</p>
+<p>{% blocktrans with user.first_name as first_name and user.last_name as last_name %}{{ first_name }} {{ last_name }} just added the following event from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</p>
 
 <div style="margin-bottom:20px;">
 <p style="margin:2px">{{ event.title }}</p>
