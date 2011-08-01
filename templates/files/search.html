@@ -68,7 +68,7 @@
             {% endif %}
 
 			<div class="meta">
-                <div class="submitted">{% blocktrans %}Updated {{ file.update_dt|date:"D d M Y P" }} by {{ file.creator }}{% endblocktrans%}</div>
+                <div class="submitted">{% blocktrans with file.update_dt|date:"D d M Y P" as file_update and file.creator as file_creator %}Updated {{ file_update }} by {{ file_creator }}{% endblocktrans%}</div>
             </div>
 
             <!-- delete-file form -->

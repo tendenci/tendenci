@@ -33,7 +33,7 @@
             <h2><a href="{{ location.get_absolute_url }}">{% firstof location.location_name "Untitled" %}</a></h2>
             <div class="content">{{ location.description|striptags|truncatewords:20|safe }}</div>
 			<div class="meta">
-            	<div class="submitted">{% blocktrans %}Released on {{ location.release_dt|date:"D d M Y P" }} by {{ location.creator }}{% endblocktrans %}</div>
+            	<div class="submitted">{% blocktrans with location.release_dt|date:"D d M Y P" as release_date and location.creator as location_creator %}Released on {{ release_date }} by {{ location_creator }}{% endblocktrans %}</div>
             </div>
 
             <!-- delete-location form -->

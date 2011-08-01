@@ -10,12 +10,12 @@
 
 <body bgcolor="#ffffff" text="#000000">
 <font size="2" face="Arial, Helvetica, sans-serif">
-<p>{% blocktrans %}A new page has been added on the 
-{{ SITE_GLOBAL_SITEDISPLAYNAME }} - <b>{{ object.title }}</b>{% endblocktrans %}</p>
-<p>{% blocktrans %}To view the detail of this page, go to: <b>
-<a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
+<p>{% blocktrans with object.title as objtitle %}A new page has been added on the 
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} - <b>{{ objtitle }}</b>{% endblocktrans %}</p>
+<p>{% blocktrans with object.get_absolute_url as objget%}To view the detail of this page, go to: <b>
+<a href="{{ SITE_GLOBAL_SITEURL }}{{ objget }}">{{ SITE_GLOBAL_SITEURL }}{{ objget }}</a></b><br>
 To approve this page and make it visible to the public, go to
-<a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a>{% endblocktrans %}
+<a href="{{ SITE_GLOBAL_SITEURL }}{{ objget }}">{{ SITE_GLOBAL_SITEURL }}{{ objget }}</a>{% endblocktrans %}
 </p>
 
 <br>{% trans "Thanks!" %}

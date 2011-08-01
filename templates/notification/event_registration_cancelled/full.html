@@ -15,12 +15,12 @@
 
 <p style="margin:2px">
 {% if user_is_registrant %}
-	{% blocktrans %}{{ user.first_name }} {{ user.last_name }} just cancelled their registration on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}
+	{% blocktrans with user.first_name as user_first and user.last_name as user_last %}{{ user_first }} {{ user_last }} just cancelled their registration on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}
 {% else %}
 	{% if user.is_anonymous %}
-		An anonymous user just cancelled the registration for: 
+		{% trans "An anonymous user just cancelled the registration for:" %} 
 	{% else %}
-		{{ user.first_name }} {{ user.last_name }} just cancelled the registration for: 
+		{% blocktrans with user.first_name as user_first and user.last_name as user_last %}{{ user.first_name }} {{ user.last_name }} just cancelled the registration for:{% endblocktrans %} 
 	{% endif %}
 	{% if registrant.first_name or registrant.last_name %}
 		{{ registrant.first_name }} {{ registrant.last_name }}
@@ -39,8 +39,8 @@ on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
 <p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "View event details" %}</a></p>
 </div>
 
-<p>{% blocktrans %}We now have {{ event.registrants.count }} registrants, {{ registrants_paid.count }} paid
-    (${{ event.money_collected }}) and {{ registrants_pending.count }} pending ({{ event.money_outstanding }}){% endblocktrans %}</p>
+<p>{% blocktrans with event.registrants.count as eventreg and registrants_paid.count as regpaid and event.money_collected as eventmoney and registrants_pending.count as regpend and event.money_outstanding as eventout %}We now have {{ eventreg }} registrants, {{ regpaid }} paid
+    (${{ eventmoney }}) and {{ regpend }} pending ({{ eventout }}){% endblocktrans %}</p>
 
 <p><a href="{{ SITE_GLOBAL_SITEURL }}/settings/site/global/#id_allnoticerecipients">
     {% trans "Remove my email from this notification list" %}</a></p>

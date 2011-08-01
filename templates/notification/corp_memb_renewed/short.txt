@@ -1,3 +1,3 @@
 {% load i18n %}
 
-{% blocktrans %}Corporate Membership Renewal - {{ object.name }}{% endblocktrans %}
+{% blocktrans with object.name as objname %}Corporate Membership Renewal - {{ objname }}{% endblocktrans %}

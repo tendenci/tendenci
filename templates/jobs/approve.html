@@ -17,9 +17,7 @@
     <p>{% trans "Are you sure you want to approve this job?" %}</p>
     <form action="{% url job.approve job.pk %}" method="post">{% csrf_token %}
     <div class="forms">
-        {% blocktrans %}
-        <input type="submit" value="Yes, approve it." /> or <a href="javascript:history.go(-1);">Cancel</a>
-        {% endblocktrans %}
+        <input type="submit" value="Yes, approve it." /> or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
     </div>
     </form>
     </div>

@@ -1,3 +1,3 @@
 {% load i18n %}
 
-{% blocktrans %}New payment (ID: {{ object.id }}, amount: {{ object.amount }}) for invoice (ID: {{ object.invoice.id }}){% endblocktrans %}
+{% blocktrans object.id as objid and object.amount as objamount and object.invoice.id as objinv %}New payment (ID: {{ objid }}, amount: {{ objamount }}) for invoice (ID: {{ objinv }}){% endblocktrans %}

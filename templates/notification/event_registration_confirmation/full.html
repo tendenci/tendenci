@@ -8,7 +8,7 @@
 {% if price <= 0 %}
     <h3 style="margin-top:0;">{% trans "Price: Free!" %}</h3>
 {% else %}
-    <h3 style="margin-top:0;">{% blocktrans %}Price: ${{ price|floatformat:"2" }}{% endblocktrans %} </h3>
+    <h3 style="margin-top:0;">{% blocktrans with price|floatformat:"2" as priceflo %}Price: ${{ priceflo }}{% endblocktrans %} </h3>
 {% endif %}
 
 {% if is_paid %}  {# handles free & priced events #}

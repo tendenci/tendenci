@@ -13,7 +13,7 @@
 <p>{% if isadmin %}{% blocktrans %}The following job was added 
   to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Online Job Bank by:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url profile request.user.username %}">{{request.user.get_full_name}}</a>
   (administrator){% else %} {% blocktrans %}The following job was added 
-  to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Online Job Bank by:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url profile request.user.username %}">{{request.user.get_full_name}}</a>. It needs to be activated{% endif %}:</p>
+  to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Online Job Bank by:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url profile request.user.username %}">{{request.user.get_full_name}}</a>. {% trans "It needs to be activated" %}{% endif %}:</p>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 

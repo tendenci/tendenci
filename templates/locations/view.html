@@ -39,7 +39,7 @@
         </div>
 
         <div class="meta">
-            <div class="submitted">{% blocktrans %}Submitted on {{ location.create_dt|date:"long" }} by {{ location.creator }}{% endblocktrans %}</div>
+            <div class="submitted">{% blocktrans with location.create_dt|date:"long" as location_create and location.creator as location_creator %}Submitted on {{ location_create }} by {{ location.creator }}{% endblocktrans %}</div>
         </div>
     </div>
 

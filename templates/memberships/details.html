@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}Membership for {{ membership.user }}{% endblock %}
+{% block title %}{% blocktrans with membership.user as mem_user %}Membership for {{ membership.user }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{{ membership.get_description }}{% endblock %}
 {% block meta_keywords %}{{ membership.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ membership.get_canonical_url }}" />{% endblock %}
@@ -17,13 +17,13 @@
 {% block body %}
 <div class="membership-wrap">
 
-    <h1>{% blocktrans %}Membership for {{ membership.user.get_full_name }}{% endblocktrans %}</h1>
-    <div><a href="{{ membership.user.get_absolute_url }}">View profile</a><div>
+    <h1>{% blocktrans with membership.user.get_full_name as memname %}Membership for {{ memname }}{% endblocktrans %}</h1>
+    <div><a href="{{ membership.user.get_absolute_url }}">{% trans "View profile" %}</a><div>
 
-    <div>{% blocktrans %}Joined {{ membership.join_dt|date }} ({{ membership.join_dt|timesince }}){% endblocktrans %}</div>
+    <div>{% blocktrans with membership.join_dt|date as memjoin and membership.join_dt|timesince as memtimesince%}Joined {{ memjoin }} ({{ memtimesince }}){% endblocktrans %}</div>
 
     {% if membership.expiration_dt %}
-        <div>{% blocktrans %}Expires {{ membership.expiration_dt }}{% endblocktrans %}</div>
+        <div>{% blocktrans with membership.expiration_dt as membexpdate %}Expires {{ membexpdate }}{% endblocktrans %}</div>
     {% else %}
         <div>{% trans "Never expires" %}</div>
     {% endif %}

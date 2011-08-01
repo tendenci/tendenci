@@ -26,10 +26,10 @@
 {% block body %}
 <div class="t">
 	 {% invoice_nav  invoice %}
-	<h1>{% blocktrans %}Accounting Entries View for Invoice {{ invoice.id }}{% endblocktrans %}</h1>
+	<h1>{% blocktrans with invoice.id as invoice_id %}Accounting Entries View for Invoice {{ invoice_id }}{% endblocktrans %}</h1>
 	
 	<div class="invoice-detail">
-		<p>{% blocktrans %}A summary of the accounting entries for invoice {{ invoice.id }} is below.{% endblocktrans %}</p>
+		<p>{% blocktrans with invoice.id as invoice_id %}A summary of the accounting entries for invoice {{ invoice_id }} is below.{% endblocktrans %}</p>
 	
 		<div>{% trans "Invoice:" %} <a href="{% url invoice.view invoice.id %}">{{ invoice.id  }}</a></div>
 		{% if acct_entries %}
