@@ -18,12 +18,6 @@
 {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
 {% if current_file %}
 <div class="file_attrs"><big><b>{% trans "Currently Editing" %}</b> (<span id="file_name">{{ pwd }}/{{ current_file }}</span>)</big></div>
-<div class='theme-selection'>
-    <form method="POST" action="{% url theme_select %}">{% csrf_token %}
-        {{ theme_form|styled_form }}
-        <input type="submit" value="Select"/>
-    </form>
-</div>
 {% endif %}
         <table id="file-editor" width="100%">
         <tr>
@@ -56,6 +50,12 @@
             </div>
         </td>
         <td width="20%" valign="top">
+            <div class='theme-selection'>
+                <h2>{% trans 'Choose your Theme:' %}</h2>
+                <form method="POST" action="{% url theme_select %}">{% csrf_token %}
+                    {{ theme_form.theme }}<input type="submit" value="Submit"/>
+                </form>
+            </div>
        		<div id="right_files_list">
                <h2>{% trans "Choose a folder or file:" %}</h2>
                {%  if pwd %}
