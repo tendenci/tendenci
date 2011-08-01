@@ -187,8 +187,9 @@ def theme_select(request):
         if form.is_valid():
             try:
                 change_theme(form.cleaned_data['theme'])
+                messages.add_message(request, messages.INFO, 'Theme successfully changed')
             except IOError, e:
                 messages.add_message(request, messages.INFO, 'Could not change the theme: %s' % e)
-            return redirect('theme_editor')
+        return redirect('theme_editor')
     else:
         raise Http404
