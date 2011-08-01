@@ -52,7 +52,7 @@
 <div class="label">{% trans "Email:" %}</div><div>{{ mp.email|obfuscate_email }}</div>
 <div class="clear-left"></div>
 <br />
-<div class="label">{% blocktrans %}Referred By:</div><div>{{ mp.referral_source }}{% endblocktrans %}</div>
+<div class="label">{% blocktrans with mp.referral_source as mpref %}Referred By:</div><div>{{ mpref }}{% endblocktrans %}</div>
 <div class="clear-left"></div>
 <div class="label">{% trans "Comments:" %}</div><div>{{ mp.comments|safe }}</div>
 <div class="clear-left"></div>

@@ -84,7 +84,7 @@
                         {{ registrant.last_name }}
                     {% endif %}
                 {% else %}
-                    {% blocktrans %}Guest #{{ forloop.counter0 }}{% endblocktrans %}
+                    {% blocktrans with forloop.counter0 as forl %}Guest #{{ forl }}{% endblocktrans %}
                 {% endif %}
                 </div>
                 

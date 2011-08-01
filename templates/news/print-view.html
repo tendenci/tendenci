@@ -29,7 +29,7 @@
         <h2>{{ news.headline }}</h2>
         <div class="content">{{ news.body|safe }}</div>
         <div class="meta">
-            <div class="submitted">{% blocktrans %}Submitted on {{ news.create_dt|date:"long" }} by {{ news.creator }}{% endblocktrans %}</div>
+            <div class="submitted">{% blocktrans with news.create_dt|date:"long" as news_create and news.creator as news_creator %}Submitted on {{ news_create }} by {{ news_creator }}{% endblocktrans %}</div>
         </div>
     </div>
 

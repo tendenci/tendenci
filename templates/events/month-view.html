@@ -65,7 +65,7 @@
 	
 						{% if events|length|add:"-2" > 0 %}
 							<div class="more-events">
-								<a href="{% url event.day day.year day.month day.day %}">{% blocktrans %}+{{ events|length|add:"-2" }} more{% endblocktrans %}</a>
+								<a href="{% url event.day day.year day.month day.day %}">{% blocktrans with events|length|add:"-2" as events_more %}+{{ events_more }} more{% endblocktrans %}</a>
 							</div>
 						{% endif %}
 	

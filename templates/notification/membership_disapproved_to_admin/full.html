@@ -29,7 +29,7 @@
 
     <div>{% blocktrans %}{{ membership_total }} Total Active Membership(s){% endblocktrans %}</div>
     <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.app.get_absolute_url }}">
-        {% blocktrans %}Application Created {{ object.app.create_dt|date }} ({{ object.app.create_dt|timesince }}){% endblocktrans %}
+        {% blocktrans with object.app.create_dt|date as objcreate and object.app.create_dt|timesince as objtime %}Application Created {{ objcreate }} ({{ objtime }}){% endblocktrans %}
     </a><div>
 
 </body>

@@ -43,7 +43,7 @@
 				<div class="content">{{ n.body|striptags|truncatewords:20|safe }}</div>	
 			{% endif %}
 			<div class="meta">
-            	<div class="submitted">{% blocktrans %}Submitted on {{ n.create_dt|date:"long" }} by {{ n.creator }}{% endblocktrans %}</div>
+            	<div class="submitted">{% blocktrans with n.create_dt|date:"long" as ncreate and n.creator as ncreator %}Submitted on {{ ncreate }} by {{ ncreator }}{% endblocktrans %}</div>
 				<div class="category">
 				{% get_category_for_object n as category %}
 				{% if category %}

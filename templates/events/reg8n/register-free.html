@@ -33,8 +33,8 @@
 
 <div class="t">    
     {% event_nav user %}
-    {% blocktrans %}<h1>Register for Event</h1>
-    <div class='event-title'>{{ event.title }}</div>{% endblocktrans %}
+    {% blocktrans with event.title as event_title %}<h1>Register for Event</h1>
+    <div class='event-title'>{{ event_title }}</div>{% endblocktrans %}
 
 	{{ form.non_field_errors }}
 	{% for field in form %}

@@ -161,13 +161,13 @@
 						{% endif %}
 		
 						{% if registrant.title and registrant.company %}
-						<div>{% blocktrans %}Web Developer at {{ registrant.company_name }}{% endblocktrans %}</div>
+						<div>{% blocktrans with registrant.company_name as regcomp %}Web Developer at {{ regcomp }}{% endblocktrans %}</div>
 						{% else %}
 							{% if registrant.title %}
 							<div>{% trans "Web Developer" %}</div>
 							{% else %}
 								{% if registrant.company_name %}
-								<div>{% blocktrans %}Works at {{ registrant.company_name }} {% endblocktrans %}</div>
+								<div>{% blocktrans with registrant.company_name as regcomp %}Works at {{ regcomp }} {% endblocktrans %}</div>
 								{% endif %}
 							{% endif %}
 						{% endif %}
@@ -178,9 +178,9 @@
 		
 		            <div class="content"></div>
 					<div class="meta">
-		            	<div class="submitted">{% blocktrans %}Registered on {{ registrant.registration.create_dt|date_short }}{% endblocktrans %}</div>
+		            	<div class="submitted">{% blocktrans with registrant.registration.create_dt|date_short as reg_date %}Registered on {{ reg_date }}{% endblocktrans %}</div>
 						{% if registrant.cancel_dt %}
-		            	<div class="canceled">{% blocktrans %}Canceled on {{ registrant.cancel_dt|date_short }}{% endblocktrans %}</div>
+		            	<div class="canceled">{% blocktrans with registrant.cancel_dt|date_short as cancel_date %}Canceled on {{ cancel_date }}{% endblocktrans %}</div>
 		            	{% endif %}
 		            	<div style="clear:both;"></div>
 		            </div>

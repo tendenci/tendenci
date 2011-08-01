@@ -6,7 +6,7 @@
 	{# named area for jump links #}
 	<a name="articles" id="articles"></a>
 	{% if start_dt %}
-		{% blocktrans %}Articles for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}{% endblocktrans %}
+		{% blocktrans with start_dt|date:"M d, Y" as start_date and end_dt|date:"M d, Y" as end_date %}Articles for {{ start_date }} to {{ end_date }}{% endblocktrans %}
 	{% else %}
 		{% blocktrans %}All Articles{% endblocktrans %}
 	{% endif %}
@@ -50,8 +50,8 @@
 		{#  posted by #}
 		{% if not simplified  %}
 			<font face="Arial" size="2" color="#000000">
-			<br>{% blocktrans %}<b>Posted by</b>: 
-			{{ article.owner.first_name }} {{ article.owner.last_name }}{% endblocktrans %}
+			<br>{% blocktrans with article.owner.first_name as article_first and article.owner.last_name as article_last %}<b>Posted by</b>: 
+			{{ article_first }} {{ article_last }}{% endblocktrans %}
 			</font>
 		{% endif %}
 		<br>
