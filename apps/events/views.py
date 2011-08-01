@@ -29,7 +29,7 @@ from events.models import Event, RegistrationConfiguration, \
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
-    Reg8nConfPricingEditForm
+    Reg8nConfPricingForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
@@ -193,7 +193,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     )
     RegConfPricingSet = modelformset_factory(
         RegConfPricing, 
-        form=Reg8nConfPricingEditForm,
+        form=Reg8nConfPricingForm,
         extra=0,
         can_delete=True
     )
@@ -410,7 +410,7 @@ def add(request, year=None, month=None, day=None, \
     )
     RegConfPricingSet = modelformset_factory(
         RegConfPricing, 
-        form=Reg8nConfPricingEditForm, 
+        form=Reg8nConfPricingForm, 
         extra=1
     )
 
@@ -535,20 +535,18 @@ def add(request, year=None, month=None, day=None, \
                 
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
-
+            
             reg_init = {
-                'early_dt': start_dt,
-                'regular_dt': start_dt,
-                'late_dt': start_dt,
-                'end_dt': end_dt,
-             }
-
+                'start_dt':start_dt,
+                'end_dt':end_dt,
+            }
+            
             # single forms
             form_event = form_class(user=request.user, initial=event_init)
             form_place = PlaceForm(prefix='place')
             form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf')
-
+            
             # form sets
             form_speaker = SpeakerFormSet(
                 queryset=Speaker.objects.none(),
@@ -657,7 +655,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
 
     # set up pricing
     try:
-        price, price_pk, price_type, amount = clean_price(request.POST['price'], request.user)
+        price, price_pk, amount = clean_price(request.POST['price'], request.user)
     except:
         return multi_register_redirect(request, event, _('Please choose a price.'))
         
@@ -874,7 +872,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
 
     return render_to_response(template_name, {'event':event,
                                               'event_price': event_price,
-                                              'price_type':  price_type,
                                               'free_event': free_event,
                                               'price_list':price_list,
                                               'total_price':total_price,
