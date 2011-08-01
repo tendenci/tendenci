@@ -1,5 +1,6 @@
 {% extends "help_files/base.html" %}
 {% load help_file_tags %}
+{% load perm_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }}{{ topic }} Topic{% endblock %}
@@ -23,7 +24,8 @@
 		<ul>
 		{% for help_file in help_files %}
 		{% with help_file.object as help_file %}
-			<li><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file }}">{{ help_file }}</a></li>
+		    {% has_perm user help_files.change_helpfile help_file as can_edit %}
+			<li><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file }}">{{ help_file }}</a>{% if can_edit %} {% obj_perms help_file %}{% endif %}</li>
 		{% endwith %}
 		{% endfor %}
 		</ul>

@@ -42,7 +42,7 @@ class BoxAdmin(admin.ModelAdmin):
     def log_deletion(self, request, object, object_repr):
         super(BoxAdmin, self).log_deletion(request, object, object_repr)
         log_defaults = {
-            'event_id' : 1101000,
+            'event_id' : 1100300,
             'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, 
                                                     object.pk, request.user),
             'description': '%s deleted' % object._meta.object_name,
@@ -55,7 +55,7 @@ class BoxAdmin(admin.ModelAdmin):
     def log_change(self, request, object, message):
         super(BoxAdmin, self).log_change(request, object, message)
         log_defaults = {
-            'event_id' : 1102000,
+            'event_id' : 1100200,
             'event_data': '%s (%d) edited by %s' % (object._meta.object_name, 
                                                     object.pk, request.user),
             'description': '%s edited' % object._meta.object_name,
@@ -68,7 +68,7 @@ class BoxAdmin(admin.ModelAdmin):
     def log_addition(self, request, object):
         super(BoxAdmin, self).log_addition(request, object)
         log_defaults = {
-            'event_id' : 1100000,
+            'event_id' : 1100100,
             'event_data': '%s (%d) added by %s' % (object._meta.object_name, 
                                                    object.pk, request.user),
             'description': '%s added' % object._meta.object_name,

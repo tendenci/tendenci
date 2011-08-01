@@ -1,3 +1,3 @@
 {% load i18n %}
 
-{% blocktrans %}New page ({{ object.title }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}
+{% blocktrans with object.title as page %}New page ({{ page }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

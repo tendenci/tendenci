@@ -1,36 +1,37 @@
 {% extends "stories/base.html" %}
 {% load i18n %}
+{% load base_tags %}
 
-{% block title %}Delete Page{% endblock %}
+{% block title %}{% trans "Delete Story" %} {{ story.title }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/stories.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/delete.css">
 {% endblock %}
 
 {% block body %}
-
 <div class="t">
-    <h1>{% trans "Delete a Story" %}</h1>
-    
-    <div class="back-to-search"><a href="{% url story.search %}">{% trans "Search" %}</a>
-    <a href="{% url story.add %}">{% trans "Add" %}</a>
-    </div>
-
     <div class="story-wrap">
-    <div class="delete-prompt"> 
-    	{% trans "Are you sure you want to delete this story?" %}
+        <h1>{% trans "Delete a Story" %}</h1>
+        {% if story.image %}
+        <div class="photo">
+            <img src="{% image_url story.image size=300x300 crop=True quality=88 %}" title="{{ story.title }}" />
+        </div>
+        {% endif %}
+        <div class="content">
+        <h2>{{ story.title }}</h2>
+        {{ story.content|safe }}
+        </div>
+        <div class="delete-prompt"> 
+        	{% trans "Are you sure you want to permanently delete this story?" %}
+        </div>
+        <div class="delete-form">
+            <form action="{% url story.delete story.id %}" method="post">{% csrf_token %}
+                <input type="submit" value="{% trans "Confirm Delete" %}" />
+            </form>
+        </div>
+        <div class="back-search"><a href="{% url story.search %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_STORIES_LABEL 'stories' %} </a></div>
     </div>
-     <h2>{{ story.title }}</h2>
-     <div class="content">{{ story.content|safe }}</div>
-	
-	<div class="delete-form">
-    <form action="{% url story.delete story.id %}" method="post">{% csrf_token %}
-        <input type="submit" value="Delete Story" />
-    </form>
-    </div>
-
-    </div>
-
 </div>
 {% endblock %}

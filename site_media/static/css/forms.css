@@ -282,3 +282,6 @@ div.forms fieldset.permissions {
 div.forms fieldset.permissions legend {
 	padding: 5px;
 }
+
+/* Forms delete links */
+.form-delete-link {text-align: right; font-size: 12px; text-decoration: underline;}

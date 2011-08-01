@@ -1,3 +1,3 @@
 {% load i18n %}
 
-{% blocktrans %}New article ({{ object.headline }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}
+{% blocktrans with object.headline as article %}New article ({{ article }}) posting for {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

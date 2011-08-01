@@ -90,6 +90,18 @@
 	margin-bottom: 20px;
 }
 
+/* Stories Search */
+.search-image {float: left; margin-right: 10px; width: 90px;}
+.search-text {float: left; width: 500px;}
+.search-text h2 small {font-weight: normal; font-size: 12px;}
+
+/* Stories Meta */
+.expires-inactive,
+.expires-active {font-weight: bold; padding-left: 10px; border-left: 2px solid #666;}
+
+.expires-active {color: green;}
+.expires-inactive {color: red;}
+
 
 .t ul.stories-nav {
 	margin: 0; padding: 0;
@@ -98,13 +110,6 @@
 }
 .t ul.stories-nav li {
 	display: inline;
-}
-.story-wrap .delete-form{
-	margin-top: 1em;
-}
-.story-wrap .delete-prompt{
-	font-size: 1.2em;
-	color: red;
 }
 
 /* form */
