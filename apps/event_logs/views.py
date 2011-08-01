@@ -145,7 +145,8 @@ def event_summary_report(request):
         queryset = form.process_filter(queryset)
 
     from_date, to_date = request_month_range(request)
-    queryset = queryset.filter(create_dt__gte=from_date, create_dt__lte=to_date)
+    next_day = to_date+timedelta(days=1)
+    queryset = queryset.filter(create_dt__gte=from_date, create_dt__lte=next_day)
 
     chart_data = queryset\
                 .extra(select={'day': 'DATE(create_dt)'})\
@@ -175,7 +176,8 @@ def event_source_summary_report(request, source):
         queryset = form.process_filter(queryset)
 
     from_date, to_date = request_month_range(request)
-    queryset = queryset.filter(create_dt__gte=from_date, create_dt__lte=to_date)
+    next_day = to_date+timedelta(days=1)
+    queryset = queryset.filter(create_dt__gte=from_date, create_dt__lte=next_day)
 
     chart_data = queryset\
                 .extra(select={'day': 'DATE(create_dt)'})\
