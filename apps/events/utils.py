@@ -476,25 +476,30 @@ def create_registrant_from_form(*args, **kwargs):
     return registrant
 
 
-def gen_pricing_dict(price, qualifies):
+def gen_pricing_dict(price, qualifies, failure_type, admin=False):
+    """
+    Generates a pricing dict based on the current date.
+    Disregards time if admin is set to True.
+    """
     now = datetime.now()
-    if now >= price.start_dt and now <= price.end_dt:
+    if admin:
         pricing = {
             'price': price,
             'amount': price.price,
             'qualifies': qualifies,
+            'failure_type': failure_type,
         }
-        return pricing
-    return {}
-
-
-def get_pricing_dict(price, qualifies, failure_type):
-    pricing_dict = gen_pricing_dict(price, qualifies)
-    if pricing_dict:
-        pricing_dict.update({
-            'failure_type': failure_type
-        })
-    return pricing_dict
+    else:
+        if now >= price.start_dt and now <= price.end_dt:
+            pricing = {
+                'price': price,
+                'amount': price.price,
+                'qualifies': qualifies,
+                'failure_type': failure_type,
+            }
+        else:
+            pricing = {}
+    return pricing
 
 
 def get_pricing(user, event, pricing=None):
@@ -520,18 +525,32 @@ def get_pricing(user, event, pricing=None):
         pricing = RegConfPricing.objects.filter(
             reg_conf=event.registration_configuration
         )
+        
+    print pricing
 
     # iterate and create a dictionary based
     # on dates and permissions
-    # get_pricing_dict(price_instance, qualifies)
+    # gen_pricing_dict(price_instance, qualifies)
     for price in pricing:
         qualifies = True
+        
+        # Admins are always true
+        # This should always be at the top of this code
+        if is_admin(user):
+            qualifies = True
+            pricing_list.append(gen_pricing_dict(
+               price, 
+               qualifies, 
+               '',
+               admin=True)
+            )
+            continue
 
         # limits
         if limit > 0:
             if spots_left < price.quantity:
               qualifies = False
-              pricing_list.append(get_pricing_dict(
+              pricing_list.append(gen_pricing_dict(
                 price, 
                 qualifies, 
                 'limit')
@@ -541,22 +560,12 @@ def get_pricing(user, event, pricing=None):
         # public pricing is always true
         if price.allow_anonymous:
             qualifies = True
-            pricing_list.append(get_pricing_dict(
+            pricing_list.append(gen_pricing_dict(
                price,
                qualifies, 
                '')
             )
             continue
-
-        # Admins are always true
-        if is_admin(user):
-            qualifies = True
-            pricing_list.append(get_pricing_dict(
-               price, 
-               qualifies, 
-               '')
-            )
-            continue            
 
         # Admin only price
         if not any([price.allow_user, price.allow_anonymous, price.allow_member, price.group]):
@@ -566,7 +575,7 @@ def get_pricing(user, event, pricing=None):
         # User permissions
         if price.allow_user and not user.is_authenticated():
             qualifies = False
-            pricing_list.append(get_pricing_dict(
+            pricing_list.append(gen_pricing_dict(
                price, 
                qualifies, 
                'user')
@@ -579,7 +588,7 @@ def get_pricing(user, event, pricing=None):
             
             if price.group.is_member(user) or is_member(user):
                 qualifies = True            
-                pricing_list.append(get_pricing_dict(
+                pricing_list.append(gen_pricing_dict(
                    price, 
                    qualifies, 
                    '')
@@ -588,18 +597,18 @@ def get_pricing(user, event, pricing=None):
 
         # Group permissions
         if price.group and not price.group.is_member(user):
-                qualifies = False
-                pricing_list.append(get_pricing_dict(
-                   price, 
-                   qualifies, 
-                   'group')
-                )
-                continue
+            qualifies = False
+            pricing_list.append(gen_pricing_dict(
+               price, 
+               qualifies, 
+               'group')
+            )
+            continue
 
         # Member permissions
         if price.allow_member and not is_member(user):
             qualifies = False
-            pricing_list.append(get_pricing_dict(
+            pricing_list.append(gen_pricing_dict(
                price, 
                qualifies, 
                'member')
@@ -607,7 +616,7 @@ def get_pricing(user, event, pricing=None):
             continue
 
         # pricing is true if doesn't get stopped above
-        pricing_list.append(get_pricing_dict(
+        pricing_list.append(gen_pricing_dict(
            price, 
            qualifies, 
            '')
@@ -633,7 +642,8 @@ def get_pricing(user, event, pricing=None):
                     'default': True,
                 })
                 break
-
+    
+    print sorted_pricing_list
     return sorted_pricing_list
 
 
