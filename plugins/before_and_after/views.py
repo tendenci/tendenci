@@ -9,6 +9,7 @@ import simplejson
 from perms.utils import has_perm
 from site_settings.utils import get_setting
 from before_and_after.models import BeforeAndAfter, Category, PhotoSet, Subcategory
+from event_logs.models import EventLog
 
 def subcategories(request):
     cat = request.GET.get('category', None)
@@ -34,6 +35,16 @@ def search(request, template_name='before_and_after/search.html'):
         if subcategory:
             subcategory = get_object_or_404(Subcategory, pk=subcategory)
             bnas = bnas.filter(subcategory=subcategory.pk)
+            
+    log_defaults = {
+        'event_id' : 1090400,
+        'event_data': '%s searched by %s' % ('Before and Afters', request.user),
+        'description': '%s searched' % 'Before and Afters',
+        'user': request.user,
+        'request': request,
+        'source': 'before_and_afters'
+    }
+    EventLog.objects.log(**log_defaults)
     
     return render_to_response(template_name, 
         {
@@ -55,6 +66,16 @@ def detail(request, id, template_name='before_and_after/detail.html'):
     
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
+    
+    log_defaults = {
+            'event_id' : 1090500,
+            'event_data': '%s (%d) viewed by %s' % (bna._meta.object_name, bna.pk, request.user),
+            'description': '%s viewed' % bna._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': bna,
+        }
+    EventLog.objects.log(**log_defaults)
     
     return render_to_response(template_name,
         {
