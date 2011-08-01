@@ -241,36 +241,24 @@ class RegConfPricing(models.Model):
     Registration configuration pricing
     """
     reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
-
+    
     title = models.CharField(max_length=50, blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
     group = models.ForeignKey(Group, blank=True, null=True)
-
-    early_price = models.DecimalField(_('Early Price'), max_digits=21, decimal_places=2, default=0)
-    regular_price = models.DecimalField(_('Regular Price'), max_digits=21, decimal_places=2, default=0)
-    late_price = models.DecimalField(_('Late Price'), max_digits=21, decimal_places=2, default=0)
     
-    early_dt = models.DateTimeField(_('Early Registration Starts'), default=datetime.now())
-    regular_dt = models.DateTimeField(_('Regular Registration Starts'), default=datetime.now()+timedelta(hours=2))
-    late_dt = models.DateTimeField(_('Late Registration Starts'), default=datetime.now()+timedelta(hours=4))
-    end_dt = models.DateTimeField(_('Registration Ends'), default=datetime.now()+timedelta(hours=6))
-
+    price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
+    
+    start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
+    end_dt = models.DateTimeField(_('End Date'), default=datetime.now()+timedelta(hours=6))
+    
     allow_anonymous = models.BooleanField(_("Public can use"))
     allow_user = models.BooleanField(_("Signed in user can use"))
     allow_member = models.BooleanField(_("All members can use"))
-
+    
     def __unicode__(self):
         if self.title:
             return '%s' % self.title
         return '%s' % self.pk
-
-    def __init__(self, *args, **kwargs):
-        super(RegConfPricing, self).__init__(*args, **kwargs)
-        self.PERIODS = {
-            'early': (self.early_dt, self.regular_dt),
-            'regular': (self.regular_dt, self.late_dt),
-            'late': (self.late_dt, self.end_dt),
-        }
 
     def available(self):
         if not self.reg_conf.enabled:
@@ -279,30 +267,19 @@ class RegConfPricing(models.Model):
             if datetime.now() > self.event.end_dt:
                 return False
         return True
-
-    @property
-    def price(self):
-        price = 0.00
-        for period in self.PERIODS:
-            if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
-                price = self.price_from_period(period)
-        return price
-
-    def price_from_period(self, period):
-        if period in self.PERIODS:
-            return getattr(self, '%s_price' % period)
-        else: 
-            return None
-
+    
     @property
     def registration_has_started(self):
-        has_started = []
-        for period in self.PERIODS:
-            if datetime.now() >= self.PERIODS[period][0]:
-                has_started.append(True)
-            has_started.append(False)
-        return any(has_started)
-
+        if datetime.now() >= self.start_dt:
+            return True
+        return False
+        
+    @property
+    def registration_has_ended(self):
+        if datetime.now() >= self.end_dt:
+            return True
+        return False
+    
     @property
     def is_open(self):
         status = [
@@ -310,15 +287,13 @@ class RegConfPricing(models.Model):
             self.within_time,
         ]
         return all(status)
-
+    
     @property
     def within_time(self):
-        for period in self.PERIODS:
-            if self.PERIODS[period][0] <= datetime.now() <= self.PERIODS[period][1]:
-                return True
+        if self.start_dt <= datetime.now() <= self.end_dt:
+            return True
         return False
-
-
+    
 class Registration(models.Model):
 
     guid = models.TextField(max_length=40, editable=False)

@@ -95,7 +95,7 @@
         {% endif %}
 
         {% if registration.status == 'registered-with-balance' %}
-            <div class="registered">{% blocktrans %}You are registered. Balance is ${{ registration.invoice.balance }}. {% endblocktrans %}
+            <div class="registered">{% blocktrans with registration.invoice.balance as balance %}You are registered. Balance is ${{ balance }}. {% endblocktrans %}
 
             {% if event.registration_configuration.can_pay_online and registration.invoice.balance > 0 %}
             <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">
@@ -114,7 +114,7 @@
 
 	{% if count_registrants == 1 and registration.canceled %}
 		<div class="cancel-notice">
-			{% blocktrans %}Registration Canceled on {{ registrant.cancel_dt|date_short }}{% endblocktrans %}
+			{% blocktrans with registrant.cancel_dt|date_short as cancel_dt %}Registration Canceled on {{ cancel_dt }}{% endblocktrans %}
 		</div>
 	{% endif %}
 
@@ -220,8 +220,8 @@
         </div>
 
         <div class="payment-accounting">
-            <div>{% blocktrans %}Total ${{ registration.invoice.total|floatformat:"2" }}{% endblocktrans %}</div>
-            <div><strong>{% blocktrans %}Balance ${{ registration.invoice.balance|floatformat:"2" }}{% endblocktrans %}</strong></div>
+            <div>{% blocktrans with registration.invoice.total|floatformat:"2" as total %}Total ${{ total }}{% endblocktrans %}</div>
+            <div><strong>{% blocktrans with registration.invoice.balance|floatformat:"2" as balance %}Balance ${{ balance }}{% endblocktrans %}</strong></div>
         </div>
 
 		<div style="clear:both;"></div>

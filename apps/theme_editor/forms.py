@@ -6,6 +6,7 @@ import codecs
 from django import forms
 from django.core.files import File
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 # local
 from theme_editor.utils import archive_file
@@ -29,4 +30,11 @@ class FileForm(forms.Form):
             return True
         else:
             return False
-        
+            
+class ThemeSelectForm(forms.Form):
+    THEME_CHOICES = ((x, x) for x in os.listdir(os.path.join(settings.PROJECT_ROOT, 'themes')))
+    theme = forms.ChoiceField(label = _('Choose your Theme:'), choices=THEME_CHOICES)
+    
+    def __init__(self, *args, **kwargs):
+        super(ThemeSelectForm, self).__init__(*args, **kwargs)
+    

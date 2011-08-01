@@ -1,0 +1,20 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% has_perm request.user stories.change_story story as can_edit %}
+        <div class="wrap-search-item">
+            <div class="search-item story-search-item">
+                <div class="item-content">
+                    {% if story.image %}
+                    <div class="search-image">
+                        <img src="{% image_url story.image size=80x80 crop=True quality=88 %}" alt="{{ story.title }}" />
+                    </div>
+                    {% endif %}
+                    <div class="search-text">
+                        <h2><a href="{{ story.full_story_link }}">{% firstof story.title 'Untitled'%}</a> {% if can_edit %}<small>({{ story.full_story_link }})</small>{% endif %}</h2>
+                        {{ story.content|striptags|truncatewords:20|safe }}
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>	
+		      {% include "stories/meta.html" %}
+		</div>
