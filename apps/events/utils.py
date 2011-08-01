@@ -525,8 +525,7 @@ def get_pricing(user, event, pricing=None):
         pricing = RegConfPricing.objects.filter(
             reg_conf=event.registration_configuration
         )
-        
-    print pricing
+    
 
     # iterate and create a dictionary based
     # on dates and permissions
@@ -643,7 +642,6 @@ def get_pricing(user, event, pricing=None):
                 })
                 break
     
-    print sorted_pricing_list
     return sorted_pricing_list
 
 
