@@ -1,3 +1,3 @@
 {% load i18n %}
 
-{% blocktrans %}{{ SITE_GLOBAL_SITEDISPLAYNAME }} - Event Added: {{ event.title }}{% endblocktrans %}
+{% blocktrans with event.title as title %}{{ SITE_GLOBAL_SITEDISPLAYNAME }} - Event Added: {{ title }}{% endblocktrans %}

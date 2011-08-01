@@ -1,7 +1,11 @@
 {% load i18n %} 
 {% load base_filters %}
+{% load perm_tags %}
+
+{% is_admin request.user as is_admin %}
+
 {% if registration.enabled %}
-    {% if event.is_over %}
+    {% if event.is_over and not is_admin %}
         <div class="registration-red">
             {% trans "Event has ended" %}
         </div>
@@ -11,6 +15,16 @@
                 {% trans "Event is full" %}
             </div>          
         {% else %}
+            {% if not reg_ended %}
+                    <div class="registration-green">
+                        <div>{% trans "Registration starts on " %}</div>
+                        <div><strong>{{ earliest_time }}</strong></div>
+                    </div>
+            {% else %}
+                    <div class="registration-red">
+                        {% trans "Registration has ended" %}
+                    </div>
+            {% endif %}
             {% if pricing %}
                 <div class="pricing-list-wrap">
                     <form action="{% url event.multi_register event.pk %}" method="post">{% csrf_token %}
@@ -62,17 +76,6 @@
                     {% endif %}
                     </form>
                 </div>
-            {% endif %}
-
-            {% if not reg_ended %}
-                    <div class="registration-green">
-                        <div>{% trans "Registration starts on " %}</div>
-                        <div><strong>{{ earliest_time }}</strong></div>
-                    </div>
-            {% else %}
-                    <div class="registration-red">
-                        {% trans "Registration has ended" %}
-                    </div>
             {% endif %}
         {% endif %}
     {% endif %}
