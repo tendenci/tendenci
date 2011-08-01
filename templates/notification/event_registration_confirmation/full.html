@@ -2,7 +2,7 @@
 
 <html><body>
 
-<h1 style="margin-bottom:0;">{% blocktrans %}{{ event.title }} on {{ event.start_dt|date:"N j, Y \a\t f A" }}{% endblocktrans %}</h1>
+<h1 style="margin-bottom:0;">{% blocktrans with event.title as title and event.start_dt|date:"N j, Y \a\t f A" as start_dt %}{{ title }} on {{ start_dt }}{% endblocktrans %}</h1>
 <h3 style="margin:0;">{{ site_label }} {% trans "Event Registration Confirmation" %}</h3>
 
 {% if price <= 0 %}
