@@ -129,7 +129,8 @@ class Command(BaseCommand):
             campaign.save()
         
         print 'Syncing scheduled campaigns...'
-        scheduled = cl.scheduled()
+        if hasattr(cl,'scheduled'): scheduled = cl.scheduled()
+        else: scheduled = []
         for c in scheduled:
             try:
                 campaign = Campaign.objects.get(campaign_id = c.CampaignID)
@@ -142,7 +143,8 @@ class Command(BaseCommand):
             campaign.save()
         
         print 'Syncing draft campaigns...'
-        drafts = cl.drafts()
+        if hasattr(cl,'drafts'): drafts = cl.drafts()
+        else: drafts = []
         for c in drafts:
             try:
                 campaign = Campaign.objects.get(campaign_id = c.CampaignID)
@@ -154,9 +156,10 @@ class Command(BaseCommand):
             campaign.save()
             
         print "Done"
-            
+
         print 'Syncing templates...'
-        templates = cl.templates()
+        if hasattr(cl,'templates'): templates = cl.templates()
+        else: templates = []
         for t in templates:
             try:
                 template = Template.objects.get(template_id = t.TemplateID)
