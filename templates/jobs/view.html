@@ -130,35 +130,20 @@
 {% endif %}
 {% if job.skills %}
 <div class="section-block">
-<<<<<<< Updated upstream
-	<div class="label">Skills</div>
-	<div class="value">{{ job.skills|striptags|linebreaks }}</div>
-=======
 	<div class="label">{% trans "Skills" %}</div>
-	<div class="value">{{ job.skills|striptags }}</div>
->>>>>>> Stashed changes
+	<div class="value">{{ job.skills|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 {% if job.computer_skills %}
 <div class="section-block">
-<<<<<<< Updated upstream
-	<div class="label">Computer Skills</div>
-	<div class="value">{{ job.computer_skills|striptags|linebreaks }}</div>
-=======
 	<div class="label">{% trans "Computer Skills" %}</div>
-	<div class="value">{{ job.computer_skills|striptags }}</div>
->>>>>>> Stashed changes
+	<div class="value">{{ job.computer_skills|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 {% if job.education %}
 <div class="section-block">
-<<<<<<< Updated upstream
-	<div class="label">Education Required</div>
-	<div class="value">{{ job.education|striptags|linebreaks }}</div>
-=======
 	<div class="label">{% trans "Education Required" %}</div>
-	<div class="value">{{ job.education|striptags }}</div>
->>>>>>> Stashed changes
+	<div class="value">{{ job.education|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 
@@ -173,13 +158,8 @@
 		</div>
 {% endif %}
 
-<<<<<<< Updated upstream
-{% if job.contact_name or job.contact_phone or job.contact_email or job.contact_fax or job.contact_website %}
-		<h2>Contact Information</h2>
-=======
-{% if job.contact_name and job.contact_phone and job.contact_email and job.contact_fax  %}
+{% if job.contact_name or job.contact_phone or job.contact_email or job.contact_fax or job.contact_website  %}
 		<h2>{% trans "Contact Information" %}</h2>
->>>>>>> Stashed changes
 		<div class="contact-wrap">
 			<div>{{ job.contact_name }}</div>
 			<div>{% trans "Phone:" %} {{ job.contact_phone }}</div>
@@ -190,13 +170,8 @@
 		
 		{% if job.contact_method %}
 				<div class="section-line">
-<<<<<<< Updated upstream
-					<div class="label">Contact Method</div>
-					<div class="value">{{ job.contact_method|striptags|linebreaks }}</div>
-=======
 					<div class="label">{% trans "Contact Method" %}</div>
-					<div class="value">{{ job.contact_method }}</div>
->>>>>>> Stashed changes
+					<div class="value">{{ job.contact_method|striptags|linebreaks }}</div>
 					<div class="clear"></div>
 				</div>
 		{% endif %}
@@ -231,8 +206,11 @@
 				{% endif %}
 			</div>
 
-            <div class="submitted">{% blocktrans with job.create_dt|date:"long" as create_date %}Submitted on {{ create_date }} 
-			by:{% endblocktrans %} {% firstof job.creator.get_profile.display_name job.creator %}</div>
+            <div class="submitted">
+                {% blocktrans with job.create_dt|date:"long" as create_date %}
+                    Submitted on {{ create_date }} by:
+                {% endblocktrans %}{% firstof job.creator.get_profile.display_name job.creator %}
+            </div>
         </div>
         
 		<br />
