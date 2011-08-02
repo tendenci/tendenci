@@ -802,7 +802,8 @@ def membership_import(request, step=None):
                     membership.member_number = AppEntry.objects.count() + 1000
                     membership.save()
 
-                
+                # add user to group
+                membership.membership_type.group.add_user(membership.user)
 
                 added.append(membership)
             else:

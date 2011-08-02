@@ -142,8 +142,7 @@ def new_mems_from_csv(file_path, app, columns):
         # clean username
         username = clean_username(m['user-name'])
 
-        try:
-            # note: cannot return multiple; usernames are unique
+        try:  # note: cannot return multiple; usernames are unique
             user, created = User.objects.get_or_create(username = username)
         except (User.MultipleObjectsReturned, IntegrityError) as e:
             user = User.objects.filter(username = username)[0]
