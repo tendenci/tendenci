@@ -175,6 +175,7 @@ class Job(models.Model):
 
 
 class JobPricing(models.Model):
+    title = models.CharField(max_length=40, blank=True, null=True)
     guid = models.CharField(max_length=40)
     duration = models.IntegerField(blank=True)
     regular_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
@@ -189,10 +190,15 @@ class JobPricing(models.Model):
     owner = models.ForeignKey(User, related_name="job_pricing_owner", null=True)
     owner_username = models.CharField(max_length=50, null=True)
     status = models.BooleanField(default=True)
-
+    
     class Meta:
         permissions = (("view_jobpricing", "Can view job pricing"),)
-
+        
+    def __unicode__(self):
+        if self.title:
+            return self.title
+        return "Untitled: %s Days" % self.duration
+    
     def save(self, user=None, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -210,5 +216,5 @@ class JobPricing(models.Model):
             self.regular_price = 0
         if not self.premium_price:
             self.premium_price = 0
-
+        
         super(JobPricing, self).save(*args, **kwargs)
