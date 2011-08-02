@@ -38,7 +38,7 @@
     	<h1>{{ group.name }}</h1>
         <div class="group-section">
             <p>{% blocktrans %}This group currently has {{ count_members }} members.{% endblocktrans %}</p>
-            <p>{% blocktrans %}This group currently has {{ group.groupsubscription_set.all.count }} subscribers.{% endblocktrans %}</p>
+            <p>{% blocktrans with group.groupsubscription_set.all.count as count %}This group currently has {{ count }} subscribers.{% endblocktrans %}</p>
             {% if can_edit %}
                 <p><a href="{% url group.member_export group.slug %}">{% trans "Export all members" %}</a></p>
                 <p><a href="{% url group.subscriber_export group.slug %}">{% trans "Export all subscribers" %}</a></p>
@@ -106,11 +106,7 @@
             <div class="group-member {% cycle 'gray' '' %}">
                 <a href="{{ gs.subscriber.get_absolute_url }}">{{ gs.name }} ({{ gs.email }})</a>
                 {% if can_delete %}
-<<<<<<< Updated upstream
-                &nbsp;<span class="delete-subscriber"><a href="{% url subscriber_delete gs.id %}">Remove</a></span>
-=======
-                &nbsp;<span>- <a href="{% url delete_subscriber gs.id %}">{% trans "Remove" %}</a></span>
->>>>>>> Stashed changes
+                    &nbsp;<span class="delete-subscriber">- <a href="{% url subscriber_delete  gs.id %}">{% trans "Remove" %}</a></span>
                 {% endif %}
             </div>
         {% endfor %}
