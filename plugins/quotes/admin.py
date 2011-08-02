@@ -112,10 +112,10 @@ class QuoteAdmin(admin.ModelAdmin):
     update_quotes.short_description = "Update quotes tags and index for imports"
     
     def change_view(self, request, object_id, extra_context=None):
-		result = super(QuoteAdmin, self).change_view(request, object_id, extra_context)
+        result = super(QuoteAdmin, self).change_view(request, object_id, extra_context)
 
-		if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
-			result['Location'] = iri_to_uri("%s") % request.GET.get('next')
-		return result
+        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
+            result['Location'] = iri_to_uri("%s") % request.GET.get('next')
+        return result
     
 admin.site.register(Quote, QuoteAdmin)
