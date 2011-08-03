@@ -10,3 +10,13 @@ def get_theme_root():
     theme = get_setting('site', 'global', 'theme')
     theme_root = os.path.join(settings.THEME_DIR, theme)
     return theme_root
+
+def theme_options():
+    """
+    Returns a string of the available themes in THEME_DIR
+    """
+    options = ''
+    for theme in os.listdir(settings.THEME_DIR):
+        options = '%s, %s' % (theme, options)
+    print options[:-2]
+    return options[:-2]
