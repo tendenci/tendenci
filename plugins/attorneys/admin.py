@@ -150,7 +150,7 @@ class AttorneyAdmin(admin.ModelAdmin):
         update the permissions backend
         """
         instance = form.save(commit=False)
-        perms = update_perms_and_save(request, form, instance)
+        instance = update_perms_and_save(request, form, instance)
         return instance
 
     def change_view(self, request, object_id, extra_context=None):
