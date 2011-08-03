@@ -8,12 +8,13 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
 
+from theme.utils import get_theme_root
 from theme_editor.models import ThemeFileVersion
 
 template_directory = "/templates"
 style_directory = "/media/css"
 
-THEME_ROOT = settings.THEME_ROOT
+THEME_ROOT = get_theme_root()
 TEMPLATES_ROOT = os.path.join(settings.PROJECT_ROOT, "templates")
 ALLOWED_EXTENSIONS = (
     '.html',
