@@ -18,7 +18,9 @@
 	<h1>{% trans "Membership Import Finished!" %}</h1>
 	<p class="timestamp">{% trans "Step 4/4" %} &middot; {{ datetime.now }}</p>
 
-	<p class="msg"><em>{% blocktrans count memberships|length as mem_length and with added|length as added_length and with skipped|length as skipped_length%}We attempted <em>{{ mem_length }}</em> import; <em>{{ added_length }}</em> added, and <em>{{ skipped_length }} skipped.</p>{% plural %}We attempted <em>{{ mem_length }}</em> imports; <em>{{ added_length }}</em> added, and <em>{{ skipped_length }} skipped.{% endblocktrans %}</p>
+	<p class="msg">We attempted <em>{{ memberships|length}}</em> import{{ memberships|length|pluralize }}; 
+	<em>{{ added|length }}</em> {{ added|length|pluralize:"was,were" }} added,
+	and <em>{{ skipped|length }}</em> {{ skipped|length|pluralize:"was,were" }} skipped.</p>
 
 	<p class="link"><a href="{% url membership.search %}">{% trans "Back to membership search page." %}</a></p>
 

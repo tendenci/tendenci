@@ -1,4 +1,5 @@
 import os
+import sys
 import csv
 from dateutil.parser import parse as dt_parse
 from datetime import datetime, date, timedelta
@@ -8,6 +9,7 @@ from django.utils import simplejson
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from memberships.models import AppField, Membership, MembershipType
+from corporate_memberships.models import CorporateMembership
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -142,8 +144,7 @@ def new_mems_from_csv(file_path, app, columns):
         # clean username
         username = clean_username(m['user-name'])
 
-        try:
-            # note: cannot return multiple; usernames are unique
+        try:  # note: cannot return multiple; usernames are unique
             user, created = User.objects.get_or_create(username = username)
         except (User.MultipleObjectsReturned, IntegrityError) as e:
             user = User.objects.filter(username = username)[0]
@@ -248,6 +249,7 @@ def new_mems_from_csv(file_path, app, columns):
         try:  # bind corporate membership with membership
             corp_memb = CorporateMembership.objects.get(name=m.get('corp-membership-name'))
             membership.membership_type = corp_memb.corporate_membership_type.membership_type
+            membership.corporate_membership_id = corp_memb.pk
         except:
             pass
 

@@ -65,7 +65,7 @@
 
 	<p class="msg">{% trans "Total:" %} <em>{{ corp_membs|length}}</em>;
 	{% if invalid_skipped %}
-	<em class="action-invalid">{% blocktrans count invalid_skipped|length as inval %}{{ inval }}</em> is invalid and will be skipped,{% plural %}{{ inval }}</em>are invalid and will be skipped,{% endblocktrans %}
+	<em class="action-invalid">{% blocktrans count invalid_skipped|length as inval %}{{ inval }}</em> is invalid and will be skipped,{% plural %}{{ inval }}</em> are invalid and will be skipped,{% endblocktrans %}
 	{% endif %}
 	<em>{% blocktrans with added|length as adds %}{{ adds }}</em> will be added, {% endblocktrans %}
 	{% if skipped %}
@@ -75,7 +75,7 @@
 			{% blocktrans with updated|length as updates %}and <em>{{ updates }}</em> will be updated (for the blank fields){% endblocktrans %}
 		{% else %}
 			{% blocktrans with updated_override|length as overid %}and <em>{{ overid }}</em> will be updated (override){% endblocktrans %}
-		{% eendndif %}
+		{% endif %}
 	{% endif %}. 
 	<em><a title="Looks good!" href="{% url corp_memb_import_confirm %}">{% trans "Import Now " %} &rarr;</a></em></p>
 
