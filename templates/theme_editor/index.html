@@ -50,12 +50,14 @@
             </div>
         </td>
         <td width="20%" valign="top">
+            {% comment %}
             <div class='theme-selection'>
                 <h2>{% trans 'Choose your Theme:' %}</h2>
                 <form method="POST" action="{% url theme_select %}">{% csrf_token %}
                     {{ theme_form.theme }}<input type="submit" value="Submit"/>
                 </form>
             </div>
+            {% endcomment %}
        		<div id="right_files_list">
                <h2>{% trans "Choose a folder or file:" %}</h2>
                {%  if pwd %}

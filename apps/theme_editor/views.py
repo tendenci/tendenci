@@ -89,10 +89,10 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         content = get_file_content(default_file)
         file_form = form_class({"content":content, "rf_path":default_file})
     
-    theme_form = ThemeSelectForm()
+    #theme_form = ThemeSelectForm()
     
     return render_to_response(template_name, {"file_form": file_form,
-                                              'theme_form': theme_form,
+                                              #'theme_form': theme_form,
                                               'current_file': current_file,
                                               'prev_dir_name': prev_dir_name,
                                               'prev_dir': prev_dir,
