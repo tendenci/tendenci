@@ -4,7 +4,7 @@ from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
 from django.conf import settings
 from django.contrib import admin
-
+from theme.utils import get_theme_root, get_theme
 from registry import autodiscover as reg_autodiscover
 
 # load the apps that are in Django Admin
@@ -100,9 +100,9 @@ if settings.DEBUG:
             'django.views.static.serve',
             {'document_root': join(settings.PROJECT_ROOT, 'site_media')}),
 
-        (r'^themes/%s/(?P<path>.*)$' % settings.SITE_THEME,
+        (r'^themes/%s/(?P<path>.*)$' % get_theme(),
             'django.views.static.serve',
-            {'document_root': settings.THEME_ROOT}),
+            {'document_root': get_theme_root()}),
 
         (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
             'base.views.plugin_static_serve'),
