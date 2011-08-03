@@ -27,7 +27,7 @@ from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
     has_perm, update_perms_and_save, is_admin, is_member, is_developer
 from invoices.models import Invoice
-from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
+from corporate_memberships.models import CorporateMembership, CorporateMembershipType, IndivMembEmailVeri8n
 from geraldo.generators import PDFGenerator
 from reports import ReportNewMems
 from files.models import File
