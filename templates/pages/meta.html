@@ -15,17 +15,17 @@
 
 
             <div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
-    			<div class="meta-left">
-                	{% if category %}
-    				<div class="categories">
-    					<strong>{% trans "Category:" %} </strong><a href="{% url page.search %}?q=category:{{ category }}">{{ category }}</a>
-    				{% if sub_category %}
-    					| <strong>{% trans "Sub Category:" %} </strong><a href="{% url page.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>
-    				{% endif %}	
-    				</div>
-    				{% endif %}
+                <div class="meta-left">
+                    {% if category %}
+                    <div class="categories">
+                        <strong>{% trans "Category:" %} </strong><a href="{% url page.search %}?q=category:{{ category }}">{{ category }}</a>
+                    {% if sub_category %}
+                        | <strong>{% trans "Sub Category:" %} </strong><a href="{% url page.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>
+                    {% endif %} 
+                    </div>
+                    {% endif %}
     
-                	{% if nonhash_tags or hash_tags %}
+                    {% if nonhash_tags or hash_tags %}
                     <div class="tags">
                         {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
                         {% for tag in nonhash_tags %}
@@ -39,30 +39,30 @@
                         {% endif %}
                     </div>
                     {% endif %}
-                	
-                	{% if user.is_authenticated %}
-                	<div class="submitted">{% blocktrans with page.create_dt|date:"long" as create_date %}Created on {{ create_date }}
-                	by:{% endblocktrans %} <a href="{{ page.creator.get_absolute_url }}">
-                	{% if page.creator.first_name %}{{ page.creator.first_name }} {{ page.creator.last_name }}
+                    
+                    {% if user.is_authenticated %}
+                    <div class="submitted">{% blocktrans with page.create_dt|date:"long" as create_date %}Created on {{ create_date }}
+                    by:{% endblocktrans %} <a href="{{ page.creator.get_absolute_url }}">
+                    {% if page.creator.first_name %}{{ page.creator.first_name }} {{ page.creator.last_name }}
                     {% else %}
                     {{ page.creator }}
                    {% endif %}</a>
                     </div>
                     {% endif %}
                     {% if user.is_authenticated %}
-                	<div class="submitted">{% blocktrans with page.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
-                	by:{% endblocktrans %} <a href="{{ page.owner.get_absolute_url }}">
-                	{% if page.owner.first_name %}{{ page.owner.first_name }} {{ page.owner.last_name }}
+                    <div class="submitted">{% blocktrans with page.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
+                    by:{% endblocktrans %} <a href="{{ page.owner.get_absolute_url }}">
+                    {% if page.owner.first_name %}{{ page.owner.first_name }} {{ page.owner.last_name }}
                     {% else %}
                     {{ page.owner }}
                    {% endif %}</a>
                     </div>
                     {% endif %}
-                	
+                    
                 </div>
                 <div class="meta-right">
-    				<a class="print-link" href="{% url page.print_view page.slug %}">{% trans "Print" %}</a>
-    				<a class="share-link" >{% trans "Share" %}</a>
+                    <a class="print-link" href="{% url page.print_view page.slug %}">{% trans "Print" %}</a>
+                    <a class="share-link" >{% trans "Share" %}</a>
                 </div>
             </div>
             {% if can_edit %}
@@ -70,8 +70,8 @@
 
                 <div class="perm-status">
                 <ul>
-                    <li>{% obj_perms page %}</li>
-                    <li>{% obj_status page %}</li>
+                    <li>{{ page.obj_perms }}</li>
+                    <li>{{ page.obj_status }}</li>
                 </ul>
                 </div>
                 <div class="edit-links">
@@ -82,10 +82,10 @@
                     <div class="options-list">
                         <ul>
                         {% if can_delete %}
-    					<li>
-    						<a class="delete" href="{% url page.delete page.pk %}">{% trans "Delete" %}</a>
-    					</li>				
-    				    {% endif %}
+                        <li>
+                            <a class="delete" href="{% url page.delete page.pk %}">{% trans "Delete" %}</a>
+                        </li>               
+                        {% endif %}
                             <li><a href="{% url page.edit.meta page.pk %}">{% trans "Edit Meta" %}</a></li>
                             <li><a href="{% url category.update page.opt_app_label page.opt_module_name page.pk %}">{% trans "Edit Categories" %}</a></li>
                             
