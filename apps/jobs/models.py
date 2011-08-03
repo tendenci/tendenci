@@ -42,6 +42,7 @@ class Job(models.Model):
 
     # date related fields
     requested_duration = models.IntegerField()  # 30, 60, 90 days - should be relational table
+    pricing = models.ForeignKey('JobPricing', null=True) # selected pricing based on requested_duration
     activation_dt = models.DateTimeField(null=True, blank=True)  # date job listing was activated
     post_dt = models.DateTimeField(null=True, blank=True)  # date job was posted (same as create date?)
     expiration_dt = models.DateTimeField(null=True, blank=True)  # date job expires based on activation date and duration
