@@ -41,9 +41,7 @@ class Group(TendenciBaseModel):
         
             
     def __unicode__(self):
-        if not self.label:
-            return self.name
-        return self.label
+        return self.label or self.name
 
     @models.permalink
     def get_absolute_url(self):
@@ -59,9 +57,32 @@ class Group(TendenciBaseModel):
         super(Group, self).save(force_insert, force_update)
 
     def is_member(self, user):
-        if user:
-            return user in self.members.all()
-        return False
+        return user in self.members.all()
+
+    def add_user(self, user, **kwargs):
+        """
+        add a user to the group; check for duplicates
+        return (user, created)
+        """
+
+        # check if user in group
+        in_group = GroupMembership.objects.filter(group=self, member=user).exists()
+        if in_group: return (user, False)  # user, created
+
+        # if user not in group; insert into group
+        GroupMembership.objects.create(**{
+            'group': self,
+            'member': user,
+            'creator_id': kwargs.get('creator_id') or user.pk,
+            'creator_username': kwargs.get('creator_username') or user.username,
+            'owner_id': kwargs.get('owner_id') or user.pk,
+            'owner_username': kwargs.get('owner_username') or user.username,
+            'status': kwargs.get('status') or True,
+            'status_detail': kwargs.get('status_detail') or 'active',
+        })
+
+        return (user, True)  # user, created
+
 
 class GroupMembership(models.Model):
     group = models.ForeignKey(Group)
