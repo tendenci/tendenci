@@ -192,7 +192,7 @@ class JobForm(TendenciBaseForm):
         super(JobForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-            self.fields['pricing'].initial = JobPricing.objects.filter(duration=self.instance.requested_duration)[0]
+            #self.fields['pricing'].initial = JobPricing.objects.filter(duration=self.instance.requested_duration)[0]
             if is_admin(self.user):
                 self.fields['status_detail'].choices = STATUS_DETAIL_CHOICES
         else:
