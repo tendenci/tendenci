@@ -1,4 +1,4 @@
-import uuid
+reesimport uuid
 from BeautifulSoup import BeautifulStoneSoup
 from pages.models import Page
 from django.contrib.auth.models import User
