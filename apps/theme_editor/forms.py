@@ -9,6 +9,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 # local
+from theme.utils import get_theme_root, get_theme
 from theme_editor.utils import archive_file
 
 class FileForm(forms.Form):
@@ -20,7 +21,7 @@ class FileForm(forms.Form):
     
     def save(self, request, file_relative_path):
         content = self.cleaned_data["content"]
-        file_path = (os.path.join(settings.THEME_ROOT, file_relative_path)).replace("\\", "/")
+        file_path = (os.path.join(get_theme_root(), file_relative_path)).replace("\\", "/")
         if os.path.isfile(file_path) and content <> "":
             archive_file(request, file_relative_path)
             f = codecs.open(file_path, 'w', 'utf-8', 'replace')
@@ -32,7 +33,7 @@ class FileForm(forms.Form):
             return False
             
 class ThemeSelectForm(forms.Form):
-    THEME_CHOICES = ((x, x) for x in os.listdir(os.path.join(settings.PROJECT_ROOT, 'themes')))
+    THEME_CHOICES = ((x, x) for x in os.listdir(get_theme_root()))
     theme = forms.ChoiceField(label = _('Choose your Theme:'), choices=THEME_CHOICES)
     
     def __init__(self, *args, **kwargs):

@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 
 from django.conf import settings
 from site_settings.utils import get_setting
+from theme.utils import get_theme_root
 
 STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'among','an','and','any','are','as','at','be','because',
@@ -24,7 +25,7 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'use', 'don\'t', 'can\'t', 'wont', 'come','you\'ll', 'want']
 
 template_directory = "templates"
-THEME_ROOT = settings.THEME_ROOT
+THEME_ROOT = get_theme_root()
 
 def now_localized():
     from datetime import datetime
