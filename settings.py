@@ -10,7 +10,6 @@ sys.path.insert(0, LIBS_PATH)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-SITE_THEME = "default"
 
 ADMINS = (
     ('Glen Zangirolami', 'gzangirolami@schipul.com'),
@@ -67,7 +66,7 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
-THEME_ROOT = os.path.join(PROJECT_ROOT, 'themes', SITE_THEME)
+THEME_DIR = os.path.join(PROJECT_ROOT, 'themes')
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
@@ -100,6 +99,7 @@ SECRET_KEY = 's$6*!=m$t0__=51^w@_tbazonjm4+fg@0+ic#bx^3rj)zc$a6i'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
+    'theme.template_loaders.load_template_source',
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
 #     'django.template.loaders.eggs.load_template_source',
@@ -125,7 +125,6 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'Tendenci50.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_ROOT, "themes", SITE_THEME, "templates"),
     os.path.join(PROJECT_ROOT, "templates"),
     # Put strings here, like "/home/html/django_templates"
     # or "C:/www/django/templates".

@@ -51,13 +51,13 @@
         </td>
         <td width="20%" valign="top">
             <div class='theme-selection'>
-                <h2>{% trans 'Choose your Theme:' %}</h2>
-                <form method="POST" action="{% url theme_select %}">{% csrf_token %}
-                    {{ theme_form.theme }}<input type="submit" value="Submit"/>
+                <h4>{% trans 'Theme in Editor:' %}</h4>
+                <form method="GET" action="">
+                    {{ theme_form.theme }}<input type="submit" value="Change Theme in Editor"/>
                 </form>
             </div>
        		<div id="right_files_list">
-               <h2>{% trans "Choose a folder or file:" %}</h2>
+               <h4>{% trans "Choose a folder or file:" %}</h4>
                {%  if pwd %}
                <div class="pwd" title="{{ pwd }}">
                {% if pwd|length > 20  %}
@@ -69,13 +69,13 @@
                {% endif %}
                {% if prev_dir %}
                    <p class="prev_dir">
-                       <a href="{% url theme_editor %}?file={{ prev_dir }}#to-editor">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
+                       <a href="{% url theme_editor %}?file={{ prev_dir }}&theme={{ current_theme }}#to-editor">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
                    </p>
                {% endif %}
                {% if dirs %}
                <ul class="dir_list">   
                     {% for dir in dirs %}
-                        <li class="dir_item"><a href="{% url theme_editor %}?file={{ dir }}/#to-editor">{{ dir|basename|safe }}</a></li>
+                        <li class="dir_item"><a href="{% url theme_editor %}?file={{ dir }}/&theme={{ current_theme }}#to-editor">{{ dir|basename|safe }}</a></li>
                     {% endfor %}
                </ul>
                {%  endif %}
@@ -83,7 +83,7 @@
                <ul class="files_list">
                     {% for file in files %}
                         <li {% if current_file == file %}class="current_file"{% endif %}>
-                            <a href="{% url theme_editor %}?file={{ pwd }}/{{ file }}#to-editor">{{ file|safe }}</a>
+                            <a href="{% url theme_editor %}?file={{ pwd }}/{{ file }}&theme={{ current_theme }}#to-editor">{{ file|safe }}</a>
                         </li>
                     {% endfor %}
                </ul>
