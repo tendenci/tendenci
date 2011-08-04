@@ -1,4 +1,4 @@
-reesimport uuid
+import uuid
 from BeautifulSoup import BeautifulStoneSoup
 from pages.models import Page
 from django.contrib.auth.models import User
@@ -34,8 +34,12 @@ def run_wp_to_t5():
           body = unicode(node.find('content:encoded').contents[0])
           post_date_content = unicode(node.find('wp:post_date').contents[0])
           post_date = datetime.strptime(post_date_content, '%Y-%m-%d %H:%M:%S')
-
-          tags_list = getattr(node.find('category domain="post_tag"'), 'string', '')
+          tags_raw = node.findAll('category', domain="post_tag")
+          tags_list = []
+          if tags_raw:
+              for tag in tags_raw:
+                  tags_list.append(tag.string[:50])
+                  print tag.string
           posts_list.append({
               'title': title,
               'creator': getattr(node.find('dc:creator'), 'string', ''),
@@ -45,13 +49,11 @@ def run_wp_to_t5():
               'slug': getattr(node.find('link'), 'string', ''),
               'body': body,
               'post_date': post_date,
-              'tags': tags_list
+              'tags': ','.join(tags_list)[:50]
           })
       elif post_type == 'page' and status == 'publish':
           title = unicode(node.find('title').contents[0])
           body = unicode(node.find('content:encoded').contents[0])
-          post_date_content = unicode(node.find('wp:post_date').contents[0])
-          post_date = datetime.strptime(post_date_content, '%Y-%m-%d %H:%M:%S')
           pages_list.append({
               'title': title,
               'creator': getattr(node.find('dc:creator'), 'string', ''),
@@ -59,7 +61,6 @@ def run_wp_to_t5():
               'status': status,
               'guid': getattr(node.find('guid'), 'string', ''),
               'slug': getattr(node.find('link'), 'string', ''),
-              'post_date': post_date,
               'content': body
           })
 

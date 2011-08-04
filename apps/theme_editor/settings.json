@@ -9,7 +9,7 @@
         "name": "theme", 
         "value": "iceman",
         "label": "Theme", 
-        "input_value": "iceman, default", 
+        "input_value": "default, iceman", 
         "parent_id": 0, 
         "scope": "module", 
         "scope_category": "theme_editor", 

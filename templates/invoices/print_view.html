@@ -39,7 +39,7 @@
 		<tr>
 			<td>{% trans "Invoice Status" %}</td>
 			{% if invoice.is_tendered %}
-				<td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %}Tendered {{ tenddate }}</td>
+				<td class="invoice-status td-right">{% blocktrans with invoice.tender_date|date:'N j, Y h:i a' as tenddate %}Tendered {{ tenddate }}{% endblocktrans %}</td>
 			{% else %}
 				<td class="invoice-status-red td-right">{% trans "Estimate" %}</td>
 			{% endif %}
