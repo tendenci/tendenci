@@ -51,13 +51,13 @@
         </td>
         <td width="20%" valign="top">
             <div class='theme-selection'>
-                <h2>{% trans 'Theme in Editor:' %}</h2>
+                <h4>{% trans 'Theme in Editor:' %}</h4>
                 <form method="GET" action="">
                     {{ theme_form.theme }}<input type="submit" value="Change Theme in Editor"/>
                 </form>
             </div>
        		<div id="right_files_list">
-               <h2>{% trans "Choose a folder or file:" %}</h2>
+               <h4>{% trans "Choose a folder or file:" %}</h4>
                {%  if pwd %}
                <div class="pwd" title="{{ pwd }}">
                {% if pwd|length > 20  %}
