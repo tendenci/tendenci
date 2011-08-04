@@ -16,7 +16,9 @@ def theme_options():
     Returns a string of the available themes in THEME_DIR
     """
     options = ''
-    for theme in os.listdir(settings.THEME_DIR):
+    themes = sorted(theme_choices())
+    themes.reverse()
+    for theme in themes:
         options = '%s, %s' % (theme, options)
     print options[:-2]
     return options[:-2]
