@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user email_blocks.add_email_block as can_add %}
@@ -21,24 +22,24 @@
     {% endif %}
 
 	<li>
-		<span>Emails</span>
+		<span>{% trans "Emails" %}</span>
 		<ul id="secondary">
-			<li><a href="{% url email.search %}">Emails:</a></li> 
-			<li><a href="{% url email_block.search %}">Email Blocks:</a></li> 
+			<li><a href="{% url email.search %}">{% trans "Emails:" %}</a></li> 
+			<li><a href="{% url email_block.search %}">{% trans "Email Blocks:" %}</a></li> 
 			{% if nav_object %}
 				{% if can_view %}
-				<li><a href="{% url email_block.view nav_object.pk %}">View</a></li>
+				<li><a href="{% url email_block.view nav_object.pk %}">{% trans "View" %}</a></li>
 				{% endif %}
 				{% if can_edit %}
-				<li><a href="{% url email_block.edit nav_object.pk %}">Edit</a></li>
+				<li><a href="{% url email_block.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
 				{% endif %}
 			{% endif %}
-			<li><a href="{% url email_block.search %}">Search</a></li>
+			<li><a href="{% url email_block.search %}">{% trans "Search" %}</a></li>
 			{% if can_add %}
-			<li><a href="{% url email_block.add %}">Add</a></li>
+			<li><a href="{% url email_block.add %}">{% trans "Add" %}</a></li>
 			{% endif %}
 			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">Log Off</a></li> 
+			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}
 		</ul>
 		

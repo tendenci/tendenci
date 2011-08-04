@@ -5,6 +5,7 @@
 {% load base_tags %}
 {% load category_tags %}
 {% load humanize %}
+{% load i18n %}
 
 
 {% block title %}{{ block.super }}{{ event.get_title }}{% endblock %}
@@ -37,7 +38,7 @@
                     </div>
                     {% endif %}
                     <div class="speaker">
-                        <strong>Speaker</strong> {{ speaker.name }}
+                        <strong>{% trans "Speaker" %}</strong> {{ speaker.name }}
                     </div>
                     {% if speaker.description|striptags|wordcount > 50 %}
                     <div class="speaker-desc-short">
@@ -52,7 +53,7 @@
                         </div>                    
                     {% endif %}
                     {% if speaker.description|striptags|wordcount > 50 %}
-                    <a class="speaker-desc-toggle" href="#">Full Description</a>
+                    <a class="speaker-desc-toggle" href="#">{% trans "Full Description" %}</a>
                     {% endif %}
                     <div style="clear:both;"></div>
                 </div>
@@ -67,7 +68,7 @@
             {% if organizer.name %}
             <div class="organizer-wrap">
                 <div class="organizer">
-                    <strong>Organizer</strong> {{ organizer.name }}
+                    <strong>{% trans "Organizer" %}</strong> {{ organizer.name }}
                 </div>
                 {% if organizer.description|striptags|wordcount > 50 %}
                 <div class="organizer-desc-short">
@@ -82,7 +83,7 @@
                     </div>                    
                 {% endif %}
                 {% if organizer.description|striptags|wordcount > 50 %}
-                <a class="organizer-desc-toggle" href="#">Full Description</a>
+                <a class="organizer-desc-toggle" href="#">{% trans "Full Description" %}</a>
                 {% endif %}
             </div>
             {% endif %}
@@ -90,7 +91,7 @@
 
 		<div class="vitals">
             <div class="time-period">
-                <h4 class="vital-header">When?</h4>
+                <h4 class="vital-header">{% trans "When?" %}</h4>
                 {% ifequal event.start_dt|date:"M j, Y" event.end_dt|date:"M j, Y" %}
                 <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
                 {% else %}
@@ -107,7 +108,7 @@
             {% endif %}
 
 			<div class="place">
-                <h4 class="vital-header">Where?</h4>
+                <h4 class="vital-header">{% trans "Where?" %}</h4>
 				<div><strong>{{ event.place.name }}</strong></div>
 				<div class="line">{{ event.place.address }}</div>
 				<div class="line">{{ event.place.city_state|join:", "}} {{ event.place.zip }}</div>
@@ -125,7 +126,7 @@
                         </div>        
                 {% endif %}
                 {% if event.place.description|striptags|wordcount > 50 %}
-                    <a class="line event-place-desc-toggle" href="#">Full Description</a> 
+                    <a class="line event-place-desc-toggle" href="#">{% trans "Full Description" %}</a> 
                 {% endif %}
 			</div>
 

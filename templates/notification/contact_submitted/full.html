@@ -1,39 +1,41 @@
+{% load i18n %}
+
 <div style="margin-bottom:20px;">
 <table>
 	<tr>
-		<td>FROM</td>
+		<td>{% trans "FROM" %}</td>
 		<td>{{ first_name }} {{ last_name }}</td>
 	</tr>
 	<tr>
-		<td>PHONE</td>
+		<td>{% trans "PHONE" %}</td>
 		<td>{{ phone|phone2numeric }}</td>
 	</tr>
 	<tr>
-		<td>EMAIL</td>
+		<td>{% trans "EMAIL" %}</td>
 		<td>{{ email }}</td>
 	</tr>
 	<tr>
-		<td>WEBSITE</td>
+		<td>{% trans "WEBSITE" %}</td>
 		<td>{{ url }}</td>
 	</tr>
 	<tr>
-		<td>ADDRESS</td>
+		<td>{% trans "ADDRESS" %}</td>
 		<td>{{ address }}</td>
 	</tr>
 	<tr>
-		<td>CITY</td>
+		<td>{% trans "CITY" %}</td>
 		<td>{{ city }}</td>
 	</tr>
 	<tr>
-		<td>STATE</td>
+		<td>{% trans "STATE" %}</td>
 		<td>{{ state }}</td>
 	</tr>
 	<tr>
-		<td>ZIPCODE</td>
+		<td>{% trans "ZIPCODE" %}</td>
 		<td>{{ zipcode }}</td>
 	</tr>
 	<tr>
-		<td style="margin-right:10px;">COUNTRY</td>
+		<td style="margin-right:10px;">{% trans "COUNTRY" %}</td>
 		<td>{{ country }}</td>
 	</tr>
 </table>
@@ -43,5 +45,5 @@
 <div>{{ message|linebreaks }}</div>
 
 <div style="margin-top:20px;">
-View message online: {{ message_link }}{{ contact.get_absolute_url }}
+{% trans "View message online:" %} {{ message_link }}{{ contact.get_absolute_url }}
 </div>

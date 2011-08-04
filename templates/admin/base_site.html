@@ -17,20 +17,21 @@ a.section:link, a.section:visited { color: #666666; }
 #footer a:link, #footer a:visited {color: #eee; text-decoration: underline;}
 
 </style>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/perms.css" />
 {% endblock %}
  
 {% block branding %}
 <h1 id="site-name" ><span><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif"></span>
 {% if user.is_authenticated %}<a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }} ({{ SITE_GLOBAL_SITEURL }})</a>
 {% else %}
-Web Administration
+{% trans "Web Administration" %}
 {% endif %}
 </h1>
 {% endblock %}
 
 {% block footer %}
 <div id="footer">
-<p><a href="http://tendenci.com">Tendenci&reg; Membership Management Software</a> by <a href="http://schipul.com">Schipul - The Web Marketing Company</a></p>
+<p><a href="http://tendenci.com">{% trans "Tendenci Membership Management Software" %}</a> by <a href="http://schipul.com">{% trans "Schipul - The Web Marketing Company" %}</a></p>
 </div>
 {% endblock %}
  

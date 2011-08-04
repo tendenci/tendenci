@@ -1,11 +1,12 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 <div class="t-iconrow">
 <ul>	
     {% has_perm request.user emails.change_emails opt_object as can_edit %}
     {% if can_edit %} 
-    	<li><a href="{% url email.edit opt_object.pk  %}" title="Edit Story" class="option-link edit">Edit</a></li>
-    	<li><a href="{% url email.delete opt_object.pk  %}" class="option-link delete" title="Delete Email">Delete</a></li>
+    	<li><a href="{% url email.edit opt_object.pk  %}" title="Edit Story" class="option-link edit">{% trans "Edit" %}</a></li>
+    	<li><a href="{% url email.delete opt_object.pk  %}" class="option-link delete" title="Delete Email">{% trans "Delete" %}</a></li>
     {% endif %}
     
     

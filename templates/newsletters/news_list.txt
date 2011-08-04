@@ -1,12 +1,14 @@
+{% load i18n %}
+
 {% if news %}
 	<font face="Arial" size="3"><b>
 	<font color=#000000>
 	{# named area for jump links #}
 	<a name="news" id="news"></a>
 	{% if start_dt %}
-		News for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}
+		{% blocktrans %}News for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}{% endblocktrans %}
 	{% else %}
-		All News
+		{% trans "All News" %}
 	{% endif %}
 	
 	</font></b></font>							   
@@ -31,10 +33,10 @@
 		
 		{% if not simplified  %}
 			<tr><td align="left" valign="top"><font face="Arial" size="2" color="#000000">
-			<b>Author:</b> {{ n.first_name }} {{ n.last_name }} </font></td></tr>
+			<b>{% trans "Author:" %}</b> {{ n.first_name }} {{ n.last_name }} </font></td></tr>
 
 			<tr><td align="left"><font face="Arial" size="2" color="#000000">
-			<b>Release Date:</b> {{ n.release_dt|date:"l d-M-Y h:i A" }} </font> 
+			<b>{% trans "Release Date:" %}</b> {{ n.release_dt|date:"l d-M-Y h:i A" }} </font> 
 			</td></tr>
 		{% endif %}
 		
@@ -48,7 +50,7 @@
 		{#  posted by #}
 		{% if not simplified  %}
 			<font face="Arial" size="2" color="#000000">
-			<br><b>Posted by</b>: 
+			<br><b>{% trans "Posted by" %}</b>: 
 			{{ n.owner.first_name }} {{n.owner.last_name }}
 			</font>
 		{% endif %}

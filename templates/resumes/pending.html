@@ -1,5 +1,6 @@
 {% extends "resumes/base.html" %}
 {% load resume_tags %}
+{% load i18n %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -9,7 +10,7 @@
 {% block body %}
 <div class="t">
     {% resume_nav request.user %}
-    <h1>Pending Resumes</h1>
+    <h1>{% trans "Pending Resumes" %}</h1>
     
     <div class="resume-wrap">
     <ul class="pending-resumes">
@@ -19,10 +20,10 @@
             &nbsp;&ndash;&nbsp;
             {{ resume.create_dt|date }}&nbsp;{{ resume.create_dt|time }}
             &nbsp;&ndash;&nbsp;
-            <a href="{% url resume.approve resume.pk %}">Approve</a>
+            <a href="{% url resume.approve resume.pk %}">{% trans "Approve" %}</a>
         </li>
     {% empty %}
-        <li>There are no pending resumes.</li>
+        <li>{% trans "There are no pending resumes." %}</li>
     {% endfor %}
     </div>
     </ul>

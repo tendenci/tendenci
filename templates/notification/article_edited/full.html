@@ -1,8 +1,10 @@
+{% load i18n %}
+
 <p>{{ user.username }},</p>
 
 <p>The following article has been edited:</p>
 
-<div>Headline: {{ object.headline }}</div>
-<div>To view this article go to: {{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</div>
+<div>{% trans "Headline: {{ object.headline }}" %}</div>
+<div>{% trans "To view this article go to:" %} {{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</div>
 
-<p>Thanks!</p>
+<p>{% trans "Thanks!" %}</p>

@@ -6,6 +6,7 @@
 {% load profile_tags %}
 {% load contribution_tags %}
 {% load membership_tags %}
+{% load i18n %}
 
 {% block title %}Profile View{% endblock %}
 
@@ -31,13 +32,13 @@
 	  
 	  <div id="userview-tabs">
 	      <ul>
-	           <li><a href="#userview-profile" id="profile"><span>Profile</span></a></li>
+	           <li><a href="#userview-profile" id="profile"><span>{% trans "Profile" %}</span></a></li>
 	           {%if user_this.is_active %}
-	           <li><a href="#userview-contributions" id="contributions"><span>Contributions</span></a></li>
+	           <li><a href="#userview-contributions" id="contributions"><span>{% trans "Contributions" %}</span></a></li>
 	           {%endif %}
-	            <li><a href="#userview-groups" id="groups"><span>Groups</span></a></li>
+	            <li><a href="#userview-groups" id="groups"><span>{% trans "Groups" %}</span></a></li>
                 {% if memberships %}
-                <li><a href="#userview-memberships" id="memberships"><span>Memberships</span></a></li>
+                <li><a href="#userview-memberships" id="memberships"><span>{% trans "Memberships" %}</span></a></li>
                 {% endif %}
 	       </ul>
 	   </div>
@@ -47,15 +48,15 @@
 	    <div class="profile-icon"><a href="{% url profile.change_avatar  user_this.id %}">{% avatar user_this 128 %}</a></div>
 	    
 	    {% if can_edit_user %}
-	    	<small><a href="{% url profile.change_avatar  user_this.id %}">Change Picture</a></small>
+	    	<small><a href="{% url profile.change_avatar  user_this.id %}">{% trans "Change Picture" %}</a></small>
 	    {%endif%}
 	    
 	    {% if content_counts.total > 0 %}
 	   		<div class="module-content">
-		   		<h2>{% if request.user.id == user_this.id %}My{% else %}{{ user_this.first_name }}'s{% endif %} Content</h2>
+		   		<h2>{% if request.user.id == user_this.id %}My{% else %}{{ user_this.first_name }}'s{% endif %} {% trans "Content" %}</h2>
 		   		<div class="option-links">
 		   			{% if content_counts.invoice > 0 %}
-		   				<a href="{% url invoice.search %}?bill_to={{ user_this.last_name }}">Invoices ({{ content_counts.invoice }})</a>
+		   				<a href="{% url invoice.search %}?bill_to={{ user_this.last_name }}">{% trans "Invoices" %} ({{ content_counts.invoice }})</a>
 		   			{% endif %}
 		   		</div>
 	   		</div>
@@ -65,7 +66,7 @@
 	    
 	    <div class="profile-right">
 	    	<div class="contact-info profile-section">
-		    <h2>Contact Info</h2>
+		    <h2>{% trans "Contact Info" %}</h2>
 		    	<table class="section-items">
 			    {% if user_this.email or profile.email2 %}
 			    	<tr>
@@ -85,7 +86,7 @@
 			    {%endif%}
 			    {% if profile.phone or profile.phone2 or profile.work_phone or profile.home_phone or profile.mobile_phone %}
 			    	<tr>
-			    	<td class="type">Phone:</td> 
+			    	<td class="type">{% trans "Phone:" %}</td> 
 				    	<td class="items"> 
 				    	{% if profile.phone  %}
 					    	<span class="item">
@@ -123,7 +124,7 @@
 			    
 			    {% if profile.fax %}
 			    	<tr>
-				    	<td class="type">Fax:</td> <td class="items">
+				    	<td class="type">{% trans "Fax:" %}</td> <td class="items">
 				    	{% if profile.fax  %}
 					    	<span class="item">
 					    		{{profile.fax}}
@@ -135,7 +136,7 @@
 			    
 			     {% if profile.url or profile.url2 %}
 			    	<tr>
-				    	<td class="type">Website:</td> <td class="items">
+				    	<td class="type">{% trans "Website:" %}</td> <td class="items">
 				    	{% if profile.url  %}
 					    	<span class="item">
 					    		{{profile.url|urlize}}
@@ -156,7 +157,7 @@
 			{% if can_edit_user or not profile.hide_address %}
 				{% if profile.mailing_name or profile.address or profile.city or profile.state or profile.zipcode or profile.country  %} 
 				  <div class="profile-addresses profile-section">
-					  <h2>Addresses</h2>
+					  <h2>{% trans "Addresses" %}</h2>
 				    	<div class="user-address">
 					    	{% if profile.mailing_name %}
 						    	<span class="mailing-name">{{profile.mailing_name}}</span>
@@ -187,11 +188,11 @@
 			  
 			{% if profile.company or profile.position_title or profile.position_assignment %}
 				<div class="work-info profile-section">
-			    <h2>Work Info</h2>
+			    <h2>{% trans "Work Info" %}</h2>
 			    	<table class="section-items">
 				    {% if profile.company %}
 				    	<tr>
-				    	<td class="type">Company:</td> <td class="items">
+				    	<td class="type">{% trans "Company:" %}</td> <td class="items">
 				    	<span class="item">
 				    	{{profile.company}}
 				    	</span>
@@ -200,7 +201,7 @@
 				    {%endif%}
 				    {% if profile.position_title %}
 				    	<tr>
-				    	<td class="type">Position Title:</td> <td class="items"> 
+				    	<td class="type">{% trans "Position Title:" %}</td> <td class="items"> 
 				    	<span class="item">
 				    	{{profile.position_title}} 
 				    	</span>
@@ -209,7 +210,7 @@
 				    {%endif%}
 				    {% if profile.position_assignment %}
 				    	<tr>
-				    	<td class="type">Position Assignment:</td> <td class="items"> 
+				    	<td class="type">{% trans "Position Assignment:" %}</td> <td class="items"> 
 				    	<span class="item">
 				    	{{profile.position_assignment}} 
 				    	</span>
@@ -226,28 +227,28 @@
 		 <div class="profile-bottom">
 		 	{% if profile.notes %}
                <div class="user-notes profile-section">
-                   <h2>Notes</h2>
+                   <h2>{% trans "Notes" %}</h2>
                    <p>{{ profile.notes  }}</p>
                </div>
               {%endif%}
               
             {% if isadmin %}
               <div class="admin-section">
-	              	<h2>Admin Section</h2>
+	              	<h2>{% trans "Admin Section" %}</h2>
 	              	
 	              	<div class="column">
-	                     <h3>Tools:</h3>
-	                     <a href="{% url auth_password_change user_this.id %}"><em>Reset Password</em></a>
+	                     <h3>{% trans "Tools:" %}</h3>
+	                     <a href="{% url auth_password_change user_this.id %}"><em>{% trans "Reset Password" %}</em></a>
                      </div>  
                     
                     <div class="column">
-	                     <h3>Site Activity:</h3>
-	                     <a href="{% url event_log.search %}?q={{user_this.username}}">View Eventlogs</a>
+	                     <h3>{% trans "Site Activity:" %}</h3>
+	                     <a href="{% url event_log.search %}?q={{user_this.username}}">{% trans "View Eventlogs" %}</a>
                      </div> 
 	              	
 	              	<div class="column">
 	              	 	{% if profile.entity %}
-		                  <h3>Entity:</h3>
+		                  <h3>{% trans "Entity:" %}</h3>
 		                      <a href="{% url entity profile.entity.id %}">{{ profile.entity.entity_name }}</a>
 	                	{% endif %} 
 	                </div>
@@ -264,11 +265,11 @@
                     </p>
 	                
 	                {%if profile.admin_notes != "" %}
-                         <p><b>Notes: </b>{{ profile.admin_notes }}</p>
+                         <p><b>{% trans "Notes:" %} </b>{{ profile.admin_notes }}</p>
                     {% endif %} 
 	                
 	                 <div class="speed-registration">
-                           <div style="float: left;">Speed Registration 
+                           <div style="float: left;">{% trans "Speed Registration" %} 
                            <a class="help" href="http://www.tendenci.com/help-files/search/?q=speed+registration">
                                <img class="help" src="/site_media/static/images/icons/help.gif" alt="Help with Speed Registration" target="_blank">
                            </a>
@@ -276,7 +277,7 @@
                            <div style="float: right;">
                                <form name="form_speedreg" method="GET" action="">
                                    <input name="userid" value="{{ user_this.id }}" type="hidden">
-                                   <label>Event ID: <input type="text" name="calendareventid"/></label> (eg. 371)
+                                   <label>{% trans "Event ID:" %} <input type="text" name="calendareventid"/></label> (eg. 371)
                                    <input type="submit" name="submit" class="submit-button" value="Register" />
                                </form>
                            </div>
@@ -293,7 +294,7 @@
 	<div id="userview-contributions">
 		{% latest_contributions user_this as contributions %}
 		<div class="latest-contributions">
-			<h3>Latest Contributions</h3>
+			<h3>{% trans "Latest Contributions" %}</h3>
 				{% if  contributions %}
 					{% for contribution in contributions %}
 					<div class="contribution">
@@ -306,7 +307,7 @@
 					</div>
 					{% endfor %}
 				{% else %}
-					<div>No contributions found.</div>
+					<div>{% trans "No contributions found." %}</div>
 				{% endif %}
 		</div>
 	</div>
@@ -315,13 +316,13 @@
 	
 	<div id="userview-groups">
 		{% if can_edit_user %}
-			<div><a href="{% url profile.edit_groups user_this.username %}">Edit Available Groups</a></div>
+			<div><a href="{% url profile.edit_groups user_this.username %}">{% trans "Edit Available Groups" %}</a></div>
 		{% endif %}
 		
 		{% if group_memberships %}
 			<div class="group">
-				<div class="content-type"><b>Group</b></div>
-				<div class="content-title"><b>Role</b></div>
+				<div class="content-type"><b>{% trans "Group" %}</b></div>
+				<div class="content-title"><b>{% trans "Role" %}</b></div>
 				<div class="clear-both"></div>
 			</div>
 			{% for gm in group_memberships %}
@@ -339,14 +340,14 @@
     <div id="userview-memberships">
         {% for membership in memberships %}
         <div class="membership-wrap">
-            <div>Membership Type: <strong>{{ membership.membership_type }}</strong></div>
-            <div>Joined: <strong>{{ membership.subscribe_dt|date }} ({{ membership.subscribe_dt|timesince }})</strong></div>
+            <div>{% trans "Membership Type:" %} <strong>{{ membership.membership_type }}</strong></div>
+            <div>{% trans "Joined:" %} <strong>{{ membership.subscribe_dt|date }} ({{ membership.subscribe_dt|timesince }})</strong></div>
 
             {% if membership.expiration_dt %}
-	            <div>Expires: <strong>{{ membership.expiration_dt|date }}</strong></div>
+	            <div>{% trans "Expires:" %} <strong>{{ membership.expiration_dt|date }}</strong></div>
 				{% renew_button %}
             {% else %}
-                <div>Never Expires</div>
+                <div>{% trans "Never Expires" %}</div>
             {% endif %}
 
             {% if membership.get_entry %}

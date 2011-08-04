@@ -3,6 +3,7 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load campaign_monitor_tags %}
+{% load i18n %}
 
 {% block title %}{{ template.name }}{% endblock %}
 
@@ -26,20 +27,21 @@
         <div class="content">
             <div>
                 {% if template.cm_screenshot_url %}
-                    <p><b>Screenshot:</b></p><a href="{{ template.cm_preview_url }}">
+                    <p><b>{% trans "Screenshot:" %}</b></p><a href="{{ template.cm_preview_url }}">
                         <img src="{{ template.cm_screenshot_url }}">
                     </a>
                 {% else %}
-                    <p><b>Screenshot:</b> Not Available</p>
+                    <p><b>{% trans "Screenshot:" %}</b>{% trans " Not Available" %}</p>
                 {% endif %}
+                <p><a href="{{ template.cm_preview_url }}">{% trans "Preview" %}</a></p>
                 {% if template.html_file %}
-                    <p><b>Html File:</b> <a href="{{ template.get_html_url }}">Download</a></p>
+                    <p><b>{% trans "Html File:" %}</b> <a href="{{ template.get_html_url }}">{% trans "Download" %}</a></p>
                 {% endif %}
                 {% if template.zip_file %}
-                    <p><b>Zip File:</b><a href="{{ template.get_zip_url }}">Download</a></p>
+                    <p><b>{% trans "Zip File:" %}</b><a href="{{ template.get_zip_url }}">{% trans "Download" %}</a></p>
                 {% endif %}
                 {% if template.screenshot_file %}
-                    <p><b>Screenshot File:</b><a href="{{ template.get_screenshot_url }}">Download</a></p>
+                    <p><b>{% trans "Screenshot File:" %}</b><a href="{{ template.get_screenshot_url }}">{% trans "Download" %}</a></p>
                 {% endif %}
                 {% if template.html_file %}
                 <p>

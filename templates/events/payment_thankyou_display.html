@@ -1,7 +1,9 @@
-<p>Thank you for your payment!</p>
-<h3>What would you like to do now?</h3>
+{% load i18n %}
+
+<p>{% trans "Thank you for your payment!" %}</p>
+<h3>{% trans "What would you like to do now?" %}</h3>
 <ul>
-	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event obj.event.id %}" class="links">View Event Details</a></li>
-	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.month %}" class="links">Monthly View</a></li>
-	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registrant.search obj.event.id %}" class="links">Search Registrations</a></li>
+	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event obj.event.id %}" class="links">{% trans "View Event Details" %}</a></li>
+	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.month %}" class="links">{% trans "Monthly View" %}</a></li>
+	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registrant.search obj.event.id %}" class="links">{% trans "Search Registrations" %}</a></li>
 </ul>

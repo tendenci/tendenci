@@ -1,13 +1,13 @@
    <font face="Arial" size="2" color="#000000">
 	   <p>
-	    Your login information is listed below. 
+	    {% blocktrans %}Your login information is listed below. 
 	    To log into the site, visit <a href="{{ SITE_GLOBAL_SITEURL }}">{{ SITE_GLOBAL_SITEURL }}</a>
-	     and enter your Username and Password. 
+	     and enter your Username and Password. {% endblocktrans %}
 	   </p>
 	   <blockquote>
-	        Username: [username]<br />
-	        Password: [password]
+	        {% trans "Username:" %} [username]<br />
+	        {% trans "Password:" %} [password]
 	   </blockquote>
-	   <p>If you have any questions please contact the Site Administrator.</p>
+	   <p>{% trans "If you have any questions, please contact the Site Administrator." %}</p>
 	   </font>
 	   <hr>

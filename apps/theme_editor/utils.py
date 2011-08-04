@@ -1,16 +1,20 @@
 import os
-
 import shutil
+from tempfile import mkstemp
+from shutil import move
+from os import remove, close
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.core.management import call_command
 
+from theme.utils import get_theme_root
 from theme_editor.models import ThemeFileVersion
 
 template_directory = "/templates"
 style_directory = "/media/css"
 
-THEME_ROOT = settings.THEME_ROOT
+THEME_ROOT = get_theme_root()
 TEMPLATES_ROOT = os.path.join(settings.PROJECT_ROOT, "templates")
 ALLOWED_EXTENSIONS = (
     '.html',
@@ -89,11 +93,11 @@ def get_file_content(file, ROOT_DIR=THEME_ROOT):
         fd.close()
     return content
 
-def archive_file(request, relative_file_path):
+def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
     """
     Archive the file into the database if it is edited
     """
-    file_path = os.path.join(settings.THEME_ROOT, relative_file_path)
+    file_path = os.path.join(ROOT_DIR, relative_file_path)
     if os.path.isfile(file_path):
         (file_dir, file_name) = os.path.split(file_path)
         fd = open(file_path, 'r')

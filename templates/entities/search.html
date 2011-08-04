@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
@@ -17,7 +18,7 @@
 
     {% entity_nav request.user %}
 
-    <h1>{{ MODULE_ENTITIES_LABEL }} Search</h1>
+    <h1>{{ MODULE_ENTITIES_LABEL }} {% trans "Search" %}</h1>
 	{% entity_search %}
     {% autopaginate entities 10 %}
 	<div class="entities-wrap">
@@ -31,13 +32,13 @@
 			<div class="options">
 
                 <div class="dropdown-options">
-                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <div><a href="javascript:;">{% trans "More " %}<span>&#9660;</span></a></div>
                     <ul>
-                        <li>Review Reports</li>
-                        <li>Optimize Meta Tags</li>
-                        <li>Attach Files</li>
-                        <li>View Revisions</li>
-                        <li>Delete</li>
+                        <li>{% trans "Review Reports" %}</li>
+                        <li>{% trans "Optimize Meta Tags" %}</li>
+                        <li>{% trans "Attach Files" %}</li>
+                        <li>{% trans "View Revisions" %}</li>
+                        <li>{% trans "Delete" %}</li>
                     </ul>
                 </div>
 
@@ -49,7 +50,7 @@
 
             <h2><a href="{% url entity entity.pk %}">{{ entity.entity_name|striptags|truncatewords:20|safe }}</a></h2>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ entity.create_dt|date:"long" }} by {{ entity.creator }}</div>
+            	<div class="submitted">{% blocktrans with entity.create_dt|date:"long" as submit_date and entity.creator as entity_creator %} Submitted on {{ submit_date }} by {{ entity_creator }}{% endblocktrans %}</div>
             </div>
 
             <!-- delete-entity form -->
@@ -62,7 +63,7 @@
 	{% endwith %}
 
 	{% empty %}
-		<div>0 Results Found</div>	
+		<div>{% trans "0 Results Found" %}</div>	
     {% endfor %}
 	</div>
 

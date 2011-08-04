@@ -2,6 +2,7 @@
 {% load job_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% is_admin user as admin %}
 
@@ -27,9 +28,9 @@
     	<div class="forms">
     		{% if MODULE_JOBS_JOBSREQUIRESPAYMENT %}
 	    	 	<div class="pricing-table-block">
-	    	 	<h4>Jobs Pricing</h4>
+	    	 	<h4>{% trans "Jobs Pricing" %}</h4>
 				{% job_pricing_table %}
-				<a href="{% url job_pricing.add %}">Add pricing options</a>
+				<a href="{% url job_pricing.add %}">{% trans "Add pricing options" %}</a>
 				</div>
             {% endif %}
 			{{ form|styled_form }}

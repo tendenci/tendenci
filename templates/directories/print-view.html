@@ -1,6 +1,7 @@
 {% extends "directories/base-print.html" %}
 {% load directory_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ directory.get_title }}{% endblock %}
 {% block meta_description %}{{ directory.get_description }}{% endblock %}
@@ -16,11 +17,11 @@
 <div class="t-print">
 
 	<div class='hide-this'>
-		<h1>Print View</h1>
+		<h1>{% trans "Print View" %}</h1>
 
 		<div class="guide">
-			<div><a href="{{ directory.get_absolute_url }}">&laquo; Back to regular directory view</a></div>
-			<div>Your printed page will look <em>something</em> like this.</div>
+			<div><a href="{{ directory.get_absolute_url }}">&laquo; {% trans "Back to regular directory view" %}</a></div>
+			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
 		</div>
 	</div>
 
@@ -32,7 +33,7 @@
         <div class="content">{{ directory.body|safe }}</div>
 		{% if directory.first_name and directory.last_name %}		
 		<div class="contact">
-			<p><strong>Contact:</strong></p>
+			<p><strong>{% trans "Contact:" %}</strong></p>
 			<div>{{ directory.first_name }} {{ directory.last_name }}</div>
 			{% if directory.address %}
 				<div>{{ directory.address }}</div>
@@ -71,7 +72,7 @@
 		</div>      
 		{% endif%}   
         <div class="meta">
-            <div class="submitted">Submitted on {{ directory.create_dt|date:"long" }} by {{ directory.creator }}</div>
+            <div class="submitted">{% blocktrans with directory.create_dt|date:"long" as d_create and directory.creator as d_creator %}Submitted on {{ d_create }} by {{ d_creator }}{% endblocktrans %}</div>
         </div>
     </div>
 

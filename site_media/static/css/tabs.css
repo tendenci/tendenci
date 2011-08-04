@@ -70,8 +70,8 @@
 #showh #secondary {
 	position: absolute;
 	margin: 0; padding: 0;
-	top: 35px;
     left: 0;
+    top: 35px;
 	width: 60em;
 }
 

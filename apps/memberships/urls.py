@@ -23,6 +23,9 @@ urlpatterns = patterns("memberships.views",
     # reports
     url(r'^reports/$', 'membership_join_report', name='reports-memberships-joins'),
     url(r'^reports/pdf/$', 'membership_join_report_pdf', name='reports-memberships-joins-pdf'),
+    url(r'^reports/active_members/$', 'report_active_members', name='reports-active-members'),
+    url(r'^reports/expired_members/$', 'report_expired_members', name='reports-expired-members'),
+    url(r'^reports/members_summary/$', 'report_members_summary', name='reports-members-summary'),
 
     # entries
     url(r"^entries/$", "application_entries", name="membership.application_entries"),

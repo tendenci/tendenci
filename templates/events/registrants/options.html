@@ -1,10 +1,12 @@
+{% load i18n %}
+
 <div class="t-iconrow">
 	{% if registrant.user %}
-	<a class="option-link print" href="{# url profile registrant.user.username #}">View Profile</a>
+	<a class="option-link print" href="{# url profile registrant.user.username #}">{% trans "View Profile" %}</a>
 	{% endif %}
-	<a href="{% url event.registration_confirmation opt_object.registration.event.pk opt_object.registration.pk %}">View Registration</a>
+	<a href="{% url event.registration_confirmation opt_object.registration.event.pk opt_object.registration.pk %}">{% trans "View Registration" %}</a>
 
 	{% if not opt_object.cancel_dt %}
-	<a href="{% url event.cancel_registration opt_object.registration.event.pk opt_object.registration.pk %}">Cancel Registration</a>
+	<a href="{% url event.cancel_registration opt_object.registration.event.pk opt_object.registration.pk %}">{% trans "Cancel Registration" %}</a>
 	{% endif %}
 </div>

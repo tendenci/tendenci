@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.management import call_command
 
 INPUT_TYPE_CHOICES = (
     ('text','Text'),
@@ -36,3 +37,12 @@ class Setting(models.Model):
 
     def __unicode__(self):
         return "(%s) %s" %(self.name, self.label)
+        
+    def save(self, *args, **kwargs):
+        if self.name == 'theme':
+            from theme.utils import theme_options
+            self.input_value = theme_options()
+            super(Setting, self).save(*args, **kwargs)
+            call_command('touch_settings')
+        else:
+            super(Setting, self).save(*args, **kwargs)

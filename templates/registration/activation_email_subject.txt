@@ -1,1 +1,3 @@
-Account Activation - {{ site_url }}
+{% load i18n %}
+
+{% blocktrans %}Account Activation - {{ site_url }}{% endblocktrans %}

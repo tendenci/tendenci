@@ -1,3 +1,5 @@
+{% load i18n %}
+
 {% load perm_tags %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
@@ -9,16 +11,16 @@
 
 <body bgcolor="#FFFFFF" text="#000000">
 
-<p>{{ user.first_name }} {{ user.last_name }} just added the following event from {{ SITE_GLOBAL_SITEDISPLAYNAME }}</p>
+<p>{% blocktrans with user.first_name as first_name and user.last_name as last_name %}{{ first_name }} {{ last_name }} just added the following event from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</p>
 
 <div style="margin-bottom:20px;">
 <p style="margin:2px">{{ event.title }}</p>
 <p style="margin:2px">{{ event.dt_display }}</p>
-<p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">View event details</a></p>
+<p style="margin:2px"><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "View event details" %}</a></p>
 </div>
 
 <p><a href="{{ SITE_GLOBAL_SITEURL }}/settings/site/global/#id_allnoticerecipients">
-Remove my email from this notification list</a></p>
+{% trans "Remove my email from this notification list" %}</a></p>
 
 <table><tr><td><!--comment--></td></tr></table>
 </body>

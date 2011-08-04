@@ -4,6 +4,7 @@
 {% load perm_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}Dashboard{% endblock %}
 
@@ -44,60 +45,60 @@
 	<ul>
 
 		{% if MODULE_USERS_ENABLED %}
-    	<li class="users"><a href="{% url profile.search %}"><span>{% firstof MODULE_USERS_LABEL "Users" %}</span></a></li>
+    	<li class="users"><a href="{% url profile.search %}"><span>{% firstof MODULE_USERS_LABEL trans "Users" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_GROUPS_ENABLED %}
-    	<li class="groups"><a href="{% url group.search %}"><span>{% firstof MODULE_GROUPS_LABEL "Groups" %}</span></a></li>
+    	<li class="groups"><a href="{% url group.search %}"><span>{% firstof MODULE_GROUPS_LABEL trans "Groups" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_ARTICLES_ENABLED %}
-    	<li class="articles"><a href="{% url article.search %}"><span>{% firstof MODULE_ARTICLES_LABEL "Articles" %}</span></a></li>
+    	<li class="articles"><a href="{% url article.search %}"><span>{% firstof MODULE_ARTICLES_LABEL trans "Articles" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_NEWS_ENABLED %}
-    	<li class="news"><a href="{% url news.search %}"><span>{% firstof MODULE_NEWS_LABEL "News" %}</span></a></li>
+    	<li class="news"><a href="{% url news.search %}"><span>{% firstof MODULE_NEWS_LABEL trans "News" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_DIRECTORIES_ENABLED %}
-    	<li class="directories"><a href="{% url directory.search %}"><span>{% firstof MODULE_DIRECTORIES_LABEL "Directories" %}</span></a></li>
+    	<li class="directories"><a href="{% url directory.search %}"><span>{% firstof MODULE_DIRECTORIES_LABEL trans "Directories" %}</span></a></li>
 		{% endif %}
 		
 		{% if MODULE_JOBS_ENABLED %}
-    	<li class="jobs"><a href="{% url job.search %}"><span>{% firstof MODULE_JOBS_LABEL "Jobs" %}</span></a></li>
+    	<li class="jobs"><a href="{% url job.search %}"><span>{% firstof MODULE_JOBS_LABEL trans "Jobs" %}</span></a></li>
 		{% endif %}
 
  		{% if MODULE_RESUMES_ENABLED %}
-    	<li class="resumes"><a href="{% url resume.search %}"><span>{% firstof MODULE_RESUMES_LABEL "Resumes" %}</span></a></li>
+    	<li class="resumes"><a href="{% url resume.search %}"><span>{% firstof MODULE_RESUMES_LABEL trans "Resumes" %}</span></a></li>
 		{% endif %}
  
         {% if MODULE_MEMBERSHIPS_ENABLED %}
         <li class="memberships">
-            <a href="{% url membership.search %}"><span>{% firstof MODULE_MEMBERSHIPS_LABEL "Memberships" %}</span></a></li>
+            <a href="{% url membership.search %}"><span>{% firstof MODULE_MEMBERSHIPS_LABEL trans "Memberships" %}</span></a></li>
         {% endif %}
         {% if MODULE_CORPORATEMEMBERSHIPS_ENABLED %}
         <li class="corporatememberships">
-            <a href="{% url corp_memb.search %}"><span>{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL "Corp. Memb." %}</span></a></li>
+            <a href="{% url corp_memb.search %}"><span>{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans "Corp. Memb." %}</span></a></li>
         {% endif %}
 
         {% if MODULE_EVENTS_ENABLED %}
-        <li class="events"><a href="{% url event.month %}"><span>{% firstof MODULE_EVENTS_LABEL "Events" %}</span></a></li>
+        <li class="events"><a href="{% url event.month %}"><span>{% firstof MODULE_EVENTS_LABEL trans "Events" %}</span></a></li>
         {% endif %}
 
 		{% if MODULE_PHOTOS_ENABLED %}
-        <li class="photo-albums"><a href="{% url photoset_latest %}"><span>{% firstof MODULE_PHOTOSETS_LABEL "Photo Albums" %}</span></a></li>
+        <li class="photo-albums"><a href="{% url photoset_latest %}"><span>{% firstof MODULE_PHOTOSETS_LABEL trans "Photo Albums" %}</span></a></li>
 		{% endif %}
 		
 		{% if MODULE_STORIES_ENABLED %}
-    	<li class="stories"><a href="{% url story.search %}"><span>{% firstof MODULE_STORIES_LABEL "Stories" %}</span></a></li>
+    	<li class="stories"><a href="{% url story.search %}"><span>{% firstof MODULE_STORIES_LABEL trans "Stories" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_PAGES_ENABLED %}
-    	<li class="pages"><a href="{% url page.search %}"><span>{% firstof MODULE_PAGES_LABEL "Pages" %}</span></a></li>
+    	<li class="pages"><a href="{% url page.search %}"><span>{% firstof MODULE_PAGES_LABEL trans "Pages" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_ENTITIES_ENABLED %}
-     	<li class="entities"><a href="{% url entity.search %}"><span>{% firstof MODULE_ENTITIES_LABEL "Entities" %}</span></a></li>
+     	<li class="entities"><a href="{% url entity.search %}"><span>{% firstof MODULE_ENTITIES_LABEL trans "Entities" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_FILES_ENABLED %}
@@ -105,26 +106,26 @@
 		{% endif %}
 
 		{% if MODULE_LOCATIONS_ENABLED %}
-		<li class="locations"><a href="{% url location.search %}"><span>{% firstof MODULE_LOCATIONS_LABEL  "Locations" %}</span></a></li>
+		<li class="locations"><a href="{% url location.search %}"><span>{% firstof MODULE_LOCATIONS_LABEL  trans "Locations" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_CONTRIBUTIONS_ENABLED %}
-		<li class="contributions"><a href="{% url contribution.search %}"><span>{% firstof MODULE_CONTRIBUTION_LABEL  "Contributions" %}</span></a></li>
+		<li class="contributions"><a href="{% url contribution.search %}"><span>{% firstof MODULE_CONTRIBUTION_LABEL  trans "Contributions" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_INVOICES_ENABLED %}
-         <li class="invoices"><a href="{% url invoice.search %}"><span>{% firstof MODULE_INVOICES_LABEL  "Invoices" %}</span></a></li>
+         <li class="invoices"><a href="{% url invoice.search %}"><span>{% firstof MODULE_INVOICES_LABEL  trans "Invoices" %}</span></a></li>
  		{% endif %}
 
 		{% if MODULE_FORMS_ENABLED %}
-         <li class="forms"><a href="{% url forms %}"><span>{% firstof MODULE_FORMS_LABEL  "Forms" %}</span></a></li>
+         <li class="forms"><a href="{% url forms %}"><span>{% firstof MODULE_FORMS_LABEL  trans "Forms" %}</span></a></li>
  		{% endif %}
  		
 		{% if admin %}
-		 <li class="redirects"><a href="{% url redirects %}"><span>Redirects</span></a></li>
-		<li class="contacts"><a href="{% url contact.search %}"><span>{% firstof MODULE_CONTACTS_LABEL "Contacts" %}</span></a></li>
-     	<li class="settings"><a href="{% url settings %}"><span>Settings</span></a></li>
-        <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  "Event Logs" %}</span></a></li>
+		 <li class="redirects"><a href="{% url redirects %}"><span>{% trans "Redirects" %}</span></a></li>
+		<li class="contacts"><a href="{% url contact.search %}"><span>{% firstof MODULE_CONTACTS_LABEL trans "Contacts" %}</span></a></li>
+     	<li class="settings"><a href="{% url settings %}"><span>{% trans "Settings" %}</span></a></li>
+        <li class="event-logs"><a href="{% url event_logs %}"><span>{% firstof MODULE_EVENT_LOGS_LABEL  trans "Event Logs" %}</span></a></li>
 		<li class="rss"><a href="/rss/"><span>RSS</span></a></li>
 		{% endif %}
 
@@ -135,7 +136,7 @@
 
     <div class="rss-feeds">
         <div class="rss-feed">
-        	<h3>Tendenci Blog</h3>
+        	<h3>{% trans "Tendenci Blog" %}</h3>
 			{% cache 86400 tendenci_blog_rss %}
                 {% get_rss "http://blog.tendenci.com/feed/" as rss %}
                 <ul>
@@ -150,7 +151,7 @@
         </div>
         
         <div class="rss-feed">
-        	<h3>Tendenci Help</h3>
+        	<h3>{% trans "Tendenci Help" %}</h3>
 			{% cache 86400 tendenci_help_rss %}
                 {% get_rss "http://support.tendenci.com/en/rss/helpfiles/" as rss %}
                 <ul>
@@ -171,36 +172,36 @@
 <div class="side-panel">
 	{% if admin %}
 	<div class="admin-quick-links">
-    <h3>Admin Quick Links</h3>
+    <h3>{% trans "Admin Quick Links" %}</h3>
 	<ul>
 		{% if MODULE_PAGES_ENABLED %}
-    	<li><a href="{% url page.add %}">Add a page</a></li>
+    	<li><a href="{% url page.add %}">{% trans "Add a page" %}</a></li>
 		{% endif %}
 
-		<li><a href="{% url haystack_search %}">Search All Modules</a></li>
+		<li><a href="{% url haystack_search %}">{% trans "Search All Modules" %}</a></li>
 
 		<!--<li><a href="{% url entity.search %}">Search entities</a></li>
     	<li><a href="javascript:;">Edit navigation</a></li>
     	<li><a href="{% url event_log.search %}">Search event logs</a></li>
     	<li><a href="{% url profile.search %}">Search users</a></li>-->
-    	<li><a href="{% url import.user_upload_add %}">Import Users</a></li>
+    	<li><a href="{% url import.user_upload_add %}">{% trans "Import Users" %}</a></li>
     	<!-- <li><a href="{% url settings %}">Change website settings</a></li> -->
-    	<li><a href="{% url settings %}">Enable/Disable modules</a></li>
+    	<li><a href="{% url settings %}">{% trans "Enable/Disable modules" %}</a></li>
     	<!-- <li><a href="javascript:;">Update SEM</a></li> -->
-        <li><a href="{% url clear_cache %}">Clear Cache</a></li>
+        <li><a href="{% url clear_cache %}">{% trans "Clear Cache" %}</a></li>
     	{% if user.is_super_user %}
-        <li><a href="/admin/">Admin Panel</a></li>
+        <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
         {% endif %}
     </ul>
     </div>
     	
 	<div class="theme-management">
-    <h3>Update Theme</h3>
+    <h3>{% trans "Update Theme" %}</h3>
 	<ul>
-		<li><a href="{% url theme_editor %}?file=/media/css/styles.css">Update Styles</a></li>
-		<li><a href="{% url theme_editor %}?file=/templates/homepage.html">Update Template</a></li>
-		<li><a href="{% url theme_editor %}?file=/templates/nav.html">Update Navigation</a></li>
-    	<li><a href="{% url theme_editor %}?file=/templates/footer.html">Update Footer</a></li>
+		<li><a href="{% url theme_editor %}?file=/media/css/styles.css">{% trans "Update Styles" %}</a></li>
+		<li><a href="{% url theme_editor %}?file=/templates/homepage.html">{% trans "Update Template" %} </a></li>
+		<li><a href="{% url theme_editor %}?file=/templates/nav.html">{% trans "Update Navigation" %}</a></li>
+    	<li><a href="{% url theme_editor %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>
     </ul>
     </div>
     {% endif %}

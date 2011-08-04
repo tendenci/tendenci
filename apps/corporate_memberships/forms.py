@@ -104,7 +104,7 @@ else:
 class CorpFieldForm(forms.ModelForm):
     instruction = forms.CharField(label=_('Instruction for User'), max_length=500, required=False,
                                widget=forms.Textarea(attrs={'rows':'3'}))
-    field_name = forms.CharField(label=_(''), max_length=30, required=False,
+    field_name = forms.CharField(label=(''), max_length=30, required=False,
                                widget=forms.HiddenInput())
     
     class Meta:

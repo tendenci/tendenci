@@ -1,6 +1,7 @@
 {% extends "files/base.html" %}
 {% load file_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}{{ file.headline }}{% endblock %}
 
@@ -22,7 +23,7 @@
 
     {% file_nav request.user %}
 
-    <h1>View File</h1>
+    <h1>{% trans "View File" %}</h1>
 
     <div class="file-wrap">
 
@@ -38,7 +39,7 @@
         <div class="file"><a href="{{ file.file.url }}">{{ file.file }}</a></div>
         <div class="content">{{ file.description }}</div>
         <div class="meta">
-            <div class="submitted">Created on {{ file.create_dt|date:"long" }} by {{ file.creator }}</div>
+            <div class="submitted">{% blocktrans with file.create_dt|date:"long" as create_date and file.creator as file_creator %}Created on {{ create_date }} by {{ file_creator }}{% endblocktrans %}</div>
         </div>
     </div>
 

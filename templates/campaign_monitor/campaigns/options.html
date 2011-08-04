@@ -1,6 +1,7 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load campaign_monitor_tags %}
+{% i18n %}
 
 {% has_perm user campaign_monitor.change_campaign as can_change %}
 {% has_perm user campaign_monitor.delete_campaign as can_delete %}
@@ -8,19 +9,18 @@
 <div class="t-iconrow">
 
 	{% if can_change %}
-		
         {% if opt_object.status == 'S' %}
         {% else %}
-            <a class="option-link" href="#">Send</a>
-            <a class="option-link" href="#">Schedule</a>
+            <a class="option-link" href="#">{% trans "Send" %}</a>
+            <a class="option-link" href="#">{% trans "Schedule" %}</a>
         {% endif %}
         
-        <a class="option-link edit" href="{% url campaign_monitor.campaign_add %}?copy={{ opt_object.campaign_id }}">Copy</a>
+        <a class="option-link edit" href="{% url campaign_monitor.campaign_add %}?copy={{ opt_object.campaign_id }}">{% trans "Copy" %}</a>
         
 	{% endif %}
     
     {% if can_delete %}
-        <a class="option-link delete" href="#">Delete</a>
+        <a class="option-link delete" href="#">{% trans "Delete" %}</a>
     {% endif %}
 
 </div>

@@ -1,12 +1,14 @@
+{% load i18n %}
+
 {% if articles %}
 	<font face="Arial" size="3"><b>
 	<font color=#000000>
 	{# named area for jump links #}
 	<a name="articles" id="articles"></a>
 	{% if start_dt %}
-		Articles for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}
+		{% blocktrans with start_dt|date:"M d, Y" as start_date and end_dt|date:"M d, Y" as end_date %}Articles for {{ start_date }} to {{ end_date }}{% endblocktrans %}
 	{% else %}
-		All Articles
+		{% blocktrans %}All Articles{% endblocktrans %}
 	{% endif %}
 	
 	</font></b></font>							   
@@ -31,10 +33,10 @@
 		
 		{% if not simplified  %}
 			<tr><td align="left" valign="top"><font face="Arial" size="2" color="#000000">
-			<b>Author:</b> {{ article.first_name }} {{ article.last_name }} </font></td></tr>
+			<b>{% trans "Author:" %}</b> {{ article.first_name }} {{ article.last_name }} </font></td></tr>
 
 			<tr><td align="left"><font face="Arial" size="2" color="#000000">
-			<b>Release Date:</b> {{ article.release_dt|date:"l d-M-Y h:i A" }} </font> 
+			<b>{% trans "Release Date:" %}</b> {{ article.release_dt|date:"l d-M-Y h:i A" }} </font> 
 			</td></tr>
 		{% endif %}
 		
@@ -42,14 +44,14 @@
 		<font face="Arial" size="2" color="#000000">
 
 		{{ article.body|striptags|truncatewords:60 }}
-		 <a href="{{ SITE_GLOBAL_SITEURL }}{% url article article.slug %}">[More Info]</a>
+		 <a href="{{ SITE_GLOBAL_SITEURL }}{% url article article.slug %}">[{% trans "More Info" %}]</a>
 		</font>
 		
 		{#  posted by #}
 		{% if not simplified  %}
 			<font face="Arial" size="2" color="#000000">
-			<br><b>Posted by</b>: 
-			{{ article.owner.first_name }} {{ article.owner.last_name }}
+			<br>{% blocktrans with article.owner.first_name as article_first and article.owner.last_name as article_last %}<b>Posted by</b>: 
+			{{ article_first }} {{ article_last }}{% endblocktrans %}
 			</font>
 		{% endif %}
 		<br>

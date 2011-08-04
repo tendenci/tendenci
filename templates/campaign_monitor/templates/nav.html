@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% has_perm user campaign_monitor.add_template as can_add_template %}
 
@@ -19,20 +20,20 @@
     {% comment %}
     <li>
         <a href="{% url campaign_monitor.campaign_index %}">
-            Campaigns
+            {% trans "Campaigns" %}
 		</a>
     </li>
     {% endcomment %}
 
 	<li>
-		<span>Templates</span>
+		<span>{% trans "Templates" %}</span>
 		<ul id="secondary">
-			<li><a href="{% url campaign_monitor.template_index %}">Templates:</a></li> 
+			<li><a href="{% url campaign_monitor.template_index %}">{% trans "Templates:" %}</a></li> 
             {% if can_add_template %}
-                <li><a href="{% url campaign_monitor.template_add %}">Add Template</a></li>
+                <li><a href="{% url campaign_monitor.template_add %}">{% trans "Add Template" %}</a></li>
             {% endif %}
 			{% if user.is_authenticated %}
-                <li><a href="{% url auth_logout %}">Log Off</a></li>
+                <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
 			{% endif %}
 		</ul>
 	</li>

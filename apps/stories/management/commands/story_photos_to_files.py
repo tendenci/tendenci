@@ -31,7 +31,6 @@ class Command(BaseCommand):
                 dest = photo.path.replace(settings.MEDIA_ROOT + '/stories', settings.MEDIA_ROOT + '/files/stories')
                 if src != dest:
                     print "Moving %s to %s" % (src, dest)
-
                     dir = os.path.dirname(dest)
                     if not os.path.exists(dir):
                         os.makedirs(dir)

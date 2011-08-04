@@ -2,9 +2,9 @@
 {% load directory_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
-
-{% block title %}{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} Edit{% endblock %}
+{% block title %}{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {% trans "Edit" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,7 +18,7 @@
 <div class="t">
     {% directory_nav request.user directory %}
 
-    <h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} Edit</h1>
+    <h1>{% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}{% trans " Edit" %}</h1>
 
     <div class="DIRECTORIESectory-wrap">
 		<div class="options">

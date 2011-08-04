@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load category_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}{{ entity.entity_name }}{% endblock %}
 
@@ -32,7 +33,7 @@
          <div class="summary">{{ entity.summary|safe }}</div> 
          
 	         <p>    
-	         <div class="contact"><h3>Contact:</h3>
+	         <div class="contact"><h3>{% trans "Contact:" %}</h3>
 		         {{ entity.contact_name|safe }}<br>	
 		         {{ entity.phone|safe }}  {{ entity.fax|safe }}<br>
 		         {{ entity.email|safe }}<br>
@@ -47,8 +48,8 @@
         
        
         <div class="meta">
-            <div class="submitted">Submitted on {{ entity.create_dt|date:"long" }} 
-			by {% firstof entity.creator.get_profile.display_name entity.creator %}</div>
+            <div class="submitted">{% blocktrans with entity.create_dt|date:"long" as encreate %}Submitted on {{ encreate }} 
+			by:{% endblocktrans %} {% firstof entity.creator.get_profile.display_name entity.creator %}</div>
         </div>
         
 		<br />

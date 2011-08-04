@@ -1,3 +1,5 @@
+{% load i18n %}
+
 <div class="photo-wrapper">
 	<input type="hidden" name="icon_url" value="{{ file.icon }}" />
 	<input type="hidden" name="filename" value="{{ file.name }}" />
@@ -14,10 +16,10 @@
 	</div>
 	<div class="actions">
 		{% if file.type == 'image' %}
-		<a class="insert-btn" onclick="ImageDialog.insert_image(this, {{file.id}});" href="javascript:;">Insert Image</a>
+		<a class="insert-btn" onclick="ImageDialog.insert_image(this, {{file.id}});" href="javascript:;">{% trans "Insert Image" %}</a>
 		{% endif %}
-        <a class="insert-btn" onclick="ImageDialog.insert(this, {{file.id}});" href="javascript:;">Insert Attachment</a>  
-        <a class="delete-btn" onclick="ImageDialog.delete_image(this, {{file.id}});" href="javascript:;">Delete</a>												
+        <a class="insert-btn" onclick="ImageDialog.insert(this, {{file.id}});" href="javascript:;">{% trans "Insert Attachment" %}</a>  
+        <a class="delete-btn" onclick="ImageDialog.delete_image(this, {{file.id}});" href="javascript:;">{% trans "Delete" %}</a>												
 	</div>
 
 </div> <!-- END photo-wrapper -->

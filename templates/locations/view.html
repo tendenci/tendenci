@@ -1,6 +1,7 @@
 {% extends "locations/base.html" %}
 {% load locations_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}{{ location.location_name }}{% endblock %}
 
@@ -38,7 +39,7 @@
         </div>
 
         <div class="meta">
-            <div class="submitted">Submitted on {{ location.create_dt|date:"long" }} by {{ location.creator }}</div>
+            <div class="submitted">{% blocktrans with location.create_dt|date:"long" as location_create and location.creator as location_creator %}Submitted on {{ location_create }} by {{ location.creator }}{% endblocktrans %}</div>
         </div>
     </div>
 
