@@ -112,12 +112,13 @@ def new_mems_from_csv(file_path, app, columns):
     NOW = datetime.now()
 
     membership_dicts = []
-    for membership in csv_to_dict(file_path):  # field mapping
-        for native_column, foreign_column in columns.items():
+    for csv_dict in csv_to_dict(file_path):  # field mapping
 
-            if foreign_column:  # skip blank option
+        membership = {}
+        for app_field, csv_field in columns.items():
+            if csv_field:  # skip blank option
                 # membership['username'] = 'charliesheen'
-                membership[native_column] = membership[foreign_column]
+                membership[app_field] = csv_dict[csv_field]
 
         membership_dicts.append(membership)
 
@@ -137,7 +138,6 @@ def new_mems_from_csv(file_path, app, columns):
         return un[:30]
 
     for m in membership_dicts:
-
         # detect if renewal
         m['renewal'] = bool(m.get('renew-date'))
 
@@ -207,7 +207,10 @@ def new_mems_from_csv(file_path, app, columns):
         profile.email = user.email
         profile.email2 = m.get('E-mail 2') or profile.email2
         profile.url = m.get('Web Site') or profile.url
-        profile.dob = m.get('DOB') or profile.dob
+
+        if m.get('DOB'):
+            profile.dob = dt_parse(m.get('DOB')) or datetime.now()
+
         profile.save()
 
         memberships = Membership.objects.filter(
@@ -280,9 +283,7 @@ def count_active_memberships(date):
                 expire_dt__gt=date,
             )
     count = mems.count()
-            
-    print date, count, mems
-    
+
     return count
 
 def prepare_chart_data(days, height=300):

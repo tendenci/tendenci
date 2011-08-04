@@ -11,7 +11,7 @@ import settings
 
 
 class BoxAdmin(admin.ModelAdmin):
-    list_display = ('edit_link', 'pk', 'title', 'tags', 'content')
+    list_display = ('edit_link', 'pk', 'title', 'tags', 'content', 'admin_perms', 'admin_status')
     search_fields = ('title','content','tags',)
     fieldsets = (
         (None, {'fields': ('title', 'content', 'tags')}),
@@ -32,6 +32,16 @@ class BoxAdmin(admin.ModelAdmin):
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
+
+    def admin_status(self, obj):
+        return obj.obj_status
+    admin_status.allow_tags = True
+    admin_status.short_description = 'status'
+
+    def admin_perms(self, obj):
+        return obj.obj_perms
+    admin_perms.allow_tags = True
+    admin_perms.short_description = 'permission'
 
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:boxes_box_change', args=[obj.pk])
