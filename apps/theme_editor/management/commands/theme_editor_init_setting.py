@@ -8,7 +8,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from django.conf import settings
         from site_settings.models import Setting
+        from django.core.cache import cache
 
         setting = Setting.objects.get(scope='module', scope_category='theme_editor')
         setting.value = settings.SITE_THEME
         setting.save()
+		cache.clear()
