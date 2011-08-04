@@ -13,4 +13,4 @@ class Command(BaseCommand):
         setting = Setting.objects.get(scope='module', scope_category='theme_editor')
         setting.value = settings.SITE_THEME
         setting.save()
-		cache.clear()
+        cache.clear()
