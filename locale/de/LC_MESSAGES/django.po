@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-28 10:10-0500\n"
+"POT-Creation-Date: 2011-08-04 16:26-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: apps/accounts/forms.py:75 apps/profiles/forms.py:63
+#: apps/accounts/forms.py:75 apps/profiles/forms.py:66
 #: templates/accounts/registration_form.html:28
 #: templates/notification/user_edited/full.html:534
 #: templates/profiles/add.html:323 templates/profiles/edit.html:323
@@ -27,7 +27,7 @@ msgstr ""
 msgid "Username"
 msgstr "XXXXXXXX"
 
-#: apps/accounts/forms.py:76 apps/profiles/forms.py:65
+#: apps/accounts/forms.py:76 apps/profiles/forms.py:68
 #: templates/profiles/add.html:332
 msgid "Password"
 msgstr "XXXXXXXX"
@@ -110,7 +110,7 @@ msgid "URL Path"
 msgstr "XXXXXXXX"
 
 #: apps/articles/models.py:19 apps/directories/models.py:28
-#: apps/events/models.py:597 apps/news/models.py:18
+#: apps/events/models.py:593 apps/news/models.py:18
 #: templates/notification/user_edited/full.html:618
 #: templates/profiles/add.html:399 templates/profiles/edit.html:396
 msgid "Time Zone"
@@ -118,7 +118,7 @@ msgstr "XXXXXXXX"
 
 #: apps/articles/models.py:24 apps/directories/models.py:37
 #: apps/forms_builder/forms/models.py:36 apps/memberships/models.py:47
-#: apps/news/models.py:24 apps/profiles/forms.py:21
+#: apps/news/models.py:24 apps/profiles/forms.py:24
 #: plugins/donations/templates/donations/add.html:77
 #: templates/events/reg8n/multi_register.html:286
 #: templates/events/reg8n/register-free.html:55
@@ -134,7 +134,7 @@ msgstr "XXXXXXXX"
 
 #: apps/articles/models.py:25 apps/directories/models.py:38
 #: apps/forms_builder/forms/models.py:37 apps/memberships/models.py:48
-#: apps/news/models.py:25 apps/profiles/forms.py:23
+#: apps/news/models.py:25 apps/profiles/forms.py:26
 #: plugins/donations/templates/donations/add.html:87
 #: templates/events/reg8n/multi_register.html:294
 #: templates/events/reg8n/register-free.html:63
@@ -150,7 +150,7 @@ msgstr "XXXXXXXX"
 
 #: apps/articles/models.py:31 apps/directories/models.py:59
 #: apps/help_files/models.py:39 apps/news/models.py:31 apps/pages/models.py:22
-#: apps/stories/models.py:23
+#: apps/stories/models.py:22
 msgid "Include in RSS feed"
 msgstr "XXXXXXXX"
 
@@ -194,43 +194,43 @@ msgid ""
 "slashes (/) or hyphens."
 msgstr "XXXXXXXX"
 
-#: apps/base/template_tags.py:45 apps/events/templatetags/event_tags.py:213
-#: apps/stories/templatetags/story_tags.py:47
+#: apps/base/template_tags.py:45 apps/events/templatetags/event_tags.py:214
+#: apps/stories/templatetags/story_tags.py:65
 msgid "Model attribute must be set"
 msgstr "XXXXXXXX"
 
-#: apps/base/template_tags.py:47 apps/events/templatetags/event_tags.py:215
-#: apps/stories/templatetags/story_tags.py:49
+#: apps/base/template_tags.py:47 apps/events/templatetags/event_tags.py:216
+#: apps/stories/templatetags/story_tags.py:67
 msgid "Model attribute must derive from Model"
 msgstr "XXXXXXXX"
 
-#: apps/base/template_tags.py:49 apps/events/templatetags/event_tags.py:217
-#: apps/stories/templatetags/story_tags.py:51
+#: apps/base/template_tags.py:49 apps/events/templatetags/event_tags.py:218
+#: apps/stories/templatetags/story_tags.py:69
 msgid "Model.objects does not have a search method"
 msgstr "XXXXXXXX"
 
-#: apps/base/utils.py:183 apps/meta/utils.py:33
+#: apps/base/utils.py:184 apps/meta/utils.py:33
 msgid " "
 msgstr "XXXXXXXX"
 
-#: apps/base/templatetags/base_tags.py:483
-#: apps/base/templatetags/base_tags.py:503
+#: apps/base/templatetags/base_tags.py:526
+#: apps/base/templatetags/base_tags.py:546
 #, python-format
 msgid "%s tag requires exactly three arguments"
 msgstr "XXXXXXXX"
 
-#: apps/base/templatetags/base_tags.py:485
-#: apps/base/templatetags/base_tags.py:505
+#: apps/base/templatetags/base_tags.py:528
+#: apps/base/templatetags/base_tags.py:548
 #, python-format
 msgid "second argument to %s tag must be 'as'"
 msgstr "XXXXXXXX"
 
-#: apps/categories/forms.py:16 templates/pages/add.html:29
-#: templates/pages/edit.html:34
+#: apps/categories/forms.py:16 apps/categories/forms.py:81
+#: templates/pages/add.html:29 templates/pages/edit.html:28
 msgid "Category"
 msgstr "XXXXXXXX"
 
-#: apps/categories/forms.py:22
+#: apps/categories/forms.py:22 apps/categories/forms.py:82
 msgid "Sub Category"
 msgstr "XXXXXXXX"
 
@@ -249,16 +249,16 @@ msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/forms.py:36
 #: apps/corporate_memberships/models.py:66
-#: apps/corporate_memberships/models.py:721 apps/memberships/models.py:78
-#: apps/memberships/models.py:626 templates/invoices/detail.html:42
+#: apps/corporate_memberships/models.py:721 apps/memberships/models.py:81
+#: apps/memberships/models.py:623 templates/invoices/detail.html:42
 #: templates/jobs/print-view.html:31 templates/jobs/view.html:38
 #: templates/resumes/print-view.html:32 templates/resumes/view.html:36
 msgid "Description"
 msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/forms.py:73
-#: apps/corporate_memberships/models.py:723 apps/memberships/forms.py:189
-#: apps/profiles/forms.py:74 templates/notification/user_edited/full.html:598
+#: apps/corporate_memberships/models.py:723 apps/memberships/forms.py:190
+#: apps/profiles/forms.py:77 templates/notification/user_edited/full.html:598
 #: templates/profiles/add.html:382 templates/profiles/edit.html:379
 #: templates/profiles/index.html:230
 msgid "Notes"
@@ -298,11 +298,11 @@ msgstr "XXXXXXXX"
 msgid "CSV File"
 msgstr "XXXXXXXX"
 
-#: apps/corporate_memberships/forms.py:475 apps/memberships/forms.py:900
+#: apps/corporate_memberships/forms.py:475 apps/memberships/forms.py:935
 msgid "Type Your Password"
 msgstr "XXXXXXXX"
 
-#: apps/corporate_memberships/forms.py:486 apps/memberships/forms.py:911
+#: apps/corporate_memberships/forms.py:486 apps/memberships/forms.py:946
 msgid "Invalid password."
 msgstr "XXXXXXXX"
 
@@ -398,7 +398,7 @@ msgstr "XXXXXXXX"
 #: apps/corporate_memberships/models.py:37 apps/directories/models.py:48
 #: apps/forms_builder/forms/admin.py:50 apps/forms_builder/forms/models.py:27
 #: apps/memberships/models.py:49 apps/notification/models.py:60
-#: apps/profiles/forms.py:25
+#: apps/profiles/forms.py:28
 #: plugins/donations/templates/donations/add.html:162
 #: templates/contacts/view.html:37 templates/email_blocks/edit.html:44
 #: templates/events/reg8n/multi_register.html:318
@@ -431,7 +431,7 @@ msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/models.py:40
 #: apps/forms_builder/forms/models.py:30
-#: apps/forms_builder/forms/models.py:171 apps/memberships/models.py:46
+#: apps/forms_builder/forms/models.py:183 apps/memberships/models.py:46
 msgid "Date/time"
 msgstr "XXXXXXXX"
 
@@ -485,8 +485,8 @@ msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/models.py:65
 #: apps/corporate_memberships/models.py:713 apps/entities/models.py:10
-#: apps/locations/models.py:11 apps/memberships/models.py:77
-#: apps/memberships/models.py:416 apps/memberships/models.py:571
+#: apps/locations/models.py:11 apps/memberships/models.py:80
+#: apps/memberships/models.py:413 apps/memberships/models.py:568
 #: templates/corporate_memberships/approve.html:92
 #: templates/corporate_memberships/view.html:97
 #: templates/corporate_memberships/import/preview.html:85
@@ -496,8 +496,8 @@ msgstr "XXXXXXXX"
 msgid "Name"
 msgstr "XXXXXXXX"
 
-#: apps/corporate_memberships/models.py:67 apps/memberships/models.py:79
-#: templates/directories/pricing-table.html:14
+#: apps/corporate_memberships/models.py:67 apps/events/models.py:249
+#: apps/memberships/models.py:82 templates/directories/pricing-table.html:14
 #: templates/directories/pricing-table.html:21
 #: templates/events/invoice_search_result_line.html:13
 #: templates/jobs/invoice_search_result_line.html:14
@@ -506,7 +506,7 @@ msgstr "XXXXXXXX"
 msgid "Price"
 msgstr "XXXXXXXX"
 
-#: apps/corporate_memberships/models.py:69 apps/memberships/models.py:81
+#: apps/corporate_memberships/models.py:69 apps/memberships/models.py:84
 msgid "Renewal Price"
 msgstr "XXXXXXXX"
 
@@ -521,7 +521,7 @@ msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/models.py:77
 #: apps/corporate_memberships/models.py:775 apps/memberships/models.py:101
-#: apps/memberships/models.py:641
+#: apps/memberships/models.py:642
 msgid "Admin Only"
 msgstr "XXXXXXXX"
 
@@ -607,7 +607,7 @@ msgid "Renew Date Time"
 msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/models.py:231
-#: apps/corporate_memberships/models.py:630 apps/memberships/models.py:277
+#: apps/corporate_memberships/models.py:630 apps/memberships/models.py:269
 msgid "Expiration Date Time"
 msgstr "XXXXXXXX"
 
@@ -697,7 +697,7 @@ msgid "Corporate Membership Applications"
 msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/models.py:755
-#: apps/forms_builder/forms/models.py:126 apps/memberships/models.py:624
+#: apps/forms_builder/forms/models.py:133 apps/memberships/models.py:621
 msgid "Label"
 msgstr "XXXXXXXX"
 
@@ -715,7 +715,7 @@ msgid "Field Type"
 msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/models.py:764
-#: apps/forms_builder/forms/models.py:135 apps/memberships/models.py:637
+#: apps/forms_builder/forms/models.py:142 apps/memberships/models.py:638
 msgid "Choices"
 msgstr "XXXXXXXX"
 
@@ -728,7 +728,7 @@ msgid "Field Size"
 msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/models.py:772
-#: apps/forms_builder/forms/models.py:133 apps/memberships/models.py:635
+#: apps/forms_builder/forms/models.py:140 apps/memberships/models.py:636
 msgid "Required"
 msgstr "XXXXXXXX"
 
@@ -737,7 +737,7 @@ msgid "No Duplicates"
 msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/models.py:774
-#: apps/forms_builder/forms/models.py:134 apps/memberships/models.py:636
+#: apps/forms_builder/forms/models.py:141 apps/memberships/models.py:637
 msgid "Visible"
 msgstr "XXXXXXXX"
 
@@ -750,12 +750,12 @@ msgid "CSS Class Name"
 msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/models.py:782
-#: apps/forms_builder/forms/models.py:142 apps/memberships/models.py:659
+#: apps/forms_builder/forms/models.py:151 apps/memberships/models.py:660
 msgid "Field"
 msgstr "XXXXXXXX"
 
 #: apps/corporate_memberships/models.py:783
-#: apps/forms_builder/forms/models.py:143 apps/memberships/models.py:660
+#: apps/forms_builder/forms/models.py:152 apps/memberships/models.py:661
 msgid "Fields"
 msgstr "XXXXXXXX"
 
@@ -779,7 +779,7 @@ msgstr "XXXXXXXX"
 msgid "Company logo. Only jpg, gif, or png images."
 msgstr "XXXXXXXX"
 
-#: apps/directories/models.py:39 apps/profiles/forms.py:39
+#: apps/directories/models.py:39 apps/profiles/forms.py:42
 #: plugins/donations/templates/donations/add.html:105
 #: templates/contacts/view.html:54
 #: templates/notification/user_edited/full.html:412
@@ -791,7 +791,7 @@ msgstr "XXXXXXXX"
 msgid "Address 2"
 msgstr "XXXXXXXX"
 
-#: apps/directories/models.py:41 apps/profiles/forms.py:44
+#: apps/directories/models.py:41 apps/profiles/forms.py:47
 #: plugins/donations/templates/donations/add.html:130
 #: templates/notification/user_edited/full.html:452
 #: templates/notification/user_edited/full.html:473
@@ -799,7 +799,7 @@ msgstr "XXXXXXXX"
 msgid "City"
 msgstr "XXXXXXXX"
 
-#: apps/directories/models.py:42 apps/profiles/forms.py:47
+#: apps/directories/models.py:42 apps/profiles/forms.py:50
 #: plugins/donations/templates/donations/add.html:131
 #: templates/profiles/add.html:282 templates/profiles/edit.html:282
 msgid "State"
@@ -810,7 +810,7 @@ msgstr "XXXXXXXX"
 msgid "Zip Code"
 msgstr "XXXXXXXX"
 
-#: apps/directories/models.py:44 apps/profiles/forms.py:53
+#: apps/directories/models.py:44 apps/profiles/forms.py:56
 #: plugins/donations/templates/donations/add.html:142
 #: templates/notification/user_edited/full.html:513
 #: templates/profiles/add.html:299 templates/profiles/edit.html:299
@@ -834,25 +834,25 @@ msgstr "XXXXXXXX"
 msgid "List Type"
 msgstr "XXXXXXXX"
 
-#: apps/directories/models.py:53
+#: apps/directories/models.py:53 apps/jobs/forms.py:72
 msgid "Requested Duration"
 msgstr "XXXXXXXX"
 
-#: apps/directories/models.py:54 apps/jobs/forms.py:53
+#: apps/directories/models.py:54 apps/jobs/forms.py:56
 #: apps/resumes/forms.py:42 plugins/services/forms.py:42
 msgid "Activation Date/Time"
 msgstr "XXXXXXXX"
 
 #: apps/directories/models.py:61 apps/entities/models.py:22
-#: apps/profiles/forms.py:76
+#: apps/profiles/forms.py:79
 msgid "Admin Notes"
 msgstr "XXXXXXXX"
 
-#: apps/entities/models.py:11 apps/forms_builder/forms/models.py:127
-#: apps/memberships/models.py:633
+#: apps/entities/models.py:11 apps/forms_builder/forms/models.py:134
+#: apps/memberships/models.py:630
 #: templates/corporate_memberships/import/preview.html:86
 #: templates/memberships/import-preview.html:59
-#: templates/user_groups/detail.html:52
+#: templates/user_groups/detail.html:54
 msgid "Type"
 msgstr "XXXXXXXX"
 
@@ -865,46 +865,35 @@ msgid "Contact Name"
 msgstr "XXXXXXXX"
 
 #: apps/event_logs/forms.py:33 apps/events/forms.py:65
-#: apps/stories/forms.py:26 apps/stories/models.py:25
+#: apps/events/forms.py:236 apps/stories/forms.py:26 apps/stories/models.py:24
 msgid "Start Date/Time"
 msgstr "XXXXXXXX"
 
 #: apps/event_logs/forms.py:38 apps/events/forms.py:66
-#: apps/events/forms.py:226 apps/stories/forms.py:27 apps/stories/models.py:26
+#: apps/events/forms.py:237 apps/stories/forms.py:27 apps/stories/models.py:25
 msgid "End Date/Time"
 msgstr "XXXXXXXX"
 
-#: apps/events/forms.py:223
-msgid "Early Date/Time"
+#: apps/events/forms.py:238
+#, fuzzy
+msgid "Start and End"
 msgstr "XXXXXXXX"
 
-#: apps/events/forms.py:224
-msgid "Regular Date/Time"
-msgstr "XXXXXXXX"
-
-#: apps/events/forms.py:225
-msgid "Late Date/Time"
-msgstr "XXXXXXXX"
-
-#: apps/events/forms.py:228
-msgid "Pricing and Times"
-msgstr "XXXXXXXX"
-
-#: apps/events/forms.py:280 apps/events/models.py:218
+#: apps/events/forms.py:291 apps/events/models.py:218
 msgid "Registration Limit"
 msgstr "XXXXXXXX"
 
-#: apps/events/forms.py:282
+#: apps/events/forms.py:293
 msgid ""
 "Enter the maximum number of registrants. Use 0 for unlimited registrants"
 msgstr "XXXXXXXX"
 
-#: apps/events/forms.py:324 apps/events/forms.py:368
-#: apps/forms_builder/forms/forms.py:55
+#: apps/events/forms.py:335 apps/events/forms.py:379
+#: apps/forms_builder/forms/forms.py:67
 msgid "Type the code below"
 msgstr "XXXXXXXX"
 
-#: apps/events/forms.py:486 apps/memberships/models.py:437
+#: apps/events/forms.py:497 apps/memberships/models.py:434
 msgid "Email Content"
 msgstr "XXXXXXXX"
 
@@ -924,59 +913,44 @@ msgstr "XXXXXXXX"
 msgid "Guests Pay Registrant Price"
 msgstr "XXXXXXXX"
 
-#: apps/events/models.py:249
-msgid "Early Price"
+#: apps/events/models.py:246
+msgid "Number of attendees"
+msgstr ""
+
+#: apps/events/models.py:251 templates/reports/mem_join_table.html:13
+msgid "Start Date"
 msgstr "XXXXXXXX"
 
-#: apps/events/models.py:250
-msgid "Regular Price"
-msgstr "XXXXXXXX"
-
-#: apps/events/models.py:251
-msgid "Late Price"
-msgstr "XXXXXXXX"
-
-#: apps/events/models.py:253
-msgid "Early Registration Starts"
+#: apps/events/models.py:252
+#, fuzzy
+msgid "End Date"
 msgstr "XXXXXXXX"
 
 #: apps/events/models.py:254
-msgid "Regular Registration Starts"
-msgstr "XXXXXXXX"
-
-#: apps/events/models.py:255
-msgid "Late Registration Starts"
-msgstr "XXXXXXXX"
-
-#: apps/events/models.py:256
-msgid "Registration Ends"
-msgstr "XXXXXXXX"
-
-#: apps/events/models.py:258
 msgid "Public can use"
 msgstr "XXXXXXXX"
 
-#: apps/events/models.py:259
+#: apps/events/models.py:255
 msgid "Signed in user can use"
 msgstr "XXXXXXXX"
 
-#: apps/events/models.py:260
+#: apps/events/models.py:256
 msgid "All members can use"
 msgstr "XXXXXXXX"
 
-#: apps/events/models.py:334
+#: apps/events/models.py:309
 msgid "Amount Paid"
 msgstr "XXXXXXXX"
 
-#: apps/events/views.py:645 apps/events/views.py:662
+#: apps/events/views.py:660 apps/events/views.py:677
 msgid "Please choose a price."
 msgstr "XXXXXXXX"
 
-#: apps/events/views.py:676
+#: apps/events/views.py:691
 msgid "Registration has been closed."
 msgstr "XXXXXXXX"
 
-#: apps/events/views.py:684
+#: apps/events/views.py:699
 msgid "Registration is full."
 msgstr "XXXXXXXX"
 
@@ -1042,7 +1016,7 @@ msgstr "XXXXXXXX"
 msgid "Multi select"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:35
+#: apps/forms_builder/forms/models.py:35 apps/memberships/models.py:75
 msgid "Subscribe to Group"
 msgstr "XXXXXXXX"
 
@@ -1065,38 +1039,51 @@ msgid "Intro"
 msgstr "XXXXXXXX"
 
 #: apps/forms_builder/forms/models.py:53
-msgid "Send email"
+#, fuzzy
+msgid "Template for email subject "
 msgstr "XXXXXXXX"
 
 #: apps/forms_builder/forms/models.py:54
+msgid ""
+"Options include [title] for form title, and  \n"
+"                        name of form fields inside brackets [ ]. E.x. [first "
+"name] or \n"
+"                        [email address]"
+msgstr ""
+
+#: apps/forms_builder/forms/models.py:60
+msgid "Send email"
+msgstr "XXXXXXXX"
+
+#: apps/forms_builder/forms/models.py:61
 msgid "If checked, the person entering the form will be sent an email"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:55
+#: apps/forms_builder/forms/models.py:62
 msgid "From address"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:56
+#: apps/forms_builder/forms/models.py:63
 msgid "The address the email will be sent from"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:57
+#: apps/forms_builder/forms/models.py:64
 msgid "Send copies to"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:58
+#: apps/forms_builder/forms/models.py:65
 msgid "One or more email addresses, separated by commas"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:64
+#: apps/forms_builder/forms/models.py:71
 msgid "Form"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:65
+#: apps/forms_builder/forms/models.py:72
 msgid "Forms"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:95
+#: apps/forms_builder/forms/models.py:102
 #: apps/forms_builder/forms/templates/admin/forms/change_form.html:10
 #: plugins/case_studies/templates/case_studies/admin/change_form.html:29
 #: templates/corporate_memberships/admin/add_form.html:8
@@ -1106,35 +1093,40 @@ msgstr "XXXXXXXX"
 msgid "View on site"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:101
+#: apps/forms_builder/forms/models.py:108
 msgid "Export entries"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:129
+#: apps/forms_builder/forms/models.py:136 apps/memberships/models.py:631
 msgid "Special Functionality"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:131
+#: apps/forms_builder/forms/models.py:138 apps/memberships/models.py:633
 msgid "Group Name or Names"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:137 plugins/attorneys/models.py:26
+#: apps/forms_builder/forms/models.py:144 plugins/attorneys/models.py:26
 msgid "position"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:174
+#: apps/forms_builder/forms/models.py:145
+#, fuzzy
+msgid "Default"
+msgstr "XXXXXXXX"
+
+#: apps/forms_builder/forms/models.py:186
 msgid "Form entry"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:175
+#: apps/forms_builder/forms/models.py:187
 msgid "Form entries"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:288
+#: apps/forms_builder/forms/models.py:303
 msgid "Form field entry"
 msgstr "XXXXXXXX"
 
-#: apps/forms_builder/forms/models.py:289
+#: apps/forms_builder/forms/models.py:304
 msgid "Form field entries"
 msgstr "XXXXXXXX"
 
@@ -1152,10 +1144,6 @@ msgid ""
 "duplicates: %s."
 msgstr "XXXXXXXX"
 
-#: apps/invoices/models.py:19
-msgid "Object Type"
-msgstr "XXXXXXXX"
-
 #: apps/invoices/management/__init__.py:9
 msgid "Invoice Edited"
 msgstr "XXXXXXXX"
@@ -1164,25 +1152,25 @@ msgstr "XXXXXXXX"
 msgid "An invoice has been edited."
 msgstr "XXXXXXXX"
 
-#: apps/jobs/forms.py:56
+#: apps/jobs/forms.py:59
 msgid "Post Date/Time"
 msgstr "XXXXXXXX"
 
-#: apps/jobs/forms.py:59 apps/resumes/forms.py:45 plugins/services/forms.py:45
+#: apps/jobs/forms.py:62 apps/resumes/forms.py:45 plugins/services/forms.py:45
 msgid "Expriation Date/Time"
 msgstr "XXXXXXXX"
 
-#: apps/jobs/models.py:80 apps/perms/models.py:9 apps/resumes/models.py:62
+#: apps/jobs/models.py:81 apps/perms/models.py:10 apps/resumes/models.py:62
 #: plugins/services/models.py:42
 msgid "Public can view"
 msgstr "XXXXXXXX"
 
-#: apps/jobs/models.py:81 apps/perms/models.py:10 apps/resumes/models.py:63
+#: apps/jobs/models.py:82 apps/perms/models.py:11 apps/resumes/models.py:63
 #: plugins/services/models.py:43
 msgid "Signed in user can view"
 msgstr "XXXXXXXX"
 
-#: apps/jobs/models.py:84 apps/perms/models.py:13 apps/resumes/models.py:66
+#: apps/jobs/models.py:85 apps/perms/models.py:14 apps/resumes/models.py:66
 #: plugins/services/models.py:46
 msgid "Signed in user can change"
 msgstr "XXXXXXXX"
@@ -1227,87 +1215,87 @@ msgstr "XXXXXXXX"
 msgid "referred by"
 msgstr "XXXXXXXX"
 
-#: apps/make_payments/models.py:38
+#: apps/make_payments/models.py:37
 msgid "General Payment"
 msgstr "XXXXXXXX"
 
-#: apps/make_payments/models.py:39
+#: apps/make_payments/models.py:38
 msgid "General Payments"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:273
+#: apps/memberships/forms.py:274
 msgid "Period must be a numeric number."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:275
+#: apps/memberships/forms.py:276
 msgid "Period is a required field."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:279 apps/memberships/forms.py:281
+#: apps/memberships/forms.py:280 apps/memberships/forms.py:282
 msgid "Please select a expiration option for join."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:286
+#: apps/memberships/forms.py:287
 msgid "The day(s) field in option 2 of Expires On must be a numeric number."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:291 apps/memberships/forms.py:293
+#: apps/memberships/forms.py:292 apps/memberships/forms.py:294
 msgid "Please select a expiration option for renewal."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:298
+#: apps/memberships/forms.py:299
 msgid ""
 "The day(s) field in option 2 of Renew Expires On must be a numeric number."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:303
+#: apps/memberships/forms.py:304
 msgid ""
 "The day(s) field in option 3 of Renew Expires On must be a numeric number."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:309 apps/memberships/forms.py:311
+#: apps/memberships/forms.py:310 apps/memberships/forms.py:312
 msgid "Please select an option for fixed period."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:316
+#: apps/memberships/forms.py:317
 msgid ""
 "The day(s) field in the option 1 of Expires On must be a numeric number."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:321
+#: apps/memberships/forms.py:322
 msgid ""
 "The day(s) field in the option 2 of Expires On must be a numeric number."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:327
+#: apps/memberships/forms.py:328
 msgid "The grace period day(s) for optoin 2 must be a numeric number."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:377
+#: apps/memberships/forms.py:378
 msgid "Num days must be a numeric number."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:382
+#: apps/memberships/forms.py:383
 msgid "Join Under the Corporation:"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:383
+#: apps/memberships/forms.py:384
 msgid "Enter the Secret Code"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:384
+#: apps/memberships/forms.py:385
 msgid "Verify Your Email Address"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:403
+#: apps/memberships/forms.py:404
 msgid "Invalid Secret Code."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:414
+#: apps/memberships/forms.py:415
 msgid "Sorry but we're not able to find your corporation."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/forms.py:898 templates/reports/mem_join_table.html:10
+#: apps/memberships/forms.py:933 templates/reports/mem_join_table.html:10
 msgid "Application"
 msgstr "XXXXXXXX"
 
@@ -1323,8 +1311,8 @@ msgstr "XXXXXXXX"
 msgid "Horizontal Rule"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:53 apps/memberships/models.py:271
-#: apps/memberships/models.py:388 templates/reports/mem_join_table.html:9
+#: apps/memberships/models.py:53 apps/memberships/models.py:263
+#: apps/memberships/models.py:385 templates/reports/mem_join_table.html:9
 msgid "Membership Type"
 msgstr "XXXXXXXX"
 
@@ -1336,7 +1324,7 @@ msgstr "XXXXXXXX"
 msgid "User"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:60 apps/memberships/models.py:284
+#: apps/memberships/models.py:60 apps/memberships/models.py:276
 msgid "Membership"
 msgstr "XXXXXXXX"
 
@@ -1372,181 +1360,180 @@ msgstr "XXXXXXXX"
 msgid "Years"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:84
+#: apps/memberships/models.py:87
 msgid "Admin Fee"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:91
+#: apps/memberships/models.py:94
 msgid "Require Approval"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:92
+#: apps/memberships/models.py:95
 msgid "Allow Renewal"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:93
+#: apps/memberships/models.py:96
 msgid "Renewal Only"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:94
+#: apps/memberships/models.py:97
 msgid "Renewal Requires Approval"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:105 templates/profiles/index.html:349
+#: apps/memberships/models.py:103 templates/profiles/index.html:350
 msgid "Never Expires"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:107 templates/jobs/view.html:61
+#: apps/memberships/models.py:105 templates/jobs/view.html:61
 msgid "Period"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:109
+#: apps/memberships/models.py:107
 msgid "Period Type"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:111 apps/memberships/models.py:117
+#: apps/memberships/models.py:109 apps/memberships/models.py:115
 msgid "Expires On"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:112
+#: apps/memberships/models.py:110
 msgid "Expiration Day"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:113
+#: apps/memberships/models.py:111
 msgid "Renewal Expires On"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:124
+#: apps/memberships/models.py:122
 msgid "Allow Rollover"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:126
+#: apps/memberships/models.py:124
 msgid ""
 "Membership signups after this date covers the following calendar year as "
 "well."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:128
+#: apps/memberships/models.py:126
 msgid "Renewal Period Start"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:130
+#: apps/memberships/models.py:128
 msgid "Renewal Period End"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:132
+#: apps/memberships/models.py:130
 msgid "Expiration Grace Period"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:270 apps/memberships/models.py:387
+#: apps/memberships/models.py:262 apps/memberships/models.py:384
 #: templates/corporate_memberships/approve.html:92
-#: templates/corporate_memberships/invoice_view_display.html:39
 msgid "Member Number"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:276 apps/memberships/models.py:392
+#: apps/memberships/models.py:268 apps/memberships/models.py:389
 msgid "Subscribe Date"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:278 apps/memberships/models.py:394
+#: apps/memberships/models.py:270 apps/memberships/models.py:391
 msgid "Corporate Membership Id"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:285 templates/memberships/nav.html:20
+#: apps/memberships/models.py:277 templates/memberships/nav.html:21
 #: templates/profiles/index.html:41
 msgid "Memberships"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:393
+#: apps/memberships/models.py:390
 msgid "Expire Date Time"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:407
+#: apps/memberships/models.py:404
 msgid "Archived Membership"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:408
+#: apps/memberships/models.py:405
 msgid "Archived Memberships"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:418
+#: apps/memberships/models.py:415
 msgid "Notice Time"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:422
+#: apps/memberships/models.py:419
 msgid "For Notice Type"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:426
+#: apps/memberships/models.py:423
 msgid "System Generated"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:428
+#: apps/memberships/models.py:425
 msgid ""
 "Note that if you don't select a membership type, the notice will go out to "
 "all members."
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:431 templates/emails/edit.html:47
+#: apps/memberships/models.py:428 templates/emails/edit.html:47
 msgid "Content Type"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:577
+#: apps/memberships/models.py:574
 msgid "Use Captcha"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:581
+#: apps/memberships/models.py:578
 msgid "Use for Corporate Individuals"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:623
+#: apps/memberships/models.py:620
 msgid "Attribute Name"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:628
+#: apps/memberships/models.py:625
 msgid "Help Text"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:629
+#: apps/memberships/models.py:626
 msgid "Default Value"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:630
+#: apps/memberships/models.py:627
 msgid "CSS Class"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:634
+#: apps/memberships/models.py:635
 msgid "Vital"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:640
+#: apps/memberships/models.py:641
 msgid "Unique"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:673
+#: apps/memberships/models.py:675
 msgid "Date/Time"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:676 templates/email_blocks/edit.html:86
+#: apps/memberships/models.py:678 templates/email_blocks/edit.html:86
 #: templates/emails/edit.html:119
 #: templates/notification/user_edited/full.html:578
 #: templates/profiles/add.html:361 templates/profiles/edit.html:357
 msgid "Status"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:685
+#: apps/memberships/models.py:687
 msgid "Application Entry"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:686
+#: apps/memberships/models.py:688
 msgid "Application Entries"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:1148
+#: apps/memberships/models.py:1184
 msgid "Application Field Entry"
 msgstr "XXXXXXXX"
 
-#: apps/memberships/models.py:1149
+#: apps/memberships/models.py:1185
 msgid "Application Field Entries"
 msgstr "XXXXXXXX"
 
@@ -1603,6 +1590,29 @@ msgstr "XXXXXXXX"
 msgid "Sent End Date/Time"
 msgstr "XXXXXXXX"
 
+#: apps/metrics/models.py:9
+#, fuzzy
+msgid "users"
+msgstr "XXXXXXXX"
+
+#: apps/metrics/models.py:10
+#, fuzzy
+msgid "members"
+msgstr "XXXXXXXX"
+
+#: apps/metrics/models.py:11
+msgid "visits"
+msgstr ""
+
+#: apps/metrics/models.py:12
+msgid "disk usage"
+msgstr ""
+
+#: apps/metrics/models.py:13
+#, fuzzy
+msgid "create date/time"
+msgstr "XXXXXXXX"
+
 #: apps/news/management.py:9
 msgid "News Added"
 msgstr "XXXXXXXX"
@@ -1647,8 +1657,9 @@ msgstr "XXXXXXXX"
 msgid "display"
 msgstr "XXXXXXXX"
 
-#: apps/notification/models.py:45 apps/photos/models.py:28
-#: plugins/before_and_after/models.py:51 plugins/before_and_after/models.py:97
+#: apps/notification/models.py:45 apps/photos/models.py:32
+#: plugins/before_and_after/models.py:51
+#: plugins/before_and_after/models.py:145
 msgid "description"
 msgstr "XXXXXXXX"
 
@@ -1763,7 +1774,7 @@ msgstr "XXXXXXXX"
 msgid "Template"
 msgstr "XXXXXXXX"
 
-#: apps/payments/models.py:191
+#: apps/payments/models.py:193
 msgid "if checked, it will only show for administrators"
 msgstr "XXXXXXXX"
 
@@ -1775,134 +1786,129 @@ msgstr "XXXXXXXX"
 msgid "A payment has been generated."
 msgstr "XXXXXXXX"
 
-#: apps/photos/forms.py:43
-msgid ""
-"Image filename contains an invalid character: '#'. Please remove the "
-"character and try again."
-msgstr "XXXXXXXX"
-
-#: apps/photos/models.py:23
+#: apps/photos/models.py:27
 msgid "Private"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:24
+#: apps/photos/models.py:28
 msgid "Public"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:27 apps/photos/models.py:207
+#: apps/photos/models.py:31 apps/photos/models.py:232
 #: plugins/before_and_after/models.py:16 plugins/before_and_after/models.py:36
 msgid "name"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:29
+#: apps/photos/models.py:33
 msgid "publish_type"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:34 apps/photos/models.py:110
+#: apps/photos/models.py:38 apps/photos/models.py:131
 msgid "photo set"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:35
+#: apps/photos/models.py:39
 msgid "photo sets"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:99
+#: apps/photos/models.py:120
 msgid "Safe"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:100
+#: apps/photos/models.py:121
 msgid "Not Safe"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:103 plugins/before_and_after/models.py:49
+#: apps/photos/models.py:124 plugins/before_and_after/models.py:49
+#: plugins/plugin_template/models.py:12
 msgid "title"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:104
+#: apps/photos/models.py:125
 msgid "slug"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:105
+#: apps/photos/models.py:126
 msgid "caption"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:106
+#: apps/photos/models.py:127
 msgid "date added"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:107
+#: apps/photos/models.py:128
 msgid "public"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:107
+#: apps/photos/models.py:128
 msgid "Public photographs will be displayed in the default views."
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:109
+#: apps/photos/models.py:130
 msgid "safety level"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:208
+#: apps/photos/models.py:233
 msgid "code"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:209
+#: apps/photos/models.py:234
 msgid "author"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:210
+#: apps/photos/models.py:235
 msgid "license deed"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:211
+#: apps/photos/models.py:236
 msgid "legal code"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:226
+#: apps/photos/models.py:251
 msgid "created_at"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:232
+#: apps/photos/models.py:257
 msgid "pool"
 msgstr "XXXXXXXX"
 
-#: apps/photos/models.py:233
+#: apps/photos/models.py:258
 msgid "pools"
 msgstr "XXXXXXXX"
 
-#: apps/photos/views.py:234
+#: apps/photos/views.py:236
 #, python-format
 msgid "Successfully updated photo '%s'"
 msgstr "XXXXXXXX"
 
-#: apps/photos/views.py:260
+#: apps/photos/views.py:262
 #, python-format
 msgid "Successfully deleted photo '%s'"
 msgstr "XXXXXXXX"
 
-#: apps/photos/views.py:309
+#: apps/photos/views.py:311
 msgid "Successfully added photo set!"
 msgstr "XXXXXXXX"
 
-#: apps/photos/views.py:336
+#: apps/photos/views.py:338
 msgid "Successfully updated photo set! "
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:27 templates/notification/user_edited/full.html:62
+#: apps/profiles/forms.py:30 templates/notification/user_edited/full.html:62
 #: templates/profiles/add.html:58 templates/profiles/edit.html:58
 msgid "Initial"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:29
+#: apps/profiles/forms.py:32
 msgid "Display name"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:32 templates/profiles/add.html:194
+#: apps/profiles/forms.py:35 templates/profiles/add.html:194
 #: templates/profiles/edit.html:194
 msgid "Web Site"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:34 plugins/donations/templates/donations/add.html:96
+#: apps/profiles/forms.py:37 plugins/donations/templates/donations/add.html:96
 #: templates/events/reg8n/multi_register.html:302
 #: templates/events/reg8n/register-free.html:71
 #: templates/events/reg8n/register-priced.html:71
@@ -1911,56 +1917,56 @@ msgstr "XXXXXXXX"
 msgid "Company"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:37 templates/notification/user_edited/full.html:372
+#: apps/profiles/forms.py:40 templates/notification/user_edited/full.html:372
 #: templates/profiles/add.html:230 templates/profiles/edit.html:230
 msgid "Department"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:42 templates/notification/user_edited/full.html:432
+#: apps/profiles/forms.py:45 templates/notification/user_edited/full.html:432
 msgid "Address2"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:50 templates/notification/user_edited/full.html:493
+#: apps/profiles/forms.py:53 templates/notification/user_edited/full.html:493
 #: templates/profiles/add.html:283 templates/profiles/edit.html:283
 msgid "Zipcode"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:56 templates/notification/user_edited/full.html:392
+#: apps/profiles/forms.py:59 templates/notification/user_edited/full.html:392
 #: templates/profiles/add.html:253 templates/profiles/edit.html:253
 msgid "Mailing Name"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:64
+#: apps/profiles/forms.py:67
 msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:66
+#: apps/profiles/forms.py:69
 #: templates/registration/password_change_form.html:84
 msgid "Password (again)"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:67
+#: apps/profiles/forms.py:70
 msgid "Enter the same password as above, for verification."
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:208 apps/registration/forms.py:57
+#: apps/profiles/forms.py:211 apps/registration/forms.py:57
 msgid "This username is already taken. Please choose another."
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:221 apps/registration/forms.py:69
+#: apps/profiles/forms.py:224 apps/registration/forms.py:69
 msgid "You must type the same password each time"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:259 apps/profiles/forms.py:266
+#: apps/profiles/forms.py:262 apps/profiles/forms.py:269
 msgid "Is Admin"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:260
+#: apps/profiles/forms.py:263
 msgid ""
 "If selected, this user has all permissions without explicitly assigning them."
 msgstr "XXXXXXXX"
 
-#: apps/profiles/forms.py:267
+#: apps/profiles/forms.py:270
 msgid ""
 "If selected, admin has all permissions without explicitly assigning them."
 msgstr "XXXXXXXX"
@@ -2105,35 +2111,35 @@ msgstr "XXXXXXXX"
 msgid "agrees to tos"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/views.py:542
+#: apps/profiles/views.py:544
 msgid "Successfully uploaded a new avatar."
 msgstr "XXXXXXXX"
 
-#: apps/profiles/views.py:550
+#: apps/profiles/views.py:552
 msgid "Successfully updated your avatar."
 msgstr "XXXXXXXX"
 
-#: apps/profiles/management/__init__.py:9
+#: apps/profiles/management/__init__.py:17
 msgid "User Added"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/management/__init__.py:9
+#: apps/profiles/management/__init__.py:17
 msgid "A user has been added."
 msgstr "XXXXXXXX"
 
-#: apps/profiles/management/__init__.py:10
+#: apps/profiles/management/__init__.py:18
 msgid "User Edited"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/management/__init__.py:10
+#: apps/profiles/management/__init__.py:18
 msgid "A user has been edited."
 msgstr "XXXXXXXX"
 
-#: apps/profiles/management/__init__.py:11
+#: apps/profiles/management/__init__.py:19
 msgid "User Deleted"
 msgstr "XXXXXXXX"
 
-#: apps/profiles/management/__init__.py:11
+#: apps/profiles/management/__init__.py:19
 msgid "A user has been deleted"
 msgstr "XXXXXXXX"
 
@@ -2210,7 +2216,7 @@ msgid "Resume URL"
 msgstr "XXXXXXXX"
 
 #: apps/resumes/forms.py:28 plugins/services/forms.py:28
-#: templates/jobs/view.html:176
+#: templates/jobs/view.html:181
 msgid "Agency"
 msgstr "XXXXXXXX"
 
@@ -2272,10 +2278,10 @@ msgstr "XXXXXXXX"
 #: templates/pages/search.html:21 templates/photos/nav.html:44
 #: templates/profiles/nav.html:48 templates/resumes/index.html:6
 #: templates/resumes/nav.html:47 templates/resumes/search.html:22
-#: templates/search/search.html:10 templates/stories/delete.html:16
-#: templates/stories/index.html:6 templates/stories/nav.html:43
-#: templates/stories/search.html:20 templates/user_groups/nav.html:50
-#: templates/user_groups/search.html:8 templates/user_groups/search.html:21
+#: templates/search/search.html:10 templates/stories/index.html:6
+#: templates/stories/nav.html:43 templates/stories/search.html:20
+#: templates/user_groups/nav.html:50 templates/user_groups/search.html:8
+#: templates/user_groups/search.html:21
 msgid "Search"
 msgstr "XXXXXXXX"
 
@@ -2283,11 +2289,11 @@ msgstr "XXXXXXXX"
 msgid "Search In"
 msgstr "XXXXXXXX"
 
-#: apps/stories/forms.py:25 apps/stories/models.py:24
+#: apps/stories/forms.py:25 apps/stories/models.py:23
 msgid "Full Story Link"
 msgstr "XXXXXXXX"
 
-#: apps/stories/forms.py:29 apps/stories/models.py:27
+#: apps/stories/forms.py:29 apps/stories/models.py:26
 msgid "Expires"
 msgstr "XXXXXXXX"
 
@@ -2295,13 +2301,21 @@ msgstr "XXXXXXXX"
 msgid "Uncheck if you want this story to never expire"
 msgstr "XXXXXXXX"
 
+#: apps/stories/forms.py:36 templates/photos/details.html:14
+msgid "Photo"
+msgstr "XXXXXXXX"
+
 #: apps/stories/forms.py:109
 msgid "File Path"
 msgstr "XXXXXXXX"
 
-#: apps/stories/models.py:31
+#: apps/stories/models.py:30 apps/stories/models.py:32
 msgid "Photo that represents this story."
 msgstr "XXXXXXXX"
+
+#: apps/theme_editor/forms.py:39
+msgid "Theme:"
+msgstr ""
 
 #: apps/theme_editor/models.py:14
 msgid "theme archive"
@@ -2367,7 +2381,7 @@ msgstr "XXXXXXXX"
 msgid "Priority"
 msgstr "XXXXXXXX"
 
-#: apps/user_groups/models.py:71
+#: apps/user_groups/models.py:92
 msgid "Sort Order"
 msgstr "XXXXXXXX"
 
@@ -2409,7 +2423,7 @@ msgstr "XXXXXXXX"
 
 #: plugins/attorneys/models.py:39 plugins/before_and_after/models.py:53
 #: plugins/case_studies/models.py:19 plugins/speakers/models.py:46
-#: plugins/staff/models.py:45 plugins/testimonials/models.py:19
+#: plugins/staff/models.py:49 plugins/testimonials/models.py:19
 msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
 msgstr "XXXXXXXX"
 
@@ -2433,7 +2447,7 @@ msgstr "XXXXXXXX"
 msgid "Before & Afters"
 msgstr "XXXXXXXX"
 
-#: plugins/before_and_after/models.py:93 plugins/speakers/models.py:30
+#: plugins/before_and_after/models.py:141 plugins/speakers/models.py:30
 msgid "order"
 msgstr "XXXXXXXX"
 
@@ -2443,7 +2457,7 @@ msgstr "XXXXXXXX"
 
 #: plugins/case_studies/templates/case_studies/admin/change_form.html:18
 #: templates/footer.html:7 templates/nav.html:4
-#: templates/admin_menu/admin_top.html:137
+#: templates/admin_menu/admin_top.html:140
 msgid "Home"
 msgstr "Startseite"
 
@@ -2462,7 +2476,7 @@ msgstr "Startseite"
 #: templates/emails/edit.html:6 templates/emails/edit.html.py:40
 #: templates/emails/nav.html:38 templates/entities/add.html:6
 #: templates/entities/add.html.py:18 templates/entities/nav.html:43
-#: templates/events/add.html:20 templates/events/nav.html:53
+#: templates/events/add.html:21 templates/events/nav.html:53
 #: templates/events/message/add.html:7 templates/files/nav.html:25
 #: templates/forms/nav.html:46 templates/help_files/nav.html:29
 #: templates/imports/nav.html:32 templates/jobs/nav.html:50
@@ -2473,8 +2487,7 @@ msgstr "Startseite"
 #: templates/photos/photo-set/add.html:15 templates/profiles/nav.html:54
 #: templates/redirects/nav.html:29 templates/resumes/add.html:22
 #: templates/resumes/nav.html:49 templates/stories/add.html:19
-#: templates/stories/delete.html:17 templates/stories/nav.html:45
-#: templates/user_groups/nav.html:56
+#: templates/stories/nav.html:45 templates/user_groups/nav.html:56
 msgid "Add"
 msgstr "XXXXXXXX"
 
@@ -2558,11 +2571,11 @@ msgstr "XXXXXXXX"
 msgid "A service has been deleted"
 msgstr "XXXXXXXX"
 
-#: plugins/speakers/models.py:41 plugins/staff/models.py:40
+#: plugins/speakers/models.py:41 plugins/staff/models.py:44
 msgid "Personal Sites"
 msgstr "XXXXXXXX"
 
-#: plugins/staff/models.py:34
+#: plugins/staff/models.py:38
 msgid "140 characters max."
 msgstr "XXXXXXXX"
 
@@ -2581,8 +2594,12 @@ msgid "Please contact the site administrator to request access to this page."
 msgstr "XXXXXXXX"
 
 #: templates/403.html:14
-msgid "This page requires a login. Please <a href="
-msgstr "XXXXXXXX"
+#, python-format
+msgid ""
+"This page requires a login. Please <a href=\"/accounts/login/?next="
+"%(request.get_full_path)s\">log in</a> if you have an account, or <a href=\"/"
+"accounts/register/\">create an account</a> if you do not have one.</p>"
+msgstr ""
 
 #: templates/404.html:4
 msgid "404 NOT FOUND"
@@ -2806,7 +2823,7 @@ msgstr "XXXXXXXX"
 msgid "Log in with Facebook"
 msgstr "XXXXXXXX"
 
-#: templates/accounts/logout.html:4 templates/admin_menu/admin_top.html:142
+#: templates/accounts/logout.html:4 templates/admin_menu/admin_top.html:145
 msgid "Logout"
 msgstr "XXXXXXXX"
 
@@ -3215,15 +3232,15 @@ msgstr "XXXXXXXX"
 msgid "View Recap"
 msgstr "XXXXXXXX"
 
-#: templates/admin/base_site.html:26
+#: templates/admin/base_site.html:27
 msgid "Web Administration"
 msgstr "XXXXXXXX"
 
-#: templates/admin/base_site.html:33
+#: templates/admin/base_site.html:34
 msgid "Tendenci Membership Management Software"
 msgstr "XXXXXXXX"
 
-#: templates/admin/base_site.html:33
+#: templates/admin/base_site.html:34
 msgid "Schipul - The Web Marketing Company"
 msgstr "XXXXXXXX"
 
@@ -3290,7 +3307,7 @@ msgstr "XXXXXXXX"
 #: templates/admin_menu/admin_top.html:43
 #: templates/admin_menu/admin_top.html:58
 #: templates/admin_menu/admin_top.html:71
-#: templates/admin_menu/admin_top.html:114
+#: templates/admin_menu/admin_top.html:117
 msgid "List"
 msgstr "XXXXXXXX"
 
@@ -3328,11 +3345,11 @@ msgstr "XXXXXXXX"
 
 #: templates/admin_menu/admin_top.html:80 templates/articles/nav.html:34
 #: templates/corporate_memberships/nav.html:36
-#: templates/dashboard/index.html:123 templates/directories/nav.html:34
+#: templates/dashboard/index.html:127 templates/directories/nav.html:34
 #: templates/forms/nav.html:34 templates/imports/nav.html:26
 #: templates/invoices/nav.html:27 templates/jobs/nav.html:33
 #: templates/locations/nav.html:33 templates/make_payments/nav.html:27
-#: templates/memberships/nav.html:25 templates/memberships/entries/nav.html:30
+#: templates/memberships/nav.html:26 templates/memberships/entries/nav.html:30
 #: templates/news/nav.html:32 templates/pages/nav.html:32
 #: templates/photos/nav.html:34 templates/photos/photo-set/nav.html:32
 #: templates/profiles/nav.html:25 templates/resumes/nav.html:33
@@ -3376,69 +3393,105 @@ msgstr "XXXXXXXX"
 msgid "Article Reporting Options"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:110
-msgid "Recently Viewed"
+#: templates/admin_menu/admin_top.html:105
+#, fuzzy
+msgid "Active Memberships"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:112
-#: templates/admin_menu/admin_top.html:135
-msgid "Event Logs"
+#: templates/admin_menu/admin_top.html:106
+#, fuzzy
+msgid "Membership Summary"
+msgstr "XXXXXXXX"
+
+#: templates/admin_menu/admin_top.html:107
+#, fuzzy
+msgid "Expired Memberships"
 msgstr "XXXXXXXX"
 
 #: templates/admin_menu/admin_top.html:113
+msgid "Recently Viewed"
+msgstr "XXXXXXXX"
+
+#: templates/admin_menu/admin_top.html:115
+#: templates/admin_menu/admin_top.html:138
+msgid "Event Logs"
+msgstr "XXXXXXXX"
+
+#: templates/admin_menu/admin_top.html:116
 msgid "Invoice for Event #4554"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:118
+#: templates/admin_menu/admin_top.html:121
 msgid "Find a Report"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:120
+#: templates/admin_menu/admin_top.html:123
 msgid "All"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:121
+#: templates/admin_menu/admin_top.html:124
 msgid "By App"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:122
+#: templates/admin_menu/admin_top.html:125
 msgid "User Reports"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:123
+#: templates/admin_menu/admin_top.html:126
 msgid "Financial Reports"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:128
+#: templates/admin_menu/admin_top.html:131
 msgid "Quick Links"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:132
+#: templates/admin_menu/admin_top.html:135
 msgid "Dashboard"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:133
+#: templates/admin_menu/admin_top.html:136
 msgid "Admin Backend"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:134
-#: templates/theme_editor/index.html:16
+#: templates/admin_menu/admin_top.html:137
+#: templates/theme_editor/index.html:17
 msgid "Theme Editor"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:136 templates/dashboard/index.html:187
+#: templates/admin_menu/admin_top.html:139 templates/dashboard/index.html:191
 msgid "Clear Cache"
 msgstr "XXXXXXXX"
 
-#: templates/articles/delete.html:4 templates/directories/delete.html:4
-#: templates/entities/delete.html:4 templates/events/delete.html:4
-#: templates/jobs/delete.html:4 templates/locations/delete.html:4
-#: templates/news/delete.html:4
-msgid "Delete Page"
+#: templates/articles/delete.html:5
+#, fuzzy
+msgid "Delete Article"
 msgstr "XXXXXXXX"
 
-#: templates/articles/delete.html:6
-msgid "Back to articles search"
+#: templates/articles/delete.html:16
+#, fuzzy
+msgid "Delete an Article"
+msgstr "XXXXXXXX"
+
+#: templates/articles/delete.html:20
+#, fuzzy
+msgid "Are you sure you want to permanently delete this article?"
+msgstr "XXXXXXXX"
+
+#: templates/articles/delete.html:25 templates/pages/delete.html:25
+#: templates/stories/delete.html:31
+#, fuzzy
+msgid "Confirm Delete"
+msgstr "XXXXXXXX"
+
+#: templates/articles/delete.html:28
+#, fuzzy
+msgid "Back to article"
+msgstr "XXXXXXXX"
+
+#: templates/articles/delete.html:29 templates/pages/delete.html:29
+#: templates/stories/delete.html:34
+#, fuzzy
+msgid "Back to all"
 msgstr "XXXXXXXX"
 
 #: templates/articles/edit-meta.html:17
@@ -3450,18 +3503,19 @@ msgstr "XXXXXXXX"
 
 #: templates/articles/edit-meta.html:30
 #: templates/directories/edit-meta.html:30 templates/events/edit-meta.html:30
-#: templates/events/reg8n/register-confirm.html:196
-#: templates/events/reg8n/register-confirm.html:198
-#: templates/jobs/edit-meta.html:31 templates/news/edit-meta.html:31
-#: templates/pages/edit-meta.html:31 templates/resumes/approve.html:20
-#: templates/resumes/delete.html:15 templates/resumes/edit-meta.html:26
+#: templates/events/reg8n/register-confirm.html:188
+#: templates/events/reg8n/register-confirm.html:190
+#: templates/jobs/approve.html:20 templates/jobs/edit-meta.html:31
+#: templates/news/edit-meta.html:31 templates/pages/edit-meta.html:31
+#: templates/resumes/approve.html:20 templates/resumes/delete.html:15
+#: templates/resumes/edit-meta.html:26
 msgid "Cancel"
 msgstr "XXXXXXXX"
 
 #: templates/articles/edit.html:7 templates/articles/edit.html.py:21
-#: templates/articles/index.html:9 templates/articles/nav.html:41
-#: templates/articles/options.html:17
-#: templates/campaign_monitor/templates/options.html:15
+#: templates/articles/index.html:9 templates/articles/meta.html:96
+#: templates/articles/nav.html:41 templates/articles/options.html:17
+#: templates/campaign_monitor/templates/options.html:12
 #: templates/contributions/index.html:8
 #: templates/contributions/options.html:11
 #: templates/corporate_memberships/index.html:36
@@ -3481,15 +3535,15 @@ msgstr "XXXXXXXX"
 #: templates/files/index.html:8 templates/files/options.html:10
 #: templates/forms/nav.html:41 templates/forms/options.html:19
 #: templates/help_files/nav.html:25 templates/help_files/options.html:12
-#: templates/imports/nav.html:29 templates/jobs/edit.html:22
+#: templates/imports/nav.html:29 templates/jobs/edit.html:24
 #: templates/jobs/index.html:9 templates/jobs/nav.html:43
-#: templates/jobs/options.html:20 templates/jobs/pricing-nav.html:38
+#: templates/jobs/options.html:22 templates/jobs/pricing-nav.html:38
 #: templates/jobs/pricing-options.html:10 templates/locations/edit.html:18
 #: templates/locations/index.html:9 templates/locations/nav.html:40
 #: templates/locations/options.html:16 templates/news/edit.html:22
 #: templates/news/index.html:9 templates/news/nav.html:39
 #: templates/news/options.html:16 templates/pages/edit.html:21
-#: templates/pages/index.html:9 templates/pages/meta.html:71
+#: templates/pages/index.html:9 templates/pages/meta.html:80
 #: templates/pages/nav.html:39 templates/pages/options.html:17
 #: templates/photos/nav.html:41 templates/photos/options.html:14
 #: templates/photos/photo-set/edit.html:20 templates/profiles/nav.html:42
@@ -3497,8 +3551,53 @@ msgstr "XXXXXXXX"
 #: templates/redirects/options.html:11 templates/resumes/edit.html:22
 #: templates/resumes/index.html:9 templates/resumes/nav.html:43
 #: templates/resumes/options.html:20 templates/stories/edit.html:20
-#: templates/stories/nav.html:39 templates/user_groups/nav.html:44
+#: templates/stories/meta.html:55 templates/stories/nav.html:39
+#: templates/user_groups/nav.html:44
 msgid "Edit"
+msgstr "XXXXXXXX"
+
+#: templates/articles/edit.html:27
+#, fuzzy
+msgid "Save Article Changes"
+msgstr "XXXXXXXX"
+
+#: templates/articles/edit.html:28 templates/pages/edit.html:40
+#: templates/stories/edit.html:27
+msgid "Link to delete confirmation page"
+msgstr ""
+
+#: templates/articles/edit.html:28 templates/articles/index.html:10
+#: templates/articles/meta.html:102 templates/articles/options.html:39
+#: templates/campaign_monitor/campaigns/options.html:23
+#: templates/campaign_monitor/templates/options.html:16
+#: templates/contacts/index.html:8 templates/contacts/options.html:9
+#: templates/contacts/search.html:41 templates/contributions/index.html:9
+#: templates/contributions/options.html:21
+#: templates/corporate_memberships/edit_reps.html:62
+#: templates/corporate_memberships/options.html:40
+#: templates/directories/index.html:10 templates/directories/options.html:39
+#: templates/directories/pricing-options.html:13
+#: templates/email_blocks/options.html:10 templates/emails/options.html:9
+#: templates/entities/index.html:10 templates/entities/options.html:21
+#: templates/entities/search.html:41 templates/events/index.html:10
+#: templates/events/nav.html:46 templates/events/options.html:43
+#: templates/events/reg8n/multi_register.html:328
+#: templates/events/reg8n/multi_register.html:332 templates/files/index.html:9
+#: templates/files/options.html:11 templates/files/templates/tinymce.html:78
+#: templates/files/templates/tinymce_upload.html:22
+#: templates/forms/entry_options.html:10 templates/forms/options.html:22
+#: templates/help_files/options.html:13 templates/jobs/options.html:46
+#: templates/jobs/pricing-options.html:13 templates/locations/index.html:10
+#: templates/locations/options.html:26 templates/news/index.html:10
+#: templates/news/options.html:38 templates/pages/edit.html:40
+#: templates/pages/index.html:10 templates/pages/meta.html:86
+#: templates/pages/options.html:39 templates/photos/options.html:18
+#: templates/profiles/options.html:65 templates/redirects/options.html:12
+#: templates/resumes/delete.html:10 templates/resumes/index.html:10
+#: templates/resumes/options.html:35 templates/stories/edit.html:27
+#: templates/stories/meta.html:61 templates/stories/options.html:26
+#: templates/user_groups/options.html:29
+msgid "Delete"
 msgstr "XXXXXXXX"
 
 #: templates/articles/index.html:3 templates/contacts/index.html:2
@@ -3545,56 +3644,81 @@ msgstr "XXXXXXXX"
 msgid "Print View"
 msgstr "XXXXXXXX"
 
-#: templates/articles/index.html:10 templates/articles/options.html:39
-#: templates/campaign_monitor/campaigns/options.html:21
-#: templates/campaign_monitor/templates/options.html:19
-#: templates/contacts/index.html:8 templates/contacts/options.html:9
-#: templates/contacts/search.html:41 templates/contributions/index.html:9
-#: templates/contributions/options.html:21
-#: templates/corporate_memberships/edit_reps.html:62
-#: templates/corporate_memberships/options.html:40
-#: templates/directories/index.html:10 templates/directories/options.html:39
-#: templates/directories/pricing-options.html:13
-#: templates/email_blocks/options.html:10 templates/emails/options.html:9
-#: templates/entities/index.html:10 templates/entities/options.html:21
-#: templates/entities/search.html:41 templates/events/index.html:10
-#: templates/events/nav.html:46 templates/events/options.html:43
-#: templates/events/reg8n/multi_register.html:328
-#: templates/events/reg8n/multi_register.html:332 templates/files/index.html:9
-#: templates/files/options.html:11 templates/files/templates/tinymce.html:78
-#: templates/files/templates/tinymce_upload.html:22
-#: templates/forms/entry_options.html:10 templates/forms/options.html:22
-#: templates/help_files/options.html:13 templates/jobs/options.html:42
-#: templates/jobs/pricing-options.html:13 templates/locations/index.html:10
-#: templates/locations/options.html:26 templates/news/index.html:10
-#: templates/news/options.html:38 templates/pages/index.html:10
-#: templates/pages/meta.html:77 templates/pages/options.html:39
-#: templates/photos/options.html:18 templates/profiles/options.html:65
-#: templates/redirects/options.html:12 templates/resumes/delete.html:10
-#: templates/resumes/index.html:10 templates/resumes/options.html:35
-#: templates/stories/options.html:26 templates/user_groups/options.html:29
-msgid "Delete"
+#: templates/articles/meta.html:16
+#, fuzzy
+msgid "Released:"
 msgstr "XXXXXXXX"
 
-#: templates/articles/nav.html:42 templates/articles/options.html:26
-#: templates/directories/nav.html:42 templates/directories/options.html:26
-#: templates/events/nav.html:39 templates/events/options.html:37
-#: templates/jobs/nav.html:44 templates/jobs/options.html:29
-#: templates/news/nav.html:40 templates/news/options.html:25
-#: templates/pages/meta.html:80 templates/pages/nav.html:40
-#: templates/pages/options.html:26 templates/resumes/nav.html:44
-#: templates/resumes/options.html:29
+#: templates/articles/meta.html:18
+msgid "by"
+msgstr ""
+
+#: templates/articles/meta.html:28 templates/news/view.html:34
+#: templates/notification/news_added/full.html:29
+msgid "Source:"
+msgstr "XXXXXXXX"
+
+#: templates/articles/meta.html:54 templates/directories/view.html:93
+#: templates/jobs/view.html:192 templates/news/search.html:50
+#: templates/news/view.html:57 templates/pages/meta.html:21
+#: templates/stories/meta.html:27
+msgid "Category:"
+msgstr "XXXXXXXX"
+
+#: templates/articles/meta.html:56 templates/directories/view.html:97
+#: templates/jobs/view.html:196 templates/news/search.html:54
+#: templates/news/view.html:61 templates/pages/meta.html:23
+#: templates/stories/meta.html:29
+msgid "Sub Category:"
+msgstr "XXXXXXXX"
+
+#: templates/articles/meta.html:62 templates/jobs/view.html:202
+#: templates/news/view.html:67 templates/photos/details.html:79
+#: templates/resumes/view.html:87 templates/stories/meta.html:18
+msgid "Tags:"
+msgstr "XXXXXXXX"
+
+#: templates/articles/meta.html:70
+#, python-format
+msgid ""
+"Last updated %(update_date)s\n"
+"                \tby:"
+msgstr "XXXXXXXX"
+
+#: templates/articles/meta.html:81 templates/pages/meta.html:65
+msgid "Share"
+msgstr "XXXXXXXX"
+
+#: templates/articles/meta.html:95 templates/pages/meta.html:79
+#: templates/stories/meta.html:54
+msgid "Eventlogs"
+msgstr "XXXXXXXX"
+
+#: templates/articles/meta.html:97 templates/pages/meta.html:81
+#: templates/stories/meta.html:56
+msgid "Options"
+msgstr "XXXXXXXX"
+
+#: templates/articles/meta.html:105 templates/articles/nav.html:42
+#: templates/articles/options.html:26 templates/directories/nav.html:42
+#: templates/directories/options.html:26 templates/events/nav.html:39
+#: templates/events/options.html:37 templates/jobs/nav.html:44
+#: templates/jobs/options.html:31 templates/news/nav.html:40
+#: templates/news/options.html:25 templates/pages/meta.html:89
+#: templates/pages/nav.html:40 templates/pages/options.html:26
+#: templates/resumes/nav.html:44 templates/resumes/options.html:29
 msgid "Edit Meta"
 msgstr "XXXXXXXX"
 
-#: templates/articles/nav.html:43 templates/articles/options.html:31
-#: templates/articles/options.html.py:33 templates/directories/nav.html:43
-#: templates/directories/options.html:31 templates/directories/options.html:33
-#: templates/jobs/nav.html:45 templates/jobs/options.html:34
-#: templates/jobs/options.html.py:36 templates/news/nav.html:41
-#: templates/news/options.html:30 templates/news/options.html.py:32
-#: templates/pages/meta.html:81 templates/pages/nav.html:41
-#: templates/pages/options.html:31 templates/pages/options.html.py:33
+#: templates/articles/meta.html:106 templates/articles/nav.html:43
+#: templates/articles/options.html:31 templates/articles/options.html.py:33
+#: templates/directories/nav.html:43 templates/directories/options.html:31
+#: templates/directories/options.html:33 templates/jobs/nav.html:45
+#: templates/jobs/options.html:37 templates/jobs/options.html.py:39
+#: templates/news/nav.html:41 templates/news/options.html:30
+#: templates/news/options.html.py:32 templates/pages/meta.html:90
+#: templates/pages/nav.html:41 templates/pages/options.html:31
+#: templates/pages/options.html.py:33 templates/stories/meta.html:64
 #: templates/stories/nav.html:40 templates/stories/options.html:19
 #: templates/stories/options.html.py:21
 msgid "Edit Categories"
@@ -3602,7 +3726,7 @@ msgstr "XXXXXXXX"
 
 #: templates/articles/nav.html:52
 #: templates/campaign_monitor/campaigns/nav.html:24
-#: templates/campaign_monitor/templates/nav.html:34
+#: templates/campaign_monitor/templates/nav.html:36
 #: templates/contacts/nav.html:38 templates/contributions/nav.html:27
 #: templates/corporate_memberships/nav.html:59
 #: templates/directories/nav.html:53 templates/directories/pricing-nav.html:46
@@ -3612,7 +3736,7 @@ msgstr "XXXXXXXX"
 #: templates/help_files/nav.html:32 templates/imports/nav.html:35
 #: templates/invoices/nav.html:35 templates/jobs/nav.html:55
 #: templates/jobs/pricing-nav.html:46 templates/locations/nav.html:48
-#: templates/make_payments/nav.html:36 templates/memberships/nav.html:40
+#: templates/make_payments/nav.html:36 templates/memberships/nav.html:42
 #: templates/memberships/entries/nav.html:42 templates/news/nav.html:49
 #: templates/pages/nav.html:49 templates/photos/nav.html:51
 #: templates/photos/photo-set/nav.html:55 templates/profiles/nav.html:64
@@ -3627,9 +3751,9 @@ msgstr "XXXXXXXX"
 #: templates/contributions/options.html:9
 #: templates/directories/options.html:14 templates/entities/options.html:9
 #: templates/entities/print-view.html:15 templates/event_logs/options.html:4
-#: templates/events/options.html:23 templates/jobs/options.html:18
+#: templates/events/options.html:23 templates/jobs/options.html:20
 #: templates/locations/options.html:14 templates/news/options.html:14
-#: templates/pages/meta.html:55 templates/pages/options.html:14
+#: templates/pages/meta.html:64 templates/pages/options.html:14
 #: templates/resumes/options.html:18
 msgid "Print"
 msgstr "XXXXXXXX"
@@ -3655,24 +3779,11 @@ msgstr "XXXXXXXX"
 msgid "Submitted on %(date)s by %(creator)s"
 msgstr "XXXXXXXX"
 
-#: templates/articles/search.html:22
+#: templates/articles/search.html:21
 msgid " Search"
 msgstr "XXXXXXXX"
 
-#: templates/articles/search.html:45
-#, fuzzy, python-format
-msgid " Released on %(create_date)s by: %(article_creator)s"
-msgstr "XXXXXXXX"
-
-#: templates/articles/search.html:49 templates/directories/search.html:52
-msgid "Category: "
-msgstr "XXXXXXXX"
-
-#: templates/articles/search.html:53 templates/directories/search.html:56
-msgid "Sub Category: "
-msgstr "XXXXXXXX"
-
-#: templates/articles/search.html:65 templates/contacts/search.html:65
+#: templates/articles/search.html:32 templates/contacts/search.html:65
 #: templates/contributions/search.html:44
 #: templates/corporate_memberships/roster_search.html:139
 #: templates/corporate_memberships/search.html:140
@@ -3680,46 +3791,15 @@ msgstr "XXXXXXXX"
 #: templates/directories/search.html:68 templates/email_blocks/search.html:56
 #: templates/emails/search.html:49 templates/entities/search.html:66
 #: templates/event_logs/search.html:154
-#: templates/events/registrants/search.html:184 templates/files/search.html:81
-#: templates/forms/search.html:34 templates/help_files/search.html:51
+#: templates/events/registrants/search.html:192 templates/files/search.html:81
+#: templates/forms/search.html:34 templates/help_files/search.html:29
 #: templates/invoices/search.html:31 templates/jobs/pricing-search.html:54
 #: templates/jobs/search.html:50 templates/locations/search.html:46
 #: templates/memberships/entries/search.html:62 templates/news/search.html:66
 #: templates/pages/search.html:32 templates/profiles/search.html:69
 #: templates/redirects/search.html:53 templates/resumes/search.html:43
-#: templates/stories/search.html:45 templates/user_groups/search.html:50
+#: templates/stories/search.html:31 templates/user_groups/search.html:50
 msgid "0 Results Found"
-msgstr "XXXXXXXX"
-
-#: templates/articles/view.html:37
-msgid "Release Date: "
-msgstr "XXXXXXXX"
-
-#: templates/articles/view.html:38 templates/directories/view.html:43
-msgid "Source: "
-msgstr "XXXXXXXX"
-
-#: templates/articles/view.html:63 templates/directories/view.html:93
-#: templates/jobs/view.html:187 templates/news/search.html:50
-#: templates/news/view.html:57 templates/pages/meta.html:19
-#: templates/stories/view.html:31
-msgid "Category:"
-msgstr "XXXXXXXX"
-
-#: templates/articles/view.html:67 templates/directories/view.html:97
-#: templates/jobs/view.html:191 templates/news/search.html:54
-#: templates/news/view.html:61 templates/pages/meta.html:21
-#: templates/stories/view.html:35
-msgid "Sub Category:"
-msgstr "XXXXXXXX"
-
-#: templates/articles/view.html:73 templates/directories/view.html:103
-msgid "Tags: "
-msgstr "XXXXXXXX"
-
-#: templates/articles/view.html:81
-#, python-format
-msgid "Submitted on %(create_date)s by:"
 msgstr "XXXXXXXX"
 
 #: templates/base/feedback.html:4
@@ -3740,7 +3820,7 @@ msgid "0 Campaigns Found"
 msgstr "XXXXXXXX"
 
 #: templates/campaign_monitor/campaigns/nav.html:18
-#: templates/campaign_monitor/templates/nav.html:22
+#: templates/campaign_monitor/templates/nav.html:23
 msgid "Campaigns"
 msgstr "XXXXXXXX"
 
@@ -3753,20 +3833,20 @@ msgid "Add Campaign"
 msgstr "XXXXXXXX"
 
 #: templates/campaign_monitor/campaigns/nav.html:30
-#: templates/campaign_monitor/templates/nav.html:27
+#: templates/campaign_monitor/templates/nav.html:29
 msgid "Templates"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/campaigns/options.html:12
-msgid "Copy"
-msgstr "XXXXXXXX"
-
-#: templates/campaign_monitor/campaigns/options.html:15
+#: templates/campaign_monitor/campaigns/options.html:14
 msgid "Send"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/campaigns/options.html:16
+#: templates/campaign_monitor/campaigns/options.html:15
 msgid "Schedule"
+msgstr "XXXXXXXX"
+
+#: templates/campaign_monitor/campaigns/options.html:18
+msgid "Copy"
 msgstr "XXXXXXXX"
 
 #: templates/campaign_monitor/templates/add.html:6
@@ -3785,19 +3865,19 @@ msgstr "XXXXXXXX"
 
 #: templates/campaign_monitor/templates/index.html:33
 #: templates/campaign_monitor/templates/index.html:39
-#: templates/campaign_monitor/templates/view.html:29
-#: templates/campaign_monitor/templates/view.html:33
+#: templates/campaign_monitor/templates/view.html:30
+#: templates/campaign_monitor/templates/view.html:34
 msgid "Screenshot:"
 msgstr "XXXXXXXX"
 
 #: templates/campaign_monitor/templates/index.html:39
-#: templates/campaign_monitor/templates/view.html:33
+#: templates/campaign_monitor/templates/view.html:34
 msgid " Not Available"
 msgstr "XXXXXXXX"
 
 #: templates/campaign_monitor/templates/index.html:41
-#: templates/campaign_monitor/templates/options.html:11
-#: templates/campaign_monitor/templates/view.html:35
+#: templates/campaign_monitor/templates/options.html:10
+#: templates/campaign_monitor/templates/view.html:36
 msgid "Preview"
 msgstr "XXXXXXXX"
 
@@ -3805,30 +3885,30 @@ msgstr "XXXXXXXX"
 msgid "0 Templates Found"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/templates/nav.html:29
+#: templates/campaign_monitor/templates/nav.html:31
 msgid "Templates:"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/templates/nav.html:31
+#: templates/campaign_monitor/templates/nav.html:33
 msgid "Add Template"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/templates/view.html:37
+#: templates/campaign_monitor/templates/view.html:38
 msgid "Html File:"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/templates/view.html:37
-#: templates/campaign_monitor/templates/view.html:40
-#: templates/campaign_monitor/templates/view.html:43
+#: templates/campaign_monitor/templates/view.html:38
+#: templates/campaign_monitor/templates/view.html:41
+#: templates/campaign_monitor/templates/view.html:44
 #: templates/photos/sizes.html:31
 msgid "Download"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/templates/view.html:40
+#: templates/campaign_monitor/templates/view.html:41
 msgid "Zip File:"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/templates/view.html:43
+#: templates/campaign_monitor/templates/view.html:44
 msgid "Screenshot File:"
 msgstr "XXXXXXXX"
 
@@ -4121,7 +4201,7 @@ msgstr "XXXXXXXX"
 #: templates/corporate_memberships/invoice_search_result_line.html:15
 #: templates/directories/invoice_search_result_line.html:15
 #: templates/events/invoice_search_result_line.html:14
-#: templates/events/registrants/roster.html:199
+#: templates/events/registrants/roster.html:200
 #: templates/invoices/invoice_item.html:22
 #: templates/jobs/invoice_search_result_line.html:15
 #: templates/make_payments/invoice_search_result_line.html:15
@@ -4130,19 +4210,12 @@ msgid "Balance"
 msgstr "XXXXXXXX"
 
 #: templates/corporate_memberships/invoice_search_result_line.html:29
-#: templates/corporate_memberships/invoice_view_display.html:36
 msgid "Individual memberships renewed in this transaction:"
 msgstr "XXXXXXXX"
 
-#: templates/corporate_memberships/invoice_view_display.html:28
-msgid "Corporate Membership Information not available"
-msgstr "XXXXXXXX"
-
-#: templates/corporate_memberships/invoice_view_display.html:53
-#: templates/directories/invoice_view_display.html:28
-#: templates/events/reg8n/cancel_registration.html:92
-#: templates/events/reg8n/register-confirm.html:182
-msgid "Amount: "
+#: templates/corporate_memberships/invoice_view_display.html:19
+#, fuzzy
+msgid "Corporate Membership information not available"
 msgstr "XXXXXXXX"
 
 #: templates/corporate_memberships/nav.html:49
@@ -4150,16 +4223,17 @@ msgid "Pendings"
 msgstr "XXXXXXXX"
 
 #: templates/corporate_memberships/nav.html:50
+#: templates/memberships/nav.html:30
 msgid "Import"
 msgstr "XXXXXXXX"
 
 #: templates/corporate_memberships/nav.html:51 templates/events/nav.html:56
-#: templates/memberships/nav.html:29
+#: templates/memberships/nav.html:31
 msgid "Export"
 msgstr "XXXXXXXX"
 
 #: templates/corporate_memberships/options.html:30
-#: templates/entities/options.html:16 templates/jobs/options.html:25
+#: templates/entities/options.html:16 templates/jobs/options.html:27
 #: templates/locations/options.html:21 templates/news/options.html:21
 #: templates/pages/options.html:22 templates/profiles/options.html:44
 #: templates/resumes/options.html:25
@@ -4248,8 +4322,8 @@ msgstr "XXXXXXXX"
 
 #: templates/corporate_memberships/renew.html:127
 #: templates/events/reg8n/multi_register.html:261
-#: templates/events/registrants/roster.html:286
-#: templates/events/registrants/roster.html:313
+#: templates/events/registrants/roster.html:289
+#: templates/events/registrants/roster.html:316
 #: templates/invoices/detail.html:69
 msgid "Total"
 msgstr "XXXXXXXX"
@@ -4287,7 +4361,6 @@ msgid "Roster - %(member)s"
 msgstr "XXXXXXXX"
 
 #: templates/corporate_memberships/roster_search.html:69
-#: templates/make_payments/invoice_view_display.html:29
 #: templates/make_payments/view.html:47
 #: templates/notification/corp_memb_added/full.html:27
 #: templates/notification/corp_memb_edited/full.html:27
@@ -4297,9 +4370,7 @@ msgid "Address:"
 msgstr "XXXXXXXX"
 
 #: templates/corporate_memberships/roster_search.html:77
-#: templates/jobs/view.html:160
-#: templates/make_payments/invoice_view_display.html:23
-#: templates/make_payments/view.html:50
+#: templates/jobs/view.html:165 templates/make_payments/view.html:50
 #: templates/notification/corp_memb_added/full.html:35
 #: templates/notification/corp_memb_added/full.html:50
 #: templates/notification/corp_memb_edited/full.html:35
@@ -4457,7 +4528,7 @@ msgstr "XXXXXXXX"
 
 #: templates/corporate_memberships/admin/stacked.html:124
 #: templates/memberships/admin/stacked.html:159
-#: templates/user_groups/detail.html:84 templates/user_groups/detail.html:107
+#: templates/user_groups/detail.html:86 templates/user_groups/detail.html:109
 msgid "Remove"
 msgstr "XXXXXXXX"
 
@@ -4529,7 +4600,7 @@ msgstr "XXXXXXXX"
 
 #: templates/corporate_memberships/import/preview.html:66
 #: templates/invoices/adjust.html:52 templates/invoices/detail.html:53
-#: templates/invoices/total_display.html:24
+#: templates/invoices/total_display.html:26
 #: templates/notification/invoice_edited/full.html:28
 msgid "Total:"
 msgstr "XXXXXXXX"
@@ -4537,7 +4608,7 @@ msgstr "XXXXXXXX"
 #: templates/corporate_memberships/import/preview.html:68
 #, python-format
 msgid "%(inval)s</em> is invalid and will be skipped,"
-msgid_plural "%(inval)s</em>are invalid and will be skipped,"
+msgid_plural "%(inval)s</em> are invalid and will be skipped,"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -4622,65 +4693,72 @@ msgstr "XXXXXXXX"
 msgid "Step 1/4 - Upload File"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:121 templates/help_files/nav.html:20
+#: templates/dashboard/index.html:125 templates/help_files/nav.html:20
 #: templates/redirects/nav.html:20
 msgid "Redirects"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:135
+#: templates/dashboard/index.html:139
 msgid "Tendenci Blog"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:150
+#: templates/dashboard/index.html:154
 msgid "Tendenci Help"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:171
+#: templates/dashboard/index.html:175
 msgid "Admin Quick Links"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:174
+#: templates/dashboard/index.html:178
 msgid "Add a page"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:177
+#: templates/dashboard/index.html:181
 msgid "Search All Modules"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:183 templates/imports/users.html:17
+#: templates/dashboard/index.html:187 templates/imports/users.html:17
 msgid "Import Users"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:185
+#: templates/dashboard/index.html:189
 msgid "Enable/Disable modules"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:189
+#: templates/dashboard/index.html:193
 msgid "Admin Panel"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:195
+#: templates/dashboard/index.html:199
 msgid "Update Theme"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:197
+#: templates/dashboard/index.html:201
 msgid "Update Styles"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:198
+#: templates/dashboard/index.html:202
 msgid "Update Template"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:199
+#: templates/dashboard/index.html:203
 msgid "Update Navigation"
 msgstr "XXXXXXXX"
 
-#: templates/dashboard/index.html:200
+#: templates/dashboard/index.html:204
 msgid "Update Footer"
 msgstr "XXXXXXXX"
 
-#: templates/directories/add.html:31 templates/jobs/add.html:31
+#: templates/directories/add.html:31 templates/jobs/add.html:33
 msgid "Add pricing options"
+msgstr "XXXXXXXX"
+
+#: templates/directories/delete.html:4 templates/entities/delete.html:4
+#: templates/events/delete.html:4 templates/jobs/delete.html:4
+#: templates/locations/delete.html:4 templates/news/delete.html:4
+#: templates/pages/delete.html:5
+msgid "Delete Page"
 msgstr "XXXXXXXX"
 
 #: templates/directories/delete.html:5
@@ -4706,10 +4784,6 @@ msgstr "XXXXXXXX"
 
 #: templates/directories/invoice_search_result_line.html:12
 msgid "Headline"
-msgstr "XXXXXXXX"
-
-#: templates/directories/invoice_view_display.html:20
-msgid "Directory Information not available"
 msgstr "XXXXXXXX"
 
 #: templates/directories/nav.html:49 templates/jobs/nav.html:51
@@ -4823,7 +4897,6 @@ msgid "View Price Details:"
 msgstr "XXXXXXXX"
 
 #: templates/directories/pricing-view.html:30
-#: templates/jobs/invoice_view_display.html:31
 #: templates/jobs/pricing-search.html:35 templates/jobs/pricing-view.html:30
 msgid "Duration:"
 msgstr "XXXXXXXX"
@@ -4868,6 +4941,22 @@ msgstr "XXXXXXXX"
 #: templates/directories/search.html:48
 #, python-format
 msgid "Released on %(da_create)s by %(da_creator)s"
+msgstr "XXXXXXXX"
+
+#: templates/directories/search.html:52
+msgid "Category: "
+msgstr "XXXXXXXX"
+
+#: templates/directories/search.html:56
+msgid "Sub Category: "
+msgstr "XXXXXXXX"
+
+#: templates/directories/view.html:43
+msgid "Source: "
+msgstr "XXXXXXXX"
+
+#: templates/directories/view.html:103
+msgid "Tags: "
 msgstr "XXXXXXXX"
 
 #: templates/directories/view.html:111
@@ -5307,34 +5396,20 @@ msgstr "XXXXXXXX"
 msgid "RegID"
 msgstr "XXXXXXXX"
 
-#: templates/events/invoice_view_display.html:7
-#: templates/events/message/add.html:31
-msgid "Event Title: "
-msgstr "XXXXXXXX"
-
-#: templates/events/invoice_view_display.html:8
-msgid "Time: "
-msgstr "XXXXXXXX"
-
-#: templates/events/invoice_view_display.html:9
-msgid "Price: "
-msgstr "XXXXXXXX"
-
-#: templates/events/invoice_view_display.html:12 templates/events/nav.html:40
-#: templates/events/options.html:34
-#: templates/events/reg8n/register-confirm.html:161
-msgid "Registrants"
-msgstr "XXXXXXXX"
-
-#: templates/events/invoice_view_display.html:22
+#: templates/events/invoice_view_display.html:18
 #: templates/events/reg8n/multi_register.html:278
 #: templates/events/reg8n/reg8n_edit.html:83
 msgid "Registrant"
 msgstr "XXXXXXXX"
 
+#: templates/events/invoice_view_display.html:18
+#, fuzzy
+msgid "(name not available)"
+msgstr "XXXXXXXX"
+
 #: templates/events/month-view.html:68
-#, python-format
-msgid "+%(events|length|add:\"-2\")s more"
+#, fuzzy, python-format
+msgid "+%(events_more)s more"
 msgstr "XXXXXXXX"
 
 #: templates/events/month-view.html:84
@@ -5343,6 +5418,11 @@ msgstr "XXXXXXXX"
 
 #: templates/events/month-view.html:86
 msgid "All Event Types"
+msgstr "XXXXXXXX"
+
+#: templates/events/nav.html:40 templates/events/options.html:34
+#: templates/events/reg8n/register-confirm.html:163
+msgid "Registrants"
 msgstr "XXXXXXXX"
 
 #: templates/events/nav.html:51
@@ -5361,6 +5441,7 @@ msgid "More"
 msgstr "XXXXXXXX"
 
 #: templates/events/options.html:35
+#: templates/events/registrants/roster.html:11
 #: templates/events/registrants/roster.html:168
 msgid "Registrant Roster"
 msgstr "XXXXXXXX"
@@ -5408,17 +5489,17 @@ msgstr[1] ""
 msgid "Past event"
 msgstr "XXXXXXXX"
 
-#: templates/events/view.html:41 templates/events/registrants/search.html:98
+#: templates/events/view.html:41 templates/events/registrants/search.html:99
 msgid "Speaker"
 msgstr "XXXXXXXX"
 
 #: templates/events/view.html:56 templates/events/view.html.py:86
 #: templates/events/view.html:129
-#: templates/events/reg8n/register-confirm.html:136
+#: templates/events/reg8n/register-confirm.html:138
 msgid "Full Description"
 msgstr "XXXXXXXX"
 
-#: templates/events/view.html:71 templates/events/registrants/search.html:107
+#: templates/events/view.html:71 templates/events/registrants/search.html:108
 msgid "Organizer"
 msgstr "XXXXXXXX"
 
@@ -5437,6 +5518,10 @@ msgstr "XXXXXXXX"
 
 #: templates/events/message/add.html:25
 msgid "Email to Event Registrants"
+msgstr "XXXXXXXX"
+
+#: templates/events/message/add.html:31
+msgid "Event Title: "
 msgstr "XXXXXXXX"
 
 #: templates/events/message/add.html:35
@@ -5468,10 +5553,6 @@ msgstr "XXXXXXXX"
 
 #: templates/events/reg8n/cancel_registrant.html:74
 #: templates/events/reg8n/cancel_registration.html:122
-#: templates/invoices/object_display.html:23
-#: templates/jobs/invoice_view_display.html:38
-#: templates/make_payments/invoice_view_display.html:36
-#: templates/memberships/invoice_view_display.html:27
 #: templates/payments/view.html:112
 msgid "Amount:"
 msgstr "XXXXXXXX"
@@ -5496,8 +5577,12 @@ msgid "Cancelling"
 msgstr "XXXXXXXX"
 
 #: templates/events/reg8n/cancel_registration.html:87
-#, python-format
-msgid "Guest #%(forloop.counter0)s"
+#, fuzzy, python-format
+msgid "Guest #%(forl)s"
+msgstr "XXXXXXXX"
+
+#: templates/events/reg8n/cancel_registration.html:92
+msgid "Amount: "
 msgstr "XXXXXXXX"
 
 #: templates/events/reg8n/cancel_registration.html:103
@@ -5513,7 +5598,7 @@ msgid "Registration Form Edit"
 msgstr "XXXXXXXX"
 
 #: templates/events/reg8n/multi_register.html:160
-#: templates/events/reg8n/register-confirm.html:76
+#: templates/events/reg8n/register-confirm.html:78
 msgid "Registration"
 msgstr "XXXXXXXX"
 
@@ -5549,95 +5634,95 @@ msgstr "XXXXXXXX"
 msgid "Registration Confirmation"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:81
+#: templates/events/reg8n/register-confirm.html:83
 msgid "Registration cancelled."
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:85
+#: templates/events/reg8n/register-confirm.html:87
 msgid "Almost registered. Payment is still required."
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:89
+#: templates/events/reg8n/register-confirm.html:91
 msgid "Complete registration."
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:96
-#, python-format
-msgid "You are registered. Balance is $%(registration.invoice.balance)s. "
+#: templates/events/reg8n/register-confirm.html:98
+#, fuzzy, python-format
+msgid "You are registered. Balance is $%(regbal)s. "
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:100
+#: templates/events/reg8n/register-confirm.html:102
 msgid "Pay online."
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:107
+#: templates/events/reg8n/register-confirm.html:109
 msgid "You are registered. Enjoy the event!"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:115
-#, python-format
-msgid "Registration Canceled on %(registrant.cancel_dt|date_short)s"
+#: templates/events/reg8n/register-confirm.html:117
+#, fuzzy, python-format
+msgid "Registration Canceled on %(cancel_dt)s"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:120
+#: templates/events/reg8n/register-confirm.html:122
 #: templates/notification/event_registration_confirmation/full.html:44
 msgid "Event Details"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:141
+#: templates/events/reg8n/register-confirm.html:143
 msgid "Your Details"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:143
+#: templates/events/reg8n/register-confirm.html:145
 msgid "Registration Number: "
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:152
 #: templates/events/reg8n/register-confirm.html:154
+#: templates/events/reg8n/register-confirm.html:156
 msgid "Cancel Registation"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:177
-msgid "Guest"
+#: templates/events/reg8n/register-confirm.html:178
+#, fuzzy
+msgid "Guest #"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:191
-#: templates/events/registrants/search.html:175
-#, python-format
-msgid "Canceled on %(registrant.cancel_dt|date_short)s"
+#: templates/events/reg8n/register-confirm.html:183
+#, fuzzy, python-format
+msgid " Canceled on %(cancel_date)s"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:210
+#: templates/events/reg8n/register-confirm.html:204
 msgid "Register More People"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:215
+#: templates/events/reg8n/register-confirm.html:209
 msgid "Payment Details"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:220
+#: templates/events/reg8n/register-confirm.html:214
 msgid "View invoice"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:224
+#: templates/events/reg8n/register-confirm.html:218
 msgid "Pay online"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/register-confirm.html:229
+#: templates/events/reg8n/register-confirm.html:223
 #, python-format
-msgid "Total $%(registration.invoice.total|floatformat:\"2\")s"
-msgstr "XXXXXXXX"
+msgid "Total $%(total)s"
+msgstr ""
 
-#: templates/events/reg8n/register-confirm.html:230
+#: templates/events/reg8n/register-confirm.html:224
 #, python-format
-msgid "Balance $%(registration.invoice.balance|floatformat:\"2\")s"
-msgstr "XXXXXXXX"
+msgid "Balance $%(balance)s"
+msgstr ""
 
 #: templates/events/reg8n/register-free.html:36
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "<h1>Register for Event</h1>\n"
-"    <div class='event-title'>%(event.title)s</div>"
+"    <div class='event-title'>%(event_title)s</div>"
 msgstr "XXXXXXXX"
 
 #: templates/events/reg8n/register-priced.html:36
@@ -5648,28 +5733,28 @@ msgstr "XXXXXXXX"
 msgid "Payment Methods Available"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/registration_pricing.html:6
+#: templates/events/reg8n/registration_pricing.html:10
 msgid "Event has ended"
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/registration_pricing.html:11
+#: templates/events/reg8n/registration_pricing.html:15
 msgid "Event is full"
 msgstr "XXXXXXXX"
 
 #: templates/events/reg8n/registration_pricing.html:20
-msgid "Register for Free"
-msgstr "XXXXXXXX"
-
-#: templates/events/reg8n/registration_pricing.html:61
-msgid "Register"
-msgstr "XXXXXXXX"
-
-#: templates/events/reg8n/registration_pricing.html:69
 msgid "Registration starts on "
 msgstr "XXXXXXXX"
 
-#: templates/events/reg8n/registration_pricing.html:76
+#: templates/events/reg8n/registration_pricing.html:25
 msgid "Registration has ended"
+msgstr "XXXXXXXX"
+
+#: templates/events/reg8n/registration_pricing.html:34
+msgid "Register for Free"
+msgstr "XXXXXXXX"
+
+#: templates/events/reg8n/registration_pricing.html:75
+msgid "Register"
 msgstr "XXXXXXXX"
 
 #: templates/events/registrants/options.html:5
@@ -5705,95 +5790,105 @@ msgid "Title &amp; Company"
 msgstr "XXXXXXXX"
 
 #: templates/events/registrants/roster.html:195
-msgid "Inv#"
+#, fuzzy
+msgid "Price Type"
 msgstr "XXXXXXXX"
 
 #: templates/events/registrants/roster.html:196
-msgid "Inv$"
+msgid "Inv#"
 msgstr "XXXXXXXX"
 
 #: templates/events/registrants/roster.html:197
-msgid "Reg#"
+msgid "Inv$"
 msgstr "XXXXXXXX"
 
 #: templates/events/registrants/roster.html:198
+msgid "Reg#"
+msgstr "XXXXXXXX"
+
+#: templates/events/registrants/roster.html:199
 msgid "Reg$"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:223
-#: templates/events/registrants/roster.html:258
+#: templates/events/registrants/roster.html:224
+#: templates/events/registrants/roster.html:260
 msgid "Guest#"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:252
+#: templates/events/registrants/roster.html:254
 msgid "additional registrants:"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:265
+#: templates/events/registrants/roster.html:267
 msgid "admin notes: "
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:272
+#: templates/events/registrants/roster.html:275
 msgid "TENDERED: "
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:274
+#: templates/events/registrants/roster.html:277
 msgid "Not Tendered"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:299
+#: templates/events/registrants/roster.html:302
 msgid "Paid"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:306
+#: templates/events/registrants/roster.html:309
 msgid "Non-Paid"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:321
+#: templates/events/registrants/roster.html:324
 msgid "Showing only non-paid registrants."
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:325
+#: templates/events/registrants/roster.html:328
 msgid "Showing only paid registrants."
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:329
+#: templates/events/registrants/roster.html:332
 msgid "Showing paid and non-paid registrants."
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:333
+#: templates/events/registrants/roster.html:336
 msgid "Show only <strong>paid</strong>"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:334
+#: templates/events/registrants/roster.html:337
 msgid "Show only <strong>non-paid</strong>"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/roster.html:335
+#: templates/events/registrants/roster.html:338
 msgid "Show <strong>total</strong>"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/search.html:117
+#: templates/events/registrants/search.html:125
 msgid "Event Registrant Search"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/search.html:156
-#, python-format
-msgid "Web Developer at %(registrant.company_name)s"
+#: templates/events/registrants/search.html:164
+#, fuzzy, python-format
+msgid "Web Developer at %(regcomp)s"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/search.html:159
+#: templates/events/registrants/search.html:167
 msgid "Web Developer"
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/search.html:162
-#, python-format
-msgid "Works at %(registrant.company_name)s "
+#: templates/events/registrants/search.html:170
+#, fuzzy, python-format
+msgid "Works at %(regcomp)s "
 msgstr "XXXXXXXX"
 
-#: templates/events/registrants/search.html:173
-#, python-format
-msgid "Registered on %(registrant.registration.create_dt|date_short)s"
+#: templates/events/registrants/search.html:181
+#, fuzzy, python-format
+msgid "Registered on %(reg_date)s"
+msgstr "XXXXXXXX"
+
+#: templates/events/registrants/search.html:183
+#, fuzzy, python-format
+msgid "Canceled on %(cancel_date)s"
 msgstr "XXXXXXXX"
 
 #: templates/feeds/photo-latest-albums.html:3
@@ -5848,8 +5943,8 @@ msgid "Download this text file"
 msgstr "XXXXXXXX"
 
 #: templates/files/search.html:71
-#, python-format
-msgid "Updated %(file.update_dt|date:\"D d M Y P\")s by %(file.creator)s"
+#, fuzzy, python-format
+msgid "Updated %(file_update)s by %(file_creator)s"
 msgstr "XXXXXXXX"
 
 #: templates/files/view.html:26
@@ -5857,8 +5952,8 @@ msgid "View File"
 msgstr "XXXXXXXX"
 
 #: templates/files/view.html:42
-#, python-format
-msgid "Created on %(file.create_dt|date:\"long\")s by %(file.creator)s"
+#, fuzzy, python-format
+msgid "Created on %(create_date)s by %(file_creator)s"
 msgstr "XXXXXXXX"
 
 #: templates/files/templates/tinymce.html:47
@@ -5919,7 +6014,7 @@ msgstr "XXXXXXXX"
 msgid "Are you sure you want to delete this entry?"
 msgstr "XXXXXXXX"
 
-#: templates/forms/options.html:17 templates/memberships/nav.html:33
+#: templates/forms/options.html:17 templates/memberships/nav.html:35
 msgid "Entries"
 msgstr "XXXXXXXX"
 
@@ -5935,24 +6030,11 @@ msgstr "XXXXXXXX"
 msgid "Fields Update"
 msgstr "XXXXXXXX"
 
-#: templates/help_files/details.html:16 templates/help_files/topic.html:16
+#: templates/help_files/details.html:17 templates/help_files/topic.html:18
 msgid "All Help Files"
 msgstr "XXXXXXXX"
 
-#: templates/help_files/details.html:43 templates/help_files/search.html:41
-msgid "Private Helpfile"
-msgstr "XXXXXXXX"
-
-#: templates/help_files/details.html:45
-msgid "Help Topics: "
-msgstr "XXXXXXXX"
-
-#: templates/help_files/details.html:52
-#, python-format
-msgid "Created on %(dat)s by: "
-msgstr "XXXXXXXX"
-
-#: templates/help_files/index.html:17 templates/help_files/topic.html:17
+#: templates/help_files/index.html:17
 msgid "Help Files"
 msgstr "XXXXXXXX"
 
@@ -6000,13 +6082,14 @@ msgstr "XXXXXXXX"
 msgid "Help Files Search"
 msgstr "XXXXXXXX"
 
-#: templates/help_files/search.html:43
-msgid "Help Topics:"
-msgstr "XXXXXXXX"
-
-#: templates/help_files/topic.html:16
+#: templates/help_files/topic.html:18
 #, python-format
 msgid "%(topic)s help files"
+msgstr "XXXXXXXX"
+
+#: templates/help_files/topic.html:19
+#, fuzzy, python-format
+msgid "%(topic_title)s Help Files"
 msgstr "XXXXXXXX"
 
 #: templates/imports/users.html:22
@@ -6030,10 +6113,10 @@ msgid "Make Users "
 msgstr "XXXXXXXX"
 
 #: templates/imports/users.html:66
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "<h2>Identify Duplicates by  </h2>\n"
-"\t<p>%(form.key)s</p>"
+"\t<p>%(form_key)s</p>"
 msgstr "XXXXXXXX"
 
 #: templates/imports/users.html:71
@@ -6158,7 +6241,7 @@ msgstr "XXXXXXXX"
 msgid "Current Invoice Totals"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/adjust.html:58 templates/invoices/total_display.html:27
+#: templates/invoices/adjust.html:58 templates/invoices/total_display.html:30
 msgid "Payments/Credits:"
 msgstr "XXXXXXXX"
 
@@ -6179,18 +6262,17 @@ msgid "Invoice Accounting Entries View"
 msgstr "XXXXXXXX"
 
 #: templates/invoices/detail.html:29
-#, python-format
-msgid "Accounting Entries View for Invoice %(invoice.id)s"
+#, fuzzy, python-format
+msgid "Accounting Entries View for Invoice %(invoice_id)s"
 msgstr "XXXXXXXX"
 
 #: templates/invoices/detail.html:32
-#, python-format
+#, fuzzy, python-format
 msgid ""
-"A summary of the accounting entries for invoice %(invoice.id)s is below."
+"A summary of the accounting entries for invoice %(invoice_id)s is below."
 msgstr "XXXXXXXX"
 
 #: templates/invoices/detail.html:34
-#: templates/invoices/payment_history.html:37
 #: templates/notification/payment_added/full.html:31
 msgid "Invoice:"
 msgstr "XXXXXXXX"
@@ -6227,48 +6309,95 @@ msgstr "XXXXXXXX"
 msgid "Invoices:"
 msgstr "XXXXXXXX"
 
+#: templates/invoices/payment_history.html:14
+#, fuzzy
+msgid "Payment #"
+msgstr "XXXXXXXX"
+
+#: templates/invoices/payment_history.html:15
+msgid "by:"
+msgstr ""
+
+#: templates/invoices/payment_history.html:18
+#: templates/invoices/payment_history.html:44
+msgid "abandoned"
+msgstr ""
+
 #: templates/invoices/payment_history.html:20
-msgid "Trans_ID:"
+#: templates/invoices/payment_history.html:46
+#, fuzzy
+msgid "verified, not received"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/payment_history.html:23
-msgid "Trans_String:"
+#: templates/invoices/payment_history.html:24
+#: templates/invoices/payment_history.html:50
+msgid "voided"
+msgstr ""
+
+#: templates/invoices/payment_history.html:29
+msgid "(details)"
+msgstr ""
+
+#: templates/invoices/payment_history.html:31 templates/payments/view.html:137
+msgid "Description:"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/payment_history.html:25
-msgid "Trans_ID not available"
+#: templates/invoices/payment_history.html:33
+#, fuzzy
+msgid "Transaction ID:"
+msgstr "XXXXXXXX"
+
+#: templates/invoices/payment_history.html:36
+#, fuzzy
+msgid "Transaction String:"
 msgstr "XXXXXXXX"
 
 #: templates/invoices/payment_history.html:39
+#, fuzzy
+msgid "Response:"
+msgstr "XXXXXXXX"
+
+#: templates/invoices/payment_history.html:41
 msgid "Payment Status:"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/payment_history.html:41
-msgid "ABANDON"
+#: templates/invoices/print_view.html:16
+#, fuzzy
+msgid "Invoice"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/payment_history.html:41
-msgid "Verified, Not Received"
+#: templates/invoices/print_view.html:26
+#, fuzzy
+msgid "Invoice #"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/payment_history.html:43
-msgid "VOID"
+#: templates/invoices/print_view.html:31 templates/invoices/view.html:62
+#, fuzzy
+msgid "Invoice For"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/print_view.html:16 templates/invoices/view.html:17
-msgid "Invoice View"
+#: templates/invoices/print_view.html:36 templates/invoices/view.html:67
+#, fuzzy
+msgid "Invoice Date"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/print_view.html:25 templates/invoices/view.html:31
-msgid "TENDERED:"
+#: templates/invoices/print_view.html:40 templates/invoices/view.html:71
+#, fuzzy
+msgid "Invoice Status"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/print_view.html:27 templates/invoices/view.html:33
-msgid "E-S-T-I-M-A-T-E"
+#: templates/invoices/print_view.html:42
+#, fuzzy, python-format
+msgid "Tendered %(tenddate)s"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/print_view.html:37 templates/invoices/view.html:43
-msgid "Pay Online Now"
+#: templates/invoices/print_view.html:44 templates/invoices/view.html:75
+msgid "Estimate"
+msgstr ""
+
+#: templates/invoices/print_view.html:48 templates/invoices/view.html:79
+#, fuzzy
+msgid "Invoice Amount"
 msgstr "XXXXXXXX"
 
 #: templates/invoices/search.html:18
@@ -6286,42 +6415,49 @@ msgid "EST"
 msgstr "XXXXXXXX"
 
 #: templates/invoices/total_display.html:9
-msgid "Totals"
+#, fuzzy
+msgid "Method"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/total_display.html:13
+#: templates/invoices/total_display.html:16
+#, fuzzy
+msgid "Adjustment"
+msgstr "XXXXXXXX"
+
+#: templates/invoices/total_display.html:22
 msgid "Sub Total:"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/total_display.html:18
-msgid "Adjustment:"
-msgstr "XXXXXXXX"
-
-#: templates/invoices/total_display.html:31
+#: templates/invoices/total_display.html:34
 msgid "Balance due:"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/total_display.html:37
-msgid "Payment method:"
+#: templates/invoices/total_display.html:40
+#, fuzzy
+msgid "Pay Invoice"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/total_display.html:47
-msgid "Admin: Adjust Invoice"
+#: templates/invoices/view.html:29
+#, fuzzy
+msgid "Adjust Invoice"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/view.html:55
-msgid "Click here for a printer friendly version of this invoice."
+#: templates/invoices/view.html:31
+#, fuzzy
+msgid "Accounting Entries"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/view.html:62
-msgid "View accounting entries associated with this invoice."
+#: templates/invoices/view.html:32
+#, fuzzy
+msgid "Make Notes"
 msgstr "XXXXXXXX"
 
-#: templates/invoices/view.html:70
-msgid "Admin Notes:"
+#: templates/invoices/view.html:73
+#, fuzzy, python-format
+msgid " Tendered %(tenddate)s "
 msgstr "XXXXXXXX"
 
-#: templates/jobs/add.html:29
+#: templates/jobs/add.html:31
 msgid "Jobs Pricing"
 msgstr "XXXXXXXX"
 
@@ -6333,23 +6469,15 @@ msgstr "XXXXXXXX"
 msgid "Are you sure you want to approve this job?"
 msgstr "XXXXXXXX"
 
-#: templates/jobs/approve.html:20
-msgid ""
-"\n"
-"        <input type=\"submit\" value=\"Yes, approve it.\" /> or <a href="
-"\"javascript:history.go(-1);\">Cancel</a>\n"
-"        "
-msgstr "XXXXXXXX"
-
 #: templates/jobs/delete.html:5
 msgid "Back to jobs search"
 msgstr "XXXXXXXX"
 
 #: templates/jobs/edit-meta.html:18
-#, python-format
+#, fuzzy, python-format
 msgid ""
 " Meta Information for<br />\n"
-"    %(job.title)s"
+"    %(job_title)s"
 msgstr "XXXXXXXX"
 
 #: templates/jobs/invoice_search_result_line.html:10
@@ -6358,31 +6486,6 @@ msgstr "XXXXXXXX"
 
 #: templates/jobs/invoice_search_result_line.html:11
 msgid "Contact"
-msgstr "XXXXXXXX"
-
-#: templates/jobs/invoice_view_display.html:21
-#: templates/notification/corp_memb_added/full.html:46
-#: templates/notification/corp_memb_edited/full.html:46
-#: templates/notification/corp_memb_paid/full.html:46
-#: templates/notification/corp_memb_renewed/full.html:46
-#: templates/notification/job_deleted/full.html:18
-#: templates/notification/page_deleted/full.html:18
-#: templates/notification/resume_deleted/full.html:17
-#: templates/stories/upload.html:27
-msgid "Title:"
-msgstr "XXXXXXXX"
-
-#: templates/jobs/invoice_view_display.html:23
-msgid "Job Information not available"
-msgstr "XXXXXXXX"
-
-#: templates/jobs/invoice_view_display.html:27
-#: templates/payments/view.html:137
-msgid "Description:"
-msgstr "XXXXXXXX"
-
-#: templates/jobs/invoice_view_display.html:30
-msgid "List Type:"
 msgstr "XXXXXXXX"
 
 #: templates/jobs/nav.html:36
@@ -6522,33 +6625,33 @@ msgstr "XXXXXXXX"
 msgid "Job Requirements"
 msgstr "XXXXXXXX"
 
-#: templates/jobs/print-view.html:96 templates/jobs/view.html:122
+#: templates/jobs/print-view.html:96 templates/jobs/view.html:126
 #: templates/resumes/print-view.html:48 templates/resumes/view.html:52
 msgid "Experience"
 msgstr "XXXXXXXX"
 
-#: templates/jobs/print-view.html:103 templates/jobs/view.html:128
+#: templates/jobs/print-view.html:103 templates/jobs/view.html:133
 #: templates/resumes/print-view.html:55 templates/resumes/view.html:59
 msgid "Skills"
 msgstr "XXXXXXXX"
 
-#: templates/jobs/print-view.html:110 templates/jobs/view.html:140
+#: templates/jobs/print-view.html:110 templates/jobs/view.html:145
 msgid "Education Required"
 msgstr "XXXXXXXX"
 
-#: templates/jobs/print-view.html:117 templates/jobs/view.html:147
+#: templates/jobs/print-view.html:117 templates/jobs/view.html:152
 #: templates/profiles/add.html:215 templates/profiles/edit.html:215
 msgid "Company Information"
 msgstr "XXXXXXXX"
 
-#: templates/jobs/print-view.html:128 templates/jobs/view.html:157
+#: templates/jobs/print-view.html:128 templates/jobs/view.html:162
 #: templates/resumes/print-view.html:68
 msgid "Contact Information"
 msgstr "XXXXXXXX"
 
 #: templates/jobs/search.html:40
-#, python-format
-msgid "Released on %(job.release_dt|date:\"D d M Y P\")s by %(job.creator)s"
+#, fuzzy, python-format
+msgid "Released on %(release_date)s by %(job_creator)s"
 msgstr "XXXXXXXX"
 
 #: templates/jobs/thank-you.html:5 templates/resumes/thank-you.html:5
@@ -6596,11 +6699,11 @@ msgid ""
 "\t\t\t<div class=\"clear\"></div>"
 msgstr "XXXXXXXX"
 
-#: templates/jobs/view.html:134
+#: templates/jobs/view.html:139
 msgid "Computer Skills"
 msgstr "XXXXXXXX"
 
-#: templates/jobs/view.html:161
+#: templates/jobs/view.html:166
 #: templates/notification/corp_memb_added/full.html:54
 #: templates/notification/corp_memb_edited/full.html:54
 #: templates/notification/corp_memb_paid/full.html:54
@@ -6609,21 +6712,16 @@ msgstr "XXXXXXXX"
 msgid "Fax:"
 msgstr "XXXXXXXX"
 
-#: templates/jobs/view.html:168
+#: templates/jobs/view.html:173
 msgid "Contact Method"
 msgstr "XXXXXXXX"
 
-#: templates/jobs/view.html:197 templates/news/view.html:67
-#: templates/pages/meta.html:27 templates/photos/details.html:77
-#: templates/resumes/view.html:87
-msgid "Tags:"
-msgstr "XXXXXXXX"
-
-#: templates/jobs/view.html:204
-#, python-format
+#: templates/jobs/view.html:210
+#, fuzzy, python-format
 msgid ""
-"Submitted on %(create_date)s \n"
-"\t\t\tby:"
+"\n"
+"                    Submitted on %(create_date)s by:\n"
+"                "
 msgstr "XXXXXXXX"
 
 #: templates/locations/delete.html:5
@@ -6631,16 +6729,13 @@ msgid "Back to locations search"
 msgstr "XXXXXXXX"
 
 #: templates/locations/search.html:36
-#, python-format
-msgid ""
-"Released on %(location.release_dt|date:\"D d M Y P\")s by "
-"%(location.creator)s"
+#, fuzzy, python-format
+msgid "Released on %(release_date)s by %(location_creator)s"
 msgstr "XXXXXXXX"
 
 #: templates/locations/view.html:42
-#, python-format
-msgid ""
-"Submitted on %(location.create_dt|date:\"long\")s by %(location.creator)s"
+#, fuzzy, python-format
+msgid "Submitted on %(location_create)s by %(location.creator)s"
 msgstr "XXXXXXXX"
 
 #: templates/make_payments/add_confirm.html:9
@@ -6649,41 +6744,6 @@ msgstr "XXXXXXXX"
 
 #: templates/make_payments/invoice_search_result_line.html:10
 msgid "Make Payment ID"
-msgstr "XXXXXXXX"
-
-#: templates/make_payments/invoice_view_display.html:18
-#, python-format
-msgid "Payment Made by %(obj.first_name)s %(obj.last_name)s"
-msgstr "XXXXXXXX"
-
-#: templates/make_payments/invoice_view_display.html:20
-msgid "Make Payment Information not available"
-msgstr "XXXXXXXX"
-
-#: templates/make_payments/invoice_view_display.html:24
-#: templates/make_payments/view.html:52
-#: templates/notification/corp_memb_added/full.html:58
-#: templates/notification/corp_memb_edited/full.html:58
-#: templates/notification/corp_memb_paid/full.html:58
-#: templates/notification/corp_memb_renewed/full.html:58
-#: templates/notification/user_added/full.html:33
-#: templates/notification/user_deleted/full.html:23
-#: templates/notification/user_deleted/full.html:54
-#: templates/payments/view.html:198 templates/profiles/search.html:44
-msgid "Email:"
-msgstr "XXXXXXXX"
-
-#: templates/make_payments/invoice_view_display.html:26
-#: templates/make_payments/view.html:45
-#: templates/notification/corp_memb_added/full.html:23
-#: templates/notification/corp_memb_edited/full.html:23
-#: templates/notification/corp_memb_paid/full.html:23
-#: templates/notification/corp_memb_renewed/full.html:23
-#: templates/notification/donation_added/full.html:19
-#: templates/notification/make_payment_added/full.html:19
-#: templates/payments/view.html:165 templates/profiles/index.html:195
-#: templates/profiles/search.html:50
-msgid "Company:"
 msgstr "XXXXXXXX"
 
 #: templates/make_payments/nav.html:23
@@ -6728,9 +6788,33 @@ msgstr "XXXXXXXX"
 msgid "Name:"
 msgstr "XXXXXXXX"
 
+#: templates/make_payments/view.html:45
+#: templates/notification/corp_memb_added/full.html:23
+#: templates/notification/corp_memb_edited/full.html:23
+#: templates/notification/corp_memb_paid/full.html:23
+#: templates/notification/corp_memb_renewed/full.html:23
+#: templates/notification/donation_added/full.html:19
+#: templates/notification/make_payment_added/full.html:19
+#: templates/payments/view.html:165 templates/profiles/index.html:195
+#: templates/profiles/search.html:50
+msgid "Company:"
+msgstr "XXXXXXXX"
+
+#: templates/make_payments/view.html:52
+#: templates/notification/corp_memb_added/full.html:58
+#: templates/notification/corp_memb_edited/full.html:58
+#: templates/notification/corp_memb_paid/full.html:58
+#: templates/notification/corp_memb_renewed/full.html:58
+#: templates/notification/user_added/full.html:33
+#: templates/notification/user_deleted/full.html:23
+#: templates/notification/user_deleted/full.html:54
+#: templates/payments/view.html:198 templates/profiles/search.html:44
+msgid "Email:"
+msgstr "XXXXXXXX"
+
 #: templates/make_payments/view.html:55
-#, python-format
-msgid "Referred By:</div><div>%(mp.referral_source)s"
+#, fuzzy, python-format
+msgid "Referred By:</div><div>%(mpref)s"
 msgstr "XXXXXXXX"
 
 #: templates/make_payments/view.html:57
@@ -6748,19 +6832,29 @@ msgstr "XXXXXXXX"
 msgid "Import Memberships from CSV file"
 msgstr "XXXXXXXX"
 
+#: templates/memberships/details.html:7
+#, fuzzy, python-format
+msgid "Membership for %(membership.user)s"
+msgstr "XXXXXXXX"
+
 #: templates/memberships/details.html:20
-#, python-format
-msgid "Membership for %(membership.user.get_full_name)s"
+#, fuzzy, python-format
+msgid "Membership for %(memname)s"
+msgstr "XXXXXXXX"
+
+#: templates/memberships/details.html:21
+#, fuzzy
+msgid "View profile"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/details.html:23
-#, python-format
-msgid "Joined %(membership.join_dt|date)s (%(membership.join_dt|timesince)s)"
+#, fuzzy, python-format
+msgid "Joined %(memjoin)s (%(memtimesince)s)"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/details.html:26
-#, python-format
-msgid "Expires %(membership.expiration_dt)s"
+#, fuzzy, python-format
+msgid "Expires %(membexpdate)s"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/details.html:28
@@ -6775,18 +6869,7 @@ msgstr "XXXXXXXX"
 msgid "Step 4/4"
 msgstr "XXXXXXXX"
 
-#: templates/memberships/import-confirm.html:21
-#, python-format
-msgid ""
-"We attempted <em>%(mem_length)s</em> import; <em>%(added_length)s</em> "
-"added, and <em>%(skipped_length)s skipped.</p>"
-msgid_plural ""
-"We attempted <em>%(mem_length)s</em> imports; <em>%(added_length)s</em> "
-"added, and <em>%(skipped_length)s skipped."
-msgstr[0] ""
-msgstr[1] ""
-
-#: templates/memberships/import-confirm.html:23
+#: templates/memberships/import-confirm.html:25
 msgid "Back to membership search page."
 msgstr "XXXXXXXX"
 
@@ -6804,21 +6887,6 @@ msgstr "XXXXXXXX"
 
 #: templates/memberships/import-preview.html:47
 msgid "Step 3/4"
-msgstr "XXXXXXXX"
-
-#: templates/memberships/import-preview.html:50
-#, python-format
-msgid ""
-"<em>%(mem_length)s</em> import; <em>%(added_length)s</em> will be added, and "
-"<em>%(skipped_length)s</em> will be skipped."
-msgid_plural ""
-"<em>%(mem_length)s</em> imports; <em>%(added_length)s</em> will be added, "
-"and <em>%(skipped_length)s</em> will be skipped."
-msgstr[0] ""
-msgstr[1] ""
-
-#: templates/memberships/import-preview.html:51
-msgid "Import Now"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/import-preview.html:57
@@ -6841,24 +6909,21 @@ msgstr "XXXXXXXX"
 msgid "Memb. App. ID"
 msgstr "XXXXXXXX"
 
-#: templates/memberships/invoice_view_display.html:20
-msgid "Membership Application Not Available"
+#: templates/memberships/invoice_view_display.html:7
+#, fuzzy
+msgid "Membership #"
 msgstr "XXXXXXXX"
 
-#: templates/memberships/invoice_view_display.html:23
-#: templates/notification/membership_disapproved_to_admin/full.html:17
-#: templates/notification/membership_disapproved_to_admin/full.html:19
-#: templates/notification/membership_disapproved_to_member/full.html:17
-#: templates/notification/membership_disapproved_to_member/full.html:19
-#: templates/profiles/index.html:343
-msgid "Membership Type:"
+#: templates/memberships/invoice_view_display.html:13
+#, fuzzy
+msgid "Membership information not available"
 msgstr "XXXXXXXX"
 
-#: templates/memberships/nav.html:22
+#: templates/memberships/nav.html:23
 msgid "Members:"
 msgstr "XXXXXXXX"
 
-#: templates/memberships/nav.html:36
+#: templates/memberships/nav.html:38
 msgid "Notices"
 msgstr "XXXXXXXX"
 
@@ -6871,13 +6936,13 @@ msgid "Membership Application Payment Status"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/renew-button.html:24
-#, python-format
-msgid "Renew from now until %(membership.get_renewal_period_dt.1)s"
+#, fuzzy, python-format
+msgid "Renew from now until %(memdate)s"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/renew-button.html:28
-#, python-format
-msgid "Renewal available in %(membership.get_renewal_period_dt.0|timeuntil)s"
+#, fuzzy, python-format
+msgid "Renewal available in %(memdate)s"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/search.html:68
@@ -6941,18 +7006,23 @@ msgid ""
 msgstr "XXXXXXXX"
 
 #: templates/memberships/applications/no-renew.html:24
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "\n"
 "        Your renewal period starts in \n"
-"        %(membership.get_renewal_period_dt.0|timeuntil)s \n"
-"        on %(membership.get_renewal_period_dt.0|date)s.\n"
+"        %(time_until_renew)s \n"
+"        on %(renewper)s.\n"
 "    "
 msgstr "XXXXXXXX"
 
 #: templates/memberships/applications/no-renew.html:32
-#, python-format
-msgid "You will be notified at %(user.email)s. "
+#, fuzzy, python-format
+msgid "You will be notified at %(user_email)s. "
+msgstr "XXXXXXXX"
+
+#: templates/memberships/applications/no-renew.html:33
+#, fuzzy
+msgid "edit email"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/entries/details.html:34
@@ -6960,15 +7030,15 @@ msgstr "XXXXXXXX"
 msgid "Submission"
 msgstr "XXXXXXXX"
 
-#: templates/memberships/entries/details.html:37
+#: templates/memberships/entries/details.html:42
 msgid "Submitted"
 msgstr "XXXXXXXX"
 
-#: templates/memberships/entries/details.html:39
+#: templates/memberships/entries/details.html:44
 msgid "Edit Entry"
 msgstr "XXXXXXXX"
 
-#: templates/memberships/entries/details.html:96
+#: templates/memberships/entries/details.html:101
 #: templates/notification/membership_approved_to_admin/full.html:25
 msgid "View Profile & Membership"
 msgstr "XXXXXXXX"
@@ -6990,18 +7060,18 @@ msgid "Membership Entry Search"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/entries/search.html:41
-#, python-format
-msgid "Submitted %(entry.entry_time|date)s"
+#, fuzzy, python-format
+msgid "Submitted %(entry_date)s"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/entries/search.html:46
-#, python-format
-msgid "Approved on %(entry.decision_dt|date)s"
+#, fuzzy, python-format
+msgid "Approved on %(entry_decision)s"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/entries/search.html:51
-#, python-format
-msgid "Disapproved on %(entry.decision_dt|date)s"
+#, fuzzy, python-format
+msgid "Disapproved on %(entry_decision)s"
 msgstr "XXXXXXXX"
 
 #: templates/memberships/entries/search.html:69
@@ -7109,10 +7179,10 @@ msgid "0 Logs Found"
 msgstr "XXXXXXXX"
 
 #: templates/news/edit-meta.html:17
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "Meta Information for <br />\n"
-"    %(news.headline)s"
+"    %(news_head)s"
 msgstr "XXXXXXXX"
 
 #: templates/news/print-view.html:23
@@ -7120,17 +7190,13 @@ msgid "Back to regular news view"
 msgstr "XXXXXXXX"
 
 #: templates/news/print-view.html:32
-#, python-format
-msgid "Submitted on %(news.create_dt|date:\"long\")s by %(news.creator)s"
+#, fuzzy, python-format
+msgid "Submitted on %(news_create)s by %(news_creator)s"
 msgstr "XXXXXXXX"
 
 #: templates/news/search.html:46
-#, python-format
-msgid "Submitted on %(n.create_dt|date:\"long\")s by %(n.creator)s"
-msgstr "XXXXXXXX"
-
-#: templates/news/view.html:34 templates/notification/news_added/full.html:29
-msgid "Source:"
+#, fuzzy, python-format
+msgid "Submitted on %(ncreate)s by %(ncreator)s"
 msgstr "XXXXXXXX"
 
 #: templates/news/view.html:74
@@ -7346,14 +7412,14 @@ msgid "Article Add Notice"
 msgstr "XXXXXXXX"
 
 #: templates/notification/article_added/full.html:13
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "The following article was \n"
-"  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s Articles module by "
-"%(request.user.get_full_name)s"
+"  added to the %(SITE_GLOBAL_SITEDISPLAYNAME)s Articles module by %(author)s"
 msgstr "XXXXXXXX"
 
 #: templates/notification/article_added/full.html:15
+#: templates/notification/job_added/full.html:16
 msgid "It needs to be activated"
 msgstr "XXXXXXXX"
 
@@ -7432,6 +7498,17 @@ msgstr "XXXXXXXX"
 msgid "This form was submitted by:"
 msgstr "XXXXXXXX"
 
+#: templates/notification/corp_memb_added/full.html:46
+#: templates/notification/corp_memb_edited/full.html:46
+#: templates/notification/corp_memb_paid/full.html:46
+#: templates/notification/corp_memb_renewed/full.html:46
+#: templates/notification/job_deleted/full.html:18
+#: templates/notification/page_deleted/full.html:18
+#: templates/notification/resume_deleted/full.html:17
+#: templates/stories/upload.html:27
+msgid "Title:"
+msgstr "XXXXXXXX"
+
 #: templates/notification/corp_memb_added/full.html:62
 msgid "To view the complete application, go to: "
 msgstr "XXXXXXXX"
@@ -7456,9 +7533,9 @@ msgid "If you have received this in error, please contact the webmaster below."
 msgstr "XXXXXXXX"
 
 #: templates/notification/corp_memb_added_user/full.html:3
-#, python-format
+#, fuzzy, python-format
 msgid ""
-"Thank you for applying for the corporate membership \"%(object.name)s\" on "
+"Thank you for applying for the corporate membership \"%(objname)s\" on "
 "%(SITE_GLOBAL_SITEDISPLAYNAME)s."
 msgstr "XXXXXXXX"
 
@@ -7651,9 +7728,9 @@ msgid "Referred By:"
 msgstr "XXXXXXXX"
 
 #: templates/notification/event_added/full.html:14
-#, python-format
+#, fuzzy, python-format
 msgid ""
-"%(user.first_name)s %(user.last_name)s just added the following event from "
+"%(first_name)s %(last_name)s just added the following event from "
 "%(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr "XXXXXXXX"
 
@@ -7709,10 +7786,20 @@ msgid "Event Registration Cancelled - Notification"
 msgstr "XXXXXXXX"
 
 #: templates/notification/event_registration_cancelled/full.html:18
-#, python-format
+#, fuzzy, python-format
 msgid ""
-"%(user.first_name)s %(user.last_name)s just cancelled their registration on "
+"%(user_first)s %(user_last)s just cancelled their registration on "
 "%(SITE_GLOBAL_SITEDISPLAYNAME)s"
+msgstr "XXXXXXXX"
+
+#: templates/notification/event_registration_cancelled/full.html:21
+msgid "An anonymous user just cancelled the registration for:"
+msgstr ""
+
+#: templates/notification/event_registration_cancelled/full.html:23
+#, fuzzy, python-format
+msgid ""
+"%(user.first_name)s %(user.last_name)s just cancelled the registration for:"
 msgstr "XXXXXXXX"
 
 #: templates/notification/event_registration_cancelled/full.html:28
@@ -7724,17 +7811,15 @@ msgid "View registration details"
 msgstr "XXXXXXXX"
 
 #: templates/notification/event_registration_cancelled/full.html:42
-#, python-format
+#, fuzzy, python-format
 msgid ""
-"We now have %(event.registrants.count)s registrants, "
-"%(registrants_paid.count)s paid\n"
-"    ($%(event.money_collected)s) and %(registrants_pending.count)s pending "
-"(%(event.money_outstanding)s)"
+"We now have %(eventreg)s registrants, %(regpaid)s paid\n"
+"    ($%(eventmoney)s) and %(regpend)s pending (%(eventout)s)"
 msgstr "XXXXXXXX"
 
 #: templates/notification/event_registration_confirmation/full.html:5
-#, python-format
-msgid "%(event.title)s on %(event.start_dt|date:\"N j, Y \\a\\t f A\")s"
+#, fuzzy, python-format
+msgid "%(title)s on %(start_dt)s"
 msgstr "XXXXXXXX"
 
 #: templates/notification/event_registration_confirmation/full.html:9
@@ -7742,8 +7827,8 @@ msgid "Price: Free!"
 msgstr "XXXXXXXX"
 
 #: templates/notification/event_registration_confirmation/full.html:11
-#, python-format
-msgid "Price: $%(price|floatformat:\"2\")s"
+#, fuzzy, python-format
+msgid "Price: $%(priceflo)s"
 msgstr "XXXXXXXX"
 
 #: templates/notification/event_registration_confirmation/full.html:16
@@ -7854,15 +7939,13 @@ msgid "Tendered"
 msgstr "XXXXXXXX"
 
 #: templates/notification/invoice_edited/full.html:23
-#, python-format
-msgid "Create Date: %(object.create_dt|date:'long')s "
+#, fuzzy, python-format
+msgid "Create Date: %(objdate)s "
 msgstr "XXXXXXXX"
 
 #: templates/notification/invoice_edited/full.html:31
-#, python-format
-msgid ""
-"To view this invoice go to: %(SITE_GLOBAL_SITEURL)s"
-"%(object.get_absolute_url)s"
+#, fuzzy, python-format
+msgid "To view this invoice go to: %(SITE_GLOBAL_SITEURL)s%(objget)s"
 msgstr "XXXXXXXX"
 
 #: templates/notification/job_added/full.html:8
@@ -7970,6 +8053,14 @@ msgstr "XXXXXXXX"
 msgid "Membership Disapproved"
 msgstr "XXXXXXXX"
 
+#: templates/notification/membership_disapproved_to_admin/full.html:17
+#: templates/notification/membership_disapproved_to_admin/full.html:19
+#: templates/notification/membership_disapproved_to_member/full.html:17
+#: templates/notification/membership_disapproved_to_member/full.html:19
+#: templates/profiles/index.html:343
+msgid "Membership Type:"
+msgstr "XXXXXXXX"
+
 #: templates/notification/membership_disapproved_to_admin/full.html:19
 #: templates/notification/membership_disapproved_to_member/full.html:19
 msgid "Free"
@@ -7981,10 +8072,8 @@ msgid "View Disapproved Application"
 msgstr "XXXXXXXX"
 
 #: templates/notification/membership_disapproved_to_admin/full.html:32
-#, python-format
-msgid ""
-"Application Created %(object.app.create_dt|date)s "
-"(%(object.app.create_dt|timesince)s)"
+#, fuzzy, python-format
+msgid "Application Created %(objcreate)s (%(objtime)s)"
 msgstr "XXXXXXXX"
 
 #: templates/notification/news_added/full.html:8
@@ -8061,21 +8150,21 @@ msgid "New Page Added"
 msgstr "XXXXXXXX"
 
 #: templates/notification/page_added/full.html:13
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "A new page has been added on the \n"
-"%(SITE_GLOBAL_SITEDISPLAYNAME)s - <b>%(object.title)s</b>"
+"%(SITE_GLOBAL_SITEDISPLAYNAME)s - <b>%(objtitle)s</b>"
 msgstr "XXXXXXXX"
 
 #: templates/notification/page_added/full.html:15
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "To view the detail of this page, go to: <b>\n"
-"<a href=\"%(SITE_GLOBAL_SITEURL)s%(object.get_absolute_url)s\">"
-"%(SITE_GLOBAL_SITEURL)s%(object.get_absolute_url)s</a></b><br>\n"
+"<a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">%(SITE_GLOBAL_SITEURL)s"
+"%(objget)s</a></b><br>\n"
 "To approve this page and make it visible to the public, go to\n"
-"<a href=\"%(SITE_GLOBAL_SITEURL)s%(object.get_absolute_url)s\">"
-"%(SITE_GLOBAL_SITEURL)s%(object.get_absolute_url)s</a>"
+"<a href=\"%(SITE_GLOBAL_SITEURL)s%(objget)s\">%(SITE_GLOBAL_SITEURL)s"
+"%(objget)s</a>"
 msgstr "XXXXXXXX"
 
 #: templates/notification/page_deleted/full.html:7
@@ -8150,9 +8239,10 @@ msgid ""
 msgstr "XXXXXXXX"
 
 #: templates/notification/resume_added/full.html:36
+#, fuzzy
 msgid ""
 "To activate this resume, go \n"
-"  to: <b>[resumeactivatelink]</b> "
+"  to:"
 msgstr "XXXXXXXX"
 
 #: templates/notification/resume_deleted/full.html:6
@@ -8336,20 +8426,22 @@ msgstr "XXXXXXXX"
 msgid "Clicking the link below allows you to reset your password and log in."
 msgstr "XXXXXXXX"
 
-#: templates/pages/add.html:35
+#: templates/pages/add.html:35 templates/pages/edit.html:34
 msgid "SEO Meta"
 msgstr "XXXXXXXX"
 
-#: templates/pages/delete.html:12
-msgid "Delete Page:"
+#: templates/pages/delete.html:16
+#, fuzzy
+msgid "Delete a Page"
 msgstr "XXXXXXXX"
 
-#: templates/pages/delete.html:15
+#: templates/pages/delete.html:20
 msgid "Are you sure you want to permanently delete this page?"
 msgstr "XXXXXXXX"
 
-#: templates/pages/delete.html:22
-msgid "Back to search"
+#: templates/pages/delete.html:28
+#, fuzzy
+msgid "Back to page"
 msgstr "XXXXXXXX"
 
 #: templates/pages/edit-meta.html:17
@@ -8359,38 +8451,26 @@ msgid ""
 "    %(page.title)s"
 msgstr "XXXXXXXX"
 
-#: templates/pages/edit.html:40
-msgid " SEO Meta"
-msgstr "XXXXXXXX"
+#: templates/pages/edit.html:39
+msgid "Save Page Changes"
+msgstr ""
 
 #: templates/pages/index.html:3
 msgid "Pages Index Page"
 msgstr "XXXXXXXX"
 
-#: templates/pages/meta.html:35
-#, python-format
+#: templates/pages/meta.html:44
+#, fuzzy, python-format
 msgid ""
 "Created on %(create_date)s\n"
-"                \tby:"
+"                    by:"
 msgstr "XXXXXXXX"
 
-#: templates/pages/meta.html:44
-#, python-format
+#: templates/pages/meta.html:53
+#, fuzzy, python-format
 msgid ""
 "Last updated %(update_date)s\n"
-"                \tby:"
-msgstr "XXXXXXXX"
-
-#: templates/pages/meta.html:56
-msgid "Share"
-msgstr "XXXXXXXX"
-
-#: templates/pages/meta.html:70
-msgid "Eventlogs"
-msgstr "XXXXXXXX"
-
-#: templates/pages/meta.html:72
-msgid "Options"
+"                    by:"
 msgstr "XXXXXXXX"
 
 #: templates/pages/print-view.html:22
@@ -8620,26 +8700,22 @@ msgstr "XXXXXXXX"
 msgid "All photos have been approved, nothing to see here."
 msgstr "XXXXXXXX"
 
-#: templates/photos/details.html:14
-msgid "Photo"
-msgstr "XXXXXXXX"
-
-#: templates/photos/details.html:29 templates/photos/partial-details.html:13
+#: templates/photos/details.html:30 templates/photos/partial-details.html:13
 msgid "Back to photo set"
 msgstr "XXXXXXXX"
 
-#: templates/photos/details.html:33 templates/photos/partial-details.html:17
+#: templates/photos/details.html:35 templates/photos/partial-details.html:17
 msgid "Prev"
 msgstr "XXXXXXXX"
 
-#: templates/photos/details.html:34 templates/photos/partial-details.html:18
+#: templates/photos/details.html:36 templates/photos/partial-details.html:18
 #: templates/reports/event_source_summary.html:11
 #: templates/reports/event_summary.html:11
 #: templates/reports/users_added.html:17
 msgid "Next"
 msgstr "XXXXXXXX"
 
-#: templates/photos/details.html:61
+#: templates/photos/details.html:63
 #, python-format
 msgid ""
 "Licensed under\n"
@@ -8715,11 +8791,11 @@ msgstr "XXXXXXXX"
 msgid "Large (opens in new tab)"
 msgstr "XXXXXXXX"
 
-#: templates/photos/sizes.html:65
+#: templates/photos/sizes.html:66
 msgid "Original (opens in new tab)"
 msgstr "XXXXXXXX"
 
-#: templates/photos/sizes.html:76
+#: templates/photos/sizes.html:78
 msgid "Copy &amp; paste HTML into your webpage"
 msgstr "XXXXXXXX"
 
@@ -8732,14 +8808,14 @@ msgstr "XXXXXXXX"
 msgid "Back to Albums"
 msgstr "XXXXXXXX"
 
-#: templates/photos/photo-set/details.html:116
+#: templates/photos/photo-set/details.html:120
 #, python-format
 msgid "%(photocount)s Photo"
 msgid_plural "%(photocount)s Photos"
 msgstr[0] ""
 msgstr[1] ""
 
-#: templates/photos/photo-set/details.html:147
+#: templates/photos/photo-set/details.html:151
 msgid "No photos were found."
 msgstr "XXXXXXXX"
 
@@ -9023,7 +9099,6 @@ msgstr "XXXXXXXX"
 #: templates/profiles/index.html:324 templates/reports/users_added.html:54
 #: templates/user_groups/delete.html:16
 #: templates/user_groups/edit_perms.html:34
-#: templates/user_groups/member_add.html:24
 msgid "Group"
 msgstr "XXXXXXXX"
 
@@ -9047,7 +9122,7 @@ msgstr "XXXXXXXX"
 msgid "Admins"
 msgstr "XXXXXXXX"
 
-#: templates/profiles/options.html:13
+#: templates/profiles/options.html:14
 msgid "DEVELOPER"
 msgstr "XXXXXXXX"
 
@@ -9349,10 +9424,6 @@ msgstr "XXXXXXXX"
 msgid "Price Paid"
 msgstr "XXXXXXXX"
 
-#: templates/reports/mem_join_table.html:13
-msgid "Start Date"
-msgstr "XXXXXXXX"
-
 #: templates/reports/membership_joins.html:5
 msgid "Membership Joins Report Summary"
 msgstr "XXXXXXXX"
@@ -9504,21 +9575,33 @@ msgstr "Nichts gefunden."
 msgid "Settings:"
 msgstr "XXXXXXXX"
 
-#: templates/stories/delete.html:14
+#: templates/stories/delete.html:5
+#, fuzzy
+msgid "Delete Story"
+msgstr "XXXXXXXX"
+
+#: templates/stories/delete.html:16
 msgid "Delete a Story"
 msgstr "XXXXXXXX"
 
-#: templates/stories/delete.html:22
-msgid "Are you sure you want to delete this story?"
+#: templates/stories/delete.html:27
+#, fuzzy
+msgid "Are you sure you want to permanently delete this story?"
 msgstr "XXXXXXXX"
+
+#: templates/stories/edit.html:26
+msgid "Save Story Changes"
+msgstr ""
 
 #: templates/stories/index.html:3
 msgid "Stories Index Page"
 msgstr "XXXXXXXX"
 
-#: templates/stories/search.html:35
+#: templates/stories/meta.html:34
 #, python-format
-msgid "Submitted on %(story.create_dt|date:\"long\")s by %(story.creator)s"
+msgid ""
+"Created on %(create_date)s\n"
+"                \tby:"
 msgstr "XXXXXXXX"
 
 #: templates/stories/upload.html:25
@@ -9535,54 +9618,54 @@ msgstr "XXXXXXXX"
 msgid "Upload Image"
 msgstr "XXXXXXXX"
 
-#: templates/stories/view.html:39
-#, fuzzy, python-format
-msgid "Submitted on %(storydate)s by %(storycreate)s"
-msgstr "XXXXXXXX"
-
 #: templates/subscribers/subscribers.html:44
 msgid "0 Subscribers Found"
 msgstr "XXXXXXXX"
 
-#: templates/theme_editor/index.html:18
+#: templates/theme_editor/index.html:20
 msgid "Currently Editing"
 msgstr "XXXXXXXX"
 
-#: templates/theme_editor/index.html:41
+#: templates/theme_editor/index.html:43
 #, fuzzy, python-format
 msgid "%(archname)s  versioned on %(archdate)s by %(archauth)s"
 msgstr "XXXXXXXX"
 
-#: templates/theme_editor/index.html:46
+#: templates/theme_editor/index.html:48
 msgid "No versions available."
 msgstr "XXXXXXXX"
 
-#: templates/theme_editor/index.html:52
+#: templates/theme_editor/index.html:54
+#, fuzzy
+msgid "Theme in Editor:"
+msgstr "XXXXXXXX"
+
+#: templates/theme_editor/index.html:60
 msgid "Choose a folder or file:"
 msgstr "XXXXXXXX"
 
-#: templates/theme_editor/index.html:56
+#: templates/theme_editor/index.html:64
 #, fuzzy, python-format
 msgid "in ...%(pslice)s"
 msgstr "XXXXXXXX"
 
-#: templates/theme_editor/index.html:58
+#: templates/theme_editor/index.html:66
 #, python-format
 msgid "in %(pwd)s"
 msgstr "XXXXXXXX"
 
-#: templates/theme_editor/index.html:64
+#: templates/theme_editor/index.html:72
 #: templates/theme_editor/original_templates.html:21
 #, python-format
 msgid "back to %(prev_dir_name)s"
 msgstr "XXXXXXXX"
 
-#: templates/theme_editor/index.html:84
+#: templates/theme_editor/index.html:92
 #: templates/theme_editor/original_templates.html:41
 msgid "No editable files"
 msgstr "XXXXXXXX"
 
-#: templates/theme_editor/index.html:87
+#: templates/theme_editor/index.html:95
 msgid "customize more templates"
 msgstr "XXXXXXXX"
 
@@ -9627,61 +9710,69 @@ msgid "This group currently has %(count_members)s members."
 msgstr "XXXXXXXX"
 
 #: templates/user_groups/detail.html:41
-#, python-format
-msgid ""
-"This group currently has %(group.groupsubscription_set.all.count)s "
-"subscribers."
+#, fuzzy, python-format
+msgid "This group currently has %(count)s subscribers."
 msgstr "XXXXXXXX"
 
 #: templates/user_groups/detail.html:43
 msgid "Export all members"
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:50
+#: templates/user_groups/detail.html:44
+#, fuzzy
+msgid "Export all subscribers"
+msgstr "XXXXXXXX"
+
+#: templates/user_groups/detail.html:45
+#, fuzzy
+msgid "Export all members and subscribers"
+msgstr "XXXXXXXX"
+
+#: templates/user_groups/detail.html:52
 msgid "Group Information"
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:55
+#: templates/user_groups/detail.html:57
 msgid "Users can add themselves to this group"
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:58
+#: templates/user_groups/detail.html:60
 msgid "Users can remove themselves from this group"
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:60
+#: templates/user_groups/detail.html:62
 msgid "Edit Security Permissions for Group Members"
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:63
+#: templates/user_groups/detail.html:65
 msgid "Group Contact"
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:66
+#: templates/user_groups/detail.html:68
 msgid "Emails regarding activity in this group will be sent to:"
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:69
+#: templates/user_groups/detail.html:71
 msgid "There is no email recipient set for this group."
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:69
+#: templates/user_groups/detail.html:71
 msgid "Edit group."
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:73
+#: templates/user_groups/detail.html:75
 msgid "Group Members"
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:75
+#: templates/user_groups/detail.html:77
 msgid "This group has no members"
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:96
+#: templates/user_groups/detail.html:98
 msgid "Group Subscribers"
 msgstr "XXXXXXXX"
 
-#: templates/user_groups/detail.html:98
+#: templates/user_groups/detail.html:100
 msgid "This group has no subscribers"
 msgstr "XXXXXXXX"
 
@@ -9697,6 +9788,12 @@ msgstr "XXXXXXXX"
 msgid "Add Members to Group"
 msgstr "XXXXXXXX"
 
+#: templates/user_groups/member_add.html:24
+#: templates/user_groups/member_add_edit.html:23
+#, fuzzy
+msgid "Group:"
+msgstr "XXXXXXXX"
+
 #: templates/user_groups/member_add_edit.html:21
 #, fuzzy, python-format
 msgid "Edit Member <a href=\"%(urlz)s\">%(group_member)s</a> in Group"
@@ -9704,11 +9801,6 @@ msgstr "XXXXXXXX"
 
 #: templates/user_groups/member_add_edit.html:21
 msgid "Add Member to Group"
-msgstr "XXXXXXXX"
-
-#: templates/user_groups/member_add_edit.html:23
-#, fuzzy
-msgid "Group:"
 msgstr "XXXXXXXX"
 
 #: templates/user_groups/options.html:14
@@ -9738,6 +9830,207 @@ msgstr[1] "XXXXXXXX"
 #, fuzzy, python-format
 msgid "Created on %(create_date)s by %(group_creator)s"
 msgstr "XXXXXXXX"
+
+#~ msgid "Early Date/Time"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Regular Date/Time"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Pricing and Times"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Early Price"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Regular Price"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Late Price"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Early Registration Starts"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Regular Registration Starts"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Late Registration Starts"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Registration Ends"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Object Type"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid ""
+#~ "Image filename contains an invalid character: '#'. Please remove the "
+#~ "character and try again."
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "This page requires a login. Please <a href="
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Submitted on %(create_date)s by:"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Directory Information not available"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Time: "
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Price: "
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Guest"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Total $%(registration.invoice.total|floatformat:\"2\")s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Balance $%(registration.invoice.balance|floatformat:\"2\")s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Registered on %(registrant.registration.create_dt|date_short)s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Created on %(file.create_dt|date:\"long\")s by %(file.creator)s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Private Helpfile"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Help Topics: "
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Created on %(dat)s by: "
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Help Topics:"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Trans_ID:"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Trans_ID not available"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "ABANDON"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "VOID"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Invoice View"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "TENDERED:"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "E-S-T-I-M-A-T-E"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Pay Online Now"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Totals"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Payment method:"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Click here for a printer friendly version of this invoice."
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "View accounting entries associated with this invoice."
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Admin Notes:"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid ""
+#~ "\n"
+#~ "        <input type=\"submit\" value=\"Yes, approve it.\" /> or <a href="
+#~ "\"javascript:history.go(-1);\">Cancel</a>\n"
+#~ "        "
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Job Information not available"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "List Type:"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Released on %(job.release_dt|date:\"D d M Y P\")s by %(job.creator)s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid ""
+#~ "Submitted on %(create_date)s \n"
+#~ "\t\t\tby:"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid ""
+#~ "Released on %(location.release_dt|date:\"D d M Y P\")s by "
+#~ "%(location.creator)s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Payment Made by %(obj.first_name)s %(obj.last_name)s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Make Payment Information not available"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Import Now"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Membership Application Not Available"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid ""
+#~ "Renewal available in %(membership.get_renewal_period_dt.0|timeuntil)s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Submitted on %(news.create_dt|date:\"long\")s by %(news.creator)s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Submitted on %(n.create_dt|date:\"long\")s by %(n.creator)s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "%(event.title)s on %(event.start_dt|date:\"N j, Y \\a\\t f A\")s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid ""
+#~ "Application Created %(object.app.create_dt|date)s "
+#~ "(%(object.app.create_dt|timesince)s)"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid ""
+#~ "To activate this resume, go \n"
+#~ "  to: <b>[resumeactivatelink]</b> "
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Delete Page:"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid " SEO Meta"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Are you sure you want to delete this story?"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Submitted on %(story.create_dt|date:\"long\")s by %(story.creator)s"
+#~ msgstr "XXXXXXXX"
+
+#, fuzzy
+#~ msgid "Submitted on %(storydate)s by %(storycreate)s"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid ""
+#~ "This group currently has %(group.groupsubscription_set.all.count)s "
+#~ "subscribers."
+#~ msgstr "XXXXXXXX"
 
 #~ msgid "My Profile"
 #~ msgstr "XXXXXXXX"
