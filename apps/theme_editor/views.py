@@ -11,10 +11,11 @@ from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 
 # local 
+from theme.utils import get_theme
 from theme_editor.models import ThemeFileVersion
 from theme_editor.forms import FileForm, ThemeSelectForm
-from theme_editor.utils import get_dir_list, get_file_list, get_file_content, qstr_is_dir
-from theme_editor.utils import qstr_is_file, copy, change_theme
+from theme_editor.utils import get_dir_list, get_file_list, get_file_content
+from theme_editor.utils import qstr_is_file, qstr_is_dir, copy
 
 from base.http import Http403
 from perms.utils import has_perm
@@ -27,7 +28,10 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     # if no permission; raise 403 exception
     if not has_perm(request.user,'theme_editor.view_themefileversion'):
         raise Http403
-
+        
+    selected_theme = request.GET.get("theme", get_theme())
+    theme_root = os.path.join(settings.THEME_DIR, selected_theme)
+    
     # get the default file and clean up any input
     default_file = request.GET.get("file", DEFAULT_FILE)
     if default_file:
@@ -36,21 +40,21 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         default_file = default_file.replace('////', '/')
         default_file = default_file.replace('///', '/')
         default_file = default_file.replace('//', '/')
-
-
+    
+    
     # if the default_file is not a directory or file within
     # the themes folder then return a 404
-    if not qstr_is_file(default_file) and not qstr_is_dir(default_file):
+    if not qstr_is_file(default_file, ROOT_DIR=theme_root) and not qstr_is_dir(default_file, ROOT_DIR=theme_root):
         raise Http404
     
     # if default_file is a directory then append the
     # trailing slash so we can get the dirname below
-    if qstr_is_dir(default_file):
+    if qstr_is_dir(default_file, ROOT_DIR=theme_root):
         default_file = '%s/' % default_file
-
+    
     # get the current file name
     current_file = os.path.basename(default_file)
-
+    
     # get the present working directory
     # and make sure they cannot list root
     pwd = os.path.dirname(default_file)
@@ -67,32 +71,34 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         prev_dir = '/'.join(pwd_split)
     elif not pwd_split[0]:
         prev_dir = ''
-
+    
     # get the direcory list
-    dirs = get_dir_list(pwd)
-
+    dirs = get_dir_list(pwd, ROOT_DIR=theme_root)
+    
     # get the file list
-    files = get_file_list(pwd)
+    files = get_file_list(pwd, ROOT_DIR=theme_root)
     
     # get a list of revisions
     archives = ThemeFileVersion.objects.filter(relative_file_path=default_file).order_by("-create_dt")
-
+    
     if request.method == "POST":
         file_form = form_class(request.POST)
         if file_form.is_valid():
-            if file_form.save(request, default_file):
+            if file_form.save(request, default_file, ROOT_DIR=theme_root):
                 message = "Successfully updated %s" % current_file
             else:
                 message = "Cannot update"
             request.user.message_set.create(message=_(message))
     else:
-        content = get_file_content(default_file)
+        content = get_file_content(default_file,  ROOT_DIR=theme_root)
         file_form = form_class({"content":content, "rf_path":default_file})
     
-    #theme_form = ThemeSelectForm()
-    
+    theme_form = ThemeSelectForm(
+                    initial = {'theme':selected_theme}
+                )
     return render_to_response(template_name, {"file_form": file_form,
-                                              #'theme_form': theme_form,
+                                              'theme_form': theme_form,
+                                              'current_theme':selected_theme,
                                               'current_file': current_file,
                                               'prev_dir_name': prev_dir_name,
                                               'prev_dir': prev_dir,
@@ -175,21 +181,3 @@ def copy_to_theme(request):
     messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
     
     return redirect('original_templates')
-
-def theme_select(request):
-    """
-    modify local_settings.py's SITE_THEME
-    then touch settings.
-    If local_settings is not found, retain the current theme.
-    """
-    if request.method == 'POST':
-        form = ThemeSelectForm(request.POST)
-        if form.is_valid():
-            try:
-                change_theme(form.cleaned_data['theme'])
-                messages.add_message(request, messages.INFO, 'Theme successfully changed')
-            except IOError, e:
-                messages.add_message(request, messages.INFO, 'Could not change the theme: %s' % e)
-        return redirect('theme_editor')
-    else:
-        raise Http404

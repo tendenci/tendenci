@@ -93,11 +93,11 @@ def get_file_content(file, ROOT_DIR=THEME_ROOT):
         fd.close()
     return content
 
-def archive_file(request, relative_file_path):
+def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
     """
     Archive the file into the database if it is edited
     """
-    file_path = os.path.join(settings.THEME_ROOT, relative_file_path)
+    file_path = os.path.join(ROOT_DIR, relative_file_path)
     if os.path.isfile(file_path):
         (file_dir, file_name) = os.path.split(file_path)
         fd = open(file_path, 'r')
@@ -108,27 +108,3 @@ def archive_file(request, relative_file_path):
                                   relative_file_path=relative_file_path,
                                   author=request.user)
         archive.save()
-
-def change_theme(theme):
-    """
-    Changes the value of the local_setting variable SITE_THEME to theme
-    """
-    fh, abs_path = mkstemp()
-    new_settings = open(abs_path,'w')
-    old_settings = open(os.path.join(settings.PROJECT_ROOT, 'local_settings.py'))
-    for line in old_settings:
-        if line.startswith('SITE_THEME'):
-            #SITE_THEME present and not commented out
-            new_theme = line.replace(line.split('=')[-1], "'%s'\n" % theme)
-            new_settings.write(new_theme)
-        else:
-            new_settings.write(line)
-    #close temp file
-    new_settings.close()
-    close(fh)
-    old_settings.close()
-    #Remove original file
-    remove(os.path.join(settings.PROJECT_ROOT, 'local_settings.py'))
-    #Move new file
-    move(abs_path, os.path.join(settings.PROJECT_ROOT, 'local_settings.py'))
-    call_command('touch_settings')
