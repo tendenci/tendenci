@@ -193,7 +193,8 @@ jQuery(function($) {
     	var fieldset = $dd.parents("fieldset");
 
     	// toggle the
-    	if (selected_value == "check-box" || selected_value == "header" || selected_value == "description" || selected_value == "horizontal-rule"){
+        // removed check-box
+    	if ( selected_value == "header" || selected_value == "description" || selected_value == "horizontal-rule"){
             fieldset.find('.required input[id$="required"]').parent().hide("fast");
     	}
     	else {
