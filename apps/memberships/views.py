@@ -334,7 +334,6 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
                         else:
                             is_verified = False
                     except IndivMembEmailVeri8n.DoesNotExist:
-                        print form.cleaned_data['email']
                         is_verified = False
                         indiv_veri = IndivMembEmailVeri8n()
                         indiv_veri.corporate_membership = corp_memb
@@ -789,12 +788,19 @@ def membership_import(request, step=None):
 
                 # create entry fields
                 for key, value in fields.items():
+
                     app_fields = AppField.objects.filter(app=app, label=key)
                     if app_fields and membership.m.get(value):
+
+                        try:
+                            value = unicode(membership.m.get(unicode(value)))
+                        except (UnicodeDecodeError) as e:
+                            value = ''
+
                         AppFieldEntry.objects.create(
                             entry=entry,
                             field=app_fields[0],
-                            value=membership.m.get(value),
+                            value=value,
                         )
 
                 # update membership number
@@ -883,7 +889,6 @@ def membership_export(request):
             for memb in memberships:
                 data_row = []
                 field_entry_d = memb.entry_items
-                print field_entry_d
                 for field in fields:
                     field_name = slugify(field.label).replace('-','_')
                     value = ''
@@ -960,8 +965,6 @@ def membership_join_report_pdf(request):
 @staff_member_required
 def report_active_members(request, template_name='reports/membership_list.html'):
     mems = Membership.objects.filter(expire_dt__gt = datetime.now())
-    for mem in mems:
-        print mem.expire_dt, datetime.now(), mem.expire_dt > datetime.now()
     
     return render_to_response(template_name, {
             'mems':mems,

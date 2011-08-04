@@ -9,7 +9,10 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 # local
+from theme.utils import get_theme_root, get_theme, theme_choices
 from theme_editor.utils import archive_file
+
+THEME_ROOT = get_theme_root()
 
 class FileForm(forms.Form):
     content = forms.CharField(label="Content",
@@ -18,11 +21,11 @@ class FileForm(forms.Form):
                            )
     rf_path = forms.CharField(widget=forms.HiddenInput())
     
-    def save(self, request, file_relative_path):
+    def save(self, request, file_relative_path, ROOT_DIR=THEME_ROOT):
         content = self.cleaned_data["content"]
-        file_path = (os.path.join(settings.THEME_ROOT, file_relative_path)).replace("\\", "/")
+        file_path = (os.path.join(ROOT_DIR, file_relative_path)).replace("\\", "/")
         if os.path.isfile(file_path) and content <> "":
-            archive_file(request, file_relative_path)
+            archive_file(request, file_relative_path, ROOT_DIR=ROOT_DIR)
             f = codecs.open(file_path, 'w', 'utf-8', 'replace')
             file = File(f)
             file.write(content)
@@ -32,8 +35,8 @@ class FileForm(forms.Form):
             return False
             
 class ThemeSelectForm(forms.Form):
-    THEME_CHOICES = ((x, x) for x in os.listdir(os.path.join(settings.PROJECT_ROOT, 'themes')))
-    theme = forms.ChoiceField(label = _('Choose your Theme:'), choices=THEME_CHOICES)
+    THEME_CHOICES = ((x, x) for x in theme_choices())
+    theme = forms.ChoiceField(label = _('Theme:'), choices=THEME_CHOICES)
     
     def __init__(self, *args, **kwargs):
         super(ThemeSelectForm, self).__init__(*args, **kwargs)
