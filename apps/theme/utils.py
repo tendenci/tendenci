@@ -18,7 +18,6 @@ def theme_options():
     options = ''
     for theme in os.listdir(settings.THEME_DIR):
         options = '%s, %s' % (theme, options)
-    print options[:-2]
     return options[:-2]
     
 def theme_choices():
