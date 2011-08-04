@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load category_tags %}
+{% load i18n %}
 
 {% block title %}{{ job.get_title }}{% endblock %}
 {% block meta_description %}{{ job.get_description }}{% endblock %}
@@ -30,18 +31,18 @@
 			
         <h1>{{ job.title }}</h1>
 
-		<h2>Job Information</h2>
+		<h2>{% trans "Job Information" %}</h2>
 
 {% if job.description %}
 		<div class="section-block">
-			<div class="label">Description</div>
+			<div class="label">{% trans "Description" %}</div>
 			<div class="value">{{ job.description|safe }}</div>
 		</div>
 {% endif %}
 
 {% if job.job_url %}
 		<div class="section-line">
-			<div class="label">URL</div>
+			<div class="label">{% trans "URL" %}</div>
 			<div class="value">{{ job.job_url|urlize }}</div>
 			<div class="clear"></div>
 		</div>
@@ -49,7 +50,7 @@
 
 {% if job.level %}
 		<div class="section-line">
-			<div class="label">Level</div>
+			<div class="label">{% trans "Level" %}</div>
 			<div class="value">{{ job.level }}</div>
 			<div class="clear"></div>
 		</div>
@@ -57,7 +58,7 @@
 
 {% if job.period %}
 		<div class="section-line">
-			<div class="label">Period</div>
+			<div class="label">{% trans "Period" %}</div>
 			<div class="value">{{ job.period }}</div>
 			<div class="clear"></div>
 		</div>
@@ -65,15 +66,15 @@
 
 {% if job.position_reports_to %}
 		<div class="section-line">
-			<div class="label">Position Reports To</div>
-			<div class="value">{{ job.position_reports_to }}</div>
+			{% blocktrans with job.position_reports_to as job_report %}<div class="label">Position Reports To</div>
+			<div class="value">{{ job_report }}</div>{% endblocktrans %}
 			<div class="clear"></div>
 		</div>
 {% endif %}
 
 {% if job.location %}
 		<div class="section-line">
-			<div class="label">Location</div>
+			<div class="label">{% trans "Location" %}</div>
 			<div class="value">{{ job.location }}</div>
 			<div class="clear"></div>
 		</div>
@@ -81,31 +82,31 @@
 
 {% if job.percent_travel %}
 		<div class="section-line">
-			<div class="label">Travel Required</div>
-			<div class="value">{{ job.percent_travel }} percent of the time (approximate)</div>
+			{% blocktrans with job.percent_travel as jobper %}<div class="label">Travel Required</div>
+			<div class="value">{{ jobper }} percent of the time (approximate)</div>{% endblocktrans %}
 			<div class="clear"></div>
 		</div>
 {% endif %}
 
 {% if job.start_dt %}
 		<div class="section-line">
-			<div class="label">Starts On</div>
-			<div class="value">{{ job.start_dt }}</div>
+			{% blocktrans with job.start_dt as jobstart%}<div class="label">Starts On</div>
+			<div class="value">{{ job.start }}</div>{% endblocktrans %}
 			<div class="clear"></div>
 		</div>
 {% endif %}
 
 {% if job.salary_from and job.salary_to %}
 		<div class="section-line">
-			<div class="label">Salary</div>
-			<div class="value">{{ job.salary_from }} to {{ job.salary_to }}</div>
-			<div class="clear"></div>
+			{% blocktrans with job.salary_from as salfrom and job.salary_to as salto %} <div class="label">Salary</div>
+			<div class="value">{{ salfrom }} to {{ salto }}</div>
+			<div class="clear"></div>{% endblocktrans %}
 		</div>
 {% endif %}
 
 {% if job.code %}
 		<div class="section-line">
-			<div class="label">Code</div>
+			<div class="label">{% trans "Code" %}</div>
 			<div class="value">{{ job.code }}</div>
 			<div class="clear"></div>
 		</div>
@@ -113,37 +114,42 @@
 
 
 {% if job.experience or job.skills or job.education or job.computer_skills %}
-		<h2>Job Requirements</h2>
+		<h2>{% trans "Job Requirements" %}</h2>
 {% endif %}
 
 {% if job.experience %}
 <div class="section-block">
+<<<<<<< Updated upstream
 	<div class="label">Experience</div>
 	<div class="value">{{ job.experience|striptags|linebreaks }}</div>
+=======
+	<div class="label">{% trans "Experience" %}</div>
+	<div class="value">{{ job.experience|striptags }}</div>
+>>>>>>> Stashed changes
 </div>
 {% endif %}
 {% if job.skills %}
 <div class="section-block">
-	<div class="label">Skills</div>
+	<div class="label">{% trans "Skills" %}</div>
 	<div class="value">{{ job.skills|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 {% if job.computer_skills %}
 <div class="section-block">
-	<div class="label">Computer Skills</div>
+	<div class="label">{% trans "Computer Skills" %}</div>
 	<div class="value">{{ job.computer_skills|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 {% if job.education %}
 <div class="section-block">
-	<div class="label">Education Required</div>
+	<div class="label">{% trans "Education Required" %}</div>
 	<div class="value">{{ job.education|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 
 		
 {% if job.contact_company or job.contact_address or job.contact_city or job.contact_state  %}
-		<h2>Company Information</h2>
+		<h2>{% trans "Company Information" %}</h2>
 		<div class="company-wrap">
 			<div>{{ job.contact_company }}</div>
 			<div>{{ job.contact_address }}</div>
@@ -152,19 +158,19 @@
 		</div>
 {% endif %}
 
-{% if job.contact_name or job.contact_phone or job.contact_email or job.contact_fax or job.contact_website %}
-		<h2>Contact Information</h2>
+{% if job.contact_name or job.contact_phone or job.contact_email or job.contact_fax or job.contact_website  %}
+		<h2>{% trans "Contact Information" %}</h2>
 		<div class="contact-wrap">
 			<div>{{ job.contact_name }}</div>
-			<div>Phone: {{ job.contact_phone }}</div>
-			<div>Fax: {{ job.contact_fax }}</div>
+			<div>{% trans "Phone:" %} {{ job.contact_phone }}</div>
+			<div>{% trans "Fax:" %} {{ job.contact_fax }}</div>
 			<div>{{ job.contact_email|obfuscate_email }}</div>
 			<div>{{ job.contact_website|urlize }}</div>
 		</div>
 		
 		{% if job.contact_method %}
 				<div class="section-line">
-					<div class="label">Contact Method</div>
+					<div class="label">{% trans "Contact Method" %}</div>
 					<div class="value">{{ job.contact_method|striptags|linebreaks }}</div>
 					<div class="clear"></div>
 				</div>
@@ -172,7 +178,7 @@
 		
 		{% if job.is_agency %}
 				<div class="section-line">
-					<div class="label">Agency</div>
+					<div class="label">{% trans "Agency" %}</div>
 					<div class="value">{{ job.is_agency }}</div>
 					<div class="clear"></div>
 				</div>
@@ -183,25 +189,28 @@
 			<div class="categories">
 				{% get_category_for_object job as category %}
 				{% if category %}
-					Category:&nbsp;<a href="{% url job.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
+					{% trans "Category:" %}&nbsp;<a href="{% url job.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
 				{% endif %}
 				{% get_sub_category_for_object job as sub_category %}
 				{% if sub_category %}
-					Sub Category:&nbsp;<a href="{% url job.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
+					{% trans "Sub Category:" %}&nbsp;<a href="{% url job.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
 				{% endif %}				
 			</div>
 			
 			<div class="tags">
 				{% if tags %}
-					Tags: 
+					{% trans "Tags:" %}
 					{% for tag in tags %}
 						<a href="{% url job.search %}?q={{ tag }}">{{ tag }}</a>
 					{% endfor %}
 				{% endif %}
 			</div>
 
-            <div class="submitted">Submitted on {{ job.create_dt|date:"long" }} 
-			by {% firstof job.creator.get_profile.display_name job.creator %}</div>
+            <div class="submitted">
+                {% blocktrans with job.create_dt|date:"long" as create_date %}
+                    Submitted on {{ create_date }} by:
+                {% endblocktrans %}{% firstof job.creator.get_profile.display_name job.creator %}
+            </div>
         </div>
         
 		<br />

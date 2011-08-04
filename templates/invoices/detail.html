@@ -26,20 +26,20 @@
 {% block body %}
 <div class="t">
 	 {% invoice_nav  invoice %}
-	<h1>Accounting Entries View for Invoice {{ invoice.id }}</h1>
+	<h1>{% blocktrans with invoice.id as invoice_id %}Accounting Entries View for Invoice {{ invoice_id }}{% endblocktrans %}</h1>
 	
 	<div class="invoice-detail">
-		<p>A summary of the accounting entries for invoice {{ invoice.id }} is below.</p>
+		<p>{% blocktrans with invoice.id as invoice_id %}A summary of the accounting entries for invoice {{ invoice_id }} is below.{% endblocktrans %}</p>
 	
-		<div>Invoice: <a href="{% url invoice.view invoice.id %}">{{ invoice.id  }}</a></div>
+		<div>{% trans "Invoice:" %} <a href="{% url invoice.view invoice.id %}">{{ invoice.id  }}</a></div>
 		{% if acct_entries %}
 			<table width="550px">
 			<tr>
-			<th width="10%"><b>Account</b></th>
-			<th width="10%"><b>Debit</b></th>
-			<th width="10%"><b>Credit</b></th>
-			<th width="30%"><b>DateTime</b></th>
-			<th width="40%"><b>Description</b></th>
+			<th width="10%"><b>{% trans "Account" %}</b></th>
+			<th width="10%"><b>{% trans "Debit" %}</b></th>
+			<th width="10%"><b>{% trans "Credit" %}</b></th>
+			<th width="30%"><b>{% trans "DateTime" %}</b></th>
+			<th width="40%"><b>{% trans "Description" %}</b></th>
 			</tr>
 			{% for acct_entry in acct_entries%}
 				{# bad unused div here, but i want to pass the entry_class to acct_entry_item #}
@@ -50,7 +50,7 @@
 			<tr><td colspan="5">&nbsp;</td></tr>
 			
 			<tr>
-			<td width="10%"><b>Total:</b></td>
+			<td width="10%"><b>{% trans "Total:" %}</b></td>
 			<td width="10%" align="right"><b>{{ total_debit }}</b></td>
 			<td width="10%" align="right"><b>{{ total_credit }}</b></td>
 			<td colspan="2">&nbsp;</td>
@@ -61,12 +61,12 @@
 		{% endif %}
 		
 		<div id="total-by-account">
-			<b>Total by Account:</b><br />
+			<b>{% trans "Total by Account:" %}</b><br />
 			<table width="550px">
 			<tr>
-			<td width="20%"><b>Account</b></td>
+			<td width="20%"><b>{% trans "Account" %}</b></td>
 			<td width="60%">&nbsp;</td>
-			<td width="20%"><b>Total</b></td>
+			<td width="20%"><b>{% trans "Total" %}</b></td>
 			</tr>
 			{% for acctnum in account_numbers %}
 				<tr>
@@ -79,7 +79,7 @@
 			</table>
 		</div>
 		
-		<div style="margin-top: 1em;"><a href="{% url accounting.account_numbers %}">View All Account Numbers</a></div>
+		<div style="margin-top: 1em;"><a href="{% url accounting.account_numbers %}">{% trans "View All Account Numbers" %}</a></div>
 	</div>
 
 </div>

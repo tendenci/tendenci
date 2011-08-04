@@ -1,5 +1,6 @@
+{% load i18n %}
 
 {% block body %}
-<h1>{% firstof MODULE_ENTITIES_LABEL 'Entities' %} Delete Page</h1>
-<div class="back-to-search"><a href="{% url entity.search %}">&laquo; Back to entities search</a></div>
+<h1>{% firstof MODULE_ENTITIES_LABEL 'Entities' %} {% trans "Delete Page" %}</h1>
+<div class="back-to-search"><a href="{% url entity.search %}">&laquo; {% trans "Back to entities search" %}</a></div>
 {% endblock %}

@@ -2,6 +2,7 @@
 {% load page_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{% firstof MODULE_PAGE_LABEL 'Page' %} Add{% endblock %}
 
@@ -18,20 +19,20 @@
 
 	{% page_nav request.user %}
 
-    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} Add</h1>
+    <h1>{% firstof MODULE_PAGES_LABEL trans 'Page' %} {% trans "Add" %}</h1>
 
     <div class="page-wrap">
     	<form action="{% url page.add %}" method="post">{% csrf_token %}
     	<div class="forms">			
 			{{ form|styled_form }}
             <fieldset class="boxy-grey" >
-                <legend id="category-title" style="cursor: pointer"><span>+</span> Category</legend>
+                <legend id="category-title" style="cursor: pointer"><span>+</span> {% trans "Category" %}</legend>
                 <div id="category-form">
                     {{ categoryform|styled_form }}
                 </div>
             </fieldset>
             <fieldset class="boxy-grey">
-                <legend id="meta-title" style="cursor: pointer"><span>+</span> SEO Meta</legend>
+                <legend id="meta-title" style="cursor: pointer"><span>+</span> {% trans "SEO Meta" %}</legend>
                 <div id="meta-form">
                     {{ metaform|styled_form }}
                 </div>

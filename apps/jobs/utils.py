@@ -7,11 +7,6 @@ from payments.models import Payment
 from perms.utils import is_admin
 from site_settings.utils import get_setting
 
-def get_duration_choices():
-    jps = JobPricing.objects.filter(status=1).order_by('duration')
-    
-    return [(jp.duration, '%d days after the activation date' % jp.duration) for jp in jps]
-
 def get_payment_method_choices(user):
     if is_admin(user):
         return (('paid - check', 'User paid by check'),
@@ -27,7 +22,7 @@ def get_payment_method_choices(user):
         else:
             return ()
   
-def job_set_inv_payment(user, job, **kwargs): 
+def job_set_inv_payment(user, job, pricing):
     if get_setting('module', 'jobs', 'jobsrequirespayment'):
         if not job.invoice:
             inv = Invoice()
@@ -72,7 +67,7 @@ def job_set_inv_payment(user, job, **kwargs):
             inv.message = 'Thank You.'
             inv.status = True
             
-            inv.total = get_job_price(user, job)
+            inv.total = get_job_price(user, job, pricing)
             inv.subtotal = inv.total
             inv.balance = inv.total
             inv.estimate = 1
@@ -98,19 +93,9 @@ def job_set_inv_payment(user, job, **kwargs):
                     inv.make_payment(user, payment.amount)
                     
             
-def get_job_price(user, job, **kwargs):
-    job_price = 0
-    jps = JobPricing.objects.filter(status=1).filter(duration=job.requested_duration)
-    if jps:
-        jp = jps[0]
-        # check if user is member when membership is in place
-        if job.list_type == 'regular':
-            job_price = jp.regular_price
-        else:
-            job_price = jp.premium_price
-            
-        job.non_member_price = job_price
-        job.non_member_count = 1
-            
-    return job_price
+def get_job_price(user, job, pricing):
+    if job.list_type == 'regular':
+        return pricing.regular_price
+    else:
+        return pricing.premium_price
     

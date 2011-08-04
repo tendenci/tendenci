@@ -18,9 +18,9 @@
    <div id="t-view">
 <h1>{% trans 'Newsletter Distribution Recap'%}</h1>
 
-<h3><a href="{% url action.view action.id %}">Subject: {{ action.email.subject }}</a></h3>
-<b>Group: <a href="{% url group.detail action.group.slug %}" target="_blank">{{ action.group.name }}</a></b> <br />
-<p>Date Submitted: {{ action.submit_dt|date:"N j, Y f A" }}</p>
+<h3><a href="{% url action.view action.id %}">{% trans "Subject: " %}{{ action.email.subject }}</a></h3>
+<b>{% trans "Group: " %}<a href="{% url group.detail action.group.slug %}" target="_blank">{{ action.group.name }}</a></b> <br />
+<p>{% trans "Date Submitted: " %}{{ action.submit_dt|date:"N j, Y f A" }}</p>
 
 {% if action_recaps %}
 {% for ar in action_recaps %}
@@ -32,17 +32,17 @@
 	{% endfor %}
 	</ol>
 	
-	<div>Total Attempted to Send = {{ ar.attempted }} </div>
-	<div>Bad Address or E-mail blocked = {{ ar.failed }} </div>
-	<div><b>Total Processed = {{ ar.sent }} </b></div>
+	<div>{% trans "Total Attempted to Send = " %}{{ ar.attempted }} </div>
+	<div>{% trans "Bad Address or E-mail blocked = " %}{{ ar.failed }} </div>
+	<div><b>{% trans "Total Processed = " %}{{ ar.sent }} </b></div>
 	<br />
-	<div>Start Time: {{ ar.start_dt|date:"l, d-M-Y h:i A" }} </div>
-	<div>Finish Time: {{ ar.finish_dt|date:"l, d-M-Y h:i A" }}</div>
+	<div>{% trans "Start Time: " %}{{ ar.start_dt|date:"l, d-M-Y h:i A" }} </div>
+	<div>{% trans "Finish Time: " %}{{ ar.finish_dt|date:"l, d-M-Y h:i A" }}</div>
 	
 	</div>
 {% endfor %}
 {% else %}
-	<p>Recap not available.</p>
+	<p>{% trans "Recap not available." %}</p>
 {% endif %}
                                
  </div>

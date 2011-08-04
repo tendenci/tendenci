@@ -2,6 +2,7 @@
 {% load job_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% is_admin user as admin %}
 
@@ -20,7 +21,7 @@
 
     {% job_nav request.user job %}
 
-    <h1>{% firstof MODULE_JOBS_LABEL 'Job' %} Edit</h1>
+    <h1>{% firstof MODULE_JOBS_LABEL 'Job' %} {% trans "Edit" %}</h1>
 
     <div class="job-wrap">
 		<div class="options">

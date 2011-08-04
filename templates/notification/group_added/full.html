@@ -1,39 +1,42 @@
+{% load i18n %}
+
 {% load perm_tags %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-<title>Group Add Notice</title>
+<title>{% trans "Group Add Notice" %}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 {% is_admin request.user as isadmin %}
 <body bgcolor="#ffffff" text="#000000">
-<p>The following group was 
-  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} by {{request.user.get_full_name}}
-  {% if isadmin %}(administrator){% else %} and needs to be activated{% endif %}:</p>
+<p>
+  {% if isadmin %}{% blocktrans with request.user.get_full_name as requser %}The following group was 
+  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} by {{ requser }}(administrator){% endblocktrans %}{% else %}{% blocktrans with request.user.get_full_name as requser%}The following group was 
+  added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} by {{ requser }} and needs to be activated{% endblocktrans %}{% endif %}:</p>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td width="2%">&nbsp;</td>
-    <td width="23%"> Name:</td>
+    <td width="23%"> {% trans "Name:" %}</td>
     <td width="75%"><b>{{ object.name }}</b></td>
   </tr>
   <tr> 
     <td width="2%">&nbsp;</td>
-    <td width="23%"> Label:</td>
+    <td width="23%"> {% trans "Label:" %}</td>
     <td width="75%"><b>{{ object.label }}</b></td>
   </tr>
 </table>
-<p>To view the details of this 
-  group, go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url group.detail object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url group.detail object.slug %}</a></b><br>
+<p>{% blocktrans %}To view the details of this 
+  group, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url group.detail object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url group.detail object.slug %}</a></b><br>
 
 {% if not isadmin %} 
   <br>
-<p>To activate this group, 
-  go to: <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url group.edit object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url group.edit object.slug %}</a></b> </p>
+<p>{% blocktrans %}To activate this group, 
+  go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url group.edit object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url group.edit object.slug %}</a></b> </p>
 {% endif %}
  
-<P>Time submitted:  {% now "D d M Y P" %}</P>
+<P>{% trans "Time submitted:" %}  {% now "D d M Y P" %}</P>
  
 </body>
 </html>

@@ -1,10 +1,13 @@
 from django.contrib import admin
 from django.conf import settings
+from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse
 
 from before_and_after.models import BeforeAndAfter, Category, \
     Subcategory, PhotoSet
 from before_and_after.forms import BnAForm
+from perms.utils import update_perms_and_save
+from event_logs.models import EventLog
 
 class PhotoSetAdmin(admin.StackedInline):
     model = PhotoSet
@@ -69,6 +72,45 @@ class BnAAdmin(admin.ModelAdmin):
     edit_link.allow_tags = True
     edit_link.short_description = 'edit'
         
+    def log_deletion(self, request, object, object_repr):
+        super(BnAAdmin, self).log_deletion(request, object, object_repr)
+        log_defaults = {
+            'event_id' : 1090300,
+            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, 
+                                                    object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)           
+
+    def log_change(self, request, object, message):
+        super(BnAAdmin, self).log_change(request, object, message)
+        log_defaults = {
+            'event_id' : 1090200,
+            'event_data': '%s (%d) edited by %s' % (object._meta.object_name, 
+                                                    object.pk, request.user),
+            'description': '%s edited' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)               
+
+    def log_addition(self, request, object):
+        super(BnAAdmin, self).log_addition(request, object)
+        log_defaults = {
+            'event_id' : 1090100,
+            'event_data': '%s (%d) added by %s' % (object._meta.object_name, 
+                                                   object.pk, request.user),
+            'description': '%s added' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults)
+                     
     def get_form(self, request, obj=None, **kwargs):
         """
         inject the user in the form.
@@ -76,6 +118,14 @@ class BnAAdmin(admin.ModelAdmin):
         form = super(BnAAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
         return form
+
+    def save_model(self, request, object, form, change):
+        """
+        update the permissions backend
+        """
+        instance = form.save(commit=False)
+        perms = update_perms_and_save(request, form, instance)
+        return instance
 
     def change_view(self, request, object_id, extra_context=None):
 		result = super(BnAAdmin, self).change_view(request, object_id, extra_context)

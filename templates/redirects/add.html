@@ -1,6 +1,7 @@
 {% extends "redirects/base.html" %}
 {% load styled_forms %}
 {% load redirect_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Add{% endblock %}
 
@@ -12,7 +13,7 @@
 {% block body %}
 <div class="t">
  {% redirect_nav request.user %}
-    <h1>Redirects Add</h1>
+    <h1>{% trans "Redirects Add" %}</h1>
    
     <div class="redirect-wrap">
     	<form action="{% url redirect.add %}" method="post">{% csrf_token %}

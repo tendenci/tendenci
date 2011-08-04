@@ -13,19 +13,12 @@ from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from jobs.models import JobPricing
-from jobs.utils import get_duration_choices, get_payment_method_choices
+from jobs.utils import get_payment_method_choices
 
 
 request_duration_defaults = {
     'help_text': mark_safe('<a href="%s">Add pricing options</a>' % '/jobs/pricing/add/')
 }
-
-STATUS_DETAIL_CHOICES = (
-    ('active', 'Active'),
-    ('inactive', 'Inactive'),
-    ('pending', 'Pending'),
-    ('paid - pending approval', 'Paid - Pending Approval'),
-)
 
 DURATION_CHOICES = (
     (14, '14 Days from Activation date'),
@@ -35,6 +28,14 @@ DURATION_CHOICES = (
     (120, '120 Days from Activation date'),
     (180, '180 Days from Activation date'),
     (365, '365 Days from Activation date'),
+)
+
+
+STATUS_DETAIL_CHOICES = (
+    ('active', 'Active'),
+    ('inactive', 'Inactive'),
+    ('pending', 'Pending'),
+    ('paid - pending approval', 'Paid - Pending Approval'),
 )
 
 STATUS_CHOICES = (
@@ -64,11 +65,12 @@ class JobForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending'),))
 
-    requested_duration = forms.ChoiceField(**request_duration_defaults)
-
     list_type = forms.ChoiceField(initial='regular', choices=(('regular', 'Regular'),
                                                               ('premium', 'Premium'),))
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
+    
+    pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
+                    queryset=JobPricing.objects.filter(status=1).order_by('duration'))
 
     class Meta:
         model = Job
@@ -90,7 +92,7 @@ class JobForm(TendenciBaseForm):
         'salary_from',
         'salary_to',
         'computer_skills',
-        'requested_duration',
+        'pricing',
         'list_type',
         'activation_dt',
         'post_dt',
@@ -136,7 +138,7 @@ class JobForm(TendenciBaseForm):
                                 'salary_from',
                                 'salary_to',
                                 'is_agency',
-                                'requested_duration',
+                                'pricing',
                                 'activation_dt',
                                 'expiration_dt',
                                 'post_dt',
@@ -190,6 +192,7 @@ class JobForm(TendenciBaseForm):
         super(JobForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            #self.fields['pricing'].initial = JobPricing.objects.filter(duration=self.instance.requested_duration)[0]
             if is_admin(self.user):
                 self.fields['status_detail'].choices = STATUS_DETAIL_CHOICES
         else:
@@ -197,9 +200,7 @@ class JobForm(TendenciBaseForm):
 
         if 'payment_method' in self.fields:
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
-        if 'requested_duration' in self.fields:
-            self.fields['requested_duration'].choices = get_duration_choices()
-
+        
         # adjust fields depending on user status
         fields_to_pop = []
         if not self.user.is_authenticated():
@@ -239,6 +240,17 @@ class JobForm(TendenciBaseForm):
         for f in list(set(fields_to_pop)):
             if f in self.fields:
                 self.fields.pop(f)
+                
+    def save(self, *args, **kwargs):
+        """
+        Assigns the requested_duration of a job based on the
+        chosen pricing.
+        """
+        job = super(JobForm, self).save(commit=False)
+        job.requested_duration = self.cleaned_data['pricing'].duration
+        if kwargs['commit']:
+            job.save()
+        return job
 
 
 

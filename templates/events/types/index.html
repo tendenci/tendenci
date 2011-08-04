@@ -1,5 +1,6 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Types{% endblock %}
 
@@ -27,7 +28,7 @@
 <div class="t">
     {% event_nav request.user %}
 
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} Types</h1>
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Types" %}</h1>
 
     <div class="event-wrap">
 

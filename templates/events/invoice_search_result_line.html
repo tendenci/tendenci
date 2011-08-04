@@ -1,15 +1,17 @@
 {% load base_filters %}
 {% load invoice_tags %}
+{% load i18n %}
+
 <table width="100%">
     {% invoices_search_line_header request invoice '#ff6600' %}  
       
     {# display event registration #} 
     <tr>
-    	<td>RegID</td>
-    	<td colspan="2">Title</td>
-    	<td>Date</td>
-    	<td>Price</td>
-    	<td>Balance</td>
+    	<td>{% trans "RegID" %}</td>
+    	<td colspan="2">{% trans "Title" %}</td>
+    	<td>{% trans "Date" %}</td>
+    	<td>{% trans "Price" %}</td>
+    	<td>{% trans "Balance" %}</td>
     </tr>
     {% if obj %}  
       <tr>

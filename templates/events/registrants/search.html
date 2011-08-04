@@ -5,6 +5,7 @@
 {% load base_filters %}
 {% load perm_tags %}
 {% load avatar_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
@@ -95,7 +96,7 @@
 			{% if event.speaker_set.all.0 %}
 			{% with event.speaker_set.all.0 as speaker %}
 			<div class="speaker-wrap">
-				<div class="speaker"><strong>Speaker</strong></div>
+				<div class="speaker"><strong>{% trans "Speaker" %}</strong></div>
 				<div>{{ speaker.name }}</div>
 			</div>
 			{% endwith %}
@@ -104,7 +105,7 @@
 			{% if event.organizer_set.all.0 %}
 			{% with event.organizer_set.all.0 as organizer %}
 			<div class="organizer-wrap">
-				<div class="organizer"><strong>Organizer</strong></div>
+				<div class="organizer"><strong>{% trans "Organizer" %}</strong></div>
 				<div>{{ organizer.name }}</div>
 			</div>
 			{% endwith %}
@@ -121,7 +122,7 @@
 		</td> <!-- END #event-wrap -->
 		<td id="registrant-wrap">
 		<!-- column2 -->
-		    <h1>Event Registrant Search</h1>  
+		    <h1>{% trans "Event Registrant Search" %}</h1>  
 		
 			{% registrant_search event %}
 		
@@ -160,13 +161,13 @@
 						{% endif %}
 		
 						{% if registrant.title and registrant.company %}
-						<div>Web Developer at {{ registrant.company_name }}</div>
+						<div>{% blocktrans with registrant.company_name as regcomp %}Web Developer at {{ regcomp }}{% endblocktrans %}</div>
 						{% else %}
 							{% if registrant.title %}
-							<div>Web Developer</div>
+							<div>{% trans "Web Developer" %}</div>
 							{% else %}
 								{% if registrant.company_name %}
-								<div>Works at {{ registrant.company_name }}</div>
+								<div>{% blocktrans with registrant.company_name as regcomp %}Works at {{ regcomp }} {% endblocktrans %}</div>
 								{% endif %}
 							{% endif %}
 						{% endif %}
@@ -177,9 +178,9 @@
 		
 		            <div class="content"></div>
 					<div class="meta">
-		            	<div class="submitted">Registered on {{ registrant.registration.create_dt|date_short }}</div>
+		            	<div class="submitted">{% blocktrans with registrant.registration.create_dt|date_short as reg_date %}Registered on {{ reg_date }}{% endblocktrans %}</div>
 						{% if registrant.cancel_dt %}
-		            	<div class="canceled">Canceled {{ registrant.cancel_dt|date_short }}</div>
+		            	<div class="canceled">{% blocktrans with registrant.cancel_dt|date_short as cancel_date %}Canceled on {{ cancel_date }}{% endblocktrans %}</div>
 		            	{% endif %}
 		            	<div style="clear:both;"></div>
 		            </div>
@@ -188,7 +189,7 @@
 				{# endif #}
 				{% endwith %}
 			{% empty %}
-				<div>0 Results Found</div>
+				<div>{% trans "0 Results Found" %}</div>
 		    {% endfor %}
 			</div>
 		

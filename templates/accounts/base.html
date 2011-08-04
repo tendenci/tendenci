@@ -1,8 +1,9 @@
 {% extends "site_base.html" %}
+{% load i18n %}
 
 {% block messages %}{{ block.super }}{% endblock %}
 
-{% block title %}Accounts{% endblock %}
+{% block title %}{% trans "Accounts" %}{% endblock %}
 {% block extra_head %}{{ block.super }}{% endblock %}
 {% block body %}{% endblock %}
 {% block extra_body %}{{ block.super }}{% endblock %}

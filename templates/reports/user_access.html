@@ -1,27 +1,28 @@
 {% extends "reports/base.html" %}
+{% load i18n %}
 
 {% block content %}
 
-<h1>User Access</h1>
+<h1>{% trans "User Access" %}</h1>
 
-The following users have access times
+{% trans "The following users have access times" %}
 
 <table>
 <tr>
-	<td>Total User Records in Database: {{ total_users }}</td>
+	<td>{% trans "Total User Records in Database:" %} {{ total_users }}</td>
 </tr>
 <tr>
-	<td>Total Logins: {{ total_logins }}</td>
+	<td>{% trans "Total Logins:" %} {{ total_logins }}</td>
 </tr>
 </table>
 
 {% for days, count in day_logins %}
 <table>
 <tr>
-	<th>LAST {{ days }} DAYS</th>
+	<th>{% blocktrans %}LAST {{ days }} DAYS{% endblocktrans %}</th>
 </tr>
 <tr>
-	<td>Event 125200 - User Login: {{ count }}</td>
+	<td>{% blocktrans %}Event 125200 - User Login: {{ count }}{% endblocktrans %}</td>
 </tr>
 </table>
 {% endfor %}

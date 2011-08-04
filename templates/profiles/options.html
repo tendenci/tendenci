@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 <div class="t-iconrow">
 {% get_or_create_profile_for user_this as "user_this_profile" %}
@@ -10,15 +11,15 @@
 		{% if can_edit_user %} 
 			{% is_developer user_this as is_developer %}
 			{% if is_developer %}
-				<span class="copyright body-copy-alerts"><em>DEVELOPER</em></span>
+				<span class="copyright body-copy-alerts"><em>{% trans "DEVELOPER" %}</em></span>
 			{% else %}
 				{% if admin %}
-				<span class="copyright body-copy-alerts"><em>ADMINISTRATOR</em></span>
+				<span class="copyright body-copy-alerts"><em>{% trans "ADMINISTRATOR" %}</em></span>
 				{% endif %}
 			{% endif %}
 			{% if profile.status == 0 %}
 				<a href="{% url profile.edit user_this.id %}" title="Inactive" class="t-statusdetail"
-				 style="background-color:#FF0000;">Inactive</a>
+				 style="background-color:#FF0000;">{% trans "Inactive" %}</a>
 			{% else %}
 				{% if profile.status_detail %}
 					{% if profile.status_detail|lower != 'active' %}
@@ -34,34 +35,34 @@
 					alt="Non-Interactive" title="Non-Interactive">
 				{% endif %}
 			
-		     	<a href="{% url profile.edit user_this.id %}" class="option-link edit">Edit</a>
+		     	<a href="{% url profile.edit user_this.id %}" class="option-link edit">{% trans "Edit" %}</a>
 		{% endif %}
 	{% endif %}
 
  {% if can_edit_user %}
 	  <div class="more-options-wrap">
-	    <a href="javascript:;" class="more-options-trigger">More options <small>&#9660;</small></a>
+	    <a href="javascript:;" class="more-options-trigger">{% trans "More options" %} <small>&#9660;</small></a>
 	    <div class="more-options-target">
 	        <ul>
 				<li class="divider">
-				 <a href="{% url profile.edit_groups user_this.username %}" class="usergroups" title=="Edit Groups">Edit Groups</a>
+				 <a href="{% url profile.edit_groups user_this.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
 				</li>
 				
 				{% if admin %}
 				<li>
-				<a href="{% url profile.edit_perms user_this.id %}" class="permissions" title=="Edit Permissions">Permissions</a>
+				<a href="{% url profile.edit_perms user_this.id %}" class="permissions" title=="Edit Permissions">{% trans "Permissions" %}</a>
 				</li>
 				<li>
-				<a href="{{ request.path }}?_impersonate={{ user_this.username }}" class="permissions" title=="Impersontae">Impersonate</a>
+				<a href="{{ request.path }}?_impersonate={{ user_this.username }}" class="permissions" title=="Impersontae">{% trans "Impersonate" %}</a>
 				</li>
 				{% endif %}
 				
 				<li>               
-				 <a href="{% url auth_password_change user_this.id %}" class="changepassword" title=="Change Password">Change Password</a>
+				 <a href="{% url auth_password_change user_this.id %}" class="changepassword" title=="Change Password">{% trans "Change Password" %}</a>
 				</li> 
 				
 				<li>               
-				 <a href="{% url profile.delete user_this.id %}" class="delete" title=="Delete User">Delete</a>
+				 <a href="{% url profile.delete user_this.id %}" class="delete" title=="Delete User">{% trans "Delete" %}</a>
 				</li>
 				
 			 </ul>

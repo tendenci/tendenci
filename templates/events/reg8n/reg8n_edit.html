@@ -1,6 +1,7 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Edit Registration{% endblock %}
 
@@ -50,7 +51,7 @@
 <div class="t">
     {% event_nav user reg8n.event %}
 
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} Registration Edit</h1>
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Registration Edit" %}</h1>
     <div class="event-title">Event: <a href="{% url event reg8n.event.id%}">{{ reg8n.event.title }}</a></div>
 
     <div class="event-wrap">
@@ -79,7 +80,7 @@
     		{{ formset.management_form }}
     		{% for form in formset.forms %}
     			<div class="registrant-header{% if total_regt_forms = 1 %} hidden{% endif %}">
-					Registrant #<span class="item-counter">{{ forloop.counter }}</span>:
+					{% trans "Registrant" %} #<span class="item-counter">{{ forloop.counter }}</span>:
 				</div>
 			
 				<div class="{% cycle 'odd-registrant' 'even-registrant'%}">

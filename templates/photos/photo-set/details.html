@@ -105,7 +105,7 @@
 	</div>
 
     <h1 class="set-name">{{ photo_set.name }}</h1>
-    <div class="back-to-photo-sets"><a href="{% url photoset_latest %}">&larr; Back to Albums</a></div>
+    <div class="back-to-photo-sets"><a href="{% url photoset_latest %}">&larr; {% trans "Back to Albums" %}</a></div>
     <table class="wrap">
         <tr><td class="set-info">
             <div class="cover-photo">
@@ -117,8 +117,7 @@
             </div>
 
             <div class="quick-info">
-            {{ photo_set.image_set.count }} Photo{{ photo_set.image_set.count|pluralize }}
-            {% if admin %}
+            {% blocktrans count photo_set.image_set.count as photocount %}{{ photocount }} Photo{% plural %}{{ photocount }} Photos{% endblocktrans %}{% if admin %}
             <span class="visibility">
                  &middot; {% obj_perms photo_set %} &middot; {% obj_status photo_set %}
             </span>

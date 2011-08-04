@@ -1,42 +1,43 @@
 {% load perm_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% is_admin request.user as isadmin %}
 <table border="0" cellspacing="0" cellpadding="0">
     {% if payment_method %}
          <tr> 
-         	<td>Method</td>
+         	<td>{% trans "Method" %}</td>
          	<td class="td-right">{{ payment_method }}</td>
          </tr>
     {% endif%}
     {% if invoice.variance and invoice.variance != 0 %}
         {% if invoice.total != tmp_total %}
             <tr>
-            	<td>Adjustment</td> 
+            	<td>{% trans "Adjustment" %}</td> 
             	<td class="td-right">{{ invoice.variance|format_currency }}</td>
             </tr>
         {% endif%}
     {% endif%}
 	<tr>
-		<td>Sub Total</td>
+		<td>{% trans "Sub Total:" %}</td>
 		<td class="td-right">{{ invoice.subtotal|format_currency }}</td>
 	</tr>
 	<tr>
-		<td>Total</td>
+		<td>{% trans "Total:" %}</td>
 		<td class="td-right">{{ invoice.total|format_currency }}</td>
 	</tr>
 	<tr>
-		<td>Payments/Credits</td>
+		<td>{% trans "Payments/Credits:" %}</td>
 		<td class="td-right">{{ invoice.payments_credits|format_currency }}</td>
 	</tr>
 	<tr class="invoice-total-balance">
-		<td>Balance due</td>
+		<td>{% trans "Balance due:" %}</td>
 		<td class="td-right">{{ invoice.balance|format_currency }}</td>
 	</tr>
 	<tr>
 		<td colspan="2">
 			{% if invoice.balance > 0 and merchant_login %}
-		     <a class="invoice-pay" href="{% url payments.views.pay_online invoice.id invoice.guid %}" title="Pay Invoice">Pay Invoice</a>
+		     <a class="invoice-pay" href="{% url payments.views.pay_online invoice.id invoice.guid %}" title="Pay Invoice">{% trans "Pay Invoice" %}</a>
 			{% endif %}
 		</td>
 </table>

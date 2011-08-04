@@ -1,3 +1,5 @@
+{% load i18n %}
+
 {% if jobs %}
 {% load base_filters %}
 	<font face="Arial" size="3"><b>
@@ -5,9 +7,9 @@
 	{# named area for jump links #}
 	<a name="jobs" id="jobs"></a>
 	{% if start_dt %}
-		Jobs for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}
+		{% blocktrans %}Jobs for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}{% endblocktrans %}
 	{% else %}
-		All Jobs
+		{% trans "All Jobs" %}
 	{% endif %}
 	
 	</font></b></font>							   
@@ -30,11 +32,11 @@
 		</td></tr>
 		
 		<tr><td align="left" valign="top"><font face="Arial" size="2" color="#000000">
-		<b>Company:</b> {{ job.contact_company }} </font></td></tr>
+		<b>{% trans "Company:" %}</b> {{ job.contact_company }} </font></td></tr>
 		
 		{% if not simplified  %}
 			<tr><td align="left"><font face="Arial" size="2" color="#000000">
-			<b>Date Activated:</b> {{ job.activation_dt|date:"l d-M-Y h:i A" }} </font> 
+			<b>{% trans "Date Activated:" %}</b> {{ job.activation_dt|date:"l d-M-Y h:i A" }} </font> 
 			</td></tr>
 		{% endif %}
 		
@@ -48,8 +50,8 @@
 		{#  posted by #}
 		{% if not simplified  %}
 			<font face="Arial" size="2" color="#000000">
-			<br><b>Posted by</b>: 
-			{{ job.owner.first_name }} {{job.owner.last_name }}
+			<br><b>{% blocktrans %}Posted by</b>: 
+			{{ job.owner.first_name }} {{job.owner.last_name }}{% endblocktrans %}
 			</font>
 		{% endif %}
 		<br>

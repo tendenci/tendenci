@@ -1,5 +1,7 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
+
 <div id="showh">
 		<ul id="primary">
 		
@@ -11,18 +13,18 @@
         </li>
         {% endif %}
 		
-		<li><a href="{% url profile.search %}">Users</a></li>
+		<li><a href="{% url profile.search %}">{% trans "Users" %}</a></li>
 		
 		<li>
-			<span>{% firstof MODULE_GROUPS_LABEL 'Groups' %}</span>
+			<span>{% firstof MODULE_GROUPS_LABEL trans 'Groups' %}</span>
 			<ul id="secondary">
 				<li>
-				<a href="/groups/">{% firstof MODULE_GROUPS_LABEL 'Groups' %}:</a>
+				<a href="/groups/">{% firstof MODULE_GROUPS_LABEL trans 'Groups' %}:</a>
 				</li> 
 				{% has_perm user site_settings.change_setting as can_edit_setting %}
 				{% if can_edit_setting %}
 					<li>	
-					<a href="{% url site_settings.views.list "module" "groups" %}">Settings</a>
+					<a href="{% url site_settings.views.list "module" "groups" %}">{% trans "Settings" %}</a>
 					</li>
 				{% endif %}
 				
@@ -30,7 +32,7 @@
 							{% has_perm user user_groups.view_group "group" as can_view %}
 							{% if can_view %}
 								<li>
-									<a href="{{ group.get_absolute_url }}">View</a>
+									<a href="{{ group.get_absolute_url }}">{% trans "View" %}</a>
 								</li>
 							{% endif %}
 						{% endif %}
@@ -39,29 +41,29 @@
 							{% has_perm user user_groups.change_group "group" as can_edit %}
 							{% if can_edit %}
 							<li>
-							<a href="{% url group.edit group.slug %}">Edit</a>
+							<a href="{% url group.edit group.slug %}">{% trans "Edit" %}</a>
 							</li>
 							{% endif %}
 						{% endif %}
 						
 						<li>
-						<a href="{% url group.search %}">Search</a>
+						<a href="{% url group.search %}">{% trans "Search" %}</a>
 						</li>
 							
 						{% has_perm user user_groups.add_group "group" as can_add %}
 						{% if can_add %}
 						<li>
-						<a href="{% url group.add %}">Add</a>
+						<a href="{% url group.add %}">{% trans "Add" %}</a>
 						</li>
 						{% endif %}
 					{% if user_current.is_authenticated %}
 					<li>
-					<a href="{% url auth_logout %}">Log Off</a>
+					<a href="{% url auth_logout %}">{% trans "Log Off" %}</a>
 					</li> 
 					{% endif %}
 			</ul>
 			
 		</li>
-		<li><a href="{% url news.search %}">News</a></li>
+		<li><a href="{% url news.search %}">{% trans "News" %}</a></li>
 		</ul>
 		</div>

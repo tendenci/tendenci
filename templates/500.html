@@ -1,9 +1,13 @@
 {% extends "default.html" %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Error{% endblock%}
 
 {% block body %}
-    <h1>Oops {% if user.is_authenticated %}{{ user.username }}{% endif %}, we caused a problem  </h1>
-    <p>We have been notified of this and will be working on it quickly.</p>
-    <p>You may want to <a href="{{ request.get_full_path }}">try this page again</a> in a little bit.</p>
+    <h1>{% if user.is_authenticated %}{% blocktrans with user.username as use %}Oops {{ use }}, we caused a problem{% endblocktrans %}
+    {% else %}Oops, we caused a problem
+    {% endif %}
+      </h1>
+    <p>{% trans "We have been notified of this and will be working on it quickly." %}</p>
+    <p>{% blocktrans with request.get_full_path as reqpath %}You may want to <a href="{{ reqpath }}">try this page again</a> in a little bit.{% endblocktrans %}</p>
 {% endblock %}

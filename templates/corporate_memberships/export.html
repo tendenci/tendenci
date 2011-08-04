@@ -2,8 +2,9 @@
 {% load corporate_memberships_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load i18n %}
 
-{% block title %}Export Corporate Memberships{% endblock %}
+{% block title %}{% trans "Export Corporate Memberships" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,7 +20,7 @@
  {% corpmemb_nav request.user %}
 <div id="corp-import-wrap">
     
-    <h1>Corporate Membership CSV Export</h1>
+    <h1>{% trans "Corporate Membership CSV Export" %}</h1>
    
     <div id="corp-export">
     	

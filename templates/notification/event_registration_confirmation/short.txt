@@ -1,11 +1,13 @@
+{% load i18n %}
+
 {% load base_filters %}
 
 {% if price <= 0 %}
-    {{ SITE_GLOBAL_SITEDISPLAYNAME }} Event Registration Confirmed - {{ event.title }} on {{ event.start_dt|date_short }} {{ event.timezone }}
+    {{ SITE_GLOBAL_SITEDISPLAYNAME }} {% blocktrans with event.timezone as event_tz and event.title as event_title and event.start_dt|date_short as event_start %}Event Registration Confirmed - {{ event_title }} on {{ event_start }}{{ event_tz }}{% endblocktrans %}
 {% else %}
     {% if event.registration_configuration.payment_required %}
-        {{ SITE_GLOBAL_SITEDISPLAYNAME }} Event Registration ALMOST Confirmed - {{ event.title }} on {{ event.start_dt|date_short }} {{ event.timezone }}
+        {{ SITE_GLOBAL_SITEDISPLAYNAME }} {% blocktrans with event.timezone as event_tz and event.title as event_title and event.start_dt|date_short as event_start %}Event Registration ALMOST Confirmed - {{ event_title }} on {{ event_start }}{{ event_ez }}{% endblocktrans %}
     {% else %}
-        {{ SITE_GLOBAL_SITEDISPLAYNAME }} Event Registration Confirmed - {{ event.title }} on {{ event.start_dt|date_short }} {{ event.timezone }}
+        {{ SITE_GLOBAL_SITEDISPLAYNAME }} {% blocktrans with event.timezone as event_tz and event.title as event_title and event.start_dt|date_short as event_start %}Event Registration Confirmed - {{ event_title }} on {{ event_start }}{{ event_ez }}{% endblocktrans %}
     {% endif %}
 {% endif %}

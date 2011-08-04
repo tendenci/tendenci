@@ -5,9 +5,10 @@
 {% load perm_tags %}
 {% load avatar_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}
-    {{ event.title }} - {{ event.start_dt|date }} - Registrant Roster {{ roster_view }}
+    {{ event.title }} - {{ event.start_dt|date }} - {% trans "Registrant Roster" %} {{ roster_view }}
 {% endblock %}
 
 {% block extra_head %}
@@ -160,22 +161,22 @@
 
 
 <div class='back-button'>
-    <a href="{{ event.get_absolute_url }}">&laquo; Back to event</a>
+    <a href="{{ event.get_absolute_url }}">&laquo; {% trans "Back to event" %}</a>
 </div>
 
 <div class='event-info'>
-	<h1>{{ event.title }} - Registrant Roster {{ roster_view|capfirst }}</h1>
+	<h1>{{ event.title }} - {% trans "Registrant Roster" %} {{ roster_view|capfirst }}</h1>
 
     {% if roster_view == 'non-paid' %}
-        <div><a href="{% url event.registrant.export.non_paid event.pk %}">Export Only Non-Paid Registrants</a></div>
+        <div><a href="{% url event.registrant.export.non_paid event.pk %}">{% trans "Export Only Non-Paid Registrants" %}</a></div>
     {% endif %}
 
     {% if roster_view == 'paid' %}
-        <div><a href="{% url event.registrant.export.paid event.pk %}">Export Only Paid Registrants </a></div>
+        <div><a href="{% url event.registrant.export.paid event.pk %}">{% trans "Export Only Paid Registrants" %} </a></div>
     {% endif %}
 
     {% if roster_view == 'total' %}
-        <div><a href="{% url event.registrant.export.total event.pk %}">Export Non-Paid and Paid Registrants (one file)</a></div>
+        <div><a href="{% url event.registrant.export.total event.pk %}">{% trans "Export Non-Paid and Paid Registrants (one file)" %}</a></div>
     {% endif %}
 
 	<h3>{{ event.place.address }} {{ event.place.city_state|join:", "}} {{ event.place.zip }}</h3>
@@ -189,14 +190,14 @@
 <tr>
 	<th width="2%"></th>
 	<th width="6%" class='attended' title="Attendance Checkbox"></th>
-	<th width="26%" title="Name and Phone Number">Name & Phone</th>
-	<th width="26%" title="Title and Company">Title &amp; Company</th>
-    <th width="8%" title="Price Chosen">Price Type</th>
-	<th width="8%" title="Invoice Number">Inv#</th>
-	<th width="8%" title="Invoice Amount">Inv$</th>
-	<th width="8%" title="Registration Number">Reg#</th>
-	<th width="8%" title="Registration Amount">Reg$</th>
-	<th width="8%" title="Balance">Balance</th>
+	<th width="26%" title="Name and Phone Number">{% trans "Name & Phone" %}</th>
+	<th width="26%" title="Title and Company">{% trans "Title &amp; Company" %}</th>
+    <th width="8%" title="Price Chosen">{% trans "Price Type" %}</th>
+	<th width="8%" title="Invoice Number">{% trans "Inv#" %}</th>
+	<th width="8%" title="Invoice Amount">{% trans "Inv$" %}</th>
+	<th width="8%" title="Registration Number">{% trans "Reg#" %}</th>
+	<th width="8%" title="Registration Amount">{% trans "Reg$" %}</th>
+	<th width="8%" title="Balance">{% trans "Balance" %}</th>
 </tr>
 <tr class='row-spacer'><td colspan="9"></td></tr>
 {% for registrant in registrants %}
@@ -220,7 +221,7 @@
 	{% if registrant.lastname_firstname or registrant.email%}
 	{% firstof registrant.lastname_firstname registrant.email %}
 	{% else %}
-		Guest#{{ registrant.pk }}
+		{% trans "Guest#" %}{{ registrant.pk }}
 	{% endif %}
 	</div>
 	{% endif %}
@@ -250,20 +251,20 @@
     <td colspan="2"></td>
     <td colspan="2">
     {% if additionals %}
-        <a href="{{ registrant.registration.invoice.get_absolute_url }}">additional registrants:</a> 
+        <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "additional registrants:" %}</a> 
 	    {% for reg in additionals %}
 	    	<a href="#roster{{ reg.pk }}">
 	    	{% if reg.lastname_firstname or reg.email%}
 	    	[{% firstof reg.lastname_firstname reg.email %}]
 	    	{% else %}
-	    	[Guest#{{ reg.pk }}]
+	    	[{% trans "Guest#" %}{{ reg.pk }}]
 	    	{% endif %}
 	    	</a>
 	    {% endfor %}
     {% endif %}
     {% if request.user.is_admin %}
         {% if registrant.registration.invoice.admin_notes %}
-            admin notes: {{ registrant.registration.invoice.admin_notes }}
+            {% trans "admin notes: " %}{{ registrant.registration.invoice.admin_notes }}
         {% endif %}
     {% endif %}
     </td>
@@ -271,9 +272,9 @@
     <td colspan="5">
 
         {% if registrant.registration.invoice.tender_date %}
-            TENDERED: {{ registrant.registration.invoice.tender_date|date_long }}
+            {% trans "TENDERED: " %}{{ registrant.registration.invoice.tender_date|date_long }}
         {% else %}
-            Not Tendered
+            {% trans "Not Tendered" %}
         {% endif %}
     </td>
 </tr>
@@ -285,7 +286,7 @@
 <tr class='row-spacer'><td colspan="10"></td></tr>
 <tr class="bottom-row">
 	<td></td>
-	<td colspan="2" class="total-label">Total</td>
+	<td colspan="2" class="total-label">{% trans "Total" %}</td>
 	<td colspan="4"></td>
     <td>${{ total_sum|floatformat:2 }}</td>
 	<td>${{ balance_sum|floatformat:2 }}</td>
@@ -298,21 +299,21 @@
     {% if roster_view == 'paid' or roster_view == 'total' %}
     <div class="count-box">
         <div>{{ num_registrants_who_paid }}</div>
-        <div>Paid</div>
+        <div>{% trans "Paid" %}</div>
     </div>
     {% endif %}
 
     {% if roster_view == 'non-paid' or roster_view == 'total' %}
     <div class="count-box">
         <div>{{ num_registrants_who_owe }}</div>
-        <div>Non-Paid</div>
+        <div>{% trans "Non-Paid" %}</div>
     </div>
     {% endif %}
 
     {% if roster_view == 'total' %}
     <div class="count-box">
         <div>{{ event.registrants.count }}</div>
-        <div>Total</div>
+        <div>{% trans "Total" %}</div>
     </div>
     {% endif %}
 </div>
@@ -320,21 +321,21 @@
 <div class="roster-view-options">
 
     {% if roster_view = 'non-paid' %}
-    <div>Showing only non-paid registrants.</div>
+    <div>{% trans "Showing only non-paid registrants." %}</div>
     {% endif %}
 
     {% if roster_view = 'paid' %}
-    <div>Showing only paid registrants.</div>
+    <div>{% trans "Showing only paid registrants." %}</div>
     {% endif %}
 
     {% if roster_view = 'total' %}
-    <div>Showing paid and non-paid registrants.</div>
+    <div>{% trans "Showing paid and non-paid registrants." %}</div>
     {% endif %}
 
     <div>
-        <a href="{% url event.registrant.roster.paid event.pk %}">Show only <strong>paid</strong></a>
-        <a href="{% url event.registrant.roster.non_paid event.pk %}">Show only <strong>non-paid</strong></a>
-        <a href="{% url event.registrant.roster.total event.pk %}">Show <strong>total</strong></a>
+        <a href="{% url event.registrant.roster.paid event.pk %}">{% blocktrans %}Show only <strong>paid</strong>{% endblocktrans %}</a>
+        <a href="{% url event.registrant.roster.non_paid event.pk %}">{% blocktrans %}Show only <strong>non-paid</strong>{% endblocktrans %}</a>
+        <a href="{% url event.registrant.roster.total event.pk %}">{% blocktrans %}Show <strong>total</strong>{% endblocktrans %}</a>
     </div>
 </div>
 

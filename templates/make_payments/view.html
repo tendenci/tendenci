@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load make_payment_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}Make a Payment{% endblock %}
 
@@ -28,35 +29,35 @@
 <div class="t">
  {% make_payment_nav mp %}
 
-<h1>View a Payment</h1>
+<h1>{% trans "View a Payment" %}</h1>
 <div class="make-payment-view">
-<div class="label">Payment Amount:</div><div>{{ mp.payment_amount }}</div>
+<div class="label">{% trans "Payment Amount:" %}</div><div>{{ mp.payment_amount }}</div>
 <div class="clear-left"></div>
-<div class="label">Invoice ID:</div><div><a href="{% url invoices.views.view mp.invoice_id %}">{{ mp.invoice_id }}</a></div>
+<div class="label">{% trans "Invoice ID:" %}</div><div><a href="{% url invoices.views.view mp.invoice_id %}">{{ mp.invoice_id }}</a></div>
 <div class="clear-left"></div>
 {% if mp.user %}
-<div class="label">User:</div><div><a href="{% url profile mp.user.username %}">{{mp.user.username }}</a></div>
+<div class="label">{% trans "User:" %}</div><div><a href="{% url profile mp.user.username %}">{{mp.user.username }}</a></div>
 <div class="clear-left"></div>
 {% endif %}
 <br />
-<div class="label">Name:</div><div>{{ mp.first_name }} {{ mp.last_name }}</div>
+<div class="label">{% trans "Name:" %}</div><div>{{ mp.first_name }} {{ mp.last_name }}</div>
 <div class="clear-left"></div>
-<div class="label">Company:</div><div>{{ mp.company }}</div>
+<div class="label">{% trans "Company:" %}</div><div>{{ mp.company }}</div>
 <div class="clear-left"></div>
-<div class="label">Address:</div><div>{{ mp.address }} {{ mp.address2 }} 
+<div class="label">{% trans "Address:" %}</div><div>{{ mp.address }} {{ mp.address2 }} 
 		{{ mp.city }} {{ mp.state }} {{ mp.zip_code }} {{ mp.country }}</div>
 <div class="clear-left"></div>
-<div class="label">Phone:</div><div>{{ mp.phone }}</div>
+<div class="label">{% trans "Phone:" %}</div><div>{{ mp.phone }}</div>
 <div class="clear-left"></div>
-<div class="label">Email:</div><div>{{ mp.email|obfuscate_email }}</div>
-<div class="clear-left"></div>
-<br />
-<div class="label">Referred By:</div><div>{{ mp.referral_source }}</div>
-<div class="clear-left"></div>
-<div class="label">Comments:</div><div>{{ mp.comments|safe }}</div>
+<div class="label">{% trans "Email:" %}</div><div>{{ mp.email|obfuscate_email }}</div>
 <div class="clear-left"></div>
 <br />
-<div class="label">Create Date:</div><div>{{ mp.create_dt|date:'long' }}</div>
+<div class="label">{% blocktrans with mp.referral_source as mpref %}Referred By:</div><div>{{ mpref }}{% endblocktrans %}</div>
+<div class="clear-left"></div>
+<div class="label">{% trans "Comments:" %}</div><div>{{ mp.comments|safe }}</div>
+<div class="clear-left"></div>
+<br />
+<div class="label">{% trans "Create Date:" %}</div><div>{{ mp.create_dt|date:'long' }}</div>
 <div class="clear-left"></div>
 </div>
 </div>
