@@ -1,0 +1,14 @@
+from django.core.management.base import BaseCommand
+
+
+class Command(BaseCommand):
+    """
+    Updates site_settings_setting table w/ initial theme
+    """
+    def handle(self, *args, **options):
+        from django.conf import settings
+        from site_settings.models import Setting
+
+        setting = Setting.objects.get(scope='module', scope_category='theme_editor')
+        setting.value = settings.SITE_THEME
+        setting.save()
