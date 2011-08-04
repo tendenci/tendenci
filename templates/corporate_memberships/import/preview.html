@@ -2,8 +2,9 @@
 {% load corporate_memberships_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load i18n %}
 
-{% block title %}Import Corporate Memberships from CSV file{% endblock %}
+{% block title %}{% trans "Import Corporate Memberships from CSV file" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -56,36 +57,36 @@
  {% corpmemb_nav request.user %}
 <div id="corp-import-wrap" class="preview">
 
-	<h1>Corporate Membership Import</h1>
+	<h1>{% trans "Corporate Membership Import" %}</h1>
 	<div id="corp-import">
 		<p class="import-timestamp">{{ datetime.now }}</p>
-	    <h3 class="corp-import-step">Step 3/4 - Preview</h3>
+	    <h3 class="corp-import-step">{% trans "Step 3/4 - Preview" %}</h3>
 		 <div class="clear-right"></div>  
 
-	<p class="msg">Total: <em>{{ corp_membs|length}}</em>;
+	<p class="msg">{% trans "Total:" %} <em>{{ corp_membs|length}}</em>;
 	{% if invalid_skipped %}
-	<em class="action-invalid">{{ invalid_skipped|length }}</em> {{ invalid_skipped|length|pluralize:"is,are" }} invalid and will be skipped,
+	<em class="action-invalid">{% blocktrans count invalid_skipped|length as inval %}{{ inval }}</em> is invalid and will be skipped,{% plural %}{{ inval }}</em> are invalid and will be skipped,{% endblocktrans %}
 	{% endif %}
-	<em>{{ added|length }}</em> will be added, 
-	and {% if skipped %}
-		<em>{{ skipped|length }}</em> will be skipped (existing record)
+	<em>{% blocktrans with added|length as adds %}{{ adds }}</em> will be added, {% endblocktrans %}
+	{% if skipped %}
+		{% blocktrans with skipped|length as skips %}and <em>{{ skips }}</em> will be skipped (existing record){% endblocktrans %}
 	{% else %}
 		{% if updated %}
-			<em>{{ updated|length }}</em> will be updated (for the blank fields)
+			{% blocktrans with updated|length as updates %}and <em>{{ updates }}</em> will be updated (for the blank fields){% endblocktrans %}
 		{% else %}
-			<em>{{ updated_override|length }}</em> will be updated (override)
+			{% blocktrans with updated_override|length as overid %}and <em>{{ overid }}</em> will be updated (override){% endblocktrans %}
 		{% endif %}
-	{% endif %}.
-	<em><a title="Looks good!" href="{% url corp_memb_import_confirm %}">Import Now &rarr;</a></em></p>
+	{% endif %}. 
+	<em><a title="Looks good!" href="{% url corp_memb_import_confirm %}">{% trans "Import Now " %} &rarr;</a></em></p>
 
 	<table>
 		<tr class="header">
 			<td></td>
-			<td>Name</td>
-			<td>Type</td>
-			<td>Join Date</td>
-			<td>Expiration Date</td>
-			<td>Action to Take</td>
+			<td>{% trans "Name" %}</td>
+			<td>{% trans "Type" %}</td>
+			<td>{% trans "Join Date" %}</td>
+			<td>{% trans "Expiration Date" %}</td>
+			<td>{% trans "Action to Take" %}</td>
 		</tr>
 
 	{% for corp_memb in corp_membs %}
@@ -95,12 +96,12 @@
 			<td><div>{{ corp_memb.corporate_membership_type.name }}</div></td>
 			{% if not corp_memb.is_valid %}
 				<td colspan="2"><div class="invalid-msg">{{ corp_memb.err_msg }}</div></td>
-				<td><div class="action-invalid">Not valid - will be skipped</div></td>
+				<td><div class="action-invalid">{% trans "Not valid - will be skipped" %}</div></td>
 			{% else %}
 				<td><div>{{ corp_memb.join_dt|date:"M d, Y" }}</div></td>
 				<td><div>{{ corp_memb.expiration_dt|date:"M d, Y" }}</div></td>
 				<td><div class="{% if corp_memb.pk %}{%if update_option == 'skip' %}action-skip{% else %}action-update{% endif %}{% else %}action-insert{% endif %}">
-				{% if corp_memb.pk %}{%if update_option == 'skip' %}Skip{% else %}Update{% endif %}{% else %}Insert{% endif %}</div></td>
+				{% if corp_memb.pk %}{%if update_option == 'skip' %}{% trans "Skip" %}{% else %}{% trans "Update" %}{% endif %}{% else %}{% trans "Insert" %}{% endif %}</div></td>
 			{% endif %}
 		</tr>
 	{% endfor %}

@@ -1,3 +1,5 @@
+{% load i18n %}
+
 {{ site_name }} - {{ first_name }} 
 
 {% if last_name %}
@@ -10,4 +12,4 @@
 - {{ email }} 
 {% endif %}
 
-- Contact Form
+- {% trans "Contact Form" %}

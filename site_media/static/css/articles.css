@@ -25,7 +25,6 @@
 }
 
 .t .articles-wrap .article-wrap-search {
-	border: 1px solid #CCC;
 	padding: 10px;
 	margin-bottom: 20px;
 	position: relative;
@@ -91,15 +90,6 @@
 
 /* Article View
  ------------------------- */
-.t .article-wrap .meta, .t .article-wrap-search .meta {
-	border: 1px solid silver;
-	padding: 10px;
-	background-color: #F7F7F7;
-	margin-top: 10px;
-}
-.t .article-wrap .meta .tags {
-	margin-bottom: 5px;
-}
 .t .article-wrap .fb-connect {
 	margin-top: 10px;
 }

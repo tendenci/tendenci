@@ -5,6 +5,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
@@ -19,7 +20,7 @@
 {% block body %}
 <div class="t">
 {% news_nav request.user %}
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_NEWS_LABEL 'News' %} Search</h1>
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans "Search" %}</h1>
 	
 	{% news_search %}
     {% autopaginate news 10 %}
@@ -42,15 +43,15 @@
 				<div class="content">{{ n.body|striptags|truncatewords:20|safe }}</div>	
 			{% endif %}
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ n.create_dt|date:"long" }} by {{ n.creator }}</div>
+            	<div class="submitted">{% blocktrans with n.create_dt|date:"long" as ncreate and n.creator as ncreator %}Submitted on {{ ncreate }} by {{ ncreator }}{% endblocktrans %}</div>
 				<div class="category">
 				{% get_category_for_object n as category %}
 				{% if category %}
-					Category: <a href="{% url news.search %}?q=category:{{ category }}">{{ category }}</a> 
+					{% trans "Category:" %} <a href="{% url news.search %}?q=category:{{ category }}">{{ category }}</a> 
 				{% endif %}
 				{% get_sub_category_for_object n as sub_category %}
 				{% if sub_category %}
-					Sub Category: <a href="{% url news.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a> 
+					{% trans "Sub Category:" %} <a href="{% url news.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a> 
 				{% endif %}
 				</div>
             </div>
@@ -62,7 +63,7 @@
 		</div>
 		{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

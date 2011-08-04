@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}Membership Search{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
@@ -64,13 +65,13 @@
         </div>
         {% endwith %}
     {% empty %}
-        <div>0 Members Found</div>
+        <div>{% trans "0 Members Found" %}</div>
     {% endfor %}
     </div>
 
     <div class="membership-side-panel">
         <div class="type-set">
-            <div>Membership Types</div>
+            <div>{% trans "Membership Types" %}</div>
             <ul>
                 {% for type in types %}
                 <li><a href="?q=type:{{ type.name|lower }}">{{ type.name }}</a></li>

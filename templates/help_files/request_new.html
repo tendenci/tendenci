@@ -1,6 +1,7 @@
 {% extends "help_files/base.html" %}
 {% load help_file_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}{{ topic }} Request{% endblock %}
 
@@ -12,10 +13,10 @@
 {% block body %}
 <div class="t">
 
-<h3>Request Help File</h3>
+<h3>{% trans "Request Help File" %}</h3>
 
-Please provide as much detail as possible.<br>
-If you would like to, also include your name and email:
+{% trans "Please provide as much detail as possible." %}<br>
+{% trans "If you would like to, also include your name and email: " %}
 <form method="POST">{% csrf_token %}
 	<div class="forms">
 	{{ form|styled_form }}

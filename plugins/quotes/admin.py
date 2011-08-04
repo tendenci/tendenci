@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
+from django.utils.encoding import iri_to_uri
 from django.conf import settings
 
 from event_logs.models import EventLog
-from perms.object_perms import ObjectPermission
+from perms.utils import update_perms_and_save
 from quotes.models import Quote
 from quotes.forms import QuoteForm
 
@@ -83,40 +84,25 @@ class QuoteAdmin(admin.ModelAdmin):
         }
         EventLog.objects.log(**log_defaults)
                      
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        inject the user in the form.
+        """
+        form = super(QuoteAdmin, self).get_form(request, obj, **kwargs)
+        form.current_user = request.user
+        return form
+
     def save_model(self, request, object, form, change):
+        """
+        update the permissions backend
+        """
         instance = form.save(commit=False)
-
-        # set up user permission
-        instance.allow_user_view, instance.allow_user_edit = form.cleaned_data['user_perms']
-        
-        # adding the quote
-        if not change:
-            instance.creator = request.user
-            instance.creator_username = request.user.username
-            instance.owner = request.user
-            instance.owner_username = request.user.username
- 
-        # save the object
-        instance.save()
-        form.save_m2m()
-
-        # permissions
-        if not change:
-            # assign permissions for selected groups
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
-            # assign creator permissions
-            ObjectPermission.objects.assign(instance.creator, instance) 
-        else:
-            # assign permissions
-            ObjectPermission.objects.remove_all(instance)
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
-            ObjectPermission.objects.assign(instance.creator, instance) 
-        
+        perms = update_perms_and_save(request, form, instance)
         return instance
 
     def update_quotes(self, request, queryset):
         """
-        Method to mass update and save quotes, used on text imports.
+        Mass update and save quotes, used on text imports.
         """
         for obj in queryset:
             obj.save()
@@ -126,10 +112,10 @@ class QuoteAdmin(admin.ModelAdmin):
     update_quotes.short_description = "Update quotes tags and index for imports"
     
     def change_view(self, request, object_id, extra_context=None):
-		result = super(QuoteAdmin, self).change_view(request, object_id, extra_context)
+        result = super(QuoteAdmin, self).change_view(request, object_id, extra_context)
 
-		if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
-			result['Location'] = iri_to_uri("%s") % request.GET.get('next')
-		return result
+        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
+            result['Location'] = iri_to_uri("%s") % request.GET.get('next')
+        return result
     
 admin.site.register(Quote, QuoteAdmin)

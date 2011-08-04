@@ -3,6 +3,7 @@
 {% load file_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
@@ -32,7 +33,7 @@
 {% block body %}
 <div class="t">
 
-    <h1>File Search</h1>
+    <h1>{% trans "File Search" %}</h1>
 
 	{% file_search %}
     {% autopaginate files 10 %}
@@ -55,19 +56,19 @@
             <h2><a href="{% url file file.pk %}">{{ file.basename }}</a></h2>
 
             {% if file.type == 'image' %}
-            <div class="download"><a href="{% url file file.pk 'download' %}">Download this image</a></div>
+            <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download this image" %}</a></div>
             {% endif %}
 
             {% if file.type == 'pdf' %}
-            <div class="download"><a href="{% url file file.pk 'download' %}">Download this PDF</a></div>
+            <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download this PDF" %}</a></div>
             {% endif %}
 
             {% if file.type == 'text' %}
-            <div class="download"><a href="{% url file file.pk 'download' %}">Download this text file</a></div>
+            <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download this text file" %}</a></div>
             {% endif %}
 
 			<div class="meta">
-                <div class="submitted">Updated {{ file.update_dt|date:"D d M Y P" }} by {{ file.creator }}</div>
+                <div class="submitted">{% blocktrans with file.update_dt|date:"D d M Y P" as file_update and file.creator as file_creator %}Updated {{ file_update }} by {{ file_creator }}{% endblocktrans%}</div>
             </div>
 
             <!-- delete-file form -->
@@ -77,7 +78,7 @@
 		</div>
 	{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

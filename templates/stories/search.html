@@ -4,6 +4,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
 
@@ -15,50 +16,22 @@
 
 {% block body %}
 <div class="t">
- {% stories_nav request.user %}
-    <h1>{% firstof MODULE_STORIES_LABEL "Story" %}  Search</h1>
+	{% stories_nav request.user %}
+    <h1>{% firstof MODULE_STORIES_LABEL "Story" %}  {% trans "Search" %}</h1>
 	 
 	{% stories_search %}
     {% autopaginate stories 10 %}
 	
 	<div class="stories-wrap">
     {% for story in stories %}
-		<div class="story-wrap">
-                <div class="quick-options">
- 					{% stories_options request.user story %}
-			    </div>
-
-            <h2><a href="{% url story story.pk %}">{{ story.title }}</a></h2>             
-            <div class="content">{{ story.content|striptags|truncatewords:20|safe }}</div>
-			<div class="meta">
-            	<div class="submitted">Submitted on {{ story.create_dt|date:"long" }} by {{ story.creator }}</div>
-            </div>
-
-            <!-- delete-article form -->
-            <form name="story-delete" method="POST" action="{% url story.delete story.pk %}">{% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-            </form>
-
-		</div>
+        {% with story.object as story %}		
+		{% include "stories/search-result.html" %}
+		{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 
     {% paginate %}
 </div>
-{% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_story = confirm('Permenantly delete {{ MODULE_STORIES_LABEL }}?');	// confirm
-				if(delete_story) $(this).parents('.story-wrap').find('form[name="story-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
 {% endblock %}

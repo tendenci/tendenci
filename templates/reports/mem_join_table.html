@@ -1,15 +1,17 @@
+{% load i18n %}
+
 <table style="width: 80%;">
 <tr>
-	<th>#</th>
-	<th>First name</th>
-	<th>Last name</th>
-    <th>Email</th>
-	<th>Membership Type</th>
-    <th>Application</th>
-    <th>Price Paid</th>
-    <th>Payment Method</th>
-    <th>Start Date</th>
-    <th>Expiration Date</th>
+	<th>{% trans "#" %}</th>
+	<th>{% trans "First name" %}</th>
+	<th>{% trans "Last name" %}</th>
+    <th>{% trans "Email" %}</th>
+	<th>{% trans "Membership Type" %}</th>
+    <th>{% trans "Application" %}</th>
+    <th>{% trans "Price Paid" %}</th>
+    <th>{% trans "Payment Method" %}</th>
+    <th>{% trans "Start Date" %}</th>
+    <th>{% trans "Expiration Date" %}</th>
 </tr>
 {% for mem in mems %}
 <tr class="{% cycle 'odd' '' %}">

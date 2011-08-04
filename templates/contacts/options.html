@@ -1,10 +1,11 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 <ul>	
-    <li><a href="{% url contact.print_view opt_object.pk %}">Print</a></li>    
+    <li><a href="{% url contact.print_view opt_object.pk %}">{% trans "Print" %}</a></li>    
     {% has_perm user contacts.delete_contact opt_object as can_delete %}
     {% if can_delete %} 
-	<li class="delete"><a href="{% url contact.delete opt_object.pk %}">Delete</a></li>
+	<li class="delete"><a href="{% url contact.delete opt_object.pk %}">{% trans "Delete" %}</a></li>
 	{% endif %}
 </ul>

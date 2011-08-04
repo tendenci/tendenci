@@ -34,8 +34,8 @@
 {% block body %}
 <div class="t">
 {% email_blocks_nav email_block %}
-<h1>{% if email %}{% trans 'Edit'%}{% else %}{% trans 'Add'%}{% endif %}{% trans ' an Email Block'%}</h1>
-<p>Please enter Email or Email Domain, but not both.</p>
+<h1>{% if email %}{% trans 'Edit an Email Block'%}{% else %}{% trans 'Add an Email Block'%}{% endif %}</h1>
+<p>{% trans "Please enter Email or Email Domain, but not both." %}</p>
 <form method="post" action=".">{% csrf_token %}
 	<div class="field-wrapper">
 		{% if form.email.errors %}

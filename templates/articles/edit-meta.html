@@ -1,6 +1,7 @@
 {% extends "articles/base.html" %}
 {% load article_tags %}
 {% load styled_forms %}
+{% load i18n %} 
 
 {% block title %}{% firstof MODULE_ARTICLES_LABEL 'Article' %} Edit Meta Information{% endblock %}
 
@@ -13,8 +14,8 @@
 <div class="t">
 
     {% article_nav user %}
-    <h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} Meta Information for<br />
-    {{ article.headline }}</h1>
+    <h1>{% firstof MODULE_ARTICLES_LABEL 'Article' %} {% blocktrans with article.headline as article_headline %}Meta Information for<br />
+    {{ article_headline }}{% endblocktrans %}</h1>
 
     <div class="article-wrap">
 		<div class="options">
@@ -26,7 +27,7 @@
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="Save Changes" />
-			 or <a href="javascript:history.go(-1);">Cancel</a>
+			 or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
 		</div>
         </form>
     </div>

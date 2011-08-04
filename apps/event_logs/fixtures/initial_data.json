@@ -1564,7 +1564,53 @@
             "rgb_color": "136,102,85", 
             "hex_color": "55AACC"
         }
-    },     
+    },         
+    {
+        "pk": 175, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1090100, 
+            "rgb_color": "17,153,51", 
+            "hex_color": "119933"
+        }
+    },
+    {
+        "pk": 176, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1090200, 
+            "rgb_color": "238,221,85", 
+            "hex_color": "EEDD55"
+        }
+    },
+    {
+        "pk": 177, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1090300, 
+            "rgb_color": "170,34,34", 
+            "hex_color": "AA2222"
+        }
+    },
+    {
+        "pk": 178, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1090400, 
+            "rgb_color": "204,85,238", 
+            "hex_color": "CC55EE"
+        }
+    },
+    {
+        "pk": 179, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1090500, 
+            "rgb_color": "85,170,204", 
+            "hex_color": "55AACC"
+        }
+    },    
+>>>>>>> sprint-5.0.38
     {
         "pk": 1, 
         "model": "event_logs.eventlogbasecolor", 
@@ -1996,6 +2042,14 @@
             "source": "attorneys",
             "hex_color": "773300"
         }
-    }  
+    },
+    {
+        "pk": 49,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1090000,
+            "source": "before_and_afters",
+            "hex_color": "FFCCBB"
+        }
+    }
 ]
-

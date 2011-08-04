@@ -36,6 +36,24 @@ def stories_search(context):
     return context
 
 
+@register.simple_tag
+def story_expiration(obj):
+    t = '<span class="expires-%s">%s</span>'
+
+    if obj.expires:
+        if obj.end_dt < datetime.now():
+            value = t % ('inactive', ("Expired on %s" % obj.end_dt.strftime("%m/%d/%Y at %I:%M %p")))
+        else:
+            if obj.start_dt > datetime.now():
+                value = t % ('inactive',("Starts on %s" % obj.start_dt.strftime("%m/%d/%Y at %I:%M %p")))
+            else:
+                value = t % ('active', ("Expires on %s" % obj.end_dt.strftime("%m/%d/%Y at %I:%M %p")))
+    else:
+        value = t % ('active', "Never Expires")
+
+    return value
+
+
 class ListStoriesNode(ListNode):
     model = Story
 

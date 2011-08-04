@@ -13,19 +13,19 @@
 <div class="t">
 {% dashboard_nav user %}	
 <div class="imports">
-<h1>Preview Your Import</h1>
+<h1>{% trans "Preview Your Import" %}</h1>
 
-<p>You're almost done!  Please review your settings.  To complete your import click 'Import Now.'</p>
+<p>{% trans "You're almost done!  Please review your settings.  To complete your import click 'Import Now.'" %}</p>
 
 <div class="csv-icon">
 <img src="/site_media/static/images/icons/xls-icon.gif" alt="{{ file_name }}" />
 <p>{{ file_name }}<br /></p>
 
 <ul>
-	<li class="first">{{ total }} Total Users</li>
-	<li>{{ count_insert }} Insert</li>
-	<li>{{ count_update }} Update</li>
-	<li class="last highlight">{{ count_invalid}} Invalid Users</li>
+	<li class="first">{{ total }} {% trans "Total Users" %}</li>
+	<li>{{ count_insert }} {% trans "Insert" %}</li>
+	<li>{{ count_update }} {% trans "Update" %}</li>
+	<li class="last highlight">{{ count_invalid}} {% trans "Invalid Users" %}</li>
 </ul>
 
 </div>
@@ -35,19 +35,19 @@
 <div class="import-settings">
 <table>
 <tr>
-	<td class="name">ID Duplicates by:</td>
+	<td class="name">{% trans "ID Duplicates by:" %}</td>
 	<td class="value">{{ key }}</td>
 </tr>
 <tr>
-	<td class="name">Interactive Status:</td>
+	<td class="name">{% trans "Interactive Status:" %}</td>
 	<td class="value">{{ interactive }}</td>
 </tr>
 <tr>
-	<td class="name">User Group:</td>
+	<td class="name">{% trans "User Group:" %}</td>
 	<td class="value">{{ group.name }}</td>
 </tr>
 <tr>
-	<td class="name">Update: </td>
+	<td class="name">{% trans "Update: " %}</td>
 	<td class="value">{{ str_update }}</td>
 </tr>
 </table>
@@ -60,16 +60,16 @@
 	{% for u in users_list %}
 		{%if not u.IS_VALID %}
 			<div class="result-error">
-				<p>Row {{ u.ROW_NUM }} - {{ u.ERROR }}</p>
-				<em>This user will be ignored (not added or updated)</em>
+				<p>{% trans "Row" %} {{ u.ROW_NUM }} - {{ u.ERROR }}</p>
+				<em>{% trans "This user will be ignored (not added or updated)" %}</em>
 			</div>
 		{% else %}
 			{% if u.ACTION == 'insert' %}
 				<div class="body-copy-yellow">
-					INSERT:
+					{% trans "INSERT:"" %}
 				</div>
 			{% else %}
-				UPDATE
+				{% trans "UPDATE" %}
 			{% endif %}
 			
 			<table width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#CCCCCC">
@@ -96,7 +96,7 @@
 			         <tr> 
 			           <td width="5%" class="body_copy">&nbsp;</td>
 			           <td width="61%">
-							<font face="Arial, Helvetica, sans-serif" size="2" class="body_copy">Email: 
+							<font face="Arial, Helvetica, sans-serif" size="2" class="body_copy">{% trans "Email: " %}
 							<a href="mailto:{{ u.email }}" class="links">
 							{{ u.email }}</a></font>
 					   </td>

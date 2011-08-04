@@ -126,6 +126,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
 
         if form.is_valid() and categoryform.is_valid():
             job = form.save(commit=False)
+            pricing = form.cleaned_data['pricing']
 
             # set it to pending if the user is anonymous or not an admin
             if not can_add_active:
@@ -156,7 +157,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                 job.save()
 
             # create invoice
-            job_set_inv_payment(request.user, job)
+            job_set_inv_payment(request.user, job, pricing)
             
             #setup categories
             category = Category.objects.get_for_object(job,'category')
@@ -276,7 +277,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
     
     # delete admin only fields for non-admin on edit - GJQ 8/25/2010
     if not is_admin(request.user):
-        del form.fields['requested_duration']
+        del form.fields['pricing']
         del form.fields['list_type']
         if form.fields.has_key('activation_dt'):
             del form.fields['activation_dt']

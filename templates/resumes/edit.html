@@ -2,6 +2,7 @@
 {% load resume_tags %}
 {% load perm_tags %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}{% firstof MODULE_RESUMES_LABEL 'Resume' %} Edit{% endblock %}
 
@@ -18,7 +19,7 @@
 
     {% resume_nav request.user resume %}
 
-    <h1>{% firstof MODULE_RESUMES_LABEL 'Resume' %} Edit</h1>
+    <h1>{% firstof MODULE_RESUMES_LABEL 'Resume' %} {% trans "Edit" %}</h1>
 
     <div class="resume-wrap">
 		<div class="options">

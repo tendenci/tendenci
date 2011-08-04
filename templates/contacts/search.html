@@ -4,8 +4,9 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load i18n %}
 
-{% block title %}{{ block.super }}Search{% endblock %}
+{% block title %}{{ block.super }}{% trans "Search" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -17,7 +18,7 @@
 
     {% contact_nav request.user %}
 
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_CONTACTS_LABEL }} Search</h1>
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_CONTACTS_LABEL }} {% trans "Search" %}</h1>
 
 	{% contact_search %}
     {% autopaginate contacts 10 %}
@@ -31,13 +32,13 @@
 			<div class="options">
 
                 <div class="dropdown-options">
-                    <div><a href="javascript:;">More <span>&#9660;</span></a></div>
+                    <div><a href="javascript:;">{% trans "More " %}<span>&#9660;</span></a></div>
                     <ul>
-                        <li>Review Reports</li>
-                        <li>Optimize Meta Tags</li>
-                        <li>Attach Files</li>
-                        <li>View Revisions</li>
-                        <li>Delete</li>
+                        <li>{% trans "Review Reports" %}</li>
+                        <li>{% trans "Optimize Meta Tags" %}</li>
+                        <li>{% trans "Attach Files" %}</li>
+                        <li>{% trans "View Revisions" %}</li>
+                        <li>{% trans "Delete" %}</li>
                     </ul>
                 </div>
 
@@ -46,10 +47,10 @@
                 </div>
 			</div>
 
-            <h2><a href="{% url contact contact.pk %}">{% firstof contact "No Name" %}</a></h2>
+            <h2><a href="{% url contact contact.pk %}">{% firstof contact trans "No Name" %}</a></h2>
             <div class="content">{{ contact.message|linebreaks }}</div>
 			<div class="meta">
-            	<div class="submitted">Submitted on {{ contact.create_dt|date:"long" }}</div>
+            	<div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date %} Submitted on {{ create_date }}{% endblocktrans %}</div>
             </div>
 
             <!-- delete-contact form -->
@@ -61,7 +62,7 @@
 		{% endif %}
 	{% endwith %}
 	{% empty %}
-		<div>0 Results Found</div>
+		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
 	</div>
 

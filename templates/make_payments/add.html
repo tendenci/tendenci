@@ -1,6 +1,7 @@
 {% extends "make_payments/base.html" %}
 {% load i18n %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}Make a Payment{% endblock %}
 
@@ -12,7 +13,7 @@
 {% block body %}
 <div class="t">
 
-<h1>Make a Payment</h1>
+<h1>{% trans "Make a Payment" %}</h1>
 
 <form method="post" action="{% url make_payment.add %}">{% csrf_token %}
 	<div class="forms">

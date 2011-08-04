@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 
@@ -21,24 +22,24 @@
     {% endif %}
 
 	<li>
-		<span>Membership Entries</span>
+		<span>{% trans "Membership Entries" %}</span>
 		<ul id="secondary">
-			<li><a href="{% url membership.application_entries %}">Entries:</a></li>
+			<li><a href="{% url membership.application_entries %}">{% trans "Entries:" %}</a></li>
 
 			{% if can_edit_setting %}
-				<li><a href="{% url settings.index "module" "memberships" %}">Settings</a></li>
+				<li><a href="{% url settings.index "module" "memberships" %}">{% trans "Settings" %}</a></li>
 			{% endif %}
 
 			{% if nav_object %}
 				{% if can_view_entry %}
-				<li><a href="{{ nav_object.get_absolute_url }}">View</a></li>
+				<li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %}</a></li>
 				{% endif %}
 			{% endif %}
 
-			<li><a href="{% url membership.application_entries_search %}">Search</a></li>
+			<li><a href="{% url membership.application_entries_search %}">{% trans "Search" %}</a></li>
 
 			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">Log Off</a></li>
+			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
 			{% endif %}
 		</ul>
 

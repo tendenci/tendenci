@@ -22,7 +22,8 @@ from memberships.models import App, AppEntry, Membership, \
 from memberships.forms import AppForm, AppEntryForm, \
     AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm, EntryEditForm, \
     ExportForm
-from memberships.utils import new_mems_from_csv, is_import_valid
+from memberships.utils import new_mems_from_csv, is_import_valid, \
+    prepare_chart_data, get_days
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
     has_perm, update_perms_and_save, is_admin, is_member, is_developer
@@ -333,7 +334,6 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
                         else:
                             is_verified = False
                     except IndivMembEmailVeri8n.DoesNotExist:
-                        print form.cleaned_data['email']
                         is_verified = False
                         indiv_veri = IndivMembEmailVeri8n()
                         indiv_veri.corporate_membership = corp_memb
@@ -795,7 +795,6 @@ def membership_import(request, step=None):
                         try:
                             value = unicode(membership.m.get(unicode(value)))
                         except (UnicodeDecodeError) as e:
-                            print 'unicode decode error', membership.m.get(unicode(value))
                             value = ''
 
                         AppFieldEntry.objects.create(
@@ -890,7 +889,6 @@ def membership_export(request):
             for memb in memberships:
                 data_row = []
                 field_entry_d = memb.entry_items
-                print field_entry_d
                 for field in fields:
                     field_name = slugify(field.label).replace('-','_')
                     value = ''
@@ -963,3 +961,33 @@ def membership_join_report_pdf(request):
     resp = HttpResponse(mimetype='application/pdf')
     report.generate_by(PDFGenerator, filename=resp)
     return resp
+    
+@staff_member_required
+def report_active_members(request, template_name='reports/membership_list.html'):
+    mems = Membership.objects.filter(expire_dt__gt = datetime.now())
+    
+    return render_to_response(template_name, {
+            'mems':mems,
+            'active':True,
+            }, context_instance=RequestContext(request))
+
+@staff_member_required
+def report_expired_members(request, template_name='reports/membership_list.html'):
+    mems = Membership.objects.filter(expire_dt__lt = datetime.now())
+    
+    return render_to_response(template_name, {
+            'mems':mems,
+            'active':False,
+            }, context_instance=RequestContext(request))
+            
+@staff_member_required            
+def report_members_summary(request, template_name='reports/membership_summary.html'):
+    days = get_days(request)
+    
+    chart_data = prepare_chart_data(days)
+    
+    return render_to_response(template_name, {
+                'chart_data': chart_data,
+                'date_range': (days[0], days[-1]),
+            }, context_instance=RequestContext(request))
+            

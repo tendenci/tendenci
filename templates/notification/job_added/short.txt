@@ -1,1 +1,3 @@
-New Job ({{ object.title }}) posting on {{ SITE_GLOBAL_SITEDISPLAYNAME }}
+{% load i18n %}
+
+{% blocktrans with object.title as objtitle %}New Job ({{ objtitle }}) posting on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

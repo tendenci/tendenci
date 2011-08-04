@@ -1,4 +1,5 @@
 {% extends "default.html" %}
+{% load i18n %}
 
 {% block title %}{{ block.super }} 403 Forbidden{% endblock%}
 
@@ -7,10 +8,10 @@
   {{ MODULE_USERS_USERSSECURITYMESSAGE }}
 {% else %}
 {% if user.is_authenticated %}
-<p>You can't go to this page right now because you do not have the correct access rights.</p>
-<p>Please contact the site administrator to request access to this page.</p>
+<p>{% trans "You can't go to this page right now because you do not have the correct access rights." %}</p>
+<p>{% trans "Please contact the site administrator to request access to this page." %}</p>
 {% else %}
-<p>This page requires a login. Please <a href="/accounts/login/?next={{ request.get_full_path }}">log in</a> if you have an account, or <a href="/accounts/register/">create an account</a> if you do not have one.</p>
+<p>{% trans "This page requires a login. Please <a href="/accounts/login/?next={{ request.get_full_path }}">log in</a> if you have an account, or <a href="/accounts/register/">create an account</a> if you do not have one.</p>" %}
 {% endif %}
 {% endif %}
 {% endblock %}

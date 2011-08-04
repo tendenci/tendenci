@@ -1,6 +1,7 @@
 {% extends "news/base-print.html" %}
 {% load news_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}{{ news.get_title }}{% endblock %}
 {% block meta_description %}{{ news.get_description }}{% endblock %}
@@ -16,11 +17,11 @@
 <div class="t-print">
    
 	<div class='hide-this'>
-		<h1>Print View</h1>
+		<h1>{% trans "Print View" %}</h1>
 
 		<div class="guide">
-			<div><a href="{{ news.get_absolute_url }}">&laquo; Back to regular news view</a></div>
-			<div>Your printed page will look <em>something</em> like this.</div>
+			<div><a href="{{ news.get_absolute_url }}">&laquo; {% trans "Back to regular news view" %}</a></div>
+			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
 		</div>
 	</div>
 
@@ -28,7 +29,7 @@
         <h2>{{ news.headline }}</h2>
         <div class="content">{{ news.body|safe }}</div>
         <div class="meta">
-            <div class="submitted">Submitted on {{ news.create_dt|date:"long" }} by {{ news.creator }}</div>
+            <div class="submitted">{% blocktrans with news.create_dt|date:"long" as news_create and news.creator as news_creator %}Submitted on {{ news_create }} by {{ news_creator }}{% endblocktrans %}</div>
         </div>
     </div>
 

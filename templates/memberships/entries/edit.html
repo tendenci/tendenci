@@ -3,6 +3,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load styled_forms %}
+{% load i18n %}
 
 {% block title %}Membership Application for {{ entry.name }}{% endblock %}
 {% block meta_description %}{{ entry.get_description }}{% endblock %}
@@ -18,7 +19,7 @@
 <div class="t">
 <div class="entry-edit">
     
-    <h1>{{ entry.app.name }} {% if entry.is_renewal %}Renewal{% else %}Submission{% endif %}</h1>
+    <h1>{{ entry.app.name }} {% if entry.is_renewal %}{% trans "Renewal" %}{% else %}{% trans "Submission" %}{% endif %}</h1>
 
     <form action="" method="post">
     <div class="forms">

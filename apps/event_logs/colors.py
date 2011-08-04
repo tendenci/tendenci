@@ -374,7 +374,15 @@ colors = {
     '494000':'CC55EE', # search
     '495000':'55AACC', # detail
     '496000':'886655', # special list index view
-    
+
+    # before and afters
+    '1090000':'FFCCBB', # base
+    '1090100':'119933', # add
+    '1090200':'EEDD55', # edit
+    '1090300':'AA2222', # delete
+    '1090400':'CC55EE', # search
+    '1090500':'55AACC', # detail
+
 #    '':'', # base
 #    '':'119933', # add
 #    '':'EEDD55', # edit

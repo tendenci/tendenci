@@ -2,6 +2,7 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load i18n %}
 
 {% block title %}Export Memberships{% endblock %}
 
@@ -19,7 +20,7 @@
  {% membership_nav request.user %}
 <div id="corp-import-wrap">
     
-    <h1>Membership CSV Export</h1>
+    <h1>{% trans "Membership CSV Export" 5}</h1>
    
     <div id="corp-export">
     	
