@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-03 11:42-0500\n"
+"POT-Creation-Date: 2011-08-04 16:27-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,8 @@ msgstr "Esta cuenta está inactiva"
 
 #: apps/accounts/forms.py:110
 msgid "The username and/or password you specified are not correct."
-msgstr "El nombre de usuario y/o la contraseña que ha especificado no son correctas"
+msgstr ""
+"El nombre de usuario y/o la contraseña que ha especificado no son correctas"
 
 #: apps/accounts/forms.py:116
 #, python-format
@@ -57,11 +58,14 @@ msgstr "E-mail"
 msgid ""
 "That e-mail address doesn't have an associated user account. Are you sure "
 "you've <a href=\"/accounts/register\" >registered</a>?"
-msgstr "Esta dirección de correo electrónico no tiene una cuenta de usuario asociada. ¿Está seguro de haberse registrado?"
+msgstr ""
+"Esta dirección de correo electrónico no tiene una cuenta de usuario "
+"asociada. ¿Está seguro de haberse registrado?"
 
 #: apps/accounts/forms.py:139
 msgid "That e-mail address doesn't have an associated user account."
-msgstr "Esta dirección de correo electrónico no tiene una cuenta de usuario asociada."
+msgstr ""
+"Esta dirección de correo electrónico no tiene una cuenta de usuario asociada."
 
 #: apps/accounts/forms.py:170
 #, python-format
@@ -186,14 +190,17 @@ msgstr "Cadena (hasta %(max_length)s)"
 #: apps/base/forms.py:7
 msgid ""
 "Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."
-msgstr "Ingrese un 'slug' valido que consiste de letras, números, guiones bajos o guiones."
+msgstr ""
+"Ingrese un 'slug' valido que consiste de letras, números, guiones bajos o "
+"guiones."
 
 #: apps/base/forms.py:15
 msgid ""
 "Enter a valid 'slug' consisting of letters, numbers, underscores (_), front-"
 "slashes (/) or hyphens."
 msgstr ""
-"Ingrese un 'slug' valido que consiste de letras, números, guiones bajos, barras, o guiones."
+"Ingrese un 'slug' valido que consiste de letras, números, guiones bajos, "
+"barras, o guiones."
 
 #: apps/base/template_tags.py:45 apps/events/templatetags/event_tags.py:214
 #: apps/stories/templatetags/story_tags.py:65
@@ -210,7 +217,7 @@ msgstr "Atributo de modelo debe proceder del modelo"
 msgid "Model.objects does not have a search method"
 msgstr "Model.objects no tiene un método de búsqueda"
 
-#: apps/base/utils.py:183 apps/meta/utils.py:33
+#: apps/base/utils.py:184 apps/meta/utils.py:33
 msgid " "
 msgstr ""
 
@@ -1157,17 +1164,17 @@ msgstr ""
 msgid "Expriation Date/Time"
 msgstr ""
 
-#: apps/jobs/models.py:81 apps/perms/models.py:9 apps/resumes/models.py:62
+#: apps/jobs/models.py:81 apps/perms/models.py:10 apps/resumes/models.py:62
 #: plugins/services/models.py:42
 msgid "Public can view"
 msgstr ""
 
-#: apps/jobs/models.py:82 apps/perms/models.py:10 apps/resumes/models.py:63
+#: apps/jobs/models.py:82 apps/perms/models.py:11 apps/resumes/models.py:63
 #: plugins/services/models.py:43
 msgid "Signed in user can view"
 msgstr ""
 
-#: apps/jobs/models.py:85 apps/perms/models.py:13 apps/resumes/models.py:66
+#: apps/jobs/models.py:85 apps/perms/models.py:14 apps/resumes/models.py:66
 #: plugins/services/models.py:46
 msgid "Signed in user can change"
 msgstr ""
@@ -2307,8 +2314,8 @@ msgstr ""
 msgid "Photo that represents this story."
 msgstr ""
 
-#: apps/theme_editor/forms.py:36 templates/theme_editor/index.html:54
-msgid "Choose your Theme:"
+#: apps/theme_editor/forms.py:39
+msgid "Theme:"
 msgstr ""
 
 #: apps/theme_editor/models.py:14
@@ -2588,7 +2595,11 @@ msgid "Please contact the site administrator to request access to this page."
 msgstr ""
 
 #: templates/403.html:14
-msgid "This page requires a login. Please <a href="
+#, python-format
+msgid ""
+"This page requires a login. Please <a href=\"/accounts/login/?next="
+"%(request.get_full_path)s\">log in</a> if you have an account, or <a href=\"/"
+"accounts/register/\">create an account</a> if you do not have one.</p>"
 msgstr ""
 
 #: templates/404.html:4
@@ -3222,15 +3233,15 @@ msgstr ""
 msgid "View Recap"
 msgstr ""
 
-#: templates/admin/base_site.html:26
+#: templates/admin/base_site.html:27
 msgid "Web Administration"
 msgstr ""
 
-#: templates/admin/base_site.html:33
+#: templates/admin/base_site.html:34
 msgid "Tendenci Membership Management Software"
 msgstr ""
 
-#: templates/admin/base_site.html:33
+#: templates/admin/base_site.html:34
 msgid "Schipul - The Web Marketing Company"
 msgstr ""
 
@@ -3330,7 +3341,7 @@ msgstr ""
 
 #: templates/admin_menu/admin_top.html:75
 #: templates/admin_menu/admin_top.html:94
-msgid "Informes"
+msgid "Reports"
 msgstr ""
 
 #: templates/admin_menu/admin_top.html:80 templates/articles/nav.html:34
@@ -3657,7 +3668,7 @@ msgstr ""
 msgid "Tags:"
 msgstr ""
 
-#: templates/articles/meta.html:70 templates/pages/meta.html:53
+#: templates/articles/meta.html:70
 #, python-format
 msgid ""
 "Last updated %(update_date)s\n"
@@ -8410,11 +8421,18 @@ msgstr ""
 msgid "Pages Index Page"
 msgstr ""
 
-#: templates/pages/meta.html:44 templates/stories/meta.html:34
+#: templates/pages/meta.html:44
 #, python-format
 msgid ""
 "Created on %(create_date)s\n"
-"                \tby:"
+"                    by:"
+msgstr ""
+
+#: templates/pages/meta.html:53
+#, python-format
+msgid ""
+"Last updated %(update_date)s\n"
+"                    by:"
 msgstr ""
 
 #: templates/pages/print-view.html:22
@@ -9538,6 +9556,13 @@ msgstr ""
 msgid "Stories Index Page"
 msgstr ""
 
+#: templates/stories/meta.html:34
+#, python-format
+msgid ""
+"Created on %(create_date)s\n"
+"                \tby:"
+msgstr ""
+
 #: templates/stories/upload.html:25
 msgid "Upload a Story Image"
 msgstr ""
@@ -9567,6 +9592,10 @@ msgstr ""
 
 #: templates/theme_editor/index.html:48
 msgid "No versions available."
+msgstr ""
+
+#: templates/theme_editor/index.html:54
+msgid "Theme in Editor:"
 msgstr ""
 
 #: templates/theme_editor/index.html:60
