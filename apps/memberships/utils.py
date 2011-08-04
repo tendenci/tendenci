@@ -283,9 +283,7 @@ def count_active_memberships(date):
                 expire_dt__gt=date,
             )
     count = mems.count()
-            
-    print date, count, mems
-    
+
     return count
 
 def prepare_chart_data(days, height=300):
