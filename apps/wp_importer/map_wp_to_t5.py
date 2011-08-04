@@ -34,7 +34,7 @@ def run_wp_to_t5():
           body = unicode(node.find('content:encoded').contents[0])
           post_date_content = unicode(node.find('wp:post_date').contents[0])
           post_date = datetime.strptime(post_date_content, '%Y-%m-%d %H:%M:%S')
-          print post_date
+
           tags_list = getattr(node.find('category domain="post_tag"'), 'string', '')
           posts_list.append({
               'title': title,
