@@ -7,7 +7,7 @@
 	{# named area for jump links #}
 	<a name="jobs" id="jobs"></a>
 	{% if start_dt %}
-		{% blocktrans %}Jobs for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}{% endblocktrans %}
+		{% blocktrans with start_dt|date:"M d, Y" as startdate and end_dt|date:"M d, Y" as enddate %}Jobs for {{ startdate }} to {{ enddate }}{% endblocktrans %}
 	{% else %}
 		{% trans "All Jobs" %}
 	{% endif %}
@@ -50,8 +50,8 @@
 		{#  posted by #}
 		{% if not simplified  %}
 			<font face="Arial" size="2" color="#000000">
-			<br><b>{% blocktrans %}Posted by</b>: 
-			{{ job.owner.first_name }} {{job.owner.last_name }}{% endblocktrans %}
+			<br><b>{% blocktrans with job.owner.first_name as ownfirst and job.owner.last_name as ownlast %}Posted by</b>: 
+			{{ ownfirst }} {{ ownlast }}{% endblocktrans %}
 			</font>
 		{% endif %}
 		<br>
