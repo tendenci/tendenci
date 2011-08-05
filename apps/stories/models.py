@@ -46,16 +46,17 @@ class Story(TendenciBaseModel):
         return 'stories'
 
     def photo(self):
-        photo = None
-
         if self.image.file:
-            photo = self.image.file
+            return self.image.file
 
         if self.pk:  # in db
             photo_qs = Story.objects.raw('SELECT id, photo FROM stories_story WHERE id = %s' % self.pk)
-            if photo_qs: photo = photo_qs[0].photo
+            if photo_qs:
+                photo = {}
+                photo['url'] = photo_qs[0].photo
+                return photo
 
-        return photo
+        return None
 
     def get_absolute_url(self):
         url = self.full_story_link
