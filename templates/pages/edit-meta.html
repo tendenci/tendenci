@@ -14,8 +14,8 @@
 <div class="t">
 
     {% page_nav user %}
-    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% blocktrans %}Meta Information for<br />
-    {{ page.title }}{% endblocktrans %}</h1>
+    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% blocktrans with page.title as page_title %}Meta Information for<br />
+    {{ page_title }}{% endblocktrans %}</h1>
 
     <div class="page-wrap">
         <div class="options">

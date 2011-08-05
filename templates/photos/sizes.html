@@ -20,16 +20,16 @@
 
 	<div id="license-wrap">
 		<div class="label">{% trans "License" %}</div>
-		<div class="value">{% blocktrans %}{{ photo.get_license.name }} by 
-			<a href="{{ photo.creator.get_absolute_url }}">
-				{{ photo.creator.get_full_name }}
+		<div class="value">{% blocktrans with photo.get_license.name as pholic and photo.creator.get_absolute_url as phocre and photo.creator.get_full_name as phoname %}{{ pholic }} by 
+			<a href="{{ phocre }}">
+				{{ phoname }}
 			</a>{% endblocktrans %}
 		</div>
 	</div>
 
 	<div id="download-wrap">
 		<div class="label">{% trans "Download" %}</div>
-		<div class="link"><a href="{{ download_url }}">{% blocktrans %}Download the {{ size_name|capfirst }} size of this photo{% endblocktrans %}</a></div>
+		<div class="link"><a href="{{ download_url }}">{% blocktrans with size_name|capfirst as sizename %}Download the {{ sizename }} size of this photo{% endblocktrans %}</a></div>
 	</div>
 	<div id="sizes-wrap">
 		<div class="label">{% trans "Sizes" %}</div>
