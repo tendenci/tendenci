@@ -93,16 +93,12 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
                 zip_url = "%s%s"%(site_url, template.get_zip_url())
             else:
                 zip_url = ""
-            if template.screenshot_file:
-                screenshot_url = "%s%s"%(site_url, template.get_screenshot_url())
-            else:
-                screenshot_url = ""
             
             #sync with campaign monitor
             try:
                 t_id = CST().create(
                         client_id, template.name, 
-                        html_url, zip_url, screenshot_url
+                        html_url, zip_url
                     )
             except BadRequest, e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
@@ -155,15 +151,11 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
                 zip_url = str("%s%s"%(site_url, template.get_zip_url()))
             else:
                 zip_url = ""
-            if template.screenshot_file:
-                screenshot_url = str("%s%s"%(site_url, template.get_screenshot_url()))
-            else:
-                screenshot_url = ""
             
             #sync with campaign monitor
             try:
                 t = CST(template_id = form.instance.template_id)
-                t.update(str(template.name), html_url, zip_url, screenshot_url)
+                t.update(str(template.name), html_url, zip_url)
             except BadRequest, e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
                 return render_to_response(template_name, {'form':form}, 
@@ -209,15 +201,11 @@ def template_update(request, template_id):
         zip_url = str("%s%s"%(site_url, template.get_zip_url()))
     else:
         zip_url = ""
-    if template.screenshot_file:
-        screenshot_url = str("%s%s"%(site_url, template.get_screenshot_url()))
-    else:
-        screenshot_url = ""
     
     #sync with campaign monitor
     try:
         t = CST(template_id = template.template_id)
-        t.update(str(template.name), html_url, zip_url, screenshot_url)
+        t.update(str(template.name), html_url, zip_url)
     except BadRequest, e:
         messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
         return redirect(template)
