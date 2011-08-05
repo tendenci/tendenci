@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-04 17:04-0500\n"
+"POT-Creation-Date: 2011-08-05 12:46-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2594,11 +2594,11 @@ msgid "Please contact the site administrator to request access to this page."
 msgstr "XXXXXXXX"
 
 #: templates/403.html:14
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "This page requires a login. Please <a href=\"/accounts/login/?next="
-"%(request.get_full_path)s\">log in</a> if you have an account, or <a href=\"/"
-"accounts/register/\">create an account</a> if you do not have one.</p>"
+"%(reqpath)s\">log in</a> if you have an account, or <a href=\"/accounts/"
+"register/\">create an account</a> if you do not have one.</p>"
 msgstr "XXXXXXXX"
 
 #: templates/404.html:4
@@ -7696,10 +7696,8 @@ msgid "The following directory has been edited:"
 msgstr "XXXXXXXX"
 
 #: templates/notification/directory_edited/full.html:8
-#, python-format
-msgid ""
-"To view this directory go to: %(SITE_GLOBAL_SITEURL)s"
-"%(object.get_absolute_url)s"
+#, fuzzy, python-format
+msgid "To view this directory go to: %(SITE_GLOBAL_SITEURL)s%(objurl)s"
 msgstr "XXXXXXXX"
 
 #: templates/notification/donation_added/full.html:4
@@ -8445,10 +8443,10 @@ msgid "Back to page"
 msgstr "XXXXXXXX"
 
 #: templates/pages/edit-meta.html:17
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "Meta Information for<br />\n"
-"    %(page.title)s"
+"    %(page_title)s"
 msgstr "XXXXXXXX"
 
 #: templates/pages/edit.html:39
@@ -8733,12 +8731,11 @@ msgid "Add Photos"
 msgstr "XXXXXXXX"
 
 #: templates/photos/partial-details.html:40
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "Licensed under\n"
-"                    <a rel=\"license\" href=\"%(photo.get_license.deed)s"
-"\"> \n"
-"                        %(photo.get_license.name)s</a>."
+"                    <a rel=\"license\" href=\"%(phodeed)s\"> \n"
+"                        %(phoname)s</a>."
 msgstr "XXXXXXXX"
 
 #: templates/photos/sizes.html:8 templates/photos/sizes.html.py:18
@@ -8754,17 +8751,17 @@ msgid "License"
 msgstr "XXXXXXXX"
 
 #: templates/photos/sizes.html:23
-#, python-format
+#, fuzzy, python-format
 msgid ""
-"%(photo.get_license.name)s by \n"
-"\t\t\t<a href=\"%(photo.creator.get_absolute_url)s\">\n"
-"\t\t\t\t%(photo.creator.get_full_name)s\n"
+"%(pholic)s by \n"
+"\t\t\t<a href=\"%(phocre)s\">\n"
+"\t\t\t\t%(phoname)s\n"
 "\t\t\t</a>"
 msgstr "XXXXXXXX"
 
 #: templates/photos/sizes.html:32
-#, python-format
-msgid "Download the %(size_name|capfirst)s size of this photo"
+#, fuzzy, python-format
+msgid "Download the %(sizename)s size of this photo"
 msgstr "XXXXXXXX"
 
 #: templates/photos/sizes.html:35
@@ -9299,27 +9296,25 @@ msgid ""
 msgstr "XXXXXXXX"
 
 #: templates/registration/password_reset_email.html:2
-msgid "You're receiving this e-mail because you requested a password reset"
+#, fuzzy, python-format
+msgid ""
+"You're receiving this e-mail because you requested a password reset for your "
+"user account at %(site_name)s"
 msgstr "XXXXXXXX"
 
-#: templates/registration/password_reset_email.html:3
-#, python-format
-msgid "for your user account at %(site_name)s"
-msgstr "XXXXXXXX"
-
-#: templates/registration/password_reset_email.html:5
+#: templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
 msgstr "XXXXXXXX"
 
-#: templates/registration/password_reset_email.html:9
+#: templates/registration/password_reset_email.html:8
 msgid "Your username, in case you've forgotten:"
 msgstr "XXXXXXXX"
 
-#: templates/registration/password_reset_email.html:11
+#: templates/registration/password_reset_email.html:10
 msgid "Thanks for using our site!"
 msgstr "XXXXXXXX"
 
-#: templates/registration/password_reset_email.html:13
+#: templates/registration/password_reset_email.html:12
 #, python-format
 msgid "The %(site_name)s team"
 msgstr "XXXXXXXX"
@@ -9525,10 +9520,10 @@ msgid "Are you sure you want to delete this resume?"
 msgstr "XXXXXXXX"
 
 #: templates/resumes/edit-meta.html:18
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "Meta Information for<br />\n"
-"    %(resume.title)s"
+"    %(resume_title)s"
 msgstr "XXXXXXXX"
 
 #: templates/resumes/pending.html:13
@@ -9830,6 +9825,16 @@ msgstr[1] "XXXXXXXX"
 #, fuzzy, python-format
 msgid "Created on %(create_date)s by %(group_creator)s"
 msgstr "XXXXXXXX"
+
+#~ msgid ""
+#~ "Licensed under\n"
+#~ "                    <a rel=\"license\" href=\"%(photo.get_license.deed)s"
+#~ "\"> \n"
+#~ "                        %(photo.get_license.name)s</a>."
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "for your user account at %(site_name)s"
+#~ msgstr "XXXXXXXX"
 
 #~ msgid "Early Date/Time"
 #~ msgstr "XXXXXXXX"

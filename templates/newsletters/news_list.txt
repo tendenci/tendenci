@@ -6,7 +6,7 @@
 	{# named area for jump links #}
 	<a name="news" id="news"></a>
 	{% if start_dt %}
-		{% blocktrans %}News for {{ start_dt|date:"M d, Y" }} to {{ end_dt|date:"M d, Y" }}{% endblocktrans %}
+		{% blocktrans with start_dt|date:"M d, Y" as startdate and end_dt|date:"M d, Y" as enddate %}News for {{ startdate }} to {{ enddate }}{% endblocktrans %}
 	{% else %}
 		{% trans "All News" %}
 	{% endif %}
