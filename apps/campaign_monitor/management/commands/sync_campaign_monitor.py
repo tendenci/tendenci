@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
-
 class Command(BaseCommand):
     """
     This script is to sync the groups and group subscribers with the campaign monitor 
@@ -13,6 +12,7 @@ class Command(BaseCommand):
         from user_groups.models import Group
         from subscribers.models import GroupSubscription as GS
         from campaign_monitor.models import ListMap, Campaign, Template
+        from campaign_monitor.utils import sync_campaigns
         from createsend import CreateSend, Client, List, Subscriber, \
             BadRequest, Unauthorized
         
@@ -113,66 +113,5 @@ class Command(BaseCommand):
         print 'Done'
         
         print 'Starting to sync campaigns with campaign monitor...'
-        
-        print 'Syncing sent campaigns...'
-        sent = cl.campaigns()
-        for c in sent:
-            try:
-                campaign = Campaign.objects.get(campaign_id = c.CampaignID)
-                print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
-            except Campaign.DoesNotExist:
-                print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
-                campaign = Campaign(campaign_id = c.CampaignID)
-            campaign.subject = c.Subject
-            campaign.name = c.Name
-            campaign.sent_date = c.SentDate
-            campaign.status = 'S'
-            campaign.save()
-        
-        print 'Syncing scheduled campaigns...'
-        if hasattr(cl,'scheduled'): scheduled = cl.scheduled()
-        else: scheduled = []
-        for c in scheduled:
-            try:
-                campaign = Campaign.objects.get(campaign_id = c.CampaignID)
-                print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
-            except Campaign.DoesNotExist:
-                print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
-                campaign = Campaign(campaign_id = c.CampaignID)
-            campaign.subject = c.Subject
-            campaign.name = c.Name
-            campaign.status = 'C'
-            campaign.save()
-        
-        print 'Syncing draft campaigns...'
-        if hasattr(cl,'drafts'): drafts = cl.drafts()
-        else: drafts = []
-        for c in drafts:
-            try:
-                campaign = Campaign.objects.get(campaign_id = c.CampaignID)
-                print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
-            except Campaign.DoesNotExist:
-                print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
-                campaign = Campaign(campaign_id = c.CampaignID)
-            campaign.subject = c.Subject
-            campaign.name = c.Name
-            campaign.save()
-            
-        print "Done"
-
-        print 'Syncing templates...'
-        if hasattr(cl,'templates'): templates = cl.templates()
-        else: templates = []
-        for t in templates:
-            try:
-                template = Template.objects.get(template_id = t.TemplateID)
-                print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
-            except Template.DoesNotExist:
-                print "Creating template (%s - %s)" % (t.TemplateID, t.Name)
-                template = Template(template_id = t.TemplateID)
-            template.name = t.Name
-            template.cm_preview_url = t.PreviewURL
-            template.cm_screenshot_url = t.ScreenshotURL
-            template.save()
-        
+        sync_campaigns()
         print "Done"
