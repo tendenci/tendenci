@@ -13,7 +13,6 @@ class TemplateForm(forms.ModelForm):
         model = Template
         exclude = ["template_id", "create_date", "update_date", "cm_preview_url", "cm_screenshot_url"]
     
-    screenshot_file = forms.FileField(required=False)
     zip_file = forms.FileField(required=False)
     
 class CampaignForm(forms.ModelForm):
