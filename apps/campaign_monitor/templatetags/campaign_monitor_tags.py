@@ -1,6 +1,7 @@
 import re
 from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from campaign_monitor.models import Template, Campaign
 from base.template_tags import ListNode, parse_tag_kwargs
@@ -11,7 +12,8 @@ register = Library()
 def template_options(context, user, template):
     context.update({
         "opt_object": template,
-        "user": user
+        "user": user,
+        "cm_url": settings.CAMPAIGNMONITOR_USER_URL,
     })
     return context
 
@@ -28,7 +30,8 @@ def template_nav(context, user, template=None):
 def campaign_options(context, user, campaign):
     context.update({
         "opt_object": campaign,
-        "user": user
+        "user": user,
+        "cm_url": settings.CAMPAIGNMONITOR_USER_URL,
     })
     return context
 

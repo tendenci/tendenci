@@ -1,7 +1,7 @@
 {% load base_tags %}
 {% load perm_tags %}
 {% load campaign_monitor_tags %}
-{% i18n %}
+{% load i18n %}
 
 {% has_perm user campaign_monitor.change_campaign as can_change %}
 {% has_perm user campaign_monitor.delete_campaign as can_delete %}
@@ -11,8 +11,7 @@
 	{% if can_change %}
         {% if opt_object.status == 'S' %}
         {% else %}
-            <a class="option-link" href="#">{% trans "Send" %}</a>
-            <a class="option-link" href="#">{% trans "Schedule" %}</a>
+            <a class="option-link" href="{{ cm_url }}createSend/snapshot.aspx?cID={{ opt_object.campaign_id }}">{% trans "Snapshot" %}</a>
         {% endif %}
         
         <a class="option-link edit" href="{% url campaign_monitor.campaign_add %}?copy={{ opt_object.campaign_id }}">{% trans "Copy" %}</a>
