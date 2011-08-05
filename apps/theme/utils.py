@@ -20,7 +20,6 @@ def theme_options():
     themes.reverse()
     for theme in themes:
         options = '%s, %s' % (theme, options)
-    print options[:-2]
     return options[:-2]
     
 def theme_choices():
