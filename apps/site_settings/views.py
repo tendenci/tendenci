@@ -47,6 +47,10 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
                 f.write(content)
                 f.close()
 
+                from django.core.management import call_command
+                call_command('touch_settings')
+                #setattr(django_settings, 'LANGUAGE_CODE', lang)
+
 
     else:
         form = build_settings_form(request.user, settings)()
