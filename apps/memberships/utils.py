@@ -148,12 +148,13 @@ def new_mems_from_csv(file_path, app, columns):
             user, created = User.objects.get_or_create(username = username)
         except (User.MultipleObjectsReturned, IntegrityError) as e:
             user = User.objects.filter(username = username)[0]
+        
 
         try:  # if membership type exists; import membership
             membership_type = MembershipType.objects.get(name = m['membership-type'])
         except:
             continue  # on to the next one
-
+        
         try: join_dt = dt_parse(m['join-date'])
         except: join_dt = None
         try: renew_dt = dt_parse(m['renew-date'])
@@ -161,8 +162,8 @@ def new_mems_from_csv(file_path, app, columns):
 
         # tendenci 4 null date: 1951-01-01
         tendenci4_null_date = datetime(1951,1,1,0,0,0)
-        if join_dt <= tendenci4_null_date: join_dt = None
-        if renew_dt <= tendenci4_null_date: renew_dt = None
+        if join_dt and join_dt <= tendenci4_null_date: join_dt = None
+        if renew_dt and renew_dt <= tendenci4_null_date: renew_dt = None
 
         try: expire_dt = dt_parse(m['expire-date'])
         except: expire_dt = membership_type.get_expiration_dt(join_dt=join_dt, renew_dt=renew_dt, renewal=m.get('renewal'))
@@ -173,6 +174,7 @@ def new_mems_from_csv(file_path, app, columns):
         user.email = m.get('E-Mail') or m.get('Email') or user.email
         user.save()
 
+
         try:
             # get profile
             profile = Profile.objects.get(user=user)
@@ -182,6 +184,7 @@ def new_mems_from_csv(file_path, app, columns):
                 user=user,
                 creator=user,
                 owner=user,
+                owner_username = user.username,
             )
         except Profile.MultipleObjectsReturned as e:
             # or get first profile
@@ -189,6 +192,7 @@ def new_mems_from_csv(file_path, app, columns):
                 user=user,
                 creator=user,
                 owner=user,
+                owner_username = user.username,
             )[0]
 
         # update profile
