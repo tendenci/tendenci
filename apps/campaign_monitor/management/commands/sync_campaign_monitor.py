@@ -119,6 +119,7 @@ class Command(BaseCommand):
         for c in sent:
             try:
                 campaign = Campaign.objects.get(campaign_id = c.CampaignID)
+                print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
             except Campaign.DoesNotExist:
                 print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
                 campaign = Campaign(campaign_id = c.CampaignID)
@@ -134,6 +135,7 @@ class Command(BaseCommand):
         for c in scheduled:
             try:
                 campaign = Campaign.objects.get(campaign_id = c.CampaignID)
+                print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
             except Campaign.DoesNotExist:
                 print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
                 campaign = Campaign(campaign_id = c.CampaignID)
@@ -148,6 +150,7 @@ class Command(BaseCommand):
         for c in drafts:
             try:
                 campaign = Campaign.objects.get(campaign_id = c.CampaignID)
+                print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
             except Campaign.DoesNotExist:
                 print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
                 campaign = Campaign(campaign_id = c.CampaignID)
@@ -163,6 +166,7 @@ class Command(BaseCommand):
         for t in templates:
             try:
                 template = Template.objects.get(template_id = t.TemplateID)
+                print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
             except Template.DoesNotExist:
                 print "Creating template (%s - %s)" % (t.TemplateID, t.Name)
                 template = Template(template_id = t.TemplateID)
