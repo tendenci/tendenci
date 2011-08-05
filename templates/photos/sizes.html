@@ -29,7 +29,8 @@
 
 	<div id="download-wrap">
 		<div class="label">{% trans "Download" %}</div>
-		<div class="link"><a href="{{ download_url }}">{% blocktrans %}Download the {{ size_name|capfirst }} size of this photo{% endblocktrans %}</a></div>
+		<div class="link"><a href="{{ download_url }}">
+		{% blocktrans with size_name|capfirst as size_name_cap_first %}Download the {{ size_name_cap_first }} size of this photo{% endblocktrans %}</a></div>
 	</div>
 	<div id="sizes-wrap">
 		<div class="label">{% trans "Sizes" %}</div>
