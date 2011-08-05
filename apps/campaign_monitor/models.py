@@ -47,7 +47,6 @@ class Template(models.Model):
     #post only
     html_file = models.FileField(upload_to=file_directory, null=True)
     zip_file = models.FileField(upload_to=file_directory, null=True)
-    screenshot_file = models.FileField(upload_to=file_directory, null=True)
     
     @property
     def content_type(self):
@@ -72,11 +71,6 @@ class Template(models.Model):
     def get_zip_url(self):
         if self.zip_file:
             return self.zip_file.url
-        return ''
-    
-    def get_screenshot_url(self):
-        if self.screenshot_file:
-            return self.screenshot_file.url
         return ''
         
     def __unicode__(self):
