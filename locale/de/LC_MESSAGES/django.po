@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-04 16:26-0500\n"
+"POT-Creation-Date: 2011-08-04 17:04-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgstr "XXXXXXXX"
 
 #: apps/accounts/forms.py:78
 msgid "Remember Login"
-msgstr "Login erinnern"
+msgstr "XXXXXXXX"
 
 #: apps/accounts/forms.py:108
 msgid "This account is currently inactive."
@@ -2315,7 +2315,7 @@ msgstr "XXXXXXXX"
 
 #: apps/theme_editor/forms.py:39
 msgid "Theme:"
-msgstr ""
+msgstr "XXXXXXXX"
 
 #: apps/theme_editor/models.py:14
 msgid "theme archive"
@@ -2459,7 +2459,7 @@ msgstr "XXXXXXXX"
 #: templates/footer.html:7 templates/nav.html:4
 #: templates/admin_menu/admin_top.html:140
 msgid "Home"
-msgstr "Startseite"
+msgstr "XXXXXXXX"
 
 #: plugins/case_studies/templates/case_studies/admin/change_form.html:21
 #: templates/admin/index.html:44 templates/admin_menu/admin_top.html:25
@@ -2599,7 +2599,7 @@ msgid ""
 "This page requires a login. Please <a href=\"/accounts/login/?next="
 "%(request.get_full_path)s\">log in</a> if you have an account, or <a href=\"/"
 "accounts/register/\">create an account</a> if you do not have one.</p>"
-msgstr ""
+msgstr "XXXXXXXX"
 
 #: templates/404.html:4
 msgid "404 NOT FOUND"
@@ -9972,8 +9972,8 @@ msgstr "XXXXXXXX"
 #~ msgstr "XXXXXXXX"
 
 #~ msgid ""
-#~ "Released on %(location.release_dt|date:\"D d M Y P\")s by "
-#~ "%(location.creator)s"
+#~ "Released on %(location.release_dt|date:\"D d M Y P\")s by %(location."
+#~ "creator)s"
 #~ msgstr "XXXXXXXX"
 
 #~ msgid "Payment Made by %(obj.first_name)s %(obj.last_name)s"
@@ -10002,8 +10002,8 @@ msgstr "XXXXXXXX"
 #~ msgstr "XXXXXXXX"
 
 #~ msgid ""
-#~ "Application Created %(object.app.create_dt|date)s "
-#~ "(%(object.app.create_dt|timesince)s)"
+#~ "Application Created %(object.app.create_dt|date)s (%(object.app.create_dt|"
+#~ "timesince)s)"
 #~ msgstr "XXXXXXXX"
 
 #~ msgid ""
