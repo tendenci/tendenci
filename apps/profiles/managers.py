@@ -5,8 +5,9 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 
 from haystack.query import SearchQuerySet
+from perms.managers import TendenciBaseManager
 
-class ProfileManager(Manager):
+class ProfileManager(TendenciBaseManager):
     def create_profile(self, user):
         return self.create(user=user, 
                            creator_id=user.id, 
