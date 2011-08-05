@@ -10,7 +10,7 @@
 </head>
 <body bgcolor="#ffffff" text="#000000">
 <p>
-    {% blocktrans with requser=request.user.get_full_name%}The following payment was 
+    {% blocktrans with request.user.get_full_name as requser %}The following payment was 
     added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} 
     Payments module by {{ requser }}:{% endblocktrans %}
 </p>
