@@ -13,7 +13,7 @@ def template_options(context, user, template):
     context.update({
         "opt_object": template,
         "user": user,
-        "cm_url": settings.CAMPAIGNMONITOR_USER_URL,
+        "cm_url": settings.CAMPAIGNMONITOR_URL,
     })
     return context
 
@@ -22,7 +22,8 @@ def template_options(context, user, template):
 def template_nav(context, user, template=None):
     context.update({
         "nav_object": template,
-        "user": user
+        "user": user,
+        "cm_url": settings.CAMPAIGNMONITOR_URL,
     })
     return context
     
@@ -31,7 +32,7 @@ def campaign_options(context, user, campaign):
     context.update({
         "opt_object": campaign,
         "user": user,
-        "cm_url": settings.CAMPAIGNMONITOR_USER_URL,
+        "cm_url": settings.CAMPAIGNMONITOR_URL,
     })
     return context
 
@@ -40,7 +41,8 @@ def campaign_options(context, user, campaign):
 def campaign_nav(context, user, campaign=None):
     context.update({
         "nav_object": campaign,
-        "user": user
+        "user": user,
+        "cm_url": settings.CAMPAIGNMONITOR_URL,
     })
     return context
     

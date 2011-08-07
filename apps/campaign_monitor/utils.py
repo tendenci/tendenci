@@ -38,7 +38,9 @@ def sync_campaigns():
         campaign.subject = c.Subject
         campaign.name = c.Name
         campaign.sent_date = c.SentDate
-        campaign.status = 'S'
+        campaign.web_version_url = c.WebVersionURL
+        campaign.total_recipients = c.TotalRecipients
+        campaign.status = 'S' #sent
         campaign.save()
     
     print 'Syncing scheduled campaigns...'
@@ -53,7 +55,10 @@ def sync_campaigns():
             campaign = Campaign(campaign_id = c.CampaignID)
         campaign.subject = c.Subject
         campaign.name = c.Name
-        campaign.status = 'C'
+        campaign.scheduled_date = c.DateScheduled
+        campaign.scheduled_time_zone = c.ScheduledTimeZone
+        campaign.preview_url = c.PreviewURL
+        campaign.status = 'C' #Scheduled
         campaign.save()
     
     print 'Syncing draft campaigns...'
@@ -68,6 +73,7 @@ def sync_campaigns():
             campaign = Campaign(campaign_id = c.CampaignID)
         campaign.subject = c.Subject
         campaign.name = c.Name
+        campaign.preview_url = c.PreviewURL
         campaign.save()
 
     print 'Syncing templates...'
