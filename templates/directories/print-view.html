@@ -72,7 +72,7 @@
 		</div>      
 		{% endif%}   
         <div class="meta">
-            <div class="submitted">{% blocktrans with directory.create_dt|date:"long" as d_create and directory.creator as d_creator %}Submitted on {{ d_create }} by {{ d_creator }}{% endblocktrans %}</div>
+            <div class="submitted">Submitted on {{ directory.create_dt|date:"long" }} by {{ directory.creator }}</div>
         </div>
     </div>
 
