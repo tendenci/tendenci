@@ -108,7 +108,7 @@
 			</div>
 
             <div class="submitted">
-            	{% blocktrans directory.create_dt|date:"long" as dc_create %}Submitted on {{ dc_create }} by: {% endblocktrans %}
+            	Submitted on {{ directory.create_dt|date:"long" }} by: 
 				{% firstof directory.creator.get_profile.display_name directory.creator %} 
 			</div>
         </div>
