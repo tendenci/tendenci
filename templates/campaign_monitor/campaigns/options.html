@@ -11,7 +11,7 @@
 	{% if can_change %}
         {% if opt_object.status == 'S' %}
         {% else %}
-            <a class="option-link" href="{{ cm_url }}createSend/snapshot.aspx?cID={{ opt_object.campaign_id }}">{% trans "Snapshot" %}</a>
+            <a class="option-link" href="{{ cm_url }}/createSend/snapshot.aspx?cID={{ opt_object.campaign_id }}">{% trans "View Snapshot" %}</a>
         {% endif %}
         
         {% comment %}
