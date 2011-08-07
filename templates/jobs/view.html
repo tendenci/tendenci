@@ -91,7 +91,7 @@
 {% if job.start_dt %}
 		<div class="section-line">
 			{% blocktrans with job.start_dt as jobstart%}<div class="label">Starts On</div>
-			<div class="value">{{ job.start }}</div>{% endblocktrans %}
+			<div class="value">{{ jobstart }}</div>{% endblocktrans %}
 			<div class="clear"></div>
 		</div>
 {% endif %}
