@@ -3,7 +3,7 @@ from django.conf import settings
 from site_settings.utils import get_setting
 from campaign_monitor.models import Campaign, Template
 from createsend import CreateSend, Client
-import os
+import os, re
 import urllib2
 import random
 import string
@@ -93,6 +93,17 @@ def sync_templates():
         template.save()
 
 def extract_files(template):
-    zip_file = zipfile.ZipFile(template.zip_file.file)
-    zip_file.extractall(os.path.join(settings.MEDIA_ROOT, 'campaign_monitor', template.template_id))
+    if template.zip_file:
+        zip_file = zipfile.ZipFile(template.zip_file.file)
+        zip_file.extractall(os.path.join(settings.MEDIA_ROOT, 'campaign_monitor', template.template_id))
     
+def apply_template_media(template):
+    """
+    Prepends files in content to the media path
+    of a given template's zip file contents
+    """
+    content = unicode(template.html_file.file.read(), "utf-8")
+    pattern = r'"[^"]*?\.(?:(?i)jpg|(?i)jpeg|(?i)png|(?i)gif|(?i)bmp|(?i)tif|(?i)css)"'
+    repl = lambda x: '"%s/%s"' % (template.get_media_url(), x.group(0).replace('"', ''))
+    new_content = re.sub(pattern, repl, content)
+    return new_content
