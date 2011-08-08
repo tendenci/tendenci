@@ -34,7 +34,7 @@
   news, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
   <br>
  {% if not isadmin %}
-	<p>{% endblocktrans %}To activate this news, 
+	<p>{% blocktrans %}To activate this news, 
 	  go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b> </p>
  {% endif %}
 <P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
