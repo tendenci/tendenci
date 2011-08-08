@@ -9788,17 +9788,22 @@ msgstr[1] ""
 msgid "Created on %(create_date)s by %(group_creator)s"
 msgstr ""
 
-#~ msgid "Photo Albums"
-#~ msgstr "Álbumes de fotos"
+#: templates/dashboard/index.html:89
+#: msgid "Photo Albums"
+#: msgstr "Álbumes de fotos"
 
-#~ msgid "Stories"
-#~ msgstr "Historias"
+#: templates/dashboard/index.html:93
+#: msgid "Stories"
+#: msgstr "Historias"
 
-#~ msgid "Contacts"
-#~ msgstr "Contactos"
+#: templates/dashboard/index.html:126
+#: msgid "Contacts"
+#: msgstr "Contactos"
 
-#~ msgid "Locations"
-#~ msgstr "Localidades"
+#: templates/dashboard/index.html:109
+#: msgid "Locations"
+#: msgstr "Localidades"
 
-#~ msgid "Entities"
-#~ msgstr "Entidades"
+#: templates/dashboard/index.html:101
+#: msgid "Entities"
+#: msgstr "Entidades"
