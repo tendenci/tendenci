@@ -19,7 +19,8 @@
             <ul id="secondary">
                 <li><a href="{% url campaign_monitor.campaign_index %}">{% trans "Campaigns:" %}</a></li> 
                 {% if can_add_campaign %}
-                    <li><a href="{% url campaign_monitor.campaign_add %}">{% trans "Add Campaign" %}</a></li>
+                    <li><a href="{{ cm_url }}createsend/step1.aspx">{% trans "Add Campaign" %}</a></li>
+                    <li><a href="{% url campaign_monitor.campaign_sync %}">{% trans "Sync Campaigns" %}</a></li>
                 {% endif %}
                 <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
             </ul>
