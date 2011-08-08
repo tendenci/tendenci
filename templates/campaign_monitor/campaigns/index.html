@@ -28,6 +28,8 @@
                 </div>
 			</div>
             <h2><a href="{{ campaign.get_absolute_url }}">{{ campaign.name }}</a></h2>
+            <p><b>{% trans "Subject" %}:</b> {{ campaign.subject }}</p>
+            <p><b>{% trans "Status" %}</b>: {{ campaign.get_status_display }}</p>
         </div>
 	{% empty %}
 		<div>{% trans "0 Campaigns Found" %}</div>
