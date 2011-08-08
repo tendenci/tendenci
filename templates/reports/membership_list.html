@@ -1,4 +1,5 @@
 {% extends "reports/base.html" %}
+{% load pagination_tags %}
 
 {% block content %}
     
@@ -9,7 +10,7 @@
         <h1>Expired Memberships Report</h1>
         Lists all memberships that have expired.
     {% endif %}
-
+    {% autopaginate mems 50 %}
     <table>
         <tr>
             <th>#</th>
@@ -34,4 +35,5 @@
             </tr>
         {% endfor %}
     </table>
+    {% paginate %}
 {% endblock content %}
