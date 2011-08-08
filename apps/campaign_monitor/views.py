@@ -14,6 +14,7 @@ from campaign_monitor.models import Template, Campaign
 from campaign_monitor.forms import TemplateForm, CampaignForm
 from campaign_monitor.utils import temporary_id, extract_files
 from campaign_monitor.utils import sync_campaigns, sync_templates
+from campaign_monitor.utils import apply_template_media
 from site_settings.utils import get_setting
 from base.http import Http403
 
@@ -61,7 +62,7 @@ def template_render(request, template_id):
     if not template.html_file:
         raise Http404
     
-    text = DTemplate(template.html_file.file.read())
+    text = DTemplate(apply_template_media(template))
     context = RequestContext(request)
     
     response = HttpResponse(text.render(context))
