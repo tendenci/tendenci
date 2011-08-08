@@ -3,8 +3,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
-{% load i18n %
-}
+{% load i18n %}
 {% is_admin user as admin %}
 
 {% block title %}Membership Application for {{ entry.name }}{% endblock %}
@@ -98,7 +97,7 @@
 
     {% if entry.membership %}
     <div class="profile-link">
-        <a href="{% url profile  entry.membership.user %}#userview-memberships">{% trans "View Profile & Membership" %}</a>
+        <a href="{% url profile  entry.membership.user %}#userview-memberships">{% trans "View Profile &nbsp; Membership" %}</a>
     </div>
     {% endif %}
 
