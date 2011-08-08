@@ -4763,7 +4763,7 @@ msgstr "Eventos"
 
 #: templates/dashboard/index.html:89
 msgid "Photo Albums"
-msgstr ""
+msgstr "Álbumes de fotos"
 
 #: templates/dashboard/index.html:93
 #, fuzzy
@@ -4776,7 +4776,7 @@ msgstr "Páginas"
 
 #: templates/dashboard/index.html:101
 msgid "Entities"
-msgstr ""
+msgstr "Entidades"
 
 #: templates/dashboard/index.html:105 templates/files/nav.html:20
 #: templates/files/templates/tinymce.html:53
@@ -4785,7 +4785,7 @@ msgstr ""
 
 #: templates/dashboard/index.html:109
 msgid "Locations"
-msgstr ""
+msgstr "Localidades"
 
 #: templates/dashboard/index.html:113 templates/profiles/index.html:37
 msgid "Contributions"
@@ -4803,7 +4803,7 @@ msgstr "Redirecciones"
 
 #: templates/dashboard/index.html:126
 msgid "Contacts"
-msgstr ""
+msgstr "Contactos"
 
 #: templates/dashboard/index.html:139
 msgid "Tendenci Blog"
