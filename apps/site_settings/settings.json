@@ -451,7 +451,7 @@
         "name": "localizationlanguage", 
         "value": "en", 
         "label": "Localization Language", 
-        "input_value": "en,es,de", 
+        "input_value": "en,es", 
         "parent_id": 0, 
         "scope": "site", 
         "scope_category": "global", 
