@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-05 18:28-0500\n"
+"POT-Creation-Date: 2011-08-08 08:11-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1084,7 +1084,7 @@ msgstr ""
 msgid "Form"
 msgstr ""
 
-#: apps/forms_builder/forms/models.py:72
+#: apps/forms_builder/forms/models.py:72 templates/dashboard/index.html:121
 msgid "Forms"
 msgstr "Formas"
 
@@ -1443,8 +1443,8 @@ msgstr ""
 msgid "Corporate Membership Id"
 msgstr ""
 
-#: apps/memberships/models.py:277 templates/memberships/nav.html:21
-#: templates/profiles/index.html:41
+#: apps/memberships/models.py:277 templates/dashboard/index.html:77
+#: templates/memberships/nav.html:21 templates/profiles/index.html:41
 msgid "Memberships"
 msgstr "Membresías"
 
@@ -1518,8 +1518,10 @@ msgstr ""
 msgid "Date/Time"
 msgstr ""
 
-#: apps/memberships/models.py:678 templates/email_blocks/edit.html:86
-#: templates/emails/edit.html:119
+#: apps/memberships/models.py:678
+#: templates/campaign_monitor/campaigns/index.html:32
+#: templates/campaign_monitor/campaigns/view.html:28
+#: templates/email_blocks/edit.html:86 templates/emails/edit.html:119
 #: templates/notification/user_edited/full.html:578
 #: templates/profiles/add.html:361 templates/profiles/edit.html:357
 msgid "Status"
@@ -3317,14 +3319,15 @@ msgstr ""
 msgid "Plugins"
 msgstr ""
 
-#: templates/admin_menu/admin_top.html:54 templates/imports/nav.html:22
-#: templates/profiles/nav.html:17 templates/user_groups/nav.html:16
+#: templates/admin_menu/admin_top.html:54 templates/dashboard/index.html:48
+#: templates/imports/nav.html:22 templates/profiles/nav.html:17
+#: templates/user_groups/nav.html:16
 msgid "Users"
 msgstr "Usuarios"
 
-#: templates/admin_menu/admin_top.html:61 templates/dashboard/nav.html:40
-#: templates/imports/nav.html:40 templates/profiles/index.html:39
-#: templates/profiles/nav.html:70
+#: templates/admin_menu/admin_top.html:61 templates/dashboard/index.html:52
+#: templates/dashboard/nav.html:40 templates/imports/nav.html:40
+#: templates/profiles/index.html:39 templates/profiles/nav.html:70
 msgid "Groups"
 msgstr "Grupos"
 
@@ -3414,7 +3417,7 @@ msgid "Recently Viewed"
 msgstr ""
 
 #: templates/admin_menu/admin_top.html:115
-#: templates/admin_menu/admin_top.html:139
+#: templates/admin_menu/admin_top.html:139 templates/dashboard/index.html:128
 msgid "Event Logs"
 msgstr "Registros De Eventos"
 
@@ -3722,7 +3725,7 @@ msgid "Edit Categories"
 msgstr ""
 
 #: templates/articles/nav.html:52
-#: templates/campaign_monitor/campaigns/nav.html:24
+#: templates/campaign_monitor/campaigns/nav.html:25
 #: templates/campaign_monitor/templates/nav.html:34
 #: templates/contacts/nav.html:38 templates/contributions/nav.html:27
 #: templates/corporate_memberships/nav.html:59 templates/dashboard/nav.html:35
@@ -3812,7 +3815,13 @@ msgstr ""
 msgid "Campaign Monitor Campaigns"
 msgstr ""
 
-#: templates/campaign_monitor/campaigns/index.html:33
+#: templates/campaign_monitor/campaigns/index.html:31
+#: templates/campaign_monitor/campaigns/view.html:27
+#: templates/emails/edit.html:56
+msgid "Subject"
+msgstr ""
+
+#: templates/campaign_monitor/campaigns/index.html:35
 msgid "0 Campaigns Found"
 msgstr ""
 
@@ -3826,20 +3835,50 @@ msgid "Campaigns:"
 msgstr ""
 
 #: templates/campaign_monitor/campaigns/nav.html:22
+msgid "Add Campaign"
+msgstr ""
+
+#: templates/campaign_monitor/campaigns/nav.html:23
 msgid "Sync Campaigns"
 msgstr ""
 
-#: templates/campaign_monitor/campaigns/nav.html:30
+#: templates/campaign_monitor/campaigns/nav.html:31
 #: templates/campaign_monitor/templates/nav.html:27
 msgid "Templates"
 msgstr ""
 
 #: templates/campaign_monitor/campaigns/options.html:14
-msgid "Snapshot"
+msgid "View Snapshot"
 msgstr ""
 
 #: templates/campaign_monitor/campaigns/options.html:18
 msgid "Copy"
+msgstr ""
+
+#: templates/campaign_monitor/campaigns/view.html:30
+msgid "Sent on"
+msgstr ""
+
+#: templates/campaign_monitor/campaigns/view.html:31
+msgid "Total Recipients"
+msgstr ""
+
+#: templates/campaign_monitor/campaigns/view.html:32
+msgid "Web Version URL"
+msgstr ""
+
+#: templates/campaign_monitor/campaigns/view.html:35
+msgid "Date Scheduled"
+msgstr ""
+
+#: templates/campaign_monitor/campaigns/view.html:36
+#, fuzzy
+msgid "Scheduled Time Zone"
+msgstr "Zona horaria"
+
+#: templates/campaign_monitor/campaigns/view.html:37
+#: templates/campaign_monitor/campaigns/view.html:40
+msgid "Preview URL"
 msgstr ""
 
 #: templates/campaign_monitor/templates/add.html:6
@@ -4685,10 +4724,86 @@ msgstr ""
 msgid "Step 1/4 - Upload File"
 msgstr ""
 
+#: templates/dashboard/index.html:56 templates/newsletters/add.html:93
+#: templates/profiles/nav.html:71
+msgid "Articles"
+msgstr "Artículos"
+
+#: templates/dashboard/index.html:60 templates/newsletters/add.html:99
+#: templates/user_groups/nav.html:67
+msgid "News"
+msgstr "Noticias"
+
+#: templates/dashboard/index.html:64
+#: templates/newsletters/templates/default/Two Column Left Sidebar.html:263
+#: Right Sidebar.html:276
+msgid "Directories"
+msgstr "Directorios"
+
+#: templates/dashboard/index.html:68 templates/newsletters/add.html:106
+#: templates/newsletters/templates/default/Two Column Left Sidebar.html:271
+#: Right Sidebar.html:284
+msgid "Jobs"
+msgstr "Empleos"
+
+#: templates/dashboard/index.html:72
+#: templates/newsletters/templates/default/Two Column Left Sidebar.html:278
+#: Right Sidebar.html:291
+msgid "Resumes"
+msgstr "Hojas De Vida"
+
+#: templates/dashboard/index.html:81
+msgid "Corp. Memb."
+msgstr ""
+
+#: templates/dashboard/index.html:85
+#: templates/reports/user_activity_table.html:10
+msgid "Events"
+msgstr "Eventos"
+
+#: templates/dashboard/index.html:89
+msgid "Photo Albums"
+msgstr ""
+
+#: templates/dashboard/index.html:93
+#, fuzzy
+msgid "Stories"
+msgstr "Directorios"
+
+#: templates/dashboard/index.html:97 templates/newsletters/add.html:116
+msgid "Pages"
+msgstr "Páginas"
+
+#: templates/dashboard/index.html:101
+msgid "Entities"
+msgstr ""
+
+#: templates/dashboard/index.html:105 templates/files/nav.html:20
+#: templates/files/templates/tinymce.html:53
+msgid "Files"
+msgstr ""
+
+#: templates/dashboard/index.html:109
+msgid "Locations"
+msgstr ""
+
+#: templates/dashboard/index.html:113 templates/profiles/index.html:37
+msgid "Contributions"
+msgstr ""
+
+#: templates/dashboard/index.html:117 templates/invoices/nav.html:23
+#: templates/profiles/index.html:59
+msgid "Invoices"
+msgstr "Facturas"
+
 #: templates/dashboard/index.html:125 templates/help_files/nav.html:20
 #: templates/redirects/nav.html:20
 msgid "Redirects"
 msgstr "Redirecciones"
+
+#: templates/dashboard/index.html:126
+msgid "Contacts"
+msgstr ""
 
 #: templates/dashboard/index.html:139
 msgid "Tendenci Blog"
@@ -5067,10 +5182,6 @@ msgstr ""
 
 #: templates/emails/edit.html:6 templates/emails/edit.html.py:40
 msgid "E-mail Record "
-msgstr ""
-
-#: templates/emails/edit.html:56
-msgid "Subject"
 msgstr ""
 
 #: templates/emails/edit.html:65
@@ -5911,10 +6022,6 @@ msgstr ""
 msgid "Files Index Page"
 msgstr ""
 
-#: templates/files/nav.html:20 templates/files/templates/tinymce.html:53
-msgid "Files"
-msgstr ""
-
 #: templates/files/nav.html:22
 msgid "Files:"
 msgstr ""
@@ -6293,10 +6400,6 @@ msgstr ""
 #: templates/invoices/detail.html:82
 msgid "View All Account Numbers"
 msgstr ""
-
-#: templates/invoices/nav.html:23 templates/profiles/index.html:59
-msgid "Invoices"
-msgstr "Facturas"
 
 #: templates/invoices/nav.html:25
 msgid "Invoices:"
@@ -7258,27 +7361,9 @@ msgstr ""
 msgid "Past ? Days "
 msgstr ""
 
-#: templates/newsletters/add.html:93 templates/profiles/nav.html:71
-msgid "Articles"
-msgstr "Artículos"
-
-#: templates/newsletters/add.html:99 templates/user_groups/nav.html:67
-msgid "News"
-msgstr "Noticias"
-
-#: templates/newsletters/add.html:106
-#: templates/newsletters/templates/default/Two Column Left Sidebar.html:271
-#: Right Sidebar.html:284
-msgid "Jobs"
-msgstr "Empleos"
-
 #: templates/newsletters/add.html:113
 msgid "Include links to recently edited pages?"
 msgstr ""
-
-#: templates/newsletters/add.html:116
-msgid "Pages"
-msgstr "Páginas"
 
 #: templates/newsletters/add.html:126
 msgid "Template Selection?"
@@ -7319,16 +7404,6 @@ msgstr ""
 #: templates/newsletters/templates/default/One Column With Header.html:7
 msgid "One Column With Header"
 msgstr ""
-
-#: templates/newsletters/templates/default/Two Column Left Sidebar.html:263
-#: Right Sidebar.html:276
-msgid "Directories"
-msgstr "Directorios"
-
-#: templates/newsletters/templates/default/Two Column Left Sidebar.html:278
-#: Right Sidebar.html:291
-msgid "Resumes"
-msgstr "Hojas De Vida"
 
 #: templates/newsletters/templates/default/Two Column Left Sidebar.html:285
 #: Right Sidebar.html:261
@@ -8985,10 +9060,6 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-#: templates/profiles/index.html:37
-msgid "Contributions"
-msgstr ""
-
 #: templates/profiles/index.html:51
 msgid "Change Picture"
 msgstr ""
@@ -9451,10 +9522,6 @@ msgstr ""
 msgid "Top 10 Most Active Users - Last 90 days"
 msgstr ""
 
-#: templates/reports/user_activity_table.html:10
-msgid "Events"
-msgstr "Eventos"
-
 #: templates/reports/users_added.html:9
 msgid "Site:"
 msgstr ""
@@ -9787,23 +9854,3 @@ msgstr[1] ""
 #, python-format
 msgid "Created on %(create_date)s by %(group_creator)s"
 msgstr ""
-
-#: templates/dashboard/index.html:89
-#: msgid "Photo Albums"
-#: msgstr "Álbumes de fotos"
-
-#: templates/dashboard/index.html:93
-#: msgid "Stories"
-#: msgstr "Historias"
-
-#: templates/dashboard/index.html:126
-#: msgid "Contacts"
-#: msgstr "Contactos"
-
-#: templates/dashboard/index.html:109
-#: msgid "Locations"
-#: msgstr "Localidades"
-
-#: templates/dashboard/index.html:101
-#: msgid "Entities"
-#: msgstr "Entidades"
