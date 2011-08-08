@@ -12,7 +12,7 @@ class Command(BaseCommand):
         from user_groups.models import Group
         from subscribers.models import GroupSubscription as GS
         from campaign_monitor.models import ListMap, Campaign, Template
-        from campaign_monitor.utils import sync_campaigns
+        from campaign_monitor.utils import sync_campaigns, sync_templates
         from createsend import CreateSend, Client, List, Subscriber, \
             BadRequest, Unauthorized
         
@@ -114,4 +114,8 @@ class Command(BaseCommand):
         
         print 'Starting to sync campaigns with campaign monitor...'
         sync_campaigns()
+        print "Done"
+        
+        print 'Syncing templates...'
+        sync_templates()
         print "Done"

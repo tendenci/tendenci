@@ -12,7 +12,7 @@ from createsend.createsend import BadRequest
 from perms.utils import has_perm
 from campaign_monitor.models import Template, Campaign
 from campaign_monitor.forms import TemplateForm, CampaignForm
-from campaign_monitor.utils import temporary_id, sync_campaigns
+from campaign_monitor.utils import temporary_id, sync_campaigns, sync_templates
 from site_settings.utils import get_setting
 from base.http import Http403
 
@@ -113,10 +113,10 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
             
             #get campaign monitor details
             t = CST(template_id=t_id).details()
+            template.template_id = t_id
             template.name = t.Name
             template.cm_preview_url = t.PreviewURL
             template.cm_screenshot_url = t.ScreenshotURL
-            template.template_id = t_id
             template.save()
             
             messages.add_message(request, messages.INFO, 'Successfully created Template : %s' % t_id)
@@ -245,6 +245,16 @@ def template_delete(request, template_id):
     template.delete()
     messages.add_message(request, messages.INFO, 'Successfully deleted Template : %s' % t_id)
     
+    return redirect("campaign_monitor.template_index")
+    
+@login_required
+def template_sync(request):
+    if not has_perm(request.user,'campaign_monitor.add_template'):
+        raise Http403
+    
+    sync_templates()
+    
+    messages.add_message(request, messages.INFO, 'Successfully synced with Campaign Monitor')
     return redirect("campaign_monitor.template_index")
 
 @login_required
