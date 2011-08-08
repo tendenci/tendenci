@@ -11,6 +11,7 @@ api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 api_password = getattr(settings, 'CAMPAIGNMONITOR_API_PASSWORD', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 CreateSend.api_key = api_key
+cl = Client(client_id)
 
 def random_string(n=32):
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in range(n))
@@ -24,8 +25,6 @@ def temporary_id():
     return id
 
 def sync_campaigns():
-    cl = Client(client_id)
-    
     print 'Syncing sent campaigns...'
     sent = cl.campaigns()
     for c in sent:
@@ -76,13 +75,13 @@ def sync_campaigns():
         campaign.preview_url = c.PreviewURL
         campaign.save()
 
-    print 'Syncing templates...'
+def sync_templates():
     if hasattr(cl,'templates'): templates = cl.templates()
     else: templates = []
     for t in templates:
         try:
             template = Template.objects.get(template_id = t.TemplateID)
-            print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
+            print "Updating template (%s - %s)" % (t.TemplateID, t.Name)
         except Template.DoesNotExist:
             print "Creating template (%s - %s)" % (t.TemplateID, t.Name)
             template = Template(template_id = t.TemplateID)
@@ -90,3 +89,4 @@ def sync_campaigns():
         template.cm_preview_url = t.PreviewURL
         template.cm_screenshot_url = t.ScreenshotURL
         template.save()
+        print t.ScreenshotURL
