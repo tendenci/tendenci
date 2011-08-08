@@ -3,9 +3,11 @@ from django.conf import settings
 from site_settings.utils import get_setting
 from campaign_monitor.models import Campaign, Template
 from createsend import CreateSend, Client
+import os
 import urllib2
 import random
 import string
+import zipfile
 
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 api_password = getattr(settings, 'CAMPAIGNMONITOR_API_PASSWORD', None)
@@ -89,4 +91,8 @@ def sync_templates():
         template.cm_preview_url = t.PreviewURL
         template.cm_screenshot_url = t.ScreenshotURL
         template.save()
-        print t.ScreenshotURL
+
+def extract_files(template):
+    zip_file = zipfile.ZipFile(template.zip_file.file)
+    zip_file.extractall(os.path.join(settings.MEDIA_ROOT, 'campaign_monitor', template.template_id))
+    
