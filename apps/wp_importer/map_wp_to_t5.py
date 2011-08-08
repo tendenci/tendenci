@@ -24,7 +24,6 @@ def run_wp_to_t5():
   items = soup.findAll('item')
   posts_list = []
   pages_list = []
-  redirect_list = []
 
 # grab posts and pages from xml
   for node in items:
@@ -39,8 +38,8 @@ def run_wp_to_t5():
           tags_list = []
           if tags_raw:
               for tag in tags_raw:
-                  if len(','.join(tags_list)) + len(tag.string) <= 255:
-                      tags_list.append(tag.string[:50])
+                  tags_list.append(tag.string[:50])
+                  print tag.string
           posts_list.append({
               'title': title,
               'creator': getattr(node.find('dc:creator'), 'string', ''),
@@ -50,7 +49,7 @@ def run_wp_to_t5():
               'slug': getattr(node.find('link'), 'string', ''),
               'body': body,
               'post_date': post_date,
-              'tags': ','.join(tags_list)
+              'tags': ','.join(tags_list)[:50]
           })
       elif post_type == 'page' and status == 'publish':
           title = unicode(node.find('title').contents[0])
@@ -115,5 +114,5 @@ def run_wp_to_t5():
       p.status = True
       p.status_detail = 'Active'
       p.save()
-       
+
 run_wp_to_t5()
