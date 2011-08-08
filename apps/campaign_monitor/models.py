@@ -47,7 +47,6 @@ class Template(models.Model):
     #post only
     html_file = models.FileField(upload_to=file_directory, null=True)
     zip_file = models.FileField(upload_to=file_directory, null=True)
-    screenshot_file = models.FileField(upload_to=file_directory, null=True)
     
     @property
     def content_type(self):
@@ -72,11 +71,6 @@ class Template(models.Model):
     def get_zip_url(self):
         if self.zip_file:
             return self.zip_file.url
-        return ''
-    
-    def get_screenshot_url(self):
-        if self.screenshot_file:
-            return self.screenshot_file.url
         return ''
         
     def __unicode__(self):
@@ -103,10 +97,19 @@ class Campaign(models.Model):
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='D')
     
     #fields for sync
-    sent_date = models.DateTimeField(null=True, blank=True)
     name = models.CharField(max_length=100)
     subject =  models.CharField(max_length=100)
     lists = models.ManyToManyField(ListMap)
+    
+    #fields for sent campaigns
+    sent_date = models.DateTimeField(null=True, blank=True)
+    web_version_url = models.URLField(null=True, blank=True)
+    total_recipients = models.IntegerField(default=0)
+    
+    #fields for scheduled campaigns
+    scheduled_date = models.DateTimeField(null=True, blank=True)
+    scheduled_time_zone = models.CharField(max_length=100, null=True, blank=True)
+    preview_url = models.URLField(null=True, blank=True)
     
     #fields for post only
     from_name = models.CharField(max_length=100, null=True, blank=True)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-04 16:26-0500\n"
+"POT-Creation-Date: 2011-08-05 17:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,7 +34,7 @@ msgstr "XXXXXXXX"
 
 #: apps/accounts/forms.py:78
 msgid "Remember Login"
-msgstr "Login erinnern"
+msgstr "XXXXXXXX"
 
 #: apps/accounts/forms.py:108
 msgid "This account is currently inactive."
@@ -2256,7 +2256,7 @@ msgstr "XXXXXXXX"
 #: templates/contacts/nav.html:36 templates/contacts/search.html:9
 #: templates/contacts/search.html.py:21 templates/contributions/index.html:5
 #: templates/contributions/nav.html:25 templates/contributions/search.html:8
-#: templates/corporate_memberships/nav.html:46
+#: templates/corporate_memberships/nav.html:46 templates/dashboard/nav.html:29
 #: templates/directories/index.html:6 templates/directories/nav.html:46
 #: templates/directories/pricing-nav.html:41
 #: templates/directories/search.html:9 templates/directories/search.html:22
@@ -2315,7 +2315,7 @@ msgstr "XXXXXXXX"
 
 #: apps/theme_editor/forms.py:39
 msgid "Theme:"
-msgstr ""
+msgstr "XXXXXXXX"
 
 #: apps/theme_editor/models.py:14
 msgid "theme archive"
@@ -2457,9 +2457,9 @@ msgstr "XXXXXXXX"
 
 #: plugins/case_studies/templates/case_studies/admin/change_form.html:18
 #: templates/footer.html:7 templates/nav.html:4
-#: templates/admin_menu/admin_top.html:140
+#: templates/admin_menu/admin_top.html:141
 msgid "Home"
-msgstr "Startseite"
+msgstr "XXXXXXXX"
 
 #: plugins/case_studies/templates/case_studies/admin/change_form.html:21
 #: templates/admin/index.html:44 templates/admin_menu/admin_top.html:25
@@ -2470,8 +2470,9 @@ msgstr "Startseite"
 #: templates/categories/update.html:5
 #: templates/corporate_memberships/add_links.html:6
 #: templates/corporate_memberships/add_links.html:48
-#: templates/directories/add.html:7 templates/directories/add.html.py:22
-#: templates/directories/nav.html:48 templates/directories/pricing-nav.html:43
+#: templates/dashboard/nav.html:31 templates/directories/add.html:7
+#: templates/directories/add.html.py:22 templates/directories/nav.html:48
+#: templates/directories/pricing-nav.html:43
 #: templates/email_blocks/edit.html:6 templates/email_blocks/nav.html:39
 #: templates/emails/edit.html:6 templates/emails/edit.html.py:40
 #: templates/emails/nav.html:38 templates/entities/add.html:6
@@ -2594,12 +2595,12 @@ msgid "Please contact the site administrator to request access to this page."
 msgstr "XXXXXXXX"
 
 #: templates/403.html:14
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "This page requires a login. Please <a href=\"/accounts/login/?next="
-"%(request.get_full_path)s\">log in</a> if you have an account, or <a href=\"/"
-"accounts/register/\">create an account</a> if you do not have one.</p>"
-msgstr ""
+"%(reqpath)s\">log in</a> if you have an account, or <a href=\"/accounts/"
+"register/\">create an account</a> if you do not have one.</p>"
+msgstr "XXXXXXXX"
 
 #: templates/404.html:4
 msgid "404 NOT FOUND"
@@ -2823,7 +2824,7 @@ msgstr "XXXXXXXX"
 msgid "Log in with Facebook"
 msgstr "XXXXXXXX"
 
-#: templates/accounts/logout.html:4 templates/admin_menu/admin_top.html:145
+#: templates/accounts/logout.html:4 templates/admin_menu/admin_top.html:146
 msgid "Logout"
 msgstr "XXXXXXXX"
 
@@ -3320,8 +3321,9 @@ msgstr "XXXXXXXX"
 msgid "Users"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:61 templates/imports/nav.html:40
-#: templates/profiles/index.html:39 templates/profiles/nav.html:70
+#: templates/admin_menu/admin_top.html:61 templates/dashboard/nav.html:39
+#: templates/imports/nav.html:40 templates/profiles/index.html:39
+#: templates/profiles/nav.html:70
 msgid "Groups"
 msgstr "XXXXXXXX"
 
@@ -3345,16 +3347,17 @@ msgstr "XXXXXXXX"
 
 #: templates/admin_menu/admin_top.html:80 templates/articles/nav.html:34
 #: templates/corporate_memberships/nav.html:36
-#: templates/dashboard/index.html:127 templates/directories/nav.html:34
-#: templates/forms/nav.html:34 templates/imports/nav.html:26
-#: templates/invoices/nav.html:27 templates/jobs/nav.html:33
-#: templates/locations/nav.html:33 templates/make_payments/nav.html:27
-#: templates/memberships/nav.html:26 templates/memberships/entries/nav.html:30
-#: templates/news/nav.html:32 templates/pages/nav.html:32
-#: templates/photos/nav.html:34 templates/photos/photo-set/nav.html:32
-#: templates/profiles/nav.html:25 templates/resumes/nav.html:33
-#: templates/site_settings/base.html:4 templates/site_settings/nav.html:16
-#: templates/stories/nav.html:32 templates/user_groups/nav.html:27
+#: templates/dashboard/index.html:127 templates/dashboard/nav.html:25
+#: templates/directories/nav.html:34 templates/forms/nav.html:34
+#: templates/imports/nav.html:26 templates/invoices/nav.html:27
+#: templates/jobs/nav.html:33 templates/locations/nav.html:33
+#: templates/make_payments/nav.html:27 templates/memberships/nav.html:26
+#: templates/memberships/entries/nav.html:30 templates/news/nav.html:32
+#: templates/pages/nav.html:32 templates/photos/nav.html:34
+#: templates/photos/photo-set/nav.html:32 templates/profiles/nav.html:25
+#: templates/resumes/nav.html:33 templates/site_settings/base.html:4
+#: templates/site_settings/nav.html:16 templates/stories/nav.html:32
+#: templates/user_groups/nav.html:27
 msgid "Settings"
 msgstr "XXXXXXXX"
 
@@ -3413,7 +3416,7 @@ msgid "Recently Viewed"
 msgstr "XXXXXXXX"
 
 #: templates/admin_menu/admin_top.html:115
-#: templates/admin_menu/admin_top.html:138
+#: templates/admin_menu/admin_top.html:139
 msgid "Event Logs"
 msgstr "XXXXXXXX"
 
@@ -3458,7 +3461,12 @@ msgstr "XXXXXXXX"
 msgid "Theme Editor"
 msgstr "XXXXXXXX"
 
-#: templates/admin_menu/admin_top.html:139 templates/dashboard/index.html:191
+#: templates/admin_menu/admin_top.html:138
+#, fuzzy
+msgid "Campaign Monitor"
+msgstr "XXXXXXXX"
+
+#: templates/admin_menu/admin_top.html:140 templates/dashboard/index.html:191
 msgid "Clear Cache"
 msgstr "XXXXXXXX"
 
@@ -3520,7 +3528,7 @@ msgstr "XXXXXXXX"
 #: templates/contributions/options.html:11
 #: templates/corporate_memberships/index.html:36
 #: templates/corporate_memberships/index.html:41
-#: templates/corporate_memberships/nav.html:43
+#: templates/corporate_memberships/nav.html:43 templates/dashboard/nav.html:28
 #: templates/directories/edit.html:7 templates/directories/index.html:9
 #: templates/directories/nav.html:41 templates/directories/options.html:17
 #: templates/directories/pricing-nav.html:38
@@ -3568,7 +3576,7 @@ msgstr ""
 
 #: templates/articles/edit.html:28 templates/articles/index.html:10
 #: templates/articles/meta.html:102 templates/articles/options.html:39
-#: templates/campaign_monitor/campaigns/options.html:23
+#: templates/campaign_monitor/campaigns/options.html:22
 #: templates/campaign_monitor/templates/options.html:16
 #: templates/contacts/index.html:8 templates/contacts/options.html:9
 #: templates/contacts/search.html:41 templates/contributions/index.html:9
@@ -3726,9 +3734,9 @@ msgstr "XXXXXXXX"
 
 #: templates/articles/nav.html:52
 #: templates/campaign_monitor/campaigns/nav.html:24
-#: templates/campaign_monitor/templates/nav.html:36
+#: templates/campaign_monitor/templates/nav.html:34
 #: templates/contacts/nav.html:38 templates/contributions/nav.html:27
-#: templates/corporate_memberships/nav.html:59
+#: templates/corporate_memberships/nav.html:59 templates/dashboard/nav.html:34
 #: templates/directories/nav.html:53 templates/directories/pricing-nav.html:46
 #: templates/email_blocks/nav.html:42 templates/emails/nav.html:41
 #: templates/entities/nav.html:46 templates/event_logs/nav.html:35
@@ -3820,7 +3828,7 @@ msgid "0 Campaigns Found"
 msgstr "XXXXXXXX"
 
 #: templates/campaign_monitor/campaigns/nav.html:18
-#: templates/campaign_monitor/templates/nav.html:23
+#: templates/campaign_monitor/templates/nav.html:22
 msgid "Campaigns"
 msgstr "XXXXXXXX"
 
@@ -3833,19 +3841,16 @@ msgid "Add Campaign"
 msgstr "XXXXXXXX"
 
 #: templates/campaign_monitor/campaigns/nav.html:30
-#: templates/campaign_monitor/templates/nav.html:29
+#: templates/campaign_monitor/templates/nav.html:27
 msgid "Templates"
 msgstr "XXXXXXXX"
 
 #: templates/campaign_monitor/campaigns/options.html:14
-msgid "Send"
+#, fuzzy
+msgid "Snapshot"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/campaigns/options.html:15
-msgid "Schedule"
-msgstr "XXXXXXXX"
-
-#: templates/campaign_monitor/campaigns/options.html:18
+#: templates/campaign_monitor/campaigns/options.html:17
 msgid "Copy"
 msgstr "XXXXXXXX"
 
@@ -3885,11 +3890,11 @@ msgstr "XXXXXXXX"
 msgid "0 Templates Found"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/templates/nav.html:31
+#: templates/campaign_monitor/templates/nav.html:29
 msgid "Templates:"
 msgstr "XXXXXXXX"
 
-#: templates/campaign_monitor/templates/nav.html:33
+#: templates/campaign_monitor/templates/nav.html:31
 msgid "Add Template"
 msgstr "XXXXXXXX"
 
@@ -4748,6 +4753,10 @@ msgstr "XXXXXXXX"
 
 #: templates/dashboard/index.html:204
 msgid "Update Footer"
+msgstr "XXXXXXXX"
+
+#: templates/dashboard/nav.html:27
+msgid "My Profile"
 msgstr "XXXXXXXX"
 
 #: templates/directories/add.html:31 templates/jobs/add.html:33
@@ -7696,10 +7705,8 @@ msgid "The following directory has been edited:"
 msgstr "XXXXXXXX"
 
 #: templates/notification/directory_edited/full.html:8
-#, python-format
-msgid ""
-"To view this directory go to: %(SITE_GLOBAL_SITEURL)s"
-"%(object.get_absolute_url)s"
+#, fuzzy, python-format
+msgid "To view this directory go to: %(SITE_GLOBAL_SITEURL)s%(objurl)s"
 msgstr "XXXXXXXX"
 
 #: templates/notification/donation_added/full.html:4
@@ -8445,10 +8452,10 @@ msgid "Back to page"
 msgstr "XXXXXXXX"
 
 #: templates/pages/edit-meta.html:17
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "Meta Information for<br />\n"
-"    %(page.title)s"
+"    %(page_title)s"
 msgstr "XXXXXXXX"
 
 #: templates/pages/edit.html:39
@@ -8733,12 +8740,11 @@ msgid "Add Photos"
 msgstr "XXXXXXXX"
 
 #: templates/photos/partial-details.html:40
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "Licensed under\n"
-"                    <a rel=\"license\" href=\"%(photo.get_license.deed)s"
-"\"> \n"
-"                        %(photo.get_license.name)s</a>."
+"                    <a rel=\"license\" href=\"%(phodeed)s\"> \n"
+"                        %(phoname)s</a>."
 msgstr "XXXXXXXX"
 
 #: templates/photos/sizes.html:8 templates/photos/sizes.html.py:18
@@ -8754,17 +8760,17 @@ msgid "License"
 msgstr "XXXXXXXX"
 
 #: templates/photos/sizes.html:23
-#, python-format
+#, fuzzy, python-format
 msgid ""
-"%(photo.get_license.name)s by \n"
-"\t\t\t<a href=\"%(photo.creator.get_absolute_url)s\">\n"
-"\t\t\t\t%(photo.creator.get_full_name)s\n"
+"%(pholic)s by \n"
+"\t\t\t<a href=\"%(phocre)s\">\n"
+"\t\t\t\t%(phoname)s\n"
 "\t\t\t</a>"
 msgstr "XXXXXXXX"
 
 #: templates/photos/sizes.html:32
-#, python-format
-msgid "Download the %(size_name|capfirst)s size of this photo"
+#, fuzzy, python-format
+msgid "Download the %(sizename)s size of this photo"
 msgstr "XXXXXXXX"
 
 #: templates/photos/sizes.html:35
@@ -9299,27 +9305,25 @@ msgid ""
 msgstr "XXXXXXXX"
 
 #: templates/registration/password_reset_email.html:2
-msgid "You're receiving this e-mail because you requested a password reset"
+#, fuzzy, python-format
+msgid ""
+"You're receiving this e-mail because you requested a password reset for your "
+"user account at %(site_name)s"
 msgstr "XXXXXXXX"
 
-#: templates/registration/password_reset_email.html:3
-#, python-format
-msgid "for your user account at %(site_name)s"
-msgstr "XXXXXXXX"
-
-#: templates/registration/password_reset_email.html:5
+#: templates/registration/password_reset_email.html:4
 msgid "Please go to the following page and choose a new password:"
 msgstr "XXXXXXXX"
 
-#: templates/registration/password_reset_email.html:9
+#: templates/registration/password_reset_email.html:8
 msgid "Your username, in case you've forgotten:"
 msgstr "XXXXXXXX"
 
-#: templates/registration/password_reset_email.html:11
+#: templates/registration/password_reset_email.html:10
 msgid "Thanks for using our site!"
 msgstr "XXXXXXXX"
 
-#: templates/registration/password_reset_email.html:13
+#: templates/registration/password_reset_email.html:12
 #, python-format
 msgid "The %(site_name)s team"
 msgstr "XXXXXXXX"
@@ -9525,10 +9529,10 @@ msgid "Are you sure you want to delete this resume?"
 msgstr "XXXXXXXX"
 
 #: templates/resumes/edit-meta.html:18
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "Meta Information for<br />\n"
-"    %(resume.title)s"
+"    %(resume_title)s"
 msgstr "XXXXXXXX"
 
 #: templates/resumes/pending.html:13
@@ -9831,6 +9835,22 @@ msgstr[1] "XXXXXXXX"
 msgid "Created on %(create_date)s by %(group_creator)s"
 msgstr "XXXXXXXX"
 
+#~ msgid "Send"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "Schedule"
+#~ msgstr "XXXXXXXX"
+
+#~ msgid ""
+#~ "Licensed under\n"
+#~ "                    <a rel=\"license\" href=\"%(photo.get_license.deed)s"
+#~ "\"> \n"
+#~ "                        %(photo.get_license.name)s</a>."
+#~ msgstr "XXXXXXXX"
+
+#~ msgid "for your user account at %(site_name)s"
+#~ msgstr "XXXXXXXX"
+
 #~ msgid "Early Date/Time"
 #~ msgstr "XXXXXXXX"
 
@@ -9972,8 +9992,8 @@ msgstr "XXXXXXXX"
 #~ msgstr "XXXXXXXX"
 
 #~ msgid ""
-#~ "Released on %(location.release_dt|date:\"D d M Y P\")s by "
-#~ "%(location.creator)s"
+#~ "Released on %(location.release_dt|date:\"D d M Y P\")s by %(location."
+#~ "creator)s"
 #~ msgstr "XXXXXXXX"
 
 #~ msgid "Payment Made by %(obj.first_name)s %(obj.last_name)s"
@@ -10002,8 +10022,8 @@ msgstr "XXXXXXXX"
 #~ msgstr "XXXXXXXX"
 
 #~ msgid ""
-#~ "Application Created %(object.app.create_dt|date)s "
-#~ "(%(object.app.create_dt|timesince)s)"
+#~ "Application Created %(object.app.create_dt|date)s (%(object.app.create_dt|"
+#~ "timesince)s)"
 #~ msgstr "XXXXXXXX"
 
 #~ msgid ""
@@ -10030,9 +10050,6 @@ msgstr "XXXXXXXX"
 #~ msgid ""
 #~ "This group currently has %(group.groupsubscription_set.all.count)s "
 #~ "subscribers."
-#~ msgstr "XXXXXXXX"
-
-#~ msgid "My Profile"
 #~ msgstr "XXXXXXXX"
 
 #~ msgid "Added on %(profile.create_dt|date:\"long\")s by %(profile.creator)s"
