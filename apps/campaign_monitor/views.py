@@ -12,7 +12,8 @@ from createsend.createsend import BadRequest
 from perms.utils import has_perm
 from campaign_monitor.models import Template, Campaign
 from campaign_monitor.forms import TemplateForm, CampaignForm
-from campaign_monitor.utils import temporary_id, sync_campaigns, sync_templates
+from campaign_monitor.utils import temporary_id, extract_files
+from campaign_monitor.utils import sync_campaigns, sync_templates
 from site_settings.utils import get_setting
 from base.http import Http403
 
@@ -119,6 +120,9 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
             template.cm_screenshot_url = t.ScreenshotURL
             template.save()
             
+            #extract and serve files in zip
+            extract_files(template)
+            
             messages.add_message(request, messages.INFO, 'Successfully created Template : %s' % t_id)
             
             return redirect(template)
@@ -171,6 +175,9 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             template.cm_preview_url = t.PreviewURL
             template.cm_screenshot_url = t.ScreenshotURL
             template.save()
+            
+            #extract and serve files in zip
+            extract_files(template)
                     
             messages.add_message(request, messages.INFO, 'Successfully updated Template : %s' % template.template_id)
             

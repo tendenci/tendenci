@@ -73,6 +73,11 @@ class Template(models.Model):
             return self.zip_file.url
         return ''
         
+    def get_media_url(self):
+        if self.zip_file:
+            return "%s%s" % (settings.MEDIA_URL, self.template_id)
+        return ''
+        
     def __unicode__(self):
         return self.name
     
