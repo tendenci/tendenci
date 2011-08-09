@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-09 14:11-0500\n"
+"POT-Creation-Date: 2011-08-09 16:05-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4893,7 +4893,7 @@ msgstr "XX Back to directories search"
 msgid "Edit Meta Information"
 msgstr "XXEdit Meta Information"
 
-#: templates/directories/edit-meta.html:17
+#: templates/directories/edit-meta.html:17 templates/pages/edit-meta.html:17
 msgid "Meta Information for"
 msgstr "XXMeta Information for"
 
@@ -5108,7 +5108,7 @@ msgid "Are you sure you want to delete this Email Block?"
 msgstr "XXAre you sure you want to delete this Email Block?"
 
 #: templates/email_blocks/delete.html:23 templates/emails/delete.html:22
-#: templates/user_groups/delete.html:23
+#: templates/user_groups/delete.html:24
 msgid "Deleted items cannot be recovered!"
 msgstr "XXDeleted items cannot be recovered!"
 
@@ -5584,11 +5584,6 @@ msgstr "XXEvent Registration Payment Status"
 #: templates/events/print-view.html:23
 msgid "Back to regular event view"
 msgstr "XXBack to regular event view"
-
-#: templates/events/print-view.html:32
-#, python-format
-msgid "Submitted on %(submit_date)s by %(event_creator)s"
-msgstr "XXSubmitted on %(submit_date)s by %(event_creator)s"
 
 #: templates/events/search.html:138
 #, python-format
@@ -6445,7 +6440,9 @@ msgstr "XXvoided"
 msgid "(details)"
 msgstr "XX(details)"
 
-#: templates/invoices/payment_history.html:31 templates/payments/view.html:140
+#: templates/invoices/payment_history.html:31
+#: templates/notification/payment_added/full.html:36
+#: templates/payments/view.html:140
 msgid "Description:"
 msgstr "XXDescription:"
 
@@ -6461,7 +6458,7 @@ msgstr "XXTransaction String:"
 msgid "Response:"
 msgstr "XXResponse:"
 
-#: templates/invoices/payment_history.html:41
+#: templates/invoices/payment_history.html:41 templates/payments/view.html:45
 msgid "Payment Status:"
 msgstr "XXPayment Status:"
 
@@ -7208,7 +7205,7 @@ msgstr "XXRecap of Emails Sent:"
 #: templates/notification/page_added/full.html:23
 #: templates/notification/page_deleted/full.html:35
 #: templates/notification/page_edited/full.html:23
-#: templates/notification/payment_added/full.html:43
+#: templates/notification/payment_added/full.html:48
 #: templates/notification/resume_added/full.html:41
 #: templates/notification/resume_deleted/full.html:32
 #: templates/notification/user_added/full.html:40
@@ -8291,7 +8288,7 @@ msgstr "XXPayment ID:"
 msgid "Status Detail:"
 msgstr "XXStatus Detail:"
 
-#: templates/notification/payment_added/full.html:37
+#: templates/notification/payment_added/full.html:42
 msgid "To view the details of this payment, go to:"
 msgstr "XXTo view the details of this payment, go to:"
 
@@ -8510,13 +8507,6 @@ msgstr "XXAre you sure you want to permanently delete this page?"
 #: templates/pages/delete.html:28
 msgid "Back to page"
 msgstr "XXBack to page"
-
-#: templates/pages/edit-meta.html:17
-#, python-format
-msgid ""
-"Meta Information for<br />\n"
-"    %(page_title)s"
-msgstr "XX"
 
 #: templates/pages/edit.html:39
 msgid "Save Page Changes"
@@ -9151,7 +9141,6 @@ msgid "Edit Available Groups"
 msgstr "XXEdit Available Groups"
 
 #: templates/profiles/index.html:324 templates/reports/users_added.html:54
-#: templates/user_groups/delete.html:16
 #: templates/user_groups/edit_perms.html:34
 msgid "Group"
 msgstr "XXGroup"
@@ -9780,20 +9769,28 @@ msgstr "XXCreate Group"
 msgid "Delete a User Group"
 msgstr "XXDelete a User Group"
 
-#: templates/user_groups/delete.html:17
-#, python-format
-msgid "%(group_label)s(%(groupmem)s member"
-msgid_plural "%(group_label)s(%(groupmem)s members"
-msgstr[0] ""
-msgstr[1] ""
-
 #: templates/user_groups/delete.html:18
 msgid "Are you sure you want to delete this Group?"
 msgstr "XXAre you sure you want to delete this Group?"
 
+#: templates/user_groups/delete.html:20
+#, fuzzy
+msgid "Clicking Delete User Group will"
+msgstr "XXDelete a User Group"
+
+#: templates/user_groups/delete.html:22
+#, fuzzy
+msgid "remove all members from the group"
+msgstr "XXRemove myself from group"
+
 #: templates/user_groups/delete.html:23
 msgid "the group will be deleted from the system"
 msgstr "XXthe group will be deleted from the system"
+
+#: templates/user_groups/delete.html:29
+#, fuzzy
+msgid "Delete User Group"
+msgstr "XXDelete a User Group"
 
 #: templates/user_groups/detail.html:40
 #, python-format
@@ -9918,6 +9915,14 @@ msgstr[1] ""
 #, python-format
 msgid "Created on %(create_date)s by %(group_creator)s"
 msgstr "XXCreated on %(create_date)s by %(group_creator)s"
+
+#~ msgid "Submitted on %(submit_date)s by %(event_creator)s"
+#~ msgstr "XXSubmitted on %(submit_date)s by %(event_creator)s"
+
+#~ msgid ""
+#~ "Meta Information for<br />\n"
+#~ "    %(page_title)s"
+#~ msgstr "XX"
 
 #~ msgid ""
 #~ "%(pholic)s by \n"
