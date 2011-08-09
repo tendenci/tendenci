@@ -29,7 +29,12 @@
   <tr> 
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Invoice:" %}</td>
-    <td width="75%"><b>{{ object.invoice.id }}</b></td>
+    <td width="75%"><b><a href="{{ SITE_GLOBAL_SITEURL }}{% url invoices.views.view object.invoice.id %}">{{ object.invoice.id }}</a></b></td>
+  </tr>
+  <tr> 
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Description:" %}</td>
+    <td width="75%">{{ object.description }}</td>
   </tr>
 </table>
 
