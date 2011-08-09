@@ -95,7 +95,7 @@ def csv_to_dict(file_path):
     for row in csv_file:
         entry = {}
         for i in xrange(len(col)):
-            entry[col[i]] = row[i]
+            entry[col[i]] = row[i].decode('latin-1')
         lst.append(entry)
 
     return lst  # list of dictionaries
