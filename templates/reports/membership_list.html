@@ -11,6 +11,7 @@
         <h1>{% trans "Expired Memberships Report" %}</h1>
         {% trans "Lists all memberships that have expired." %}
     {% endif %}
+    {{ mems|length }} {% trans "Members listed" %}
     {% autopaginate mems 50 %}
     <table>
         <tr>
