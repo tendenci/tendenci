@@ -43,7 +43,7 @@
         <div class="event-cancel-amount">
                 {% if registrant.first_name or registrant.last_name %}
                     {% if registrant.first_name %}
-                        {% blocktrans registrant.first_name as first_name %} Cancelling registration for {{ first_name }}{% endblocktrans %} 
+                        {% blocktrans with registrant.first_name as first_name %} Cancelling registration for {{ first_name }}{% endblocktrans %} 
                     {% endif %}
                     {%  if registrant.last_name %}
                         {% blocktrans with registrant.last_name as last_name %} Cancelling registration for {{ last_name }}{% endblocktrans %} 
