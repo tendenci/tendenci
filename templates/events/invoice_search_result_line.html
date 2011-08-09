@@ -13,13 +13,15 @@
     	<td>{% trans "Price" %}</td>
     	<td>{% trans "Balance" %}</td>
     </tr>
-    {% if obj %}  
+    {% if obj %}
       <tr>
-     	<td><a href="{% url event.registration_confirmation obj.event.id obj.id%}">{{obj.id}}</a></td>
-     	<td colspan="2"><a href="{% url events.views.index obj.event.id %}">{{obj.event.title|truncatewords:5}}</a></td>
+        {% if obj.event.pk %}
+     	<td><a href="{% url event.registration_confirmation obj.event.pk obj.pk %}">{{obj.pk}}</a></td>
+     	<td colspan="2"><a href="{% url events.views.index obj.event.pk %}">{{obj.event.title|truncatewords:5}}</a></td>
+     	{% endif %}
      	<td>{{obj.event.start_dt|date:'long'}}</td>
      	<td>{{obj.amount_paid|format_currency}}</td>
      	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
      </tr> 
-     {% endif %}     
+     {% endif %}
   </table>
