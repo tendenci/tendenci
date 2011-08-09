@@ -1,8 +1,10 @@
-{% extends "base.html" %}
+{% load theme_tags %}
 {% load base_filters %}
 {% load base_tags %}
 {% load cache %}
 {% load photo_tags %}
+
+{% theme_extends 'base.html' %}
 
 {% block extra_head %}
 {{ block.super }}
