@@ -13,6 +13,7 @@ urlpatterns = patterns('legacy.views',
     # module redirects
     url(r'^(art|articles)/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'articles'}),
     url(r'^(rel|releases)/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'news'}),
+    url(r'^cev/mon/$', redirect_to, {'url': '/events/'}),
     url(r'^(cev|calendarevents)/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'events'}),
     url(r'^(cms|contentmanagers)/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'pages'}),
     url(r'^(j|jobs)/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'jobs'}),
