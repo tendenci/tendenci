@@ -219,6 +219,7 @@ INSTALLED_APPS = (
     'mobile',
     'social_auth',
     'campaign_monitor',
+    'theme',
     # celery task system, must stay at the bottom
     # of installed apps
     #'djcelery',
