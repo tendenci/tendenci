@@ -4,10 +4,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.db.models import Q
 
-from profiles.utils import user_add_remove_admin_auth_group
-
 class Command(BaseCommand):
-    
+
     def handle(self, *args, **options):
         """ admin was determined by: is_superuser=True and is_staff=False 
             now we changed criteria to be: is_superuser=False and is_staff=True
@@ -15,6 +13,7 @@ class Command(BaseCommand):
             and add them to the auth group
         """
         # command to run: python manage.py admin_converter
+        from profiles.utils import user_add_remove_admin_auth_group
         
         if hasattr(settings, 'ADMIN_AUTH_GROUP_NAME'):
             name = settings.ADMIN_AUTH_GROUP_NAME
