@@ -30,7 +30,28 @@ class ThemeExtendsNode(ExtendsNode):
             template = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", parent)).read(), "utf-8"))
         return template
         
-class ThemeIncludeNone(IncludeNode):
+class ThemeConstantIncludeNode(ConstantIncludeNode):
+    def __init__(self, template_path):
+        self.template_path = template_path
+
+    def render(self, context):
+        theme = context['THEME']
+        try:
+            try:
+                t = get_template("%s/templates/%s" % (theme, self.template_path))
+            except TemplateDoesNotExist:
+                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", self.template_path)).read(), "utf-8"))
+            self.template = t
+        except:
+            if settings.TEMPLATE_DEBUG:
+                raise
+            self.template = None
+        if self.template:
+            return self.template.render(context)
+        else:
+            return ''
+        
+class ThemeIncludeNode(IncludeNode):
     def render(self, context):
         try:
             template_name = self.template_name.resolve(context)
@@ -40,7 +61,7 @@ class ThemeIncludeNone(IncludeNode):
             except TemplateDoesNotExist:
                 #load the true default template directly to be sure
                 #that we are not loading the active theme's template
-                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", parent)).read(), "utf-8"))
+                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
@@ -85,7 +106,7 @@ def theme_include(parser, token):
         raise TemplateSyntaxError("%r tag takes one argument: the name of the template to be included" % bits[0])
     path = bits[1]
     if path[0] in ('"', "'") and path[-1] == path[0]:
-        return ConstantIncludeNode(path[1:-1])
+        return ThemeConstantIncludeNode(path[1:-1])
     return ThemeIncludeNode(bits[1])
 
 register.tag('theme_extends', theme_extends)

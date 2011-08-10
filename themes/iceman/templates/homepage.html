@@ -24,11 +24,11 @@
 	</div> 
         
     <div id="menu"> 
-    	{% spaceless %}{% include "nav.html" %}{% endspaceless %}
+    	{% spaceless %}{% theme_include "nav.html" %}{% endspaceless %}
     </div>
     
     <div class="content content-middle"> 
-        {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
+        {% spaceless %}{% theme_include "base/messages.html" %}{% endspaceless %}
             
         {% block body %}
         	<h2>Welcome to your Tendenci 5 powered Site!</h2>
@@ -72,7 +72,7 @@
 	</div>
 
     <div id="footer">
-      {% spaceless %}{% include "footer.html" %}{% endspaceless %}
+      {% spaceless %}{% theme_include "footer.html" %}{% endspaceless %}
     </div>
         
 </div><!-- /container -->
