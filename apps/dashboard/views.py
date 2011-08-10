@@ -4,6 +4,7 @@ from django.template import RequestContext
 
 from site_settings.models import Setting
 from perms.utils import is_admin
+from theme.shortcuts import themed_response
 
 @login_required
 def index(request, template_name="dashboard/index.html"):
@@ -13,4 +14,4 @@ def index(request, template_name="dashboard/index.html"):
         profile_redirect = ''
     if profile_redirect and profile_redirect.value != '/dashboard' and not is_admin(request.user):
         return redirect(profile_redirect.value)
-    return render_to_response(template_name, context_instance=RequestContext(request))
+    return themed_response(template_name, context_instance=RequestContext(request))
