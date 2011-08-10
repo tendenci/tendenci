@@ -28,9 +28,6 @@
     <div class="event-wrap">
         <h2>{{ event.title }}</h2>
         <div class="content">{{ event.description|safe }}</div>
-        <div class="meta">
-            <div class="submitted">{% blocktrans with event.create_dt|date:"long" as submit_date and event.creator as event_creator %}Submitted on {{ submit_date }} by {{ event_creator }}{% endblocktrans %}</div>
-        </div>
     </div>
 
 </div>
