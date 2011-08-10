@@ -1203,6 +1203,7 @@ def types(request, template_name='events/types/index.html'):
                     'user': request.user,
                     'request': request,
                     'instance': event_type,
+                    'source': 'events',
                 })
 
             # log "changed" event_types
@@ -1214,6 +1215,7 @@ def types(request, template_name='events/types/index.html'):
                     'user': request.user,
                     'request': request,
                     'instance': event_type,
+                    'source': 'events',
                 })
 
             # log "deleted" event_types
@@ -1225,6 +1227,7 @@ def types(request, template_name='events/types/index.html'):
                     'user': request.user,
                     'request': request,
                     'instance': event_type,
+                    'source': 'events',
                 })
 
     formset = TypeFormSet()
