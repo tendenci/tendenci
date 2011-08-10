@@ -1,5 +1,6 @@
+import os
 from django.template import TemplateSyntaxError, TemplateDoesNotExist
-from django.template import Library
+from django.template import Library, Template
 from django.conf import settings
 from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode
@@ -24,8 +25,9 @@ class ThemeExtendsNode(ExtendsNode):
         try:
             template = get_template("%s/templates/%s"%(theme,parent))
         except TemplateDoesNotExist, e:
-            print e
-            template = get_template(parent)
+            #load the true default template directly to be sure
+            #that we are not loading the active theme's template
+            template = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", parent)).read(), "utf-8"))
         return template
         
 class ThemeIncludeNone(IncludeNode):
@@ -36,7 +38,9 @@ class ThemeIncludeNone(IncludeNode):
             try:
                 t = get_template("%s/templates/%s"%(theme,template_name))
             except TemplateDoesNotExist:
-                t = get_template(template_name)
+                #load the true default template directly to be sure
+                #that we are not loading the active theme's template
+                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", parent)).read(), "utf-8"))
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
@@ -72,9 +76,8 @@ def theme_extends(parser, token):
 def theme_include(parser, token):
     """
     Loads a template and renders it with the current context.
-
-    Example::
-
+    context['THEME'] is used to specify a selected theme for the templates
+    Example:
         {% include "foo/some_include" %}
     """
     bits = token.split_contents()
