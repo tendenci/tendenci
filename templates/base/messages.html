@@ -4,6 +4,11 @@
         <li>{{ request.impersonation_message|safe }}</li>
     </ul>
     {% endif %}
+    {% if request.GET.theme %}
+    <ul class="messages">
+        <li>You are previewing the {{ request.GET.theme }} theme.</li>
+    </ul>
+    {% endif %}
      {% if messages %}
     <ul class="messages">
         {% for message in messages %}
