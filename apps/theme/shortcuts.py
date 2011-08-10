@@ -39,6 +39,6 @@ def render_to_theme(template_name, dictionary=None, context_instance=None):
     else:
         try:
             t = get_template("%s/templates/%s" % (theme, template_name))
-        except:
+        except TemplateDoesNotExist:
             t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
     return t.render(context_instance)
