@@ -20,11 +20,11 @@ class ThemeExtendsNode(ExtendsNode):
             raise TemplateSyntaxError(error_msg)
         if hasattr(parent, 'render'):
             return parent # parent is a Template object
-        print context
         theme = context['THEME']
         try:
             template = get_template("%s/templates/%s"%(theme,parent))
-        except TemplateDoesNotExist:
+        except TemplateDoesNotExist, e:
+            print e
             template = get_template(parent)
         return template
         

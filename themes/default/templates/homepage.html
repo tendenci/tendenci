@@ -1,10 +1,12 @@
-{% extends "base.html" %}
 {% load base_filters %}
 {% load base_tags %}
 {% load cache %}
 {% load photo_tags %}
 {% load event_tags %}
 {% load file_tags %}
+{% load theme_tags %}
+
+{% theme_extends "base.html" %}
 
 {% block html_body %}
 <div id="container">
