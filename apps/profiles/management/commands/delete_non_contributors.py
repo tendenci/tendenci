@@ -60,6 +60,17 @@ class Command(BaseCommand):
         delete = options['delete']
 
         if delete:
+            from django.db import connections, DEFAULT_DB_ALIAS, IntegrityError
+            using = options.get('database', DEFAULT_DB_ALIAS)
+            connection = connections[using]
+            cursor = connection.cursor()
+
+            cursor.execute('SET FOREIGN_KEY_CHECKS=0;')
             for slacker in slackers:
-                print slacker
-                slacker.delete()
+                try:
+                    print slacker
+                    slacker.delete()
+                except IntegrityError as e:
+                    print 'Integrity Error deleting', slacker
+
+            cursor.execute('SET FOREIGN_KEY_CHECKS=1;')
