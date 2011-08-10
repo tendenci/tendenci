@@ -15,7 +15,7 @@ reg_autodiscover()
 
 
 urlpatterns = patterns('',
-    url(r'^$', direct_to_template, {"template": "homepage.html", }, name="home"),
+    url(r'^$', 'base.views.homepage', name="home"),
 
     #Reports:
     (r'^reports/', include('reports.urls')),
@@ -103,12 +103,11 @@ if settings.DEBUG:
         (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
             'base.views.plugin_static_serve'),
     )
-    for theme in theme_choices():
-        urlpatterns += patterns('',
-            (r'^themes/%s/(?P<path>.*)$' % theme,
-                'django.views.static.serve',
-                {'document_root': join(settings.THEME_DIR, theme)}),
-        )
+    urlpatterns += patterns('',
+        (r'^themes/(?P<path>.*)$',
+            'django.views.static.serve',
+            {'document_root': settings.THEME_DIR, 'show_indexes': True}),
+    )
 
 # template tag testing environment
 if settings.DEBUG:
