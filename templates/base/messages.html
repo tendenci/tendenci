@@ -4,9 +4,10 @@
         <li>{{ request.impersonation_message|safe }}</li>
     </ul>
     {% endif %}
-    {% if request.GET.theme %}
+    {% if request.session.theme %}
     <ul class="messages">
-        <li>You are previewing the {{ request.GET.theme }} theme.</li>
+        <li>You are previewing the {{ request.session.theme }} theme.</li>
+        <li><a href="{{ request.path }}?theme=">Stop previewing</a></li>
     </ul>
     {% endif %}
      {% if messages %}
