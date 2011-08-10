@@ -267,23 +267,6 @@
 	                {%if profile.admin_notes != "" %}
                          <p><b>{% trans "Notes:" %} </b>{{ profile.admin_notes }}</p>
                     {% endif %} 
-	                
-	                 <div class="speed-registration">
-                           <div style="float: left;">{% trans "Speed Registration" %} 
-                           <a class="help" href="http://www.tendenci.com/help-files/search/?q=speed+registration">
-                               <img class="help" src="/site_media/static/images/icons/help.gif" alt="Help with Speed Registration" target="_blank">
-                           </a>
-                           </div>
-                           <div style="float: right;">
-                               <form name="form_speedreg" method="GET" action="">
-                                   <input name="userid" value="{{ user_this.id }}" type="hidden">
-                                   <label>{% trans "Event ID:" %} <input type="text" name="calendareventid"/></label> (eg. 371)
-                                   <input type="submit" name="submit" class="submit-button" value="Register" />
-                               </form>
-                           </div>
-                           <div class="clear-both"></div>
-                       </div>
-	                
               </div>
             {% endif %} 
               

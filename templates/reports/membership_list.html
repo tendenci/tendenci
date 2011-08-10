@@ -1,26 +1,28 @@
 {% extends "reports/base.html" %}
 {% load pagination_tags %}
+{% load i18n %}
 
 {% block content %}
     
     {% if active %}
-        <h1>Active Memberships Report</h1>
-        Lists all memberships that are still active.
+        <h1>{% trans "Active Memberships Report" %}</h1>
+        {% trans "Lists all memberships that are still active." %}
     {% else %}
-        <h1>Expired Memberships Report</h1>
-        Lists all memberships that have expired.
+        <h1>{% trans "Expired Memberships Report" %}</h1>
+        {% trans "Lists all memberships that have expired." %}
     {% endif %}
+    {{ mems|length }} {% trans "Members listed" %}
     {% autopaginate mems 50 %}
     <table>
         <tr>
             <th>#</th>
-            <th>Username</th>
-            <th>Fullname</th>
-            <th>Email</th>
-            <th>Application</th>
-            <th>Type</th>
-            <th>Subscription</th>
-            <th>Expiration</th>
+            <th>{% trans "Username" %}</th>
+            <th>{% trans "Fullname" %}</th>
+            <th>{% trans "Email" %}</th>
+            <th>{% trans "Application" %}</th>
+            <th>{% trans "Type" %}</th>
+            <th>{% trans "Subscription" %}</th>
+            <th>{% trans "Expiration" %}</th>
         </tr>
         {% for mem in mems %}
             <tr class="{% cycle 'odd' '' %}">

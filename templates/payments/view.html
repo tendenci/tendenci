@@ -17,9 +17,9 @@
 
 <p class="payment-view-intro">
 {% trans "Payments are created with " %}
-<a href="{% url invoice.search%}">
-{% trans "invoices</a>. 
-There can be, theoretically, multiple payments for one invoice. 
+<a href="{% url invoice.search %}">
+{% trans "invoices" %}</a>. 
+{% trans "There can be, theoretically, multiple payments for one invoice. 
 Only a TENDERED invoice can have a payment created for it, but if the payment 
 were to not be approved then it is possible for the user to initiate payment 
 again resulting in more than one payment per invoice. The real trail is on the 
@@ -42,7 +42,7 @@ the payment entries in the general ledger for accounting purposes." %}<p>
 <td width="20%"><a href="{% url invoices.views.view payment.invoice.id %}">{{ payment.invoice.id }}</a>
 <span class="body-copy-yellow"><a href="{% url invoices.views.detail payment.invoice.id %}">{% trans "accounting" %}</a></span>
 </td>
-<td class="label" width="30%">Status:</td>
+<td class="label" width="30%">{% trans "Payment Status:" %}</td>
 <td width="20%">{% if payment.status%}1{% else %}0{% endif %}</td>
 </tr>
 
