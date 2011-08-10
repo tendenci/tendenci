@@ -51,10 +51,17 @@
         </td>
         <td width="20%" valign="top">
             <div class='theme-selection'>
+                <p><b>Active Theme:</b> <a href="{% url setting.permalink 'module' 'theme_editor' 'theme' %}">{{ ACTIVE_THEME }}</a></p>
                 <h4>{% trans 'Theme in Editor:' %}</h4>
                 <form method="GET" action="">
                     {{ theme_form.theme_edit }}<input type="submit" value="Change Theme in Editor"/>
                 </form>
+                <p>
+                    <a href="{% url dashboard %}?theme={{ current_theme }}">{% trans "Preview dashboard" %}</a>
+                </p>
+                <p>
+                <a href="{% url home %}?theme={{ current_theme }}">{% trans "Preview homepage" %}</a>
+                </p>
             </div>
        		<div id="right_files_list">
                <h4>{% trans "Choose a folder or file:" %}</h4>
@@ -93,10 +100,6 @@
                {% endif %}
                <br>
                <a href="{% url original_templates %}">{% trans "Customize more templates" %}</a>
-               <br>
-               <a href="{% url dashboard %}?theme={{ current_theme }}">{% trans "Preview dashboard" %}</a>
-               <br>
-               <a href="{% url home %}?theme={{ current_theme }}">{% trans "Preview homepage" %}</a>
                <br>
            </div>
       </td>

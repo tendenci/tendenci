@@ -6,4 +6,5 @@ def theme(request):
     theme = request.GET.get('theme', get_setting('module', 'theme_editor', 'theme'))
     contexts['THEME'] = theme
     contexts['THEME_URL'] = '/themes/' + theme + '/'
+    contexts['ACTIVE_THEME'] = get_setting('module', 'theme_editor', 'theme')
     return contexts
