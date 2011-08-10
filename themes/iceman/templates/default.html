@@ -1,7 +1,9 @@
-{% extends "base.html" %}
 {% load base_filters %}
 {% load base_tags %}
 {% load cache %}
+{% load theme_tags %}
+
+{% theme_extends "base.html" %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -21,11 +23,11 @@
 	</div><!-- /headerimage --> 
         
     <div id="menu"> 
-    	{% spaceless %}{% include "nav.html" %}{% endspaceless %}
+    	{% spaceless %}{% theme_include "nav.html" %}{% endspaceless %}
     </div><!-- /menu -->
     
     <div class="content content-middle {% block content_classes %}{% endblock %}"> 
-        {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
+        {% spaceless %}{% theme_include "base/messages.html" %}{% endspaceless %}
             
         {% block body %}{{ block.super }}{% endblock %}
         
@@ -77,7 +79,7 @@
 	
 
     <div id="footer">
-      {% spaceless %}{% include "footer.html" %}{% endspaceless %}
+      {% spaceless %}{% theme_include "footer.html" %}{% endspaceless %}
     </div><!-- /footer -->
         
 </div><!-- /container -->
