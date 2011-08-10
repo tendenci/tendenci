@@ -69,13 +69,13 @@
                {% endif %}
                {% if prev_dir %}
                    <p class="prev_dir">
-                       <a href="{% url theme_editor %}?file={{ prev_dir }}&theme={{ current_theme }}#to-editor">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
+                       <a href="{% url theme_editor %}?file={{ prev_dir }}&theme_edit={{ current_theme }}#to-editor">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
                    </p>
                {% endif %}
                {% if dirs %}
                <ul class="dir_list">   
                     {% for dir in dirs %}
-                        <li class="dir_item"><a href="{% url theme_editor %}?file={{ dir }}/&theme={{ current_theme }}#to-editor">{{ dir|basename|safe }}</a></li>
+                        <li class="dir_item"><a href="{% url theme_editor %}?file={{ dir }}/&theme_edit={{ current_theme }}#to-editor">{{ dir|basename|safe }}</a></li>
                     {% endfor %}
                </ul>
                {%  endif %}
@@ -83,7 +83,7 @@
                <ul class="files_list">
                     {% for file in files %}
                         <li {% if current_file == file %}class="current_file"{% endif %}>
-                            <a href="{% url theme_editor %}?file={{ pwd }}/{{ file }}&theme={{ current_theme }}#to-editor">{{ file|safe }}</a>
+                            <a href="{% url theme_editor %}?file={{ pwd }}/{{ file }}&theme_edit={{ current_theme }}#to-editor">{{ file|safe }}</a>
                         </li>
                     {% endfor %}
                </ul>
@@ -92,7 +92,12 @@
                <p>{% trans "No editable files" %}</p>
                {% endif %}
                <br>
-               <a href="{% url original_templates %}">{% trans "customize more templates" %}</a>
+               <a href="{% url original_templates %}">{% trans "Customize more templates" %}</a>
+               <br>
+               <a href="{% url dashboard %}?theme={{ current_theme }}">{% trans "Preview dashboard" %}</a>
+               <br>
+               <a href="{% url home %}?theme={{ current_theme }}">{% trans "Preview homepage" %}</a>
+               <br>
            </div>
       </td>
       </tr>
