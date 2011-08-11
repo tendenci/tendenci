@@ -1,0 +1,260 @@
+.t {
+	width: 90%;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+.t ul.discounts-nav {
+	margin: 0; padding: 0;
+	list-style-type: none;
+	margin-bottom: 20px;
+}
+.t ul.discounts-nav li {
+	display: inline;
+}
+
+.t .discounts-wrap {
+	margin-bottom: 20px;
+}
+
+.t .discount-wrap {
+	padding: 10px;
+	position: relative;
+}
+
+.t .discounts-wrap .discount-wrap-search {
+	padding: 10px;
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+}
+
+.t .discounts-wrap .discount-wrap h2 {
+	width: 85%;
+}
+.t .discounts-wrap .discount-wrap .content {
+	margin-bottom: 10px;
+}
+.t .discounts-wrap .category {
+    margin-top: 5px;
+}
+.t .options {
+	text-align: right;
+	position: absolute;
+	top: -30px; right: 0;
+	padding: 5px;
+	white-space: nowrap;
+}
+.t .options-search {
+	position: static;
+}
+.t .quick-options {
+	float: right;
+	margin-right: 5px;
+}
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+.t h1 {
+	margin: 0;
+}
+.t .back-to-search {
+	margin-bottom: 20px;
+}
+
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;	
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;	
+	cursor: pointer;
+}
+
+/* discount View
+ ------------------------- */
+
+/* form */
+div.forms div.form-field div.id_discount_code .field input {
+	width: 70%;
+}
+
+div.forms div.form-field div.id_cap .field input {
+	width: 50%;
+}
+
+div.forms div.form-field div.id_value .field input {
+	width: 50%;
+}
+
+
+/* start_dt */
+div.forms div.form-field 
+div.id_start_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+div.forms div.form-field 
+div.id_start_dt .field input#id_start_dt_1 {
+	width: 80px;
+}
+/* end_dt */
+div.forms div.form-field 
+div.id_end_dt .field input {
+	margin: 0 5px 0 0;
+	width: 18%;
+}
+div.forms div.form-field 
+div.id_end_dt .field input#id_end_dt_1 {
+	width: 80px;
+}
+
+div.forms div.form-field .field input.datepicker,
+div.forms div.form-field .field input.timepicker {
+	margin: 0 5px 0 0;
+    width: 90px;
+}
+
+
+/* discount Add/Edit
+ ------------------------- */
+
+.errors {
+	border: 2px solid #FF8B78;
+	background-color: #FFEBE8;
+	padding: 10px;
+	margin-bottom: 20px;
+	margin-left: 110px;
+	width: 75%;
+}
+.clear {
+	clear: both;
+}
+.wrap {
+	white-space: pre-wrap;
+}
+.item-text {
+	font-size: 1.4em;
+	border-bottom: 1px solid silver;
+	margin: 20px 0;
+	font-weight: bold;
+}
+
+/* label:field item */
+.item {
+	margin-bottom: 10px;
+}
+.item .errs {
+	color: red;
+	margin-left: 110px;
+}
+.item .label {
+	float: left;
+	font-size: 1.4em;
+	text-align: right;
+	width: 100px;
+	white-space: nowrap;
+}
+.item .label-wrap {
+	white-space: normal;
+}
+
+
+.item .field,
+.item .help {
+	margin-left: 110px;
+}
+.item .field input,
+.item .field textarea,
+.item .field select {
+	width: 100%;
+}
+.item .field .mceLayout {
+	/* WYSIWYG; .1 keeps border intact */
+	width: 100.1% !important; 
+}
+.item .field-short input,
+.item .field-short select {
+	width: 20%;
+}
+
+/* date-time item */
+.item-dt {
+	margin: 0 0 20px 110px;
+}
+.item-dt .errs {
+	color: red;
+}
+.item-dt .label {
+	font-size: 1.4em;
+	margin-bottom: 5px;
+}
+.item-dt .field input {
+	float: left;
+	width: 15%;
+	margin-right: 5px;
+}
+
+/* field:label item */
+.item-checkbox {
+	margin: 0 0 5px 110px;
+}
+.item-checkbox .label {
+	font-size: 1.4em;
+	margin-bottom: 5px;
+}
+.item-checkbox .field input {
+	float: left;
+	margin-right: 10px;
+}
+
+/* horizontal rule item */
+.item-hr {
+	height: 1px;
+	background-color: silver;
+	margin: 10px 0 10px 110px;
+	width: 85%;
+}
+/* horizontal rule long item */
+.item-hr-long {
+	height: 1px;
+	background-color: silver;
+	margin: 20px 0 20px 0;
+	width: 100%;
+}
+/* horizontal rule (transparent) item */
+.item-hr-clear {
+	height: 10px;
+	width: 100%;
+}
+
+
+div.forms fieldset.contact {
+	background-color: #EFEFEF;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+div.forms fieldset.contact legend {
+	padding: 5px;
+}
