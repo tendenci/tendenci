@@ -20,6 +20,7 @@
     {% discount_nav request.user discount %}
     
     <div class="discount-wrap">
+        <div class="options">{% discount_options request.user discount %}</div>
         <h1>{{ discount.discount_code }}</h1>
 		<div class="content">
             <p><b>Discount Code:</b> {{ discount.discount_code }}</p>
