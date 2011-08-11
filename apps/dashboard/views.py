@@ -14,4 +14,4 @@ def index(request, template_name="dashboard/index.html"):
         profile_redirect = ''
     if profile_redirect and profile_redirect.value != '/dashboard' and not is_admin(request.user):
         return redirect(profile_redirect.value)
-    return themed_response(template_name, context_instance=RequestContext(request))
+    return render_to_response(template_name, context_instance=RequestContext(request))
