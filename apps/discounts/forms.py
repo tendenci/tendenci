@@ -2,6 +2,7 @@ from datetime import datetime
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 from perms.forms import TendenciBaseForm
+from perms.utils import is_admin
 from discounts.models import Discount
 from base.fields import SplitDateTimeField
 
@@ -49,6 +50,22 @@ class DiscountForm(TendenciBaseForm):
         
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now())
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        
+    def __init__(self, *args, **kwargs):
+        super(DiscountForm, self).__init__(*args, **kwargs)
+        if not is_admin(self.user):
+            if 'status' in self.fields: self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
+            
+    def clean_discount_code(self):
+        data = self.cleaned_data['discount_code']
+        try:
+            Discount.objects.get(discount_code=data)
+        except Discount.DoesNotExist:
+            return data
+        raise forms.ValidationError('There a discount for this code already exists.')
 
     def clean(self):
         cleaned_data = self.cleaned_data
