@@ -30,6 +30,10 @@ class Discount(TendenciBaseModel):
     
     def __unicode__(self):
         return self.discount_code
+        
+    @models.permalink
+    def get_absolute_url(self):
+        return('discount.detail', [self.pk])
     
 class DiscountUse(models.Model):
     invoice = models.ForeignKey(Invoice)
