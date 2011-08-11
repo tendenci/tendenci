@@ -1,0 +1,28 @@
+{% extends "discounts/base.html" %}
+{% load discount_tags %}
+{% load tagging_tags %}
+{% load category_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}Discount {{ discount.discount_code }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/discounts.css">
+{% endblock %}
+
+{% block body %}
+{% tags_for_object discount as tags %}
+
+<div class="t">
+    {% discount_nav request.user discount %}
+
+    <div class="discount-wrap">
+        <h1>{{ discount.discount_code }}</h1>
+		<div class="content">
+		</div>
+    </div>
+</div>
+{% endblock %}
