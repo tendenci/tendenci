@@ -40,13 +40,54 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
         raise Http403
     
     if request.method == "POST":
-        form = form_class(request.POST)
+        form = form_class(request.POST, user=request.user)
         if form.is_valid():
-            discount = form.save()
+            discount = form.save(commit=False)
+            discount = update_perms_and_save(request, form, discount)
+            log_defaults = {
+                    'event_id' : 1010100,
+                    'event_data': '%s (%d) added by %s' % (discount._meta.object_name, discount.pk, request.user),
+                    'description': '%s added' % discount._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': discount,
+                }
+            EventLog.objects.log(**log_defaults)
             messages.add_message(request, messages.INFO, 'Successfully added %s' % discount)
-            return redirect('discount', id=discount.id)
+            return redirect('discount.detail', id=discount.id)
     else:
-        form = form_class()
+        form = form_class(user=request.user)
+        
+    return render_to_response(
+        template_name,
+        {'form':form},
+        context_instance=RequestContext(request),
+    )
+
+@login_required
+def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.html"):
+    discount = get_object_or_404(Discount, id=id)
+    if not has_perm(request.user, 'discounts.change_discount', discount):
+        raise Http403
+    
+    if request.method == "POST":
+        form = form_class(request.POST, instance=discount, user=request.user)
+        if form.is_valid():
+            discount = form.save(commit=False)
+            discount = update_perms_and_save(request, form, discount)
+            log_defaults = {
+                    'event_id' : 1010200,
+                    'event_data': '%s (%d) updated by %s' % (discount._meta.object_name, discount.pk, request.user),
+                    'description': '%s updated' % discount._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': discount,
+                }
+            EventLog.objects.log(**log_defaults)
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % discount)
+            return redirect('discount.detail', id=discount.id)
+    else:
+        form = form_class(instance=discount, user=request.user)
         
     return render_to_response(
         template_name,

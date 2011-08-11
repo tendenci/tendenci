@@ -8,11 +8,13 @@
 <div class="t-iconrow">
     
 	{% if can_edit %}
-		<a class="option-link edit" href="{% url discounts.edit opt_object.pk %}">{% trans "Edit" %}</a>
+		<a class="option-link edit" href="{% url discount.edit opt_object.pk %}">{% trans "Edit" %}</a>
 	{% endif %}
     
+    {% comment %}
     {% if can_delete %}
-        <a class="option-link delete" href="{% url discounts.delete opt_object.pk %}">{% trans "Delete" %}</a>			
+        <a class="option-link delete" href="{% url discount.delete opt_object.pk %}">{% trans "Delete" %}</a>			
     {% endif %}
+    {% endcomment %}
     
 </div>

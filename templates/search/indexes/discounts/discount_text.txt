@@ -1,0 +1,5 @@
+{{ object.discount_code }}
+{{ object.value }}
+by {{ object.creator }}
+by {{ object.object.creator.get_profile.display_name }}
+is:{{ object.status_detail }}
