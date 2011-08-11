@@ -29,11 +29,13 @@
 
 <ul class="events-summary">
 {% for item in summary_data %}
+    {% if item.source %}
 	<li>
 	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
 	<a href="{% url reports-events-source item.source %}">{{ item.source }} ({{ item.count }})</a>
 	</li>
+	{% endif %}
 {% endfor %}
 </ul>
 
