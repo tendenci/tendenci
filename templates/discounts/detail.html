@@ -6,7 +6,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}Discount {{ discount.discount_code }}{% endblock %}
+{% block title %}{{ block.super }} {{ discount.discount_code }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,14 +19,31 @@
 <div class="t">
     {% discount_nav request.user discount %}
     
-    <div class="discount-wrap">
-        <div class="options">{% discount_options request.user discount %}</div>
-        <h1>{{ discount.discount_code }}</h1>
+    <div class="discounts-wrap">
+        <a href="{{ discount.get_absolute_url }}"><h1>{{ discount.discount_code }}</h1></a>
 		<div class="content">
-            <p><b>Discount Code:</b> {{ discount.discount_code }}</p>
-            <p><b>Discount Value:</b> {{ discount.value }}</p>
-            <p><b>Max # of uses:</b> {{ discount.cap }}</p>
-            <p><b>Current # of uses:</b> {{ discount.num_of_uses }}</p>
+            <table>
+                <tr>
+                    <td class="label"><b>{% trans "Discount Code" %}:</b></td>
+                    <td>{{ discount.discount_code }}</td>
+                </tr>
+                <tr>
+                    <td class="label"><b>{% trans "Discount Value" %}:</b></td>
+                    <td>{{ discount.value }}</td>
+                </tr>
+                <tr>
+                    <td class="label"><b>{% trans "Number of uses" %}:</b></td>
+                    <td> {{ discount.num_of_uses }} out of {{ discount.cap }} max</td>
+                </tr>
+                <tr>
+                    <td class="label"><b>{% trans "Duration" %}:</b></td>
+                    <td>{{ discount.start_dt }} to {{ discount.end_dt }}</td>
+                </tr>
+                <tr>
+                    <td class="label"><b>{% trans "Still Available" %}:</b></td>
+                    <td>{% if discount.available %}{% trans 'Yes' %}{% else %}{% trans 'No' %}{% endif %}</td>
+                </tr>
+            </table>
 		</div>
     </div>
 </div>
