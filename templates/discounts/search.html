@@ -18,9 +18,13 @@
     <h1>{% firstof MODULE_DISCOUNTS_LABEL "Discount" %}  {% trans "Search" %}</h1>  
 
 	{% discount_search %}
-    {% autopaginate discounts 10 %}
+    {% autopaginate discounts 50 %}
 	
 	<div class="discounts-wrap">
+        <table id="discounts">
+            <tr>
+                <th>Code</th><th>Value</th><th>Uses</th><th>Cap</th><th>Status</th><th>Edit</th>
+            </tr>
     {% for discount in discounts %}
 		{% with discount.object as discount %}		
 		{% include "discounts/search-result.html" %}
@@ -28,6 +32,7 @@
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
+        </table>
 	</div>
 
     {% paginate %}
