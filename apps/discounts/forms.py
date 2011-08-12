@@ -66,10 +66,12 @@ class DiscountForm(TendenciBaseForm):
     def clean_discount_code(self):
         data = self.cleaned_data['discount_code']
         try:
-            Discount.objects.get(discount_code=data)
+            discount = Discount.objects.get(discount_code=data)
         except Discount.DoesNotExist:
             return data
-        raise forms.ValidationError('There a discount for this code already exists.')
+        if not discount == self.instance:
+            raise forms.ValidationError('There a discount for this code already exists.')
+        return data
 
     def clean(self):
         cleaned_data = self.cleaned_data

@@ -21,10 +21,10 @@
     <h1>{% firstof MODULE_DISCOUNTS_LABEL "Discount" %} {% trans "Edit" %}</h1>
     
     <div class="discount-wrap">
-    	<form action="{% url discount.add %}" method="post">{% csrf_token %}
+    	<form action="{% url discount.edit discount.id %}" method="post">{% csrf_token %}
     	<div class="forms">
 			{{ form|styled_form }}
-        	<input type="submit" value="{% trans 'Add Discount' %}" />
+        	<input type="submit" value="{% trans 'Update Discount' %}" />
 		</div>
         </form>
     </div>
