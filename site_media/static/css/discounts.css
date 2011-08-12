@@ -60,6 +60,14 @@
 	cursor: pointer;
 }
 
+/* discount Search table 
+ ------------------------- */
+
+table#discounts { width: 100%}
+#discounts td {text-align: center; padding: 3px 0;}
+#discounts td.left {text-align: left;}
+
+
 /* discount View
  ------------------------- */
 
