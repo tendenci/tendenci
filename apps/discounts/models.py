@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -27,7 +27,7 @@ class Discount(TendenciBaseModel):
         Determines if this discount has is still usable based on its
         cap.
         """
-        if self.num_of_uses() >= self.cap:
+        if self.num_of_uses() >= self.cap and self.cap != 0:
             return False
         if datetime.now() > self.end_dt and not self.never_expires:
             return False
