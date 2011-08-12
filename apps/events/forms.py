@@ -387,6 +387,7 @@ class RegistrationForm(forms.Form):
         event_price: integer of the event amount
         """
         user = kwargs.pop('user', None)
+        self.count = kwargs.pop('count', 0)
         super(RegistrationForm, self).__init__(*args, **kwargs)
 
         free_event = event_price <= 0
@@ -413,8 +414,8 @@ class RegistrationForm(forms.Form):
                 discount = Discount.objects.get(discount_code=data)
             except Discount.DoesNotExist:
                 raise forms.ValidationError('Discount code is invalid.')
-            if not discount.available():
-                raise froms.ValidationError('This discount code is no longer available.')
+            if not discount.available_for(self.count):
+                raise forms.ValidationError('This discount code is no longer available.')
         return data
         
     def get_discount(self):

@@ -742,7 +742,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
             price,
             event_price,
             request.POST, 
-            user=request.user
+            user=request.user,
+            count=len(registrant.forms),
         )
     else:
         reg_form = RegistrationForm(
@@ -773,6 +774,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 discount = reg_form.get_discount()
                 if discount:
                     event_price = event_price - discount.value
+                    if event_price < 0:
+                        event_price = 0
                     admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
                 
                 reg8n, reg8n_created = add_registration(
