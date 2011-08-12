@@ -73,6 +73,23 @@
 	float: right;
 	display: none; /* todo: port-over dropdown js */
 }
+
+/* discount Search table 
+ ------------------------- */
+
+table#discounts { width: 100%}
+#discounts td {text-align: center; padding: 3px 0;}
+#discounts td.left {text-align: left;}
+
+
+/* discount View
+ ------------------------- */
+
+/* form */
+div.forms div.form-field div.id_discount_code .field input {
+	width: 70%;
+}
+
 .t .dropdown-options span {
 	font-size: .7em;
 }

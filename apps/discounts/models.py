@@ -1,5 +1,7 @@
 import datetime
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
 from discounts.managers import DiscountManager
@@ -8,12 +10,12 @@ class Discount(TendenciBaseModel):
     class Meta:
         permissions = (("view_discount","Can view discount"),)
         
-    discount_code = models.CharField(max_length=100, unique=True)
-    start_dt = models.DateTimeField()
-    end_dt = models.DateTimeField()
-    never_expires = models.BooleanField()
-    value = models.DecimalField(max_digits=10, decimal_places=2)
-    cap = models.IntegerField()
+    discount_code = models.CharField(max_length=100, unique=True, help_text=_('Discount codes must be unique.'))
+    start_dt = models.DateTimeField(_('Start Date/Time'))
+    end_dt = models.DateTimeField(_('Start Date/Time'))
+    never_expires = models.BooleanField(_('Never Expires'), help_text=_('Check this box to make the discount code never expire.'))
+    value = models.DecimalField(_('Discount Value'), max_digits=10, decimal_places=2, help_text=_('Enter discount value as a positive number.'))
+    cap = models.IntegerField(_('Maximum Uses'), help_text=_('Enter 0 for unlimited discount code uses.'))
     
     objects = DiscountManager()
     
