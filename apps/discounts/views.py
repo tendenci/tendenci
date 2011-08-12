@@ -15,6 +15,16 @@ def search(request, template_name="discounts/search.html"):
     query = request.GET.get('q', None)
     discounts = Discount.objects.search(query, user=request.user)
     
+    log_defaults = {
+        'event_id' : 1010400,
+        'event_data': '%s searched by %s' % ('Discount', request.user),
+        'description': '%s searched' % 'Discount',
+        'user': request.user,
+        'request': request,
+        'source': 'discounts'
+    }
+    EventLog.objects.log(**log_defaults)
+    
     return render_to_response(
         template_name,
         {'discounts':discounts},
@@ -27,6 +37,19 @@ def detail(request, id, template_name="discounts/detail.html"):
     
     if not has_perm(request.user, 'discounts.view_discount', discount):
         raise Http403
+        
+    log_defaults = {
+        'event_id': 1010500,
+        'event_data': '%s (%d) viewed by %s' % (
+             discount._meta.object_name,
+             discount.pk, request.user
+        ),
+        'description': '%s viewed' % discount._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': discount,
+    }
+    EventLog.objects.log(**log_defaults)
     
     return render_to_response(
         template_name, 
@@ -94,3 +117,29 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
         {'form':form},
         context_instance=RequestContext(request),
     )
+
+@login_required
+def delete(request, id, template_name="discounts/delete.html"):
+    discount = get_object_or_404(Discount, pk=id)
+
+    if not has_perm(request.user,'discounts.delete_discount', discount):
+        raise Http403
+    
+    if request.method == "POST":
+        log_defaults = {
+            'event_id' : 1010300,
+            'event_data': '%s (%d) deleted by %s' % (discount._meta.object_name, discount.pk, request.user),
+            'description': '%s deleted' % discount._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': discount,
+        }
+        EventLog.objects.log(**log_defaults)
+        
+        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % discount)
+        discount.delete()
+        
+        return redirect('discount.search')
+
+    return render_to_response(template_name, {'discount': discount}, 
+        context_instance=RequestContext(request))

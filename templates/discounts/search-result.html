@@ -6,7 +6,15 @@
         </div>
         <h2><a href="{{ discount.get_absolute_url }}">{{ discount.discount_code }}</a></h2>
         <div class="item-content">
-            
+            <div class="search-text">
+                <p>Value: ${{ discount.value }}</p>
+                <p>
+                    Available: {% if discount.available %}Yes{% else %}No{% endif %}
+                </p>
+                <p>
+                    Duration: {{ discount.start_dt }} to {{ discount.end_dt }}
+                </p>
+            </div>
         </div>
     </div>
 </div>

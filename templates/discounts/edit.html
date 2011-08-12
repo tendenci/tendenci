@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} {% trans "Add" %}{% endblock title %}
+{% block title %}{{ block.super }} {% trans "Edit" %}{% endblock title %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,7 +18,7 @@
 <div class="t">
     {% discount_nav request.user %}
 	
-    <h1>{% firstof MODULE_DISCOUNTS_LABEL "Discount" %}  {% trans "Add" %}</h1>
+    <h1>{% firstof MODULE_DISCOUNTS_LABEL "Discount" %} {% trans "Edit" %}</h1>
     
     <div class="discount-wrap">
     	<form action="{% url discount.add %}" method="post">{% csrf_token %}
