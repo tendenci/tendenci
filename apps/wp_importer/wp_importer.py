@@ -3,6 +3,7 @@ import urllib2
 import time
 import uuid
 import sys
+import re
 from dateutil import parser
 from datetime import datetime
 from BeautifulSoup import BeautifulStoneSoup
@@ -23,6 +24,11 @@ items = soup.findAll('item')
 user = User.objects.get(id=1)
 uri_parser = ParseUri()
 
+
+def replace_short_code(body):
+    body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
+    return body
+
 def get_posts(items):
     post_list = []
     redirect_list = []
@@ -33,6 +39,7 @@ def get_posts(items):
         if post_type == 'post' and post_status == 'publish':
             title = unicode(node.find('title').contents[0])
             body = unicode(node.find('content:encoded').contents[0])
+            body = replace_short_code(body)
             link = unicode(node.find('link').contents[0])
             slug = uri_parser.parse(link).path.strip('/')
             post_date = unicode(node.find('wp:post_date').contents[0])
@@ -94,7 +101,7 @@ def get_pages(items):
                 #'timezone': 'US/Central',
                 'syndicate': True,
                 #'featured': False,
-                #'create_dt': datetime.now(), 
+                #'create_dt': datetime.now(),
                 'creator': user,
                 'creator_username': user.username,
                 'allow_anonymous_view': True,
@@ -110,6 +117,7 @@ def get_pages(items):
             })
     return page_list
 
+
 def run():
     posts = get_posts(items)[0]
     for post in posts:
@@ -123,4 +131,5 @@ def run():
     for page in pages:
         p = Page(**page)
         p.save()
+  
 run()
