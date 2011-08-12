@@ -1,10 +1,14 @@
 from datetime import datetime
+from datetime import timedelta
+
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
 from discounts.models import Discount
 from base.fields import SplitDateTimeField
+
+END_DT_INITIAL = datetime.now() + timedelta(weeks=4)
 
 class DiscountForm(TendenciBaseForm):
     class Meta:
@@ -25,11 +29,11 @@ class DiscountForm(TendenciBaseForm):
 
         fieldsets = [('Discount Information', {
                       'fields': ['discount_code',
-                                 'start_dt',
-                                 'end_dt',
                                  'value',
                                  'cap',
                                  'never_expires',
+                                 'start_dt',
+                                 'end_dt',
                                  ],
                       'legend': ''
                       }),
@@ -49,7 +53,7 @@ class DiscountForm(TendenciBaseForm):
                     ]
         
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now())
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
         
