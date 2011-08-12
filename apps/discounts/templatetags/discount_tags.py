@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.template import Library, TemplateSyntaxError, Variable
 
 from base.template_tags import ListNode, parse_tag_kwargs
@@ -24,3 +26,21 @@ def discount_nav(context, user, discount=None):
 @register.inclusion_tag("discounts/search-form.html", takes_context=True)
 def discount_search(context):
     return context
+
+
+@register.simple_tag
+def discount_expiration(obj):
+    t = '<span class="status-%s">%s</span>'
+
+    if not obj.never_expires:
+        if obj.end_dt < datetime.now():
+            value = t % ('inactive', ("Expired on %s" % obj.end_dt.strftime("%m/%d/%Y at %I:%M %p")))
+        else:
+            if obj.start_dt > datetime.now():
+                value = t % ('inactive',("Starts on %s" % obj.start_dt.strftime("%m/%d/%Y at %I:%M %p")))
+            else:
+                value = t % ('active', ("Expires on %s" % obj.end_dt.strftime("%m/%d/%Y at %I:%M %p")))
+    else:
+        value = t % ('active', "Never Expires")
+
+    return value

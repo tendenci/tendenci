@@ -1,5 +1,15 @@
 {% load discount_tags %}
-<div class="wrap-search-item">
+<tr>
+    <td class="left">{{ discount.discount_code }}</td>
+    <td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ discount.value }}</td>
+    <td>{{ discount.num_of_uses }}</td>
+    <td>{{ discount.cap }}</td>
+    <td>{% discount_expiration discount %}</td>
+    <td>{% discount_options request.user discount %}</td>
+</tr>
+
+
+<!-- <div class="wrap-search-item">
     <div class="search-item discount-search-item">
         <div class="quick-options">
         {% discount_options request.user discount %}
@@ -9,4 +19,4 @@
             
         </div>
     </div>
-</div>
+</div> -->
