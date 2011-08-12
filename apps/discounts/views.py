@@ -114,7 +114,10 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
         
     return render_to_response(
         template_name,
-        {'form':form},
+        {
+            'form':form,
+            'discount':discount,
+        },
         context_instance=RequestContext(request),
     )
 
