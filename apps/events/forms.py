@@ -19,6 +19,7 @@ from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from emails.models import Email
 from form_utils.forms import BetterModelForm
+from discounts.models import Discount
 
 from fields import Reg8nDtField, Reg8nDtWidget
 
@@ -376,8 +377,9 @@ class RegistrationForm(forms.Form):
     """
     Registration form - not include the registrant.
     """
+    discount_code = forms.CharField(label=_('Discount Code'), required=False)
     captcha = CaptchaField(label=_('Type the code below'))
-
+    
     def __init__(self, event, price, event_price, *args, **kwargs):
         """
         event: instance of Event model
@@ -403,7 +405,23 @@ class RegistrationForm(forms.Form):
                 
             if user and is_admin(user):
                 self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial = event_price)
-
+                
+    def clean_discount_code(self):
+        data = self.cleaned_data['discount_code']
+        if data:
+            try:
+                discount = Discount.objects.get(discount_code=data)
+            except Discount.DoesNotExist:
+                raise forms.ValidationError('Discount code is invalid.')
+            if not discount.available():
+                raise froms.ValidationError('This discount code is no longer available.')
+        return data
+        
+    def get_discount(self):
+        if self.is_valid() and self.cleaned_data['discount_code']:
+            discount = Discount.objects.get(discount_code=self.cleaned_data['discount_code'])
+            return discount
+        return None
 
 class RegistrantForm(forms.Form):
     """
