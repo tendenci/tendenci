@@ -74,7 +74,7 @@
 	   	<div class="step-desc">
 			<div>{% trans "Confirm acceptance of site policies and common sense." %}</div>
 			<div class="body-copy-alerts">
-				{% blocktrans with action_group as action.group.name %}I agree that I have permission from all users of the
+				{% blocktrans with action.group.name as action_group %}I agree that I have permission from all users of the
 				<b>{{ action_group }}  </b> user group 
 				to send them e-mail. I understand that by sending this e-mail the transaction, 
 				including my IP address, is recorded. Furthermore I am legally bound by 
