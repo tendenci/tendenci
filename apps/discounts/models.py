@@ -37,7 +37,6 @@ class Discount(TendenciBaseModel):
         """
         Determines if count number of uses is still available.
         """
-        print (self.num_of_uses() + count)
         if (self.num_of_uses() + count) > self.cap and self.cap != 0:
             return False
         if datetime.now() > self.end_dt and not self.never_expires:
