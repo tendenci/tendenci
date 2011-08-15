@@ -742,7 +742,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
             price,
             event_price,
             request.POST, 
-            user=request.user
+            user=request.user,
+            count=len(registrant.forms),
         )
     else:
         reg_form = RegistrationForm(
@@ -763,12 +764,20 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
             if reg_form.is_valid() and registrant.is_valid():
                 
                 # override event_price to price specified by admin
-                admin_notes = None
+                admin_notes = ''
                 if is_admin(request.user) and event_price > 0:
                     if event_price != reg_form.cleaned_data['amount_for_admin']:
-                        admin_notes = "Price has been overriden for this registration"
+                        admin_notes = "Price has been overriden for this registration. "
                     event_price = reg_form.cleaned_data['amount_for_admin']
-                    
+                
+                # apply discount if any
+                discount = reg_form.get_discount()
+                if discount:
+                    event_price = event_price - discount.value
+                    if event_price < 0:
+                        event_price = 0
+                    admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
+                
                 reg8n, reg8n_created = add_registration(
                     request, 
                     event, 
@@ -776,7 +785,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     registrant,
                     price,
                     event_price,
-                    admin_notes = admin_notes
+                    admin_notes = admin_notes,
+                    discount = discount,
                 )
                 
                 site_label = get_setting('site', 'global', 'sitedisplayname')

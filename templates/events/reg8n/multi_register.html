@@ -218,6 +218,14 @@
 						</div>
 		    			</noscript>
                         
+                        {% if reg_form.discount_code %}
+                            <div class="form-field">
+                                <div class="error">{{ reg_form.discount_code.errors }}</div>
+								<div class="required">{% trans "Discount Code" %}</div>
+								<div class="field">{{ reg_form.discount_code }}</div>
+                            </div>
+                        {% endif %}
+                        
                         {% if reg_form.amount_for_admin %}
                             <div class="form-field">
                                 <div class="error">{{ reg_form.amount_for_admin.errors }}</div>
