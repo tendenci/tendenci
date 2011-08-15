@@ -219,6 +219,7 @@ INSTALLED_APPS = (
     'mobile',
     'social_auth',
     'campaign_monitor',
+    'wp_importer',
     'theme',
     'discounts',
     # celery task system, must stay at the bottom
