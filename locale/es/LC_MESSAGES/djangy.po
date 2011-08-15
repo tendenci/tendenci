@@ -1,5 +1,0 @@
-Unstaged changes after reset:
-M	locale/de/LC_MESSAGES/django.po
-M	locale/es/LC_MESSAGES/django.mo
-M	locale/es/LC_MESSAGES/djangy.mo
-M	locale/es/LC_MESSAGES/djangy.po
