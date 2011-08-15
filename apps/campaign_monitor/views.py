@@ -1,8 +1,10 @@
+import datetime
 from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext, TemplateDoesNotExist
 from django.template import Template as DTemplate
+from django.template.loader import render_to_string
 from django.contrib import messages
 from django.http import Http404, HttpResponse
 from createsend import CreateSend
@@ -17,6 +19,9 @@ from campaign_monitor.utils import sync_campaigns, sync_templates
 from campaign_monitor.utils import apply_template_media
 from site_settings.utils import get_setting
 from base.http import Http403
+from events.models import Event
+from newsletters.utils import newsletter_articles_list, newsletter_jobs_list, \
+    newsletter_news_list, newsletter_pages_list
 
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
@@ -47,9 +52,64 @@ def template_html(request, template_id):
     
     if not template.html_file:
         raise Http404
+        
+    simplified = True
+    
+    login_content = ""
+    include_login = request.GET.get('include_login', False)
+    if include_login:
+        login_content = render_to_string('newsletters/login.txt',  
+                                        context_instance=RequestContext(request))
+    
+    jumplink_content = ""
+    jump_links = request.GET.get('jump_links', 1)
+    if jump_links:
+        jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(), 
+                                        context_instance=RequestContext(request))
+    
+    art_content = ""    
+    articles = request.GET.get('articles', 1)
+    articles_days = request.GET.get('article_days', 60)
+    if articles:
+        art_content = newsletter_articles_list(request, articles_days, simplified)
+    
+    news_content = ""
+    news = request.GET.get('news', 1)
+    news_days = request.GET.get('news_days',30)
+    if news:
+        news_content = newsletter_news_list(request, news_days, simplified)
+    
+    jobs_content = ""
+    jobs = request.GET.get('jobs', 1)
+    jobs_days = request.GET.get('jobs_days', 30)
+    if jobs:
+        jobs_content = newsletter_jobs_list(request, jobs_days, simplified)
+    
+    pages_content = ""
+    pages = request.GET.get('pages', 0)
+    pages_days = request.GET.get('pages_days', 7)
+    if pages:
+        pages_content = newsletter_pages_list(request, pages_days, simplified)
+        
+    events = request.GET.get('events', 1)
+    start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
+    event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
+    end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
+    event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
+    if events:
+        events = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt)
     
     text = DTemplate(template.html_file.file.read())
-    context = RequestContext(request)
+    context = RequestContext(request, 
+            {
+                'jumplink_content':jumplink_content,
+                'login_content':login_content,
+                "art_content":art_content,
+                "jobs_content":jobs_content,
+                "news_content":news_content,
+                "pages_content":pages_content,
+                "events":events
+            })
     
     response = HttpResponse(text.render(context))
     response['Content-Disposition'] = 'attachment; file=page.html'
@@ -61,9 +121,64 @@ def template_render(request, template_id):
     
     if not template.html_file:
         raise Http404
+        
+    simplified = True
+    
+    login_content = ""
+    include_login = request.GET.get('include_login', False)
+    if include_login:
+        login_content = render_to_string('newsletters/login.txt',  
+                                        context_instance=RequestContext(request))
+    
+    jumplink_content = ""
+    jump_links = request.GET.get('jump_links', 1)
+    if jump_links:
+        jumplink_content = render_to_string('newsletters/jumplinks.txt', locals(), 
+                                        context_instance=RequestContext(request))
+    
+    art_content = ""    
+    articles = request.GET.get('articles', 1)
+    articles_days = request.GET.get('article_days', 60)
+    if articles:
+        art_content = newsletter_articles_list(request, articles_days, simplified)
+    
+    news_content = ""
+    news = request.GET.get('news', 1)
+    news_days = request.GET.get('news_days',30)
+    if news:
+        news_content = newsletter_news_list(request, news_days, simplified)
+    
+    jobs_content = ""
+    jobs = request.GET.get('jobs', 1)
+    jobs_days = request.GET.get('jobs_days', 30)
+    if jobs:
+        jobs_content = newsletter_jobs_list(request, jobs_days, simplified)
+    
+    pages_content = ""
+    pages = request.GET.get('pages', 0)
+    pages_days = request.GET.get('pages_days', 7)
+    if pages:
+        pages_content = newsletter_pages_list(request, pages_days, simplified)
+        
+    events = request.GET.get('events', 1)
+    start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
+    event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
+    end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
+    event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
+    if events:
+        events = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt)
     
     text = DTemplate(apply_template_media(template))
-    context = RequestContext(request)
+    context = RequestContext(request, 
+            {
+                'jumplink_content':jumplink_content,
+                'login_content':login_content,
+                "art_content":art_content,
+                "jobs_content":jobs_content,
+                "news_content":news_content,
+                "pages_content":pages_content,
+                "events":events
+            })
     
     response = HttpResponse(text.render(context))
     
@@ -362,6 +477,40 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
+            template = form.cleaned_data['template']
+            
+            #set up urls
+            site_url = get_setting('site', 'global', 'siteurl')
+            html_url = str("%s%s"%(site_url, template.get_html_url()))
+            html_url += "?include_login=%s" % form.cleaned_data.get('include_login', False)
+            html_url += "&jump_links=%s" % form.cleaned_data.get('jump_links')
+            html_url += "&events=%s" % form.cleaned_data.get('events')
+            html_url += "&event_start_dt=%s" % form.cleaned_data.get('event_start_dt', '')
+            html_url += "&event_end_dt=%s" % form.cleaned_data.get('event_end_dt', '')
+            html_url += "&articles=%s" % form.cleaned_data.get('articles')
+            html_url += "&articles_days=%s" % form.cleaned_data.get('articles_days')
+            html_url += "&news=%s" % form.cleaned_data.get('news')
+            html_url += "&news_days=%s" % form.cleaned_data.get('news_days')
+            html_url += "&jobs=%s" % form.cleaned_data.get('jobs')
+            html_url += "&jobs_days=%s" % form.cleaned_data.get('jobs_days')
+            html_url += "&pages=%s" % form.cleaned_data.get('pages')
+            html_url += "&pages_days=%s" % form.cleaned_data.get('pages_days')
+            
+            if template.zip_file:
+                zip_url = str("%s%s"%(site_url, template.get_zip_url()))
+            else:
+                zip_url = ""
+            
+            #sync with campaign monitor
+            try:
+                t = CST(template_id = template.template_id)
+                t.update(str(template.name), html_url, zip_url)
+            except BadRequest, e:
+                messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+                return redirect('campaign_monitor.campaign_generate')
+            except Exception, e:
+                messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+                return redirect('campaign_monitor.campaign_generate')
             return redirect("%s/createsend/step1.aspx" % settings.CAMPAIGNMONITOR_URL)
     else:
         form = form_class()
