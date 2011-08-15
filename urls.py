@@ -79,6 +79,7 @@ urlpatterns = patterns('',
     (r'^resumes/', include('resumes.urls')),
     (r'^mobile/', include('mobile.urls')),
     (r'campaign_monitor/', include('campaign_monitor.urls')),
+    (r'^wp_importer/', include('wp_importer.urls')),
     (r'^discounts/', include('discounts.urls')),
     url(r'social_auth/', include('social_auth.urls')),
 
