@@ -79,6 +79,7 @@ urlpatterns = patterns('',
     (r'^resumes/', include('resumes.urls')),
     (r'^mobile/', include('mobile.urls')),
     (r'campaign_monitor/', include('campaign_monitor.urls')),
+    (r'^wp_importer/', include('wp_importer.urls')),
     url(r'social_auth/', include('social_auth.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
