@@ -195,8 +195,8 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             entry_invoice = entry.save_invoice()
 
 
-            if user.is_authenticated():  # bind to user
-                entry.user = user
+            if user.is_authenticated():
+                entry.user = user  # bind to user
                 if all(user_member_requirements):  # save as renewal
                     entry.is_renewal = True
 
@@ -206,6 +206,15 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             # administrators go to approve/disapprove page
             if is_admin(user):
                 return redirect(reverse('membership.application_entries', args=[entry.pk]))
+
+            # send "joined" notification
+            Notice.send_notice(
+                entry=entry,
+                request = request,
+                emails=entry.email,
+                notice_type='join',
+                membership_type=entry.membership_type,
+            )
 
             # online payment
             if entry.payment_method and entry.payment_method.is_online:
@@ -220,38 +229,14 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
                     membership_total = Membership.objects.filter(status=True, status_detail='active').count()
 
-                    notice_dict = {
-                        'notice_time':'attimeof',
-                        'notice_type':'join',
-                        'status':True,
-                        'status_detail':'active',
-                    }
-
-                    if entry.is_renewal:
-                        notice_dict['notice_type'] = 'renewal'
-
-                    # send email to member
-                    for notice in Notice.objects.filter(**notice_dict):
-
-                        notice_requirements = [
-                           notice.membership_type == entry.membership_type,
-                           notice.membership_type == None, 
-                        ]
-
-                        if any(notice_requirements):
-                            notification.send_emails([entry.email],'membership_approved_to_member', {
-                                'subject': notice.get_subject(entry.membership),
-                                'content': notice.get_content(entry.membership),
-                            })
-
-                    # send email to admins
-                    recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-                    if recipients and notification:
-                        notification.send_emails(recipients,'membership_approved_to_admin', {
-                            'object':entry,
-                            'request':request,
-                            'membership_total':membership_total,
-                        })
+                    # send "approved" notification
+                    Notice.send_notice(
+                        request = request,
+                        emails=entry.email,
+                        notice_type='approve',
+                        membership=entry.membership,
+                        membership_type=entry.membership_type,
+                    )
 
                     # log - entry approval
                     EventLog.objects.log(**{
@@ -275,13 +260,11 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
             return redirect(entry.confirmation_url)
 
-    c = {
+    return render_to_response(template_name, {
             'app': app, 
             'app_entry_form': app_entry_form, 
             'pending_entries': pending_entries,
-        }
-    return render_to_response(template_name, c, 
-        context_instance=RequestContext(request))
+            }, context_instance=RequestContext(request))
     
 def application_details_corp_pre(request, slug, cmb_id=None, template_name="memberships/applications/details_corp_pre.html"):
 
@@ -497,40 +480,14 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                 # group, membership, and archive
                 entry.approve()
 
-                notice_dict = {
-                    'notice_time':'attimeof',
-                    'notice_type':'join',
-                    'status':True,
-                    'status_detail':'active',
-                }
-
-                if entry.is_renewal:
-                    notice_dict['notice_type'] = 'renewal'
-
-                
-
-                # send membership notification(s) (email)
-                for notice in Notice.objects.filter(**notice_dict):
-
-                    notice_requirements = [
-                       notice.membership_type == entry.membership_type,
-                       notice.membership_type == None, 
-                    ]
-
-                    if any(notice_requirements):
-                        notification.send_emails([entry.email],'membership_approved_to_member', {
-                            'subject': notice.get_subject(entry.membership),
-                            'content': notice.get_content(entry.membership),
-                        })
-
-                # send notification to admin (email)
-                recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-                if recipients and notification:
-                    notification.send_emails(recipients,'membership_approved_to_admin', {
-                        'object':entry,
-                        'request':request,
-                        'membership_total':membership_total,
-                    })
+                # send "approved" notification
+                Notice.send_notice(
+                    request = request,
+                    emails=entry.email,
+                    notice_type='approve',
+                    membership=entry.membership,
+                    membership_type=entry.membership_type,
+                )
 
                 # log entry approved
                 EventLog.objects.log(**{
@@ -545,21 +502,14 @@ def application_entries(request, id=None, template_name="memberships/entries/det
             else:  # if not approved
                 entry.disapprove()
 
-                # send email to disapproved applicant
-                notification.send_emails([entry.email],'membership_disapproved_to_member', {
-                    'object':entry,
-                    'request':request,
-                    'membership_total':membership_total,
-                })
-
-                # send email to admins
-                recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-                if recipients and notification:
-                    notification.send_emails(recipients,'membership_disapproved_to_admin', {
-                        'object': entry,
-                        'request': request,
-                        'membership_total': membership_total,
-                    })
+                # send "disapproved" notification
+                Notice.send_notice(
+                    entry = entry,
+                    request = request,
+                    emails=entry.email,
+                    notice_type='disapprove',
+                    membership_type=entry.membership_type,
+                )
 
                 # log entry disapproved
                 EventLog.objects.log(**{
