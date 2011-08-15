@@ -777,7 +777,10 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     if event_price < 0:
                         event_price = 0
                     admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
-                
+                    messages.add_message(request, messages.INFO,
+                        'Your discount of $%s has been added.' % discount.value
+                    )
+                    
                 reg8n, reg8n_created = add_registration(
                     request, 
                     event, 

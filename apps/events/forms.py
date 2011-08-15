@@ -413,9 +413,9 @@ class RegistrationForm(forms.Form):
             try:
                 discount = Discount.objects.get(discount_code=data)
             except Discount.DoesNotExist:
-                raise forms.ValidationError('Discount code is invalid.')
+                raise forms.ValidationError('This is not a valid discount code.')
             if not discount.available_for(self.count):
-                raise forms.ValidationError('This discount code is no longer available.')
+                raise forms.ValidationError('This is not a valid discount code.')
         return data
         
     def get_discount(self):
