@@ -29,7 +29,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     if not has_perm(request.user,'theme_editor.view_themefileversion'):
         raise Http403
         
-    selected_theme = request.GET.get("theme", get_theme())
+    selected_theme = request.GET.get("theme_edit", get_theme())
     theme_root = os.path.join(settings.THEME_DIR, selected_theme)
     
     # get the default file and clean up any input
@@ -94,7 +94,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         file_form = form_class({"content":content, "rf_path":default_file})
     
     theme_form = ThemeSelectForm(
-                    initial = {'theme':selected_theme}
+                    initial = {'theme_edit':selected_theme}
                 )
     return render_to_response(template_name, {"file_form": file_form,
                                               'theme_form': theme_form,

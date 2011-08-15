@@ -119,13 +119,8 @@
 
 {% if job.experience %}
 <div class="section-block">
-<<<<<<< Updated upstream
-	<div class="label">Experience</div>
-	<div class="value">{{ job.experience|striptags|linebreaks }}</div>
-=======
 	<div class="label">{% trans "Experience" %}</div>
-	<div class="value">{{ job.experience|striptags }}</div>
->>>>>>> Stashed changes
+	<div class="value">{{ job.experience|striptags|linebreaks }}</div>
 </div>
 {% endif %}
 {% if job.skills %}

@@ -15,7 +15,7 @@ reg_autodiscover()
 
 
 urlpatterns = patterns('',
-    url(r'^$', direct_to_template, {"template": "homepage.html", }, name="home"),
+    url(r'^$', 'base.views.homepage', name="home"),
 
     #Reports:
     (r'^reports/', include('reports.urls')),
@@ -80,6 +80,7 @@ urlpatterns = patterns('',
     (r'^mobile/', include('mobile.urls')),
     (r'campaign_monitor/', include('campaign_monitor.urls')),
     (r'^wp_importer/', include('wp_importer.urls')),
+    (r'^discounts/', include('discounts.urls')),
     url(r'social_auth/', include('social_auth.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
@@ -104,12 +105,11 @@ if settings.DEBUG:
         (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
             'base.views.plugin_static_serve'),
     )
-    for theme in theme_choices():
-        urlpatterns += patterns('',
-            (r'^themes/%s/(?P<path>.*)$' % theme,
-                'django.views.static.serve',
-                {'document_root': join(settings.THEME_DIR, theme)}),
-        )
+    urlpatterns += patterns('',
+        (r'^themes/(?P<path>.*)$',
+            'django.views.static.serve',
+            {'document_root': settings.THEME_DIR, 'show_indexes': True}),
+    )
 
 # template tag testing environment
 if settings.DEBUG:
