@@ -1,0 +1,40 @@
+{% extends "discounts/base.html" %}
+{% load pagination_tags %}
+{% load discount_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} {% trans "Search" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/discounts.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+	{% discount_nav request.user %}
+    <h1>{% firstof MODULE_DISCOUNTS_LABEL "Discount" %}  {% trans "Search" %}</h1>  
+
+	{% discount_search %}
+    {% autopaginate discounts 50 %}
+	
+	<div class="discounts-wrap">
+        <table id="discounts">
+            <tr>
+                <th>Code</th><th>Value</th><th>Uses</th><th>Cap</th><th>Status</th><th>Edit</th>
+            </tr>
+    {% for discount in discounts %}
+		{% with discount.object as discount %}		
+		{% include "discounts/search-result.html" %}
+		{% endwith %}
+	{% empty %}
+		<div>{% trans "0 Results Found" %}</div>
+    {% endfor %}
+        </table>
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}

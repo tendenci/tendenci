@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 class Command(BaseCommand):
     """
-    This command creates profiles for userse who
+    This command creates profiles for users who
     don't have profiles.
     """
     def handle(self, *args, **options):

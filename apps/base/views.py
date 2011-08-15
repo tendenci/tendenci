@@ -14,6 +14,7 @@ from django.conf import settings
 # local
 from base.cache import IMAGE_PREVIEW_CACHE
 from perms.utils import is_admin
+from theme.shortcuts import themed_response
 
 
 def image_preview(request, app_label, model, id,  size):
@@ -221,3 +222,6 @@ def feedback(request, template_name="base/feedback.html"):
     if not is_admin(request.user):
         raise Http404
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    
+def homepage(request, template_name="homepage.html"):
+    return themed_response(template_name, {}, context_instance=RequestContext(request))
