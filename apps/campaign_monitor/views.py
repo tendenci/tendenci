@@ -353,3 +353,19 @@ def campaign_sync(request):
 #        
 #    return render_to_response(template_name, {'form':form}, 
 #        context_instance=RequestContext(request))
+
+@login_required
+def campaign_generate(request, form_class=CampaignForm, template_name='campaign_monitor/campaigns/add.html'):
+    if not has_perm(request.user,'campaign_monitor.add_campaign'):
+        raise Http403
+        
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            return redirect("%s/createsend/step1.aspx" % settings.CAMPAIGNMONITOR_URL)
+    else:
+        form = form_class()
+        
+    return render_to_response(template_name,
+        {'form':form},
+        context_instance=RequestContext(request))
