@@ -51,10 +51,14 @@
         </td>
         <td width="20%" valign="top">
             <div class='theme-selection'>
+                <p><b>Active Theme:</b> <a href="{% url setting.permalink 'module' 'theme_editor' 'theme' %}">{{ ACTIVE_THEME }}</a></p>
                 <h4>{% trans 'Theme in Editor:' %}</h4>
                 <form method="GET" action="">
-                    {{ theme_form.theme }}<input type="submit" value="Change Theme in Editor"/>
+                    {{ theme_form.theme_edit }}<input type="submit" value="Change Theme in Editor"/>
                 </form>
+                {% ifnotequal ACTIVE_THEME current_theme %}
+                <p><a href="{% url home %}?theme={{ current_theme }}">{% trans "Preview" %} <strong>{{ current_theme }}</strong></a></p>
+                {% endifnotequal %}
             </div>
        		<div id="right_files_list">
                <h4>{% trans "Choose a folder or file:" %}</h4>
@@ -69,13 +73,13 @@
                {% endif %}
                {% if prev_dir %}
                    <p class="prev_dir">
-                       <a href="{% url theme_editor %}?file={{ prev_dir }}&theme={{ current_theme }}#to-editor">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
+                       <a href="{% url theme_editor %}?file={{ prev_dir }}&theme_edit={{ current_theme }}#to-editor">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
                    </p>
                {% endif %}
                {% if dirs %}
                <ul class="dir_list">   
                     {% for dir in dirs %}
-                        <li class="dir_item"><a href="{% url theme_editor %}?file={{ dir }}/&theme={{ current_theme }}#to-editor">{{ dir|basename|safe }}</a></li>
+                        <li class="dir_item"><a href="{% url theme_editor %}?file={{ dir }}/&theme_edit={{ current_theme }}#to-editor">{{ dir|basename|safe }}</a></li>
                     {% endfor %}
                </ul>
                {%  endif %}
@@ -83,7 +87,7 @@
                <ul class="files_list">
                     {% for file in files %}
                         <li {% if current_file == file %}class="current_file"{% endif %}>
-                            <a href="{% url theme_editor %}?file={{ pwd }}/{{ file }}&theme={{ current_theme }}#to-editor">{{ file|safe }}</a>
+                            <a href="{% url theme_editor %}?file={{ pwd }}/{{ file }}&theme_edit={{ current_theme }}#to-editor">{{ file|safe }}</a>
                         </li>
                     {% endfor %}
                </ul>
@@ -92,7 +96,8 @@
                <p>{% trans "No editable files" %}</p>
                {% endif %}
                <br>
-               <a href="{% url original_templates %}">{% trans "customize more templates" %}</a>
+               <a href="{% url original_templates %}">{% trans "Customize more templates" %}</a>
+               <br>
            </div>
       </td>
       </tr>

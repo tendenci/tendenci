@@ -1039,7 +1039,7 @@ def corp_import(request, step=None):
             'description': 'corporate membership import',
             'user': request.user,
             'request': request,
-            #'instance': corp_memb,
+            'source': 'corporate_memberships',
         }
         
         EventLog.objects.log(**log_defaults)

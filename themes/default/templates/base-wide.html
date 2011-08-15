@@ -1,7 +1,9 @@
-{% extends "base.html" %}
 {% load base_filters %}
 {% load base_tags %}
 {% load cache %}
+{% load theme_tags %}
+
+{% theme_extends "base.html" %}
 
 {% block html_body %}
 <div id="container">
@@ -15,7 +17,7 @@
 	</div> 
         
     <div id="menu"> 
-    	{% spaceless %}{% include "nav.html" %}{% endspaceless %}
+    	{% spaceless %}{% theme_include "nav.html" %}{% endspaceless %}
     </div>
     
     <div class="content content-middle content-wide"> 
@@ -39,7 +41,7 @@
     </div><!-- /content content-middle -->
 
     <div id="footer">
-      {% spaceless %}{% include "footer.html" %}{% endspaceless %}
+      {% spaceless %}{% theme_include "footer.html" %}{% endspaceless %}
     </div>
         
 </div><!-- /container -->

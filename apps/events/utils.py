@@ -11,6 +11,7 @@ from events.models import Registration
 from events.models import Registrant, RegConfPricing
 from user_groups.models import Group
 from perms.utils import is_member, is_admin
+from discounts.models import Discount, DiscountUse
 
 
 def get_vevents(request, d):
@@ -393,6 +394,7 @@ def add_registration(*args, **kwargs):
     
     #kwargs
     admin_notes = kwargs.get('admin_notes', None)
+    discount = kwargs.get('discount', None)
 
     reg8n_attrs = {
         "event": event,
@@ -430,7 +432,15 @@ def add_registration(*args, **kwargs):
     created = True
     
     # create invoice
-    reg8n.save_invoice(admin_notes=admin_notes)
+    invoice = reg8n.save_invoice(admin_notes=admin_notes)
+    
+    if discount:
+        for i in range(0, count):
+            DiscountUse.objects.create(
+                    discount=discount,
+                    invoice=invoice,
+                )
+    
     return (reg8n, created)
 
 
