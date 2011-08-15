@@ -29,6 +29,10 @@ def replace_short_code(body):
     body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
     return body
 
+ # def remove_gallery(body):
+ #     body = (.*)(\\[gallery.*)(\\.*\\])(.*)
+ #     return body
+
 def get_posts(items):
     post_list = []
     redirect_list = []
