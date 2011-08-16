@@ -14,6 +14,7 @@ urlpatterns = patterns('events',
     url(r'^edit/(?P<id>\d+)/$', 'views.edit', name="event.edit"),
     url(r'^edit/meta/(?P<id>\d+)/$', 'views.edit_meta', name="event.edit.meta"),
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="event.delete"),
+    url(r'^ics/(?P<id>\d+)/$', 'views.icalendar_single', name="event.ics_single"),
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
     url(r'^(?P<id>\d+)/$', 'views.index', name="event"),
     
