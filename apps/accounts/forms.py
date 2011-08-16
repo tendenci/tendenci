@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
@@ -69,6 +71,15 @@ class RegistrationCustomForm(RegistrationForm):
                     
         return new_user
     
+    def clean_password1(self):
+        password1 = self.cleaned_data.get('password1')
+        password_regex = get_setting('module', 'users', 'password_requirements_regex')
+        password_requirements = get_setting('module', 'users', 'password_text')
+        if password_regex:
+            if not re.match(password_regex, password1):
+                raise forms.ValidationError(mark_safe("The password does not meet the requirements </li><li>%s" % password_requirements))
+
+        return password1
     
 class LoginForm(forms.Form):
 
