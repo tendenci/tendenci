@@ -14,7 +14,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib import messages
 
 # for password change
-from django.contrib.auth.forms import PasswordChangeForm
 from django.views.decorators.csrf import csrf_protect
 
 # for avatar
@@ -34,7 +33,7 @@ friends = False
 #    from friends.models import Friendship
 
 from profiles.models import Profile
-from profiles.forms import ProfileForm, UserPermissionForm, UserGroupsForm
+from profiles.forms import ProfileForm, UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm
 from profiles.utils import user_add_remove_admin_auth_group
 from base.http import Http403
 from user_groups.models import GroupMembership
@@ -573,7 +572,7 @@ def change_avatar(request, id, extra_context={}, next_override=None):
 @csrf_protect
 @login_required
 def password_change(request, id, template_name='registration/password_change_form.html',
-                    post_change_redirect=None, password_change_form=PasswordChangeForm):
+                    post_change_redirect=None, password_change_form=ValidatingPasswordChangeForm):
     user_edit = get_object_or_404(User, pk=id)
     if post_change_redirect is None:
         post_change_redirect = reverse('profiles.views.password_change_done', kwargs={'id':id})
