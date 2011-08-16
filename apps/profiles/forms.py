@@ -1,14 +1,20 @@
 import datetime
+import re
+
 from django import forms
+from django.contrib import auth
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
+from django.utils.safestring import mark_safe
+
 from user_groups.models import Group, GroupMembership
 from event_logs.models import EventLog
 from profiles.models import Profile
 from profiles.utils import get_groups, get_memberships, group_choices
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin, is_developer
+from site_settings.utils import get_setting
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -336,3 +342,20 @@ class UserGroupsForm(forms.Form):
                 'instance': group_membership,
             }
             EventLog.objects.log(**log_defaults)
+
+class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
+    
+    def clean_new_password1(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password_regex = get_setting('module', 'users', 'password_requirements_regex')
+        password_requirements = get_setting('module', 'users', 'password_text')
+        print password_regex
+        print password_requirements
+        if password_regex:
+            # At least MIN_LENGTH long
+            # "^(?=.{8,})(?=.*[0-9=]).*$"
+            print re.match(password_regex, password1)
+            if not re.match(password_regex, password1):
+                raise forms.ValidationError(mark_safe("The new password does not meet the requirements </li><li>%s" % password_requirements))
+
+        return password1

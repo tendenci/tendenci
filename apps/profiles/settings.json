@@ -236,5 +236,39 @@
         "scope_category": "users", 
         "store": true, 
         "updated_by": ""
+    }, 
+    {
+        "default_value": "", 
+        "description": "Optional Regular Expression validation for passwords.", 
+        "data_type": "string", 
+        "update_dt": "2011-08-11 15:38:23", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "password_requirements_regex", 
+        "value": "", 
+        "label": "Password Regex", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "users", 
+        "store": true, 
+        "updated_by": ""
+    }, 
+    {
+        "default_value": "", 
+        "description": "Optional Password Validation Message/Rules.", 
+        "data_type": "string", 
+        "update_dt": "2011-05-27 15:38:23", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "password_text", 
+        "value": "", 
+        "label": "Password Requirements Description", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "users", 
+        "store": true, 
+        "updated_by": ""
     }
 ]
