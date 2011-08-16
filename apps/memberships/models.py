@@ -372,7 +372,6 @@ class Membership(TendenciBaseModel):
         memb_archive.archive_user = user
         memb_archive.save()
 
-
 class MembershipArchive(TendenciBaseModel):
     """
     Keep a record of the old memberships.
@@ -407,7 +406,17 @@ class MembershipArchive(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s #%s" % (self.user.get_full_name(), self.member_number)
-    
+
+
+NOTICE_TYPES = (
+    ('join', 'Join Date'),
+    ('renewal', 'Renewal Date'),
+    ('expiration', 'Expiration Date'),
+    ('approve', 'Approval Date'),
+    ('disapprove', 'Disapproval Date'),
+)
+
+
 class Notice(models.Model):
     guid = models.CharField(max_length=50, editable=False)
     notice_name = models.CharField(_("Name"), max_length=250)
@@ -415,15 +424,18 @@ class Notice(models.Model):
     notice_time = models.CharField(_("Notice Time"), max_length=20,
                                    choices=(('before','Before'),
                                             ('after','After'),
-                                            ('attimeof','At Time Of'))) 
-    notice_type = models.CharField(_("For Notice Type"), max_length=20,
-                                   choices=(('join','Join Date'),
-                                            ('renewal','Renewal Date'),
-                                            ('expiration','Expiration Date'))) 
+                                            ('attimeof','At Time Of')))
+    notice_type = models.CharField(_("For Notice Type"), max_length=20, choices=NOTICE_TYPES)
     system_generated = models.BooleanField(_("System Generated"), default=0)
-    membership_type = models.ForeignKey("MembershipType", blank=True, null=True,
-                                        help_text=_("Note that if you don't select a membership type, the notice will go out to all members."))
-    
+    membership_type = models.ForeignKey(
+        "MembershipType",
+        blank=True,
+        null=True,
+        help_text=_("Note that if you \
+            don't select a membership type, \
+            the notice will go out to all members."
+        ))
+
     subject =models.CharField(max_length=255)
     content_type = models.CharField(_("Content Type"), 
                                     choices=(('html','HTML'),
@@ -454,53 +466,97 @@ class Notice(models.Model):
         www.tendenci.com developed by Schipul - The Web Marketing Company
         """
 
-    def get_subject(self, membership):
-        return self.build_notice(membership, self.subject)
+    def get_subject(self, entry=None, membership=None):
+        """
+        Return self.subject replace shortcode (context) variables
+        The membership object takes priority over entry object
+        """
+        context = {}
 
-    def get_content(self, membership):
+        if membership: user = getattr(membership, 'user', None)
+        elif entry: user = getattr(entry, 'user', None)
+
+        if user:
+            context = {
+                'firstname': user.first_name,
+                'lastname': user.last_name,
+                'name': user.get_full_name(),
+                'username': user.username,
+                'email': user.email,
+            }
+
+        return self.build_notice(self.subject, context=context)
+
+    def get_content(self, entry=None, membership=None):
         """
         Return self.email_content with self.footer appended
+        and replace shortcode (context) variables
         """
+
+        # defaults
         global_setting = partial(get_setting, 'site', 'global')
-        user = membership.user
         corporate_msg = ''
         expiration_dt = ''
+
+        if membership:
+            user = getattr(membership, 'user', None)
+        elif entry:
+            user = getattr(entry, 'user', None)
 
         try:
             profile = user.get_profile()
         except Profile.DoesNotExist as e:
             profile = Profile.objects.create_profile(user=user)
+        except AttributeError as e:
+            profile = None  # no profile boo; no user/profile shortcode vars
 
-        if membership.expire_dt:
-            expiration_dt = time.strftime(
-                "%d-%b-%y %I:%M %p",
-                membership.expire_dt.timetuple()
-            )
+        if user:
+            context = {
+                'firstname': user.first_name,
+                'lastname': user.last_name,
+                'name': user.get_full_name(),
+                'username': user.username,
+                'email': user.email, 
+            }
 
-        if membership.corporate_membership_id:
-            corporate_msg = """
-            <br /><br />
-            <font color="#FF0000">
-            Organizational Members, please contact your company Membership coordinator
-            to ensure that your membership is being renewed.
-            </font>
-            """
+        if profile:
+            context = {
+                'title': profile.position_title,
+                'address': profile.address,
+                'city': profile.city,
+                'state': profile.state,
+                'zipcode': profile.zipcode,
+                'phone': profile.phone,
+                'workphone': profile.work_phone,
+                'homephone': profile.home_phone,
+                'fax': profile.fax,
+            }
+
+        if membership:
+
+            if membership.corporate_membership_id:
+                corporate_msg = """
+                <br /><br />
+                <font color="#FF0000">
+                Organizational Members, please contact your company Membership coordinator
+                to ensure that your membership is being renewed.
+                </font>
+                """
+
+            if membership.expire_dt:
+                expiration_dt = time.strftime(
+                    "%d-%b-%y %I:%M %p",
+                    membership.expire_dt.timetuple()
+                )
+
+            context = {
+                'membernumber': membership.member_number,
+                'membershiptype': membership.membership_type.name,
+                'membershiplink': '%s%s'.format(global_setting('siteurl'), membership.get_absolute_url()),
+                'renewlink': '%s%s'.format(global_setting('siteurl'), membership.get_absolute_url()),
+            } 
 
         context = {
-            'title': profile.position_title,
-            'address': profile.address,
-            'city': profile.city,
-            'state': profile.state,
-            'zipcode': profile.zipcode,
-            'phone': profile.phone,
-            'workphone': profile.work_phone,
-            'homephone': profile.home_phone,
-            'fax': profile.fax,
-
-            'membernumber': membership.member_number,
-            'membershiptype': membership.membership_type.name,
-            'membershiplink': '%s%s'.format(global_setting('siteurl'), membership.get_absolute_url()),
-            'renewlink': '%s%s'.format(global_setting('siteurl'), membership.get_absolute_url()),
             'expirationdatetime': expiration_dt,
             'sitecontactname': global_setting('sitecontactname'),
             'sitecontactemail': global_setting('sitecontactemail'),
@@ -511,32 +567,97 @@ class Notice(models.Model):
 
         content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
 
-        return self.build_notice(membership, content, context=context)
+        return self.build_notice(content, context=context)
 
-    def build_notice(self, membership, content, *args, **kwargs):
+    def build_notice(self, content, *args, **kwargs):
         """
         Replace values in a string and return the updated content
         Values are pulled from membership, user, profile, and site_settings
         In the future, maybe we can pull from the membership application entry
         """
-        user = membership.user
-        extra_context = kwargs.get('context') or {}
-        content = content.replace('[','{{')
-        content = content.replace(']','}}')
+        context = kwargs.get('context') or {}  # get context
+        content = content.replace('[','{{')  # replace shortcode tags
+        content = content.replace(']','}}')  # replace shortcode tags
 
+        context = Context(context)
         template = Template(content)
 
-        context = {
-            'firstname': user.first_name,
-            'lastname': user.last_name,
-            'name': user.get_full_name(),
-            'username': user.username,
-            'email': user.email,
-        }
-        context.update(extra_context)
-        context = Context(context)
-
         return template.render(context)
+
+    @classmethod
+    def send_notice(cls, **kwargs):
+        """
+        Send notice to notice_type specified
+        within membership_type specified
+        to email addresses specified
+        Returns boolean.
+
+        Allowed Notice Types: joined, renewed, approved, disapproved
+        """
+        from notification import models as notification
+
+        notice_type = kwargs.get('notice_type') or 'joined'
+        membership_type = kwargs.get('membership_type')
+        membership = kwargs.get('membership')
+        emails = kwargs.get('emails') or []
+        request = kwargs.get('request')
+        entry = kwargs.get('entry')
+
+        if isinstance(emails, basestring):
+            emails = [emails]  # expecting list of emails
+
+        # allowed notice types
+        if notice_type == 'join':
+            template_type = 'joined'
+        elif notice_type == 'renewal':
+            template_type = 'renewed'
+        elif notice_type == 'approve':
+            template_type = 'approved'
+        elif notice_type == 'disapprove':
+            template_type = 'disapproved'
+        else:
+            return False
+
+        # email list required
+        if not emails:
+            return False
+
+        field_dict = {
+            'notice_time':'attimeof',
+            'notice_type':notice_type,
+            'status':True,
+            'status_detail':'active',
+        }
+
+        # send to applicant
+        for notice in Notice.objects.filter(**field_dict):
+
+            notice_requirments = (
+                notice.membership_type == membership_type,
+                notice.membership_type == None
+            )
+
+            if any(notice_requirments):
+                notification.send_emails(
+                    emails,
+                    'membership_%s_to_member' % template_type, {
+                    'subject': notice.get_subject(entry=entry, membership=membership),
+                    'content': notice.get_content(entry=entry, membership=membership),
+                })
+
+        # send email to admins
+        recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+
+        print 'recipients', recipients
+
+        if recipients and notification:
+            notification.send_emails(recipients,
+                'membership_%s_to_admin' % template_type, {
+                'entry':entry,
+                'request':request,
+            })
+
+        return True
 
     @models.permalink
     def get_absolute_url(self):
@@ -1070,21 +1191,14 @@ class AppEntry(TendenciBaseModel):
 
             membership_total = Membership.objects.filter(status=True, status_detail='active').count()
 
-            # send email to approved member
-            notification.send_emails([self.email],'membership_approved_to_member', {
-                'object':self,
-                'request':request,
-                'membership_total':membership_total,
-            })
-
-            # send email to admins
-            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-            if recipients and notification:
-                notification.send_emails(recipients,'membership_approved_to_admin', {
-                    'object':self,
-                    'request':request,
-                    'membership_total':membership_total,
-                })
+            # send "approved" notification
+            Notice.send_notice(
+                request = request,
+                emails=entry.email,
+                notice_type='approve',
+                membership=self.membership,
+                membership_type=entry.membership_type,
+            )
 
             # log entry approval
             EventLog.objects.log(**{
