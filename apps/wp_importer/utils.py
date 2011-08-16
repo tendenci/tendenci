@@ -10,7 +10,9 @@ from BeautifulSoup import BeautifulStoneSoup
 from pages.models import Page
 from articles.models import Article
 from redirects.models import Redirect
+from files.models import File
 from django.contrib.auth.models import User
+from django.conf import settings
 from parse_uri import ParseUri
 
 
@@ -135,8 +137,26 @@ def get_pages(items, uri_parser, user):
 
     return page_list
 
+def get_media(items, uri_parser, user):
+    # from files.managers import save_files_for_instance
+    ##################################################
+
+    for node in items:
+        post_type = node.find('wp:post_type').string
+        if post_type == 'attachment':
+            media_url = node.find('wp:attachment_url').string
+            source = urllib2.urlopen(media_url).read()
+            media_url = uri_parser.parse(media_url).file
+            media_url = os.path.join(settings.MEDIA_ROOT, media_url)
+
+            with open(media_url, 'wb') as f:
+                f.write(source)
+                file_path = f.name
+
+            new_media = File(guid=unicode(uuid.uuid1()), file=file_path, creator=user, owner=user)
+            new_media.save()
+
 def run(file_name):
-    file_name = 'site_media/media/blogimport/' + file_name
     f = open(file_name, 'r')
     xml = f.read()
     f.close()
@@ -148,6 +168,7 @@ def run(file_name):
 
     user = User.objects.get(id=1)
 
+    get_media(items, uri_parser, user)
     posts = get_posts(items, uri_parser, user)[0]
     for post in posts:
         a = Article(**post)

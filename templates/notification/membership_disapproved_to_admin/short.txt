@@ -1,1 +1,1 @@
-{{ SITE_GLOBAL_SITEDISPLAYNAME }} - Membership application disapproved {{ object.first_name }} {{ object.last_name }}
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} - Membership application disapproved {{ entry.first_name }} {{ entry.last_name }}
