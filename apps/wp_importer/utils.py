@@ -4,7 +4,10 @@ import time
 import uuid
 import sys
 import re
+<<<<<<< HEAD
 
+=======
+>>>>>>> 835546f27e5421af3c14f5abfda69c8a63bd1c22
 from dateutil import parser
 from datetime import datetime
 from BeautifulSoup import BeautifulStoneSoup
@@ -18,6 +21,12 @@ from files.models import File
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.template import RequestContext
+
+def replace_short_code(body):
+    body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
+    body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
+    return body
+
 
 def replace_short_code(body):
     body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
@@ -41,8 +50,10 @@ def get_posts(items, uri_parser, user):
             slug = uri_parser.parse(link).path.strip('/')
             post_date = unicode(node.find('wp:post_date').contents[0])
             post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
+            
             tags_raw = node.findAll('category', domain="post_tag")
             tags_list = []
+            
             if tags_raw:
                 for tag in tags_raw:
                     if len(','.join(tags_list)) + len(tag.string) <= 255:
@@ -87,10 +98,10 @@ def get_posts(items, uri_parser, user):
 
     return post_list, redirect_list
     
-
 def get_pages(items, uri_parser, user):
     page_list = []
     alreadyThere = False
+
     for node in items:
         post_type = node.find('wp:post_type').string
         post_status = node.find('wp:status').string

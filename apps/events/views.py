@@ -33,7 +33,7 @@ from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
-from events.utils import get_event_spots_taken, update_event_spots_taken
+from events.utils import get_event_spots_taken, update_event_spots_taken, get_ievent
 from perms.utils import has_perm, get_notice_recipients, \
     update_perms_and_save, get_administrators, is_admin
 from event_logs.models import EventLog
@@ -136,7 +136,38 @@ def icalendar(request):
         file_name = "event.ics"
     response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
     return response
+
+def icalendar_single(request, id):
+    import re
+    from events.utils import get_vevents
+    p = re.compile(r'http(s)?://(www.)?([^/]+)')
+    d = {}
+
+    d['site_url'] = get_setting('site', 'global', 'siteurl')
+    match = p.search(d['site_url'])
+    if match:
+        d['domain_name'] = match.group(3)
+    else:
+        d['domain_name'] = ""
+
+    ics_str = "BEGIN:VCALENDAR\n"
+    ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
+    ics_str += "VERSION:2.0\n"
+    ics_str += "METHOD:PUBLISH\n"
     
+    # function get_vevents in events.utils
+    ics_str += get_ievent(request, d, id)
+    
+    ics_str += "END:VCALENDAR\n"
+    
+    response = HttpResponse(ics_str)
+    response['Content-Type'] = 'text/calendar'
+    if d['domain_name']:
+        file_name = '%s.ics' % (d['domain_name'])
+    else:
+        file_name = "event.ics"
+    response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
+    return response
 
 def print_view(request, id, template_name="events/print-view.html"):
     event = get_object_or_404(Event, pk=id)    
@@ -777,7 +808,10 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     if event_price < 0:
                         event_price = 0
                     admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
-                
+                    #messages.add_message(request, messages.INFO,
+                    #    'Your discount of $%s has been added.' % discount.value
+                    #)
+                    
                 reg8n, reg8n_created = add_registration(
                     request, 
                     event, 
