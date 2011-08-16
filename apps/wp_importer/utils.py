@@ -4,10 +4,7 @@ import time
 import uuid
 import sys
 import re
-<<<<<<< HEAD
 
-=======
->>>>>>> 835546f27e5421af3c14f5abfda69c8a63bd1c22
 from dateutil import parser
 from datetime import datetime
 from BeautifulSoup import BeautifulStoneSoup
