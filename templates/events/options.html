@@ -21,7 +21,9 @@
 	{{ opt_object.type.name|truncatewords:3 }}</span>
 
 	<a class="option-link print" href="{% url event.print_view opt_object.pk %}">{% trans "Print" %}</a>
-
+    
+    <a class="option-link export" href="{% url event.ics_single opt_object.pk %}">{% trans "Export" %}</a>
+    
 	{% if can_edit %}
 		<a class="option-link edit" href="{% url event.edit opt_object.pk %}">{% trans "Edit" %}</a>
 	{% endif %}
