@@ -27,11 +27,11 @@ class TemplateForm(forms.ModelForm):
     
 class CampaignForm(forms.Form):
     # module content
-    include_login = forms.BooleanField(initial=0, required=False)
+    include_login = forms.BooleanField(initial=False, required=False)
     jump_links = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     events =  forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
-    event_start_dt = forms.DateField(required=False, widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))
-    event_end_dt = forms.DateField(required=False, widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))
+    event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))
+    event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))
     articles = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     articles_days = forms.ChoiceField(initial=60, choices=DAYS_CHOICES)
     news = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
