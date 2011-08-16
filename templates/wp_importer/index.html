@@ -1,10 +1,11 @@
 {% extends "wp_importer/base.html" %}
+{% load i18n %}
 
 {% block body %}
-<h1>get your wordpress stuff on tendenci!</h1>
-  <p>1. download xml file of blog from wordpress</p>
-  <p>2. upload here</p>
-  <p>3. enjoy your posts!</p>
+<h1>{% trans "get your wordpress stuff on tendenci!" %}</h1>
+  <p>{% trans "1. download xml file of blog from wordpress" %}</p>
+  <p>{% trans "2. upload here" %}</p>
+  <p>{% trans "3. enjoy your posts!" %}</p>
     <form enctype="multipart/form-data" method="post" action="">{% csrf_token %}
        {{ form.as_p}}
        <input type="submit" value="Upload file" />

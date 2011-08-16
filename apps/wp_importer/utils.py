@@ -3,16 +3,26 @@ import urllib2
 import time
 import uuid
 import sys
+import re
+
 from dateutil import parser
 from datetime import datetime
 from BeautifulSoup import BeautifulStoneSoup
+from parse_uri import ParseUri
+
 from pages.models import Page
 from articles.models import Article
 from redirects.models import Redirect
 from files.models import File
+
 from django.contrib.auth.models import User
 from django.conf import settings
-from parse_uri import ParseUri
+from django.template import RequestContext
+
+def replace_short_code(body):
+    body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
+    body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
+    return body
 
 def get_posts(items, uri_parser, user):
     post_list = []
@@ -25,6 +35,8 @@ def get_posts(items, uri_parser, user):
         if post_type == 'post' and post_status == 'publish':
             title = unicode(node.find('title').contents[0])
             body = unicode(node.find('content:encoded').contents[0])
+            body = replace_short_code(body)
+            body = correct_media_file_path(body, uri_parser)
             link = unicode(node.find('link').contents[0])
             slug = uri_parser.parse(link).path.strip('/')
             post_date = unicode(node.find('wp:post_date').contents[0])
@@ -86,6 +98,7 @@ def get_pages(items, uri_parser, user):
         if post_type == 'page' and post_status == 'publish':
             title = unicode(node.find('title').contents[0])
             body = unicode(node.find('content:encoded').contents[0])
+            body = correct_media_file_path(body, uri_parser)
             link = unicode(node.find('link').contents[0])
             slug = uri_parser.parse(link).path.strip('/')
 
@@ -123,9 +136,6 @@ def get_pages(items, uri_parser, user):
     return page_list
 
 def get_media(items, uri_parser, user):
-    # from files.managers import save_files_for_instance
-    ##################################################
-
     for node in items:
         post_type = node.find('wp:post_type').string
         if post_type == 'attachment':
@@ -141,7 +151,18 @@ def get_media(items, uri_parser, user):
             new_media = File(guid=unicode(uuid.uuid1()), file=file_path, creator=user, owner=user)
             new_media.save()
 
-def run(file_name):
+def correct_media_file_path(body, uri_parser):
+    for url in File.objects.all():
+        media_file = unicode(url.file)
+        match = re.search("(.*)(http://.*\\/?\\/\\b\\S+\\/)(\\w.*?)(\\\".*)", body)
+        if match:
+            match.group()
+            if media_file.endswith(match.group(3)):
+                body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(\\w.*?)(\\\".*)", "\\1" + media_file + "/\\4", body)
+
+    return body
+
+def run(file_name, request):
     f = open(file_name, 'r')
     xml = f.read()
     f.close()
@@ -151,7 +172,7 @@ def run(file_name):
     soup = BeautifulStoneSoup(xml)
     items = soup.findAll('item')
 
-    user = User.objects.get(id=1)
+    user = request.user
 
     get_media(items, uri_parser, user)
     posts = get_posts(items, uri_parser, user)[0]

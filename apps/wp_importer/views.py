@@ -13,6 +13,7 @@ from wp_importer.models import BlogImport
 from wp_importer.utils import run
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.utils.translation import ugettext as _
 from parse_uri import ParseUri
 
 from base.http import Http403
@@ -28,12 +29,12 @@ def index(request, template_name="wp_importer/index.html"):
             upload = form.save()
 
             file_name = 'site_media/media/blogimport/' + request.FILES['blog'].name
-            run(file_name)
+            run(file_name, request)
 
             messages.add_message(
                 request,
                 messages.INFO,
-                'Your blog has been imported!'
+                _('Your blog has been imported!')
             )
 
             return HttpResponseRedirect('detail/')
