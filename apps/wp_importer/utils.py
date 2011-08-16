@@ -18,9 +18,6 @@ from parse_uri import ParseUri
 
 def replace_short_code(body):
     body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
-    return body
-
-def remove_gallery(body):
     body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
     return body
 
@@ -36,8 +33,6 @@ def get_posts(items, uri_parser, user):
             title = unicode(node.find('title').contents[0])
             body = unicode(node.find('content:encoded').contents[0])
             body = replace_short_code(body)
-            body = remove_gallery(body)
-
             link = unicode(node.find('link').contents[0])
             slug = uri_parser.parse(link).path.strip('/')
             post_date = unicode(node.find('wp:post_date').contents[0])
