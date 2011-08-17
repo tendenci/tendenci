@@ -123,6 +123,7 @@ class FormAdminForm(TendenciBaseForm):
                   'response',
                   # 'send_email', removed per ed's request
                   'subject_template',
+                  'completion_url',
                   'email_from',
                   'email_copies',
                   'user_perms',
@@ -143,6 +144,7 @@ class FormForm(TendenciBaseForm):
                   'intro',
                   'response',
                   # 'send_email', removed per ed's request
+                  'completion_url',
                   'subject_template',
                   'email_from',
                   'email_copies',
@@ -157,6 +159,7 @@ class FormForm(TendenciBaseForm):
                         'fields': [ 'title',
                                     'intro',
                                     'response',
+                                    'completion_url',
                                     'subject_template',
                                     'email_from',
                                     'email_copies',
