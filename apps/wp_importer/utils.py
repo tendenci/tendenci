@@ -158,12 +158,11 @@ def get_media(items, uri_parser, user):
 def correct_media_file_path(body, uri_parser):
     for url in File.objects.all():
         media_file = unicode(url.file)
-        print media_file
         match = re.search("(.*)(http://.*\\/?\\/\\b\\S+\\/)(\\w.*?)(\\\".*)", body)
         if match:
             match.group()
             if media_file.endswith(match.group(3)):
-                body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(\\w.*?)(\\\".*)", "\\1/site_media/media/" + match.group(3) + "/\\4", body)
+                body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(" + re.escape(match.group(3)) + ".*?)(\\\".*)", "\\1/site_media/media/" + match.group(3) + "/\\4", body)
 
     return body
 
