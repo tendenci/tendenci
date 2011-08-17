@@ -329,12 +329,22 @@ class Registration(models.Model):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        return 'Tendenci Invoice %d for Event (%d): %s (Reg# %d)' % (
+        description = 'Tendenci Invoice %d for Event (%d): %s (Reg# %d).' % (
             inv.id,
             self.event.pk,
             self.event.title,
             inv.object_id,
         )
+        
+        #The discount used will be the same for all discount uses in one
+        #invoice.
+        discount = inv.discountuse_set.filter(invoice=inv)
+        if discount:
+            discount = discount[0].discount
+            description += "\nYour discount of $ %s has been added." % discount.value
+        
+        return description
+        
         
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """

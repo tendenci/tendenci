@@ -6,6 +6,7 @@ from django.utils.html import conditional_escape
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 from django.forms.util import flatatt
+from memberships.models import NOTICE_TYPES
 
 
 PERIOD_UNIT_CHOICE = (
@@ -282,11 +283,11 @@ class NoticeTimeTypeWidget(forms.MultiWidget):
         
         # notice_type
         notice_type_widget = self.pos_d['notice_type'][1]
-        notice_type_widget.choices = (('join','Join Date'),
-                                    ('renew','Renewal Date'),
-                                    ('expire','Expiration Date'))
-        rendered_notice_type = self.render_widget(notice_type_widget, 
-                                                  name, value, final_attrs, self.pos_d['notice_type'][0], id_)
+        notice_type_widget.choices = NOTICE_TYPES
+        rendered_notice_type = self.render_widget(
+            notice_type_widget,name,value,final_attrs,
+            self.pos_d['notice_type'][0],id
+        )
         
         output_html = """
                         <div id="notice-time-type">

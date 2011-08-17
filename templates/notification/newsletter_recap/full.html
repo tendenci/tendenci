@@ -1,3 +1,5 @@
+{% load i18n %}
+
 {% blocktrans with action.creator.first_name as act_create and action.name as act_name and action.attempted as act_attempt and action.failed as act_fail and action.sent as act_sent %}Greetings {{ act_create }}: <br /><br />
 
 The submission of your newsletter {{ act_name }} has been completed.<br /><br />

@@ -1,5 +1,7 @@
-
-<div>{{ obj.image_set.count }} photo{{ obj.image_set.count|pluralize }}</div>
+{% load i18n %}
+<div>
+{% blocktrans count obj.image_set.count as obj_count %}{{ obj_count }} photo{% plural %}{{ obj_count }} photos{% endblocktrans %}
+</div>
 
 {% for image in obj.image_set.all %}
     <a href="{{ image.get_absolute_url }}"><img src="{{ image.get_small_crop_url }}" alt="{{ image.title }}"/></a>

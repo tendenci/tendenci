@@ -1609,8 +1609,7 @@
             "rgb_color": "85,170,204", 
             "hex_color": "55AACC"
         }
-    },    
->>>>>>> sprint-5.0.38
+    },
     {
         "pk": 1, 
         "model": "event_logs.eventlogbasecolor", 

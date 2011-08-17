@@ -6,15 +6,16 @@ from perms.indexes import TendenciBaseSearchIndex
 
 class ProfileIndex(TendenciBaseSearchIndex):
     user = indexes.CharField(model_attr='user', faceted=True)
+    user_object = indexes.CharField(model_attr='user', faceted=True)
     company = indexes.CharField(model_attr='company')
     address = indexes.CharField(model_attr='address')
     city = indexes.CharField(model_attr='city')
     state = indexes.CharField(model_attr='state')
     zipcode = indexes.CharField(model_attr='zipcode')
     country = indexes.CharField(model_attr='country')
-    user_object = indexes.CharField(model_attr='user', faceted=True)
     last_name = indexes.CharField(faceted=True)
-
+    hide_in_search = indexes.BooleanField(model_attr='hide_in_search')
+    
     def prepare_last_name(self, obj):
         return obj.user.last_name
 

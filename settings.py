@@ -125,6 +125,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'Tendenci50.urls'
 
 TEMPLATE_DIRS = (
+    os.path.join(PROJECT_ROOT, "themes"),
     os.path.join(PROJECT_ROOT, "templates"),
     # Put strings here, like "/home/html/django_templates"
     # or "C:/www/django/templates".
@@ -218,6 +219,9 @@ INSTALLED_APPS = (
     'mobile',
     'social_auth',
     'campaign_monitor',
+    'wp_importer',
+    'theme',
+    'discounts',
     # celery task system, must stay at the bottom
     # of installed apps
     #'djcelery',
