@@ -64,6 +64,8 @@ class Form(TendenciBaseModel):
     email_copies = models.CharField(_("Send copies to"), blank=True, 
         help_text=_("One or more email addresses, separated by commas"), 
         max_length=200)
+    completion_url = models.URLField(_("Completion URL"), blank=True, null=True,
+        help_text=_("Redirect to this page after form completion."))
     
     objects = FormManager()
 

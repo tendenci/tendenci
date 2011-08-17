@@ -315,6 +315,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     f.seek(0)
                     msg.attach(f.name, f.read())
                 msg.send()
+            if form.completion_url:
+                return redirect(form.completion_url)
             return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
     context = {"form": form, "form_for_form": form_for_form}
     return render_to_response(template, context, RequestContext(request))
