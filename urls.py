@@ -4,7 +4,7 @@ from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
 from django.conf import settings
 from django.contrib import admin
-from theme.utils import get_theme_root, get_theme
+from theme.utils import get_theme_root, get_theme, theme_choices
 from registry import autodiscover as reg_autodiscover
 
 # load the apps that are in Django Admin
@@ -15,7 +15,7 @@ reg_autodiscover()
 
 
 urlpatterns = patterns('',
-    url(r'^$', direct_to_template, {"template": "homepage.html", }, name="home"),
+    url(r'^$', 'base.views.homepage', name="home"),
 
     #Reports:
     (r'^reports/', include('reports.urls')),
@@ -79,6 +79,8 @@ urlpatterns = patterns('',
     (r'^resumes/', include('resumes.urls')),
     (r'^mobile/', include('mobile.urls')),
     (r'campaign_monitor/', include('campaign_monitor.urls')),
+    (r'^wp_importer/', include('wp_importer.urls')),
+    (r'^discounts/', include('discounts.urls')),
     url(r'social_auth/', include('social_auth.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
@@ -100,12 +102,13 @@ if settings.DEBUG:
             'django.views.static.serve',
             {'document_root': join(settings.PROJECT_ROOT, 'site_media')}),
 
-        (r'^themes/%s/(?P<path>.*)$' % get_theme(),
-            'django.views.static.serve',
-            {'document_root': get_theme_root()}),
-
         (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
             'base.views.plugin_static_serve'),
+    )
+    urlpatterns += patterns('',
+        (r'^themes/(?P<path>.*)$',
+            'django.views.static.serve',
+            {'document_root': settings.THEME_DIR, 'show_indexes': True}),
     )
 
 # template tag testing environment

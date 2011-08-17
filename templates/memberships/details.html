@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{% blocktrans with membership.user as mem_user %}Membership for {{ membership.user }}{% endblocktrans %}{% endblock %}
+{% block title %}{% blocktrans with membership.user as mem_user %}Membership for {{ mem_user }}{% endblocktrans %}{% endblock %}
 {% block meta_description %}{{ membership.get_description }}{% endblock %}
 {% block meta_keywords %}{{ membership.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ membership.get_canonical_url }}" />{% endblock %}

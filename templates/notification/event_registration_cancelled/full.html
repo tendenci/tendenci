@@ -20,7 +20,7 @@
 	{% if user.is_anonymous %}
 		{% trans "An anonymous user just cancelled the registration for:" %} 
 	{% else %}
-		{% blocktrans with user.first_name as user_first and user.last_name as user_last %}{{ user.first_name }} {{ user.last_name }} just cancelled the registration for:{% endblocktrans %} 
+		{% blocktrans with user.first_name as user_first and user.last_name as user_last %}{{ user_first }} {{ user_last }} just cancelled the registration for:{% endblocktrans %} 
 	{% endif %}
 	{% if registrant.first_name or registrant.last_name %}
 		{{ registrant.first_name }} {{ registrant.last_name }}
