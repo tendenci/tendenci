@@ -36,7 +36,7 @@ class FileForm(forms.Form):
             
 class ThemeSelectForm(forms.Form):
     THEME_CHOICES = ((x, x) for x in theme_choices())
-    theme = forms.ChoiceField(label = _('Theme:'), choices=THEME_CHOICES)
+    theme_edit = forms.ChoiceField(label = _('Theme:'), choices=THEME_CHOICES)
     
     def __init__(self, *args, **kwargs):
         super(ThemeSelectForm, self).__init__(*args, **kwargs)

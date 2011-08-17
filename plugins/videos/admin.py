@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
+from django.utils.encoding import iri_to_uri
 from django.conf import settings
 
 from event_logs.models import EventLog

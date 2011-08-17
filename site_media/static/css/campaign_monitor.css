@@ -42,3 +42,13 @@
 .t .dropdown-options ul {
 	display: none;
 }
+.module-content {
+    background: #F7F7F7;
+    border: solid 1px #BBB;
+    padding: 10px;
+}
+.module-content h2 {
+    padding: 0;
+    margin: 0;
+    margin-bottom: 8px;
+}

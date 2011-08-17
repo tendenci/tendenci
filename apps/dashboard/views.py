@@ -4,6 +4,7 @@ from django.template import RequestContext
 
 from site_settings.models import Setting
 from perms.utils import is_admin
+from theme.shortcuts import themed_response
 
 @login_required
 def index(request, template_name="dashboard/index.html"):

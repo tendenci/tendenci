@@ -17,13 +17,11 @@
 	</li>
     {% endif %}
     
-    {% comment %}
     <li>
         <a href="{% url campaign_monitor.campaign_index %}">
             {% trans "Campaigns" %}
 		</a>
     </li>
-    {% endcomment %}
 
 	<li>
 		<span>{% trans "Templates" %}</span>
@@ -31,6 +29,7 @@
 			<li><a href="{% url campaign_monitor.template_index %}">{% trans "Templates:" %}</a></li> 
             {% if can_add_template %}
                 <li><a href="{% url campaign_monitor.template_add %}">{% trans "Add Template" %}</a></li>
+                <li><a href="{% url campaign_monitor.template_sync %}">{% trans "Sync Templates" %}</a></li>
             {% endif %}
 			{% if user.is_authenticated %}
                 <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>

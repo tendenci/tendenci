@@ -202,6 +202,7 @@ def user_upload_subprocess(request, id, template_name="imports/users_subprocess.
             'description': 'user import',
             'user': request.user,
             'request': request,
+            'source': 'auth',
         }
         EventLog.objects.log(**log_defaults)
         

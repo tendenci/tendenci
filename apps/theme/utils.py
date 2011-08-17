@@ -7,7 +7,7 @@ def get_theme():
     return theme
 
 def get_theme_root():
-    theme = get_setting('module', 'theme_editor', 'theme')
+    theme = get_theme()
     theme_root = os.path.join(settings.THEME_DIR, theme)
     return theme_root
 
@@ -16,7 +16,9 @@ def theme_options():
     Returns a string of the available themes in THEME_DIR
     """
     options = ''
-    for theme in os.listdir(settings.THEME_DIR):
+    themes = sorted(theme_choices())
+    themes.reverse()
+    for theme in themes:
         options = '%s, %s' % (theme, options)
     return options[:-2]
     

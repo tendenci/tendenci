@@ -14,22 +14,22 @@
 <div class="t">
 
     {% page_nav user %}
-    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% blocktrans %}Meta Information for<br />
-    {{ page.title }}{% endblocktrans %}</h1>
+    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% trans "Meta Information for" %}<br />
+    {{ page.title }}</h1>
 
     <div class="page-wrap">
         <div class="options">
             <div class="quick-options">
-				{% page_options request.user page %}
+                {% page_options request.user page %}
             </div>
         </div>
-    
-    	<form action="{% url page.edit.meta page.pk %}" method="post">{% csrf_token %}
-    	<div class="forms">
+
+        <form action="{% url page.edit.meta page.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Save Changes" />
-			 or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
-		</div>
+            <input type="submit" value="Save Changes" />
+             or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
         </form>
     </div>
 </div>
@@ -38,22 +38,22 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-		$(document).ready(function(){
+        $(document).ready(function(){
 
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_page = confirm("Permenantly delete {% firstof MODULE_PAGES_LABEL 'Page' %}?");	// confirm
-				if(delete_page) $(this).parents('.page-wrap').find('form[name="page-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_page = confirm("Permenantly delete {% firstof MODULE_PAGES_LABEL 'Page' %}?");   // confirm
+                if(delete_page) $(this).parents('.page-wrap').find('form[name="page-delete"]').submit() // delete: if OK
+                return false;   // cancel
+            });
+        });
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-		var iconrow = new dropdown({
-			container:	'more-options-wrap',
-			trigger:	'more-options-trigger',
-			target:		'more-options-target'
-		});
-	</script>
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:  'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:     'more-options-target'
+        });
+    </script>
 {% endblock %}

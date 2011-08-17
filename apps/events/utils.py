@@ -11,6 +11,63 @@ from events.models import Registration
 from events.models import Registrant, RegConfPricing
 from user_groups.models import Group
 from perms.utils import is_member, is_admin
+from discounts.models import Discount, DiscountUse
+
+def get_ievent(request, d, event_id):
+    from django.conf import settings
+    from timezones.utils import adjust_datetime_to_timezone
+    from events.models import Event
+    
+    site_url = get_setting('site', 'global', 'siteurl')
+    
+    event = Event.objects.get(id=event_id)
+    e_str = "BEGIN:VEVENT\n"
+    
+    # organizer
+    organizers = event.organizer_set.all()
+    if organizers:
+        organizer_name_list = [organizer.name for organizer in organizers]
+        e_str += "ORGANIZER:%s\n" % (', '.join(organizer_name_list))
+    
+    # date time 
+    if event.start_dt:
+        start_dt = adjust_datetime_to_timezone(event.start_dt, settings.TIME_ZONE, 'GMT')
+        start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
+        e_str += "DTSTART:%s\n" % (start_dt)
+    if event.end_dt:
+        end_dt = adjust_datetime_to_timezone(event.end_dt, settings.TIME_ZONE, 'GMT')
+        end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
+        e_str += "DTEND:%s\n" % (end_dt)
+    
+    # location
+    if event.place:
+        e_str += "LOCATION:%s\n" % (event.place.name)
+        
+    e_str += "TRANSP:OPAQUE\n"
+    e_str += "SEQUENCE:0\n"
+    
+    # uid
+    e_str += "UID:uid%d@%s\n" % (event.pk, d['domain_name'])
+    
+    event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
+    d['event_url'] = event_url
+    
+    # text description
+    e_str += "DESCRIPTION:%s\n" % (build_ical_text(event,d))
+    #  html description
+    e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\n" % (build_ical_html(event,d))
+    
+    e_str += "SUMMARY:%s\n" % strip_tags(event.title)
+    e_str += "PRIORITY:5\n"
+    e_str += "CLASS:PUBLIC\n"
+    e_str += "BEGIN:VALARM\n"
+    e_str += "TRIGGER:-PT30M\n"
+    e_str += "ACTION:DISPLAY\n"
+    e_str += "DESCRIPTION:Reminder\n"
+    e_str += "END:VALARM\n"
+    e_str += "END:VEVENT\n"
+        
+    return e_str
 
 
 def get_vevents(request, d):
@@ -393,6 +450,7 @@ def add_registration(*args, **kwargs):
     
     #kwargs
     admin_notes = kwargs.get('admin_notes', None)
+    discount = kwargs.get('discount', None)
 
     reg8n_attrs = {
         "event": event,
@@ -430,7 +488,15 @@ def add_registration(*args, **kwargs):
     created = True
     
     # create invoice
-    reg8n.save_invoice(admin_notes=admin_notes)
+    invoice = reg8n.save_invoice(admin_notes=admin_notes)
+    
+    if discount:
+        for i in range(0, count):
+            DiscountUse.objects.create(
+                    discount=discount,
+                    invoice=invoice,
+                )
+    
     return (reg8n, created)
 
 

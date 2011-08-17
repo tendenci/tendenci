@@ -13,19 +13,20 @@
 <div class="t">
 {% user_group_nav request.user %}
 <h1>{% trans "Delete a User Group" %}</h1>
-<h3>{% trans "Group" %}: <a href="{{ group.get_absolute_url }}">
-{% blocktrans count group.members.count as groupmem and with group.label as group_label %}{{ group_label }}({{ groupmem }} member{% plural %}{{ group_label }}({{ groupmem }} members{% endblocktrans %}</a></h3>
+<h3>Group: <a href="{{ group.get_absolute_url }}">{{ group.label }}
+({{ group.members.count }} member{{group.members.count|pluralize }})</a></h3>
 <div style="color:red;font-weight:bold;">{% trans "Are you sure you want to delete this Group?" %}</div>
 <div>
-{% trans "Clicking Delete User Group will 
-<ul>
-<li>remove all members from the group</li>" %}
-<li>{% trans "the group will be deleted from the system" %}</li> <li>{% trans "Deleted items cannot be recovered!" %}</li>
-</ul>
+    {% trans "Clicking Delete User Group will" %} 
+    <ul>
+        <li>{% trans "remove all members from the group" %}</li>
+        <li>{% trans "the group will be deleted from the system" %}</li>
+        <li>{% trans "Deleted items cannot be recovered!" %}</li>
+    </ul>
 </div>
 <form action="{% url group.delete group.id %}" method="post">{% csrf_token %}
 <input type="hidden" name="id" value="{{group.id}}" />
-<input type="submit" value="Delete User Group" />
+<input type="submit" value="{% trans "Delete User Group" %}" />
 </form>
 
 
