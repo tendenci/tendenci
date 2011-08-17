@@ -163,6 +163,9 @@ def correct_media_file_path(body, uri_parser):
             match.group()
             if media_file.endswith(match.group(3)):
                 body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(" + re.escape(match.group(3)) + ".*?)(\\\".*)", "\\1/site_media/media/" + match.group(3) + "/\\4", body)
+                # above: site_media/media (with match.group(3)) is hardcoded 
+                # rather than media_file because the resulting url from 
+                # media_file (with settings.MEDIA_ROOT) breaks - possible fix??
 
     return body
 
