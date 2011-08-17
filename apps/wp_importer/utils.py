@@ -24,12 +24,6 @@ def replace_short_code(body):
     body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
     return body
 
-
-def replace_short_code(body):
-    body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
-    body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
-    return body
-
 def get_posts(items, uri_parser, user):
     post_list = []
     redirect_list = []
@@ -39,22 +33,8 @@ def get_posts(items, uri_parser, user):
         post_status = node.find('wp:status').string
 
         if post_type == 'post' and post_status == 'publish':
-            title = unicode(node.find('title').contents[0])
-            body = unicode(node.find('content:encoded').contents[0])
-            body = replace_short_code(body)
-            body = correct_media_file_path(body, uri_parser)
             link = unicode(node.find('link').contents[0])
             slug = uri_parser.parse(link).path.strip('/')
-            post_date = unicode(node.find('wp:post_date').contents[0])
-            post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
-            
-            tags_raw = node.findAll('category', domain="post_tag")
-            tags_list = []
-            
-            if tags_raw:
-                for tag in tags_raw:
-                    if len(','.join(tags_list)) + len(tag.string) <= 255:
-                        tags_list.append(tag.string[:50])
 
             for post in Article.objects.all():
                 if post.slug == slug[:100]:
@@ -64,6 +44,22 @@ def get_posts(items, uri_parser, user):
                     alreadyThere = False
             
             if not alreadyThere:
+                title = unicode(node.find('title').contents[0])
+                body = unicode(node.find('content:encoded').contents[0])
+                body = replace_short_code(body)
+                body = correct_media_file_path(body, uri_parser)
+                post_date = unicode(node.find('wp:post_date').contents[0])
+                post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
+                
+                tags_raw = node.findAll('category', domain="post_tag")
+                tags_list = []
+            
+                if tags_raw:
+                    for tag in tags_raw:
+                        if len(','.join(tags_list)) + len(tag.string) <= 255:
+                            tags_list.append(tag.string[:50])
+
+            
                 post_list.append({
                     'headline': title,
                     'guid': str(uuid.uuid1()),
@@ -104,9 +100,6 @@ def get_pages(items, uri_parser, user):
         post_status = node.find('wp:status').string
 
         if post_type == 'page' and post_status == 'publish':
-            title = unicode(node.find('title').contents[0])
-            body = unicode(node.find('content:encoded').contents[0])
-            body = correct_media_file_path(body, uri_parser)
             link = unicode(node.find('link').contents[0])
             slug = uri_parser.parse(link).path.strip('/')
 
@@ -118,6 +111,9 @@ def get_pages(items, uri_parser, user):
                     alreadyThere = False
            
             if not alreadyThere:
+                title = unicode(node.find('title').contents[0])
+                body = unicode(node.find('content:encoded').contents[0])
+                body = correct_media_file_path(body, uri_parser)
                 page_list.append({
                     'title': title,
                     'guid': str(uuid.uuid1()),
@@ -162,11 +158,12 @@ def get_media(items, uri_parser, user):
 def correct_media_file_path(body, uri_parser):
     for url in File.objects.all():
         media_file = unicode(url.file)
+        print media_file
         match = re.search("(.*)(http://.*\\/?\\/\\b\\S+\\/)(\\w.*?)(\\\".*)", body)
         if match:
             match.group()
             if media_file.endswith(match.group(3)):
-                body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(\\w.*?)(\\\".*)", "\\1" + media_file + "/\\4", body)
+                body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(\\w.*?)(\\\".*)", "\\1/site_media/media/" + match.group(3) + "/\\4", body)
 
     return body
 
