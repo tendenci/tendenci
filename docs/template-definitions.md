@@ -18,8 +18,8 @@ T5 has custom template tags for most modules. For example, we can grab the lates
 
         {% list_articles as articles_list limit=5 %}
 
-	`list_articles` is the actual template tag name, like "if" or "for". The word `articles_list` is our temporary context variable. It could be `baby_elephants`, but we usually choose to name it something more relevant. We could use a descriptive name like `articles_sidebar` if we wanted. The only thing we shouldn't name it is just plain `articles`, because that Context Variable is used on the Articles search page, and it may cause that page to have errors. When in doubt, add some detail to the context variable name. At this point, all we have is a group or articles.
-	
+    `list_articles` is the actual template tag name, like "if" or "for". The word `articles_list` is our temporary context variable. It could be `baby_elephants`, but we usually choose to name it something more relevant. We could use a descriptive name like `articles_sidebar` if we wanted. The only thing we shouldn't name it is just plain `articles`, because that Context Variable is used on the Articles search page, and it may cause that page to have errors. When in doubt, add some detail to the context variable name. At this point, all we have is a group or articles.
+    
 2. We loop through the list using the `{% for %}` template tag
 
         {% for article in articles_list %}
@@ -28,10 +28,10 @@ T5 has custom template tags for most modules. For example, we can grab the lates
     
         {% endfor %}
     
-	A for loop takes a group of items and then does something for each one. In our example, we have 5 items. The for loop doesn't care how many items there are, as long is there is at least one. In the code, we can set a word (variable) to represent each item. In this case, that word is "article". The loop also has to know which list of things to pull from. We define this as we did in step 1, with "articles_list". This word can be different in step 1, but step 2 must use the same word (context variable). 
-	
+    A for loop takes a group of items and then does something for each one. In our example, we have 5 items. The for loop doesn't care how many items there are, as long is there is at least one. In the code, we can set a word (variable) to represent each item. In this case, that word is "article". The loop also has to know which list of things to pull from. We define this as we did in step 1, with "articles_list". This word can be different in step 1, but step 2 must use the same word (context variable). 
+    
 Inside the loop is where the content get's displayed. There, we can add HTML and change the way the content is laid out for the individual articles. We may want the title in an H4 linked to the article. The variables from the context are displayed with `{{ }}` and use a period to separate the context and the specific field. An example is `{{ article.title }}`. We could want the authors name and the date it was published, too. Now, what if we want a special format for the date, like m.d.y, or if it's an international client, d.m.y?
-	
+    
 **What is a filter?**
 
 A filter changes the output of a variable. These variables are generally thought of as fields on a form. Title, author, date, etc. For news we may have contact information.
@@ -47,7 +47,7 @@ In this case, the first word title is the field from the article. The second one
 Date is also a filter. It works using specific letters to represent month names, day numbers, etc. I always look this up from a list.
 
     {{ article.publish_date|date:"D d M Y" }}
-
+
 A full list of django template tags and filters is available at (http://docs.djangoproject.com/en/dev/ref/templates/builtins/)
 
 A list of those custom to T5 is in development.
@@ -71,8 +71,3 @@ Filters
 - truncate a section of text
 - do a word wrap
 
-
-
-	
-	
- 
