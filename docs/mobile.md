@@ -5,7 +5,10 @@ When setting up your mobile layout, you can select to show the mobile content us
     {% if request.mobile %}
         <link rel="stylesheet" href="{{ THEME_URL }}media/css/styles-mobile.css" type="text/css" />
     {% endif %}   
-    
+
+That same code can be used to include a separate layout, separate navigation, or anything else that you may want to display to mobile viewers but not to desktop browsers.
+
+
 To take advantage of the cookie opt-out for mobile viewers who want to view the full site, first load the mobile tags at the top of the template:
     
     {% load mobile_tags %}
@@ -23,3 +26,38 @@ To show the view mobile site link to mobile browser viewers who previously opted
     {% endif %}
     
 The placement of these links, as well as the text of the link is customizable.
+
+## Mobile Browsers Supported
+
+The following mobile browsers are supported:
+
+- iPad
+- iPhone
+- iPod
+- Android
+- Opera Mini
+- Blackberry
+- Droid
+- IEMobile
+- EudoraWeb
+- Fennec
+- Minimo
+- NetFront
+- Polaris
+- HTC_Dream
+- HTC Hero
+- HTC-ST7377
+- Kindle
+- LG-LX550
+- LX265
+- Nokia
+- Palm
+- MOT-V9mm
+- SEC-SGHE900
+- SAMSUNG-SGH-A867
+- SymbianOS
+- DoCoMo
+- ZuneHD
+- ReqwirelessWeb
+- SEJ001
+
