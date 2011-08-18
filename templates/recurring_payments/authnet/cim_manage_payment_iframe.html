@@ -1,0 +1,55 @@
+{% extends "recurring_payments/authnet/base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Manage Customer Payment and Shipping Information" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+  
+  
+{% endblock %}
+
+{% block body %}
+
+<form method="post" action="https://secure.authorize.net/hosted/profile/manage" id="formAuthorizeNetPopup" 
+name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
+  <input type="hidden" name="Token" value="{{ token }}" />
+</form>
+
+
+
+<div class="t">
+    <h1>{% trans "Manage Payment Information" %}</h1>
+
+    <button onclick="openAddPaymentPopup()">Manage my payment info</button><br />
+   
+  	<div class="AuthorizeNetPopupInner">
+    <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="" frameborder="0" scrolling="no"
+    width="442px" height="578px"></iframe>
+  	</div>
+	 
+	
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    
+    <script>
+    function openAddPaymentPopup(opt) {
+		var form = document.forms["formAuthorizeNetPopup"];
+		form.action = "{{ form_post_url }}"
+		form.submit();
+		
+	};
+    
+    </script>
+	
+	
+	
+{% endblock %}

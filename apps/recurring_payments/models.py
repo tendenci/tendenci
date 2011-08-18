@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 
 class RecurringPayment(models.Model):
     guid = models.CharField(max_length=50)
-    # payment gateway assigned ID associated with the customer profile
+    # gateway assigned ID associated with the customer profile
     customer_profile_id = models.CharField(max_length=100, default='')
     user = models.ForeignKey(User, related_name="recurring_payment_user",  null=True)
     # with object_content_type and object_content_id, we can apply the recurring 
@@ -45,9 +45,16 @@ class RecurringPayment(models.Model):
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='active')
     status = models.BooleanField(default=True)
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.guid = str(uuid.uuid1())
+        super(RecurringPayment, self).save(*args, **kwargs)
 
 class PaymentProfile(models.Model):
     recurring_payment =  models.ForeignKey(RecurringPayment)
+    # assigned by gateway
+    payment_profile_id = models.CharField(max_length=100, default='')
     card_type = models.CharField(max_length=50, null=True)
     # last 4 digits of card number
     card_num = models.CharField(max_length=4, null=True)

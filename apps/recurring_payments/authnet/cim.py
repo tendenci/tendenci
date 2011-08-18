@@ -7,8 +7,11 @@ from utils import to_camel_case
 
 BILL_TO_FIELDS = ('firstName', 'lastName', 'company', 'address', 'city', 'state', 'zip',
                   'country', 'phoneNumber', 'faxNumber')
-
 CREDIT_CARD_FIELDS = ('cardNumber', 'expirationDate', 'cardCode')
+TAX_FIELDS = ('amount', 'name', 'description')
+SHIPPING_FIELDS = ('amount', 'name', 'description')
+LINE_ITEMS_FIELDS = ('itemId', 'name', 'description', 'quantity', 'unitPrice', 'taxable')
+ORDER_FIELDS = ('invoiceNumber', 'description', 'purchaseOrderNumber')
 
 
 class CIMBase(object):
@@ -42,24 +45,31 @@ class CIMBase(object):
         billing_info = to_camel_case(billing_info)
         if billing_info and (type(billing_info) is dict):
             bill_to_node = ET.SubElement(payment_profiles_node, 'billTo')
-            for key in billing_info.keys():
-                value = billing_info.get(key)
-                if key in BILL_TO_FIELDS and value:
-                    node = ET.SubElement(bill_to_node, key)
-                    node.text = value
-                    
+            bill_to_node = self.build_node_from_dict(bill_to_node, 
+                                                     billing_info, 
+                                                     BILL_TO_FIELDS)
+            
         # credit_card
         payment_node =  ET.SubElement(payment_profiles_node, 'payment')
         credit_card_info= to_camel_case(credit_card_info)
         if credit_card_info and (type(credit_card_info) is dict):
             credit_card_node = ET.SubElement(payment_node, 'creditCard')
-            for key in credit_card_info.keys():
-                value = credit_card_info.get(key)
-                if key in CREDIT_CARD_FIELDS and value:
-                    node = ET.SubElement(credit_card_node, key)
-                    node.text = value
-                    
+            
+            credit_card_node = self.build_node_from_dict(credit_card_node, 
+                                                         credit_card_info, 
+                                                         CREDIT_CARD_FIELDS)
+            
         return payment_profiles_node
+    
+    def build_node_from_dict(self, parent_node, d, field_scope=None):
+        for key in d.keys():
+            if not field_scope or key in field_scope:
+                value = d.get(key)
+                node = ET.SubElement(parent_node, key)
+                node.text = value
+        return parent_node
+                
+            
         
     
     def process_request(self, xml_root):
@@ -79,17 +89,17 @@ class CIMBase(object):
         Extract the data from raw response xml to a dictionary.
         """
         e = ET.XML(raw_response_xml)
-        d = self._recurive_process(e)
+        d = self._recurive_parse(e)
         return d
         
         
-    def _recurive_process(self, element):
+    def _recurive_parse(self, element):
         """
-        Recurively process the xml tree until we reach to the end node.
+        Recurively parse the xml tree until we reach to the end node.
         
         example output:
         
-        {'customerProfileId': '4356210', 
+        {    'customerProfileId': '4356210', 
             'customerPaymentProfileIdList': 
                 {'numericString': '3831946'}, 
             'messages': 
@@ -97,8 +107,8 @@ class CIMBase(object):
                  'message': 
                      {'text': 'Successful.', 'code': 'I00001'}
                 }, 
-        'validationDirectResponseList': None,
-        'customerShippingAddressIdList': None
+            'validationDirectResponseList': None,
+            'customerShippingAddressIdList': None
         }
         """
         d = {}
@@ -119,7 +129,7 @@ class CIMBase(object):
                 else:
                     d[name] = sub_e.text
             else:
-                d[name] = self._recurive_process(sub_e)
+                d[name] = self._recurive_parse(sub_e)
         return d
 
 class CustomerProfile(CIMBase):
@@ -344,12 +354,13 @@ class CustomerProfile(CIMBase):
             # make payment_profiles node
             billing_info = kwargs.get('billing_info', '')
             credit_card_info= kwargs.get('credit_card_info', '')
-            payment_profiles_node = self.create_payment_profile_node('paymentProfiles', 
-                                                                     billing_info, 
-                                                                     credit_card_info)
-                        
-            
-            profile_node.append(payment_profiles_node)
+            if billing_info or credit_card_info:
+                payment_profiles_node = self.create_payment_profile_node('paymentProfiles', 
+                                                                         billing_info, 
+                                                                         credit_card_info)
+                            
+                
+                profile_node.append(payment_profiles_node)
         
         return profile_node
 
@@ -422,11 +433,12 @@ class CustomerPaymentProfile(CIMBase):
         
         billing_info = kwargs.get('billing_info', '')
         credit_card_info= kwargs.get('credit_card_info', '')
-        payment_profiles_node = self.create_payment_profile_node('paymentProfile', 
-                                                                 billing_info, 
-                                                                 credit_card_info)
-        
-        xml_root.append(payment_profiles_node)
+        if billing_info or credit_card_info:
+            payment_profiles_node = self.create_payment_profile_node('paymentProfile', 
+                                                                     billing_info, 
+                                                                     credit_card_info)
+            
+            xml_root.append(payment_profiles_node)
         
         response_d = self.process_request(xml_root)
         
@@ -531,14 +543,15 @@ class CustomerPaymentProfile(CIMBase):
         
         billing_info = kwargs.get('billing_info', '')
         credit_card_info= kwargs.get('credit_card_info', '')
-        payment_profiles_node = self.create_payment_profile_node('paymentProfile', 
-                                                                 billing_info, 
-                                                                 credit_card_info)
-        
-        customer_payment_profile_id_node = ET.SubElement(payment_profiles_node, 'customerPaymentProfileId')
-        customer_payment_profile_id_node.text = self.customer_payment_profile_id
-        
-        xml_root.append(payment_profiles_node)
+        if billing_info or credit_card_info:
+            payment_profiles_node = self.create_payment_profile_node('paymentProfile', 
+                                                                     billing_info, 
+                                                                     credit_card_info)
+            
+            customer_payment_profile_id_node = ET.SubElement(payment_profiles_node, 'customerPaymentProfileId')
+            customer_payment_profile_id_node.text = self.customer_payment_profile_id
+            
+            xml_root.append(payment_profiles_node)
         
         response_d = self.process_request(xml_root)
         
@@ -585,11 +598,12 @@ class CustomerPaymentProfile(CIMBase):
         
         return response_d   
 
-class CustomerProfileTranction(CIMBase):
-    def __init__(self, customer_profile_id):
-        super(CustomerProfileTranction, self).__init__()
+class CustomerProfileTransaction(CIMBase):
+    def __init__(self, customer_profile_id, customer_payment_profile_id):
+        super(CustomerProfileTransaction, self).__init__()
         
         self.customer_profile_id = customer_profile_id
+        self.customer_payment_profile_id = customer_payment_profile_id
         
         
     def create(self, **kwargs):
@@ -617,16 +631,164 @@ class CustomerProfileTranction(CIMBase):
                 split_tender_id - conditional for partial authorization transaction
          
          Output fields:
-                
+               ref_id
+               direct_response 
                         
         """
         if not self.customer_profile_id:
-            raise AttributeError, "Missing customer_profile_id in input."
+            raise AttributeError, "%s Missing customer_profile_id in input." % \
+                                'createCustomerProfileTransactionRequest'
+                                
+        root_name = 'createCustomerProfileTransactionRequest'
+        xml_root = self.create_base_xml(root_name)
+        
+        transaction_node = self.create_transaction_node(**kwargs)
+        xml_root.append(transaction_node)
+        
+        response_d = self.process_request(xml_root)
+        
+        return response_d   
         
         
         
+    def create_transaction_node(self, **kwargs):
+        amount = kwargs.get('amount', 0)
+        if amount <= 0:
+            raise ValueError, '%s - the amount %.2f is not greater than 0.' % \
+                               ('<createCustomerProfileTransactionRequest', amount)
+        tax = kwargs.get('tax', '')
+        shipping = kwargs.get('shipping')
+        line_items_list = kwargs.get('line_items_list')
+        customer_shipping_address_id = kwargs.get('customer_shipping_address_id')
+        order = kwargs.get('order')
+        tax_exempt = kwargs.get('tax_exempt')
+        recurring_billing = kwargs.get('recurring_billing')
+        card_code = kwargs.get('card_code')
+        split_tender_id = kwargs.get('split_tender_id')
+        
+        transaction_node = ET.Element("transaction")
+        trans_auth_capture_node = ET.SubElement(transaction_node, 'profileTransAuthCapture')
         
         
+        # amount node
+        amount_node = ET.SubElement(trans_auth_capture_node, "amount")
+        amount_node.text = amount
+        
+        # tax node       
+        if tax and type(tax) is dict:
+            tax = to_camel_case(tax)
+            tax_node = ET.SubElement(trans_auth_capture_node, 'tax')
+            tax_node = self.build_node_from_dict(tax_node, 
+                                                 tax,
+                                                 TAX_FIELDS)
+            
+        # tax node       
+        if shipping and type(shipping) is dict:
+            shipping = to_camel_case(shipping)
+            shipping_node = ET.SubElement(trans_auth_capture_node, 'shipping')
+            shipping_node = self.build_node_from_dict(shipping_node, 
+                                                 shipping,
+                                                 SHIPPING_FIELDS)
+            
+        # line items
+        if line_items_list and type(line_items_list) is list:
+            for line_items in line_items_list:
+                if line_items and type(line_items) is dict:
+                    line_items_node = ET.SubElement(trans_auth_capture_node, 'lineItems')
+                    line_items_node = self.build_node_from_dict(line_items_node,
+                                                                line_items,
+                                                                LINE_ITEMS_FIELDS)
+                    
+        # customer profile id
+        customer_profile_id_node = ET.SubElement(trans_auth_capture_node, "customerProfileId")
+        customer_profile_id_node.text = self.customer_profile_id
+        
+        # customer payment profile id
+        customer_payment_profile_id_node = ET.SubElement(trans_auth_capture_node, "customerPaymentProfileId")
+        customer_payment_profile_id_node.text = self.customer_payment_profile_id
+        
+        # customer shipping address id
+        if customer_shipping_address_id:
+            customer_shipping_address_id_node = ET.SubElement(trans_auth_capture_node, "customerShippingAddressId")
+            customer_shipping_address_id_node.text = customer_shipping_address_id
+            
+        # order
+        if order and type(order) is dict:
+            order = to_camel_case(order)
+            order_node = ET.SubElement(trans_auth_capture_node, 'order')
+            order_node = self.build_node_from_dict(order_node, 
+                                                 order,
+                                                 ORDER_FIELDS)
+            
+        # tax exempt
+        if tax_exempt:
+            tax_exempt_node = ET.SubElement(trans_auth_capture_node, "taxExempt")
+            tax_exempt_node.text = tax_exempt
+            
+        # recurring billing
+        if recurring_billing:
+            recurring_billing_node = ET.SubElement(trans_auth_capture_node, "recurringBilling")
+            recurring_billing_node.text = recurring_billing
+            
+        # card code
+        if card_code:
+            card_code_node = ET.SubElement(trans_auth_capture_node, "cardCode")
+            card_code_node.text = card_code
+            
+        # split tender id
+        if split_tender_id:
+            split_tender_id_node = ET.SubElement(trans_auth_capture_node, "splitTenderId")
+            split_tender_id_node.text = split_tender_id
+            
+        
+        return transaction_node
+    
+    
+class HostedProfilePage(CIMBase):
+    def __init__(self, customer_profile_id):
+        super(HostedProfilePage, self).__init__()
+        
+        self.customer_profile_id = customer_profile_id
+        
+    def get(self, **kwargs):
+        """
+        Get the token to initiate a request for direct access to the Authorize.Net hosted profile page.
+        
+        Input fields:
+            customer_profile_id
+            hosted_profile_settings - optional
+                setting_name
+                setting_value
+                
+        Output fields:
+            token - if not used within 15 minutes of the original API call, this token expires.
+            
+        """
+        if not self.customer_profile_id:
+            raise AttributeError, "%s Missing customer_profile_id in input." % \
+                                'getHostedProfilePageRequest'
+                                
+        root_name = 'getHostedProfilePageRequest'
+        xml_root = self.create_base_xml(root_name)
+        
+        customer_profile_id_node = ET.SubElement(xml_root, 'customerProfileId')
+        customer_profile_id_node.text = self.customer_profile_id
+        
+        hosted_profile_settings = kwargs.get('hosted_profile_settings')
+        if hosted_profile_settings and type(hosted_profile_settings) is list:
+            hosted_profile_settings_node = ET.SubElement(xml_root, 'hostedProfileSettings')
+            for hosted_profile_setting in hosted_profile_settings:
+                if type(hosted_profile_setting) is dict:
+                    setting_node = ET.SubElement(hosted_profile_settings_node, 'setting')
+                    hosted_profile_setting = to_camel_case(hosted_profile_setting)
+                    setting_node = self.build_node_from_dict(setting_node, 
+                                                         hosted_profile_setting, 
+                                                         ('settingName', 'settingValue'))
+        
+        response_d = self.process_request(xml_root)
+        
+        return response_d     
+           
 
 class CustomerShippingAddress(CIMBase):
     def __init__(self, customer_profile_id):
