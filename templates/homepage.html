@@ -19,10 +19,6 @@
 		<h1><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a></h1> 
 		<h2>Website tagline</h2> 
 	</div> 
-
-	<div id="headerimage"> 
-		<img src="{{ THEME_URL }}media/images/headers/header.jpg" width="940" height="198" alt="" /> 
-	</div> 
         
     <div id="menu"> 
     	{% spaceless %}{% theme_include "nav.html" %}{% endspaceless %}
@@ -56,7 +52,6 @@
 						<li><a href="{% url registration_register %}">Register</a></li>
 						{% endif %}
 						<li><a href="{% url auth_login %}">Log in</a></li>
-                        <li><a href="{% url social_begin 'facebook' %}">Log in with Facebook</a></li>
                     {% endif %}
 				</ul>
 			</li>

@@ -82,7 +82,7 @@ class Command(BaseCommand):
         """
         Get the HDD usage of the entire site
         """
-        cmd = 'du -s %s' % settings.PROJECT_ROOT
+        cmd = 'du -s -k %s' % settings.PROJECT_ROOT
         size_in_kb = 0
         status, output = commands.getstatusoutput(cmd)
 
