@@ -1,0 +1,97 @@
+{% extends "recurring_payments/authnet/base.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Manage Customer Payment and Shipping Information" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}authnet_cim2/paymentShipping.css">
+
+<!--[if lte IE 6]>
+  <link href="{{ STATIC_URL }}authnet_cim2/paymentShippingIELTE6.css" rel="stylesheet" type="text/css" />
+  <![endif]-->
+  
+  <script type="text/javascript" src="{{ STATIC_URL }}authnet_cim/popup.js"></script>
+  
+ <script type="text/javascript">
+  //<![CDATA[
+  // Uncomment this line if eCheck is enabled. This does not affect functionality, only the initial sizing of the popup page for add payment.
+  //AuthorizeNetPopup.options.eCheckEnabled = true;
+
+  // Uncomment these lines to define a function that will be called when the popup is closed.
+  // For example, you may want to refresh your page and/or call the GetCustomerProfile API method from your server.
+  AuthorizeNetPopup.options.onPopupClosed = function() {
+  	alert("Just test");
+  };
+
+  // Uncomment this line if you do not have absolutely positioned elements on your page that can obstruct the view of the popup.
+  // This can speed up the processing of the page slightly.
+  AuthorizeNetPopup.options.skipZIndexCheck = true;
+
+  // Uncomment this line to use test.authorize.net instead of secure.authorize.net.
+  AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }}
+  //]]>
+  </script>
+  
+  
+{% endblock %}
+
+{% block body %}
+
+<form method="post" action="" id="formAuthorizeNetPopup" name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
+  <input type="hidden" name="Token" value="{{ token }}" />
+  <input type="hidden" name="PaymentProfileId" value="" />
+  <input type="hidden" name="ShippingAddressId" value="" />
+</form>
+
+
+
+<div class="t">
+    <h1>{% trans "Manage Payment Information" %}</h1>
+
+    <button onclick="AuthorizeNetPopup.openAddPaymentPopup()">Add a New Payment Method</button><br />
+   
+   {% if payment_profiles %}
+   {% for payment_profile in payment_profiles %}
+   <button onclick="AuthorizeNetPopup.openEditPaymentPopup('{{ payment_profile.payment_profile_id }}')">Edit Payment Method</button>
+   <br />
+   {% endfor %}
+   {% endif %}
+
+
+   <div id="divAuthorizeNetPopup" style="display:none;" class="AuthorizeNetPopupSimpleTheme">
+	  <div class="AuthorizeNetPopupOuter">
+	  	<div class="AuthorizeNetPopupTop">
+          <div class="AuthorizeNetPopupClose">
+            <a href="javascript:;" onclick="AuthorizeNetPopup.closePopup();" title="Close"> </a>
+          </div>
+        </div>
+	  
+	  	<div class="AuthorizeNetPopupInner">
+	    <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="{{ STATIC_URL }}authnet_cim2/empty.html" frameborder="0" scrolling="no"></iframe>
+	  	</div>
+	  </div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowT"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowR"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowB"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowL"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowTR"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowBR"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowBL"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowTL"></div>
+	</div>
+	
+	<div id="divAuthorizeNetPopupScreen" style="display:none;"></div>
+
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+	
+	
+	
+{% endblock %}
