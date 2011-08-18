@@ -12,6 +12,7 @@ urlpatterns = patterns('events',
     url(r'^add/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', 'views.add', name="event.add"),
 
     url(r'^edit/(?P<id>\d+)/$', 'views.edit', name="event.edit"),
+    url(r'^copy/(?P<id>\d+)/$', 'views.copy', name="event.copy"),
     url(r'^edit/meta/(?P<id>\d+)/$', 'views.edit_meta', name="event.edit.meta"),
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="event.delete"),
     url(r'^ics/(?P<id>\d+)/$', 'views.icalendar_single', name="event.ics_single"),
