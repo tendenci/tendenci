@@ -1645,6 +1645,15 @@ def copy(request, id):
     event = get_object_or_404(Event, id=id)
     new_event = copy_event(event, request.user)
     
-    messages.add_message(request, messages.INFO, 'Sucessfully copied Event: %s' % event.title)
+    EventLog.objects.log(
+        event_id =  171000, # add event
+        event_data = '%s (%d) added by %s' % (new_event._meta.object_name, new_event.pk, request.user),
+        description = '%s added' % new_event._meta.object_name,
+        user = request.user,
+        request = request,
+        instance = new_event
+    )
+    
+    messages.add_message(request, messages.INFO, 'Sucessfully copied Event: %s' % new_event.title)
     
     return redirect(new_event)
