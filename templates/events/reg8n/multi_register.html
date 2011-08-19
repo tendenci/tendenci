@@ -24,7 +24,6 @@
         margin-bottom: 10px;
         width: 61%;
     }
-
     .event-title {
         font-size: 1.3em;   
         margin-bottom: 10px;
@@ -83,18 +82,23 @@
     }
     #summary-total-price{
         border-top: 1px solid #ccc;
+        margin-bottom: 1em;
     }
     #total-label,#total-amount{ 
         font-weight: bold;
-    }
-    #summary-total-price{
-        margin-bottom: 1em;
     }
     #summary-price, #summary-total-price{
         width: 90%;
     }
     #summary-price td, #summary-total-price td{
         padding: 3px;
+    }
+    #summary-discounted-price{
+        margin-bottom: 1em;
+        width: 90%;
+	}
+    .line-on-top{
+        border-top: 1px solid #ccc;
     }
     #register-button {
         font-size: 1.2em;
@@ -207,11 +211,12 @@
                 <div class="float-anchor"><!-- ie7 fix --></div>
                 <div class="float-window">
                 
-                <div id="reg-form-box"> 
-                    <div class="summary-total">
-                        {{ SITE_GLOBAL_CURRENCYSYMBOL }}
-                        <span class="summary-total-amount">{{ total_price|floatformat:2 }}</span>
-                    </div>
+				<div id="reg-form-box">	
+                    <div id="original-price" style="display:none;">{{ total_price|floatformat:2 }}</div>
+    				<div class="summary-total">
+    					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
+    					<span class="summary-total-amount" id="summary-total-amount">{{ total_price|floatformat:2 }}</span>
+    				</div>
 
                     <div class="summary-payment">
                         <noscript>
@@ -230,8 +235,9 @@
                         {% if reg_form.discount_code %}
                             <div class="form-field">
                                 <div class="error">{{ reg_form.discount_code.errors }}</div>
-                                <div class="discount">{% trans "Discount Code" %}</div>
-                                <div class="field">{{ reg_form.discount_code }}</div>
+								<div class="required">{% trans "Discount Code" %}</div>
+								<div class="field">{{ reg_form.discount_code }}</div>
+                                <button type="button" id="discount_check">Check Discount</button>
                             </div>
                         {% endif %}
                         
@@ -253,113 +259,127 @@
                         <input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register & Pay{%endif%}" />
                     </div>
 
-                    {# price list #}
-                    <table id="summary-price">
-                        {% for price_entry in price_list %}
-                        <tr id="price_registrant_{{ forloop.counter }}"{% if price_entry.deleted %} class="deleted-item"{% endif %}>
-                            <td width="50%">{% trans "Reg" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
-                            <td width="50%" align="right">
-                                <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span class="reg-price">{{ price_entry.price|floatformat:2 }}</span>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                    <table id="summary-total-price">
+    				{# price list #}
+    				<table id="summary-price">
+    					{% for price_entry in price_list %}
+    					<tr id="price_registrant_{{ forloop.counter }}"{% if price_entry.deleted %} class="deleted-item"{% endif %}>
+	    					<td width="50%">{% trans "Reg" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+	    					<td width="50%" align="right">
+		    					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+		    					<span class="reg-price">{{ price_entry.price|floatformat:2 }}</span>
+	    					</td>
+    					</tr>
+    					{% endfor %}
+    				</table>
+					<table id="summary-total-price">
+						<tr>
+							<td><div id="total-label">{% trans "Total" %}</div></td>
+							<td align="right">
+								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+								<span id="total-amount">{{ total_price|floatformat:2 }}</span>
+							</td>
+						</tr>
                         <tr>
-                            <td><div id="total-label">{% trans "Total" %}</div></td>
+                            <td><div id="discount-label">{% trans "Discount" %}</div></td>
                             <td align="right">
-                                <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span id="total-amount">{{ total_price|floatformat:2 }}</span>
-                            </td>
+								<span class="currency-symbol">- {{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+								<span id="discount-amount">0</span>
+							</td>
                         </tr>
-                    </table>
-               </div>
-               </div>  {# float-widow#}
-            </div>
-            
-            <div id="registrant-forms">
-                {{ registrant.management_form }}
-                {% for form in registrant.forms %}
-                    {% with forloop.counter as forloop_counter %}
-                    <div id="registrant_{{ forloop.counter }}" class="registrant-form">
-                        <div class="registrant-header{% if total_regt_forms = 1 %} hidden{% endif %}">
-                            {% trans "Registrant" %} #<span class="item-counter">{{ forloop_counter }}</span>:
-                        </div>
-                    
-                        <div class="{% cycle 'odd-registrant' 'even-registrant'%}">
-                        
-                            {% if form.first_name %}
-                            <div class="form-field">
-                                <div class="error">{{ form.first_name.errors }}</div>
-                                <div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "First Name" %}</div>
-                                <div class="field">{{ form.first_name }}</div>
-                            </div>
-                            {% endif %}
-                
-                            {% if form.last_name %}
-                            <div class="form-field">
-                                <div class="error">{{ form.last_name.errors }}</div>
-                                <div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "Last Name" %}</div>
-                                <div class="field">{{ form.last_name }}</div>
-                            </div>
-                            {% endif %}
-                
-                            {% if form.company_name %}
-                            <div class="form-field">
-                                <div class="error">{{ form.company_name.errors }}</div>
-                                <div class="label">{% trans "Company" %}</div>
-                                <div class="field">{{ form.company_name }}</div>
-                            </div>
-                            {% endif %}
-                
-                            {% if form.phone %}
-                            <div class="form-field">
-                                <div class="error">{{ form.phone.errors }}</div>
-                                <div class="label">{% trans "Phone" %}</div>
-                                <div class="field">{{ form.phone }}</div>
-                            </div>
-                            {% endif %}
-                
-                            {% if form.email %}
-                            <div class="form-field">
-                                <div class="error">{{ form.email.errors }}</div>
-                                <div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "Email" %}</div>
-                                <div class="field">{{ form.email }}</div>
-                            </div>
-                            {% endif %} 
-                            
-                            
-                            {% if form.DELETE %}
-                            {% if price.quantity == 1 %}
-                            <div class="form-field delete{% if forloop.first %} hidden{% endif %}">
-                                <div class="delete-button-wrap">
-                                    <button class="delete-button">&nbsp;&nbsp;{% trans "Delete" %}</button>
-                                </div>
-                                
-                                <noscript>
-                                    <div>{{ form.DELETE }} {% trans "Delete" %}</div>
-                                </noscript>
-                            
-                            </div>
-                            {% endif %}
-                            {% endif %}
-                            
-                        </div>  
-                    </div>
-                {% endwith %}
-                {% endfor %}
-                
-            </div>
-            
-            {% if price.quantity == 1 %}
-            <div class="add-registrant-box">
-                 <div class="add-registrants-text">
-                 {% blocktrans %} Add<input class="extra-registrants" type="text" name="extra-registrant-amount" value="1" /> registrant(s){% endblocktrans %}
-                 </div>
-                 <input class="add-registrants-button" title='Add registrant(s)' type='submit' name='add_registrant'  onClick="add_registrants(this, 'registrant'); return false;"
-                  value='Add' />
-            </div>
+                        <tr class='line-on-top'>
+							<td><div id="total-label">{% trans "Total" %}</div></td>
+							<td align="right">
+								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+								<span id="final-amount">{{ total_price|floatformat:2 }}</span>
+							</td>
+						</tr>
+					</table>
+    		   </div>
+    		   </div>  {# float-widow#}
+    		</div>
+    		
+    		<div id="registrant-forms">
+	    		{{ registrant.management_form }}
+				{% for form in registrant.forms %}
+					{% with forloop.counter as forloop_counter %}
+					<div id="registrant_{{ forloop.counter }}" class="registrant-form">
+						<div class="registrant-header{% if total_regt_forms = 1 %} hidden{% endif %}">
+							{% trans "Registrant" %} #<span class="item-counter">{{ forloop_counter }}</span>:
+						</div>
+					
+						<div class="{% cycle 'odd-registrant' 'even-registrant'%}">
+						
+							{% if form.first_name %}
+							<div class="form-field">
+								<div class="error">{{ form.first_name.errors }}</div>
+								<div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "First Name" %}</div>
+								<div class="field">{{ form.first_name }}</div>
+							</div>
+							{% endif %}
+				
+							{% if form.last_name %}
+							<div class="form-field">
+								<div class="error">{{ form.last_name.errors }}</div>
+								<div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "Last Name" %}</div>
+								<div class="field">{{ form.last_name }}</div>
+							</div>
+							{% endif %}
+				
+				        	{% if form.company_name %}
+							<div class="form-field">
+								<div class="error">{{ form.company_name.errors }}</div>
+								<div class="label">{% trans "Company" %}</div>
+								<div class="field">{{ form.company_name }}</div>
+							</div>
+							{% endif %}
+				
+							{% if form.phone %}
+							<div class="form-field">
+								<div class="error">{{ form.phone.errors }}</div>
+								<div class="label">{% trans "Phone" %}</div>
+								<div class="field">{{ form.phone }}</div>
+							</div>
+							{% endif %}
+				
+							{% if form.email %}
+							<div class="form-field">
+								<div class="error">{{ form.email.errors }}</div>
+								<div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "Email" %}</div>
+								<div class="field">{{ form.email }}</div>
+							</div>
+							{% endif %}	
+							
+							
+							{% if form.DELETE %}
+							{% if price.quantity == 1 %}
+							<div class="form-field delete{% if forloop.first %} hidden{% endif %}">
+								<div class="delete-button-wrap">
+									<button class="delete-button">&nbsp;&nbsp;{% trans "Delete" %}</button>
+								</div>
+								
+								<noscript>
+									<div>{{ form.DELETE }} {% trans "Delete" %}</div>
+								</noscript>
+							
+							</div>
+							{% endif %}
+							{% endif %}	
+							
+						</div>	
+					</div>
+				{% endwith %}	
+				{% endfor %}
+				
+			</div>
+			
+			{% if price.quantity == 1 %}
+			<div class="add-registrant-box">
+				 <div class="add-registrants-text">
+				 {% blocktrans %} Add<input class="extra-registrants" type="text" name="extra-registrant-amount" value="1" /> registrant(s){% endblocktrans %}
+				 </div>
+				 <input class="add-registrants-button" title='Add registrant(s)' type='submit' name='add_registrant'  onClick="add_registrants(this, 'registrant'); return false;"
+			 	  value='Add' />
+			</div>
             {% else %}
             <div class="add-registrant-box">
                  <input class="add-registrants-button" title='Add registrant(s)' type='submit' name='add_registrant'  onClick="add_registrant_set(this, 'registrant'); return false;"
@@ -389,37 +409,39 @@
         var forms = $(".registrant-form");
         $("#id_" + prefix + "-TOTAL_FORMS").val(forms.length);
 
-        // update the total amount and remove the reg price entry
-        var reg_id = attr_id.split('_')[1];
-        var registrant_summary_entry = $("tr[id=price_registrant_" + reg_id + "]");
-        var registrant_price = $(registrant_summary_entry).find(".reg-price").html();
-        
-        var total_amount = $("#total-amount").html();
-        total_amount = (parseFloat(total_amount) - parseFloat(registrant_price)).toFixed(2);
-        $("#total-amount").html(total_amount);
-        
-        
-        $(registrant_summary_entry).remove();
-        
-        // update form index
-        var this_form;
-        for (var i=0, formCount=forms.length; i<formCount; i++){
-            this_form = forms.get(i);
-            $(this_form).find(".form-field").children().children().each(function() {
-                if (this){
-                    updateIndex(this, prefix, i);
-                }
-            });
+		// update the total amount and remove the reg price entry
+		var reg_id = attr_id.split('_')[1];
+		var registrant_summary_entry = $("tr[id=price_registrant_" + reg_id + "]");
+		var registrant_price = $(registrant_summary_entry).find(".reg-price").html();
+		
+		var total_amount = $("#total-amount").html();
+		total_amount = (parseFloat(total_amount) - parseFloat(registrant_price)).toFixed(2);
+		
+		$(registrant_summary_entry).remove();
+		
+		// update form index
+		var this_form;
+		for (var i=0, formCount=forms.length; i<formCount; i++){
+			this_form = forms.get(i);
+			$(this_form).find(".form-field").children().children().each(function() {
+				if (this){
+					updateIndex(this, prefix, i);
+				}
+			});
 
-            // update form header
-            if (i > 0){
-                updateFormHeader(this_form, prefix, i);
-                updateSummary(this_form, prefix, i);
-            }
-        }
-
-        return false;
-    }
+			// update form header
+			if (i > 0){
+				updateFormHeader(this_form, prefix, i);
+				updateSummary(this_form, prefix, i);
+			}
+		}
+        
+		$("#total-amount").html(total_amount);
+        $("span.summary-total-amount").html(total_amount);
+        $("#original-price").html(total_amount);
+        $('#discount-amount').html(0);
+        $('#final-amount').html(total_amount);
+	}
 
     function updateIndex(e, prefix, idx){
         var id_regex = new RegExp('(registrant-\\d+)');
@@ -467,17 +489,21 @@
         if (zero) {
             $(row).find('.reg-price').html('0.00');
         }
-        var id_regex = new RegExp('(registrant_\\d+)');
-        var replacement = prefix + '_' + idx
-        if (row.id) {row.id = row.id.replace(id_regex, replacement);}
-        
-        $(row).insertAfter($('#summary-price').find('tr:last'))
-        // update the total
-        var total_amount = $("#total-amount").html();
-        total_amount = (parseFloat(total_amount) + parseFloat($(row).find(".reg-price").html())).toFixed(2);
-        $("#total-amount").html(total_amount);
-        $("span.summary-total-amount").html(total_amount);
-    }
+
+		var id_regex = new RegExp('(registrant_\\d+)');
+		var replacement = prefix + '_' + idx
+		if (row.id) {row.id = row.id.replace(id_regex, replacement);}
+		
+		$(row).insertAfter($('#summary-price').find('tr:last'))
+		// update the total
+		var total_amount = $("#total-amount").html();
+		total_amount = (parseFloat(total_amount) + parseFloat($(row).find(".reg-price").html())).toFixed(2);
+		$("#total-amount").html(total_amount);
+		$("span.summary-total-amount").html(total_amount);
+        $("#original-price").html(total_amount);
+        $('#discount-amount').html(0);
+        $('#final-amount').html(total_amount);
+	}
 
     function addRegistrant(ele, prefix, zero) {
         var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
@@ -545,18 +571,44 @@
         });
     });
 
-    // $(window).scroll(function(){
-    //  if  ($(window).scrollTop() > $(".float-anchor").offset().top){
-    //      $(".float-window").css("position", "fixed");
-    //      $(".float-window").css("top", "8px");
-    //  }
-        
-    //  if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
-    //      $(".float-window").css("position", "relative");
-    //      $(".float-window").css("top", $(".float-anchor").offset);
-    //  }
-    // });
-
-
+	// $(window).scroll(function(){
+	// 	if  ($(window).scrollTop() > $(".float-anchor").offset().top){
+	// 		$(".float-window").css("position", "fixed");
+	// 		$(".float-window").css("top", "8px");
+	// 	}
+		
+	// 	if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
+	// 		$(".float-window").css("position", "relative");
+	// 		$(".float-window").css("top", $(".float-anchor").offset);
+	// 	}
+	// });
+    
+    $('#discount_check').click(function(){
+        code = $('#id_discount_code').val();
+        price = $('#original-price').html();
+        count = parseInt($('#id_registrant-TOTAL_FORMS').val());
+        $.post(
+            '{% url discount.discounted_price %}',
+            {
+                'code':code,
+                'price':price,
+                'count':count,
+            },
+            function(data, textStatus, jqXHR){
+                json = $.parseJSON(data);
+                alert(json['message'])
+                if (!json["error"]){
+                    $('#summary-total-amount').html(json["price"]);
+                    $('#discount-amount').html(json["discount"]);
+                    $('#final-amount').html(json["price"]);
+                } else {
+                    $('#summary-total-amount').html($('#original-price').html());
+                    $('#discount-amount').html(0);
+                    $('#final-amount').html($('#original-price').html());
+                }
+            }
+        );
+    });
+    
    </script>
 {% endblock %}

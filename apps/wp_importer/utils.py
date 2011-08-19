@@ -23,6 +23,9 @@ from django.template import RequestContext
   
 def replace_short_code(body):
 
+    """
+    Replaces shortcodes in the body of an article with appropriate HTML structures.
+    """
     body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
     body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
     return body
@@ -55,7 +58,7 @@ def get_posts(items, uri_parser, user):
                 title = unicode(node.find('title').contents[0])
                 body = unicode(node.find('content:encoded').contents[0])
                 body = replace_short_code(body)
-                body = correct_media_file_path(body, uri_parser)
+                body = correct_media_file_path(body)
                 post_date = unicode(node.find('wp:post_date').contents[0])
                 post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
                 
@@ -99,10 +102,12 @@ def get_posts(items, uri_parser, user):
 
     return post_list, redirect_list
 
-# Find each item marked "page" in items.If that Page has already been created, do nothing. If not, create Page object.
-    
 def get_pages(items, uri_parser, user):
- 
+    """
+    Find each item marked "page" in items.
+    If that Page has already been created, do nothing.
+    If not, create Page object.
+    """
     page_list = []
     alreadyThere = False
 
@@ -124,7 +129,7 @@ def get_pages(items, uri_parser, user):
             if not alreadyThere:
                 title = unicode(node.find('title').contents[0])
                 body = unicode(node.find('content:encoded').contents[0])
-                body = correct_media_file_path(body, uri_parser)
+                body = correct_media_file_path(body)
                 page_list.append({
                     'title': title,
                     'guid': str(uuid.uuid1()),
@@ -149,11 +154,13 @@ def get_pages(items, uri_parser, user):
                 })
 
     return page_list
-
-#   Find any URL contained in an "attachment" If that File has already been created, skip it. If not, go to the URL, and save the media there as a File.
   
 def get_media(items, uri_parser, user):
-    
+    """
+    Find any URL contained in an "attachment."
+    If that File has already been created, skip it.
+    If not, go to the URL, and save the media there as a File.
+    """
     for node in items:
         post_type = node.find('wp:post_type').string
         if post_type == 'attachment':
@@ -178,36 +185,29 @@ def get_media(items, uri_parser, user):
                 new_media = File(guid=unicode(uuid.uuid1()), file=file_path, creator=user, owner=user)
                 new_media.save()
 
-# For each File in the database, replace an instance of that file's URL in the given HTML with a file path.
-    
-def correct_media_file_path(body, uri_parser):
-    
-    for overwrite in File.objects.all():
-        print 'Got to the for loop'
-        print overwrite.basename() + '\n'
+def correct_media_file_path(body):
+    """
+    For each File in the database, replace an instance of that file's URL in the given HTML with a file path.
+    """
+    for file in File.objects.all():
         match = re.search("(.*)(http://.*\\/?\\/\\b\\w+\\/)((\\S+)(\\-\\d+x.*?\\S*.*)|(\\S+.*?\\S+))(\\.\\S+)(\\\".*)", body)
         if match:
             match.group()
-            if overwrite.basename() == match.group(3) + match.group(7):
-                print 'I am in the if statement before sub'
-                print overwrite.basename() + '\n'
-                #media_overwrite.endswith(match.group(3)+match.group(7)):
-                #body = re.sub("(.*)(http://.*\\/?\\/\\b\\w+\\/)(" + re.escape(overwrite.basename())")(\\.\\S+)(\\\".*)", "\\1/files/" + match.group(3) + "/\\7", body)
-                body = re.sub("(.*)(http://.*\\/?\\/\\b\\w+\\/)(" + re.escape(overwrite.basename()) + ".*?)(\\\".*)", "\\1/files/" + str(overwrite.pk) + "/\\4", body)
-                print 'I am after re.sub'
-                print overwrite.basename() + '\n'
 
-            elif overwrite.basename() == match.group(3) + match.group(7):
-                print 'In the elif before re.sub'
-                body = re.sub("(.*)(http://.*\\/?\\/\\b\\w+\\/)("+ re.escape(match.group(6)) +")(\\.\\S+)(\\\".*)", "\\1/files/" + str(overwrite.pk) + "/\\7", body)
-                print 'In elif after re.sub'
+            if match.group(4) == None and file.basename() == match.group(6) + match.group(7):
+                # if the file is unsized
+                body = re.sub("(.*)(http://.*\\/?\\/\\b\\w+\\/)(" + re.escape(file.basename()) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
+            elif match.group(6) == None and file.basename() == match.group(4) + match.group(7):
+                # if the file is sized
+                body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(" + re.escape(match.group(4) + match.group(5) + match.group(7)) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
+
     return body
-    print 'After return'
-
-# Parse the given xml file using BeautifulSoup. Save all Article, Redirect and Page objects.
 
 def run(file_name, request):
-    
+
+    """
+    Parse the given xml file using BeautifulSoup. Save all Article, Redirect and Page objects.
+    """
     f = open(file_name, 'r')
     xml = f.read()
     f.close()

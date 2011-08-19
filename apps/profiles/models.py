@@ -90,11 +90,13 @@ class Profile(TendenciBaseModel):
         permissions = (("view_profile","Can view profile"),)
         
     def save(self, *args, **kwargs):
+        from campaign_monitor.utils import update_subscription
         if not self.id:
             self.guid = str(uuid.uuid1())
-            
+        old_email = Profile.objects.get(pk=self.pk).email
         super(Profile, self).save(*args, **kwargs)
-
+        if old_email != self.email:
+            update_subscription(self, old_email)
         
     # if this profile allows view by user2_compare
     def allow_view_by(self, user2_compare):
@@ -131,4 +133,6 @@ class Profile(TendenciBaseModel):
                         return True
         return False
 
-
+    def get_groups(self):
+        memberships = self.user.group_member.all()
+        return [membership.group for membership in memberships]
