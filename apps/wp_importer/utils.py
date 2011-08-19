@@ -20,6 +20,9 @@ from django.conf import settings
 from django.template import RequestContext
 
 def replace_short_code(body):
+    """
+    Replaces shortcodes in the body of an article with appropriate HTML structures.
+    """
     body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
     body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
     return body

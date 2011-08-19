@@ -2,7 +2,7 @@ from createsend import Client
 from django.conf import settings
 from site_settings.utils import get_setting
 from campaign_monitor.models import Campaign, Template
-from createsend import CreateSend, Client
+from createsend import CreateSend, Client, Subscriber
 import os, re
 import urllib2
 import random
@@ -107,3 +107,20 @@ def apply_template_media(template):
     repl = lambda x: '"%s/%s"' % (template.get_media_url(), x.group(0).replace('"', ''))
     new_content = re.sub(pattern, repl, content)
     return new_content
+
+def update_subscription(profile, old_email):
+    """
+    Update a profile subscription on campaign monitor.
+    If the old email is not on CM this will not subscribe the user
+    to CM.
+    """
+    user = profile.user
+    for group in profile.get_groups():
+        for listmap in group.listmap_set.all():
+            subscriber = Subscriber(listmap.list_id, old_email)
+            try:
+                print "Resubscribing %s to %s." % (user.get_full_name(), group.name)
+                subscriber.update(profile.email, user.get_full_name(), [], False)
+            except BadRequest, e:
+                print e
+            
