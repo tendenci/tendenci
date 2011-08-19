@@ -224,4 +224,15 @@ def feedback(request, template_name="base/feedback.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
     
 def homepage(request, template_name="homepage.html"):
+    from event_logs.models import EventLog
+
+    EventLog.objects.log(**{
+        'event_id' : 100000,
+        'event_data': 'Homepage viewed by %s' % request.user,
+        'description': 'Homepage viewed',
+        'user': request.user,
+        'request': request,
+        'source': 'homepage'
+    })
+
     return themed_response(template_name, {}, context_instance=RequestContext(request))
