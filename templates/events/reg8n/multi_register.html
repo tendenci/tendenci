@@ -159,6 +159,7 @@
     }
     
     .admin {color: #800; font-weight: bold;}
+    .discount-summary {display: none;}
 </style>
 
 <div class="t">    
@@ -234,7 +235,7 @@
                         
                         {% if reg_form.discount_code %}
                             <div class="form-field">
-                                <div class="error">{{ reg_form.discount_code.errors }}</div>
+                                <div id="discount-message" class="error">{{ reg_form.discount_code.errors }}</div>
 								<div class="required">{% trans "Discount Code" %}</div>
 								<div class="field">{{ reg_form.discount_code }}</div>
                                 <button type="button" id="discount_check">Check Discount</button>
@@ -279,14 +280,14 @@
 								<span id="total-amount">{{ total_price|floatformat:2 }}</span>
 							</td>
 						</tr>
-                        <tr>
+                        <tr class="discount-summary">
                             <td><div id="discount-label">{% trans "Discount" %}</div></td>
                             <td align="right">
 								<span class="currency-symbol">- {{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
 								<span id="discount-amount">0</span>
 							</td>
                         </tr>
-                        <tr class='line-on-top'>
+                        <tr class="line-on-top discount-summary">
 							<td><div id="total-label">{% trans "Total" %}</div></td>
 							<td align="right">
 								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
@@ -596,11 +597,13 @@
             },
             function(data, textStatus, jqXHR){
                 json = $.parseJSON(data);
-                alert(json['message'])
+                //alert(json['message'])
+                $('#discount-message').html(json["message"]);
                 if (!json["error"]){
                     $('#summary-total-amount').html(json["price"]);
                     $('#discount-amount').html(json["discount"]);
                     $('#final-amount').html(json["price"]);
+                    $('.discount-summary').show()
                 } else {
                     $('#summary-total-amount').html($('#original-price').html());
                     $('#discount-amount').html(0);
