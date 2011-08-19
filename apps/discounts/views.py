@@ -157,12 +157,14 @@ def discounted_price(request, form_class=DiscountCodeForm):
         if form.is_valid():
             return HttpResponse(json.dumps(
                 {
+                    "error":False,
                     "price":str(form.new_price()[0]),
                     "discount":str(form.new_price()[1]),
                     "message":"Your discount of $ %s has been added."%str(form.new_price()[1]),
                 }), mimetype="text/plain")
         return HttpResponse(json.dumps(
             {
+                "error":True,
                 "message":"This is not a valid discount code.",
             }), mimetype="text/plain")
     else:

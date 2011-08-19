@@ -87,15 +87,19 @@
 	#total-label,#total-amount{ 
 		font-weight: bold;
 	}
-	#summary-total-price{
-		margin-bottom: 1em;
-	}
 	#summary-price, #summary-total-price{
 		width: 90%;
 	}
 	#summary-price td, #summary-total-price td{
 		padding: 3px;
 	}
+    #summary-discounted-price{
+        margin-bottom: 1em;
+        width: 90%;
+	}
+    .line-on-top{
+        border-top: 1px solid #ccc;
+    }
 	#register-button {
 		font-size: 1.2em;
 		padding: 5px;
@@ -206,6 +210,7 @@
                 <div class="float-window">
                 
 				<div id="reg-form-box">	
+                    <div id="original-price" style="display:none;">{{ total_price|floatformat:2 }}</div>
     				<div class="summary-total">
     					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
     					<span class="summary-total-amount" id="summary-total-amount">{{ total_price|floatformat:2 }}</span>
@@ -271,6 +276,20 @@
 							<td align="right">
 								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
 								<span id="total-amount">{{ total_price|floatformat:2 }}</span>
+							</td>
+						</tr>
+                        <tr>
+                            <td><div id="discount-label">{% trans "Discount" %}</div></td>
+                            <td align="right">
+								<span class="currency-symbol">- {{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+								<span id="discount-amount">0</span>
+							</td>
+                        </tr>
+                        <tr class='line-on-top'>
+							<td><div id="total-label">{% trans "Total" %}</div></td>
+							<td align="right">
+								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+								<span id="final-amount">{{ total_price|floatformat:2 }}</span>
 							</td>
 						</tr>
 					</table>
@@ -396,8 +415,6 @@
 		
 		var total_amount = $("#total-amount").html();
 		total_amount = (parseFloat(total_amount) - parseFloat(registrant_price)).toFixed(2);
-		$("#total-amount").html(total_amount);
-		
 		
 		$(registrant_summary_entry).remove();
 		
@@ -417,8 +434,10 @@
 				updateSummary(this_form, prefix, i);
 			}
 		}
-
-		return false;
+        
+		$("#total-amount").html(total_amount);
+        $("span.summary-total-amount").html(total_amount);
+        $("#original-price").html(total_amount);
 	}
 
 	function updateIndex(e, prefix, idx){
@@ -477,6 +496,7 @@
 		total_amount = (parseFloat(total_amount) + parseFloat($(row).find(".reg-price").html())).toFixed(2);
 		$("#total-amount").html(total_amount);
 		$("span.summary-total-amount").html(total_amount);
+        $("#original-price").html(total_amount);
 	}
 
 	function addRegistrant(ele, prefix, zero) {
@@ -559,7 +579,7 @@
     
     $('#discount_check').click(function(){
         code = $('#id_discount_code').val();
-        price = $('#summary-total-amount').html();
+        price = $('#original-price').html();
         count = parseInt($('#id_registrant-TOTAL_FORMS').val());
         $.post(
             '{% url discount.discounted_price %}',
@@ -571,7 +591,15 @@
             function(data, textStatus, jqXHR){
                 json = $.parseJSON(data);
                 alert(json['message'])
-                $('#summary-total-amount').html(json["price"]);
+                if (!json["error"]){
+                    $('#summary-total-amount').html(json["price"]);
+                    $('#discount-amount').html(json["discount"]);
+                    $('#final-amount').html(json["price"]);
+                } else {
+                    $('#summary-total-amount').html($('#original-price').html());
+                    $('#discount-amount').html(0);
+                    $('#final-amount').html($('#original-price').html());
+                }
             }
         );
     });

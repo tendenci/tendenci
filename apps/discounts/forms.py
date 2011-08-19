@@ -92,7 +92,6 @@ class DiscountCodeForm(forms.Form):
     count = forms.IntegerField()
     
     def clean(self):
-        print self.cleaned_data
         code = self.cleaned_data.get('code', '')
         count = self.cleaned_data.get('count', 1)
         try:
