@@ -8,6 +8,7 @@ h1 {
 
 .events-summary-chart {
 	height: 300px;
+	margin-bottom: 5px;
 }
 
 .events-summary-chart td {
@@ -28,13 +29,14 @@ h1 {
 }
 
 .events-summary {
-	width: 650px;
+	width: 220px;
+	float: left;
 }
 
 .events-summary li {
 	display: block;
 	width: 200px;
-	float: left;
+	margin-bottom: 5px;
 }
 
 
