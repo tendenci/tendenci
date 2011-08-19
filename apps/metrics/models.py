@@ -9,7 +9,7 @@ class Metric(models.Model):
     users = models.IntegerField(_('users'))
     members = models.IntegerField(_('members'))
     visits = models.IntegerField(_('visits'))
-    disk_usage = models.IntegerField(_('disk usage'))
+    disk_usage = models.BigIntegerField(_('disk usage'))
     create_dt = models.DateTimeField(_('create date/time'), auto_now_add=True)
 
     def __unicode__(self):
