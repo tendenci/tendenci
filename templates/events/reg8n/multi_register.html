@@ -208,7 +208,7 @@
 				<div id="reg-form-box">	
     				<div class="summary-total">
     					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
-    					<span class="summary-total-amount">{{ total_price|floatformat:2 }}</span>
+    					<span class="summary-total-amount" id="summary-total-amount">{{ total_price|floatformat:2 }}</span>
     				</div>
 
     				<div class="summary-payment">
@@ -223,6 +223,7 @@
                                 <div class="error">{{ reg_form.discount_code.errors }}</div>
 								<div class="required">{% trans "Discount Code" %}</div>
 								<div class="field">{{ reg_form.discount_code }}</div>
+                                <button type="button" id="discount_check">Check Discount</button>
                             </div>
                         {% endif %}
                         
@@ -555,7 +556,25 @@
 	// 		$(".float-window").css("top", $(".float-anchor").offset);
 	// 	}
 	// });
-
-
+    
+    $('#discount_check').click(function(){
+        code = $('#id_discount_code').val();
+        price = $('#summary-total-amount').html();
+        count = parseInt($('#id_registrant-TOTAL_FORMS').val());
+        $.post(
+            '{% url discount.discounted_price %}',
+            {
+                'code':code,
+                'price':price,
+                'count':count,
+            },
+            function(data, textStatus, jqXHR){
+                json = $.parseJSON(data);
+                alert(json['message'])
+                $('#summary-total-amount').html(json["price"]);
+            }
+        );
+    });
+    
    </script>
 {% endblock %}
