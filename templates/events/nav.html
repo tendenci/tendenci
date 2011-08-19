@@ -41,6 +41,10 @@
 				<li><a href="{% url event.registrant.roster nav_object.pk %}">{% trans "Roster" %}</a></li>
 				<li><a href="{% url event.message nav_object.pk %}">{% trans "E-mail" %}</a></li>
 				{% endif %}
+                
+                {% if can_add_event %}
+                <li><a href="{% url event.copy nav_object.pk %}">{% trans "Copy" %}</a></li>
+                {% endif %}
 
 				{% if can_delete_event %}
 				<li><a class="delete" href="{% url event.delete nav_object.pk %}">{% trans "Delete" %}</a></li>
@@ -53,8 +57,12 @@
 			<li><a href="{% url event.add %}">{% trans "Add" %}</a></li>
 			{% endif %}
 			<li><a href="{% url event.types %}">{% trans "Types" %}</a></li>
-			<li><a href="{% url event.ics %}" id="event_export_link">{% trans "Export" %}</a></li>
-		</ul>
+            {% if nav_object %}
+                <li><a href="{% url event.ics_single nav_object.pk %}">{% trans "Export" %}</a></li>
+            {% else %}
+                <li><a href="{% url event.ics %}" id="event_export_link">{% trans "Export" %}</a></li>
+            {% endif %}
+        </ul>
 		
 	</li>
 	{% if MODULE_NEWS_ENABLED %}
