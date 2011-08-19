@@ -25,6 +25,11 @@ def replace_short_code(body):
     return body
 
 def get_posts(items, uri_parser, user):
+    """
+    Find each item marked "post" in items
+    If that Article has already been created, skip it.
+    If not, create Article object and Redirect object.
+    """
     post_list = []
     redirect_list = []
     alreadyThere = False
@@ -47,7 +52,7 @@ def get_posts(items, uri_parser, user):
                 title = unicode(node.find('title').contents[0])
                 body = unicode(node.find('content:encoded').contents[0])
                 body = replace_short_code(body)
-                body = correct_media_file_path(body, uri_parser)
+                body = correct_media_file_path(body)
                 post_date = unicode(node.find('wp:post_date').contents[0])
                 post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
                 
@@ -92,6 +97,11 @@ def get_posts(items, uri_parser, user):
     return post_list, redirect_list
     
 def get_pages(items, uri_parser, user):
+    """
+    Find each item marked "page" in items.
+    If that Page has already been created, do nothing.
+    If not, create Page object.
+    """
     page_list = []
     alreadyThere = False
 
@@ -113,7 +123,7 @@ def get_pages(items, uri_parser, user):
             if not alreadyThere:
                 title = unicode(node.find('title').contents[0])
                 body = unicode(node.find('content:encoded').contents[0])
-                body = correct_media_file_path(body, uri_parser)
+                body = correct_media_file_path(body)
                 page_list.append({
                     'title': title,
                     'guid': str(uuid.uuid1()),
@@ -140,36 +150,57 @@ def get_pages(items, uri_parser, user):
     return page_list
 
 def get_media(items, uri_parser, user):
+    """
+    Find any URL contained in an "attachment."
+    If that File has already been created, skip it.
+    If not, go to the URL, and save the media there as a File.
+    """
     for node in items:
         post_type = node.find('wp:post_type').string
         if post_type == 'attachment':
-            media_url = node.find('wp:attachment_url').string
-            source = urllib2.urlopen(media_url).read()
-            media_url = uri_parser.parse(media_url).file
+            media_url_in_attachment = node.find('wp:attachment_url').string
+            media_url = uri_parser.parse(media_url_in_attachment).file
             media_url = os.path.join(settings.MEDIA_ROOT, media_url)
 
-            with open(media_url, 'wb') as f:
-                f.write(source)
-                file_path = f.name
+            alreadyThere = False
 
-            new_media = File(guid=unicode(uuid.uuid1()), file=file_path, creator=user, owner=user)
-            new_media.save()
+            for url in File.objects.all():
+                if media_url == url.file:
+                    alreadyThere = True
+                    break
 
-def correct_media_file_path(body, uri_parser):
-    for url in File.objects.all():
-        media_file = unicode(url.file)
-        match = re.search("(.*)(http://.*\\/?\\/\\b\\S+\\/)(\\w.*?)(\\\".*)", body)
+            if not alreadyThere:
+                source = urllib2.urlopen(media_url_in_attachment).read()
+
+                with open(media_url, 'wb') as f:
+                    f.write(source)
+                    file_path = f.name
+
+                new_media = File(guid=unicode(uuid.uuid1()), file=file_path, creator=user, owner=user)
+                new_media.save()
+
+def correct_media_file_path(body):
+    """
+    For each File in the database, replace an instance of that file's URL in the given HTML with a file path.
+    """
+    for file in File.objects.all():
+        match = re.search("(.*)(http://.*\\/?\\/\\b\\w+\\/)((\\S+)(\\-\\d+x.*?\\S*.*)|(\\S+.*?\\S+))(\\.\\S+)(\\\".*)", body)
         if match:
             match.group()
-            if media_file.endswith(match.group(3)):
-                body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(" + re.escape(match.group(3)) + ".*?)(\\\".*)", "\\1/site_media/media/" + match.group(3) + "/\\4", body)
-                # above: site_media/media (with match.group(3)) is hardcoded 
-                # rather than media_file because the resulting url from 
-                # media_file (with settings.MEDIA_ROOT) breaks - possible fix??
+
+            if match.group(4) == None and file.basename() == match.group(6) + match.group(7):
+                # if the file is unsized
+                body = re.sub("(.*)(http://.*\\/?\\/\\b\\w+\\/)(" + re.escape(file.basename()) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
+            elif match.group(6) == None and file.basename() == match.group(4) + match.group(7):
+                # if the file is sized
+                body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(" + re.escape(match.group(4) + match.group(5) + match.group(7)) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
 
     return body
 
 def run(file_name, request):
+    """
+    Parse the given xml file using BeautifulSoup. Save all Article, Redirect and Page objects.
+    """
     f = open(file_name, 'r')
     xml = f.read()
     f.close()
