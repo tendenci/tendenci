@@ -406,22 +406,15 @@ class RegistrationForm(forms.Form):
                 
             if user and is_admin(user):
                 self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial = event_price)
-                
-    def clean_discount_code(self):
-        data = self.cleaned_data['discount_code']
-        if data:
-            try:
-                discount = Discount.objects.get(discount_code=data)
-            except Discount.DoesNotExist:
-                raise forms.ValidationError('This is not a valid discount code.')
-            if not discount.available_for(self.count):
-                raise forms.ValidationError('This is not a valid discount code.')
-        return data
-        
+
     def get_discount(self):
         if self.is_valid() and self.cleaned_data['discount_code']:
-            discount = Discount.objects.get(discount_code=self.cleaned_data['discount_code'])
-            return discount
+            try:
+                discount = Discount.objects.get(discount_code=self.cleaned_data['discount_code'])
+                if discount.available_for(self.count):
+                    return discount
+            except:
+                pass
         return None
 
 class RegistrantForm(forms.Form):
