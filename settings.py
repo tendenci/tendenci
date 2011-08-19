@@ -222,6 +222,7 @@ INSTALLED_APPS = (
     'wp_importer',
     'theme',
     'discounts',
+    'metrics',
     # celery task system, must stay at the bottom
     # of installed apps
     #'djcelery',
