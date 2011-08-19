@@ -85,3 +85,30 @@ class DiscountForm(TendenciBaseForm):
 
         # Always return the full collection of cleaned data.
         return cleaned_data
+
+class DiscountCodeForm(forms.Form):
+    price = forms.DecimalField(decimal_places=2)
+    code = forms.CharField()
+    count = forms.IntegerField()
+    
+    def clean(self):
+        print self.cleaned_data
+        code = self.cleaned_data.get('code', '')
+        count = self.cleaned_data.get('count', 1)
+        try:
+            discount = Discount.objects.get(discount_code=code)
+        except Discount.DoesNotExist:
+            raise forms.ValidationError('This is not a valid discount code.')
+        if not discount.available_for(count):
+            raise forms.ValidationError('This is not a valid discount code.')
+        return self.cleaned_data
+        
+    def new_price(self):
+        code = self.cleaned_data['code']
+        price = self.cleaned_data['price']
+        count = self.cleaned_data['count']
+        discount = Discount.objects.get(discount_code=code).value * count
+        new_price = price - discount
+        if new_price < 0:
+            new_price = 0
+        return (new_price, discount)

@@ -1,14 +1,17 @@
 from django.utils.translation import ugettext_lazy as _
+from django.utils import simplejson as json
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
+from django.http import HttpResponse
 
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save, is_admin
 from event_logs.models import EventLog
 from discounts.models import Discount, DiscountUse
-from discounts.forms import DiscountForm
+from discounts.forms import DiscountForm, DiscountCodeForm
 
 @login_required
 def search(request, template_name="discounts/search.html"):
@@ -146,3 +149,24 @@ def delete(request, id, template_name="discounts/delete.html"):
 
     return render_to_response(template_name, {'discount': discount}, 
         context_instance=RequestContext(request))
+    
+@csrf_exempt
+def discounted_price(request, form_class=DiscountCodeForm):
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            return HttpResponse(json.dumps(
+                {
+                    "price":str(form.new_price()[0]),
+                    "discount":str(form.new_price()[1]),
+                    "message":"Your discount of $ %s has been added."%str(form.new_price()[1]),
+                }), mimetype="text/plain")
+        return HttpResponse(json.dumps(
+            {
+                "message":"This is not a valid discount code.",
+            }), mimetype="text/plain")
+    else:
+        form = form_class()
+    return HttpResponse(
+        "<form action='' method='post'>" + form.as_p() + "<input type='submit' value='check'> </form>",
+        mimetype="text/html")
