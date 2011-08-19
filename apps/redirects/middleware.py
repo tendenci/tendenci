@@ -10,13 +10,13 @@ class RedirectMiddleware(object):
         try:
             redirect, args, kwargs = resolve(path, urlconf='redirects.dynamic_urls')
             args = [value for value in kwargs.values()]
-            print redirect, args, kwargs
+            #print redirect, args, kwargs
             to_url = kwargs.pop('url')
             to_url = re.sub("\$(\d+)", "%s", to_url) % tuple(kwargs.values())
-            print to_url
+            #print to_url
             args[0] = to_url
             return redirect(request, *args)
         except Exception, e:
             # No redirect was found. Return the response.
-            print e
+            #print e
             return response
