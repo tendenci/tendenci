@@ -2,6 +2,7 @@ import re
 
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import authenticate, login
 from django.utils.translation import ugettext_lazy as _, ugettext
 from django.utils.safestring import mark_safe
@@ -17,6 +18,18 @@ from site_settings.utils import get_setting
 from accounts.utils import send_registration_activation_email
 
 
+class SetPasswordCustomForm(SetPasswordForm):
+    def clean_new_password1(self):
+        new_password1 = self.cleaned_data.get('new_password1')
+        password_regex = get_setting('module', 'users', 'password_requirements_regex')
+        password_requirements = get_setting('module', 'users', 'password_text')
+        if password_regex:
+            if not re.match(password_regex, new_password1):
+                raise forms.ValidationError(mark_safe("The password does not meet the requirements </li><li>%s" % password_requirements))
+
+        return new_password1
+
+
 class RegistrationCustomForm(RegistrationForm):
     first_name = forms.CharField(max_length=100)
     last_name = forms.CharField(max_length=100)
@@ -28,6 +41,16 @@ class RegistrationCustomForm(RegistrationForm):
     country = forms.CharField(max_length=50, required=False)
     zipcode = forms.CharField(max_length=50, required=False)
     captcha = CaptchaField()
+
+    def clean_password1(self):
+        password1 = self.cleaned_data.get('password1')
+        password_regex = get_setting('module', 'users', 'password_requirements_regex')
+        password_requirements = get_setting('module', 'users', 'password_text')
+        if password_regex:
+            if not re.match(password_regex, password1):
+                raise forms.ValidationError(mark_safe("The password does not meet the requirements </li><li>%s" % password_requirements))
+
+        return password1
 
     def save(self, profile_callback=None):
         # 
@@ -70,17 +93,8 @@ class RegistrationCustomForm(RegistrationForm):
         new_profile.save()
                     
         return new_user
-    
-    def clean_password1(self):
-        password1 = self.cleaned_data.get('password1')
-        password_regex = get_setting('module', 'users', 'password_requirements_regex')
-        password_requirements = get_setting('module', 'users', 'password_text')
-        if password_regex:
-            if not re.match(password_regex, password1):
-                raise forms.ValidationError(mark_safe("The password does not meet the requirements </li><li>%s" % password_requirements))
 
-        return password1
-    
+
 class LoginForm(forms.Form):
 
     username = forms.CharField(label=_("Username"), max_length=30, widget=forms.TextInput())
