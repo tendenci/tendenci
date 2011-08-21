@@ -9,7 +9,9 @@ class RecurringPayment(models.Model):
     guid = models.CharField(max_length=50)
     # gateway assigned ID associated with the customer profile
     customer_profile_id = models.CharField(max_length=100, default='')
-    user = models.ForeignKey(User, related_name="recurring_payment_user",  null=True)
+    user = models.ForeignKey(User, related_name="recurring_payment_user",
+                             verbose_name=_('Customer'),  null=True)
+    description = models.CharField(max_length=100)
     # with object_content_type and object_content_id, we can apply the recurring 
     # payment to other modules such as memberships, jobs, etc.
     object_content_type = models.ForeignKey(ContentType, blank=True, null=True)
@@ -19,22 +21,23 @@ class RecurringPayment(models.Model):
                                                             ('year', _('Year')),
                                                             ('week', _('Week')),
                                                             ('day', _('Day')),
-                                                            ))
+                                                            ),
+                                        default='month')
     billing_frequency = models.IntegerField(default=1)
-    billing_cycle_start_dt = models.DateTimeField()
-    billing_cycle_end_dt = models.DateTimeField(blank=True, null=True)
+    billing_cycle_start_dt = models.DateTimeField(_("Billing cycle start date"))
+    billing_cycle_end_dt = models.DateTimeField(_('Billing cycle end date'), blank=True, null=True)
     payment_amount = models.DecimalField(max_digits=15, decimal_places=2)
     has_trial_period = models.BooleanField(default=0)
-    trial_period_start_dt = models.DateTimeField(blank=True, null=True)
-    trial_period_end_dt = models.DateTimeField(blank=True, null=True)
-    trial_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    trial_period_start_dt = models.DateTimeField(_('Trial period start date'), blank=True, null=True)
+    trial_period_end_dt = models.DateTimeField(_('Trial period end date'), blank=True, null=True)
+    trial_amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
 
     next_billing_dt = models.DateTimeField(blank=True, null=True)
     last_payment_received_dt = models.DateTimeField(blank=True, null=True)
     num_billing_cycle_completed = models.IntegerField(default=0, blank=True, null=True)
     num_billing_cycle_failed = models.IntegerField(default=0, blank=True, null=True)
-    current_balance = models.DecimalField(max_digits=15, decimal_places=2)
-    outstanding_balance = models.DecimalField(max_digits=15, decimal_places=2)
+    current_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    outstanding_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     
 
     create_dt = models.DateTimeField(auto_now_add=True)
