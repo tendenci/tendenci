@@ -40,8 +40,6 @@ def get_posts(item, uri_parser, user):
         if article.slug == slug[:100]:
             alreadyThere = True
             break
-        else:
-            alreadyThere = False
     
     if not alreadyThere:
         title = unicode(node.find('title').contents[0])
@@ -57,7 +55,6 @@ def get_posts(item, uri_parser, user):
             for tag in tags_raw:
                 if len(','.join(tags_list)) + len(tag.string) <= 255:
                     tags_list.append(tag.string[:50])
-
     
         article = {
             'headline': title,
@@ -108,8 +105,6 @@ def get_pages(items, uri_parser, user):
         if page.slug == slug[:100]:
             alreadyThere = True
             break
-        else:
-            alreadyThere = False
    
     if not alreadyThere:
         title = unicode(node.find('title').contents[0])
@@ -156,6 +151,9 @@ def get_media(item, uri_parser, user):
     for url in File.objects.all():
         if media_url == url.file:
             alreadyThere = True
+            # This assignment will make sure the file gets replaced in the HTML even if
+            # it's an old file that already exists in the database.
+            new_media = url
             break
 
     if not alreadyThere:
@@ -168,13 +166,13 @@ def get_media(item, uri_parser, user):
         new_media = File(guid=unicode(uuid.uuid1()), file=file_path, creator=user, owner=user)
         new_media.save()
 
-        # Loop through Articles and Pages replacing this file.
-        for a in Article.objects.all():
-            a.body = correct_media_file_path(a.body, new_media)
-            a.save()
-        for p in Page.objects.all():
-            p.body = correct_media_file_path(p.body, new_media)
-            p.save()
+    # Loop through Articles and Pages replacing new_media.
+    for a in Article.objects.all():
+        a.body = correct_media_file_path(a.body, new_media)
+        a.save()
+    for p in Page.objects.all():
+        p.body = correct_media_file_path(p.body, new_media)
+        p.save()
 
 def correct_media_file_path(body, file):
     """
