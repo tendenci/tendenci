@@ -27,77 +27,72 @@ def replace_short_code(body):
     body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
     return body
 
-def get_posts(items, uri_parser, user):
+def get_posts(item, uri_parser, user):
     """
-    Find each item marked "post" in items
-    If that Article has already been created, skip it.
+    If the given Article has already been created, skip it.
     If not, create Article object and Redirect object.
     """
-    post_list = []
-    redirect_list = []
     alreadyThere = False
-    for node in items:
-        post_type = node.find('wp:post_type').string
-        post_status = node.find('wp:status').string
+    link = unicode(node.find('link').contents[0])
+    slug = uri_parser.parse(link).path.strip('/')
 
-        if post_type == 'post' and post_status == 'publish':
-            link = unicode(node.find('link').contents[0])
-            slug = uri_parser.parse(link).path.strip('/')
+    for article in Article.objects.all():
+        if article.slug == slug[:100]:
+            alreadyThere = True
+            break
+        else:
+            alreadyThere = False
+    
+    if not alreadyThere:
+        title = unicode(node.find('title').contents[0])
+        body = unicode(node.find('content:encoded').contents[0])
+        body = replace_short_code(body)
+        post_date = unicode(node.find('wp:post_date').contents[0])
+        post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
+        
+        tags_raw = node.findAll('category', domain="post_tag")
+        tags_list = []
+    
+        if tags_raw:
+            for tag in tags_raw:
+                if len(','.join(tags_list)) + len(tag.string) <= 255:
+                    tags_list.append(tag.string[:50])
 
-            for post in Article.objects.all():
-                if post.slug == slug[:100]:
-                    alreadyThere = True
-                    break
-                else:
-                    alreadyThere = False
-            
-            if not alreadyThere:
-                title = unicode(node.find('title').contents[0])
-                body = unicode(node.find('content:encoded').contents[0])
-                body = replace_short_code(body)
-                body = correct_media_file_path(body)
-                post_date = unicode(node.find('wp:post_date').contents[0])
-                post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
-                
-                tags_raw = node.findAll('category', domain="post_tag")
-                tags_list = []
-            
-                if tags_raw:
-                    for tag in tags_raw:
-                        if len(','.join(tags_list)) + len(tag.string) <= 255:
-                            tags_list.append(tag.string[:50])
+    
+        article = {
+            'headline': title,
+            'guid': str(uuid.uuid1()),
+            'slug': slug[:100],
+            'body': body,
+            'tags': ','.join(tags_list),
+            'timezone': 'US/Central',
+            'syndicate': True,
+            'featured': False,
+            'release_dt': post_dt,
+            'creator': user,
+            'creator_username': user.username,
+            'allow_anonymous_view': True,
+            'allow_user_view': False,
+            'allow_member_view': False,
+            'allow_anonymous_edit': False,
+            'allow_user_edit': False,
+            'allow_member_edit': False,
+            'owner': user,
+            'owner_username': user.username,
+            'status': True,
+            'status_detail': 'active'
+        }
 
-            
-                post_list.append({
-                    'headline': title,
-                    'guid': str(uuid.uuid1()),
-                    'slug': slug[:100],
-                    'body': body,
-                    'tags': ','.join(tags_list),
-                    'timezone': 'US/Central',
-                    'syndicate': True,
-                    'featured': False,
-                    'release_dt': post_dt,
-                    'creator': user,
-                    'creator_username': user.username,
-                    'allow_anonymous_view': True,
-                    'allow_user_view': False,
-                    'allow_member_view': False,
-                    'allow_anonymous_edit': False,
-                    'allow_user_edit': False,
-                    'allow_member_edit': False,
-                    'owner': user,
-                    'owner_username': user.username,
-                    'status': True,
-                    'status_detail': 'active'
-                })
+        redirect = {
+            'from_url': slug[:100],
+            'to_url': os.path.join('articles', slug[:100])
+        }
 
-                redirect_list.append({
-                    'from_url': slug[:100],
-                    'to_url': os.path.join('articles', slug[:100])
-                })
+        a = Article(**post)
+        a.save()
 
-    return post_list, redirect_list
+        r = Redirect(**redirect)
+        r.save()
     
 def get_pages(items, uri_parser, user):
     """
@@ -105,98 +100,96 @@ def get_pages(items, uri_parser, user):
     If that Page has already been created, do nothing.
     If not, create Page object.
     """
-    page_list = []
     alreadyThere = False
+    link = unicode(node.find('link').contents[0])
+    slug = uri_parser.parse(link).path.strip('/')
 
-    for node in items:
-        post_type = node.find('wp:post_type').string
-        post_status = node.find('wp:status').string
+    for page in Page.objects.all():
+        if page.slug == slug[:100]:
+            alreadyThere = True
+            break
+        else:
+            alreadyThere = False
+   
+    if not alreadyThere:
+        title = unicode(node.find('title').contents[0])
+        body = unicode(node.find('content:encoded').contents[0])
+        page = {
+            'title': title,
+            'guid': str(uuid.uuid1()),
+            'slug': slug[:100],
+            'content': body,
+            #'timezone': 'US/Central',
+            'syndicate': True,
+            #'featured': False,
+            #'create_dt': datetime.now(), 
+            'creator': user,
+            'creator_username': user.username,
+            'allow_anonymous_view': True,
+            'allow_user_view': False,
+            'allow_member_view': False,
+            'allow_anonymous_edit': False,
+            'allow_user_edit': False,
+            'allow_member_edit': False,
+            'owner': user,
+            'owner_username': user.username,
+            'status': True,
+            'status_detail': 'active'
+        }
 
-        if post_type == 'page' and post_status == 'publish':
-            link = unicode(node.find('link').contents[0])
-            slug = uri_parser.parse(link).path.strip('/')
+        p = Page(**page)
+        p.save()
 
-            for page in Page.objects.all():
-                if page.slug == slug[:100]:
-                    alreadyThere = True
-                    break
-                else:
-                    alreadyThere = False
-           
-            if not alreadyThere:
-                title = unicode(node.find('title').contents[0])
-                body = unicode(node.find('content:encoded').contents[0])
-                body = correct_media_file_path(body)
-                page_list.append({
-                    'title': title,
-                    'guid': str(uuid.uuid1()),
-                    'slug': slug[:100],
-                    'content': body,
-                    #'timezone': 'US/Central',
-                    'syndicate': True,
-                    #'featured': False,
-                    #'create_dt': datetime.now(), 
-                    'creator': user,
-                    'creator_username': user.username,
-                    'allow_anonymous_view': True,
-                    'allow_user_view': False,
-                    'allow_member_view': False,
-                    'allow_anonymous_edit': False,
-                    'allow_user_edit': False,
-                    'allow_member_edit': False,
-                    'owner': user,
-                    'owner_username': user.username,
-                    'status': True,
-                    'status_detail': 'active'
-                })
-
-    return page_list
-
-def get_media(items, uri_parser, user):
+def get_media(item, uri_parser, user):
     """
     Find any URL contained in an "attachment."
     If that File has already been created, skip it.
     If not, go to the URL, and save the media there as a File.
+    Loop through Articles and Pages and replace links.
     """
-    for node in items:
-        post_type = node.find('wp:post_type').string
-        if post_type == 'attachment':
-            media_url_in_attachment = node.find('wp:attachment_url').string
-            media_url = uri_parser.parse(media_url_in_attachment).file
-            media_url = os.path.join(settings.MEDIA_ROOT, media_url)
+    media_url_in_attachment = node.find('wp:attachment_url').string
+    media_url = uri_parser.parse(media_url_in_attachment).file
+    media_url = os.path.join(settings.MEDIA_ROOT, media_url)
 
-            alreadyThere = False
+    alreadyThere = False
 
-            for url in File.objects.all():
-                if media_url == url.file:
-                    alreadyThere = True
-                    break
+    for url in File.objects.all():
+        if media_url == url.file:
+            alreadyThere = True
+            break
 
-            if not alreadyThere:
-                source = urllib2.urlopen(media_url_in_attachment).read()
+    if not alreadyThere:
+        source = urllib2.urlopen(media_url_in_attachment).read()
 
-                with open(media_url, 'wb') as f:
-                    f.write(source)
-                    file_path = f.name
+        with open(media_url, 'wb') as f:
+            f.write(source)
+            file_path = f.name
 
-                new_media = File(guid=unicode(uuid.uuid1()), file=file_path, creator=user, owner=user)
-                new_media.save()
+        new_media = File(guid=unicode(uuid.uuid1()), file=file_path, creator=user, owner=user)
+        new_media.save()
 
-def correct_media_file_path(body):
+        # Loop through Articles and Pages replacing this file.
+        for a in Article.objects.all():
+            a.body = correct_media_file_path(a.body, new_media)
+            a.save()
+        for p in Page.objects.all():
+            p.body = correct_media_file_path(p.body, new_media)
+            p.save()
+
+def correct_media_file_path(body, file):
     """
-    For each File in the database, replace an instance of that file's URL in the given HTML with a file path.
+    Replace an instance of the given file's URL in the given HTML with a file path.
     """
-    for file in File.objects.all():
-        match = re.search("(.*)(http://.*\\/?\\/\\b\\w+\\/)((\\S+)(\\-\\d+x.*?\\S*.*)|(\\S+.*?\\S+))(\\.\\S+)(\\\".*)", body)
-        if match:
-            match.group()
+    match = re.search("(.*)(http://.*\\/?\\/\\b\\w+\\/)((\\S+)(\\-\\d+x.*?\\S*.*)|(\\S+.*?\\S+))(\\.\\S+)(\\\".*)", body)
+    if match:
+        match.group()
 
-            if match.group(4) == None and file.basename() == match.group(6) + match.group(7):
-                # if the file is unsized
-                body = re.sub("(.*)(http://.*\\/?\\/\\b\\w+\\/)(" + re.escape(file.basename()) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
-            elif match.group(6) == None and file.basename() == match.group(4) + match.group(7):
-                # if the file is sized
-                body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(" + re.escape(match.group(4) + match.group(5) + match.group(7)) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
+        if match.group(4) == None and file.basename() == match.group(6) + match.group(7):
+            # if the file is unsized
+            body = re.sub("(.*)(http://.*\\/?\\/\\b\\w+\\/)(" + re.escape(file.basename()) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
+        elif match.group(6) == None and file.basename() == match.group(4) + match.group(7):
+            # if the file is sized
+            body = re.sub("(.*)(http://.*\\/?\\/\\b\\S+\\/)(" + re.escape(match.group(4) + match.group(5) + match.group(7)) + ".*?)(\\\".*)", "\\1/files/" + str(file.pk) + "/\\4", body)
 
     return body
 
@@ -215,16 +208,21 @@ def run(file_name, request):
 
     user = request.user
 
-    get_media(items, uri_parser, user)
-    posts = get_posts(items, uri_parser, user)[0]
-    for post in posts:
-        a = Article(**post)
-        a.save()
-    redirects = get_posts(items, uri_parser, user)[1]
-    for redir in redirects:
-        r = Redirect(**redir)
-        r.save()
-    pages = get_pages(items, uri_parser, user)
-    for page in pages:
-        p = Page(**page)
-        p.save()
+    for item in items:
+        post_type = node.find('wp:post_type').string
+        post_status = node.find('wp:status').string
+
+        if post_type == 'post' and post_status == 'publish':
+            get_posts(item, uri_parser, user)
+        elif post_type == 'page' and post_status == 'publish':
+            get_pages(item, uri_parser, user)
+
+    # Loops twice. This is so that all the articles and pages are
+    # stored and ready to have their links corrected.
+    
+    for item in items:
+        post_type = node.find('wp:post_type').string
+        post_status = node.find('wp:status').string
+
+        if post_type == 'attachment':
+            get_media(item, uri_parser, user)
