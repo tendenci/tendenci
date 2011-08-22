@@ -20,16 +20,28 @@ name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
 
 
 <div class="t">
-    <h1>{% trans "Manage Payment Information" %}</h1>
-
-    <button onclick="openAddPaymentPopup()">Manage my payment info</button><br />
-   
-  	<div class="AuthorizeNetPopupInner">
-    <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="" frameborder="0" scrolling="no"
-    width="442px" height="578px"></iframe>
-  	</div>
-	 
+    <h1>{% trans "Manage Payment Info for " %} <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></h1>
 	
+	{% if gateway_error  %}
+	
+	<div>
+	Oops, we're not able to process your request at the moment due to an error from payment gateway. Please try again later or
+	contact your site administrator for assistance. Thanks!
+	</div>
+	
+	{% else %}
+	
+	<noscript>
+	    <div style="font-size: 1.2em; color:red; margin-top: 1em;">JavaScript must be enabled in order for you to add/edit payment methods. Please enable Javascript and try again </div>
+	 </noscript>   
+	 <br />
+   	
+  	<div class="AuthorizeNetPopupInner">
+    <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="" frameborder="0" scrolling="auto"
+    width="482px" height="678px"></iframe>
+  	</div>
+  	
+  	{% endif %}
 
 </div>
 
@@ -40,15 +52,14 @@ name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
 {% block extra_body %}
     {{ block.super }}
     
-    <script>
-    function openAddPaymentPopup(opt) {
-		var form = document.forms["formAuthorizeNetPopup"];
-		form.action = "{{ form_post_url }}"
-		form.submit();
-		
-	};
+{% if not gateway_error %} 
+<script>
+    var form = document.forms["formAuthorizeNetPopup"];
+	form.action = "{{ form_post_url }}"
+	form.submit();
     
-    </script>
+</script>
+{% endif %}
 	
 	
 	
