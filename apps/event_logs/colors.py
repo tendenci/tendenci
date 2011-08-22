@@ -324,6 +324,9 @@ colors = {
     '1100200':'EEDD55', # edit
     '1100300':'AA2222', # delete
 
+    # homepage
+    '100000':'7F0000', # view; tendenci color (maroon)
+
     ## Plugins ##
     
     # videos
