@@ -90,7 +90,8 @@ class CIMBase(object):
         """
         e = ET.XML(raw_response_xml)
         d = self._recurive_parse(e)
-        return d
+        success = (d['messages']['result_code'].lower() == 'ok')
+        return success, d
         
         
     def _recurive_parse(self, element):
@@ -229,9 +230,7 @@ class CustomerProfile(CIMBase):
         profile_node = self.create_profile_node(**kwargs)
         xml_root.append(profile_node)
         
-        response_d = self.process_request(xml_root)
-        
-        return response_d
+        return self.process_request(xml_root)
     
 
     def delete(self, **kwargs):
@@ -249,8 +248,7 @@ class CustomerProfile(CIMBase):
         customer_profile_id_node = ET.SubElement(xml_root, 'customerProfileId')
         customer_profile_id_node.text = self.customer_profile_id
         
-        response_d = self.process_request(xml_root)
-        return response_d
+        return self.process_request(xml_root)
         
         
 
@@ -270,8 +268,7 @@ class CustomerProfile(CIMBase):
         customer_profile_id_node = ET.SubElement(xml_root, 'customerProfileId')
         customer_profile_id_node.text = self.customer_profile_id
         
-        response_d = self.process_request(xml_root)
-        return response_d
+        return self.process_request(xml_root)
     
     def get_all(self, **kwargs):
         """
@@ -286,8 +283,7 @@ class CustomerProfile(CIMBase):
         """
         root_name = 'getCustomerProfileIdsRequest'
         xml_root = self.create_base_xml(root_name)
-        response_d = self.process_request(xml_root)
-        return response_d
+        return  self.process_request(xml_root)
               
 
     def update(self, **kwargs):
@@ -316,9 +312,7 @@ class CustomerProfile(CIMBase):
         profile_node = self.create_profile_node(**kwargs)
         xml_root.append(profile_node)
         
-        response_d = self.process_request(xml_root)
-        
-        return response_d    
+        return self.process_request(xml_root)  
         
 
     def create_profile_node(self, **kwargs):
@@ -440,10 +434,8 @@ class CustomerPaymentProfile(CIMBase):
             
             xml_root.append(payment_profiles_node)
         
-        response_d = self.process_request(xml_root)
-        
-        return response_d
-        
+        return  self.process_request(xml_root)
+                
     
     def delete(self, **kwargs):
         """
@@ -470,8 +462,7 @@ class CustomerPaymentProfile(CIMBase):
         customer_payment_profile_id_node = ET.SubElement(xml_root, 'customerPaymentProfileId')
         customer_payment_profile_id_node.text = self.customer_payment_profile_id
         
-        response_d = self.process_request(xml_root)
-        return response_d
+        return self.process_request(xml_root)
         
     
     def get(self, **kwargs):
@@ -504,8 +495,7 @@ class CustomerPaymentProfile(CIMBase):
         customer_payment_profile_id_node = ET.SubElement(xml_root, 'customerPaymentProfileId')
         customer_payment_profile_id_node.text = self.customer_payment_profile_id
         
-        response_d = self.process_request(xml_root)
-        return response_d
+        return self.process_request(xml_root)
     
     def update(self, **kwargs):
         """
@@ -553,10 +543,8 @@ class CustomerPaymentProfile(CIMBase):
             
             xml_root.append(payment_profiles_node)
         
-        response_d = self.process_request(xml_root)
-        
-        return response_d
-        
+        return  self.process_request(xml_root)
+                
         
     def validate(self, **kwargs):
         """
@@ -594,10 +582,9 @@ class CustomerPaymentProfile(CIMBase):
             validation_mode_node = ET.SubElement(xml_root, 'validationMode')
             validation_mode_node.text = validation_mode
         
-        response_d = self.process_request(xml_root)
+        return self.process_request(xml_root)
         
-        return response_d   
-
+        
 class CustomerProfileTransaction(CIMBase):
     def __init__(self, customer_profile_id, customer_payment_profile_id):
         super(CustomerProfileTransaction, self).__init__()
@@ -645,10 +632,8 @@ class CustomerProfileTransaction(CIMBase):
         transaction_node = self.create_transaction_node(**kwargs)
         xml_root.append(transaction_node)
         
-        response_d = self.process_request(xml_root)
-        
-        return response_d   
-        
+        return self.process_request(xml_root)
+                
         
         
     def create_transaction_node(self, **kwargs):
@@ -785,9 +770,8 @@ class HostedProfilePage(CIMBase):
                                                          hosted_profile_setting, 
                                                          ('settingName', 'settingValue'))
         
-        response_d = self.process_request(xml_root)
+        return self.process_request(xml_root)
         
-        return response_d     
            
 
 class CustomerShippingAddress(CIMBase):
