@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from jobs.models import JobPricing
 from invoices.models import Invoice
 from payments.models import Payment
-from perms.utils import is_admin
+from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 
 def get_payment_method_choices(user):
@@ -94,8 +94,31 @@ def job_set_inv_payment(user, job, pricing):
                     
             
 def get_job_price(user, job, pricing):
-    if job.list_type == 'regular':
-        return pricing.regular_price
+    if is_member(user):
+        if job.list_type == 'regular':
+            return pricing.regular_price_member
+        else:
+            return pricing.premium_price_member
     else:
-        return pricing.premium_price
+        if job.list_type == 'regular':
+            return pricing.regular_price
+        else:
+            return pricing.premium_price
     
+    
+def pricing_choices(user):
+    """
+    Since the list type of a job cannot be determined without the job,
+    Both regular and premium price will be included in the label.
+    """
+    choices = []
+    pricings = JobPricing.objects.all()
+    for pricing in pricings:
+        if is_member(user):
+            prices = "%s/%s" % (pricing.regular_price_member, pricing.premium_price_member)
+        else:
+            prices = "%s/%s" % (pricing.regular_price, pricing.premium_price)
+            
+        label = "%s: %s Days for %s" % (pricing.get_title(), pricing.duration, prices)
+        choices.append((pricing.pk, label))
+    return choices
