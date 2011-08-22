@@ -23,12 +23,6 @@
     {% job_nav request.user job %}
 
     <div class="job-wrap">
-		<div class="options">
-             <div class="quick-options">
-				{% job_options request.user job %} 	       
-             </div>
-		</div>
-			
         <h1>{{ job.title }}</h1>
 
 		<h2>{% trans "Job Information" %}</h2>
