@@ -33,7 +33,7 @@ def get_posts(item, uri_parser, user):
     If not, create Article object and Redirect object.
     """
     alreadyThere = False
-    link = unicode(node.find('link').contents[0])
+    link = unicode(item.find('link').contents[0])
     slug = uri_parser.parse(link).path.strip('/')
 
     for article in Article.objects.all():
@@ -42,13 +42,13 @@ def get_posts(item, uri_parser, user):
             break
     
     if not alreadyThere:
-        title = unicode(node.find('title').contents[0])
-        body = unicode(node.find('content:encoded').contents[0])
+        title = unicode(item.find('title').contents[0])
+        body = unicode(item.find('content:encoded').contents[0])
         body = replace_short_code(body)
-        post_date = unicode(node.find('wp:post_date').contents[0])
+        post_date = unicode(item.find('wp:post_date').contents[0])
         post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
         
-        tags_raw = node.findAll('category', domain="post_tag")
+        tags_raw = item.findAll('category', domain="post_tag")
         tags_list = []
     
         if tags_raw:
@@ -85,20 +85,20 @@ def get_posts(item, uri_parser, user):
             'to_url': os.path.join('articles', slug[:100])
         }
 
-        a = Article(**post)
+        a = Article(**article)
         a.save()
 
         r = Redirect(**redirect)
         r.save()
     
-def get_pages(items, uri_parser, user):
+def get_pages(item, uri_parser, user):
     """
     Find each item marked "page" in items.
     If that Page has already been created, do nothing.
     If not, create Page object.
     """
     alreadyThere = False
-    link = unicode(node.find('link').contents[0])
+    link = unicode(item.find('link').contents[0])
     slug = uri_parser.parse(link).path.strip('/')
 
     for page in Page.objects.all():
@@ -107,8 +107,8 @@ def get_pages(items, uri_parser, user):
             break
    
     if not alreadyThere:
-        title = unicode(node.find('title').contents[0])
-        body = unicode(node.find('content:encoded').contents[0])
+        title = unicode(item.find('title').contents[0])
+        body = unicode(item.find('content:encoded').contents[0])
         page = {
             'title': title,
             'guid': str(uuid.uuid1()),
@@ -142,7 +142,7 @@ def get_media(item, uri_parser, user):
     If not, go to the URL, and save the media there as a File.
     Loop through Articles and Pages and replace links.
     """
-    media_url_in_attachment = node.find('wp:attachment_url').string
+    media_url_in_attachment = item.find('wp:attachment_url').string
     media_url = uri_parser.parse(media_url_in_attachment).file
     media_url = os.path.join(settings.MEDIA_ROOT, media_url)
 
@@ -168,11 +168,13 @@ def get_media(item, uri_parser, user):
 
     # Loop through Articles and Pages replacing new_media.
     for a in Article.objects.all():
-        a.body = correct_media_file_path(a.body, new_media)
-        a.save()
+        if a.body != correct_media_file_path(a.body, new_media):
+            a.body = correct_media_file_path(a.body, new_media)
+            a.save()
     for p in Page.objects.all():
-        p.body = correct_media_file_path(p.body, new_media)
-        p.save()
+        if p.content != correct_media_file_path(p.content, new_media):
+            p.content = correct_media_file_path(p.content, new_media)
+            p.save()
 
 def correct_media_file_path(body, file):
     """
@@ -207,8 +209,8 @@ def run(file_name, request):
     user = request.user
 
     for item in items:
-        post_type = node.find('wp:post_type').string
-        post_status = node.find('wp:status').string
+        post_type = item.find('wp:post_type').string
+        post_status = item.find('wp:status').string
 
         if post_type == 'post' and post_status == 'publish':
             get_posts(item, uri_parser, user)
@@ -219,8 +221,8 @@ def run(file_name, request):
     # stored and ready to have their links corrected.
     
     for item in items:
-        post_type = node.find('wp:post_type').string
-        post_status = node.find('wp:status').string
+        post_type = item.find('wp:post_type').string
+        post_status = item.find('wp:status').string
 
         if post_type == 'attachment':
             get_media(item, uri_parser, user)
