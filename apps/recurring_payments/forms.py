@@ -10,7 +10,7 @@ class RecurringPaymentForm(forms.ModelForm):
                                            " and billing period is Month, payment will" + \
                                             " be made every 2 months.")
     payment_amount = forms.DecimalField(decimal_places=2, widget=PriceInput())
-    trial_amount = forms.DecimalField(decimal_places=2, widget=PriceInput())
+    trial_amount = forms.DecimalField(decimal_places=2, widget=PriceInput(), required=False)
     
     class Meta:
         model = RecurringPayment
