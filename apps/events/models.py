@@ -255,6 +255,17 @@ class RegConfPricing(models.Model):
     allow_user = models.BooleanField(_("Signed in user can use"))
     allow_member = models.BooleanField(_("All members can use"))
     
+    status = models.BooleanField(default=True)
+    
+    def delete(self, *args, **kwargs):
+        """
+        Note that the delete() method for an object is not necessarily
+        called when deleting objects in bulk using a QuerySet.
+        """
+        print "%s, %s" % (self, "status set to false" )
+        self.status = False
+        self.save(*args, **kwargs)
+    
     def __unicode__(self):
         if self.title:
             return '%s' % self.title
