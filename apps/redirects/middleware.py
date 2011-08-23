@@ -12,8 +12,9 @@ class RedirectMiddleware(object):
             args = [value for value in kwargs.values()]
             #print redirect, args, kwargs
             to_url = kwargs.pop('url')
-            to_url = re.sub("\$(\d+)", "%s", to_url) % tuple(kwargs.values())
-            #print to_url
+            for key in kwargs.keys():
+                to_url = to_url.replace("(%s)"%key, kwargs[key])
+            print to_url
             args[0] = to_url
             return redirect(request, *args)
         except Exception, e:
