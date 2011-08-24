@@ -14,6 +14,7 @@ from pages.models import Page
 from articles.models import Article
 from redirects.models import Redirect
 from files.models import File
+from wp_importer.models import AssociatedFile
 
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -43,8 +44,19 @@ def get_posts(item, uri_parser, user):
     
     if not alreadyThere:
         title = unicode(item.find('title').contents[0])
+        post_id = item.find('wp:post_id').string
+        post_id = int(post_id)
         body = unicode(item.find('content:encoded').contents[0])
         body = replace_short_code(body)
+        try:
+            # There may not be a file associated with a post.
+            # If so, catch that error.
+            fgroup = AssociatedFile.objects.filter(post_id=post_id)
+            for f in fgroup:
+                body = correct_media_file_path(body, f.file)
+        except:
+            pass
+
         post_date = unicode(item.find('wp:post_date').contents[0])
         post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
         
@@ -108,7 +120,17 @@ def get_pages(item, uri_parser, user):
    
     if not alreadyThere:
         title = unicode(item.find('title').contents[0])
+        post_id = item.find('wp:post_id').string
+        post_id = int(post_id)
         body = unicode(item.find('content:encoded').contents[0])
+        body = replace_short_code(body)
+        try:
+            fgroup = AssociatedFile.objects.filter(post_id=post_id)
+            for f in fgroup:
+                body = correct_media_file_path(body, f.file)
+        except:
+            pass
+        
         page = {
             'title': title,
             'guid': str(uuid.uuid1()),
@@ -146,6 +168,9 @@ def get_media(item, uri_parser, user):
     media_url = uri_parser.parse(media_url_in_attachment).file
     media_url = os.path.join(settings.MEDIA_ROOT, media_url)
 
+    post_id = item.find('wp:post_parent').string
+    post_id = int(post_id)
+
     alreadyThere = False
 
     for url in File.objects.all():
@@ -166,15 +191,9 @@ def get_media(item, uri_parser, user):
         new_media = File(guid=unicode(uuid.uuid1()), file=file_path, creator=user, owner=user)
         new_media.save()
 
-    # Loop through Articles and Pages replacing new_media.
-    for a in Article.objects.all():
-        if a.body != correct_media_file_path(a.body, new_media):
-            a.body = correct_media_file_path(a.body, new_media)
-            a.save()
-    for p in Page.objects.all():
-        if p.content != correct_media_file_path(p.content, new_media):
-            p.content = correct_media_file_path(p.content, new_media)
-            p.save()
+    temporary = AssociatedFile(post_id=post_id, file=new_media)
+    temporary.save()
+    
 
 def correct_media_file_path(body, file):
     """
@@ -212,17 +231,14 @@ def run(file_name, request):
         post_type = item.find('wp:post_type').string
         post_status = item.find('wp:status').string
 
-        if post_type == 'post' and post_status == 'publish':
+        if post_type == 'attachment':
+            get_media(item, uri_parser, user)
+            # Note! This script assumes all the attachments come before
+            # posts and pages in the xml. If this ends up changing,
+            # do two loops, one with attachments and the second with posts and pages.
+        elif post_type == 'post' and post_status == 'publish':
             get_posts(item, uri_parser, user)
         elif post_type == 'page' and post_status == 'publish':
             get_pages(item, uri_parser, user)
 
-    # Loops twice. This is so that all the articles and pages are
-    # stored and ready to have their links corrected.
     
-    for item in items:
-        post_type = item.find('wp:post_type').string
-        post_status = item.find('wp:status').string
-
-        if post_type == 'attachment':
-            get_media(item, uri_parser, user)
