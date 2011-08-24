@@ -93,9 +93,12 @@ class Profile(TendenciBaseModel):
         from campaign_monitor.utils import update_subscription
         if not self.id:
             self.guid = str(uuid.uuid1())
-        old_email = Profile.objects.get(pk=self.pk).email
+        if self.pk:
+            old_email = Profile.objects.get(pk=self.pk).email
+        else:
+            old_email = ''
         super(Profile, self).save(*args, **kwargs)
-        if old_email != self.email:
+        if old_email and old_email != self.email:
             update_subscription(self, old_email)
         
     # if this profile allows view by user2_compare
