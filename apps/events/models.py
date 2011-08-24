@@ -262,7 +262,7 @@ class RegConfPricing(models.Model):
         Note that the delete() method for an object is not necessarily
         called when deleting objects in bulk using a QuerySet.
         """
-        print "%s, %s" % (self, "status set to false" )
+        #print "%s, %s" % (self, "status set to false" )
         self.status = False
         self.save(*args, **kwargs)
     
