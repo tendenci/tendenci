@@ -22,7 +22,7 @@ def save_to_disk(f, instance):
         instance._meta.module_name,
     )
 
-    # make directory w/ pk
+    # make directory with pk
     if isinstance(instance.pk, long):
         relative_directory = os.path.join(
             relative_directory, 
@@ -52,6 +52,57 @@ class FileManager(TendenciBaseManager):
             content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.pk,
         )
+
+    def bind_files_to_instance(self, files, instance, **kwargs):
+        """
+        Save files and associate with instance.
+        Return list of files saved.
+        """
+        from django.contrib.auth.models import User
+
+        try:  # explicit user; default to admin
+            user = kwargs.get('user') or User.objects.get(id=1)
+        except User.DoesNotExist as e:
+            return []
+
+        # loop; save file; save file record in db
+        # ----------------------------------------
+
+        files_saved = []
+        for file in files:
+
+            # what to save; where to save it
+            file_path = save_to_disk(file, instance)
+
+            # update file record; or create new file record
+            # ----------------------------------------------
+
+            instance_pk = None
+            if isinstance(instance.pk, long):
+                instance_pk = instance.pk
+
+            try:
+                file = self.get(file=file_path)
+                file.name = file.name
+                file.owner = user
+                file.owner_username = user.username
+                file.update_dt = datetime.now()
+            except:
+                file = self.model(**{
+                    'file':file_path,
+                    'name':file.name,
+                    'content_type':ContentType.objects.get_for_model(instance),
+                    'object_id':instance_pk,
+                    'creator':user,
+                    'creator_username':user.username,
+                    'owner':user,
+                    'owner_username':user.username,
+                })
+
+            file.save() # auto generate GUID if missing
+            files_saved.append(file)
+
+        return files_saved
 
     def save_files_for_instance(self, request, instance, **kwargs):
         """
