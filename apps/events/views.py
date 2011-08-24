@@ -1654,6 +1654,6 @@ def copy(request, id):
         instance = new_event
     )
     
-    messages.add_message(request, messages.INFO, 'Sucessfully copied Event: %s' % new_event.title)
+    messages.add_message(request, messages.INFO, 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % new_event.title)
     
-    return redirect(new_event)
+    return redirect('event.edit', id=new_event.id)
