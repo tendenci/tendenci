@@ -380,6 +380,11 @@ SOCIAL_AUTH_DEFAULT_USERNAME = 'social_auth_user'
 SOCIAL_AUTH_CREATE_USERS = True
 SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
 
+# ------------------------------------ #
+# CAMPAIGN MONITOR URL
+# ------------------------------------ #
+CAMPAIGNMONITOR_URL = 'https://tendenci.createsend.com'
+
 # local settings for development
 try:
     from local_settings import *
