@@ -266,7 +266,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             form_regconfpricing = RegConfPricingSet(
                 request.POST,
                 queryset=RegConfPricing.objects.filter(
-                    reg_conf=event.registration_configuration
+                    reg_conf=event.registration_configuration,
+                    status=True,
                 ),
                 prefix='regconfpricing'
             )
@@ -371,7 +372,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
             form_regconfpricing = RegConfPricingSet(
                 queryset=RegConfPricing.objects.filter(
-                    reg_conf=event.registration_configuration
+                    reg_conf=event.registration_configuration,
+                    status=True,
                 ),
                 prefix='regconfpricing',
                 auto_id='regconfpricing_formset'
@@ -696,7 +698,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     
     # get all pricing
     pricing = RegConfPricing.objects.filter(
-        reg_conf=event.registration_configuration
+        reg_conf=event.registration_configuration,
+        status=True,
     )
     
     # check is this person is qualified to see this pricing and event_price
