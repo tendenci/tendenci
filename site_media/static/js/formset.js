@@ -255,8 +255,6 @@ $(document).ready(function(){
         fsa.each(function(i) {
             var e = $(this);
             var next_class = e.parent().next().attr('class');
-            alert(e.html());
-            alert(next_class);
 
             if (!next_class || next_class.indexOf('formset') == -1) {
                 e.css({
