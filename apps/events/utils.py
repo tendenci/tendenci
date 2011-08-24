@@ -841,7 +841,7 @@ def copy_event(event, user):
             all_day = event.all_day,
             private = event.private,
             password = event.password,
-            allow_anonymous_view = event.allow_anonymous_view,
+            allow_anonymous_view = False,
             allow_user_view = event.allow_user_view,
             allow_member_view = event.allow_member_view,
             allow_anonymous_edit = event.allow_anonymous_edit,
@@ -865,7 +865,7 @@ def copy_event(event, user):
     new_regconf = RegistrationConfiguration.objects.create(
         payment_required = old_regconf.payment_required,
         limit = old_regconf.limit,
-        enabled = old_regconf.limit,
+        enabled = old_regconf.enabled,
         is_guest_price = old_regconf.is_guest_price,
     )
     new_regconf.payment_method = old_regconf.payment_method.all()
