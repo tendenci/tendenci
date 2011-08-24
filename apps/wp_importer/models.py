@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from files.models import File
 from datetime import datetime
 
 class BlogImport(models.Model):
@@ -9,3 +10,7 @@ class BlogImport(models.Model):
     blog_import_date = models.DateTimeField(auto_now_add=True)
     # file
     blog = models.FileField(upload_to='blogimport')
+
+class AssociatedFile(models.Model):
+    post_id = models.IntegerField()
+    file = models.ForeignKey(File)
