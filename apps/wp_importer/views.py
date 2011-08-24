@@ -1,8 +1,8 @@
 import os.path
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse 
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib import messages
@@ -23,22 +23,37 @@ from event_logs.models import EventLog
 def index(request, template_name="wp_importer/index.html"):
     if request.method == 'POST':
         form = BlogImportForm(request.POST, request.FILES)
-        if form.is_valid() and request.FILES['blog'].name.endswith('xml') and request.FILES['blog'].size < 20*1024*1024:
-            upload = form.save(commit=False)
-            upload.author = request.user
-            upload = form.save()
+        try:
+            if form.is_valid() and request.FILES['blog'].name.endswith('xml') and request.FILES['blog'].size < 20*1024*1024 and request.user:
+                upload = form.save(commit=False)
+                upload.author = request.user
+                upload = form.save()
 
-            file_name = 'site_media/media/blogimport/' + request.FILES['blog'].name
-            run(file_name, request)
+                file_name = 'site_media/media/blogimport/' + request.FILES['blog'].name
+                run(file_name, request)
 
-            messages.add_message(
-                request,
-                messages.INFO,
-                _('Your blog has been imported!')
-            )
+                messages.add_message(
+                    request,
+                    messages.INFO,
+                    _('Your blog has been imported!')
+                )
 
-            return HttpResponseRedirect('detail/')
-    
+                return HttpResponseRedirect('detail/')
+            elif not request.FILES['blog'].name.endswith('xml'):
+                messages.add_message(
+                    request,
+                    messages.INFO,
+                    _('Oops, only upload XML files!'))
+
+            elif not request.FILES['blog'].size < 20*1024*1024:
+                messages.add_message(
+                    request,
+                    messages.INFO,
+                    _('Oops, only upload files smaller than 20 MB!'))
+            
+        except ValueError:
+            return redirect('auth_login')       
+
     else:
         form = BlogImportForm()
 
