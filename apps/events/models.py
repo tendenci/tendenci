@@ -272,7 +272,7 @@ class RegConfPricing(models.Model):
         return '%s' % self.pk
 
     def available(self):
-        if not self.reg_conf.enabled:
+        if not self.reg_conf.enabled or not self.status:
             return False
         if hasattr(self, 'event'):
             if datetime.now() > self.event.end_dt:

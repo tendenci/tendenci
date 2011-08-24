@@ -589,7 +589,8 @@ def get_pricing(user, event, pricing=None):
     spots_left = limit - spots_taken
     if not pricing:
         pricing = RegConfPricing.objects.filter(
-            reg_conf=event.registration_configuration
+            reg_conf=event.registration_configuration,
+            status=True,
         )
     
 
@@ -768,6 +769,7 @@ def registration_earliest_time(event, pricing=None):
     if not pricing:
         pricing = RegConfPricing.objects.filter(
             reg_conf=event.registration_configuration,
+            status=True,
         )
     
     pricing = pricing.filter(end_dt__gt=datetime.now()).order_by('start_dt')
@@ -786,7 +788,8 @@ def registration_has_started(event, pricing=None):
     
     if not pricing:
         pricing = RegConfPricing.objects.filter(
-            reg_conf=event.registration_configuration
+            reg_conf=event.registration_configuration,
+            status=True,
         )
     
     for price in pricing:
@@ -805,7 +808,8 @@ def registration_has_ended(event, pricing=None):
     
     if not pricing:
         pricing = RegConfPricing.objects.filter(
-            reg_conf=event.registration_configuration
+            reg_conf=event.registration_configuration,
+            status=True,
         )
     
     for price in pricing:
@@ -821,7 +825,7 @@ def clean_price(price, user):
     amount is not validated if user is admin.
     """
     price_pk, amount = price.split('-')
-    price = RegConfPricing.objects.get(pk=price_pk)
+    price = RegConfPricing.objects.get(pk=price_pk, status=True)
     amount = Decimal(str(amount))
     
     if amount != price.price and not is_admin(user):
@@ -873,7 +877,7 @@ def copy_event(event, user):
     new_event.registration_configuration = new_regconf
     new_event.save()
     #copy regconf pricings
-    for pricing in old_regconf.regconfpricing_set.all():
+    for pricing in old_regconf.regconfpricing_set.filter(status=True):
         new_pricing = RegConfPricing.objects.create(
             reg_conf = new_regconf,
             title = pricing.title,
