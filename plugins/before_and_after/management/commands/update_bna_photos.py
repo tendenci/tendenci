@@ -16,14 +16,21 @@ class Command(BaseCommand):
         from before_and_after.models import BeforeAndAfter
         cursor = connection.cursor()
 
-        root_dir = os.path.join(settings.MEDIA_ROOT,'uploads','image-crops')
+        root_dir = os.path.join(settings.PROJECT_ROOT,'site_media','uploads','image-crops')
+
+        print root_dir
 
         # loop through directories
         for root, dirs, file_names in os.walk(root_dir):
-            t4_pk = int(os.path.basename(root))
+
+            # directory name must be digit
+            base_name = os.path.basename(root)
+            if not base_name.isdigit():
+                continue # on to the next one
+
+            t4_pk = int(base_name)
             cursor.execute("SELECT t5_id FROM mig_before_after_t4_to_t5 WHERE t4_id = %s", [t4_pk])
             row = cursor.fetchone()
-
 
             try:  # get instance; use directory name
                 instance = BeforeAndAfter.objects.get(pk=row['t5_id'])
