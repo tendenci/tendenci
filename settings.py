@@ -60,6 +60,10 @@ LANGUAGES = (
     ('en-us', u'English'),
 )
 
+LOCALE_PATHS = (
+    os.path.join(PROJECT_ROOT, 'themes'),
+)
+
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not

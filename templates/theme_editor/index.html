@@ -35,7 +35,7 @@
             </form>
         
         	<div id="file_version_box">
-            	<h2>Versions</h2>
+            	<h2>{% trans "Versions" %}</h2>
             	{% if archives %}
                 	<div id="file_versions">
                     	{% for archive in archives %}
@@ -51,7 +51,7 @@
         </td>
         <td width="20%" valign="top">
             <div class='theme-selection'>
-                <p><b>Active Theme:</b> <a href="{% url setting.permalink 'module' 'theme_editor' 'theme' %}">{{ ACTIVE_THEME }}</a></p>
+                <p><b>{% trans "Active Theme:" %}</b> <a href="{% url setting.permalink 'module' 'theme_editor' 'theme' %}">{{ ACTIVE_THEME }}</a></p>
                 <h4>{% trans 'Theme in Editor:' %}</h4>
                 <form method="GET" action="">
                     {{ theme_form.theme_edit }}<input type="submit" value="Change Theme in Editor"/>
