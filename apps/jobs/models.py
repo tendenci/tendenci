@@ -199,6 +199,11 @@ class JobPricing(models.Model):
         if self.title:
             return self.title
         return "Untitled: %s Days" % self.duration
+        
+    def get_title(self):
+        if self.title:
+            return self.title
+        return "Untitled"
     
     def save(self, user=None, *args, **kwargs):
         if not self.id:

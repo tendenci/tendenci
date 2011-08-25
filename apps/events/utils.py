@@ -7,7 +7,7 @@ from decimal import Decimal
 
 from profiles.models import Profile
 from site_settings.utils import get_setting
-from events.models import Registration
+from events.models import Registration, Event, RegistrationConfiguration
 from events.models import Registrant, RegConfPricing
 from user_groups.models import Group
 from perms.utils import is_member, is_admin
@@ -589,7 +589,8 @@ def get_pricing(user, event, pricing=None):
     spots_left = limit - spots_taken
     if not pricing:
         pricing = RegConfPricing.objects.filter(
-            reg_conf=event.registration_configuration
+            reg_conf=event.registration_configuration,
+            status=True,
         )
     
 
@@ -768,6 +769,7 @@ def registration_earliest_time(event, pricing=None):
     if not pricing:
         pricing = RegConfPricing.objects.filter(
             reg_conf=event.registration_configuration,
+            status=True,
         )
     
     pricing = pricing.filter(end_dt__gt=datetime.now()).order_by('start_dt')
@@ -786,7 +788,8 @@ def registration_has_started(event, pricing=None):
     
     if not pricing:
         pricing = RegConfPricing.objects.filter(
-            reg_conf=event.registration_configuration
+            reg_conf=event.registration_configuration,
+            status=True,
         )
     
     for price in pricing:
@@ -805,7 +808,8 @@ def registration_has_ended(event, pricing=None):
     
     if not pricing:
         pricing = RegConfPricing.objects.filter(
-            reg_conf=event.registration_configuration
+            reg_conf=event.registration_configuration,
+            status=True,
         )
     
     for price in pricing:
@@ -821,10 +825,67 @@ def clean_price(price, user):
     amount is not validated if user is admin.
     """
     price_pk, amount = price.split('-')
-    price = RegConfPricing.objects.get(pk=price_pk)
+    price = RegConfPricing.objects.get(pk=price_pk, status=True)
     amount = Decimal(str(amount))
     
     if amount != price.price and not is_admin(user):
         raise ValueError("Invalid price amount")
     
     return price, price_pk, amount
+
+def copy_event(event, user):
+    #copy event
+    new_event = Event.objects.create(
+            title = event.title,
+            entity = event.entity,
+            description = event.description,
+            place = event.place,
+            timezone = event.timezone,
+            type = event.type,
+            all_day = event.all_day,
+            private = event.private,
+            password = event.password,
+            allow_anonymous_view = False,
+            allow_user_view = event.allow_user_view,
+            allow_member_view = event.allow_member_view,
+            allow_anonymous_edit = event.allow_anonymous_edit,
+            allow_user_edit = event.allow_user_edit,
+            allow_member_edit = event.allow_member_edit,
+            creator = user,
+            creator_username = user.username,
+            owner = user,
+            owner_username = user.username,
+            status = event.status,
+            status_detail = event.status_detail,
+        )
+    #associate speakers
+    for speaker in event.speaker_set.all():
+        speaker.event.add(new_event)
+    #associate organizers
+    for organizer in event.organizer_set.all():
+        organizer.event.add(new_event)
+    #copy registration configuration
+    old_regconf = event.registration_configuration
+    new_regconf = RegistrationConfiguration.objects.create(
+        payment_required = old_regconf.payment_required,
+        limit = old_regconf.limit,
+        enabled = old_regconf.enabled,
+        is_guest_price = old_regconf.is_guest_price,
+    )
+    new_regconf.payment_method = old_regconf.payment_method.all()
+    new_regconf.save()
+    new_event.registration_configuration = new_regconf
+    new_event.save()
+    #copy regconf pricings
+    for pricing in old_regconf.regconfpricing_set.filter(status=True):
+        new_pricing = RegConfPricing.objects.create(
+            reg_conf = new_regconf,
+            title = pricing.title,
+            quantity = pricing.quantity,
+            group = pricing.group,
+            price = pricing.price,
+            allow_anonymous = pricing.allow_anonymous,
+            allow_user = pricing.allow_user,
+            allow_member = pricing.allow_member,
+        )
+    return new_event

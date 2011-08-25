@@ -15,9 +15,9 @@
 
     <div class="contact-form-wrap">
 	
-		{% trans '<p>Hi there!  Thanks for filling out a contact form, your website is feeling more optimized and marketable already.</p>
+		{% blocktrans %}
+		<p>Hi there!  Thanks for filling out a contact form, your website is feeling more optimized and marketable already.</p>
 		<p>Our Tendenci Membership Management software is a great way to power your website, grow your community and make your life easier.  We can't wait to help you get started!</p>
-	
 		<div style="margin-bottom:20px;">
 			<p>If contact forms aren't your style, here are a few other ways to get in touch with our Tendenci team:</p>
 			<ul>
@@ -27,7 +27,8 @@
 				<li>Connect on Twitter:  <a href="http://www.twitter.com/tendenci">www.twitter.com/tendenci</a></li>
 				<li>Friend us on Facebook:  <a href="http://www.facebook.com/tendenci">www.facebook.com/tendenci</a></li>
 			</ul>
-		</div>' %}
+		</div>
+		{% endblocktrans %}
 
     	<form action="{% url form %}" method="post">{% csrf_token %}
     	<div class="forms">
