@@ -33,7 +33,8 @@ from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
-from events.utils import get_event_spots_taken, update_event_spots_taken, get_ievent
+from events.utils import get_event_spots_taken, update_event_spots_taken
+from events.utils import get_ievent, copy_event
 from perms.utils import has_perm, get_notice_recipients, \
     update_perms_and_save, get_administrators, is_admin
 from event_logs.models import EventLog
@@ -265,7 +266,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             form_regconfpricing = RegConfPricingSet(
                 request.POST,
                 queryset=RegConfPricing.objects.filter(
-                    reg_conf=event.registration_configuration
+                    reg_conf=event.registration_configuration,
+                    status=True,
                 ),
                 prefix='regconfpricing'
             )
@@ -370,7 +372,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
             form_regconfpricing = RegConfPricingSet(
                 queryset=RegConfPricing.objects.filter(
-                    reg_conf=event.registration_configuration
+                    reg_conf=event.registration_configuration,
+                    status=True,
                 ),
                 prefix='regconfpricing',
                 auto_id='regconfpricing_formset'
@@ -695,7 +698,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     
     # get all pricing
     pricing = RegConfPricing.objects.filter(
-        reg_conf=event.registration_configuration
+        reg_conf=event.registration_configuration,
+        status=True,
     )
     
     # check is this person is qualified to see this pricing and event_price
@@ -1635,3 +1639,24 @@ def delete_special_pricing(request, id):
     s.delete()
     
     return redirect('event', id=event.id)
+
+@login_required
+def copy(request, id):
+    if not has_perm(request.user, 'events.add_event'):
+        raise Http403
+        
+    event = get_object_or_404(Event, id=id)
+    new_event = copy_event(event, request.user)
+    
+    EventLog.objects.log(
+        event_id =  171000, # add event
+        event_data = '%s (%d) added by %s' % (new_event._meta.object_name, new_event.pk, request.user),
+        description = '%s added' % new_event._meta.object_name,
+        user = request.user,
+        request = request,
+        instance = new_event
+    )
+    
+    messages.add_message(request, messages.INFO, 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % new_event.title)
+    
+    return redirect('event.edit', id=new_event.id)

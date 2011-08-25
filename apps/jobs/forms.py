@@ -13,7 +13,7 @@ from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 from jobs.models import JobPricing
-from jobs.utils import get_payment_method_choices
+from jobs.utils import get_payment_method_choices, pricing_choices
 
 
 request_duration_defaults = {
@@ -197,6 +197,8 @@ class JobForm(TendenciBaseForm):
                 self.fields['status_detail'].choices = STATUS_DETAIL_CHOICES
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+            
+        self.fields['pricing'].choices = pricing_choices(self.user)
 
         if 'payment_method' in self.fields:
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
@@ -261,6 +263,7 @@ class JobPricingForm(forms.ModelForm):
     class Meta:
         model = JobPricing
         fields = (
+            'title',
             'duration',
             'regular_price',
             'premium_price',

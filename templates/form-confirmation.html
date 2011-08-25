@@ -12,12 +12,11 @@
 <div class="t">
     <h1>{% trans "Success!" %}</h1>
 	
-	{% trans '<p>Thank you for getting in touch with the Tendenci team!  We will be in touch with you shortly.</p>
-	<p>In the meantime, why not friend us on Facebook (<a href="http://facebook.com/tendenci">facebook.com/tendenci</a>), 
-	follow us on Twitter (<a href="http://twitter.com/tendenci.com">twitter.com/tendenci.com</a>) or 
-	read our Tendenci blog (<a href="http://blog.tendenci.com">blog.tendenci.com</a>) so we can get to know each other better!</p>
+	{% blocktrans %}
+	<p>Thank you for getting in touch with the Tendenci team!  We will be in touch with you shortly.</p>
+	<p>In the meantime, why not friend us on Facebook (<a href="http://facebook.com/tendenci">facebook.com/tendenci</a>), follow us on Twitter (<a href="http://twitter.com/tendenci.com">twitter.com/tendenci.com</a>) or read our Tendenci blog (<a href="http://blog.tendenci.com">blog.tendenci.com</a>) so we can get to know each other better!</p>
 	<p>Thanks!</p>
-	<p>~The Tendenci team</p>' %}
-
+	<p>~The Tendenci team</p>
+    {% endblocktrans %}
 </div>
 {% endblock %}

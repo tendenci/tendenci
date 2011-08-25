@@ -18,19 +18,16 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr> 
     <td width="2%">&nbsp;</td>
-    <td width="23%">{% trans "Company 
-      Name:" %}</td>
+    <td width="23%">{% trans "Company Name:" %}</td>
     <td width="75%"><b>{{ object.contact_company }}</b></td>
   </tr>
   <tr> 
     <td width="2%">&nbsp;</td>
-    <td width="23%">{% trans "Position 
-      Title:" %}</td>
+    <td width="23%">{% trans "Position Title:" %}</td>
     <td width="75%"><b>{{ object.title }}</b></td>
   </tr>
 </table>
-<p>{% trans "To view the details of this 
-  job, go to:" %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
+<p>{% trans "To view the details of this job, go to:" %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
 
 {% if not isadmin %}
 <p>{% blocktrans %}You can activate this job at:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url job.approve object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url job.approve object.pk %}</a>.</p>

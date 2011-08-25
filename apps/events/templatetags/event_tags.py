@@ -69,7 +69,8 @@ def registration_pricing_and_button(context, event, user):
     registration = event.registration_configuration
 
     pricing = RegConfPricing.objects.filter(
-        reg_conf=event.registration_configuration
+        reg_conf=event.registration_configuration,
+        status=True,
     )
     reg_started = registration_has_started(event, pricing=pricing)
     reg_ended = registration_has_ended(event, pricing=pricing)

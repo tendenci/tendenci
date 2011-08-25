@@ -255,13 +255,24 @@ class RegConfPricing(models.Model):
     allow_user = models.BooleanField(_("Signed in user can use"))
     allow_member = models.BooleanField(_("All members can use"))
     
+    status = models.BooleanField(default=True)
+    
+    def delete(self, *args, **kwargs):
+        """
+        Note that the delete() method for an object is not necessarily
+        called when deleting objects in bulk using a QuerySet.
+        """
+        #print "%s, %s" % (self, "status set to false" )
+        self.status = False
+        self.save(*args, **kwargs)
+    
     def __unicode__(self):
         if self.title:
             return '%s' % self.title
         return '%s' % self.pk
 
     def available(self):
-        if not self.reg_conf.enabled:
+        if not self.reg_conf.enabled or not self.status:
             return False
         if hasattr(self, 'event'):
             if datetime.now() > self.event.end_dt:
@@ -338,10 +349,10 @@ class Registration(models.Model):
         
         #The discount used will be the same for all discount uses in one
         #invoice.
-        discount = inv.discountuse_set.filter(invoice=inv)
-        if discount:
-            discount = discount[0].discount
-            description += "\nYour discount of $ %s has been added." % discount.value
+        discounts = inv.discountuse_set.filter(invoice=inv)
+        if discounts:
+            discount = discounts[0].discount.value * discounts.count()
+            description += "\nYour discount of $ %s has been added." % discount
         
         return description
         
