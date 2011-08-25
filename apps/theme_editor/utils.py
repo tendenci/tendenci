@@ -20,7 +20,8 @@ ALLOWED_EXTENSIONS = (
     '.html',
     '.css',
     '.txt',
-    '.js'
+    '.js',
+    '.po'
 )
 
 def copy(path_to_file, file, FROM_ROOT=TEMPLATES_ROOT, TO_ROOT=THEME_ROOT):
