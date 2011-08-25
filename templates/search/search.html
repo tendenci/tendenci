@@ -4,6 +4,7 @@
 {% load base_filters %}
 {% load base_tags %}
 {% load avatar_tags %}
+{% load search_tags %}
 {% load pagination_tags %}
 {% load smart_if %}
 
@@ -45,17 +46,7 @@
         {% if page.object_list %}
             <ul id="uniform-ul">
             {% for result in page.object_list %}             
-                <li>
-                    <h3 style="margin-bottom:0;"><a title="{{ result.object }}" href="{{ result.object.get_absolute_url }}">{% firstof result.object "Untitled" %}</a></h3>
-                    <div class="uniform-li-meta">
-                        {% filter striptags|truncatewords:50 %}
-                            {% autoescape on %}
-                                {% firstof result.object.content result.object.description result.object.body %}
-                            {% endautoescape %}
-                        {% endfilter %}
-                        &nbsp;[{{ result.model_name }}]
-                    </div>
-                </li>
+                {% search_result result %}
             {% endfor %}
              </ul>
         {% else %}
