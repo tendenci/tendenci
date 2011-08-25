@@ -10,11 +10,17 @@ class Command(BaseCommand):
         """
         import os
         import shutil
+        import logging
         from django.db import connection, transaction
         from django.conf import settings
         from django.core.files.uploadedfile import UploadedFile
         from files.models import File
         from before_and_after.models import BeforeAndAfter, PhotoSet
+
+        logger = logging.getLogger('image_log')
+        handler = logging.FileHandler(os.path.join(settings.PROJECT_ROOT, 'plugins', 'before_and_after', 'the.log'))
+        logger.addHandler(handler)
+        logger.setLevel(logging.WARNING)
 
         # 0 no output; 1 normal; 2 verbose; 3 very verbose
         verbosity = options['verbosity'] 
@@ -59,6 +65,7 @@ class Command(BaseCommand):
                     temp_name = temp_name.split('_')[-1:][0]
 
                     if len(temp_name) != 2:
+                        logger.error('%s' % file_name)
                         continue  # on to the next one
 
                     order, half = temp_name
