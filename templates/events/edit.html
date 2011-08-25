@@ -16,17 +16,11 @@
 
 {% block body %}
 <div class="t">
-    {% event_nav request.user %}
+    {% event_nav request.user event %}
 
     <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %}{% trans " Edit" %}</h1>
 
     <div class="event-wrap">
-
-		<div class="options">
-             <div class="quick-options">
-				{% event_options request.user event %} 	       
-             </div>
-		</div>
 
     	<form action="{% url event.edit event.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
     	<div class="forms">
@@ -43,8 +37,8 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
 	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/formset.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/formset.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.hotkeys.min.js"></script>
     <script type="text/javascript">
         var geocoder = null;
@@ -106,12 +100,14 @@
                 }
             });         
         });
-
-    	var iconrow = new dropdown({
-    		container:	'more-options-wrap',
-    		trigger:	'more-options-trigger',
-    		target:		'more-options-target'
-    	});
+        
+        var slugit = new Slugify({
+			input_element : 'input#id_title',
+			slug_element : 'input#id_slug',
+			submit_element : 'input[type="submit"]',
+			help: false,
+			limit : 150
+		});
 
         $(".datepicker").live('focus', function() {
             $(this).datepicker({ dateFormat: 'yy-mm-dd' });
