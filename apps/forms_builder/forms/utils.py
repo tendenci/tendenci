@@ -30,6 +30,7 @@ def generate_email_subject(form, form_entry):
         for field_entry in field_entries:
             label = field_entry.field.label
             value = field_entry.value
+            label = label.strip('(').strip(')')
             if not value:
                 value = ''
                 p = re.compile('(-\s+)?\[%s\]' % label, re.IGNORECASE)
