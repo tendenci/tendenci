@@ -247,29 +247,30 @@ $(document).ready(function(){
         form_set_funcs.find('div.formset-delete').hide();
     }
 
-    // hide all the add elements except for the last one
     if (href.indexOf('/edit') > -1) {
         var fsa = form_set_funcs.find('div.formset-add');
         var fsd = form_set_funcs.find('div.formset-delete');
-
+        
+        // hide all the add links except for the last one
         fsa.each(function(i) {
             var e = $(this);
             var next_class = e.parent().next().attr('class');
 
-            if (next_class.indexOf('formset') == -1) {
+            if (!next_class || next_class.indexOf('formset') == -1) {
                 e.css({
                     display: 'inline'
                 });
             }
         });
-
+        
+        //hide the delete link if there is only one
         fsd.each(function(i) {
             var e = $(this);
             var prev_class = e.parent().prev().prev().attr('class');
             var next_class = e.parent().next().attr('class');
 
-            if ((next_class.indexOf('formset') == -1) && 
-               (prev_class.indexOf('formset') == -1)) {
+            if ((!next_class || next_class.indexOf('formset') == -1) && 
+               (!prev_class || prev_class.indexOf('formset') == -1)) {
                 e.hide();
             } else {
                 e.css({

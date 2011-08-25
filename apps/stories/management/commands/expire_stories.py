@@ -11,6 +11,5 @@ class Command(BaseCommand):
         from stories.models import Story
         for story in Story.objects.filter(expires=True, status_detail='active'):
             if story.end_dt < datetime.now():
-                #print "%s has expired." % story.title
                 story.status_detail = 'expired'
                 story.save()
