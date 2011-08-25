@@ -20,8 +20,7 @@
     	{% is_admin request.user as admin %}
     	{% if not admin %}
     		{% if  renew_entry.status_detail == "pending" or renew_entry.status_detail == "paid - pending approval" %}
-		    	{% trans "Your membership renewal will be reviewed by an administrator 
-		    	who will be contacting you shortly." %}
+		    	{% trans "Your membership renewal will be reviewed by an administrator who will be contacting you shortly." %}
 	    	{% endif %}
     	{% endif %}
     

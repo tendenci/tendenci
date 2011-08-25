@@ -6,19 +6,21 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """
         Loop through all images in a directory.
-        Associate the images to the before_after application
-        via the Files application.
+        Associate the images to their before_and_after instance
         """
         import os
+        import shutil
         from django.db import connection, transaction
         from django.conf import settings
+        from django.core.files.uploadedfile import UploadedFile
         from files.models import File
-        from before_and_after.models import BeforeAndAfter
+        from before_and_after.models import BeforeAndAfter, PhotoSet
+
+        # 0 no output; 1 normal; 2 verbose; 3 very verbose
+        verbosity = options['verbosity'] 
+
         cursor = connection.cursor()
-
         root_dir = os.path.join(settings.PROJECT_ROOT,'site_media','uploads','image-crops')
-
-        print root_dir
 
         # loop through directories
         for root, dirs, file_names in os.walk(root_dir):
@@ -33,23 +35,59 @@ class Command(BaseCommand):
             row = cursor.fetchone()
 
             try:  # get instance; use directory name
-                instance = BeforeAndAfter.objects.get(pk=row['t5_id'])
+                if row: instance = BeforeAndAfter.objects.get(pk=row[0])
             except BeforeAndAfter.DoesNotExist as e:
                 continue  # on to the next one
 
+            if verbosity == 1:
+                print instance, file_names
+
             # get list of file paths
-            file_paths = [os.path.join(root_dir, file_name) for f in file_names]
+            file_paths = [os.path.join(root_dir, base_name, file_name) for file_name in file_names]
 
-            files = []  # make file objects
-            for file_path in file_paths:
-                f = open(file_path)
-                files.append(f)
+            # copy files to directory
+            for src in file_paths:
+                dst = os.path.join(settings.MEDIA_ROOT,'files','before_and_after', os.path.basename(src))
+                shutil.copy2(src, dst)  # copy2; metadata is copied as well
 
-            # associate files with instance (before_after innstance)
-            files = File.objects.bind_files_to_instance(files, instance)
+            # update instance records with photos
+            for i in range(10):
+                for file_name in file_names:
+                    before_photo, after_photo = '', ''
+                    temp_name = file_name.lower()
+                    temp_name = os.path.splitext(temp_name)[0]
+                    temp_name = temp_name.split('_')[-1:][0]
 
-            # output
-            print instance, files
+                    if len(temp_name) != 2:
+                        continue  # on to the next one
 
-            # close files
-            for f in files: f.close()
+                    order, half = temp_name
+
+                    if not order.isdigit():
+                        continue # on to the next one
+
+                    rel_path = '/files/before_and_after/%s' % file_name
+
+                    if half == 'a': after_photo = rel_path
+                    elif half == 'b': before_photo= rel_path
+
+                    try:
+                        photo_set = PhotoSet.objects.get(
+                            order=order,
+                            before_and_after=instance,
+                        )
+
+                        if after_photo:
+                            photo_set.after_photo = after_photo
+                        elif before_photo:
+                            photo_set.before_photo = before_photo
+
+                        photo_set.save()
+
+                    except PhotoSet.DoesNotExist as e:
+                        photo_set = PhotoSet.objects.create(**{
+                            'order': order,
+                            'before_and_after': instance,
+                            'before_photo': before_photo,
+                            'after_photo': after_photo,
+                        })

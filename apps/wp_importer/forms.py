@@ -6,7 +6,6 @@ from wp_importer.models import BlogImport
 
 class BlogImportForm(forms.ModelForm):
     blog = forms.Field(widget=forms.FileInput, required=True)
-    # print blog_file
 
     class Meta():
         model = BlogImport

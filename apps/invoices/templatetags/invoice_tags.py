@@ -1,4 +1,5 @@
 from django.template import Library
+from django.conf import settings
 
 register = Library()
 
@@ -99,12 +100,17 @@ def invoice_total_display(request, invoice):
             if payment_set:
                 payment = payment_set[0]
                 payment_method = payment.method
-    
+
+    merchant_login = False
+    if hasattr(settings, 'MERCHANT_LOGIN') and settings.MERCHANT_LOGIN:
+        merchant_login = True
+
     context = {
         'request': request,
         'invoice': invoice,
         'tmp_total': tmp_total,
-        'payment_method': payment_method
+        'payment_method': payment_method,
+        'merchant_login': merchant_login
     } 
     return context
 
