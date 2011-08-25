@@ -54,7 +54,7 @@ def get_posts(item, uri_parser, user):
             fgroup = AssociatedFile.objects.filter(post_id=post_id)
             for f in fgroup:
                 body = correct_media_file_path(body, f.file)
-                
+
         except:
             pass
 
@@ -129,6 +129,7 @@ def get_pages(item, uri_parser, user):
             fgroup = AssociatedFile.objects.filter(post_id=post_id)
             for f in fgroup:
                 body = correct_media_file_path(body, f.file)
+                
         except:
             pass
         
