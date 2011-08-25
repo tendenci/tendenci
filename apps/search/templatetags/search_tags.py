@@ -28,6 +28,7 @@ class SearchResultNode(IncludeNode):
                     t = get_template("search/search-result.html")
             context.update({
                 "search_result": result,
+                "search_object": result_object,
             })
             return t.render(context)
         except:
