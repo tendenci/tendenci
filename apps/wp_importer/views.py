@@ -39,20 +39,24 @@ def index(request, template_name="wp_importer/index.html"):
                 )
 
                 return HttpResponseRedirect('detail/')
+
             elif not request.FILES['blog'].name.endswith('xml'):
                 messages.add_message(
                     request,
                     messages.INFO,
-                    _('Oops, only upload XML files!'))
+                    _('Oops, only upload XML files!')
+                )
 
             elif not request.FILES['blog'].size < 20*1024*1024:
                 messages.add_message(
                     request,
                     messages.INFO,
-                    _('Oops, only upload files smaller than 20 MB!'))
+                    _('Oops, only upload files smaller than 20 MB!')
+                )
             
         except ValueError:
-            return redirect('auth_login')       
+            messages.add_message(request, messages.INFO, 'Oops, please login before uploading a blog!')
+            return redirect('auth_login')
 
     else:
         form = BlogImportForm()
