@@ -227,6 +227,7 @@ INSTALLED_APPS = (
     'theme',
     'discounts',
     'metrics',
+    'search',
     # celery task system, must stay at the bottom
     # of installed apps
     #'djcelery',
