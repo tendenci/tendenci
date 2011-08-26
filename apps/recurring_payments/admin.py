@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 
 from recurring_payments.models import RecurringPayment
 from recurring_payments.forms import RecurringPaymentForm
-from recurring_payments.authnet.cim import CustomerProfile
+from recurring_payments.authnet.cim import CIMCustomerProfile
 
 from event_logs.models import EventLog
 
@@ -13,15 +13,15 @@ class RecurringPaymentAdmin(admin.ModelAdmin):
         return '<a href="%s">Add/Edit payment info</a>' % (link)
     edit_payment_info_link.allow_tags = True
     
-    list_display = ['user', edit_payment_info_link, 'billing_period', 'billing_frequency', 'payment_amount',  
+    list_display = ['user', edit_payment_info_link, 'billing_start_dt',
+                     'billing_period', 'billing_frequency', 'payment_amount',  
                      'status_detail']
     list_filter = ['status_detail']
     
     fieldsets = (
         (None, {'fields': ('user', 'description',)}),
         ("Billing Cycle", {'fields': ('billing_period', 'billing_frequency', 
-                           'billing_cycle_start_dt', 'billing_cycle_end_dt',
-                           'payment_amount',)}),
+                           'billing_start_dt', 'payment_amount',)}),
         ("Trial Period", {'fields': ('has_trial_period', 'trial_period_start_dt', 
                            'trial_period_end_dt', 'trial_amount', )}),
         ('Other Options', {'fields': ('status', 'status_detail',)}),
@@ -44,7 +44,7 @@ class RecurringPaymentAdmin(admin.ModelAdmin):
             
         if not instance.customer_profile_id:
             # create a customer profile on payment gateway
-            cp = CustomerProfile()
+            cp = CIMCustomerProfile()
             d = {'email': instance.user.email,
                  'description': instance.description,
                  'customer_id': str(instance.id)}
