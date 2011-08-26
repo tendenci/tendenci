@@ -3,6 +3,7 @@
 {% load discount_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load search_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} {% trans "Search" %}{% endblock %}
@@ -25,10 +26,8 @@
             <tr>
                 <th>Code</th><th>Value</th><th>Uses</th><th>Cap</th><th>Status</th><th>Edit</th>
             </tr>
-    {% for discount in discounts %}
-		{% with discount.object as discount %}		
-		{% include "discounts/search-result.html" %}
-		{% endwith %}
+    {% for discount in discounts %}	
+		{% search_result discount %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
