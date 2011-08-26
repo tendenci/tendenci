@@ -1,7 +1,7 @@
 <div class="wrap-search-item">
     <div class="search-item page-search-item">
-        <h2><a href="{{ search_object.get_absolute_url }}">{% firstof search_object.title 'Untitled'%}</a></h2>
-        <div class="item-content">{{ search_object.content|striptags|truncatewords:20|safe }}</div>
+        <h2><a href="{{ page.get_absolute_url }}">{% firstof page.title 'Untitled'%}</a></h2>
+        <div class="item-content">{{ page.content|striptags|truncatewords:20|safe }}</div>
     </div>	
       {% include "pages/meta.html" %}
 </div>
