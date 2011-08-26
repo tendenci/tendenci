@@ -44,11 +44,9 @@
     {# /*  SEARCH RESULTS  */ #}
     <div class="search-results">
         {% if page.object_list %}
-            <ul id="uniform-ul">
             {% for result in page.object_list %}             
                 {% search_result result %}
             {% endfor %}
-             </ul>
         {% else %}
             <p>{% trans "No results found." %}</p>
         {% endif %}

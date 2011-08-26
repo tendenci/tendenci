@@ -28,7 +28,7 @@ class SearchResultNode(IncludeNode):
                     t = get_template("search/search-result.html")
             var_name = result_object._meta.verbose_name.replace(' ', '_')
             context.update({
-                "search_result": result,
+                "result": result,
                 var_name: result_object,
             })
             return t.render(context)
