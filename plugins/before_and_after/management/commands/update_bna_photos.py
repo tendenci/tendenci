@@ -9,6 +9,7 @@ class Command(BaseCommand):
         Associate the images to their before_and_after instance
         """
         import os
+        import re
         import shutil
         import logging
         from django.db import connection, transaction
@@ -45,7 +46,7 @@ class Command(BaseCommand):
             except BeforeAndAfter.DoesNotExist as e:
                 continue  # on to the next one
 
-            if verbosity == 1:
+            if verbosity > 0:
                 print instance, file_names
 
             # get list of file paths
@@ -61,19 +62,26 @@ class Command(BaseCommand):
                 for file_name in file_names:
                     before_photo, after_photo = '', ''
                     temp_name = file_name.lower()
-                    temp_name = os.path.splitext(temp_name)[0]
-                    temp_name = temp_name.split('_')[-1:][0]
 
-                    if len(temp_name) != 2:
+                    p = re.compile('((\d)_(\w)\.\w{3})|((\d)(\w)\.\w{3})')
+                    groups = re.findall(p, temp_name)
+                    if groups: groups = groups[0]
+                    else:
+                        logger.error('photo:%s/%s instance:%d' % (base_name,file_name,instance.pk))
+                        continue  # on to the next one
+
+                    # there are 2 naming conventions.
+                    # depending on which naming convention
+                    # was detect, the appropriate list items are used
+                    if all(groups[1:3]):
+                        order, half = groups[1:3]
+                    elif all(groups[4:6]):
+                        order, half = groups[4:6]
+                    else:
                         logger.error('%s' % file_name)
                         continue  # on to the next one
 
-                    order, half = temp_name
-
-                    if not order.isdigit():
-                        continue # on to the next one
-
-                    rel_path = '/files/before_and_after/%s' % file_name
+                    rel_path = 'files/before_and_after/%s' % file_name
 
                     if half == 'a': after_photo = rel_path
                     elif half == 'b': before_photo= rel_path
