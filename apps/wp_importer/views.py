@@ -28,8 +28,7 @@ def index(request, template_name="wp_importer/index.html"):
                 upload = form.save(commit=False)
                 upload.author = request.user
                 upload = form.save()
-
-                file_name = 'site_media/media/blogimport/' + request.FILES['blog'].name
+                file_name = os.path.join(settings.MEDIA_ROOT, 'blogimport', request.FILES['blog'].name)
                 run(file_name, request)
 
                 messages.add_message(
