@@ -6,8 +6,9 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from haystack.query import SearchQuerySet
 from perms.managers import TendenciBaseManager
-from perms.utils import is_admin
-
+from perms.utils import is_admin, is_member
+from site_settings.utils import get_setting
+#from memberships.models import Membership
 
 class MemberAppManager(TendenciBaseManager):
     def search(self, query=None, *args, **kwargs):
@@ -140,6 +141,11 @@ def user2_sqs(sqs, **kwargs):
 def anon_sqs(sqs):
     sqs = sqs.filter(status=1).filter(status_detail='active')
     sqs = sqs.filter(allow_anonymous_view=True)
+
+    member_perms = get_setting('module', 'memberships', 'memberprotection')
+    if member_perms != "public":
+        sqs = sqs.none()
+
     return sqs
 
 
@@ -148,7 +154,8 @@ def user_sqs(sqs, **kwargs):
     people between admin and anon permission
     (status+status_detail+(anon OR user)) OR (who_can_view__exact)
     """
-    user = kwargs.get('user', None)
+    user = kwargs.get('user')
+    member_perms = get_setting('module', 'memberships', 'memberprotection')
 
     anon_q = Q(allow_anonymous_view=True)
     user_q = Q(allow_user_view=True)
@@ -159,7 +166,16 @@ def user_sqs(sqs, **kwargs):
     q = reduce(operator.and_, [status_q, q])
     q = reduce(operator.or_, [q, perm_q])
 
-    return sqs.filter(q)
+    filtered_sqs = sqs.filter(q)
+    if not is_member(user):
+        # all-members means members can view all other members
+        if member_perms == "all-members":
+            filtered_sqs = filtered_sqs.none()
+        # member type means members can only view members of their same type
+        if member_perms == "member-type":
+            filtered_sqs = filtered_sqs.none()
+
+    return filtered_sqs
 
 
 def impersonation(user):
@@ -180,6 +196,13 @@ class MembershipManager(Manager):
         sqs = SearchQuerySet()
         user = kwargs.get('user', AnonymousUser())
         user = impersonation(user)
+        
+#         if is_member(user) and member_perms == "member-type":
+#             user_membership = Membership.objects.filter(user=user)
+#             try:
+#                 query = '%s type:%s' % (query, user_membership[0].membership_type.name)
+#             except:
+#                 pass
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
