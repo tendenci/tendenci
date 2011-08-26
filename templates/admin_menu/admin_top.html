@@ -82,9 +82,10 @@
             <div class="sub">
                 <div class="column">
                     <ul>
-                    {% for lang in settings.LANGUAGES %}
+                    {% get_language_info_list for available_languages as languages %}
+                    {% for language in languages}
                         <li>
-                            <a href="{{ view with switch_language(request, lang.name) }}">{{ lang.name }}</a>
+                            <a href="{{ something with language.name }}">{{ language.name }}</a>
                         </li>
                     {% endfor %}
                     </ul>
