@@ -1,11 +1,11 @@
 <div class="wrap-search-item">
     <div class="search-item article-search-item">
-        <h2><a href="{{ search_object.get_absolute_url }}">{% firstof search_object.headline 'Untitled'%}</a></h2>
+        <h2><a href="{{ article.get_absolute_url }}">{% firstof article.headline 'Untitled'%}</a></h2>
         <div class="item-content">
-        {% if search_object.summary %}
-            {{ search_object.summary|striptags|truncatewords:40|safe  }}
+        {% if article.summary %}
+            {{ article.summary|striptags|truncatewords:40|safe  }}
         {% else %}
-            {{ search_object.body|striptags|truncatewords:40|safe }}
+            {{ article.body|striptags|truncatewords:40|safe }}
         {% endif %}</div>
     </div>	
       {% include "articles/meta.html" %}
