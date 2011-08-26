@@ -1,6 +1,7 @@
 {% extends "stories/base.html" %}
 {% load pagination_tags %}
 {% load story_tags %}
+{% load search_tags %}
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
@@ -23,10 +24,8 @@
     {% autopaginate stories 10 %}
 	
 	<div class="stories-wrap">
-    {% for story in stories %}
-        {% with story.object as story %}		
-		{% include "stories/search-result.html" %}
-		{% endwith %}
+    {% for story in stories %}	
+		{% search_result story %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}

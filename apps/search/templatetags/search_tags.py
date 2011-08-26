@@ -26,9 +26,10 @@ class SearchResultNode(IncludeNode):
                     t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
                 except IOError:
                     t = get_template("search/search-result.html")
+            var_name = result_object._meta.verbose_name.replace(' ', '_')
             context.update({
-                "search_result": result,
-                "search_object": result_object,
+                "result": result,
+                var_name: result_object,
             })
             return t.render(context)
         except:
