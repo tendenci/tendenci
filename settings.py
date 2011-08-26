@@ -58,6 +58,7 @@ TIME_ZONE = 'US/Central'
 LANGUAGE_CODE = 'en-us'
 LANGUAGES = (
     ('en-us', u'English'),
+    ('es', u'Espanol'),
 )
 
 LOCALE_PATHS = (
@@ -110,11 +111,13 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    # If you add CacheMiddleware, put LocaleMiddleware after it.
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'swfupload.middleware.SWFUploadMiddleware',
     'swfupload.middleware.MediaUploadMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'johnny.middleware.LocalStoreClearMiddleware',
