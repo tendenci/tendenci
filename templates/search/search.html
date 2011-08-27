@@ -46,6 +46,7 @@
         {% if page.object_list %}
             {% for result in page.object_list %}             
                 {% search_result result %}
+                <div style="margin-bottom:10px;"></div>
             {% endfor %}
         {% else %}
             <p>{% trans "No results found." %}</p>
