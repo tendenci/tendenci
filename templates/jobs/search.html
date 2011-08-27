@@ -3,6 +3,7 @@
 {% load job_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load search_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
@@ -25,27 +26,7 @@
 	
 	<div class="jobs-wrap">
     {% for job in jobs %}
-		{% with job.object as job %}
-		<div class="job-wrap-search">
-
-			<div class="options options-search">
-                <div class="quick-options">
-					{% job_options request.user job %} 	       
-                </div>
-			</div>
-
-            <h2><a href="{{ job.get_absolute_url }}">{% firstof job.title "Untitled" %}</a></h2>
-            <div class="content">{{ job.description|striptags|truncatewords:20|safe }}</div>
-			<div class="meta">
-            	<div class="submitted">{% blocktrans with job.release_dt|date:"D d M Y P" as release_date and job.creator as job_creator %}Released on {{ release_date }} by {{ job_creator }}{% endblocktrans %}</div>
-            </div>
-
-            <!-- delete-job form -->
-            <form name="job-delete" method="POST" action="{% url job.delete job.pk %}">{% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-            </form>
-		</div>
-		{% endwith %}
+		{% search_result job %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}

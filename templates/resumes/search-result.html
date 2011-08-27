@@ -1,0 +1,11 @@
+<div class="resume-wrap-search">
+
+    <div class="options options-search">
+        <div class="quick-options">
+            {% resume_options request.user resume %} 	       
+        </div>
+    </div>
+
+    <h2><a href="{{ resume.get_absolute_url }}">{% firstof resume.title "Untitled" %}</a></h2>
+    <div class="content">{{ resume.description|striptags|truncatewords:20|safe }}</div>
+</div>
