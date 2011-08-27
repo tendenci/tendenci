@@ -1,6 +1,6 @@
 <div class="wrap-search-item">
     <div class="search-item">
-        <h2><a title="{{ result.object }}" href="{{ result.object.get_absolute_url }}">{% firstof result.object "Untitled" %}</a></h2>
+        <h3><a title="{{ result.object }}" href="{{ result.object.get_absolute_url }}">{% firstof result.object "Untitled" %}</a></h2>
         <div class="item-content">
             {% filter striptags|truncatewords:50 %}
                 {% autoescape on %}
