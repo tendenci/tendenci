@@ -12,20 +12,20 @@ class SearchResultNode(IncludeNode):
         self.result = Variable(result)
     
     def render(self, context):
+        """
+        This does not take into account preview themes.
+        """
         try:
             result = self.result.resolve(context)
             result_object = result.object
             template_name = "%s/search-result.html" % (result_object._meta.app_label)
-            theme = context['THEME']
+            print template_name
             try:
-                t = get_template("%s/templates/%s"%(theme,template_name))
+                t = get_template(template_name)
             except TemplateDoesNotExist:
-                #load the true default template directly to be sure
-                #that we are not loading the active theme's template
-                try:
-                    t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
-                except IOError:
-                    t = get_template("search/search-result.html")
+                #load the default search result template
+                print "not found"
+                t = get_template("search/search-result.html")
             var_name = result_object._meta.verbose_name.replace(' ', '_')
             context.update({
                 "result": result,
@@ -41,9 +41,7 @@ def search_result(parser, token):
     """
     Loads the search-result.html and renders it with the current context
     and the given app name.
-    context['THEME'] is used to specify a selected theme for the templates
-    Example:
-        {% search_result app %}
+    {% search_result app %}
     """
     bits = token.split_contents()
     if len(bits) != 2:
