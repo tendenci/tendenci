@@ -3,6 +3,7 @@
 {% load pagination_tags %}
 {% load staff_tags %}
 {% load perm_tags %}
+{% load search_tags %}
 
 {% block title %}Staff{% endblock %}
 
@@ -16,9 +17,9 @@
 {% endblock %}
 
 {% block body %}
-{# list_staff as staff limit=30 order="-update_dt" #}
+{# list_staff as staff_members limit=30 order="-update_dt" #}
 
-{% autopaginate staff 9 %}
+{% autopaginate staff_members 9 %}
 {% has_perm user staff.add_staff as can_add_staff %}
 <div class="t">
     <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Staff List</h1>
@@ -27,23 +28,9 @@
     <div><a href="{% url admin:staff_staff_add %}">Add Staff</a></div>
     {% endif %}
     <div class="staff-search-wrap-list clearfix">
-        {% for staff_member in staff %}
-        {% with staff_member.object as staff_member %}
-            <div class="staff-item">
-            {% for img in staff_member.stafffile_set.all %}
-                {% if img.photo_type == "professional" %}
-                <div class="member-photo">  
-                    <a href="{{ staff_member.get_absolute_url }}"><img alt="Contact {{ staff_member.name }}" src="{% url file img.pk %}184x184" /></a><br />
-                    <h4><a href="{{ staff_member.get_absolute_url }}">{{ staff_member.name }}</a></h4>
-                    <p>{% if staff_member.position %}<strong>{{ staff_member.position }}</strong><br />{% endif %}
-                    {% if staff_member.department %}{{ staff_member.department }}{% endif %}</p>
-                </div>
-                {% endif %}
-            {% endfor %}
-            </div><!-- /staff-item -->
-        {% endwith %}
+        {% for staff in staff_members %}
+            {% search_result staff %}
         {% empty %}
-                
             <p>0 Staff Found</p>
         {% endfor %}
     </div>
