@@ -12,7 +12,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/search.css" /> 
+<link rel="stylesheet" href="{{ STATIC_URL }}css/search.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form.css" /> 
 <link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form-generic.css" /> 
 {% endblock %}
@@ -44,9 +44,10 @@
     {# /*  SEARCH RESULTS  */ #}
     <div class="search-results">
         {% if page.object_list %}
-            {% for result in page.object_list %}             
-                {% search_result result %}
-                <div style="margin-bottom:10px;"></div>
+            {% for result in page.object_list %}     
+                <div class="wrap-search-result">
+                    {% search_result result %}
+                </div>
             {% endfor %}
         {% else %}
             <p>{% trans "No results found." %}</p>
@@ -71,6 +72,14 @@
 		
 		$('div.search-adv a').click(function() {
 			toggle_adv_models();
+		});
+	</script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
 		});
 	</script>
 {% endblock %}
