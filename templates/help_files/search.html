@@ -21,9 +21,7 @@
 	
 	<div class="help-files-wrap">
     {% for help_file in help_files %}
-		<div class="help-file-wrap">    
-            {% search_result help_file %}
-		</div>
+        {% search_result help_file %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}

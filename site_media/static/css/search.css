@@ -23,11 +23,6 @@
 	padding-left: 3px;
 }
 
-.search-results {
-	padding-left: 3px;
-	margin-top: 15px;
-}
-
 .search-adv-models {
 	padding: 5px;
 	background-color: #f2f2f2;
@@ -46,32 +41,143 @@ p.search-adv-header {
 	list-style-type: none;
 }
 
-div.search-results {
+.search-results {
+	padding-left: 3px;
+	margin-top: 15px;
 	width: 90%;
 }
 
-.search-results h2 {
-	font-size: 18px;
+.wrap-search-result {
+    border: 1px solid #CCC;
+    margin-bottom: 20px;
 }
 
-.search-results p {
-	color: #777;
+.wrap-search-item {
+    margin-bottom: 0px;
 }
 
-
-p.search-result-model {
-	color: #777;
+.quick-options {
+	float: right;
+	margin-right: 5px;
 }
 
-p.search-result-model {
-	color: #999;
-	margin-bottom: 18px;
+.quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
 }
 
-h2.search-result-header {
-	margin-bottom: 2px;
+.dropdown-options {
+	float: right;
+	display: none;
 }
 
-.upper {
-	margin-top: 30px;
+.dropdown-options span {
+	font-size: .7em;
+}
+
+.dropdown-options ul {
+	display: none;
+}
+
+/* EVENTS */
+
+.event-wrap {
+    background-color: #EEE;
+    padding: 0;
+}
+
+.event-info .options {
+    float: right;
+}
+
+.event-wrap h3 {
+    margin-top: 20px;
+}
+
+.event-wrap div.description {
+    margin-bottom: 10px;
+}
+
+.event-wrap div.time-stamp {
+    float: left;
+    width: 80px;
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 15px 0 0 15px
+}
+
+.event-wrap div.time-stamp .age-msg {
+    font-weight: normal;
+    font-size: .8em;
+}
+
+.event-wrap .event-info {
+    background-color: white;
+    padding: 10px;
+    margin-left: 110px;
+    
+}
+
+.event-info .attend-wrap {
+    border-top: 1px solid #DDD;
+}
+
+.event-info .attend-wrap .attend {
+    border: 1px solid silver;
+    float: right;
+    margin-top: 10px;
+    padding: 5px;
+    background-color: #F7F7F7;
+}
+
+.event-info .attend-wrap .attend a {
+    text-decoration: none;
+}
+
+.event-info .time-period {
+    margin-bottom: 10px;
+}
+
+.event-info .options {
+    top: 0;
+}
+
+.event-info .registered .attend {
+    background-color: orange;
+    border: 1px solid orange;
+}
+
+.event-info .registered .attend a {
+    color: white;
+}
+
+.event-info .closed .attend {
+    background-color: darkred;
+    border: 1px solid darkred;
+}
+
+.event-info .closed .attend a {
+    color: white;
+}
+
+/* VIDEOS */
+
+.video-wrap {
+    padding: 10px;
+}
+
+.video-wrap .video-img {
+    float: left;
+    padding-right: 5px;
+}
+
+.video-wrap .video-info {
+}
+
+/* JOBS */
+
+.job-info {
+    padding: 10px;
+    padding-bottom: 0px;
 }
