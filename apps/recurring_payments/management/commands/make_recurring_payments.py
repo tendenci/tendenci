@@ -32,14 +32,14 @@ class Command(BaseCommand):
             
             # create invoices if needed
             rp.check_and_generate_invoices()
-                    
-            
+
             # look for unpaid invoices
             rp_invoices = RecurringPaymentInvoice.objects.filter(
                                                  recurring_payment=rp, 
                                                  invoice__balance__gt=0,
                                                  billing_cycle_start_dt__lte=now
                                                  ).order_by('billing_cycle_start_dt')
+
                                                  
             if rp_invoices:
                 payment_profiles = PaymentProfile.objects.filter(
@@ -65,7 +65,6 @@ class Command(BaseCommand):
                 # email to admin - for both successful and failed transactions
                 
             # calculate the balance for this recurring payment
-            
             
                 
             
