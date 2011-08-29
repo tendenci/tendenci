@@ -94,8 +94,9 @@ class RecurringPayment(models.Model):
                                                      )
                     if cim_payment_profile['payment'].has_key('credit_card') and \
                                 cim_payment_profile['payment']['credit_card'].has_key('card_number'):
-                        print cim_payment_profile['payment']
+
                         card_num = cim_payment_profile['payment']['credit_card']['card_number'][-4:]
+
                         payment_profile.card_num = card_num
                     payment_profile.save()  
         
@@ -128,6 +129,7 @@ class RecurringPayment(models.Model):
                 billing_cycle_end = billing_cycle_start + timedelta
         else:
             billing_cycle_start = last_billing_cycle['end'] + relativedelta(days=1)
+
             billing_cycle_end = billing_cycle_start + timedelta
             
         
@@ -182,6 +184,7 @@ class RecurringPayment(models.Model):
         inv = Invoice()
         inv.due_date = self.next_billing_dt
         inv.ship_date = self.next_billing_dt
+
         inv.object_type = ContentType.objects.get(app_label=self._meta.app_label, 
                                                   model=self._meta.module_name)
         inv.object_id = self.id
@@ -210,6 +213,7 @@ class RecurringPayment(models.Model):
                              billing_cycle_start_dt=billing_cycle['start'],
                              billing_cycle_end_dt=billing_cycle['end'],
                              billing_dt=billing_cycle['start']
+
                                              )
         rp_invoice.save()
         
@@ -223,7 +227,7 @@ class RecurringPaymentInvoice(models.Model):
     billing_cycle_start_dt = models.DateTimeField(_("Billing cycle start date"), blank=True, null=True)
     billing_cycle_end_dt = models.DateTimeField(_('Billing cycle end date'), blank=True, null=True)
     # billing date is same as due date in invoice
-    # also billing_dt = billing_cycle_start_dt
+
     billing_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     #is_paid = models.BooleanField(default=False)
@@ -269,7 +273,6 @@ class RecurringPaymentInvoice(models.Model):
             
         payment_transaction.save()
         return success, response_d
-     
 
 class PaymentProfile(models.Model):
     recurring_payment =  models.ForeignKey(RecurringPayment)
