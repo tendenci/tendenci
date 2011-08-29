@@ -12,7 +12,7 @@
 
 {% block body %}
 
-<form method="post" action="https://secure.authorize.net/hosted/profile/manage" id="formAuthorizeNetPopup" 
+<form method="post" action="{{ form_post_url }}" 
 name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
   <input type="hidden" name="Token" value="{{ token }}" />
 </form>
