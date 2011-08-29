@@ -133,9 +133,9 @@ class CIMBase(object):
                 d[name] = self._recurive_parse(sub_e)
         return d
 
-class CustomerProfile(CIMBase):
+class CIMCustomerProfile(CIMBase):
     def __init__(self, customer_profile_id=None):
-        super(CustomerProfile, self).__init__()
+        super(CIMCustomerProfile, self).__init__()
         
         self.customer_profile_id = customer_profile_id
 
@@ -176,8 +176,8 @@ class CustomerProfile(CIMBase):
             
         Example call:
            
-        >>> from recurring_payments.authnet.cim import CustomerProfile
-        >>> cp = CustomerProfile()
+        >>> from recurring_payments.authnet.cim import CIMCustomerProfile
+        >>> cp = CIMCustomerProfile()
         >>> d = {'email': 'jqian@schipul.com', 'description': 'self registration',
                     'credit_card_info': {'card_number': '4111111111111111', 
                                         'expiration_date': '2015-12'}
@@ -359,9 +359,9 @@ class CustomerProfile(CIMBase):
         return profile_node
 
 
-class CustomerPaymentProfile(CIMBase):
+class CIMCustomerPaymentProfile(CIMBase):
     def __init__(self, customer_profile_id, customer_payment_profile_id=None):
-        super(CustomerPaymentProfile, self).__init__()
+        super(CIMCustomerPaymentProfile, self).__init__()
         
         self.customer_profile_id = customer_profile_id
         self.customer_payment_profile_id = customer_payment_profile_id
@@ -585,9 +585,9 @@ class CustomerPaymentProfile(CIMBase):
         return self.process_request(xml_root)
         
         
-class CustomerProfileTransaction(CIMBase):
+class CIMCustomerProfileTransaction(CIMBase):
     def __init__(self, customer_profile_id, customer_payment_profile_id):
-        super(CustomerProfileTransaction, self).__init__()
+        super(CIMCustomerProfileTransaction, self).__init__()
         
         self.customer_profile_id = customer_profile_id
         self.customer_payment_profile_id = customer_payment_profile_id
@@ -657,7 +657,7 @@ class CustomerProfileTransaction(CIMBase):
         
         # amount node
         amount_node = ET.SubElement(trans_auth_capture_node, "amount")
-        amount_node.text = amount
+        amount_node.text = str(amount)
         
         # tax node       
         if tax and type(tax) is dict:
@@ -725,13 +725,12 @@ class CustomerProfileTransaction(CIMBase):
             split_tender_id_node = ET.SubElement(trans_auth_capture_node, "splitTenderId")
             split_tender_id_node.text = split_tender_id
             
-        
         return transaction_node
     
     
-class HostedProfilePage(CIMBase):
+class CIMHostedProfilePage(CIMBase):
     def __init__(self, customer_profile_id):
-        super(HostedProfilePage, self).__init__()
+        super(CIMHostedProfilePage, self).__init__()
         
         self.customer_profile_id = customer_profile_id
         
@@ -774,9 +773,9 @@ class HostedProfilePage(CIMBase):
         
            
 
-class CustomerShippingAddress(CIMBase):
+class CIMCustomerShippingAddress(CIMBase):
     def __init__(self, customer_profile_id):
-        super(CustomerShippingAddress, self).__init__()
+        super(CIMCustomerShippingAddress, self).__init__()
         
         self.customer_profile_id = customer_profile_id
         

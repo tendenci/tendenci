@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 
 from recurring_payments.models import RecurringPayment, PaymentProfile
-from recurring_payments.authnet.cim import CustomerProfile, CustomerPaymentProfile, HostedProfilePage
+from recurring_payments.authnet.cim import CIMCustomerProfile, CIMCustomerPaymentProfile, CIMHostedProfilePage
 
 from perms.utils import has_perm, is_admin
 from base.http import Http403
@@ -32,7 +32,7 @@ def manage_payment_info(request, recurring_payment_id,
     
     if not rp.customer_profile_id:
         # customer_profile is not available yet for this customer, create one now
-        cp = CustomerProfile()
+        cp = CIMCustomerProfile()
         d = {'email': rp.user.email,
              'description': rp.description,
              'customer_id': str(rp.id)}
@@ -49,13 +49,15 @@ def manage_payment_info(request, recurring_payment_id,
     # get the token from payment gateway for this customer (customer_profile_id=4356210)
     token = ""
     if not gateway_error:
-        hosted_profile_page = HostedProfilePage(rp.customer_profile_id)
+        hosted_profile_page = CIMHostedProfilePage(rp.customer_profile_id)
         success, response_d = hosted_profile_page.get()
         
         if not success:
             gateway_error = True
         else:
             token = response_d['token']
+            
+    print token
         
     return render_to_response(template_name, {'token': token, 
                                               'test_mode': test_mode, 
