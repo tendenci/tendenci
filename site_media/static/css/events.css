@@ -416,7 +416,7 @@ input.short_text_input{
 
 /* details page */
 .t .event-wrap {
-	xbackground-color: #F7F7F7;
+	background-color: #F7F7F7;
 	padding: 0;
 }
 .event-wrap .info {
