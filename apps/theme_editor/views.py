@@ -140,8 +140,8 @@ def original_templates(request, template_name="theme_editor/original_templates.h
     elif not current_dir_split[0]:
         prev_dir = ''
     
-    dirs = get_dir_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"))
-    files = get_file_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"))
+    dirs = get_dir_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"), include_plugins=True)
+    files = get_file_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"), include_plugins=True)
     return render_to_response(template_name, {
                                                 'current_dir': current_dir,
                                                 'prev_dir_name': prev_dir_name,
