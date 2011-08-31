@@ -24,12 +24,18 @@ ALLOWED_EXTENSIONS = (
     '.po'
 )
 
-def copy(path_to_file, file, FROM_ROOT=TEMPLATES_ROOT, TO_ROOT=THEME_ROOT):
+def copy(path_to_file, file, FROM_ROOT=TEMPLATES_ROOT, TO_ROOT=THEME_ROOT, plugin=None):
+    """
+        Copies a file and all associated directories into TO_ROOT
+    """
     try:
         os.makedirs(os.path.join(TO_ROOT, "templates", path_to_file))
     except OSError:
         pass
     full_filename = os.path.join(path_to_file, file)
+    if plugin:
+        FROM_ROOT = os.path.join(settings.PROJECT_ROOT, "plugins",
+            plugin, 'templates')
     shutil.copy(os.path.join(FROM_ROOT, full_filename), os.path.join(TO_ROOT, "templates", full_filename))
 
 def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
@@ -57,9 +63,11 @@ def get_dir_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
     dir_list = []
     if pwd.startswith("plugins.") and include_plugins:
         plugin_name = pwd.split('plugins.')[1].split('/')[0]
-        current_dir = os.path.join(settings.PROJECT_ROOT, "plugins", plugin_name, 'templates', pwd.split('plugins.'+plugin_name)[1], plugin_name)
+        current_dir = os.path.join(settings.PROJECT_ROOT, "plugins",
+            plugin_name, 'templates', pwd.split('plugins.')[1])
     else:
         current_dir = os.path.join(ROOT_DIR, pwd)
+    
     if include_plugins and not pwd:
         import pluginmanager
         plugins = pluginmanager.plugin_apps(())
@@ -82,9 +90,11 @@ def get_file_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
     file_list = []
     if pwd.startswith("plugins.") and include_plugins:
         plugin_name = pwd.split('plugins.')[1].split('/')[0]
-        current_dir = os.path.join(settings.PROJECT_ROOT, "plugins", plugin_name, 'templates', pwd.split('plugins.'+plugin_name)[1], plugin_name)
+        current_dir = os.path.join(settings.PROJECT_ROOT, "plugins",
+            plugin_name, 'templates', pwd.split('plugins.')[1])
     else:
         current_dir = os.path.join(ROOT_DIR, pwd)
+    
     if os.path.isdir(current_dir):
         item_list = os.listdir(current_dir)
         for item in item_list:

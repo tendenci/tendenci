@@ -160,9 +160,11 @@ def copy_to_theme(request):
         current_dir = current_dir.replace('////', '/')
         current_dir = current_dir.replace('///', '/')
         current_dir = current_dir.replace('//', '/')
-        
-    if not qstr_is_dir(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates")):
-        raise Http404   
+    
+    plugin = None
+    if current_dir.startswith('plugins.'):
+        plugin = current_dir.split('plugins.')[1].split('/')[0]
+        current_dir = current_dir.split('plugins.')[1]
     
     chosen_file = request.GET.get("file", '')
     if chosen_file:
@@ -171,13 +173,19 @@ def copy_to_theme(request):
         chosen_file = chosen_file.replace('////', '/')
         chosen_file = chosen_file.replace('///', '/')
         chosen_file = chosen_file.replace('//', '/')
-
-    full_filename = os.path.join(current_dir, chosen_file)
-    if not qstr_is_file(full_filename, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates")) \
-        and not qstr_is_dir(full_filename, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates")):
-            raise Http404
-            
-    copy(current_dir, chosen_file)
+    
+    if plugin:
+        full_filename = os.path.join(settings.PROJECT_ROOT, "plugins",
+            plugin, 'templates', current_dir,
+            chosen_file)
+    else:
+        full_filename = os.path.join(settings.PROJECT_ROOT, 'templates',
+            current_dir, chosen_file)
+    
+    if not os.path.isfile(full_filename):
+        raise Http404
+        
+    copy(current_dir, chosen_file, plugin=plugin)
     
     messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
     
