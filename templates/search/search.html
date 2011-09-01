@@ -4,6 +4,7 @@
 {% load base_filters %}
 {% load base_tags %}
 {% load avatar_tags %}
+{% load search_tags %}
 {% load pagination_tags %}
 {% load smart_if %}
 
@@ -11,7 +12,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/search.css" /> 
+<link rel="stylesheet" href="{{ STATIC_URL }}css/search.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form.css" /> 
 <link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form-generic.css" /> 
 {% endblock %}
@@ -43,21 +44,11 @@
     {# /*  SEARCH RESULTS  */ #}
     <div class="search-results">
         {% if page.object_list %}
-            <ul id="uniform-ul">
-            {% for result in page.object_list %}             
-                <li>
-                    <h3 style="margin-bottom:0;"><a title="{{ result.object }}" href="{{ result.object.get_absolute_url }}">{% firstof result.object "Untitled" %}</a></h3>
-                    <div class="uniform-li-meta">
-                        {% filter striptags|truncatewords:50 %}
-                            {% autoescape on %}
-                                {% firstof result.object.content result.object.description result.object.body %}
-                            {% endautoescape %}
-                        {% endfilter %}
-                        &nbsp;[{{ result.model_name }}]
-                    </div>
-                </li>
+            {% for result in page.object_list %}     
+                <div class="wrap-search-result">
+                    {% search_result result %}
+                </div>
             {% endfor %}
-             </ul>
         {% else %}
             <p>{% trans "No results found." %}</p>
         {% endif %}
@@ -81,6 +72,14 @@
 		
 		$('div.search-adv a').click(function() {
 			toggle_adv_models();
+		});
+	</script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+		var iconrow = new dropdown({
+			container:	'more-options-wrap',
+			trigger:	'more-options-trigger',
+			target:		'more-options-target'
 		});
 	</script>
 {% endblock %}

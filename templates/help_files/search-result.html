@@ -1,3 +1,7 @@
-<h3><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file.question|striptags|safe }}">{{ help_file.question|striptags|safe }}</a></h3>
-<p>{{ help_file.answer|striptags|safe|truncatewords:60 }}</p>
-{% include "help_files/meta.html" %}
+<div class="help-file-wrap">  
+    <div class="search-item">
+        <h3><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file.question|striptags|safe }}">{{ help_file.question|striptags|safe }}</a></h3>
+        <p>{{ help_file.answer|striptags|safe|truncatewords:60 }}</p>
+    </div>
+    {% include "help_files/meta.html" %}
+</div>

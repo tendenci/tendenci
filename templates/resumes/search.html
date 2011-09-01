@@ -5,6 +5,7 @@
 {% load base_filters %}
 {% load perm_tags %}
 {% load i18n %}
+{% load search_tags %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
@@ -26,19 +27,7 @@
 	
 	<div class="resumes-wrap">
     {% for resume in resumes %}
-		{% with resume.object as resume %}
-		<div class="resume-wrap-search">
-
-			<div class="options options-search">
-                <div class="quick-options">
-					{% resume_options request.user resume %} 	       
-                </div>
-			</div>
-
-            <h2><a href="{{ resume.get_absolute_url }}">{% firstof resume.title "Untitled" %}</a></h2>
-            <div class="content">{{ resume.description|striptags|truncatewords:20|safe }}</div>
-		</div>
-		{% endwith %}
+		{% search_result resume %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}

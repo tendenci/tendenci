@@ -3,6 +3,7 @@
 {% load page_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load search_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
@@ -24,10 +25,8 @@
     {% autopaginate pages 10 %}
 
 	<div class="pages-wrap">
-    {% for page in pages %}
-		{% with page.object as page %}		
-		{% include "pages/search-result.html" %}
-		{% endwith %}
+    {% for page in pages %}	
+		{% search_result page %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}

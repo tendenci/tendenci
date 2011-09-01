@@ -21,9 +21,6 @@
 
     <div>{{ entry.first_name }} {{ entry.last_name }}</div>
     <div>{{ entry.email }}</div>
-    <div><a href="{{ SITE_GLOBAL_SITEURL }}{% url profile entry.membership.user.username %}#userview-memberships">
-        {% trans "View Profile &amp; Membership" %}
-    </a></div>
     <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.get_absolute_url }}">
         {% trans "View Approved Application" %}
     </a></div>

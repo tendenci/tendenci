@@ -27,9 +27,9 @@ html { margin-top: 30px !important; padding-bottom: 26px !important;  }
 	
 	#admin-bar li.right { float: right; }
 	#admin-bar li.right.search ul { width: auto; }
-	#admin-bar input#admin-search-bar { margin: 0 4px 0 0; line-height:14px; }
-	#admin-bar li #admin-search-box {margin: 3px 0 0 0; padding: 0 4px 0 0; border-right: 1px solid #4B0D09; }
-	#admin-bar #admin-search-box input#admin-search-submit {border: 1px solid #eee; color: #eee; background-color: #6A120D;font-family: Verdana, Geneva, sans-serif;}
+	#admin-bar input#admin-search-bar { margin: 0 4px 0 0; line-height:14px; font-size: 12px;}
+	#admin-bar li #admin-search-box {margin: 3px 0 0 0; padding: 0 4px 0 0; border-right: 1px solid #4B0D09; font-size: 12px; }
+	#admin-bar #admin-search-box input#admin-search-submit {border: 1px solid #eee; color: #eee; background-color: #6A120D;font-family: Verdana, Geneva, sans-serif; font-size: 12px; }
 	
 	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #6A120D; color: #ebebeb; height: 26px; z-index: 99999 !important; }
 	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
@@ -39,26 +39,17 @@ html { margin-top: 30px !important; padding-bottom: 26px !important;  }
 	#bottom-admin-bar li#feedback-menu { float: right; }
 	#bottom-admin-bar a#feedback {
 		  background: #2260dd;
- 		  background: -moz-linear-gradient(top, #779be9 0%, #376fe0 50%, #2260dd 50%, #2463de 100%);
- 		  background: -webkit-gradient(linear, 0 0, 0 100%, color-stop(0, #779be9), color-stop(0.5,#376fe0), color-stop(0.5, #2260dd), color-stop(1, #2463de));
-  		-moz-border-radius: 3px;
-		  -webkit-border-radius: 3px;
-		  border-radius: 3px;
 		  color: #fff;
- 		 font-family: "helvetica neue", helvetica, arial, sans-serif;
+ 		 font-family: Verdana, Geneva, sans-serif;
 		  font-size: 12px;
 		  font-weight: bold;
 		  line-height: 1;
 		  padding: 6px 0 8px 0;
 		  text-align: center;
   		  text-shadow: 0px -1px 1px #2c4d93;
-		  width: 150px;
- 		 -webkit-background-clip: padding-box;  }
+		  width: 150px; }
 	#bottom-admin-bar li a#feedback:hover {
-	  background: #1d55c4;
-	  background: -moz-linear-gradient(top, #6989cf 0%, #3263c7 50%, #1d55c4 50%, #1d55c4 100%);
-	  background: -webkit-gradient(linear, 0 0, 0 100%, color-stop(0, #6989cf), color-stop(0.5, #3263c7), color-stop(0.5, #1d55c4), color-stop(1, #1d55c4));
-	  -webkit-background-clip: padding-box;
+	  background: #1d4ab4;
 	  cursor: pointer;
 	}
 	
