@@ -22,7 +22,7 @@ from tinymce.widgets import TinyMCE
 
 from perms.forms import TendenciBaseForm
 from models import MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry
-from fields import TypeExpMethodField, PriceInput
+from fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from memberships.utils import csv_to_dict
 
@@ -334,7 +334,7 @@ class MembershipTypeForm(forms.ModelForm):
     
     
 class NoticeForm(forms.ModelForm):
-    notice_time_type = TypeExpMethodField(label='When to Send',
+    notice_time_type = NoticeTimeTypeField(label='When to Send',
                                           widget=NoticeTimeTypeWidget)
     email_content = forms.CharField(widget=TinyMCE(attrs={'style':'width:70%'}, 
                                             mce_attrs={'storme_app_label':"email_content", 
