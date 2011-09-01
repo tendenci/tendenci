@@ -48,7 +48,7 @@ def index(request, slug=None, cv=None):
 def search(request, template_name="staff/search.html"):
     query = request.GET.get('q', None)
     staff = Staff.objects.search(query, user=request.user)
-    staff = staff.order_by('start_date')
+    staff = staff.order_by('status').order_by('status_detail').order_by('start_date')
     
     log_defaults = {
         'event_id' : 1080400,
