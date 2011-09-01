@@ -1,6 +1,7 @@
 {% extends "help_files/base.html" %}
 {% load pagination_tags %}
 {% load help_file_tags %}
+{% load search_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
@@ -20,11 +21,7 @@
 	
 	<div class="help-files-wrap">
     {% for help_file in help_files %}
-		<div class="help-file-wrap">
-            {% with help_file.object as help_file %}      
-                {% include "help_files/search-result.html" %}
-            {% endwith %}
-		</div>
+        {% search_result help_file %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}

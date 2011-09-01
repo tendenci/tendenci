@@ -3,6 +3,7 @@
 {% load article_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load search_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
@@ -25,9 +26,7 @@
 	
 	<div class="articles-wrap">
     {% for article in articles %}
-		{% with article.object as article %}		
-		{% include "articles/search-result.html" %}
-		{% endwith %}
+		{% search_result article %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}

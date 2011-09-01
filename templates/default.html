@@ -3,6 +3,7 @@
 {% load cache %}
 {% load theme_tags %}
 {% theme_extends "base.html" %}
+{% load i18n %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -13,7 +14,7 @@
 <div id="container">
 	<div id="header"> 
 		<h1><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a></h1> 
-		<h2>Website tagline</h2> 
+		<h2>{% trans "Website tagline" %}</h2> 
 	</div><!-- /header --> 
 
 	<div id="headerimage"> 
@@ -33,17 +34,17 @@
 
 	 {% block sidebar %}
 	 <div class="primary-sidebar content-middle "> 
-	 <h2>Interior page</h2>
+	 <h2>{% trans "Interior page" %}</h2>
 		<ul>
 			<li>
-				<h2>Search</h2> 
+				<h2>{% trans "Search" %}</h2> 
 				<form id="searchform" method="get" action="/search"> 
 					<input type="text" value="type, hit enter" onfocus="if (this.value == 'type, hit enter') {this.value = '';}" onblur="if (this.value == '') {this.value = 'type, hit enter';}" size="18" maxlength="50" name="q" id="s" /> 
 				</form> 
 			</li>
 					
 			<li>
-				<h2>What is schipul doing...</h2> 
+				<h2>{% trans "What is schipul doing..." %}</h2> 
 				<div class="aktt_tweets"> 
 					{% cache 86400 schipul_rss %}
                	    {% get_rss "http://twitter.com/statuses/user_timeline/6971652.rss" as rss %}
@@ -57,16 +58,16 @@
 			</li> 
 		
 			<li>
-				<h2>Meta</h2>
+				<h2>{% trans "Meta" %}</h2>
 				<ul>
 					{% if user.is_authenticated %}
-						<li><a href="{% url dashboard %}">Dashboard</a></li>
-						<li><a href="{% url auth_logout %}">Log Out</a></li>
+						<li><a href="{% url dashboard %}">{% trans "Dashboard" %}</a></li>
+						<li><a href="{% url auth_logout %}">{% trans "Log Out" %}</a></li>
 					{% else %} 
 						{% if MODULE_USERS_SELFREGISTRATION %}
-						<li><a href="{% url registration_register %}">Register</a></li>
+						<li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
 						{% endif %}
-						<li><a href="{% url auth_login %}">Log in</a></li>
+						<li><a href="{% url auth_login %}">{% trans "Log in" %}</a></li>
 					{% endif %}					
 				</ul>
 			</li>

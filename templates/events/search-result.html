@@ -1,0 +1,71 @@
+{% load i18n %}
+{% load event_tags %}
+<div class="event-wrap">
+    <div class="time-stamp">
+        {{ event.start_dt|date:"M j, Y" }}
+        
+        {% if event.start_dt < now %}
+            <div class="age-msg" title="about {{ event.start_dt|timesince }} ago">
+                {% trans "Past event" %}
+            </div>
+        {% else %}
+        <div class="age-msg" title ="in about {{ event.start_dt|timeuntil }}">
+            {{ event.start_dt|timeuntil }}
+        </div>
+        {% endif %}
+    </div>
+    <div class="event-info">
+
+        <div class="options">{% event_options user event %}</div>
+        
+        <h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
+        <div class="place">{{ event.place }}</div>
+
+        <div class="time-period">
+            {{ event.start_dt|date:"M j, Y P" }} - {{ event.end_dt|date:"M j, Y P" }}
+        </div> 
+
+        <div class="description">
+        {% if event.meta.description %}
+            {{ event.meta.description }}
+        {% else %}
+            {{ event.get_description }}
+        {% endif %}
+        </div>
+
+        {% if event.registration_configuration.enabled %}
+
+            {% if now > event.end_dt or now > event.registration_configuration.end_dt %}
+
+            <div class="attend-wrap closed">
+                <div class="attend"><a href="">{% trans "Registration Closed" %}</a></div>
+                <div style="clear:both;"></div>
+            </div>
+            
+            {% else %}
+
+            {% is_registered_user user event as registered_user %}
+            {% if registered_user %}
+            <div class="attend-wrap registered">
+                <div class="attend"><a href="{% url event event.pk %}">{% trans "You are registered" %}</a></div>
+                <div style="clear:both;"></div>
+            </div>
+            {% else %}
+            <div class="attend-wrap">
+                <div class="attend"><a href="{% url event event.pk %}">{% trans "Attend this event" %}</a></div>
+                <div style="clear:both;"></div>
+            </div>
+            {% endif %}
+
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+    <div style="clear:both;"></div>
+
+    <!-- delete-event form -->
+    <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">{% csrf_token %}
+        <input type="hidden" name="action" value="delete">
+    </form>
+</div>

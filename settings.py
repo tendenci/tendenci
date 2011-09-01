@@ -12,12 +12,12 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Glen Zangirolami', 'gzangirolami@schipul.com'),
+    #('Glen Zangirolami', 'gzangirolami@schipul.com'),
     ('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
     ('JMO', 'jmoswalt@schipul.com'),
-    ('Loren Lugosch', 'llugosch@schipul.com'),
-    ('Nabil Bani', 'nbani@schipul.com'),
+    #('Loren Lugosch', 'llugosch@schipul.com'),
+    #('Nabil Bani', 'nbani@schipul.com'),
 )
 
 MANAGERS = ADMINS
@@ -58,6 +58,11 @@ TIME_ZONE = 'US/Central'
 LANGUAGE_CODE = 'en-us'
 LANGUAGES = (
     ('en-us', u'English'),
+    ('es', u'Espanol'),
+)
+
+LOCALE_PATHS = (
+    os.path.join(PROJECT_ROOT, 'themes'),
 )
 
 SITE_ID = 1
@@ -115,6 +120,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'johnny.middleware.LocalStoreClearMiddleware',
     # 'johnny.middleware.QueryCacheMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
@@ -223,6 +229,7 @@ INSTALLED_APPS = (
     'theme',
     'discounts',
     'metrics',
+    'search',
     # celery task system, must stay at the bottom
     # of installed apps
     #'djcelery',
