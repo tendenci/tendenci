@@ -242,5 +242,3 @@ def run(file_name, request):
             get_posts(item, uri_parser, user)
         elif post_type == 'page' and post_status == 'publish':
             get_pages(item, uri_parser, user)
-
-    

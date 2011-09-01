@@ -5,6 +5,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load search_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} Search{% endblock %}
@@ -23,45 +24,11 @@
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_NEWS_LABEL trans 'News' %} {% trans "Search" %}</h1>
 	
 	{% news_search %}
-    {% autopaginate news 10 %}
+    {% autopaginate search_news 10 %}
 	
 	<div class="news-wrap">
-    {% for n in news %}
-		{% with n.object as n %}
-		<div class="news-wrap-search">
-
-			<div class="options options-search">
-                <div class="quick-options">
-					{% news_options request.user n %} 	       
-                </div>
-			</div>
-
-            <h2><a href="{{ n.get_absolute_url }}">{{ n.headline }}</a></h2>
-			{% if n.summary %}
-				<div class="content">{{ n.summary|striptags|truncatewords:20|safe }}</div>
-			{% else %}
-				<div class="content">{{ n.body|striptags|truncatewords:20|safe }}</div>	
-			{% endif %}
-			<div class="meta">
-            	<div class="submitted">{% blocktrans with n.create_dt|date:"long" as ncreate and n.creator as ncreator %}Submitted on {{ ncreate }} by {{ ncreator }}{% endblocktrans %}</div>
-				<div class="category">
-				{% get_category_for_object n as category %}
-				{% if category %}
-					{% trans "Category:" %} <a href="{% url news.search %}?q=category:{{ category }}">{{ category }}</a> 
-				{% endif %}
-				{% get_sub_category_for_object n as sub_category %}
-				{% if sub_category %}
-					{% trans "Sub Category:" %} <a href="{% url news.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a> 
-				{% endif %}
-				</div>
-            </div>
-
-            <!-- delete-article form -->
-            <form name="news-delete" method="POST" action="{% url news.delete n.pk %}">{% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-            </form>
-		</div>
-		{% endwith %}
+    {% for news in search_news %}
+		{% search_result news %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}

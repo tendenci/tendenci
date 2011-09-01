@@ -20,15 +20,22 @@ ALLOWED_EXTENSIONS = (
     '.html',
     '.css',
     '.txt',
-    '.js'
+    '.js',
+    '.po'
 )
 
-def copy(path_to_file, file, FROM_ROOT=TEMPLATES_ROOT, TO_ROOT=THEME_ROOT):
+def copy(path_to_file, file, FROM_ROOT=TEMPLATES_ROOT, TO_ROOT=THEME_ROOT, plugin=None):
+    """
+        Copies a file and all associated directories into TO_ROOT
+    """
     try:
         os.makedirs(os.path.join(TO_ROOT, "templates", path_to_file))
     except OSError:
         pass
     full_filename = os.path.join(path_to_file, file)
+    if plugin:
+        FROM_ROOT = os.path.join(settings.PROJECT_ROOT, "plugins",
+            plugin, 'templates')
     shutil.copy(os.path.join(FROM_ROOT, full_filename), os.path.join(TO_ROOT, "templates", full_filename))
 
 def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
@@ -45,31 +52,49 @@ def qstr_is_file(query_string, ROOT_DIR=THEME_ROOT):
     current_file = os.path.join(ROOT_DIR, query_string)
     return os.path.isfile(current_file)
 
-def get_dir_list(pwd, ROOT_DIR=THEME_ROOT):
+def get_dir_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
     """
     Get a list of directories from within
     the theme folder based on the present
     working directory
+    if the pwd is the None this will include a list of plugins in
+    the dir_list.
     """
     dir_list = []
-    current_dir = os.path.join(ROOT_DIR, pwd)
+    if pwd.startswith("plugins.") and include_plugins:
+        plugin_name = pwd.split('plugins.')[1].split('/')[0]
+        current_dir = os.path.join(settings.PROJECT_ROOT, "plugins",
+            plugin_name, 'templates', pwd.split('plugins.')[1])
+    else:
+        current_dir = os.path.join(ROOT_DIR, pwd)
+    
+    if include_plugins and not pwd:
+        import pluginmanager
+        plugins = pluginmanager.plugin_apps(())
+        for plugin in plugins:
+            dir_list.append(plugin)
     if os.path.isdir(current_dir):
         item_list = os.listdir(current_dir)
         for item in item_list:
             current_item = os.path.join(current_dir, item)
             if os.path.isdir(current_item):
                 dir_list.append(os.path.join(pwd,item))
-        return sorted(dir_list)
-    return dir_list
+    return sorted(dir_list)
 
-def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
+def get_file_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
     """
     Get a list of files from within
     the theme folder based on the present
     working directory
     """
     file_list = []
-    current_dir = os.path.join(ROOT_DIR, pwd)
+    if pwd.startswith("plugins.") and include_plugins:
+        plugin_name = pwd.split('plugins.')[1].split('/')[0]
+        current_dir = os.path.join(settings.PROJECT_ROOT, "plugins",
+            plugin_name, 'templates', pwd.split('plugins.')[1])
+    else:
+        current_dir = os.path.join(ROOT_DIR, pwd)
+    
     if os.path.isdir(current_dir):
         item_list = os.listdir(current_dir)
         for item in item_list:

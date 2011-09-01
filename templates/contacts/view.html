@@ -67,8 +67,7 @@
         <div class="the-message">
         	<div class="label">{% trans "Message" %}</div>
         	<div class="submitted-dt">
-        		{% blocktrans with contact.create_dt|date:"long" as create_date contact.create_dt|timesince as time_since %}Submitted {{ create_date }}
-        		({{ time_since }} ago){% endblocktrans %}
+        		{% blocktrans with contact.create_dt|date:"long" as create_date %}Submitted {{ create_date }}{% endblocktrans %}
         	</div>
         	<div class="content">
         		{{ contact.message|linebreaks }}

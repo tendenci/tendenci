@@ -17,7 +17,7 @@ THEME_ROOT = get_theme_root()
 class FileForm(forms.Form):
     content = forms.CharField(label="Content",
                            widget=forms.Textarea(attrs={'rows':26, 'cols':73}),
-                           max_length=100000
+                           max_length=500000
                            )
     rf_path = forms.CharField(widget=forms.HiddenInput())
     

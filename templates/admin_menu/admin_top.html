@@ -77,6 +77,22 @@
                 </div>
             </div>
         </li> -->
+        {% comment %}
+        <!-- <li><a href="nowhere">{% trans "Language" %}</a>
+            <div class="sub">
+                <div class="column">
+                    <ul>
+                    {% get_language_info_list for available_languages as languages %}
+                    {% for language in languages}
+                        <li>
+                            <a href="{{ something with language.name }}">{{ language.name }}</a>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </li> -->
+        {% endcomment %}
         <li><a href="{% url settings %}">{% trans "Settings" %}</a>
         	<div class="sub">
             	<div class="column">                
