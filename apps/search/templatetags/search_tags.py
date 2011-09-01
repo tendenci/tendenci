@@ -19,12 +19,10 @@ class SearchResultNode(IncludeNode):
             result = self.result.resolve(context)
             result_object = result.object
             template_name = "%s/search-result.html" % (result_object._meta.app_label)
-            print template_name
             try:
                 t = get_template(template_name)
             except TemplateDoesNotExist:
                 #load the default search result template
-                print "not found"
                 t = get_template("search/search-result.html")
             var_name = result_object._meta.verbose_name.replace(' ', '_')
             context.update({
