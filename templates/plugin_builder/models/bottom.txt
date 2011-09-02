@@ -1,0 +1,11 @@
+    objects = S_S_CAPManager()
+    
+    def __unicode__(self):
+        return self.title
+    
+    class Meta:
+        permissions = (("view_S_S_LOW","Can view S_S_LOW"),)
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ("S_S_LOW.detail", [self.pk])
