@@ -12,12 +12,12 @@
 
 {% if invoice.balance <= 0 %}
 	<p>
-	{% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+	{% trans "To view the invoice, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
 	</p>
 {% else %}
 	{% if object.payment_method == 'cc' or object.payment_method == 'credit card' %}
 	<p>
-		{% blocktrans %}To make online credit card payment, go to the invoice view page and make online payment from there.{% endblocktrans %} 
+        {% trans "To make online credit card payment, go to the invoice view page and make online payment from there." %}
 		<a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
 		
 	</p>
@@ -25,7 +25,7 @@
 {% endif %}
 
 <p>
-{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
+{% trans "To view this corporate membership, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
 </p>
 {% if object.status_detail == "pending" %}
 	<p>
