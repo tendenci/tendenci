@@ -21,6 +21,7 @@ def build_plugin(plugin):
     """
     plugin should be a plugin_builder.models.Plugin
     Creates a tendenci plugin based on the the given plugin.
+    If the plugin already exists, remove it then rebuild.
     """
     
     plugin_dir = os.path.join(settings.PROJECT_ROOT, 'plugins', plugin.plural_lower)
@@ -45,8 +46,8 @@ def build_models(plugin, plugin_dir):
     for field in plugin.fields.all():
         type = field.type.split('/')[0]
         models.write(
-            "    %s = models.%s(_(%r),default=%r, help_text=%r, blank=%s)\n" \
-            % (field.name, type, field.name, field.default, field.help_text, field.blank)
+            "    %s = models.%s(_(%r),default=%r, help_text=%r, blank=%s, %s)\n" \
+            % (field.name, type, field.name, field.default, field.help_text, field.blank, field.kwargs)
         )
     models.write(render_to_plugin(bottom, plugin))
     models.close()
