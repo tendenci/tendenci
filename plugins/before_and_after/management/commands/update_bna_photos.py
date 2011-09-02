@@ -63,6 +63,7 @@ class Command(BaseCommand):
                     before_photo, after_photo = '', ''
                     temp_name = file_name.lower()
 
+
                     p = re.compile('((\d)_(\w)\.\w{3})|((\d)(\w)\.\w{3})')
                     groups = re.findall(p, temp_name)
                     if groups: groups = groups[0]
