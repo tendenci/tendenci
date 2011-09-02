@@ -1,11 +1,11 @@
 from django.db import models
 
 field_choices = (
-    ('IntegerField/IntegerField', 'Integer'),
-    ('CharField/CharField', 'Text (single line)'),
-    ('TextField/CharField', 'Text (multi line)'),
-    ('TextField/Wysiwyg', 'Wysiwyg'),
-    ('DateTimeField/DateTimeField', 'Date/Time'),
+    ('IntegerField/IntegerField/IntegerField', 'Integer'),
+    ('CharField/CharField/CharField', 'Text (single line)'),
+    ('TextField/TextField/CharField', 'Text (multi line)'),
+    ('TextField/Wysiwyg/CharField', 'Wysiwyg'),
+    ('DateTimeField/DateTimeField/DateTimeField', 'Date/Time'),
 )
 
 class Plugin(models.Model):
