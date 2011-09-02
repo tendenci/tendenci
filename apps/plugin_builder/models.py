@@ -27,6 +27,7 @@ class PluginField(models.Model):
     default = models.CharField(max_length=50, blank=True, null=True)
     blank = models.BooleanField(default=False)
     help_text = models.CharField(max_length=100, blank=True, null=True)
+    kwargs = models.CharField(max_length=100, help_text="Extra keyword arguments.", blank=True, null=True)
     
     def __unicode__(self):
         return "%s: %s" % (self.plugin, self.name)
