@@ -15,7 +15,8 @@ def render_to_plugin(temp, plugin):
     return temp.replace('S_P_LOW', plugin.plural_lower)\
         .replace('S_S_CAP', plugin.single_caps)\
         .replace('S_S_LOW', plugin.single_lower)\
-        .replace('S_P_CAP', plugin.plural_caps)
+        .replace('S_P_CAP', plugin.plural_caps)\
+        .replace('EVID', str(plugin.event_id))
 
 def build_plugin(plugin):
     """
@@ -33,6 +34,9 @@ def build_plugin(plugin):
     build_forms(plugin, plugin_dir)
     build_search_indexes(plugin, plugin_dir)
     build_search_document(plugin, plugin_dir)
+    build_template_tags(plugin, plugin_dir)
+    build_templates(plugin, plugin_dir)
+    build_the_rest(plugin, plugin_dir)
 
 def build_models(plugin, plugin_dir):
     """
@@ -114,3 +118,71 @@ def build_search_document(plugin, plugin_dir):
         document.write("{{ object.%s }}\n"%field.name)
     document.close()
     
+def build_template_tags(plugin, plugin_dir):
+    """
+    Creates the plugin's template tags.
+    """
+    tags_path = os.path.join(plugin_dir, 'templatetags')
+    os.mkdir(tags_path)
+    tags_text = open(os.path.join(TEMPLATE_ROOT, 'template_tags.txt')).read()
+    tags = open(os.path.join(tags_path, '%s_tags.py' % plugin.plural_lower), 'w')
+    tags.write(render_to_plugin(tags_text, plugin))
+    tags.close()
+    
+def build_templates(plugin, plugin_dir):
+    """
+    Creates the plugin's templates.
+    """
+    templates_path = os.path.join(plugin_dir, 'templates', plugin.plural_lower)
+    os.makedirs(templates_path)
+    
+    base_text = open(os.path.join(TEMPLATE_ROOT, 'templates', 'base.html')).read()
+    base = open(os.path.join(templates_path, 'base.html'), 'w')
+    base.write(render_to_plugin(base_text, plugin))
+    base.close()
+    
+    search_text = open(os.path.join(TEMPLATE_ROOT, 'templates', 'search.html')).read()
+    search = open(os.path.join(templates_path, 'search.html'), 'w')
+    search.write(render_to_plugin(search_text, plugin))
+    search.close()
+    
+    detail_text = open(os.path.join(TEMPLATE_ROOT, 'templates', 'detail.html')).read()
+    detail = open(os.path.join(templates_path, 'detail.html'), 'w')
+    detail.write(render_to_plugin(detail_text, plugin))
+    detail.close()
+    
+    
+def build_the_rest(plugin, plugin_dir):
+    """
+    Creates the rest of the files for the plugin
+    """
+    
+    admin_txt = open(os.path.join(TEMPLATE_ROOT, 'admin.txt')).read()
+    admin = open(os.path.join(plugin_dir, 'admin.py'), 'w')
+    admin.write(render_to_plugin(admin_txt, plugin))
+    admin.close()
+    
+    managers_txt = open(os.path.join(TEMPLATE_ROOT, 'managers.txt')).read()
+    managers = open(os.path.join(plugin_dir, 'managers.py'), 'w')
+    managers.write(render_to_plugin(managers_txt, plugin))
+    managers.close()
+    
+    urls_txt = open(os.path.join(TEMPLATE_ROOT, 'urls.txt')).read()
+    urls = open(os.path.join(plugin_dir, 'urls.py'), 'w')
+    urls.write(render_to_plugin(urls_txt, plugin))
+    urls.close()
+    
+    app_registry_txt = open(os.path.join(TEMPLATE_ROOT, 'app_registry.txt')).read()
+    app_registry = open(os.path.join(plugin_dir, 'app_registry.py'), 'w')
+    app_registry.write(render_to_plugin(app_registry_txt, plugin))
+    app_registry.close()
+    
+    views_txt = open(os.path.join(TEMPLATE_ROOT, 'views.txt')).read()
+    views = open(os.path.join(plugin_dir, 'views.py'), 'w')
+    views.write(render_to_plugin(views_txt, plugin))
+    views.close()
+    
+    feeds_txt = open(os.path.join(TEMPLATE_ROOT, 'feeds.txt')).read()
+    feeds = open(os.path.join(plugin_dir, 'feeds.py'), 'w')
+    feeds.write(render_to_plugin(feeds_txt, plugin))
+    feeds.close()
