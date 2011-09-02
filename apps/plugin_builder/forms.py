@@ -1,5 +1,6 @@
 import re, os
 from django import forms
+from django.utils.importlib import import_module
 from plugin_builder.models import Plugin
 
 class PluginForm(forms.ModelForm):
@@ -7,15 +8,19 @@ class PluginForm(forms.ModelForm):
         model = Plugin
         
     def clean_single_lower(self):
-        data = self.cleaned_data['single_lower']
-        if re.search(r'^[_a-zA-Z]\w*$', data):
-            # If it's not a valid directory name.
-            raise forms.ValidationError("This is not a valid directory name.")
+        data = str(self.cleaned_data['single_lower'])
+        if not re.search(r'^[_a-zA-Z]\w*$', data):
+            # Provide a smart error message, depending on the error.
+            if not re.search(r'^[_a-zA-Z]', data):
+                message = 'make sure the name begins with a letter or underscore'
+            else:
+                message = 'use only numbers, letters and underscores'
+            raise forms.ValidationError("%r is not a valid plugin name. Please %s." % (data, message))
         if data == os.path.basename(os.getcwd()):
-            raise forms.ValdidationError("You cannot create an app with\
+            raise forms.ValidationError("You cannot create an app with\
                 the same name as your project.")
         try:
-            import_module(app_low_single)
+            import_module(data)
         except ImportError:
             pass
         else:
