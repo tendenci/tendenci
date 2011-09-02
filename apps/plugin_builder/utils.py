@@ -125,6 +125,8 @@ def build_template_tags(plugin, plugin_dir):
     tags_path = os.path.join(plugin_dir, 'templatetags')
     os.mkdir(tags_path)
     tags_text = open(os.path.join(TEMPLATE_ROOT, 'template_tags.txt')).read()
+    init = open(os.path.join(tags_path, '__init__.py'), 'w')
+    init.close()
     tags = open(os.path.join(tags_path, '%s_tags.py' % plugin.plural_lower), 'w')
     tags.write(render_to_plugin(tags_text, plugin))
     tags.close()
