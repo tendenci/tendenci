@@ -1,11 +1,11 @@
 from django.db import models
 
 field_choices = (
-    ('int', 'Integer'),
-    ('single_line', 'Text (single line)'),
-    ('multi_line', 'Text (multi line)'),
-    ('wysiwyg', 'Wysiwyg'),
-    ('datetime', 'Date/Time'),
+    ('IntegerField/IntegerField', 'Integer'),
+    ('CharField/CharField', 'Text (single line)'),
+    ('TextField/CharField', 'Text (multi line)'),
+    ('TextField/Wysiwyg', 'Wysiwyg'),
+    ('DateTimeField/DateTimeField', 'Date/Time'),
 )
 
 class Plugin(models.Model):
@@ -13,11 +13,20 @@ class Plugin(models.Model):
     single_lower = models.CharField(max_length=50)
     plural_caps = models.CharField(max_length=50)
     plural_lower = models.CharField(max_length=50)
+    event_id = models.IntegerField()
+    
+    def __unicode__(self):
+        return self.plural_lower
 
 class PluginField(models.Model):
-    plugin = models.ForeignKey(Plugin)
+    class Meta:
+        unique_together = (('plugin', 'name'),)
+    plugin = models.ForeignKey(Plugin, related_name='fields')
     name = models.CharField(max_length=50)
     type = models.CharField(max_length=50, choices=field_choices)
     default = models.CharField(max_length=50, blank=True, null=True)
     blank = models.BooleanField(default=False)
     help_text = models.CharField(max_length=100, blank=True, null=True)
+    
+    def __unicode__(self):
+        return "%s: %s" % (self.plugin, self.name)
