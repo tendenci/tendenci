@@ -1,14 +1,14 @@
 import re, os
 from django import forms
 from django.utils.importlib import import_module
-from plugin_builder.models import Plugin
+from plugin_builder.models import Plugin, PluginField
 
 class PluginForm(forms.ModelForm):
     class Meta:
         model = Plugin
         
     def clean_single_lower(self):
-        data = str(self.cleaned_data['single_lower'])
+        data = self.cleaned_data['single_lower']
         if not re.search(r'^[_a-zA-Z]\w*$', data):
             # Provide a smart error message, depending on the error.
             if not re.search(r'^[_a-zA-Z]', data):
@@ -19,12 +19,27 @@ class PluginForm(forms.ModelForm):
         if data == os.path.basename(os.getcwd()):
             raise forms.ValidationError("You cannot create an app with\
                 the same name as your project.")
+        return data
+    
+    def clean_plural_lower(self):
+        data = self.cleaned_data['plural_lower']
         try:
             import_module(data)
         except ImportError:
             pass
         else:
-            raise CommandError("%r conflicts with the name of an \
+            raise forms.ValidationError("%r conflicts with the name of an \
                 existing Python module and cannot be used as an app name.\
                 Please try another name." % data)
+        return data
+
+class PluginFieldForm(forms.ModelForm):
+    class Meta:
+        model = PluginField
+        
+    def clean_name(self):
+        data = self.cleaned_data['name']
+        if data == 'tags':
+            raise forms.ValidationError("This field is already part of the \
+                model by default.")                
         return data

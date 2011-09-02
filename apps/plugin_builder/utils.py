@@ -26,9 +26,9 @@ def build_plugin(plugin):
     
     plugin_dir = os.path.join(settings.PROJECT_ROOT, 'plugins', plugin.plural_lower)
     os.mkdir(plugin_dir)
-    
+    init = open(os.path.join(plugin_dir, '__init__.py'), 'w')
+    init.close()
     build_models(plugin, plugin_dir)
-    
 
 def build_models(plugin, plugin_dir):
     top = open(os.path.join(TEMPLATE_ROOT, 'models', 'top.txt')).read()
@@ -42,6 +42,7 @@ def build_models(plugin, plugin_dir):
             % (field.name, type, field.name, field.default, field.help_text, field.blank)
         )
     models.write(render_to_plugin(bottom, plugin))
+    models.close()
     
 def build_forms(plugin, plugin_dir):
     forms = open(os.path.join(plugin_dir, 'forms.py'), 'w')
