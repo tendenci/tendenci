@@ -9,11 +9,11 @@ from S_P_LOW.models import S_S_CAP
 from S_P_LOW.forms import S_S_CAPForm
 
 class S_S_CAPAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'edit_link', 'title', 'tags']
+    list_display = ['view_on_site', 'edit_link', 'tags']
     list_filter = []
     search_fields = []
     fieldsets = (
-        (None, {'fields': ('title', 'tags',)}),
+        (None, {'fields': ('tags',)}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',),'fields': (
             'user_perms',
