@@ -23,14 +23,15 @@ class PluginForm(forms.ModelForm):
     
     def clean_plural_lower(self):
         data = self.cleaned_data['plural_lower']
-        try:
-            import_module(data)
-        except ImportError:
-            pass
-        else:
-            raise forms.ValidationError("%r conflicts with the name of an \
-                existing Python module and cannot be used as an app name.\
-                Please try another name." % data)
+        if not self.instance:
+            try:
+                import_module(data)
+            except ImportError:
+                pass
+            else:
+                raise forms.ValidationError("%r conflicts with the name of an \
+                    existing Python module and cannot be used as an app name.\
+                    Please try another name." % data)
         return data
 
 class PluginFieldForm(forms.ModelForm):
@@ -42,4 +43,10 @@ class PluginFieldForm(forms.ModelForm):
         if data == 'tags':
             raise forms.ValidationError("This field is already part of the \
                 model by default.")                
+        return data
+        
+    def clean(self):
+        data = self.cleaned_data
+        if data['type'] == 'CharField/CharField/CharField' and data['kwargs'].find('max_length') == -1:
+            raise forms.ValidationError("This field type requires the max_length in kwargs")
         return data

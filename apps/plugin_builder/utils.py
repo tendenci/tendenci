@@ -50,9 +50,13 @@ def build_models(plugin, plugin_dir):
     for field in plugin.fields.all():
         type = field.type.split('/')[0]
         models.write(
-            "    %s = models.%s(_(%r),default=%r, help_text=%r, blank=%s, %s)\n" \
-            % (field.name, type, field.name, field.default, field.help_text, field.blank, field.kwargs)
+            "    %s = models.%s(_(%r),default=%r, help_text=%r, blank=%s," \
+            % (field.name, type, field.name, field.default, field.help_text, field.blank)
         )
+        if field.kwargs:
+            models.write("%s)\n"%field.kwargs)
+        else:
+            models.write(")\n")
     models.write(render_to_plugin(bottom, plugin))
     models.close()
     
@@ -78,7 +82,7 @@ def build_forms(plugin, plugin_dir):
                 "mce_attrs={'storme_app_label':%r," % plugin.plural_lower
             )
             forms.write(
-                "'storme_model':%s._meta.module_name.lower()})\n" \
+                "'storme_model':%s._meta.module_name.lower()}))\n" \
                 % plugin.single_caps
             )
         if type == "DateTimeField":
@@ -103,6 +107,7 @@ def build_search_indexes(plugin, plugin_dir):
             "    %s = indexes.%s(model_attr='%s')\n" \
             % (field.name, type, field.name)
         )
+    index.write(render_to_plugin(bottom, plugin))
     index.close()
 
 def build_search_document(plugin, plugin_dir):
