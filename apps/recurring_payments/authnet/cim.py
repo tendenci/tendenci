@@ -785,16 +785,20 @@ class CIMHostedProfilePage(CIMBase):
         customer_profile_id_node.text = self.customer_profile_id
         
         hosted_profile_settings = kwargs.get('hosted_profile_settings')
-        if hosted_profile_settings and type(hosted_profile_settings) is list:
+        if hosted_profile_settings and type(hosted_profile_settings) is dict:
             hosted_profile_settings_node = ET.SubElement(xml_root, 'hostedProfileSettings')
-            for hosted_profile_setting in hosted_profile_settings:
-                if type(hosted_profile_setting) is dict:
-                    setting_node = ET.SubElement(hosted_profile_settings_node, 'setting')
-                    hosted_profile_setting = to_camel_case(hosted_profile_setting)
-                    setting_node = self.build_node_from_dict(setting_node, 
+            hosted_profile_settings = to_camel_case(hosted_profile_settings)
+            for key in hosted_profile_settings.keys():
+                setting_node = ET.SubElement(hosted_profile_settings_node, 'setting')
+                hosted_profile_setting = {'settingName': key}
+                setting_node = self.build_node_from_dict(setting_node, 
+                                                         hosted_profile_setting, 
+                                                         ('settingName', ))
+                hosted_profile_setting = {'settingValue': hosted_profile_settings[key]}
+                setting_node = self.build_node_from_dict(setting_node, 
                                                          hosted_profile_setting, 
                                                          ('settingName', 'settingValue'))
-        
+        #print ET.tostring(xml_root)
         return self.process_request(xml_root)
         
            
