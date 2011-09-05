@@ -34,11 +34,11 @@
 		,skipZIndexCheck: false
 		,useTestEnvironment: false
 	};
-	AuthorizeNetPopup.closePopup = function(action_result) {
+	AuthorizeNetPopup.closePopup = function() {
 		document.getElementById("divAuthorizeNetPopupScreen").style.display = "none";
 		document.getElementById("divAuthorizeNetPopup").style.display = "none";
-		document.getElementById("iframeAuthorizeNet").src = "/rp/authnet/empty/";
-		if (AuthorizeNetPopup.options.onPopupClosed) AuthorizeNetPopup.options.onPopupClosed(action_result);
+		document.getElementById("iframeAuthorizeNet").src = "contentx/empty.html";
+		if (AuthorizeNetPopup.options.onPopupClosed) AuthorizeNetPopup.options.onPopupClosed();
 	};
 	AuthorizeNetPopup.openManagePopup = function() {
 		openSpecificPopup({action:"manage"});
@@ -59,10 +59,10 @@
 		var params = parseQueryString(querystr);
 		switch(params["action"]) {
 			case "successfulSave":
-				AuthorizeNetPopup.closePopup(params["action"]);
+				AuthorizeNetPopup.closePopup();
 				break;
 			case "cancel":
-				AuthorizeNetPopup.closePopup(params["action"]);
+				AuthorizeNetPopup.closePopup();
 				break;
 			case "resizeWindow":
 				var w = parseInt(params["width"]);
