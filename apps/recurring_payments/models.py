@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 from invoices.models import Invoice
 from profiles.models import Profile
 from recurring_payments.authnet.cim import (CIMCustomerProfile,
+                                            CIMCustomerPaymentProfile,
                                             CIMCustomerProfileTransaction)
 from recurring_payments.authnet.utils import payment_update_from_response
 from payments.models import Payment
@@ -309,7 +310,25 @@ class PaymentProfile(models.Model):
     owner = models.ForeignKey(User, related_name="payment_profile_owner", null=True)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='active')
-    status = models.BooleanField(default=True)   
+    status = models.BooleanField(default=True) 
+    
+    def update_local(self, request):
+        cim_payment_profile = CIMCustomerPaymentProfile(
+                                self.recurring_payment.customer_profile_id, 
+                                self.payment_profile_id)
+        success, response_d = cim_payment_profile.get()
+        
+        if success:
+            if response_d['payment_profile'].has_key('payment'):
+                if response_d['payment_profile']['payment'].has_key('credit_card') and \
+                        response_d['payment_profile']['payment']['credit_card'].has_key('card_number'):
+                    card_num = response_d['payment_profile']['payment']['credit_card']['card_number'][-4:]
+                    self.card_num = card_num
+        
+        self.owner = request.user
+        self.owner_username = request.user.username          
+        self.save()
+        
         
 class RecurringPaymentInvoice(models.Model):
     recurring_payment =  models.ForeignKey(RecurringPayment, related_name="rp_invoices")
