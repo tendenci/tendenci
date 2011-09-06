@@ -748,7 +748,7 @@ def count_event_spots_taken(event):
     count = 0
 
     for reg in registrations:
-        count += reg.registrant_set.count()
+        count += reg.registrant_set.filter(cancel_dt__isnull=True).count()
     
     return count
 
