@@ -1071,6 +1071,9 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                         'registrant':registrant,
                         'user_is_registrant': user_is_registrant,
                     })
+            
+            # update the spots taken on this event
+            update_event_spots_taken(event)
 
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', 
@@ -1155,6 +1158,9 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     'registrant':registrant,
                     'user_is_registrant': user_is_registrant,
                 })
+
+            # update the spots taken on this event
+            update_event_spots_taken(event)
 
         # back to invoice
         return HttpResponseRedirect(
