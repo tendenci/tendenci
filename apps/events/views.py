@@ -34,7 +34,7 @@ from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
 from events.utils import get_event_spots_taken, update_event_spots_taken
-from events.utils import get_ievent, copy_event
+from events.utils import get_ievent, copy_event, email_admins
 from perms.utils import has_perm, get_notice_recipients, \
     update_perms_and_save, get_administrators, is_admin
 from event_logs.models import EventLog
@@ -864,7 +864,9 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                     'is_paid': reg8n.invoice.balance == 0
                                  },
                                 True, # save notice in db
-                            )
+                            )                            
+                            #email the admins as well
+                            email_admins(event, event_price, self_reg8n, reg8n)
                         
                     # log an event
                     log_defaults = {
