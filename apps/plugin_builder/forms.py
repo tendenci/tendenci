@@ -40,6 +40,7 @@ class PluginFieldForm(forms.ModelForm):
         
     def clean_name(self):
         data = self.cleaned_data['name']
+        data = data.strip().replace(' ', '_').lower()
         if data == 'tags':
             raise forms.ValidationError("This field is already part of the \
                 model by default.")                
@@ -47,6 +48,4 @@ class PluginFieldForm(forms.ModelForm):
         
     def clean(self):
         data = self.cleaned_data
-        if data['type'] == 'CharField/CharField/CharField' and data['kwargs'].find('max_length') == -1:
-            raise forms.ValidationError("This field type requires the max_length in kwargs")
         return data

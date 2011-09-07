@@ -50,11 +50,20 @@ def build_models(plugin, plugin_dir):
     for field in plugin.fields.all():
         type = field.type.split('/')[0]
         models.write(
-            "    %s = models.%s(_(%r),default=%r, help_text=%r, blank=%s," \
-            % (field.name, type, field.name, field.default, field.help_text, field.blank)
+            "    %s = models.%s(_(%r), help_text=%r, blank=%s," \
+            % (field.name, type, field.name, field.help_text, not(field.required))
         )
+        #add max_length for charfield
+        if type == 'CharField':
+            models.write(" max_length=200,")
+        #add default param
+        if type == 'IntegerField':
+            models.write(" default=%s,"%field.default)
+        else:
+            models.write(" default=%r,"%field.default)
+        #add extra kwargs
         if field.kwargs:
-            models.write("%s)\n"%field.kwargs)
+            models.write(" %s)\n"%field.kwargs)
         else:
             models.write(")\n")
     models.write(render_to_plugin(bottom, plugin))
@@ -73,7 +82,7 @@ def build_forms(plugin, plugin_dir):
         if type == "Wysiwyg":
             forms.write(
                 "    %s = forms.CharField(required=%s," \
-                % (field.name, field.blank)
+                % (field.name, field.required)
             )
             forms.write(
                 "widget=TinyMCE(attrs={'style':'width:100%'},"
@@ -88,7 +97,7 @@ def build_forms(plugin, plugin_dir):
         if type == "DateTimeField":
             forms.write(
                 "    %s = SplitDateTimeField(required=%s)" \
-                % (field.name, field.blank)
+                % (field.name, field.required)
             )
     forms.close()
     
