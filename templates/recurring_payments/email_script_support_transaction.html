@@ -3,8 +3,7 @@
 
 {% trans "Greetings:" %}<br /><br />
 A transaction 
-was processed {% if pt.status %}successfully{% endif %}{% if not pt.status %}but failed{% endif %} 
-for the recurring payment ({{ pt.recurring_payment }}) 
+was failed for the recurring payment ({{ pt.recurring_payment }}) 
 on <a href="{{ site_url }}">{{ site_display_name }}</a>.
 <br /><br />
 
@@ -20,10 +19,10 @@ on <a href="{{ site_url }}">{{ site_display_name }}</a>.
 		<td>Result code:</td><td>{{ pt.result_code }}</td>
 	</tr>
 	<tr>
-		<td>Message code:</td><td>{{ pt.message_code }}</td>
+		<td>Error code:</td><td>{{ pt.message_code }}</td>
 	</tr>
 	<tr>
-		<td>Message text:</td><td>{{ pt.message_text }}</td>
+		<td>Error text:</td><td>{{ pt.message_text }}</td>
 	</tr>
 	<tr>
 		<td>Transaction date:</td><td>{{ pt.create_dt|date }}</td>
@@ -45,10 +44,10 @@ on <a href="{{ site_url }}">{{ site_display_name }}</a>.
 		<td>Guid:</td><td>{{ pt.recurring_payment.guid }}</td>
 	</tr>
 	<tr>
-		<td>Current cycle start:</td><td>{{ pt.recurring_payment_invoice.billing_cycle_start_dt|date }}</td>
+		<td>Recurring cycle start date:</td><td>{{ pt.recurring_payment_invoice.billing_cycle_start_dt|date }}</td>
 	</tr>
 	<tr>
-		<td>Current cycle end:</td><td>{{ pt.recurring_payment_invoice.billing_cycle_end_dt|date }}</td>
+		<td>Recurring cycle end date:</td><td>{{ pt.recurring_payment_invoice.billing_cycle_end_dt|date }}</td>
 	</tr>
 	
 

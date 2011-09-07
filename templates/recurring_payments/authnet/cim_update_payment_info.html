@@ -46,6 +46,8 @@
     {% endif %}
     </h1>
  
+ <h3>Description: {{ rp.description }}</h3>
+ 
    {% if payment_profile %}
    <button onclick="AuthorizeNetPopup.openEditPaymentPopup('{{ payment_profile.payment_profile_id }}')">Edit Payment Method</button>
 	{% else %}

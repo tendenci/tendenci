@@ -9,7 +9,7 @@ Your recurring payment account "{{ rp.description }}" doesn't have a valid payme
 
 Please visit the link below to add or update the payment method:
 <br />
-<a href="{{ site_url }}{% url recurring_payment.authnet.manage_payment_info rp.id %}">{{ site_url }}{% url recurring_payment.authnet.manage_payment_info rp.id %}</a>
+<a href="{{ site_url }}{% url recurring_payment.authnet.update_payment_info rp.id %}">{{ site_url }}{% url recurring_payment.authnet.update_payment_info rp.id %}</a>
 
 </div>
 
