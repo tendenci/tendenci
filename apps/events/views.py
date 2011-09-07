@@ -842,6 +842,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     if is_credit_card_payment:
                         # online payment
                         # get invoice; redirect to online pay
+                        # email the admins as well
+                        email_admins(event, event_price, self_reg8n, reg8n)
                         
                         return HttpResponseRedirect(reverse(
                             'payments.views.pay_online',

@@ -14,8 +14,9 @@
 {% if is_paid %}  {# handles free & priced events #}
     <div style="background-color:#CFFFCE; padding:10px; font-size:1.2em;">
         {% if for_admin %}
-            {% trans "Registration Complete." %} {{ reg8n_number }} {% trans "Registrants:" %}
+            {% trans "Registration Complete." %}
             <div style="font-size:1.0em; margin-top:5px;">
+                {{ reg8n_number }} {% trans "Registrants:" %}
                 {% for reg in reg8n.registrant_set.all %}
                     {{ reg.lastname_firstname }}<br>
                 {% endfor %}
@@ -28,14 +29,25 @@
 
     {% if event.registration_configuration.payment_required %}
         <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
-            {% trans "Almost Registered. Payment is still required." %}
-            <a href="{{ site_url }}{% url payment.pay_online reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "Complete this registration." %}</a>
+            {% if for_admin %}
+                {% trans "Almost Registered. Payment is still required." %}
+                <div style="font-size:1.0em; margin-top:5px;">
+                    {{ reg8n_number }} {% trans "Registrants:" %}
+                    {% for reg in reg8n.registrant_set.all %}
+                        {{ reg.lastname_firstname }}<br>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% trans "Almost Registered. Payment is still required." %}
+                <a href="{{ site_url }}{% url payment.pay_online reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "Complete this registration." %}</a>
+            {% endif %}
         </div>
     {% else %}
         <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
             {% if for_admin %}
-                {% trans "Registration Complete." %} {{ reg8n_number }} {% trans "Registrants:" %}
+                {% trans "Registration Complete." %}
                 <div style="font-size:1.0em; margin-top:5px;">
+                    {{ reg8n_number }} {% trans "Registrants:" %}
                     {% for reg in reg8n.registrant_set.all %}
                         {{ reg.lastname_firstname }}<br>
                     {% endfor %}
@@ -60,6 +72,9 @@
         </a>
     </li>
     <li><a href="{{ site_url }}{{ event.get_absolute_url }}">{% trans "Event Details" %}</a></li>
+    {% if for_admin %}
+        <li><a href="{{ site_url }}{% url event.registrant.roster event.pk %}">{% trans "Event Roster" %}</a></li>
+    {% endif %}
     <li><a href="{{ site_url }}">{{ site_label }} - {{ site_url }}</a></li>
 </ol>
 
