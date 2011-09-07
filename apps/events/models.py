@@ -393,6 +393,7 @@ class Registration(models.Model):
         except:
             notification = None
         from perms.utils import get_notice_recipients
+        from events.utils import email_admins
 
         site_label = get_setting('site', 'global', 'sitedisplayname')
         site_url = get_setting('site', 'global', 'siteurl')
@@ -416,6 +417,8 @@ class Registration(models.Model):
                 },
                 True,  # notice saved in db
             )
+            #notify the admins too
+            email_admins(event, self.invoice.total, self_reg8n, self)
 
     @property
     def canceled(self):
