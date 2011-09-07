@@ -25,7 +25,7 @@ class PluginField(models.Model):
     name = models.CharField(max_length=50)
     type = models.CharField(max_length=50, choices=field_choices)
     default = models.CharField(max_length=50, blank=True, null=True)
-    blank = models.BooleanField(default=False)
+    required = models.BooleanField(default=True)
     help_text = models.CharField(max_length=100, blank=True, null=True)
     kwargs = models.CharField(max_length=100, help_text="Extra keyword arguments.", blank=True, null=True)
     
