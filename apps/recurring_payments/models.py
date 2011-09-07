@@ -120,10 +120,6 @@ class RecurringPayment(models.Model):
     
                             payment_profile.card_num = card_num
                         payment_profile.save()
-        else: # failed
-            # info admin that an error occurred when populating payment profiles
-            pass   
-        
         
         
         
@@ -317,6 +313,7 @@ class PaymentProfile(models.Model):
                                 self.recurring_payment.customer_profile_id, 
                                 self.payment_profile_id)
         success, response_d = cim_payment_profile.get()
+        print success, response_d 
         
         if success:
             if response_d['payment_profile'].has_key('payment'):
@@ -335,6 +332,7 @@ class RecurringPaymentInvoice(models.Model):
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     billing_cycle_start_dt = models.DateTimeField(_("Billing cycle start date"), blank=True, null=True)
     billing_cycle_end_dt = models.DateTimeField(_('Billing cycle end date'), blank=True, null=True)
+    last_payment_failed_dt = models.DateTimeField(_('Last payment failed date'), blank=True, null=True)
     # billing date is same as due date in invoice
     billing_dt = models.DateTimeField(blank=True, null=True)
     payment_received_dt = models.DateTimeField(blank=True, null=True)
@@ -390,6 +388,8 @@ class RecurringPaymentInvoice(models.Model):
             if payment.status_detail == '':
                 payment.status_detail = 'not approved'
                 payment.save()
+            self.last_payment_failed_dt = datetime.now()
+            self.save()
             
         payment_transaction.payment = payment
         payment_transaction.result_code = response_d['result_code']
@@ -399,6 +399,14 @@ class RecurringPaymentInvoice(models.Model):
         payment_transaction.save()
         
         return payment_transaction
+    
+    def get_last_transaction_error_code(self):
+        failed_trans = PaymentTransaction.objects.filter(recurring_payment_invoice=self,
+                                                         status=False
+                                                         ).order_by('-create_dt')
+        if failed_trans:
+            return failed_trans[0].message_code
+        return None
 
 
 class PaymentTransaction(models.Model):

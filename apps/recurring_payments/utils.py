@@ -1,5 +1,6 @@
 from django.template.loader import render_to_string
 from django.template import TemplateDoesNotExist
+from django.conf import settings
 from emails.models import Email
 from site_settings.utils import get_setting
         
@@ -25,6 +26,35 @@ class RecurringPaymentEmailNotices(object):
             admin_emails = ','.join(admin_emails)
             
         return admin_emails
+    
+    def get_script_support_emails(self):
+        admins = getattr(settings, 'ADMINS', None) 
+        if admins:
+            recipients_list = [admin[1] for admin in admins]
+            return ','.join(recipients_list)
+        
+        return None
+        
+    def email_script_support_transaction_error(self, payment_transaction):
+        """if there is an error other than transaction not being approved, notify us.
+        """
+        self.email.recipient = self.get_script_support_emails()
+        if self.email.recipient:
+            template_name = "recurring_payments/email_script_support_transaction.html"
+            try:
+                email_content = render_to_string(template_name, 
+                                               {'pt':payment_transaction,
+                                                'site_display_name': self.site_display_name,
+                                                'site_url': self.site_url
+                                                })
+                self.email.body = email_content
+                self.email.content_type = "html"
+                self.email.subject = 'Recurring payment transaction error on %s' % ( 
+                                                                            self.site_display_name)
+                
+                self.email.send()
+            except TemplateDoesNotExist:
+                pass
         
     def email_admins_transaction_result(self, payment_transaction):
         """Send admins the result after the transaction is processed.

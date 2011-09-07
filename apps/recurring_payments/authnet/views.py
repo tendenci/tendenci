@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from recurring_payments.models import RecurringPayment, PaymentProfile
 from recurring_payments.authnet.cim import CIMCustomerProfile, CIMCustomerPaymentProfile, CIMHostedProfilePage
@@ -139,6 +140,7 @@ def update_payment_info(request, recurring_payment_id,
     
     
 @login_required
+@csrf_exempt
 def update_payment_profile_local(request):
     """
     Update the local payment profile entry.

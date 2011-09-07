@@ -9,11 +9,11 @@ from event_logs.models import EventLog
 
 class RecurringPaymentAdmin(admin.ModelAdmin):
     def edit_payment_info_link(self):
-        link = reverse('recurring_payment.authnet.manage_payment_info', args=[self.id])
+        link = reverse('recurring_payment.authnet.update_payment_info', args=[self.id])
         return '<a href="%s">Add/Edit payment info</a>' % (link)
     edit_payment_info_link.allow_tags = True
     
-    list_display = ['user', edit_payment_info_link, 'billing_start_dt',
+    list_display = ['user', edit_payment_info_link, 'description', 'billing_start_dt',
                      'billing_period', 'billing_frequency', 'payment_amount',  
                      'status_detail']
     list_filter = ['status_detail']
