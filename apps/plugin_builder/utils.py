@@ -36,6 +36,7 @@ def build_plugin(plugin):
     build_search_document(plugin, plugin_dir)
     build_template_tags(plugin, plugin_dir)
     build_templates(plugin, plugin_dir)
+    build_admin(plugin, plugin_dir)
     build_the_rest(plugin, plugin_dir)
 
 def build_models(plugin, plugin_dir):
@@ -167,16 +168,23 @@ def build_templates(plugin, plugin_dir):
     detail.write(render_to_plugin(detail_text, plugin))
     detail.close()
     
+def build_admin(plugin, plugin_dir):
+    """
+    Creates the plugin's admin.py
+    """
+    top = open(os.path.join(TEMPLATE_ROOT, 'admin', 'top.txt')).read()
+    bottom = open(os.path.join(TEMPLATE_ROOT, 'admin', 'bottom.txt')).read()
+    document = open(os.path.join(plugin_dir, 'admin.py'), 'w')
+    document.write(render_to_plugin(top, plugin))
+    for field in plugin.fields.all():
+        document.write("                '%s',\n" % field.name)
+    document.write(render_to_plugin(bottom, plugin))
+    document.close()
     
 def build_the_rest(plugin, plugin_dir):
     """
     Creates the rest of the files for the plugin
     """
-    
-    admin_txt = open(os.path.join(TEMPLATE_ROOT, 'admin.txt')).read()
-    admin = open(os.path.join(plugin_dir, 'admin.py'), 'w')
-    admin.write(render_to_plugin(admin_txt, plugin))
-    admin.close()
     
     managers_txt = open(os.path.join(TEMPLATE_ROOT, 'managers.txt')).read()
     managers = open(os.path.join(plugin_dir, 'managers.py'), 'w')
