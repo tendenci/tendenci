@@ -7,8 +7,19 @@ class PluginForm(forms.ModelForm):
     class Meta:
         model = Plugin
         
+    def clean_single_caps(self):
+        data = self.cleaned_data['single_caps']
+        data = data.strip().replace(' ', '_')
+        return data
+    
+    def clean_plural_caps(self):
+        data = self.cleaned_data['plural_caps']
+        data = data.strip().replace(' ', '_')
+        return data
+        
     def clean_single_lower(self):
         data = self.cleaned_data['single_lower']
+        data = data.strip().replace(' ', '_').lower()
         if not re.search(r'^[_a-zA-Z]\w*$', data):
             # Provide a smart error message, depending on the error.
             if not re.search(r'^[_a-zA-Z]', data):
@@ -23,6 +34,7 @@ class PluginForm(forms.ModelForm):
     
     def clean_plural_lower(self):
         data = self.cleaned_data['plural_lower']
+        data = data.strip().replace(' ', '_').lower()
         if not self.instance:
             try:
                 import_module(data)

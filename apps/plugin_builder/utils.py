@@ -95,11 +95,6 @@ def build_forms(plugin, plugin_dir):
                 "'storme_model':%s._meta.module_name.lower()}))\n" \
                 % plugin.single_caps
             )
-        if type == "DateTimeField":
-            forms.write(
-                "    %s = SplitDateTimeField(required=%s)" \
-                % (field.name, field.required)
-            )
     forms.close()
     
 def build_search_indexes(plugin, plugin_dir):
@@ -163,9 +158,14 @@ def build_templates(plugin, plugin_dir):
     search.write(render_to_plugin(search_text, plugin))
     search.close()
     
-    detail_text = open(os.path.join(TEMPLATE_ROOT, 'templates', 'detail.html')).read()
+    #build detail.html
+    top = open(os.path.join(TEMPLATE_ROOT, 'templates', 'detail', 'top.txt')).read()
+    bottom = open(os.path.join(TEMPLATE_ROOT, 'templates', 'detail', 'bottom.txt')).read()
     detail = open(os.path.join(templates_path, 'detail.html'), 'w')
-    detail.write(render_to_plugin(detail_text, plugin))
+    detail.write(render_to_plugin(top, plugin))
+    for field in plugin.fields.all():
+        detail.write("<div>{{ %s.%s }}</div>\n"% (plugin.single_lower, field.name))
+    detail.write(render_to_plugin(bottom, plugin))
     detail.close()
     
 def build_admin(plugin, plugin_dir):
