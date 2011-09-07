@@ -13,6 +13,11 @@ from user_groups.models import Group
 from perms.utils import is_member, is_admin
 from discounts.models import Discount, DiscountUse
 
+try:
+    from notification import models as notification
+except:
+    notification = None
+
 def get_ievent(request, d, event_id):
     from django.conf import settings
     from timezones.utils import adjust_datetime_to_timezone
@@ -341,6 +346,29 @@ def email_registrants(event, email, **kwargs):
         email.send()
         
         email.body = tmp_body  # restore to the original
+        
+def email_admins(event, event_price, self_reg8n, reg8n):
+    site_label = get_setting('site', 'global', 'sitedisplayname')
+    site_url = get_setting('site', 'global', 'siteurl')
+    admins = get_setting('module', 'events', 'admin_emails').split(',')
+    email_list = [admin.strip() for admin in admins]
+    
+    notification.send_emails(
+        email_list,
+        'event_registration_confirmation',
+        {
+            'site_label': site_label,
+            'site_url': site_url,
+            'self_reg8n': self_reg8n,
+            'reg8n': reg8n,
+            'event': event,
+            'price': event_price,
+            'is_paid': reg8n.invoice.balance == 0,
+            'reg8n_number': reg8n.registrant_set.all().count(),
+            'for_admin': True,
+         },
+        True, # save notice in db
+    )
 
 
 def save_registration(*args, **kwargs):
@@ -720,7 +748,7 @@ def count_event_spots_taken(event):
     count = 0
 
     for reg in registrations:
-        count += reg.registrant_set.count()
+        count += reg.registrant_set.filter(cancel_dt__isnull=True).count()
     
     return count
 
