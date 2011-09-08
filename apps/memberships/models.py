@@ -1266,9 +1266,6 @@ class AppEntry(TendenciBaseModel):
             corp_memb = CorporateMembership.objects.get(id=self.corporate_membership_id)
         except CorporateMembership.DoesNotExist:
             corp_memb = None
-        except:
-            #temporary skip. there seems to be some missing migrations for this app.
-            corp_memb = None
         
         if corp_memb:
             allow_threshold = corp_memb.corporate_membership_type.apply_threshold
