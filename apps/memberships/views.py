@@ -416,16 +416,19 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
     if not id:
         return redirect(reverse('membership.application_entries_search'))
-
-    # TODO: Not use search but query the database
-    # TODO: Needs a manager to query database with permission checks
-    query = '"id:%s"' % id
-    sqs = AppEntry.objects.search(query, user=request.user)
-
-    if sqs:
-        entry = sqs[0].object
+    
+    if is_admin(request.user):
+        entry = get_object_or_404(AppEntry, id=id)
     else:
-        raise Http404
+        # TODO: Not use search but query the database
+        # TODO: Needs a manager to query database with permission checks
+        query = '"id:%s"' % id
+        sqs = AppEntry.objects.search(query, user=request.user)
+
+        if sqs:
+            entry = sqs[0].object
+        else:
+            raise Http404
 
     # log entry view
     EventLog.objects.log(**{
