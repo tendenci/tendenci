@@ -485,6 +485,9 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                 # update application, user, 
                 # group, membership, and archive
                 entry.approve()
+                
+                # execute field functions (group subscriptions)
+                entry.execute_field_functions()
 
                 # send "approved" notification
                 Notice.send_notice(
