@@ -784,6 +784,22 @@ class AppField(models.Model):
 
     def __unicode__(self):
         return self.label
+        
+    def execute_function(self, entry):
+        user = entry.user
+        if self.field_function == "Group":
+            for val in self.function_params.split(','):
+                group = Group.objects.get(name=val)
+                try:
+                    group_membership = GroupMembership.objects.get(group=group, member=user)
+                except GroupMembership.DoesNotExist:
+                    group_membership = GroupMembership(group=group, member=user)
+                    group_membership.creator_id = user.id
+                    group_membership.creator_username = user.username
+                    group_membership.role='subscriber'
+                    group_membership.owner_id =  user.id
+                    group_membership.owner_username = user.username
+                    group_membership.save()
     
     
 class AppEntry(TendenciBaseModel):
@@ -1281,10 +1297,13 @@ class AppEntry(TendenciBaseModel):
                     return True, threshold_price
                 
         return False, None
-                
-                
-            
-            
+        
+    def execute_field_functions(self):
+        app = self.app
+        fields = app.fields.exclude(field_function=None)
+        print fields
+        for field in fields:
+            field.execute_function(self)
 
 class AppFieldEntry(models.Model):
     """
