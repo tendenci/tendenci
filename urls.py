@@ -82,6 +82,7 @@ urlpatterns = patterns('',
     (r'^wp_importer/', include('wp_importer.urls')),
     (r'^discounts/', include('discounts.urls')),
     url(r'social_auth/', include('social_auth.urls')),
+    url(r'plugin_builder/', include('plugin_builder.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
     url(r'^robots.txt', direct_to_template, {"template": "robots.txt", }, name="robots"),
