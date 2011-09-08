@@ -708,22 +708,22 @@ class AppEntryForm(forms.ModelForm):
 
     def save(self, **kwargs):
         """
-        Create a FormEntry instance and related FieldEntry instances for each 
+        Create a AppEntry instance and related AppFieldEntry instances for each 
         form field.
         """
         app_entry = super(AppEntryForm, self).save(commit=False)
         app_entry.app = self.app
-
+        
         # TODO: We're assuming that an administrator exists
         # We're assuming this administrator is actively used
         admin = User.objects.order_by('pk')[0]
-
+        
         user = None
         username = None
         if hasattr(self.user, 'pk'):
             user = self.user
             username = user.username
-
+        
         app_entry.user = user
         app_entry.entry_time = datetime.now()
         app_entry.creator = user or admin
@@ -732,9 +732,10 @@ class AppEntryForm(forms.ModelForm):
         app_entry.owner_username = username or admin.username
         app_entry.status = True
         app_entry.status_detail = 'active'
-
+        
         app_entry.save()
-
+        
+        #create all field entries
         for field in self.form_fields:
             if field.field_type == 'corporate_membership_id' and not self.corporate_membership:
                 continue
@@ -747,6 +748,7 @@ class AppEntryForm(forms.ModelForm):
                 value = ','.join(value)
             if not value: value=''
             app_entry.fields.create(field_id=field.id, value=value)
+            
         return app_entry
 
     def email_to(self):
