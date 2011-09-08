@@ -23,7 +23,7 @@ from memberships.forms import AppForm, AppEntryForm, \
     AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm, EntryEditForm, \
     ExportForm
 from memberships.utils import new_mems_from_csv, is_import_valid, \
-    prepare_chart_data, get_days
+    prepare_chart_data, get_days, has_app_perm
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
     has_perm, update_perms_and_save, is_admin, is_member, is_developer
@@ -96,14 +96,13 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     if not slug: raise Http404
     user = request.user
 
-    # check user permissions / get application QS
-    query = '"slug:%s"' % slug
-    apps = App.objects.search(query, user=user)
-
     # get application
-    if apps: app = apps.best_match().object
-    else: raise Http404
-
+    app = get_object_or_404(App, slug=slug)
+    
+    # check user permissions
+    if not has_app_perm(user, 'memberships.view_app', app):
+        raise Http403
+    
     # if this app is for corporation individuals, redirect them to corp-pre page if
     # they have not passed the security check.
     is_corp_ind = False
