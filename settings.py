@@ -230,6 +230,7 @@ INSTALLED_APPS = (
     'discounts',
     'metrics',
     'search',
+    'plugin_builder',
     # celery task system, must stay at the bottom
     # of installed apps
     #'djcelery',
