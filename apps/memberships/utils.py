@@ -8,6 +8,7 @@ from django.conf import settings
 from django.utils import simplejson
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
+from perms.utils import has_perm, is_admin
 from memberships.models import AppField, Membership, MembershipType
 from corporate_memberships.models import CorporateMembership
 
@@ -332,3 +333,17 @@ def get_days(request):
     month = int(request.GET.get('month') or str(now.month))
     days = list(month_days(year, month)) 
     return days
+
+def has_app_perm(user, perm, obj=None):
+    """
+    Wrapper for perm's has_perm util.
+    This consider's the app's status_detail
+    """
+    allow = has_perm(user, perm, obj)
+    if is_admin(user):
+        return allow
+    if obj.status_detail != 'published':
+        return allow
+    else:
+        return False
+    

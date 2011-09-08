@@ -2,7 +2,6 @@ from django.db import models
 from forms_builder.forms.models import FormEntry, FieldEntry
 from user_groups.models import Group
 
-# Create your models here.
 class GroupSubscription(models.Model):
     group = models.ForeignKey(Group)
     subscriber = models.ForeignKey(FormEntry, related_name='subscriptions')

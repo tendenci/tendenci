@@ -7,22 +7,24 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/styles.css" type="text/css" media="screen" />
+    <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/styles.css" type="text/css" media="screen" />
 {% endblock extra_head %}
 
 {% block html_body %}
 <div id="container">
-	<div id="header"> 
-		<h1><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a></h1> 
-		<h2>{% trans "Website tagline" %}</h2> 
-	</div><!-- /header --> 
+    <div id="header"> 
+        <h1><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a></h1> 
+        <h2>{% trans "Website tagline" %}</h2> 
+    </div><!-- /header --> 
 
-	<div id="headerimage"> 
-		<img src="{{ STATIC_URL }}images/headers/header.jpg" width="940" height="198" alt="" /> 
-	</div><!-- /headerimage --> 
+    <div id="headerimage"> 
+        <img src="{{ STATIC_URL }}images/headers/header.jpg" width="940" height="198" alt="" /> 
+    </div><!-- /headerimage --> 
         
     <div id="menu"> 
-    	{% spaceless %}{% theme_include "nav.html" %}{% endspaceless %}
+        {% spaceless %}{% theme_include "nav.html" %}{% endspaceless %}
     </div><!-- /menu -->
     
     <div class="content content-middle {% block content_classes %}{% endblock %}"> 
@@ -32,54 +34,52 @@
         
     </div><!-- /content-->
 
-	 {% block sidebar %}
-	 <div class="primary-sidebar content-middle "> 
-	 <h2>{% trans "Interior page" %}</h2>
-		<ul>
-			<li>
-				<h2>{% trans "Search" %}</h2> 
-				<form id="searchform" method="get" action="/search"> 
-					<input type="text" value="type, hit enter" onfocus="if (this.value == 'type, hit enter') {this.value = '';}" onblur="if (this.value == '') {this.value = 'type, hit enter';}" size="18" maxlength="50" name="q" id="s" /> 
-				</form> 
-			</li>
-					
-			<li>
-				<h2>{% trans "What is schipul doing..." %}</h2> 
-				<div class="aktt_tweets"> 
-					{% cache 86400 schipul_rss %}
-               	    {% get_rss "http://twitter.com/statuses/user_timeline/6971652.rss" as rss %}
-		                <ul>
-		                {% for entry in rss.entries|slice:":3" %}
-		                    <li>{{ entry.title }}</li>
-		                {% endfor %}
-		                </ul>
-					{% endcache %}
-				</div>
-			</li> 
-		
-			<li>
-				<h2>{% trans "Meta" %}</h2>
-				<ul>
-					{% if user.is_authenticated %}
-						<li><a href="{% url dashboard %}">{% trans "Dashboard" %}</a></li>
-						<li><a href="{% url auth_logout %}">{% trans "Log Out" %}</a></li>
-					{% else %} 
-						{% if MODULE_USERS_SELFREGISTRATION %}
-						<li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
-						{% endif %}
-						<li><a href="{% url auth_login %}">{% trans "Log in" %}</a></li>
-					{% endif %}					
-				</ul>
-			</li>
-		</ul>
-		</div><!-- /sidebar -->
-		{% endblock %}
-	
-	
+     {% block sidebar %}
+     <div class="primary-sidebar content-middle "> 
+     <h2>{% trans "Interior page" %}</h2>
+        <ul>
+            <li>
+                <h2>{% trans "Search" %}</h2> 
+                <form id="searchform" method="get" action="/search"> 
+                    <input type="text" value="type, hit enter" onfocus="if (this.value == 'type, hit enter') {this.value = '';}" onblur="if (this.value == '') {this.value = 'type, hit enter';}" size="18" maxlength="50" name="q" id="s" /> 
+                </form> 
+            </li>
+
+            <li>
+                <h2>{% trans "What is schipul doing..." %}</h2> 
+                <div class="aktt_tweets"> 
+                    {% cache 86400 schipul_rss %}
+                    {% get_rss "http://twitter.com/statuses/user_timeline/6971652.rss" as rss %}
+                        <ul>
+                        {% for entry in rss.entries|slice:":3" %}
+                            <li>{{ entry.title }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endcache %}
+                </div>
+            </li> 
+
+            <li>
+                <h2>{% trans "Meta" %}</h2>
+                <ul>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url dashboard %}">{% trans "Dashboard" %}</a></li>
+                        <li><a href="{% url auth_logout %}">{% trans "Log Out" %}</a></li>
+                    {% else %} 
+                        {% if MODULE_USERS_SELFREGISTRATION %}
+                        <li><a href="{% url registration_register %}">{% trans "Register" %}</a></li>
+                        {% endif %}
+                        <li><a href="{% url auth_login %}">{% trans "Log in" %}</a></li>
+                    {% endif %}                 
+                </ul>
+            </li>
+        </ul>
+        </div><!-- /sidebar -->
+        {% endblock %}
 
     <div id="footer">
       {% spaceless %}{% theme_include "footer.html" %}{% endspaceless %}
     </div><!-- /footer -->
-        
+
 </div><!-- /container -->
 {% endblock %}
