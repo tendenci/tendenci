@@ -1,0 +1,8 @@
+from haystack import indexes
+from haystack import site
+
+from perms.indexes import TendenciBaseSearchIndex
+from S_P_LOW.models import S_S_CAP
+
+class S_S_CAPIndex(TendenciBaseSearchIndex):
+    text = indexes.CharField(document=True, use_template=True)

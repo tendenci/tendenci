@@ -393,7 +393,7 @@ h1{
            <p>{{ event.additional_info|safe|urlize }}</p>
        {% endif %}
        
-       {% if event.additional_info2 %}
+       {% if event.additional_info2 and event.additional_info2 != 'None' %}
            <h3>More Information</h3>
            <p>{{ event.additional_info2|safe|urlize }}</p>
        {% endif %}

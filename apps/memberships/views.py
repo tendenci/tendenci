@@ -23,7 +23,7 @@ from memberships.forms import AppForm, AppEntryForm, \
     AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm, EntryEditForm, \
     ExportForm
 from memberships.utils import new_mems_from_csv, is_import_valid, \
-    prepare_chart_data, get_days
+    prepare_chart_data, get_days, has_app_perm
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
     has_perm, update_perms_and_save, is_admin, is_member, is_developer
@@ -95,15 +95,18 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     """
     if not slug: raise Http404
     user = request.user
-
-    # check user permissions / get application QS
-    query = '"slug:%s"' % slug
-    apps = App.objects.search(query, user=user)
-
-    # get application
-    if apps: app = apps.best_match().object
-    else: raise Http404
-
+    
+    if is_admin(user):
+        # get applicatios
+        app = get_object_or_404(App, slug=slug)
+    else:
+        # check user permissions / get application QS
+        query = '"slug:%s"' % slug
+        apps = App.objects.search(query, user=user)
+        # get application
+        if apps: app = apps.best_match().object
+        else: raise Http404
+    
     # if this app is for corporation individuals, redirect them to corp-pre page if
     # they have not passed the security check.
     is_corp_ind = False
@@ -413,16 +416,19 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
     if not id:
         return redirect(reverse('membership.application_entries_search'))
-
-    # TODO: Not use search but query the database
-    # TODO: Needs a manager to query database with permission checks
-    query = '"id:%s"' % id
-    sqs = AppEntry.objects.search(query, user=request.user)
-
-    if sqs:
-        entry = sqs[0].object
+    
+    if is_admin(request.user):
+        entry = get_object_or_404(AppEntry, id=id)
     else:
-        raise Http404
+        # TODO: Not use search but query the database
+        # TODO: Needs a manager to query database with permission checks
+        query = '"id:%s"' % id
+        sqs = AppEntry.objects.search(query, user=request.user)
+
+        if sqs:
+            entry = sqs[0].object
+        else:
+            raise Http404
 
     # log entry view
     EventLog.objects.log(**{
@@ -479,6 +485,9 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                 # update application, user, 
                 # group, membership, and archive
                 entry.approve()
+                
+                # execute field functions (group subscriptions)
+                entry.execute_field_functions()
 
                 # send "approved" notification
                 Notice.send_notice(
