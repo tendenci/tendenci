@@ -95,13 +95,17 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     """
     if not slug: raise Http404
     user = request.user
-
-    # get application
-    app = get_object_or_404(App, slug=slug)
     
-    # check user permissions
-    if not has_app_perm(user, 'memberships.view_app', app):
-        raise Http403
+    if is_admin(user):
+        # get applicatios
+        app = get_object_or_404(App, slug=slug)
+    else:
+        # check user permissions / get application QS
+        query = '"slug:%s"' % slug
+        apps = App.objects.search(query, user=user)
+        # get application
+        if apps: app = apps.best_match().object
+        else: raise Http404
     
     # if this app is for corporation individuals, redirect them to corp-pre page if
     # they have not passed the security check.
