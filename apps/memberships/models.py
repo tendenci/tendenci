@@ -643,6 +643,7 @@ class Notice(models.Model):
                     'membership_%s_to_member' % template_type, {
                     'subject': notice.get_subject(entry=entry, membership=membership),
                     'content': notice.get_content(entry=entry, membership=membership),
+                    'membership_total': Membership.objects.filter(status=True, status_detail='active').count(),
                 })
 
         # send email to admins
@@ -655,6 +656,7 @@ class Notice(models.Model):
                 'membership_%s_to_admin' % template_type, {
                 'entry':entry,
                 'request':request,
+                'membership_total': Membership.objects.filter(status=True, status_detail='active').count(),
             })
 
         return True
@@ -1301,7 +1303,6 @@ class AppEntry(TendenciBaseModel):
     def execute_field_functions(self):
         app = self.app
         fields = app.fields.exclude(field_function=None)
-        print fields
         for field in fields:
             field.execute_function(self)
 
