@@ -35,6 +35,7 @@
 {% endblock %}
 
 {% block extra_body %}
+    {{ block.super }}
     <script type="text/javascript" >
         function find_field(name) {
             labels = $(".forms").find("label");

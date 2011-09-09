@@ -62,4 +62,45 @@
 		  step: 15
 		});
 	</script>
+        <script type="text/javascript" >
+        function find_field(name) {
+            labels = $(".forms").find("label");
+            label = labels[0];
+            i = 0;
+            while((label.innerHTML!=name) && (i < labels.length)) {
+                i++;
+                label = labels[i];
+            };
+            field = $('.'+$.trim(label.parentNode.parentNode.attributes[0].value));
+            return field;
+        };
+        
+        breaks = $.find('div.section-break h2');
+        pay_break = $(breaks[0]);
+        i = 0;
+        while((pay_break.html()!="Payment Details") && (i < breaks.length)) {
+            i++;
+            pay_break = $(breaks[i]);
+        };
+        
+        membership = find_field("Corporate Membership Type");
+        payment = find_field("Payment Method");
+        
+        mem_options = membership.find('li');
+        
+        for(var i=0; i < mem_options.length; i++) {
+            op = $(mem_options[i]);
+            if(parseFloat(op.find('label').html().split('$')[1])==0) {
+                op.click(function() {
+                    payment.hide();
+                    pay_break.hide();
+                });
+            } else {
+                op.click(function() {
+                    payment.show();
+                    pay_break.show();
+                });
+            };
+        }
+    </script>
 {% endblock %}
