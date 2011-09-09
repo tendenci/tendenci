@@ -418,7 +418,7 @@ class Registration(models.Model):
                 True,  # notice saved in db
             )
             #notify the admins too
-            email_admins(event, self.invoice.total, self_reg8n, self)
+            email_admins(self.event, self.invoice.total, self_reg8n, self)
 
     @property
     def canceled(self):
