@@ -50,5 +50,19 @@
         
         membership = find_field("Membership Type");
         payment = find_field("Payment Method");
+        mem_options = membership.find('li');
+        
+        for(var i=0; i < mem_options.length; i++) {
+            op = $(mem_options[i]);
+            if(parseFloat(op.find('label').html().split('$')[1])==0) {
+                op.click(function() {
+                    payment.hide();
+                });
+            } else {
+                op.click(function() {
+                    payment.show();
+                });
+            };
+        }
     </script>
 {% endblock extra_body %}
