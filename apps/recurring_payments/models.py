@@ -29,7 +29,7 @@ class RecurringPayment(models.Model):
     customer_profile_id = models.CharField(max_length=100, default='')
     user = models.ForeignKey(User, related_name="recurring_payment_user",
                              verbose_name=_('Customer'),  null=True)
-    description = models.CharField(max_length=100)
+    description = models.CharField(_('Service name'), max_length=100)
     # with object_content_type and object_content_id, we can apply the recurring 
     # payment to other modules such as memberships, jobs, etc.
     object_content_type = models.ForeignKey(ContentType, blank=True, null=True)
@@ -58,8 +58,8 @@ class RecurringPayment(models.Model):
 
     next_billing_dt = models.DateTimeField(blank=True, null=True)
     last_payment_received_dt = models.DateTimeField(blank=True, null=True)
-    num_billing_cycle_completed = models.IntegerField(default=0, blank=True, null=True)
-    num_billing_cycle_failed = models.IntegerField(default=0, blank=True, null=True)
+    num_billing_cycle_completed = models.IntegerField(default=0, blank=True)
+    num_billing_cycle_failed = models.IntegerField(default=0, blank=True)
     
     current_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     outstanding_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
@@ -77,6 +77,10 @@ class RecurringPayment(models.Model):
     
     def __unicode__(self):
         return '%s - %s' % (self.user, self.description)
+    
+    @models.permalink
+    def get_absolute_url(self):
+        return ("recurring_payment.view_account", [self.id])
     
     def save(self, *args, **kwargs):
         if not self.id:
@@ -189,7 +193,7 @@ class RecurringPayment(models.Model):
         # num_days is the number days after billing cycle end date
         billing_dt = billing_cycle['end'] + relativedelta(days=self.num_days)
         
-        return billing_dt
+        return billing_dt         
         
         
     def check_and_generate_invoices(self, last_billing_cycle=None):
@@ -273,6 +277,7 @@ class RecurringPayment(models.Model):
     
     def get_current_balance(self):
         d = RecurringPaymentInvoice.objects.filter(
+                                recurring_payment=self,
                                 invoice__balance__gt=0,
                                 billing_cycle_start_dt__lte=datetime.now(),
                                 billing_cycle_end_dt__gte=datetime.now()
@@ -283,12 +288,33 @@ class RecurringPayment(models.Model):
     
     def get_outstanding_balance(self):
         d = RecurringPaymentInvoice.objects.filter(
+                                recurring_payment=self,
                                 invoice__balance__gt=0,
                                 billing_dt__lte=datetime.now()
                                 ).aggregate(outstanding_balance=Sum('invoice__balance'))
         if not d['outstanding_balance']:
             d['outstanding_balance'] = 0
         return d['outstanding_balance']
+    
+    @property
+    def total_paid(self):
+        d = RecurringPaymentInvoice.objects.filter(
+                                recurring_payment=self,
+                                invoice__balance=0,
+                                ).aggregate(total=Sum('invoice__total'))
+        if not d['total']:
+            d['total'] = 0
+        return d['total']
+    
+    @property
+    def total_unpaid(self):
+        d = RecurringPaymentInvoice.objects.filter(
+                                recurring_payment=self,
+                                invoice__balance__gt=0,
+                                ).aggregate(total=Sum('invoice__balance'))
+        if not d['total']:
+            d['total'] = 0
+        return d['total']
         
 class PaymentProfile(models.Model):
     recurring_payment =  models.ForeignKey(RecurringPayment)

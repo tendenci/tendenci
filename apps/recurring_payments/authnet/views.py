@@ -128,7 +128,7 @@ def update_payment_info(request, recurring_payment_id,
             gateway_error = True
         else:
             token = response_d['token']
-                  
+    #print test_mode              
     return render_to_response(template_name, {'token': token, 
                                               'test_mode': test_mode, 
                                               'form_post_url': form_post_url,
