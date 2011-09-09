@@ -42,18 +42,16 @@ class GetFormNode(Node):
 
     def render(self, context):
         pk = 0
-
+        
         if 'pk' in self.kwargs:
             try:
                 pk = Variable(self.kwargs['pk'])
                 pk = pk.resolve(context)
             except:
                 pk = self.kwargs['pk'] # context string
-                
-        query = '"pk:%s"' % (pk)
         
         try:
-            form = Form.objects.search(query=query).best_match()
+            form = Form.objects.get(pk=pk)
             context['form'] = form.object
             context['form_for_form'] = FormForForm(form.object, AnonymousUser())
             template = get_template('forms/embed_form.html')

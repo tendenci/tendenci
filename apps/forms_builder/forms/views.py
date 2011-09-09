@@ -287,6 +287,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     if request.method == "POST":
         if form_for_form.is_valid():
             entry = form_for_form.save()
+            entry.entry_path = request.POST.get("entry_path", "")
+            entry.save()
             #email_headers = {'Content-Type': 'text/html'}
             email_headers = {}  # content type specified below
             if form.email_from:
