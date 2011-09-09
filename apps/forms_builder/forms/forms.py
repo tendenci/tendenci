@@ -22,8 +22,8 @@ class FormForForm(forms.ModelForm):
 
     class Meta:
         model = FormEntry
-        exclude = ("form", "entry_time")
-
+        exclude = ("form", "entry_time", "entry_path")
+    
     def __init__(self, form, user, *args, **kwargs):
         """
         Dynamically add each of the form fields for the given form model 
