@@ -190,3 +190,46 @@ def copy_to_theme(request):
     messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
     
     return redirect('original_templates')
+
+
+def delete_file(request):
+    
+    # if no permission; raise 403 exception
+    if not has_perm(request.user,'theme_editor.change_themefileversion'):
+        raise Http403
+    
+    current_dir = request.GET.get("dir", '')
+    if current_dir:
+        current_dir = current_dir.replace('\\','/')
+        current_dir = current_dir.strip('/')
+        current_dir = current_dir.replace('////', '/')
+        current_dir = current_dir.replace('///', '/')
+        current_dir = current_dir.replace('//', '/')
+    
+    plugin = None
+    if current_dir.startswith('plugins.'):
+        plugin = current_dir.split('plugins.')[1].split('/')[0]
+        current_dir = current_dir.split('plugins.')[1]
+    
+    chosen_file = request.GET.get("file", '')
+    if chosen_file:
+        chosen_file = chosen_file.replace('\\','/')
+        chosen_file = chosen_file.strip('/')
+        chosen_file = chosen_file.replace('////', '/')
+        chosen_file = chosen_file.replace('///', '/')
+        chosen_file = chosen_file.replace('//', '/')
+    
+    full_filename = os.path.join(settings.PROJECT_ROOT, "themes",
+        get_theme(), current_dir,
+        chosen_file)
+    
+    print full_filename
+    
+    if not os.path.isfile(full_filename):
+        raise Http404
+    
+    os.remove(full_filename)
+    
+    messages.add_message(request, messages.INFO, ('Successfully deleted %s/%s.' % (current_dir, chosen_file)))
+    
+    return redirect('theme_editor')
