@@ -223,8 +223,6 @@ def delete_file(request):
         get_theme(), current_dir,
         chosen_file)
     
-    print full_filename
-    
     if not os.path.isfile(full_filename):
         raise Http404
     
