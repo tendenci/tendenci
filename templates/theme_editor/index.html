@@ -31,7 +31,7 @@
     				<div class="form_block">
     					<input type="hidden" name="action" value="edit" />
                     	<input type="submit" value="Update" class="button"/>
-                        <a style="color:red;" href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}">Delete Template File</a>
+                        <a style="color:red;" class="delete" href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}">Delete Template File</a>
                     </div>
             </form>
         
@@ -152,5 +152,17 @@ function open_archive(id)
 		gravity: 's',
 		live: true,
 	});
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //bind the modified one
+        $('.delete').click(function(){
+            if(window.confirm("Are you sure you want to delete the theme file {{ pwd }}/{{ current_file }} from your theme?")){
+                return true;
+            } else {
+                return false;
+            }
+        });
+    });
 </script>
 {% endblock %}
