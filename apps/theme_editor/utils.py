@@ -133,3 +133,12 @@ def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
                                   relative_file_path=relative_file_path,
                                   author=request.user)
         archive.save()
+
+
+def handle_uploaded_file(f, file_dir="templates", ROOT_DIR=THEME_ROOT):
+    file_path = os.path.join(ROOT_DIR, file_dir, f.name)
+    print file_path
+    destination = open(file_path, 'wb+')
+    for chunk in f.chunks():
+        destination.write(chunk)
+    destination.close()
