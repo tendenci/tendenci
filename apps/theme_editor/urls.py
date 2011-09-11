@@ -6,5 +6,6 @@ urlpatterns = patterns('',
     url(r'^original_templates/$', 'theme_editor.views.original_templates', name="original_templates"),
     url(r'^copy_to_theme/$', 'theme_editor.views.copy_to_theme', name="copy_to_theme"),
     url(r'^delete/$', 'theme_editor.views.delete_file', name="theme_editor.delete"),
+    url(r'^upload/$', 'theme_editor.views.upload_file', name="theme_editor.upload"),
 )
 
