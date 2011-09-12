@@ -245,9 +245,11 @@ def upload_file(request, template_name="theme_editor/upload.html"):
         if form.is_valid():
             upload = request.FILES['upload']
             file_dir = form.cleaned_data['file_dir']
+            overwrite = form.cleaned_data['overwrite']
             full_filename = os.path.join(settings.PROJECT_ROOT, "themes",
                 get_theme(), file_dir, upload.name)
-            if os.path.isfile(full_filename):
+            
+            if os.path.isfile(full_filename) and not overwrite:
                 response = {
                     "error":"file already exists",
                 }
@@ -257,6 +259,7 @@ def upload_file(request, template_name="theme_editor/upload.html"):
                 response = {
                     "success":True
                 }
+                messages.add_message(request, messages.INFO, ('Successfully uploaded %s.' % (upload.name)))
                 return HttpResponse(json.dumps(response), mimetype='application/json')
     else:
         form = UploadForm()

@@ -185,8 +185,19 @@ function open_archive(id)
     
     function showResponse(response, status, xhr, $form)  { 
         if (response.error) {
-            alert(response.error);
+            if (response.error = "file already exists") {
+                if(window.confirm("The file '{{ pwd }}/{{ current_file }}' exists already. Do you want to overwrite it??")){
+                    $('#upload_form #id_overwrite').val(true);
+                    $('#upload_form').submit();
+                } else {
+                    return false;
+                }
+            } else {
+                alert("An error occured. Please try again.");
+            }
+        } else {
+            location.reload();
         }
-    } 
+    }
 </script>
 {% endblock %}
