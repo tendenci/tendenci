@@ -8,7 +8,8 @@ class InvoiceRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Invoices for the entire system'
-
+    icon = '/site_media/static/images/icons/invoicing-color-64x64.png'
+    
     url = {
         'search': lazy_reverse('invoice.search'),
     }
