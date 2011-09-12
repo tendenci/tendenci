@@ -8,6 +8,7 @@ class ResumeRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Users can upload resumes to help with their careers'
+    icon = '/site_media/static/images/icons/resumes-color-64x64.png'
 
     url = {
         'add': lazy_reverse('resume.add'),
