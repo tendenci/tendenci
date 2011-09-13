@@ -20,11 +20,18 @@ class EventManager(TendenciBaseManager):
         
         start_dt, end_dt = kwargs.get('date_range', None)
         
-        if start_dt:
-            sqs = sqs.filter(start_dt__lte=start_dt)
-        
-        if end_dt:
-            sqs = sqs.filter(end_dt__gte=end_dt)
+        if start_dt and end_dt:
+            sqs = sqs.filter(start_dt__lte=start_dt, end_dt__gte=end_dt)
+        else:
+            # old behavior
+            if start_dt:
+                # this does not take into account events that are still active
+                # this only takes into account events starting after the given date.
+                sqs = sqs.filter(start_dt__gte=start_dt)
+            elif end_dt:
+                # this does not take into account events that are active before the given date.
+                # this only takes into account events that will end before the given date.
+                sqs = sqs.filter(end_dt__lte=end_dt)
         
         if not query:
             # sort based on start_dt by default
