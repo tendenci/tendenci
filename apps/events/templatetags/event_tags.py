@@ -1,5 +1,5 @@
 import hashlib
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.contrib.humanize.templatetags.humanize import naturalday
 from django.core.urlresolvers import reverse
@@ -108,30 +108,26 @@ class EventListNode(Node):
         self.context_var = context_var
 
     def render(self, context):
-
+        
         day = self.day.resolve(context)
         type_slug = self.type_slug.resolve(context)
-        type = None
-
-        filters = [
-            'start_day:%s' % day.day,
-            'start_month:%s' % day.month,
-            'start_year:%s' % day.year,
-        ]
-
         try:
             type = Type.objects.get(slug=type_slug)
         except:
-            pass
-
+            type = None
+        
+        day = datetime(day.year, day.month, day.day)
+        #one day offset so we can get all the events on that day
+        bound = timedelta(hours=23, minutes=59)
+        
+        sqs = Event.objects.search(date_range=(day+bound, day), user=context['user'])
+        
         if type:
-            filters.append('type_id:%s' % type.pk)
-
-        sqs = Event.objects.search_filter(
-            filters=filters,
-            user=context['user']).order_by('start_dt')
+            sqs = sqs.objects.filter(type_id=type.pk)
+        
+        sqs = sqs.order_by('start_dt')
         events = [sq.object for sq in sqs]
-
+        
         context[self.context_var] = events
         return ''
 
