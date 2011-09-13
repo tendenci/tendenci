@@ -1,0 +1,146 @@
+{% extends "recurring_payments/base-wide.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% block title %}Recurring Payment Customers{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+
+<link type="text/css" href="{{ STATIC_URL }}tablesorter/sortthemes.css" rel="Stylesheet" />	
+<style>
+	.rp-search-box{
+		float: right;
+	}
+	.rp-search-box input[type=text]{
+		width: 20em;
+	}
+	#rp-totals{
+		width: 70%;
+		margin: 1em auto;
+		border: 1px solid #ccc;
+		font-size: small;
+	
+	}
+	#rp-totals td, #rp-totals th{
+		padding: 6px;
+		vertical-align: top;
+	}
+	#rp-totals th{
+		border-bottom: 1px dotted #ccc;
+	}
+</style>
+
+{% endblock %}
+
+{% block body %}
+ 
+<div class="t">
+<div id="t-search">
+
+	<h1>Recurring Payment Customers</h1>
+	
+	<div id="rp-totals">
+		<table width="100%">
+			<tr>
+				<th>Total # of accounts</th>
+				<th>Total amount received</th>
+				<th>Total amount unpaid</th>
+				<th>Total amount past due</th>
+			</tr>
+			<tr>
+				<td align="center">{{ total_customers }}</td>
+				<td align="center">{{ total_amount_received|format_currency }}</td>
+				<td align="center">{{ total_amount_unpaid|format_currency }}</td>
+				<td align="center">{{ total_amount_past_due|format_currency }}</td>
+			</tr>
+		</table>
+	</div>
+	
+	<div class="rp-search-box">
+	<form class="search-form" action="" method="get">
+	<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+	<input type="submit" name="search" value="Search" />
+	</form>
+	</div>
+	
+	
+	
+	<div style="clear: both"></div>
+	
+	{% if recurring_payments %}
+		<table width="90%" class="tablesorter">
+			<thead>
+			<tr>
+				<th class="iheader">Name</th>
+				<th class="iheader">Description</th>
+				<th class="iheader">Amount ({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
+				<th class="iheader">Start Date &nbsp;</th>
+				<th class="iheader">Total Paid ({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
+				<th class="iheader">Balance ({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
+				<th class="iheader">Status Detail &nbsp;</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for rp in recurring_payments %}
+			{% with rp.object as rp %}
+				<tr> 
+					<td><a href="{% url recurring_payment.view_account rp.id %}">{{ rp.user.get_full_name }}</a></td>
+					<td>{{ rp.description }}</td>
+					<td>{{ rp.payment_amount }}</td>
+					<td>{{ rp.billing_start_dt|date:"n/j/Y" }}</td>
+					<td>{{ rp.total_paid }}</td>
+					<td>{{ rp.get_outstanding_balance }}</td>
+					<td>{{ rp.status_detail }} </td>
+				</tr>
+			{% endwith %}
+			{% endfor %}
+			</tbody>
+		</table>	
+	{% else %}	
+		No customers available yet. 
+	{% endif %}	
+	
+
+</div>
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{# dynamically load jquery #}
+<script>
+	if (!(window.jQuery)) { 
+		var s = document.createElement('script');
+		s.setAttribute('src', '/site_media/static/js/jquery-1.4.2.min.js'); 
+		s.setAttribute('type', 'text/javascript');
+		document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script> 
+<script type="text/javascript">
+$(document).ready(function(){
+	
+	// extend the default setting to always include the zebra widget. 
+        $.tablesorter.defaults.widgets = ['zebra']; 
+        // extend the default setting to always sort on the first column 
+        $.tablesorter.defaults.sortList = [[0,1]]; 
+        // call the tablesorter plugin 
+        $("table").tablesorter({
+             headers: { 
+            // assign the first column (we start counting zero) 
+            0: { 
+                // disable it by setting the property sorter to false 
+                //sorter: false 
+                } 
+            } 
+        }); 
+	
+}); 
+
+
+</script>
+
+{% endblock %}

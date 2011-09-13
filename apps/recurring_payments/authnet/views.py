@@ -72,7 +72,7 @@ def manage_payment_info(request, recurring_payment_id,
     
 @login_required
 def update_payment_info(request, recurring_payment_id, 
-                          template_name="recurring_payments/authnet/cim_update_payment_info.html"):
+                          template_name="recurring_payments/authnet/cim_update_payment_info2.html"):
     """
     Add or edit payment info.
     """

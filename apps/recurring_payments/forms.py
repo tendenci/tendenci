@@ -6,8 +6,8 @@ from widgets import BillingCycleWidget, BillingDateSelectInput
 from fields import BillingCycleField
 
 class RecurringPaymentForm(forms.ModelForm):
-    status_detail = forms.ChoiceField(choices=(('inactive','Inactive'),('active','Active')),
-                                      initial='active')
+    #status_detail = forms.ChoiceField(choices=(('inactive','Inactive'),('active','Active')),
+    #                                  initial='active')
     payment_amount = forms.DecimalField(decimal_places=2, widget=PriceInput())
     trial_amount = forms.DecimalField(decimal_places=2, widget=PriceInput(), required=False)
     

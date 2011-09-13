@@ -1,9 +1,12 @@
+from datetime import datetime
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Sum
 
 from recurring_payments.models import (RecurringPayment, 
                                        PaymentProfile, 
@@ -72,3 +75,44 @@ def view_account(request, recurring_payment_id,
                                               'payment_transactions': payment_transactions
                                               }, 
         context_instance=RequestContext(request))
+    
+@staff_member_required
+def customers(request, template_name="recurring_payments/customers.html"):
+    """Display a list of recurring payment accounts.
+    """
+    query = request.GET.get('q', None)
+    recurring_payments = RecurringPayment.objects.search(query)
+    total_customers = RecurringPayment.objects.count()
+    # get total amount received
+    d = RecurringPaymentInvoice.objects.filter(
+                                invoice__balance=0,
+                                ).aggregate(total_amount_received=Sum('invoice__total'))
+    total_amount_received = d['total_amount_received']
+    # get total amount unpaid
+    d = RecurringPaymentInvoice.objects.filter(
+                                invoice__balance__gt=0,
+                                ).aggregate(total_amount_unpaid=Sum('invoice__balance'))
+    total_amount_unpaid = d['total_amount_unpaid']
+    
+    # get total amount past due
+    d = RecurringPaymentInvoice.objects.filter(
+                                invoice__balance__gt=0,
+                                billing_dt__lte=datetime.now()
+                                ).aggregate(total_amount_past_due=Sum('invoice__balance'))
+    total_amount_past_due = d['total_amount_past_due']
+    
+    return render_to_response(template_name, {
+                    'recurring_payments': recurring_payments,
+                    'total_customers': total_customers,
+                    'total_amount_received': total_amount_received,
+                    'total_amount_unpaid': total_amount_unpaid,
+                    'total_amount_past_due': total_amount_past_due
+                                              }, 
+        context_instance=RequestContext(request))
+    
+    
+    
+    
+    
+    
+    

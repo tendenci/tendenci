@@ -9,6 +9,7 @@ from django.db.models import Sum
 from dateutil.relativedelta import relativedelta
 from invoices.models import Invoice
 from profiles.models import Profile
+from recurring_payments.managers import RecurringPaymentManager
 from recurring_payments.authnet.cim import (CIMCustomerProfile,
                                             CIMCustomerPaymentProfile,
                                             CIMCustomerProfileTransaction)
@@ -22,6 +23,13 @@ BILLING_PERIOD_CHOICES = (
                         ('day', _('Day(s)')),
                         )
 
+STATUS_DETAIL_CHOICES = (
+                        ('active', _('Active')),
+                        ('inactive', _('Inactive')),
+                        ('canceled', _('Canceled')),
+                        ('deleted', _('Deleted')),
+                        )
+
 
 class RecurringPayment(models.Model):
     guid = models.CharField(max_length=50)
@@ -29,7 +37,7 @@ class RecurringPayment(models.Model):
     customer_profile_id = models.CharField(max_length=100, default='')
     user = models.ForeignKey(User, related_name="recurring_payment_user",
                              verbose_name=_('Customer'),  null=True)
-    description = models.CharField(_('Service name'), max_length=100)
+    description = models.CharField(_('Description'), max_length=100, help_text="Use a short term, example: web hosting")
     # with object_content_type and object_content_id, we can apply the recurring 
     # payment to other modules such as memberships, jobs, etc.
     object_content_type = models.ForeignKey(ContentType, blank=True, null=True)
@@ -71,8 +79,10 @@ class RecurringPayment(models.Model):
     creator_username = models.CharField(max_length=50, null=True)
     owner = models.ForeignKey(User, related_name="recurring_payment_owner", null=True)
     owner_username = models.CharField(max_length=50, null=True)
-    status_detail = models.CharField(max_length=50, default='active')
+    status_detail = models.CharField(max_length=50, default='active', choices=STATUS_DETAIL_CHOICES)
     status = models.BooleanField(default=True)
+    
+    objects = RecurringPaymentManager()
     
     
     def __unicode__(self):
@@ -86,6 +96,16 @@ class RecurringPayment(models.Model):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(RecurringPayment, self).save(*args, **kwargs)
+        
+    @property
+    def user_profile(self):
+        """Insteading of using user.get_profile(), this function traps the error.
+        """
+        try:
+            profile = self.user.get_profile()
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create_profile(user=self.user)
+        return profile
         
     def populate_payment_profile(self, *args, **kwargs):
         """
