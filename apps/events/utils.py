@@ -83,7 +83,8 @@ def get_vevents(request, d):
     site_url = get_setting('site', 'global', 'siteurl')
     
     e_str = ""
-    events = Event.objects.search(None, user=request.user)
+    # load only upcoming events by default
+    events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
     for evnt in events:
         event = evnt.object
         e_str += "BEGIN:VEVENT\n"
