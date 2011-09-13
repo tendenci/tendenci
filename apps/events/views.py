@@ -88,7 +88,11 @@ def index(request, id=None, template_name="events/view.html"):
 
 def search(request, template_name="events/search.html"):
     query = request.GET.get('q', None)
-    events = Event.objects.search(query, user=request.user)
+    if query:
+        events = Event.objects.search(query, user=request.user)
+    else:
+        # load upcoming events only by default
+        events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
 
     EventLog.objects.log(
         event_id=174000,  # searched event
@@ -1224,21 +1228,11 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         context_instance=RequestContext(request))
 
 def day_view(request, year=None, month=None, day=None, template_name='events/day-view.html'):
-
-    kwargs = {
-        # i'm being explicit about each date part
-        # because I do not want to include the time
-        'start_dt__day': day,
-        'start_dt__month': month,
-        'start_dt__year': year,
-    }
-
-    events = Event.objects.filter(**kwargs).order_by('start_dt')
     
     return render_to_response(template_name, {
-        'events': events,
         'date': datetime(year=int(year), month=int(month), day=int(day)),
-        'now':datetime.now()
+        'now':datetime.now(),
+        'type':None,
         }, 
         context_instance=RequestContext(request))
 
