@@ -36,7 +36,7 @@ class EventManager(TendenciBaseManager):
         if not query:
             # sort based on start_dt by default
             sqs = sqs.order_by('start_dt')
-        
+        #print sqs #will force the search query to be evaluated
         return sqs
 
     def search_filter(self, filters=None, *args, **kwargs):
