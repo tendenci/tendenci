@@ -31,7 +31,8 @@
     				<div class="form_block">
     					<input type="hidden" name="action" value="edit" />
                     	<input type="submit" value="Update" class="button"/>
-                        <a style="color:red;" class="delete" href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}">Delete Template File</a>
+                        <a style="color:red; float:right; padding-top:10px;" class="delete" href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}">Delete Template File</a>
+                        <div style="clear:both"></div>
                     </div>
             </form>
         
