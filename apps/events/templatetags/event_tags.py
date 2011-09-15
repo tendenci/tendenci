@@ -124,7 +124,7 @@ class EventListNode(Node):
         sqs = Event.objects.search(date_range=(day+bound, day), user=context['user'])
         
         if type:
-            sqs = sqs.objects.filter(type_id=type.pk)
+            sqs = sqs.filter(type_id=type.pk)
         
         if self.ordering:
             sqs = sqs.order_by(self.ordering)
