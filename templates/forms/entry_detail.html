@@ -31,6 +31,12 @@
     		</p>
     		{% endif %}
     	{% endfor %}
+        {% if entry.entry_path %}
+            <p>
+    			<strong>Entry Path</strong><br />
+    			<em>{{ entry.entry_path }}</em>
+    		</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

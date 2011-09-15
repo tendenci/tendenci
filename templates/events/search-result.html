@@ -2,7 +2,7 @@
 {% load event_tags %}
 <div class="event-wrap">
     <div class="time-stamp">
-        {{ event.start_dt|date:"M j, Y" }}
+        {{ event.start_dt|date:"l, M j, Y" }}
         
         {% if event.start_dt < now %}
             <div class="age-msg" title="about {{ event.start_dt|timesince }} ago">
@@ -22,7 +22,7 @@
         <div class="place">{{ event.place }}</div>
 
         <div class="time-period">
-            {{ event.start_dt|date:"M j, Y P" }} - {{ event.end_dt|date:"M j, Y P" }}
+            {{ event.start_dt|date:"l, M j, Y P" }} - {{ event.end_dt|date:"l, M j, Y P" }}
         </div> 
 
         <div class="description">

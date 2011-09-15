@@ -9,13 +9,15 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
+from django.utils import simplejson as json
 
 # local 
 from theme.utils import get_theme
 from theme_editor.models import ThemeFileVersion
-from theme_editor.forms import FileForm, ThemeSelectForm
+from theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
 from theme_editor.utils import get_dir_list, get_file_list, get_file_content
 from theme_editor.utils import qstr_is_file, qstr_is_dir, copy
+from theme_editor.utils import handle_uploaded_file
 
 from base.http import Http403
 from perms.utils import has_perm
@@ -94,11 +96,12 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         content = get_file_content(default_file,  ROOT_DIR=theme_root)
         file_form = form_class({"content":content, "rf_path":default_file})
     
-    theme_form = ThemeSelectForm(
-                    initial = {'theme_edit':selected_theme}
-                )
-    return render_to_response(template_name, {"file_form": file_form,
+    theme_form = ThemeSelectForm(initial = {'theme_edit':selected_theme})
+    upload_form = UploadForm(initial = {'file_dir':pwd})
+    
+    return render_to_response(template_name, {'file_form': file_form,
                                               'theme_form': theme_form,
+                                              'upload_form': upload_form,
                                               'current_theme':selected_theme,
                                               'current_file': current_file,
                                               'prev_dir_name': prev_dir_name,
@@ -190,3 +193,76 @@ def copy_to_theme(request):
     messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
     
     return redirect('original_templates')
+
+
+def delete_file(request):
+    
+    # if no permission; raise 403 exception
+    if not has_perm(request.user,'theme_editor.change_themefileversion'):
+        raise Http403
+    
+    current_dir = request.GET.get("dir", '')
+    if current_dir:
+        current_dir = current_dir.replace('\\','/')
+        current_dir = current_dir.strip('/')
+        current_dir = current_dir.replace('////', '/')
+        current_dir = current_dir.replace('///', '/')
+        current_dir = current_dir.replace('//', '/')
+    
+    plugin = None
+    if current_dir.startswith('plugins.'):
+        plugin = current_dir.split('plugins.')[1].split('/')[0]
+        current_dir = current_dir.split('plugins.')[1]
+    
+    chosen_file = request.GET.get("file", '')
+    if chosen_file:
+        chosen_file = chosen_file.replace('\\','/')
+        chosen_file = chosen_file.strip('/')
+        chosen_file = chosen_file.replace('////', '/')
+        chosen_file = chosen_file.replace('///', '/')
+        chosen_file = chosen_file.replace('//', '/')
+    
+    full_filename = os.path.join(settings.PROJECT_ROOT, "themes",
+        get_theme(), current_dir,
+        chosen_file)
+    
+    if not os.path.isfile(full_filename):
+        raise Http404
+    
+    os.remove(full_filename)
+    
+    messages.add_message(request, messages.INFO, ('Successfully deleted %s/%s.' % (current_dir, chosen_file)))
+    
+    return redirect('theme_editor')
+    
+def upload_file(request, template_name="theme_editor/upload.html"):
+    # if no permission; raise 403 exception
+    if not has_perm(request.user,'theme_editor.add_themefileversion'):
+        raise Http403
+    
+    if request.method == 'POST':
+        form = UploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            upload = request.FILES['upload']
+            file_dir = form.cleaned_data['file_dir']
+            overwrite = form.cleaned_data['overwrite']
+            full_filename = os.path.join(settings.PROJECT_ROOT, "themes",
+                get_theme(), file_dir, upload.name)
+            
+            if os.path.isfile(full_filename) and not overwrite:
+                response = {
+                    "error":"file already exists",
+                }
+                return HttpResponse(json.dumps(response), mimetype='application/json')
+            else:
+                handle_uploaded_file(upload)
+                response = {
+                    "success":True
+                }
+                messages.add_message(request, messages.INFO, ('Successfully uploaded %s.' % (upload.name)))
+                return HttpResponse(json.dumps(response), mimetype='application/json')
+    else:
+        form = UploadForm()
+        
+    return render_to_response(template_name, {'form':form},
+        context_instance=RequestContext(request))
