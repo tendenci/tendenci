@@ -8,6 +8,7 @@ class MembershipRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Membership management application.'
+    icon = '/site_media/static/images/icons/memberships-color-64x64.png'
 
     url = {
         'search': lazy_reverse('membership.search'),

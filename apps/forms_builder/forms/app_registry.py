@@ -9,6 +9,7 @@ class FormRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create custom forms to take information ' \
                   'throughout the site'
+    icon = '/site_media/static/images/icons/cms-forms-color-64x64.png'
 
     url = {
         'add': lazy_reverse('form_add'),

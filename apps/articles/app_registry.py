@@ -9,6 +9,7 @@ class ArticleRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create articles to display basic content ' \
                   'throughout the site'
+    icon = '/site_media/static/images/icons/articles-color-64x64.png'
 
     url = {
         'add': lazy_reverse('article.add'),

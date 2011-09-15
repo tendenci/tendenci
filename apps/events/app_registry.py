@@ -8,6 +8,7 @@ class EventRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Create directories to list businesses'
+    icon = '/site_media/static/images/icons/events-color-64x64.png'
 
     url = {
         'add': lazy_reverse('event.add'),
