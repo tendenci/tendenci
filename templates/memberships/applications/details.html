@@ -33,3 +33,37 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" >
+        function find_field(name) {
+            labels = $(".forms").find("label");
+            label = labels[0];
+            i = 0;
+            while((label.innerHTML!=name) && (i < labels.length)) {
+                i++;
+                label = labels[i];
+            };
+            field = $('.'+$.trim(label.parentNode.parentNode.attributes[0].value));
+            return field;
+        };
+        
+        membership = find_field("Membership Type");
+        payment = find_field("Payment Method");
+        mem_options = membership.find('li');
+        
+        for(var i=0; i < mem_options.length; i++) {
+            op = $(mem_options[i]);
+            if(parseFloat(op.find('label').html().split('$')[1])==0) {
+                op.click(function() {
+                    payment.hide();
+                });
+            } else {
+                op.click(function() {
+                    payment.show();
+                });
+            };
+        }
+    </script>
+{% endblock extra_body %}

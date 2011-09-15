@@ -42,25 +42,31 @@ class GetFormNode(Node):
 
     def render(self, context):
         pk = 0
-
+        
         if 'pk' in self.kwargs:
             try:
                 pk = Variable(self.kwargs['pk'])
                 pk = pk.resolve(context)
             except:
                 pk = self.kwargs['pk'] # context string
-                
-        query = '"pk:%s"' % (pk)
-        
+
         try:
-            form = Form.objects.search(query=query).best_match()
+            form = Form.objects.get(pk=pk)
             context['form'] = form.object
             context['form_for_form'] = FormForForm(form.object, AnonymousUser())
             template = get_template('forms/embed_form.html')
             output = '<div class="embed-form">%s</div>' % template.render(context)
             return output
         except:
-            return ""        
+            try:
+                form = Form.objects.get(pk=pk)
+                context['form'] = form
+                context['form_for_form'] = FormForForm(form, AnonymousUser())
+                template = get_template('forms/embed_form.html')
+                output = '<div class="embed-form">%s</div>' % template.render(context)
+                return output
+            except:
+                return ""
         
 @register.tag
 def embed_form(parser, token):
@@ -77,5 +83,4 @@ def embed_form(parser, token):
     except:
         message = "Form tag must include an ID of a form."
         raise TemplateSyntaxError(message)
-    
     return GetFormNode(**kwargs) 

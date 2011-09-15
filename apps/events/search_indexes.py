@@ -12,7 +12,9 @@ class EventIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')
     description = indexes.CharField(model_attr='description')
     start_dt = indexes.DateTimeField(model_attr='start_dt')
-
+    end_dt = indexes.DateTimeField(model_attr='end_dt')
+    type_id = indexes.IntegerField(null=True)
+    
     # amount of registrations spots left
     spots_taken = indexes.IntegerField()
 
@@ -24,6 +26,12 @@ class EventIndex(TendenciBaseSearchIndex):
         description = strip_tags(description)
         description = strip_entities(description)
         return description
+        
+    def prepare_type_id(self, obj):
+        if obj.type:
+            return obj.type.pk
+        else:
+            return None
 
     def prepare_spots_taken(self, obj):
         if hasattr(obj, 'spots_taken'):

@@ -9,6 +9,7 @@ class StoryRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Stories can be created and rotated on ' \
                   'a specified area on the site'
+    icon = '/site_media/static/images/icons/stories-color-64x64.png'
 
     url = {
         'add': lazy_reverse('story.add'),

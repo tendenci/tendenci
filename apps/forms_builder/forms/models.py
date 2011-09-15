@@ -183,6 +183,7 @@ class FormEntry(models.Model):
 
     form = models.ForeignKey("Form", related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))
+    entry_path = models.CharField(max_length=200, blank=True, default="")
     
     class Meta:
         verbose_name = _("Form entry")

@@ -13,6 +13,17 @@ from theme.utils import get_theme_root, get_theme, theme_choices
 from theme_editor.utils import archive_file
 
 THEME_ROOT = get_theme_root()
+FILE_EXTENTIONS = (
+    '.html',
+    '.js',
+    '.css',
+    '.less',
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.ico',
+    '.gif'
+)
 
 class FileForm(forms.Form):
     content = forms.CharField(label="Content",
@@ -41,3 +52,26 @@ class ThemeSelectForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ThemeSelectForm, self).__init__(*args, **kwargs)
     
+class UploadForm(forms.Form):
+    upload = forms.FileField()
+    file_dir = forms.CharField(widget=forms.HiddenInput, required=False)
+    overwrite = forms.BooleanField(widget=forms.HiddenInput, required=False)
+    
+    def clean_file_dir(self):
+        data = self.cleaned_data['file_dir']
+        if data:
+            data = data.replace('\\','/')
+            data = data.strip('/')
+            data = data.replace('////', '/')
+            data = data.replace('///', '/')
+            data = data.replace('//', '/')
+        else:
+            data ="templates"
+        return data
+    
+    def clean_upload(self):
+        data = self.cleaned_data['upload']
+        if not data.name.endswith(FILE_EXTENTIONS):
+            raise forms.ValidationError("This is not a valid file type to upload.")
+        return data
+        

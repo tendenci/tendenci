@@ -31,6 +31,7 @@
     				<div class="form_block">
     					<input type="hidden" name="action" value="edit" />
                     	<input type="submit" value="Update" class="button"/>
+                        <a style="color:red;" class="delete" href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}">Delete Template File</a>
                     </div>
             </form>
         
@@ -96,6 +97,11 @@
                <p>{% trans "No editable files" %}</p>
                {% endif %}
                <br>
+               <form id="upload_form" action="{% url theme_editor.upload %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                    {{ upload_form.as_p }}
+                    <input type="submit" value="Upload new theme file" />
+               </form>
+               <br>
                <a href="{% url original_templates %}">{% trans "Customize more templates" %}</a>
                <br>
            </div>
@@ -151,5 +157,47 @@ function open_archive(id)
 		gravity: 's',
 		live: true,
 	});
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //bind the modified one
+        $('.delete').click(function(){
+            if(window.confirm("Are you sure you want to delete the theme file {{ pwd }}/{{ current_file }} from your theme?")){
+                return true;
+            } else {
+                return false;
+            }
+        });
+    });
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}/js/jquery.form.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var options = {
+            success: showResponse,
+            error: showResponse,
+            dataType: 'json',
+            clearForm: false,
+            resetForm: false,
+        };
+        $('#upload_form').ajaxForm(options);
+    });
+    
+    function showResponse(response, status, xhr, $form)  { 
+        if (response.error) {
+            if (response.error = "file already exists") {
+                if(window.confirm("The file '{{ pwd }}/{{ current_file }}' exists already. Do you want to overwrite it??")){
+                    $('#upload_form #id_overwrite').val(true);
+                    $('#upload_form').submit();
+                } else {
+                    return false;
+                }
+            } else {
+                alert("An error occured. Please try again.");
+            }
+        } else {
+            location.reload();
+        }
+    }
 </script>
 {% endblock %}
