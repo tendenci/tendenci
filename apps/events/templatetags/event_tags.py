@@ -101,10 +101,11 @@ def registration_pricing_and_button(context, event, user):
 
 
 class EventListNode(Node):
-    def __init__(self, day, type_slug, context_var):
-
+    def __init__(self, day, type_slug, ordering, context_var):
+        print ordering
         self.day = Variable(day)
         self.type_slug = Variable(type_slug)
+        self.ordering = ordering
         self.context_var = context_var
 
     def render(self, context):
@@ -125,7 +126,10 @@ class EventListNode(Node):
         if type:
             sqs = sqs.filter(type_id=type.pk)
         
-        sqs = sqs.order_by('start_dt')
+        if self.ordering:
+            sqs = sqs.order_by(self.ordering)
+        else:
+            sqs = sqs.order_by('number_of_days', 'start_dt')
         events = [sq.object for sq in sqs]
         
         context[self.context_var] = events
@@ -140,9 +144,10 @@ def event_list(parser, token):
     """
     bits = token.split_contents()
     type_slug = None
+    ordering = None
 
-    if len(bits) != 4 and len(bits) != 5:
-        message = '%s tag requires 4 or 5 arguments' % bits[0]
+    if len(bits) != 4 and len(bits) != 5 and len(bits) != 6:
+        message = '%s tag requires 4 or 5 or 6 arguments' % bits[0]
         raise TemplateSyntaxError(message)
 
     if len(bits) == 4:
@@ -153,8 +158,14 @@ def event_list(parser, token):
         day = bits[1]
         type_slug = bits[2]
         context_var = bits[4]
+        
+    if len(bits) == 6:
+        day = bits[1]
+        type_slug = bits[2]
+        ordering = bits[3]
+        context_var = bits[5]
 
-    return EventListNode(day, type_slug, context_var)
+    return EventListNode(day, type_slug, ordering, context_var)
 
 
 class IsRegisteredUserNode(Node):
