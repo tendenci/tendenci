@@ -252,6 +252,7 @@ def upload_file(request, template_name="theme_editor/upload.html"):
             if os.path.isfile(full_filename) and not overwrite:
                 response = {
                     "error":"file already exists",
+                    "file_name": os.path.join(file_dir, upload.name),
                 }
                 return HttpResponse(json.dumps(response), mimetype='application/json')
             else:
