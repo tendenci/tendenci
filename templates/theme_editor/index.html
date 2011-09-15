@@ -187,7 +187,7 @@ function open_archive(id)
     function showResponse(response, status, xhr, $form)  { 
         if (response.error) {
             if (response.error = "file already exists") {
-                if(window.confirm("The file '{{ pwd }}/{{ current_file }}' exists already. Do you want to overwrite it??")){
+                if(window.confirm("The file '"+ response.file_name +"' exists already. Do you want to overwrite it?")){
                     $('#upload_form #id_overwrite').val(true);
                     $('#upload_form').submit();
                 } else {
