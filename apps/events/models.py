@@ -708,3 +708,7 @@ class Event(TendenciBaseModel):
                 registrants = registrants.filter(registration__invoice__balance__lte=0)
 
         return registrants
+        
+    def number_of_days(self):
+        delta = self.end_dt - self.start_dt
+        return delta.days
