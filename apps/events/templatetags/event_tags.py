@@ -141,6 +141,7 @@ def event_list(parser, token):
     """
     Example: {% event_list day as events %}
              {% event_list day type as events %}
+             {% event_list day type 'start_dt' as events %}
     """
     bits = token.split_contents()
     type_slug = None
