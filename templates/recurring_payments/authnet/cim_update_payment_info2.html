@@ -81,7 +81,7 @@
 			$.ajax({
 				   type: "POST",
 				   url: "{% url recurring_payment.authnet.update_payment_profile_local%}",
-				   data: {rpid : {{ rp.id }}, ppid : {% if payment_profile %}{{ payment_profile.id }}{% endif %} },
+				   data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
 				   success: function(msg){
 				     //alert( msg );
 				   }
