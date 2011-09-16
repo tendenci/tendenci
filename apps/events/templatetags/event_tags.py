@@ -231,7 +231,8 @@ class ListEventsNode(ListNode):
         query = u''
         user = AnonymousUser()
         limit = 3
-        order = u'next_upcoming'
+        order = 'next_upcoming'
+
         randomize = False
 
         if 'random' in self.kwargs:
