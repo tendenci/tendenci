@@ -264,7 +264,9 @@ class RecurringPayment(models.Model):
         inv.object_type = ContentType.objects.get(app_label=self._meta.app_label, 
                                                   model=self._meta.module_name)
         inv.object_id = self.id
-        inv.title = "Recurring Payment Invoice"
+        inv.title = "Recurring Payment Invoice for Billing Cycle %s - %s" % (
+                                           billing_cycle['start'].strftime('%m/%d/%Y'),
+                                           billing_cycle['end'].strftime('%m/%d/%Y'))
         inv.bill_to = self.user.get_full_name()
         inv.bill_to_company = profile.company
         inv.bill_to_address = profile.address

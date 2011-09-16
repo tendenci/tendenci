@@ -2,6 +2,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load recurring_payments_tags %}
 {% load i18n %}
 
 {% block title %}Recurring Payment Customers{% endblock %}
@@ -36,9 +37,12 @@
 {% endblock %}
 
 {% block body %}
- 
+  {% is_admin request.user as isadmin %}
 <div class="t">
 <div id="t-search">
+ {% if isadmin %}
+ {% rp_nav request.user %}
+ {% endif %}
 
 	<h1>Recurring Payment Customers</h1>
 	

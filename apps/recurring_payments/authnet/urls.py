@@ -12,5 +12,7 @@ urlpatterns = patterns('recurring_payments.authnet.views',
          name='recurring_payment.authnet.iframe_communicator'),
      url(r'^update_payment_profile_local/$', 'update_payment_profile_local', 
          name="recurring_payment.authnet.update_payment_profile_local"),
+    url(r'^retrieve_token/$', 'retrieve_token', 
+         name="recurring_payment.authnet.retrieve_token"),
 
 )

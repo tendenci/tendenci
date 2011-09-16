@@ -2,6 +2,7 @@
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
+{% load recurring_payments_tags %}
 {% load i18n %}
 
 {% block title %}Recurring Payment View{% endblock %}
@@ -42,8 +43,70 @@
 	.transaction-failed{
 		color: red;
 	}
+	.rp-dname{
+		padding: 5px 0;
+	}
+	#btn-pm{
+		float:right; 
+		margin-right: 1em;
+	}
+	
+	button#btn-pm {
+	   border-top: 1px solid #96d1f8;
+	   background: #65a9d7;
+	   background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+	   background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+	   background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+	   background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+	   background: -o-linear-gradient(top, #3e779d, #65a9d7);
+	   padding: 5px 10px;
+	   -webkit-border-radius: 8px;
+	   -moz-border-radius: 8px;
+	   border-radius: 8px;
+	   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+	   -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+	   box-shadow: rgba(0,0,0,1) 0 1px 0;
+	   text-shadow: rgba(0,0,0,.4) 0 1px 0;
+	   color: white;
+	   font-size: 14px;
+	   font-family: Georgia, serif;
+	   font-weight: bold;
+	   text-decoration: none;
+	   vertical-align: middle;
+	   }
+	button#btn-pm:hover {
+	   border-top-color: #28597a;
+	   background: #28597a;
+	   color: #ccc;
+	   }
+	button#btn-pm:active {
+	   border-top-color: #1b435e;
+	   background: #1b435e;
+	   }
 
 </style>
+
+<link rel="stylesheet" href="{{ STATIC_URL }}authnet_cim/paymentShipping.css">
+
+  <!--[if lte IE 6]>
+  <link href="{{ STATIC_URL }}authnet_cim/paymentShippingIELTE6.css" rel="stylesheet" type="text/css" />
+ <![endif]-->
+  
+<script type="text/javascript" src="{{ STATIC_URL }}authnet_cim/popup.js"></script>
+  
+ <script type="text/javascript">
+  //<![CDATA[
+  // Uncomment this line if eCheck is enabled. This does not affect functionality, only the initial sizing of the popup page for add payment.
+  AuthorizeNetPopup.options.eCheckEnabled = false;
+
+  // Uncomment this line if you do not have absolutely positioned elements on your page that can obstruct the view of the popup.
+  // This can speed up the processing of the page slightly.
+ // AuthorizeNetPopup.options.skipZIndexCheck = true;
+
+  AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }}
+  //]]>
+  </script>
+  
 
 {% endblock %}
 
@@ -53,10 +116,15 @@
 <div class="t">
 <div id="t-rp">
 <div id="t-view">
+ {% if isadmin %}
+ {% rp_nav request.user rp %}
+ {% endif %}
 	
-	    <h1>Recurring Payment Account for <a href="{% url profile rp.user.username %}">{{ rp.user }}</a></h1>
-	    <div style="color:#669900">Description: {{ rp.description }}</div>
-	    
+	    <h1>Recurring Payment Account </h1>
+	    <button id="btn-pm">{% if payment_profile %}Update Payment Info{% else %}Add Payment Method{% endif %}</button>
+	    <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
+	    <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
+	    <div style="clear: right;"></div>
 	  
 	  <div id="rpview-tabs">
 	      <ul>
@@ -131,7 +199,7 @@
 
 	<div id="rpview-invoices">
 	{% if rp_invoices %}
-		<table width="90%" class="tablesorter">
+		<table width="90%" class="tablesorter" id="rpinvoicetable">
 			<thead>
 			<tr>
 				<th class="iheader">Billing Cycle</th>
@@ -150,7 +218,7 @@
 					<td>{{ rp_invoice.billing_dt|date:"n/j/Y" }}</td>
 					<td>{% if rp_invoice.payment_received_dt %}{{ rp_invoice.payment_received_dt|date:"n/j/Y" }}{% endif %}</td>
 					<td>{% if rp_invoice.invoice.balance <= 0 %}Y{% else %}N{% endif %}</td>
-					<td><a href="" title="view invoice" target="_blank">{{ rp_invoice.invoice.id }}</a></td>
+					<td><a href="{% url invoice.view rp_invoice.invoice.id rp_invoice.invoice.guid   %}" title="view invoice" target="_blank">{{ rp_invoice.invoice.id }}</a></td>
 				</tr>
 			{% endfor %}
 			</tbody>
@@ -163,7 +231,7 @@
 	<div id="rpview-transactions">
 	
 	{% if payment_transactions %}
-		<table width="90%" class="tablesorter" id="#transtable">
+		<table width="90%" class="tablesorter" id="rptranstable">
 			<thead>
 			<tr>
 				<th class="iheader">Date</th>
@@ -182,7 +250,7 @@
 					<td>{{ pt.amount|format_currency }} </td>
 					<td>{% if pt.status  %}<span class="transaction-success">Success</span>{% else %}<span class="transaction-failed">Failed</span>{% endif %}</td>
 					<td>{% if not pt.status %}{{ pt.message_text }}{% endif %}</td>
-					<td><a href="" title="view receipt" target="_blank">{{ pt.payment.id }}</a></td>
+					<td><a href="{% url recurring_payment.transaction_receipt rp.id pt.id %}" title="view receipt" target="_blank">{{ pt.payment.id }}</a></td>
 				</tr>
 			{% endfor %}
 			</tbody>
@@ -196,6 +264,30 @@
 </div>
 </div>
 </div>
+
+
+<form method="post" action="" id="formAuthorizeNetPopup" name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
+  <input type="hidden" name="Token" value="111" />
+  <input type="hidden" name="PaymentProfileId" value="{% if payment_profile %}{{ payment_profile.payment_profile_id }}{% endif %}" />
+  <input type="hidden" name="ShippingAddressId" value="" />
+</form>
+
+	<div id="divAuthorizeNetPopup" style="display:none;" class="AuthorizeNetPopupSimpleTheme">
+	  <div class="AuthorizeNetPopupOuter">
+	    <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="/rp/authnet/empty/" frameborder="0" 
+	    scrolling="no"></iframe>
+	  </div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowT"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowR"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowB"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowL"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowTR"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowBR"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowBL"></div>
+	  <div class="AuthorizeNetShadow AuthorizeNetShadowTL"></div>
+	</div>
+	
+	<div id="divAuthorizeNetPopupScreen" style="display:none;"></div>
 
 {% endblock %}
 
@@ -220,8 +312,43 @@ $(document).ready(function(){
         $.tablesorter.defaults.widgets = ['zebra']; 
         // extend the default setting to always sort on the first column 
         $.tablesorter.defaults.sortList = [[0,1]]; 
+        
+        $.tablesorter.addParser({
+		        // set a unique id
+		        id: 'billing-cycle',
+		        is: function(s) {
+		                // return false so this parser is not auto detected
+		                return false;
+		        },
+		        format: function(s) {
+		                // format your data for normalization
+		                var bc_dates = s.split(' - ');
+		
+		                if(bc_dates.length !== 2)
+		                        return 0;
+		                        
+		                var bc_start_dt = (bc_dates[0]).split('/');
+		                        
+		                return new Date(bc_start_dt[2], bc_start_dt[0], bc_start_dt[1]);
+		
+		        },
+		        // set type, either numeric or text
+		        type: 'numeric'
+		});
+        
+        
         // call the tablesorter plugin 
-        $("table").tablesorter({
+        $("#rpinvoicetable").tablesorter({
+             headers: { 
+            // assign the first column (we start counting zero) 
+            0: { 
+                // disable it by setting the property sorter to false 
+                sorter: 'billing-cycle' 
+                } 
+            } 
+        }); 
+        
+        $("#rptranstable").tablesorter({
              headers: { 
             // assign the first column (we start counting zero) 
             0: { 
@@ -230,6 +357,40 @@ $(document).ready(function(){
                 } 
             } 
         }); 
+        
+     $("#btn-pm").click(function(){
+     	$.ajax({
+		   type: "POST",
+		   url: "{% url recurring_payment.authnet.retrieve_token %}",
+		   data: {rpid : {{rp.id}} },
+		   success: function(t){
+		     $("input[name=Token]").val(t);
+		     {% if payment_profile %}
+		  	   AuthorizeNetPopup.openEditPaymentPopup('{{ payment_profile.payment_profile_id }}');
+			 {% else %}
+			   AuthorizeNetPopup.openAddPaymentPopup();
+		     {% endif %}
+		   }
+		 });
+     }); 
+       
+        
+     AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
+		if(action_result=="successfulSave"){
+			$.ajax({
+				   type: "POST",
+				   url: "{% url recurring_payment.authnet.update_payment_profile_local%}",
+				   data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
+				   success: function(msg){
+				     //alert( msg );
+				     {% if not payment_profile %}
+				     	window.location.reload(true);
+				     {% endif %}
+				   }
+				 });
+		}
+	};   
+    
 	
 }); 
 
