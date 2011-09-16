@@ -12,6 +12,10 @@ from recurring_payments.models import (RecurringPayment,
                                        PaymentProfile, 
                                        PaymentTransaction,
                                        RecurringPaymentInvoice)
+from recurring_payments.authnet.cim import (CIMCustomerProfile,
+                                            CIMCustomerPaymentProfile,
+                                            CIMHostedProfilePage)
+from recurring_payments.authnet.utils import get_token, get_test_mode
 
 from perms.utils import has_perm, is_admin
 from base.http import Http403
@@ -65,6 +69,17 @@ def view_account(request, recurring_payment_id,
     payment_transactions = PaymentTransaction.objects.filter(
                                         recurring_payment=rp
                                         ).order_by('-create_dt')
+                                        
+    # get ready for the add/update payment method button
+    rp.populate_payment_profile()
+    payment_profiles = PaymentProfile.objects.filter(recurring_payment=rp, status=1, status_detail='active')
+    if payment_profiles:
+        payment_profile = payment_profiles[0]
+    else:
+        payment_profile = None
+        
+    test_mode = get_test_mode()
+    
     
     return render_to_response(template_name, {
                                               'rp': rp,
@@ -72,7 +87,9 @@ def view_account(request, recurring_payment_id,
                                               'last_paid_payment_transaction': last_paid_payment_transaction,
                                               'last_failed_payment_transaction': last_failed_payment_transaction,
                                               'rp_invoices': rp_invoices,
-                                              'payment_transactions': payment_transactions
+                                              'payment_transactions': payment_transactions,
+                                              'payment_profile': payment_profile,
+                                              'test_mode': test_mode
                                               }, 
         context_instance=RequestContext(request))
     
@@ -107,6 +124,25 @@ def customers(request, template_name="recurring_payments/customers.html"):
                     'total_amount_received': total_amount_received,
                     'total_amount_unpaid': total_amount_unpaid,
                     'total_amount_past_due': total_amount_past_due
+                                              }, 
+        context_instance=RequestContext(request))
+
+@login_required   
+def transaction_receipt(request, recurring_payment_id, payment_transaction_id, 
+                        template_name="recurring_payments/transaction_receipt.html"):
+    """Display a transaction receipt.
+    """
+    rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
+    payment_transaction = get_object_or_404(PaymentTransaction, 
+                                            pk=payment_transaction_id)
+    
+    # only admin or user self can access this page
+    if not is_admin(request.user) and request.user.id <> rp.user.id:
+        raise Http403
+    
+    return render_to_response(template_name, {
+                    'rp': rp,
+                    'payment_transaction': payment_transaction
                                               }, 
         context_instance=RequestContext(request))
     

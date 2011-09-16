@@ -1,5 +1,8 @@
 
 import re
+from django.conf import settings
+from django.core.urlresolvers import reverse
+from site_settings.utils import get_setting
 
 direct_response_fields = (
                         'response_code',
@@ -93,4 +96,54 @@ def to_camel_case(d):
         
         return dict(map(lambda x: (to_camel(x[0]), x[1]), d.items()))
     return d
+
+  
+def get_test_mode():
+    """Return test_mode (false/true) - to be used in js
+    """
+    test_mode = 'false'
+    if hasattr(settings, 'AUTHNET_CIM_TEST_MODE') and  settings.AUTHNET_CIM_TEST_MODE:
+        test_mode = 'true'
+       
+    return test_mode
+    
+def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage):
+    """Get the token from payment gateway for this customer (ex: customer_profile_id=4356210).
+       Return token and gateway_error
+    """
+    gateway_error = False
+    if not rp.customer_profile_id:
+        # customer_profile is not available yet for this customer, create one now
+        cp = CIMCustomerProfile()
+        d = {'email': rp.user.email,
+             'description': rp.description,
+             'customer_id': str(rp.id)}
+        success, response_d = cp.create(**d)
+        if success:
+            rp.customer_profile_id = response_d['customer_profile_id']
+            rp.save()
+        else:
+            gateway_error = True
+            
+    token = ""
+    hosted_profile_page = CIMHostedProfilePage(rp.customer_profile_id)
+    site_url = get_setting('site', 'global', 'siteurl')
+    d = {'hosted_profile_settings': 
+         {'hosted_profile_heading_bg_color': '#e0e0e0',     # the bg color of sections can be customized
+         'hosted_profile_iFrame_communicator_url': '%s%s' % (
+                                        site_url, 
+                                        reverse('recurring_payment.authnet.iframe_communicator'))}}
+    success, response_d = hosted_profile_page.get(**d)
+    #print success, response_d
+    
+    if not success:
+        gateway_error = True
+    else:
+        token = response_d['token']
+    
+    return token, gateway_error
+    
+    
+    
+    
 
