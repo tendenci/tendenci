@@ -219,7 +219,8 @@ class ListEventsNode(ListNode):
         query = u''
         user = AnonymousUser()
         limit = 3
-        order = u'next_upcoming'
+        order = 'next_upcoming'
+
         randomize = False
 
         if 'random' in self.kwargs:
@@ -321,6 +322,6 @@ def list_events(parser, token):
     kwargs = parse_tag_kwargs(bits)
 
     if 'order' not in kwargs:
-        kwargs['order'] = '-start_dt'
+        kwargs['order'] = 'next_upcoming'
 
     return ListEventsNode(context_var, *args, **kwargs)
