@@ -15,7 +15,7 @@
 <h1>{{ product.name }}</h1>
 {% for f in product.productfile_set.all %}
     {% if forloop.first %}
-        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=300x300 quality=90 %}" /></a><br />
+        <a href="{% image_url f quality=99 %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=300x300 quality=90 %}" /></a><br />
     {% else %}
         <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=90x90 quality=95 %}" /></a>
     {% endif %}
