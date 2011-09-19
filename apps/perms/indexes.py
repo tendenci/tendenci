@@ -17,7 +17,7 @@ class TendenciBaseSearchIndex(indexes.RealTimeSearchIndex):
     creator_username = indexes.CharField(model_attr='creator_username')
     owner = indexes.CharField(model_attr='owner')
     owner_username = indexes.CharField(model_attr='owner_username')
-    status = indexes.IntegerField(model_attr='status')
+    status = indexes.BooleanField(model_attr='status')
     status_detail = indexes.CharField(model_attr='status_detail')
     create_dt = indexes.DateTimeField(model_attr='create_dt', null=True)
     update_dt = indexes.DateTimeField(model_attr='update_dt', null=True)
