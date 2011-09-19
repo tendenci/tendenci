@@ -1,0 +1,18 @@
+{% load base_filters %}
+{% load base_tags %}
+
+<div class="wrap-search-item">
+    <div class="search-item product-search-item">
+        <div class="product-photo">  
+            {% for f in product.productfile_set.all %}
+            {% if forloop.first %}<a href="{{ product.get_absolute_url }}"><img alt="{{ product.name }}" src="{% image_url f size=184x184 quality=90 %}" /></a><br />{% endif %}
+            {% endfor %}
+            <h4><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h4>
+            <p>{% if product.summary %}
+                {{ product.summary|safe }}
+                {% else %}
+                {{ product.description|truncatewords_html:"6"|safe }}
+                {% endif %}</p>
+        </div>
+    </div><!-- /product-item -->
+</div>
