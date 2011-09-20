@@ -40,7 +40,7 @@
 		float: left;
 		
 	}
-	roster-search-wrap .member-detail, .roster-search-wrap .member-right{
+	.roster-search-wrap .member-detail, .roster-search-wrap .member-right{
 		padding-left: 1em;
 		line-length: 1.2em;
 	}
@@ -120,7 +120,7 @@
 						<div>{% trans "Member Type: " %}{{ membership.membership_type }}</div>
 					</div>
 					<div class="member-right">
-						<div>{% trans "Join Date: " %}{{ membership.join_dt|date:'Y-n-j' }}</div>
+						<div>{% trans "Join Date: " %}{{ membership.subscribe_dt|date:'Y-n-j' }}</div>
 						<div>{% trans "Expiration Date: " %}{% if membership.expire_dt %}
 				    							{{ membership.expire_dt|date:'Y-n-j' }}
 				    							{% else %}
