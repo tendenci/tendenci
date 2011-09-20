@@ -733,10 +733,14 @@ def membership_import_status(request, task_id, template_name = 'memberships/impo
     """
     if not is_admin(request.user):
         raise Http403
+        
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        #tasks database entries are not created at once.
+        task = None
     
-    task = get_object_or_404(TaskMeta, task_id=task_id)
-    
-    if task.status == "SUCCESS":
+    if task and task.status == "SUCCESS":
         memberships, added, skipped = task.result
         return render_to_response(template_name, {
             'memberships': memberships,
@@ -745,8 +749,10 @@ def membership_import_status(request, task_id, template_name = 'memberships/impo
             'datetime': datetime,
         }, context_instance=RequestContext(request))
     else:
-        return render_to_response('memberships/import-status.html', {},
-            context_instance=RequestContext(request))
+        return render_to_response('memberships/import-status.html', {
+            'task': task,
+            'datetime': datetime,
+        }, context_instance=RequestContext(request))
 
 #REPORTS
     
