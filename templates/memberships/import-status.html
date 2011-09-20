@@ -1,0 +1,41 @@
+{% extends "memberships/base.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}Import Memberships from CSV file{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+
+<div id="import-wrap" class="finished">
+    {% if task.status == "FAILED" or task.status == "REVOKED" %}
+	<h1>{% trans "Membership Import Failed!" %}</h1>
+	<p class="timestamp">{% trans "Step 4/4" %} &middot; {{ datetime.now }}</p>
+
+	<p class="msg">Please try again. If the problem continues to persist please contact us <a href="">here</a>.</p>
+    {% else %}
+    <h1>{% trans "Processing Membership Import!" %}</h1>
+	<p class="timestamp">{% trans "Step 4/4" %} &middot; {{ datetime.now }}</p>
+
+	<p class="msg">Thank you for being patient.</p>
+    {% endif %}
+
+	<p class="link"><a href="{% url membership.search %}">{% trans "Back to membership search page." %}</a></p>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+    setInterval(function(){
+            window.location.reload();
+        }, 5000);
+</script>
+{% endblock %}

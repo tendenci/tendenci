@@ -22,6 +22,8 @@ class ProfileManager(TendenciBaseManager):
         Returns a SearchQuerySet.
         Filter out users if they have hide_in_search set to True.
         """
+        from perms.utils import is_admin
         sqs = super(ProfileManager, self).search(query=query, *args, **kwargs)
-        sqs = sqs.filter(hide_in_search=False)
+        if not is_admin(kwargs.get('user')):
+            sqs = sqs.filter(hide_in_search=False)
         return sqs
