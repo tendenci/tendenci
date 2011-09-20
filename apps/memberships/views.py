@@ -24,6 +24,7 @@ from memberships.forms import AppForm, AppEntryForm, \
     ExportForm
 from memberships.utils import new_mems_from_csv, is_import_valid, \
     prepare_chart_data, get_days, has_app_perm
+from memberships.tasks import ImportMembershipsTask
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
     has_perm, update_perms_and_save, is_admin, is_member, is_developer
@@ -33,6 +34,7 @@ from geraldo.generators import PDFGenerator
 from reports import ReportNewMems
 from files.models import File
 from imports.utils import render_excel
+from djcelery.models import TaskMeta
 
 try:
     from notification import models as notification
@@ -711,8 +713,7 @@ def membership_import(request, step=None):
         }, context_instance=RequestContext(request))
 
     if step_numeral == 4:  # confirm
-        template_name = 'memberships/import-confirm.html'
-
+        
         app = request.session.get('membership.import.app')
         memberships = request.session.get('membership.import.memberships')
         fields = request.session.get('membership.import.fields')
@@ -720,67 +721,32 @@ def membership_import(request, step=None):
         if not all([app, memberships, fields]):
             return redirect('membership_import_upload_file')
 
-        added = []
-        skipped = []
-
-        for membership in memberships:
-
-            if not membership.pk:  # new membership; no pk
-
-                membership.save()  # create pk
-
-                # create entry
-                entry = AppEntry.objects.create(
-                    app = app,
-                    user = membership.user,
-                    entry_time = datetime.now(),
-                    membership = membership,  # pk required here
-                    is_renewal = membership.renewal,
-                    is_approved = True,
-                    decision_dt = membership.subscribe_dt,
-                    judge = membership.creator,
-                    creator=membership.creator,
-                    creator_username=membership.creator_username,
-                    owner=membership.owner,
-                    owner_username=membership.owner_username,
-                )
-
-                # create entry fields
-                for key, value in fields.items():
-
-                    app_fields = AppField.objects.filter(app=app, label=key)
-                    if app_fields and membership.m.get(value):
-
-                        try:
-                            value = unicode(membership.m.get(unicode(value)))
-                        except (UnicodeDecodeError) as e:
-                            value = ''
-
-                        AppFieldEntry.objects.create(
-                            entry=entry,
-                            field=app_fields[0],
-                            value=value,
-                        )
-
-                # update membership number
-                if not membership.member_number:
-                    membership.member_number = AppEntry.objects.count() + 1000
-                    membership.save()
-
-                # add user to group
-                membership.membership_type.group.add_user(membership.user)
-
-                added.append(membership)
-            else:
-                skipped.append(membership)
-
+        result = ImportMembershipsTask.delay(app, memberships, fields)
+        
+        return redirect('membership_import_status', result.task_id)
+        
+    
+@login_required
+def membership_import_status(request, task_id, template_name = 'memberships/import-confirm.html'):
+    """
+    Checks if a membership import is completed.
+    """
+    if not is_admin(request.user):
+        raise Http403
+    
+    task = get_object_or_404(TaskMeta, task_id=task_id)
+    
+    if task.status == "SUCCESS":
+        memberships, added, skipped = task.result
         return render_to_response(template_name, {
             'memberships': memberships,
             'added': added,
             'skipped': skipped,
             'datetime': datetime,
         }, context_instance=RequestContext(request))
-
+    else:
+        return render_to_response('memberships/import-status.html', {},
+            context_instance=RequestContext(request))
 
 #REPORTS
     
