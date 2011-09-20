@@ -16,6 +16,7 @@ urlpatterns = patterns("memberships.views",
     url(r"^import/map-fields/$", "membership_import", kwargs={'step':(2,'map-fields')}, name="membership_import_map_fields"),
     url(r"^import/preview/$", "membership_import", kwargs={'step':(3,'preview')}, name="membership_import_preview"),
     url(r"^import/confirm/$", "membership_import", kwargs={'step':(4,'confirm')}, name="membership_import_confirm"),
+    url(r"^import/status/(?P<task_id>[-\w]+)/$", "membership_import_status", name='membership_import_status'),
     
     # export
     url(r"^export/$", "membership_export", name="membership_export"),
