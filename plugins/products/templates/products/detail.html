@@ -1,0 +1,40 @@
+{% extends "products/base.html" %}
+
+{% load i18n %}
+{% load base_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "products/media/css/products.css" %}
+</style>
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest Products' %}" href="{% url products.feed %}" />
+{% endblock %}
+
+{% block body %}
+<h1>{{ product.name }}</h1>
+{% for f in product.productfile_set.all %}
+    {% if forloop.first %}
+        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=300x300 quality=90 %}" /></a><br />
+    {% else %}
+        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=90x90 quality=95 %}" /></a>
+    {% endif %}
+{% endfor %}
+<div>{{ product.brand }}</div>
+{%if product.url %}<div>URL: <a href="{{ product.url }}">{{ product.url }}</a></div>{% endif %}
+<div>{{ product.item_number }}</div>
+<div>{{ product.description|safe }}</div>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<div class="fb-like" data-send="true" data-width="450" data-show-faces="true"></div>
+
+<br /><a href="{% url products.search %}">{% trans 'See all products' %}</a>
+{% endblock body %}

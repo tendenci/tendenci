@@ -65,10 +65,12 @@
                             {{ field.field }}
 		            	{% else %}
 			                <div{% if not line.fields|length_is:"1" %} class="field-box"{% endif %}>
+                                {% if field.field.name == "field_function" %}<div class="field_function">{% endif %}
+                                {% if field.field.name == "function_params" %}<div class="function_params">{% endif %}
+                                {% if field.field.name == "field_type" %}<div class="field_type">{% endif %}
 			                    {% if field.is_checkbox %}
 			                        {{ field.field }}{{ field.label_tag }}
 			                    {% else %}
-
                                     {% if not field.field.is_hidden %}
                                         {{ field.label_tag }}
                                     {% endif %}
@@ -82,6 +84,9 @@
 			                    {% if field.field.field.help_text %}
 			                        <p class="help">{{ field.field.field.help_text|safe }}</p>
 			                    {% endif %}
+                                {% if field.field.name == "field_function" %}</div>{% endif %}
+                                {% if field.field.name == "function_params" %}</div>{% endif %}
+                                {% if field.field.name == "field_type" %}</div>{% endif %}
 			                </div>
 		                {% endif %}
 		            {% endfor %}
@@ -215,4 +220,20 @@
     });
     
 })(django.jQuery);
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.field_function').hide();
+        $('.function_params').hide();
+        $('.field_type').change(function(data){
+                if ($(this).find("select option:selected").text() == "Checkbox"){
+                    $(this).parent().find(".field_function").show();
+                    $(this).parent().find(".function_params").show();
+                } else {
+                    $(this).parent().find(".field_function").hide();
+                    $(this).parent().find(".function_params").hide();
+                }
+            });
+    });
 </script>

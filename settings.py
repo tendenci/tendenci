@@ -234,7 +234,8 @@ INSTALLED_APPS = (
     'plugin_builder',
     # celery task system, must stay at the bottom
     # of installed apps
-    #'djcelery',
+    'djkombu',
+    'djcelery',
 )
 
 # This is the number of days users will have to activate their
@@ -310,6 +311,9 @@ CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800"   # 7 days
 # --------------------------------------#
 # CELERY
 # --------------------------------------#
+import djcelery
+djcelery.setup_loader()
+BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
 BROKER_USER = "guest"

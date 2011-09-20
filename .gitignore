@@ -9,6 +9,7 @@ django
 themes/*
 !themes/default/
 !themes/iceman/
+!themes/thinksmart/
 
 # Ignore media files
 site_media/directories/

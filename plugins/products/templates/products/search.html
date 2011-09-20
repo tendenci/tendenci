@@ -1,0 +1,40 @@
+{% extends "products/base.html" %}
+
+{% load base_filters %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load perm_tags %}
+{% load product_tags %}
+{% load search_tags %}
+
+{% block title %}{% trans 'Products' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "products/media/css/products.css" %}
+.t .products-search-wrap {width: 100%}
+</style>
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest Products' %}" href="{% url products.feed %}" />
+{% endblock %}
+
+{% block body %}
+
+{% autopaginate products 9 %}
+{% has_perm user products.add_product as can_add_product %}
+<div class="t">
+    <h1>{% trans 'Product List' %}</h1>
+    {% product_search %}
+    {% if can_add_product %}
+    <div><a href="{% url admin:products_product_add %}">{% trans 'Add a Product' %}</a></div>
+    {% endif %}
+    <div class="products-wrap clearfix">
+        {% for product in products %}
+            {% search_result product %}
+        {% empty %}
+            <p>{% trans '0 Products found' %}</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock body %}

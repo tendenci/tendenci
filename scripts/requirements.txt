@@ -30,6 +30,9 @@ oauth2>=1.5.167
 python_openid>=2.2
 ordereddict==1.1
 createsend>=0.3.2
+celery>=2.2.4
+django-celery>=2.2.4
+django-kombu>=0.9.4
 
 # git repositories
 git+http://github.com/notanumber/xapian-haystack.git
