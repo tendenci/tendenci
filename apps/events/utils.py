@@ -918,3 +918,4 @@ def copy_event(event, user):
             allow_member = pricing.allow_member,
         )
     return new_event
+

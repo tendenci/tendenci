@@ -6,10 +6,10 @@ from perms.indexes import TendenciBaseSearchIndex
 
 
 class MembershipIndex(TendenciBaseSearchIndex):
-    corporate_membership_id = indexes.BooleanField(model_attr='corporate_membership_id')
+    corporate_membership_id = indexes.IntegerField(model_attr='corporate_membership_id')
 
 class MembershipArchiveIndex(TendenciBaseSearchIndex):
-    corporate_membership_id = indexes.BooleanField(model_attr='corporate_membership_id')
+    corporate_membership_id = indexes.IntegerField(model_attr='corporate_membership_id')
 
 class MemberAppIndex(TendenciBaseSearchIndex):
     name = indexes.CharField(model_attr='name')

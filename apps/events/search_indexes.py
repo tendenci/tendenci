@@ -17,10 +17,13 @@ class EventIndex(TendenciBaseSearchIndex):
     
     # amount of registrations spots left
     spots_taken = indexes.IntegerField()
-
+    
+    # number of days the event is active
+    number_of_days = indexes.IntegerField()
+    
     # RSS fields
     can_syndicate = indexes.BooleanField()
-
+    
     def prepare_description(self, obj):
         description = obj.description
         description = strip_tags(description)
@@ -38,6 +41,9 @@ class EventIndex(TendenciBaseSearchIndex):
             return obj.spots_taken
         else:
             return count_event_spots_taken(obj)
+            
+    def prepare_number_of_days(self, obj):
+        return obj.number_of_days()
 
     def prepare_can_syndicate(self, obj):
         return obj.allow_anonymous_view and obj.status == 1 \

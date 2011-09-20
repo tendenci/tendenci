@@ -18,7 +18,7 @@ class EventManager(TendenciBaseManager):
         """
         sqs = super(EventManager, self).search(query=query, *args, **kwargs)
         
-        start_dt, end_dt = kwargs.get('date_range', None)
+        start_dt, end_dt = kwargs.get('date_range', (None, None))
         
         if start_dt and end_dt:
             sqs = sqs.filter(start_dt__lte=start_dt, end_dt__gte=end_dt)
