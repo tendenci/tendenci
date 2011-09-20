@@ -35,33 +35,18 @@ def encode_site(xml):
     xml.open("title", depth=1)
     xml.write(get_setting('site', 'global', 'sitedisplayname'), depth=2)
     xml.close("title", depth=1)
-    xml.open("link", depth=1)
-    xml.write(get_setting('site', 'global', 'siteurl'), depth=2)
-    xml.close("link", depth=1)
     xml.open("description", depth=1)
     xml.close("description", depth=1)
     xml.open("pubDate", depth=1)
     xml.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), depth=2)
     xml.close("pubDate", depth=1)
-    xml.open("generator", depth=1)
-    xml.write(get_setting('site', 'global', 'siteurl'), depth=2)
-    xml.close("generator", depth=1)
     xml.open("language", depth=1)
     xml.write(get_setting('site', 'global', 'localizationlanguage'), depth=2)
     xml.close("language", depth=1)
     xml.open("wp:wxr_version", depth=1)
     xml.write(1.0, depth=2)
     xml.close("wp:wxr_version", depth=1)
-    xml.open("wp:base_site_url", depth=1)
-    xml.write(get_setting('site', 'global', 'siteurl'), depth=2)
-    xml.close("wp:base_site_url", depth=1)
-    xml.open("wp:base_blog_url", depth=1)
-    xml.write(get_setting('site', 'global', 'siteurl'), depth=2)
-    xml.close("wp:base_blog_url", depth=1)
     encode_categories(xml)
-    xml.open("generator", depth=1)
-    xml.write(get_setting('site', 'global', 'siteurl'), depth=2)
-    xml.close("generator", depth=1)
     
 def encode_categories(xml):
     # since wordpress categories can only have single parents,
@@ -99,16 +84,13 @@ def encode_tags(xml):
         xml.close("wp:tag", depth=1)
 
 def encode_pages(xml):
-    pages = Page.objects.all()
+    pages = Page.objects.filter(status=True)
     ct = ContentType.objects.get_for_model(Page)
     for page in pages:
         xml.open("item", depth=1)
         xml.open("title", depth=2)
-        xml.write("Hello world!", depth=3)
+        xml.write(page.title, depth=3)
         xml.close("title", depth=2)
-        xml.open("link", depth=2)
-        xml.write(get_setting('site', 'global', 'siteurl') + page.get_absolute_url(), depth=3)
-        xml.close("link", depth=2)
         xml.open("pubDate", depth=2)
         xml.write(page.create_dt.strftime("%a, %d %b %Y %H:%M:%S %z"), depth=3)
         xml.close("pubDate", depth=2)
@@ -128,10 +110,7 @@ def encode_pages(xml):
             xml.open("category", attrs={"domain":"category", "nicename":slugify(cat.name)}, depth=2)
             xml.write("<![CDATA[%s]]>"%cat.name, depth=3)
             xml.close("category", depth=2)
-
-        xml.open("guid", attrs={"isPermaLink":"false"}, depth=2)
-        xml.write(get_setting('site', 'global', 'siteurl') + page.get_absolute_url(), depth=3)
-        xml.close("guid", depth=2)
+            
         xml.open("description", depth=2)
         xml.close("description", depth=2)
         xml.open("content:encoded", depth=2)
@@ -176,4 +155,4 @@ def encode_pages(xml):
         xml.write(0, depth=3)
         xml.close("wp:is_sticky", depth=2)
         xml.close("item", depth=1)
-        
+        break
