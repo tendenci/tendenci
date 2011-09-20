@@ -312,7 +312,6 @@ CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800"   # 7 days
 # --------------------------------------#
 import djcelery
 djcelery.setup_loader()
-
 BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672
