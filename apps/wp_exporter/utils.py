@@ -11,7 +11,7 @@ from news.models import News
 from events.models import Event
 from jobs.models import Job
 
-def gen_xml():
+def gen_xml(data):
     """
     Makes use of the encoder for xml to generate the wordpress export.
     """
@@ -27,11 +27,16 @@ def gen_xml():
     )
     xml.open("channel")
     encode_site(xml)
-    encode_pages(xml)
-    encode_articles(xml)
-    encode_news(xml)
-    encode_jobs(xml)
-    encode_events(xml)
+    if data["pages"]:
+        encode_pages(xml)
+    if data["articles"]:
+        encode_articles(xml)
+    if data["news"]:
+        encode_news(xml)
+    if data["jobs"]:
+        encode_jobs(xml)
+    if data["events"]:
+        encode_events(xml)
     xml.close("channel")
     xml.close("rss")
     return xml
@@ -186,7 +191,6 @@ def encode_pages(xml):
         xml.write(0, depth=3)
         xml.close("wp:is_sticky", depth=2)
         xml.close("item", depth=1)
-        break
 
 def encode_articles(xml):
     articles = Article.objects.filter(status=True)
@@ -268,7 +272,6 @@ def encode_articles(xml):
         xml.write(0, depth=3)
         xml.close("wp:is_sticky", depth=2)
         xml.close("item", depth=1)
-        break
         
 def encode_news(xml):
     newss = News.objects.filter(status=True)
@@ -350,7 +353,6 @@ def encode_news(xml):
         xml.write(0, depth=3)
         xml.close("wp:is_sticky", depth=2)
         xml.close("item", depth=1)
-        break
         
 def encode_jobs(xml):
     jobs = Job.objects.filter(status=True)
@@ -432,7 +434,6 @@ def encode_jobs(xml):
         xml.write(0, depth=3)
         xml.close("wp:is_sticky", depth=2)
         xml.close("item", depth=1)
-        break
         
 def encode_events(xml):
     events = Event.objects.filter(status=True)
@@ -514,4 +515,3 @@ def encode_events(xml):
         xml.write(0, depth=3)
         xml.close("wp:is_sticky", depth=2)
         xml.close("item", depth=1)
-        break
