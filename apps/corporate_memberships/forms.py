@@ -315,7 +315,7 @@ class CorpMembRepForm(forms.ModelForm):
     
     
 class RosterSearchForm(forms.Form):
-    name = forms.ChoiceField(choices=[])
+    name = forms.CharField(max_length=100, widget=forms.HiddenInput())
     q = forms.CharField(max_length=100, required=False)
     
     
