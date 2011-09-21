@@ -11,20 +11,23 @@ from base.http import Http403
 from perms.utils import has_perm, is_admin
 from event_logs.models import EventLog
 from wp_exporter.utils import gen_xml
+from wp_exporter.forms import ExportForm
 
-def index(request, template_name="wp_exporter/index.html"):
+def index(request, form_class=ExportForm ,template_name="wp_exporter/index.html"):
     if not is_admin(request.user):
         raise Http403
     
-    return render_to_response(template_name, {}, 
-        context_instance=RequestContext(request))
-
-def download(request, template_name="wp_importer/detail.html"):
-    if not is_admin(request.user):
-        raise Http403
-        
-    xml = gen_xml()
+    if request.method == "POST":
+        form = form_class(request.POST)
+        if form.is_valid():
+            xml = gen_xml(form.cleaned_data)
+            response = HttpResponse(xml.content, mimetype='text/xml')
+            response['Content-Disposition'] = 'attachment; filename=export.xml'
+            return response
+    else:
+        form = form_class()
     
-    response = HttpResponse(xml.content, mimetype='text/xml')
-    response['Content-Disposition'] = 'attachment; filename=export.xml'
-    return response
+    return render_to_response(template_name, {
+        'form':form,
+    },context_instance=RequestContext(request))
+
