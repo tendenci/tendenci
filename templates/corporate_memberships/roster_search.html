@@ -41,7 +41,7 @@
 		
 	}
 	.roster-search-wrap .member-detail, .roster-search-wrap .member-right{
-		padding-left: 1em;
+		padding-left: 1em !important;
 		line-length: 1.2em;
 	}
 	.member-line .member-name{
@@ -93,9 +93,9 @@
 
 </div>
 {% endif %}
-
-<form class="search-form" action="" method="get">
-<div class="form-field">{% trans "Corporate Name: " %}{{ form.name }}</div>
+<br />
+<form name="roster-search" class="search-form" action="{% url corp_memb.roster_search %}" method="get">
+<div class="form-field">{{ form.name }}</div>
 <div class="form-field">
 {{ form.q }}
 <input type="submit" name="search" value="Search" />
@@ -151,7 +151,10 @@
 {% block extra_body %}
  <script type="text/javascript">
 	$(document).ready(function(){
-
+		//$('select#id_name').change(function(){
+		//	var form = document.forms["roster-search"];
+		//	form.submit();
+		//});
 		
 	});
    </script>
