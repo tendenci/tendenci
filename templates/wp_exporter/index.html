@@ -1,0 +1,9 @@
+{% extends "wp_exporter/base.html" %}
+{% load i18n %}
+
+{% block body %}
+<h1>{% trans "Get your tendenci stuff on wordpress!" %}</h1>
+  <p>{% trans "1. download xml file" %} <a href="{% url wp_exporter.download %}">{% trans "here" %}</a></p>
+  <p>{% trans "2. export to wordpress as a wordpress export file" %}</p>
+  <p>{% trans "3. enjoy your posts!" %}</p>
+{% endblock %}
