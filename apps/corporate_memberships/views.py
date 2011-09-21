@@ -745,10 +745,10 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
         memberships = memberships.filter(status=1, status_detail='active')
         
     # a list of corporate memberships for the drop down
-    corp_members = CorporateMembership.objects.search(None, user=request.user).order_by('name_exact')
-    name_choices = ((corp_member.name, corp_member.name) for corp_member in corp_members)
+    #corp_members = CorporateMembership.objects.search(None, user=request.user).order_by('name_exact')
+    #name_choices = ((corp_member.name, corp_member.name) for corp_member in corp_members)
     form = RosterSearchForm(request.GET or None)
-    form.fields['name'].choices = name_choices
+    #form.fields['name'].choices = name_choices
     form.fields['name'].initial = corp_memb.name
         
     return render_to_response(template_name, {'corp_memb': corp_memb,
