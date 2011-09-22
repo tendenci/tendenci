@@ -10,6 +10,8 @@ from articles.models import Article
 from news.models import News
 from events.models import Event
 from jobs.models import Job
+from resumes.models import Resume
+    
 
 def gen_xml(data):
     """
@@ -38,6 +40,10 @@ def gen_xml(data):
         offset = encode_jobs(xml, offset)
     if data["events"]:
         offset = encode_events(xml, offset)
+    if data["case_studies"]:
+        offset = encode_casestudies(xml, offset)
+    if data["resumes"]:
+        offset = encode_resumes(xml, offset)
     xml.close("channel")
     xml.close("rss")
     return xml
@@ -61,6 +67,12 @@ def encode_categories(xml):
     ct_news = ContentType.objects.get_for_model(News)
     ct_job = ContentType.objects.get_for_model(Job)
     ct_event = ContentType.objects.get_for_model(Event)
+    ct_resume = ContentType.objects.get_for_model(Resume)
+    try:
+        from case_studies.models import CaseStudy
+        ct_casestudy = ContentType.objects.get_for_model(CaseStudy)
+    except ImportError:
+        ct_casestudy = None
     
     #encode tendenci categories
     cats = Category.objects.filter(
@@ -77,13 +89,14 @@ def encode_categories(xml):
         xml.close("wp:category", depth=1)
         
     #encode content types as categories
-    types = ["article", "job", "event", "news", "page"]
+    types = [ct_article, ct_job, ct_event, ct_news, ct_page, ct_resume, ct_casestudy]
     for type in types:
-        xml.open("wp:category", depth=1)
-        xml.write("<wp:category_nicename>%s</wp:category_nicename>"%slugify(type), depth=2)
-        xml.write("<wp:category_parent></wp:category_parent>", depth=2)
-        xml.write("<wp:cat_name><![CDATA[%s]]></wp:cat_name>"%type, depth=2)
-        xml.close("wp:category", depth=1)
+        if type:
+            xml.open("wp:category", depth=1)
+            xml.write("<wp:category_nicename>%s</wp:category_nicename>"%slugify(type), depth=2)
+            xml.write("<wp:category_parent></wp:category_parent>", depth=2)
+            xml.write("<wp:cat_name><![CDATA[%s]]></wp:cat_name>"%type, depth=2)
+            xml.close("wp:category", depth=1)
 
 def encode_tags(xml):
     for tag in tags:
@@ -149,6 +162,7 @@ def encode_articles(xml, offset=0):
     for article in articles:
         offset = offset+1
         encode_item(xml, offset, article, ct, title=article.headline, content=article.body)
+    return offset
         
 def encode_news(xml, offset=0):
     newss = News.objects.filter(status=True)
@@ -156,6 +170,7 @@ def encode_news(xml, offset=0):
     for news in newss:
         offset = offset+1
         encode_item(xml, offset, news, ct, title=news.headline, content=news.body)
+    return offset
         
 def encode_jobs(xml, offset=0):
     jobs = Job.objects.filter(status=True)
@@ -163,6 +178,7 @@ def encode_jobs(xml, offset=0):
     for job in jobs:
         offset = offset+1
         encode_item(xml, offset, job, ct, title=job.title, content=job.description)
+    return offset
         
 def encode_events(xml, offset=0):
     events = Event.objects.filter(status=True)
@@ -170,3 +186,24 @@ def encode_events(xml, offset=0):
     for event in events:
         offset = offset+1
         encode_item(xml, offset, event, ct, title=event.title, content=event.description)
+    return offset
+        
+def encode_resumes(xml, offset=0):
+    resumes = Resume.objects.filter(status=True)
+    ct = ContentType.objects.get_for_model(Resume)
+    for resume in resumes:
+        offset = offset+1
+        encode_item(xml, offset, resume, ct, title=resume.title, content=resume.description)
+    return offset
+
+def encode_casestudies(xml, offset=0):
+    try:
+        from case_studies.models import CaseStudy
+        studies = CaseStudy.objects.filter(status=True)
+        ct = ContentType.objects.get_for_model(CaseStudy)
+        for study in studies:
+            offset = offset+1
+            encode_item(xml, offset, study, ct, title=study.client, content=study.overview)
+    except ImportError:
+        pass
+    return offset
