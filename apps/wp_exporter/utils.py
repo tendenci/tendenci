@@ -154,7 +154,6 @@ def encode_pages(xml, offset=0):
     for page in pages:
         offset = offset+1
         encode_item(xml, offset, page, ct, title=page.title, content=page.content)
-        break
     return offset
         
 def encode_articles(xml, offset=0):
@@ -163,7 +162,6 @@ def encode_articles(xml, offset=0):
     for article in articles:
         offset = offset+1
         encode_item(xml, offset, article, ct, title=article.headline, content=article.body)
-        break
     return offset
         
 def encode_news(xml, offset=0):
@@ -172,7 +170,6 @@ def encode_news(xml, offset=0):
     for news in newss:
         offset = offset+1
         encode_item(xml, offset, news, ct, title=news.headline, content=news.body)
-        break
     return offset
         
 def encode_jobs(xml, offset=0):
@@ -180,8 +177,13 @@ def encode_jobs(xml, offset=0):
     ct = ContentType.objects.get_for_model(Job)
     for job in jobs:
         offset = offset+1
-        encode_item(xml, offset, job, ct, title=job.title, content=job.description)
-        break
+        content = job.description
+        content += "\n Location: %s" % job.location
+        content += "\n Required Experience: %s" % job.experience
+        content += "\n Required Skills: %s" % job.skills
+        content += "\n Required Computer Skills: %s" % job.computer_skills
+        content += "\n Required Education: %s" % job.education
+        encode_item(xml, offset, job, ct, title=job.title, content=content)
     return offset
         
 def encode_events(xml, offset=0):
@@ -192,7 +194,6 @@ def encode_events(xml, offset=0):
         content = "%s to %s\n" % (event.start_dt, event.end_dt)
         content += event.description
         encode_item(xml, offset, event, ct, title=event.title, content=content)
-        break
     return offset
     
 def encode_resumes(xml, offset=0):
@@ -200,8 +201,18 @@ def encode_resumes(xml, offset=0):
     ct = ContentType.objects.get_for_model(Resume)
     for resume in resumes:
         offset = offset+1
-        encode_item(xml, offset, resume, ct, title=resume.title, content=resume.description)
-        break
+        content = resume.description
+        content += "\n Location: %s" % resume.location
+        content += "\n Experience: %s" % resume.experience
+        content += "\n Skills: %s" % resume.skills
+        content += "\n Education: %s" % resume.education
+        content += "\n Contact Information:"
+        content += "\n %s" % resume.contact_name
+        content += "\n %s" % resume.contact_phone
+        content += "\n %s" % resume.contact_phone2
+        content += "\n %s" % resume.contact_fax
+        content += "\n %s" % resume.contact_email
+        encode_item(xml, offset, resume, ct, title=resume.title, content=content)
     return offset
 
 def encode_casestudies(xml, offset=0):
@@ -211,8 +222,12 @@ def encode_casestudies(xml, offset=0):
         ct = ContentType.objects.get_for_model(CaseStudy)
         for study in studies:
             offset = offset+1
-            encode_item(xml, offset, study, ct, title=study.client, content=study.overview)
-            break
+            content = "<h2>Overview:</h2> \n %s" % study.overview
+            if study.execution:
+                content += "\n<h2>Execution:</h2> \n %s" % study.execution
+            if study.results:
+                content += "\n<h2>Results:</h2> \n %s" % study.results
+            encode_item(xml, offset, study, ct, title=study.client, content=content)
     except ImportError:
         pass
     return offset
