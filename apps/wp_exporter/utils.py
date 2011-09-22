@@ -154,6 +154,7 @@ def encode_pages(xml, offset=0):
     for page in pages:
         offset = offset+1
         encode_item(xml, offset, page, ct, title=page.title, content=page.content)
+        break
     return offset
         
 def encode_articles(xml, offset=0):
@@ -162,6 +163,7 @@ def encode_articles(xml, offset=0):
     for article in articles:
         offset = offset+1
         encode_item(xml, offset, article, ct, title=article.headline, content=article.body)
+        break
     return offset
         
 def encode_news(xml, offset=0):
@@ -170,6 +172,7 @@ def encode_news(xml, offset=0):
     for news in newss:
         offset = offset+1
         encode_item(xml, offset, news, ct, title=news.headline, content=news.body)
+        break
     return offset
         
 def encode_jobs(xml, offset=0):
@@ -178,6 +181,7 @@ def encode_jobs(xml, offset=0):
     for job in jobs:
         offset = offset+1
         encode_item(xml, offset, job, ct, title=job.title, content=job.description)
+        break
     return offset
         
 def encode_events(xml, offset=0):
@@ -185,15 +189,19 @@ def encode_events(xml, offset=0):
     ct = ContentType.objects.get_for_model(Event)
     for event in events:
         offset = offset+1
-        encode_item(xml, offset, event, ct, title=event.title, content=event.description)
+        content = "%s to %s\n" % (event.start_dt, event.end_dt)
+        content += event.description
+        encode_item(xml, offset, event, ct, title=event.title, content=content)
+        break
     return offset
-        
+    
 def encode_resumes(xml, offset=0):
     resumes = Resume.objects.filter(status=True)
     ct = ContentType.objects.get_for_model(Resume)
     for resume in resumes:
         offset = offset+1
         encode_item(xml, offset, resume, ct, title=resume.title, content=resume.description)
+        break
     return offset
 
 def encode_casestudies(xml, offset=0):
@@ -204,6 +212,7 @@ def encode_casestudies(xml, offset=0):
         for study in studies:
             offset = offset+1
             encode_item(xml, offset, study, ct, title=study.client, content=study.overview)
+            break
     except ImportError:
         pass
     return offset
