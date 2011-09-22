@@ -721,7 +721,7 @@ def membership_import(request, step=None):
         if not all([app, memberships, fields]):
             return redirect('membership_import_upload_file')
 
-        result = ImportMembershipsTask.delay(app, memberships, fields)
+        result = ImportMembershipsTask(app, memberships, fields)
         
         return redirect('membership_import_status', result.task_id)
         
