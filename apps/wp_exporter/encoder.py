@@ -6,7 +6,7 @@ class XML():
         txt = ""
         for i in range(0, depth):
             txt += "    "
-        txt += str(text) + "\n"
+        txt += unicode(text) + "\n"
         self.content += txt
         
     def open(self, name, attrs={}, depth=0):
