@@ -1,0 +1,18 @@
+{% extends "wp_exporter/base.html" %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block body %}
+<div class="t">
+    <h1>{% trans "Get your tendenci stuff on wordpress!" %}</h1>
+    <div class="export-wrap">
+        <p>Select the items you want to be exported.</p>
+        <form method="POST" action="">{% csrf_token %}
+            <div class="forms">
+                {{ form|styled_form }}
+                <input type="submit" value="{% trans 'Download Export File' %}" />
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
