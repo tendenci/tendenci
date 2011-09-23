@@ -6,9 +6,14 @@ from django.core.urlresolvers import reverse
 
 from base.http import Http403
 from event_logs.models import EventLog
-from perms.utils import has_perm
+from perms.utils import has_perm, is_admin, get_notice_recipients
 from models import Topic, HelpFile, HelpFileMigration
 from forms import RequestForm
+
+try:
+    from notification import models as notification
+except:
+    notification = None
 
 
 def index(request, template_name="help_files/index.html"):
