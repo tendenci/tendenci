@@ -10,11 +10,12 @@ from django import forms
 from django.db import models
 from wp_importer.forms import BlogImportForm
 from wp_importer.models import BlogImport
-from wp_importer.utils import run
+from wp_importer.tasks import WPImportTask
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from parse_uri import ParseUri
+from djcelery.models import TaskMeta
 
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save
@@ -29,16 +30,13 @@ def index(request, template_name="wp_importer/index.html"):
                 upload.author = request.user
                 upload = form.save()
                 file_name = os.path.join(settings.MEDIA_ROOT, 'blogimport', request.FILES['blog'].name)
-                run(file_name, request)
-
-                messages.add_message(
-                    request,
-                    messages.INFO,
-                    _('Your blog has been imported!')
-                )
-
-                return HttpResponseRedirect('detail/')
-
+                
+                result = WPImportTask.delay(file_name, request.user)
+                #uncomment the next line if there is no celery server yet.
+                #result.wait()
+                
+                return redirect("wp_importer.views.detail", result.task_id)
+                
             elif not request.FILES['blog'].name.endswith('xml'):
                 messages.add_message(
                     request,
@@ -52,7 +50,7 @@ def index(request, template_name="wp_importer/index.html"):
                     messages.INFO,
                     _('Oops, only upload files smaller than 20 MB!')
                 )
-            
+                
         except ValueError:
             messages.add_message(request, messages.INFO, 'Oops, please login before uploading a blog!')
             return redirect('auth_login')
@@ -63,6 +61,30 @@ def index(request, template_name="wp_importer/index.html"):
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
 
-def detail(request, template_name="wp_importer/detail.html"):
-    return render_to_response(template_name, {}, 
+@login_required
+def detail(request, task_id, template_name="wp_importer/detail.html"):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        #tasks database entries are not created at once.
+        #instead of raising 404 we'll assume that there will be one for
+        #the id.
+        task = None
+    
+    if task and task.status == "SUCCESS":
+        messages.add_message(
+            request,
+            messages.INFO,
+            _('Your blog has been imported!')
+        )
+        return render_to_response(template_name, {},
+            context_instance=RequestContext(request))
+    
+    messages.add_message(
+        request,
+        messages.INFO,
+        _("Your site import is being processed. You will receive an email when the import is complete.")
+    )
+    
+    return render_to_response(template_name, {},
         context_instance=RequestContext(request))
