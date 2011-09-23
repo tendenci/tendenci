@@ -12,9 +12,7 @@ class ImportMembershipsTask(Task):
         for membership in memberships:
 
             if not membership.pk:  # new membership; no pk
-
                 membership.save()  # create pk
-
                 # create entry
                 entry = AppEntry.objects.create(
                     app = app,
@@ -60,7 +58,7 @@ class ImportMembershipsTask(Task):
             else:
                 skipped.append(membership)
                 
-            return (memberships, added, skipped)
+        return (memberships, added, skipped)
 
 
 tasks.register(ImportMembershipsTask)
