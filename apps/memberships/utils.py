@@ -124,6 +124,7 @@ def new_mems_from_csv(file_path, app, columns):
         membership_dicts.append(membership)
 
     membership_set = []
+    skipped_set = []
 
     def clean_username(un):
         import re
@@ -154,6 +155,7 @@ def new_mems_from_csv(file_path, app, columns):
         try:  # if membership type exists; import membership
             membership_type = MembershipType.objects.get(name = m['membership-type'])
         except:
+            skipped_set.append(m)
             continue  # on to the next one
         
         try: join_dt = dt_parse(m['join-date'])
@@ -265,7 +267,7 @@ def new_mems_from_csv(file_path, app, columns):
 
         membership_set.append(membership)
 
-    return membership_set
+    return membership_set, skipped_set
 
 def is_import_valid(file_path):
     """
