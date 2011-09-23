@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
+from tagging.models import Tag
 from site_settings.utils import get_setting
 from categories.models import Category
 from pages.models import Page
@@ -58,6 +59,7 @@ def encode_site(xml):
     #xml.write("<wp:base_site_url>http://wordpress.com/</wp:base_site_url>", depth=1)
     #xml.write("<wp:base_blog_url>http://sambixly.wordpress.com</wp:base_blog_url>", depth=1)
     encode_categories(xml)
+    encode_tags(xml)
     
 def encode_categories(xml):
     # since wordpress categories can only have single parents,
@@ -99,14 +101,22 @@ def encode_categories(xml):
             xml.close("wp:category", depth=1)
 
 def encode_tags(xml):
+    ct_page = ContentType.objects.get_for_model(Page)
+    ct_article = ContentType.objects.get_for_model(Article)
+    ct_news = ContentType.objects.get_for_model(News)
+    ct_job = ContentType.objects.get_for_model(Job)
+    ct_event = ContentType.objects.get_for_model(Event)
+    ct_resume = ContentType.objects.get_for_model(Resume)
+    tags = Tag.objects.filter(
+        Q(items__content_type__pk=ct_page.pk) or
+        Q(items__content_type__pk=ct_article.pk) or
+        Q(items__content_type__pk=ct_news.pk) or
+        Q(items__content_type__pk=ct_job.pk) or
+        Q(items__content_type__pk=ct_event.pk)).distinct()
     for tag in tags:
         xml.open("wp:tag", depth=1)
-        xml.open("wp:tag_slug", depth=2)
-        xml.write(slugify(tag), depth=3)
-        xml.close("wp:tag_slug", depth=2)
-        xml.open("wp:tag_name", depth=2)
-        xml.write("<![CDATA[%s]]>"%tag, depth=3)
-        xml.close("wp:tag_name", depth=2)
+        xml.write("<wp:tag_slug>%s</wp:tag_slug>"%slugify(tag), depth=2)
+        xml.write("<wp:tag_name><![CDATA[%s]]></wp:tag_name>"%tag, depth=2)
         xml.close("wp:tag", depth=1)
         
 def encode_item(xml, offset, item, ct, title="", content=""):
@@ -131,6 +141,13 @@ def encode_item(xml, offset, item, ct, title="", content=""):
     xml.write('<category domain="category" nicename="%s"><![CDATA[%s]]></category>' \
             % (slugify(ct),ct), depth=2)
     
+    # get all the item's tags and encode
+    tags = Tag.objects.get_for_object(item)
+    for tag in tags:
+        xml.write('<category domain="tag"><![CDATA[%s]]></category>'%tag.name, depth=2)
+        xml.write('<category domain="tag" nicename="%s"><![CDATA[%s]]></category>' \
+            % (slugify(tag.name), tag.name), depth=2)
+            
     xml.write("<description></description>", depth=2)
     xml.write("<content:encoded><![CDATA[%s]]></content:encoded>"%content, depth=2)
     xml.write("<excerpt:encoded><![CDATA[]]></excerpt:encoded>", depth=2)
@@ -178,11 +195,11 @@ def encode_jobs(xml, offset=0):
     for job in jobs:
         offset = offset+1
         content = job.description
-        content += "\n Location: %s" % job.location
-        content += "\n Required Experience: %s" % job.experience
-        content += "\n Required Skills: %s" % job.skills
-        content += "\n Required Computer Skills: %s" % job.computer_skills
-        content += "\n Required Education: %s" % job.education
+        content += "\n <h2>Location:</h2> %s" % job.location
+        content += "\n <h2>Required Experience:</h2> %s" % job.experience
+        content += "\n <h2>Required Skills:</h2> %s" % job.skills
+        content += "\n <h2>Required Computer Skills:</h2> %s" % job.computer_skills
+        content += "\n <h2>Required Education:</h2> %s" % job.education
         encode_item(xml, offset, job, ct, title=job.title, content=content)
     return offset
         
@@ -202,11 +219,11 @@ def encode_resumes(xml, offset=0):
     for resume in resumes:
         offset = offset+1
         content = resume.description
-        content += "\n Location: %s" % resume.location
-        content += "\n Experience: %s" % resume.experience
-        content += "\n Skills: %s" % resume.skills
-        content += "\n Education: %s" % resume.education
-        content += "\n Contact Information:"
+        content += "\n <h2>Location:</h2> %s" % resume.location
+        content += "\n <h2>Experience:</h2> %s" % resume.experience
+        content += "\n <h2>Skills:</h2> %s" % resume.skills
+        content += "\n <h2>Education:</h2> %s" % resume.education
+        content += "\n <h2>Contact Information:</h2>"
         content += "\n %s" % resume.contact_name
         content += "\n %s" % resume.contact_phone
         content += "\n %s" % resume.contact_phone2
