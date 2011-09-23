@@ -226,6 +226,7 @@ INSTALLED_APPS = (
     'social_auth',
     'campaign_monitor',
     'wp_importer',
+    'wp_exporter',
     'theme',
     'discounts',
     'metrics',
