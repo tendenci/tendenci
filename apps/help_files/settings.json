@@ -1,0 +1,19 @@
+[
+	{
+        "default_value": "", 
+        "description": "A list of email addresses that receive admin notices from Help File module on the site. Comma delimited.", 
+        "data_type": "string", 
+        "update_dt": "2011-09-12 17:19:11", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "helpfilerecipients", 
+        "value": "", 
+        "label": "Help file admin notice recipients", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "help_files", 
+        "store": true, 
+        "updated_by": ""
+    }
+]
