@@ -146,6 +146,7 @@ class ProductAdmin(admin.ModelAdmin):
                 file.product = form.save()
                 file.content_type = ContentType.objects.get_for_model(file.product)
                 file.object_id = file.product.pk
+                file.name = file.file.name
                 file.creator = request.user
                 file.owner = request.user
                 file.save()
