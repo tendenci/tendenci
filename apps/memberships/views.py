@@ -681,9 +681,10 @@ def membership_import(request, step=None):
                 cleaned_data = form.save(step=step)
                 file_path = request.session.get('membership.import.file_path')
 
-                memberships = new_mems_from_csv(file_path, app, cleaned_data)
+                memberships, skipped = new_mems_from_csv(file_path, app, cleaned_data)
 
                 request.session['membership.import.memberships'] = memberships
+                request.session['membership.import.skipped'] = skipped
                 request.session['membership.import.fields'] = cleaned_data
 
                 return redirect('membership_import_preview')
@@ -699,8 +700,8 @@ def membership_import(request, step=None):
     if step_numeral == 3:  # preview
         template_name = 'memberships/import-preview.html'
         memberships = request.session.get('membership.import.memberships')
-
-        added, skipped = [], []
+        skipped = request.session.get('membership.import.skipped')
+        added = []
         for membership in memberships:
             if membership.pk: skipped.append(membership)
             else: added.append(membership)
