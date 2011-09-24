@@ -702,10 +702,13 @@ def membership_import(request, step=None):
         memberships = request.session.get('membership.import.memberships')
         skipped = request.session.get('membership.import.skipped')
         added = []
+        
         for membership in memberships:
             if membership.pk: skipped.append(membership)
             else: added.append(membership)
-
+            
+        request.session['membership.import.skipped'] = skipped
+        
         return render_to_response(template_name, {
         'memberships':memberships,
         'added': added,
@@ -724,6 +727,11 @@ def membership_import(request, step=None):
 
         result = ImportMembershipsTask.delay(app, memberships, fields)
         result.wait()
+        
+        #clear these from the session
+        request.session['membership.import.memberships'] = []
+        request.session['membership.import.skipped'] = []
+        request.session['membership.import.fields'] = []
 
         return redirect('membership_import_status', result.task_id)
         
@@ -743,7 +751,9 @@ def membership_import_status(request, task_id, template_name = 'memberships/impo
         task = None
     
     if task and task.status == "SUCCESS":
+        
         memberships, added, skipped = task.result
+        
         return render_to_response(template_name, {
             'memberships': memberships,
             'added': added,

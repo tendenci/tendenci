@@ -60,7 +60,7 @@ class ImportMembershipsTask(Task):
             else:
                 skipped.append(membership)
                 
-            return (memberships, added, skipped)
+        return (memberships, added, skipped)
 
 
 tasks.register(ImportMembershipsTask)
