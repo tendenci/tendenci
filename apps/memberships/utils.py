@@ -155,6 +155,8 @@ def new_mems_from_csv(file_path, app, columns):
         try:  # if membership type exists; import membership
             membership_type = MembershipType.objects.get(name = m['membership-type'])
         except:
+            for key in m.keys():
+                m[slugify(key).replace('-', '_')] = m.pop(key)
             skipped_set.append(m)
             continue  # on to the next one
         
