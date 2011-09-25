@@ -681,10 +681,10 @@ def membership_import(request, step=None):
                 cleaned_data = form.save(step=step)
                 file_path = request.session.get('membership.import.file_path')
 
-                memberships, skipped = new_mems_from_csv(file_path, app, cleaned_data)
+                memberships, no_memtypes = new_mems_from_csv(file_path, app, cleaned_data)
 
                 request.session['membership.import.memberships'] = memberships
-                request.session['membership.import.skipped'] = skipped
+                request.session['membership.import.no_memtypes'] = no_memtypes
                 request.session['membership.import.fields'] = cleaned_data
 
                 return redirect('membership_import_preview')
@@ -700,19 +700,23 @@ def membership_import(request, step=None):
     if step_numeral == 3:  # preview
         template_name = 'memberships/import-preview.html'
         memberships = request.session.get('membership.import.memberships')
-        skipped = request.session.get('membership.import.skipped')
+        no_memtypes = request.session.get('membership.import.no_memtypes')
         added = []
+        skipped = []
+        
+        for skip in skipped:
+            print skip
         
         for membership in memberships:
+            print membership
             if membership.pk: skipped.append(membership)
             else: added.append(membership)
-            
-        request.session['membership.import.skipped'] = skipped
         
         return render_to_response(template_name, {
         'memberships':memberships,
         'added': added,
         'skipped': skipped,
+        'no_memtypes':no_memtypes,
         'datetime': datetime,
         }, context_instance=RequestContext(request))
 
@@ -730,9 +734,8 @@ def membership_import(request, step=None):
         
         #clear these from the session
         request.session['membership.import.memberships'] = []
-        request.session['membership.import.skipped'] = []
         request.session['membership.import.fields'] = []
-
+        
         return redirect('membership_import_status', result.task_id)
         
     
