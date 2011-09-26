@@ -48,7 +48,12 @@ def index(request, slug=None, template_name="articles/view.html"):
         raise Http403
 
 def search(request, template_name="articles/search.html"):
-    query = request.GET.get('q', None)
+    get = dict(request.GET)
+    query = get.pop('q', [''])
+    get.pop('page', None)  # pop page query string out; page ruins pagination
+    query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
+    query = '%s %s' % (''.join(query), ' '.join(query_extra))
+
     articles = Article.objects.search(query, user=request.user)
     articles = articles.order_by('-release_dt')
 
@@ -61,8 +66,15 @@ def search(request, template_name="articles/search.html"):
         'source': 'articles'
     }
     EventLog.objects.log(**log_defaults)
-    
-    return render_to_response(template_name, {'articles':articles, 'search_view': True}, 
+    category = request.GET.get('category')
+    try:
+        category = int(category)
+    except:
+        category = 0
+    categories, sub_categories = Article.objects.get_categories(category=category)
+
+    return render_to_response(template_name, {'articles':articles,'categories':categories,
+        'sub_categories':sub_categories, 'search_view': True}, 
         context_instance=RequestContext(request))
 
 def print_view(request, slug, template_name="articles/print-view.html"):
