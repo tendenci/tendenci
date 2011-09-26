@@ -11,11 +11,13 @@ is:{{ object.status_detail }}
 {% get_category_for_object object as category %}
 {% if category %}
 category:{{ category }}
+category:{{ category.pk }}
 {% endif %}
 
 {% get_sub_category_for_object object as sub_category %}
 {% if sub_category %}
 sub_category:{{ sub_category }}
+sub_category:{{ sub_category.pk }}
 {% endif %}
 
 {% tags_for_object object as tags %}
