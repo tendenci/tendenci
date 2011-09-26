@@ -228,8 +228,8 @@ def new_mems_from_csv(file_path, app, columns):
         )
 
         # get subscribe_dt
-        subscribe_dt = renew_dt or join_dt or datetime.now()
-
+        subscribe_dt = join_dt or datetime.now()
+        
         if 'cc' in m.get('payment-method', ''):
             payment_method_id = 1
         elif 'check' in m.get('payment-method', ''):
