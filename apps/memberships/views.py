@@ -681,9 +681,10 @@ def membership_import(request, step=None):
                 cleaned_data = form.save(step=step)
                 file_path = request.session.get('membership.import.file_path')
 
-                memberships = new_mems_from_csv(file_path, app, cleaned_data)
+                memberships, no_memtypes = new_mems_from_csv(file_path, app, cleaned_data)
 
                 request.session['membership.import.memberships'] = memberships
+                request.session['membership.import.no_memtypes'] = no_memtypes
                 request.session['membership.import.fields'] = cleaned_data
 
                 return redirect('membership_import_preview')
@@ -699,16 +700,23 @@ def membership_import(request, step=None):
     if step_numeral == 3:  # preview
         template_name = 'memberships/import-preview.html'
         memberships = request.session.get('membership.import.memberships')
-
-        added, skipped = [], []
+        no_memtypes = request.session.get('membership.import.no_memtypes')
+        added = []
+        skipped = []
+        
+        for skip in skipped:
+            print skip
+        
         for membership in memberships:
+            print membership
             if membership.pk: skipped.append(membership)
             else: added.append(membership)
-
+        
         return render_to_response(template_name, {
         'memberships':memberships,
         'added': added,
         'skipped': skipped,
+        'no_memtypes':no_memtypes,
         'datetime': datetime,
         }, context_instance=RequestContext(request))
 
@@ -722,6 +730,11 @@ def membership_import(request, step=None):
             return redirect('membership_import_upload_file')
 
         result = ImportMembershipsTask.delay(app, memberships, fields)
+        result.wait()
+        
+        #clear these from the session
+        request.session['membership.import.memberships'] = []
+        request.session['membership.import.fields'] = []
 
         return redirect('membership_import_status', result.task_id)
         
@@ -741,7 +754,9 @@ def membership_import_status(request, task_id, template_name = 'memberships/impo
         task = None
     
     if task and task.status == "SUCCESS":
+        
         memberships, added, skipped = task.result
+        
         return render_to_response(template_name, {
             'memberships': memberships,
             'added': added,
