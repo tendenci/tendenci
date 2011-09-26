@@ -9,7 +9,7 @@
             {% endfor %}
             <h4><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h4>
             <p>{% if product.summary %}
-                {{ product.summary|safe }}
+                {{ product.summary|truncatewords_html:"6"|safe }}
                 {% else %}
                 {{ product.description|truncatewords_html:"6"|safe }}
                 {% endif %}</p>
