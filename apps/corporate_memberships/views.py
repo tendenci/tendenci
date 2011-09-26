@@ -42,7 +42,8 @@ from corporate_memberships.utils import (get_corporate_membership_type_choices,
                                          dues_rep_emails_list,
                                          corp_memb_update_perms,
                                          validate_import_file,
-                                         new_corp_mems_from_csv)
+                                         new_corp_mems_from_csv,
+                                         get_over_time_stats)
 #from memberships.models import MembershipType
 from memberships.models import Membership
 
@@ -1220,12 +1221,12 @@ def corp_export(request):
             'form':form
             }, context_instance=RequestContext(request))
             
-            
-            
+def new_over_time_report(request, template_name='reports/corp_memberships_over_time.html'):
+    if not is_admin(request.user):
+        raise Http403
     
+    stats = get_over_time_stats()
     
-    
-    
-    
-    
-    
+    return render_to_response(template_name, {
+        'stats':stats,
+        }, context_instance=RequestContext(request))
