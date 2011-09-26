@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 import dateutil.parser as dparser
 from django.utils.encoding import smart_str
@@ -450,11 +450,26 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
         
     return corp_memb_set
 
-        
+def get_over_time_stats():
+    now = datetime.now()
     
-
-            
-            
-        
-               
+    times = [
+        ("Year", timedelta(days=365)),
+        ("Month", timedelta(weeks=4)),
+        ("Last Month", timedelta(weeks=8)),
+        ("Last 3 Months", timedelta(weeks=12)),
+        ("Last 6 Months", timedelta(weeks=24)),
+    ]
     
+    stats = {}
+    
+    for time in times:
+        start_dt = now - time[1]
+        d = {}
+        active_mems = CorporateMembership.objects.filter(expiration_dt__gt=start_dt)
+        d['new'] = active_mems.filter(join_dt__gt=start_dt) #just joined in that time period
+        d['renewing'] = active_mems.filter(renewal=True)
+        d['active'] = active_mems
+        stats[time[0]] = d
+    
+    return stats
