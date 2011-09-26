@@ -7,8 +7,9 @@ from django.core.urlresolvers import reverse
 from base.http import Http403
 from event_logs.models import EventLog
 from perms.utils import has_perm, is_admin, get_notice_recipients
-from models import Topic, HelpFile, HelpFileMigration
-from forms import RequestForm
+
+from help_files.models import Topic, HelpFile, HelpFileMigration, Request
+from help_files.forms import RequestForm
 
 try:
     from notification import models as notification
@@ -130,3 +131,16 @@ def redirects(request, id):
             return HttpResponsePermanentRedirect(reverse('help_files'))
     except:
         return HttpResponsePermanentRedirect(reverse('help_files'))
+
+def requests(request, template_name="help_files/request_list.html"):
+    """
+        Display a list of help file requests
+    """
+    if not is_admin(request.user):
+        raise Http403
+    
+    requests = Request.objects.all()
+    
+    return render_to_response(template_name, {
+        'requests': requests,
+        }, context_instance=RequestContext(request))
