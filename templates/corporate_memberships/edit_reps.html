@@ -73,7 +73,7 @@
 	 {% endif %}
      
     
-    <form action="" method="post">
+    <form action="" method="post">{% csrf_token %}
 	<div class="forms">
 		{{ form|styled_form }}
 			<input type="submit" name="submit" value="Save and Continue Add Another" />
