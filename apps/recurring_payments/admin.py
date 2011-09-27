@@ -3,7 +3,6 @@ from django.core.urlresolvers import reverse
 
 from recurring_payments.models import RecurringPayment
 from recurring_payments.forms import RecurringPaymentForm
-from recurring_payments.authnet.cim import CIMCustomerProfile
 
 from event_logs.models import EventLog
 
@@ -50,18 +49,6 @@ class RecurringPaymentAdmin(admin.ModelAdmin):
         # save the object
         instance.save()
             
-        if not instance.customer_profile_id:
-            # create a customer profile on payment gateway
-            cp = CIMCustomerProfile()
-            d = {'email': instance.user.email,
-                 'description': instance.description,
-                 'customer_id': str(instance.id)}
-            success, response_d = cp.create(**d)
-            
-            if success:
-                instance.customer_profile_id = response_d['customer_profile_id']
-               
-                instance.save()
         
         return instance
     
