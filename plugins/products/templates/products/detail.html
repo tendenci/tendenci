@@ -16,12 +16,12 @@
 
 <style type="text/css">
 {% include "products/media/css/products.css" %}
-.product-image { float: left; width: 280px;}
+.product-image { float: left; width: 240px;}
 .product-image p { text-align: center; }
 .product-image .small-img { padding: 4px; border: solid 2px #ddd; }
-.product-info { float: right; width: 380px; }
+.product-info { float: right; width: 370px; }
 .product-info li { list-style-type: square; line-height: 16px; margin-bottom: 10px;}
-.meta {clear: both;}
+.more-products {clear: both;}
 </style>
 <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest Products' %}" href="{% url products.feed %}" />
 {% endblock %}
@@ -31,10 +31,10 @@
 <div class="product-image">
 {% for f in product.productfile_set.all %}
     {% if forloop.first %}
-        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=300x300 quality=90 %}" /></a>
+        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=220x220 quality=90 crop=true %}" /></a>
         <p>{{ f.photo_description }}</p>
     {% else %}
-        <a href="{% url file f.file_ptr_id %}"><img class="small-img" alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=90x90 quality=95 %}" /></a>
+        <a href="{% url file f.file_ptr_id %}"><img class="small-img" alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=80x80 quality=95 %}" /></a>
     {% endif %}
 {% endfor %}
 </div>
@@ -68,7 +68,7 @@
     <!-- AddThis Button END -->
     <p><a href="">Get a quote</a></p>
 </div>
-<div class="clear"><a href="{% url products.search %}">&larr; {% trans 'See all products' %}</a></div>
+<div class="more-products"><a href="{% url products.search %}">&larr; {% trans 'See all products' %}</a></div>
 {% include "products/meta.html" %}
 
 
