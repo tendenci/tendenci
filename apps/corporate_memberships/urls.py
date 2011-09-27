@@ -33,4 +33,7 @@ urlpatterns = patterns('corporate_memberships.views',
         
     # export 
     url(r"^export/$", "corp_export", name="corp_export"),
+    
+    # reports
+    url(r"^reports/corp_mems_over_time/$", "new_over_time_report", name="reports-corp-mems-over-time"),
 )
