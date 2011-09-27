@@ -103,6 +103,7 @@ def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_
                                       end_dt.strftime(format_date),
                                       end_dt.strftime(format_time))
             
+            
 def day_validate(dt, day):
     """
         validate if this day is valid in the month of dt, and correct it if not.
