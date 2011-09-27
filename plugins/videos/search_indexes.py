@@ -9,6 +9,7 @@ from models import Video
 class VideoIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')
     description = indexes.CharField(model_attr='description')
+    position = indexes.CharField(model_attr='position')
     category = indexes.CharField()
 
     # RSS fields
