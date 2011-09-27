@@ -476,3 +476,25 @@ class PaymentTransaction(models.Model):
     # True=success or False=failed
     status = models.BooleanField()
     #status_detail = models.CharField(max_length=50,  null=True)
+    
+    
+from django.db.models.signals import post_save
+
+def create_customer_profile(sender, instance=None, created=False, **kwargs):
+    """ A post_save signal of RecurringPayment to create a customer profile
+        on payment gateway.
+    """
+    if instance.id and (not instance.customer_profile_id):
+        # create a customer profile on payment gateway
+        cp = CIMCustomerProfile()
+        d = {'email': instance.user.email,
+             'description': instance.description,
+             'customer_id': str(instance.id)}
+        success, response_d = cp.create(**d)
+        
+        if success:
+            instance.customer_profile_id = response_d['customer_profile_id']
+           
+            instance.save()
+
+post_save.connect(create_customer_profile, sender=RecurringPayment)   
