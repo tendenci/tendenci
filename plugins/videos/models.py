@@ -31,14 +31,30 @@ class Video(TendenciBaseModel):
     video_url = models.CharField(max_length=500, help_text='Youtube, Vimeo, etc..')
     description = tinymce_models.HTMLField()
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
+    position = models.IntegerField(blank=True, null=True)
     
     objects = VideoManager()
     
     def __unicode__(self):
         return self.title
     
+    def save(self, *args, **kwargs):
+        model = self.__class__
+        
+        if self.position is None:
+            # Append
+            try:
+                last = model.objects.order_by('-position')[0]
+                self.position = last.position + 1
+            except IndexError:
+                # First row
+                self.position = 0
+        
+        return super(Video, self).save(*args, **kwargs)
+    
     class Meta:
         permissions = (("view_video","Can view video"),)
+        ordering = ('position',)
     
     @models.permalink
     def get_absolute_url(self):
