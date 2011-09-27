@@ -461,15 +461,18 @@ def get_over_time_stats():
         ("Last 6 Months", timedelta(weeks=24)),
     ]
     
-    stats = {}
+    stats = []
     
     for time in times:
         start_dt = now - time[1]
         d = {}
         active_mems = CorporateMembership.objects.filter(expiration_dt__gt=start_dt)
-        d['new'] = active_mems.filter(join_dt__gt=start_dt) #just joined in that time period
-        d['renewing'] = active_mems.filter(renewal=True)
-        d['active'] = active_mems
-        stats[time[0]] = d
+        d['new'] = active_mems.filter(join_dt__gt=start_dt).count() #just joined in that time period
+        d['renewing'] = active_mems.filter(renewal=True).count()
+        d['active'] = active_mems.count()
+        d['time'] = time[0]
+        d['start_dt'] = start_dt
+        d['end_dt'] = now
+        stats.append(d)
     
     return stats

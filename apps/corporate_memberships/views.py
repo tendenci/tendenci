@@ -1221,7 +1221,7 @@ def corp_export(request):
             'form':form
             }, context_instance=RequestContext(request))
             
-def new_over_time_report(request, template_name='reports/corp_memberships_over_time.html'):
+def new_over_time_report(request, template_name='reports/corp_mems_over_time.html'):
     if not is_admin(request.user):
         raise Http403
     
