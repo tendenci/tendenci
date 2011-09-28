@@ -36,4 +36,5 @@ urlpatterns = patterns('corporate_memberships.views',
     
     # reports
     url(r"^reports/corp_mems_over_time/$", "new_over_time_report", name="reports-corp-mems-over-time"),
+    url(r"^reports/corp_mems_summary/$", "corp_mems_summary", name="reports-corp-mems-summary"),
 )

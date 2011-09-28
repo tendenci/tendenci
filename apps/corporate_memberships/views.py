@@ -43,7 +43,8 @@ from corporate_memberships.utils import (get_corporate_membership_type_choices,
                                          corp_memb_update_perms,
                                          validate_import_file,
                                          new_corp_mems_from_csv,
-                                         get_over_time_stats)
+                                         get_over_time_stats,
+                                         get_summary)
 #from memberships.models import MembershipType
 from memberships.models import Membership
 
@@ -1229,4 +1230,14 @@ def new_over_time_report(request, template_name='reports/corp_mems_over_time.htm
     
     return render_to_response(template_name, {
         'stats':stats,
+        }, context_instance=RequestContext(request))
+
+def corp_mems_summary(request, template_name='reports/corp_mems_summary.html'):
+    if not is_admin(request.user):
+        raise Http403
+    
+    summary = get_summary()
+    
+    return render_to_response(template_name, {
+        'summary':summary,
         }, context_instance=RequestContext(request))
