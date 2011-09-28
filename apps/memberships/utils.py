@@ -350,4 +350,41 @@ def has_app_perm(user, perm, obj=None):
         return allow
     else:
         return False
+
+def get_over_time_stats():
+    """
+    Returns membership statistics over time.
+    time ranges are:
+    1 month,
+    2 months,
+    3 months,
+    6 months,
+    1 year
+    """
     
+    now = datetime.now()
+    
+    times = [
+        ("Month", timedelta(weeks=4), 0),
+        ("Last Month", timedelta(weeks=8), 1),
+        ("Last 3 Months", timedelta(weeks=12), 2),
+        ("Last 6 Months", timedelta(weeks=24), 3),
+        ("Year", timedelta(days=365), 4),
+    ]
+    
+    stats = []
+    
+    for time in times:
+        start_dt = now - time[1]
+        d = {}
+        active_mems = Membership.objects.filter(expire_dt__gt=start_dt)
+        d['new'] = active_mems.filter(subscribe_dt__gt=start_dt).count() #just joined in that time period
+        d['renewing'] = active_mems.filter(renewal=True).count()
+        d['active'] = active_mems.count()
+        d['time'] = time[0]
+        d['start_dt'] = start_dt
+        d['end_dt'] = now
+        d['order'] = time[2]
+        stats.append(d)
+    
+    return sorted(stats, key=lambda x:x['order'])
