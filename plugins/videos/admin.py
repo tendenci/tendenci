@@ -15,9 +15,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class VideoAdmin(admin.ModelAdmin):
 
-    list_display = ['view_on_site', 'edit_link' ,'title', 'category', 'position']
+    list_display = ['view_on_site', 'edit_link' ,'title', 'category', 'ordering']
     list_filter = ['category']
-    list_editable = ['position']
+    list_editable = ['ordering']
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['question','answer']
     fieldsets = (
@@ -34,7 +34,7 @@ class VideoAdmin(admin.ModelAdmin):
         )}),
     )
     form = VideoForm
-    ordering = ['-position']
+    ordering = ['-ordering']
 
     class Media:
         js = (
