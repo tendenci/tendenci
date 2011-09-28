@@ -23,7 +23,7 @@ from memberships.forms import AppForm, AppEntryForm, \
     AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm, EntryEditForm, \
     ExportForm
 from memberships.utils import new_mems_from_csv, is_import_valid, \
-    prepare_chart_data, get_days, has_app_perm
+    prepare_chart_data, get_days, has_app_perm, get_over_time_stats
 from memberships.tasks import ImportMembershipsTask
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
@@ -937,3 +937,10 @@ def report_members_summary(request, template_name='reports/membership_summary.ht
                 'date_range': (days[0], days[-1]),
             }, context_instance=RequestContext(request))
             
+@staff_member_required
+def report_members_over_time(request, template_name='reports/membership_over_time.html'):
+    stats = get_over_time_stats()
+    
+    return render_to_response(template_name, {
+        'stats': stats,
+    }, context_instance=RequestContext(request))
