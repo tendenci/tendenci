@@ -622,7 +622,7 @@ class Event(TendenciBaseModel):
     private = models.BooleanField() # hide from lists
     password = models.CharField(max_length=50, blank=True)
     
-    on_weekend = models.BooleanField(default=True)
+    on_weekend = models.BooleanField(default=True, help_text="This event occurs on weekends")
     
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
