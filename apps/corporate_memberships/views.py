@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -1221,10 +1222,13 @@ def corp_export(request):
     return render_to_response(template_name, {
             'form':form
             }, context_instance=RequestContext(request))
-            
+
+@staff_member_required             
 def new_over_time_report(request, template_name='reports/corp_mems_over_time.html'):
-    if not is_admin(request.user):
-        raise Http403
+    """
+    Shows a report of corp memberships over time.
+    1 report for 1 month, 2 months, 3 months, 6 months, and 1 year
+    """
     
     stats = get_over_time_stats()
     
@@ -1232,9 +1236,11 @@ def new_over_time_report(request, template_name='reports/corp_mems_over_time.htm
         'stats':stats,
         }, context_instance=RequestContext(request))
 
+@staff_member_required 
 def corp_mems_summary(request, template_name='reports/corp_mems_summary.html'):
-    if not is_admin(request.user):
-        raise Http403
+    """
+    Shows a report of corporate memberships per corporate membership type.
+    """
     
     summary = get_summary()
     
