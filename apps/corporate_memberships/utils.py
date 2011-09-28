@@ -454,11 +454,11 @@ def get_over_time_stats():
     now = datetime.now()
     
     times = [
-        ("Year", timedelta(days=365)),
-        ("Month", timedelta(weeks=4)),
-        ("Last Month", timedelta(weeks=8)),
-        ("Last 3 Months", timedelta(weeks=12)),
-        ("Last 6 Months", timedelta(weeks=24)),
+        ("Month", timedelta(weeks=4), 0),
+        ("Last Month", timedelta(weeks=8), 1),
+        ("Last 3 Months", timedelta(weeks=12), 2),
+        ("Last 6 Months", timedelta(weeks=24), 3),
+        ("Year", timedelta(days=365), 4),
     ]
     
     stats = []
@@ -473,9 +473,10 @@ def get_over_time_stats():
         d['time'] = time[0]
         d['start_dt'] = start_dt
         d['end_dt'] = now
+        d['order'] = time[2]
         stats.append(d)
     
-    return stats
+    return sorted(stats, key=lambda x:x['order'])
 
 def get_summary():
     now = datetime.now()
@@ -495,4 +496,4 @@ def get_summary():
             'total':mems.count(),
         })
     
-    return summary
+    return sorted(summary, key=lambda x:x['type'].name)
