@@ -43,3 +43,22 @@ h1 {
 tr.odd {
 	background-color: #DDDDDD;
 }
+
+.corp-mems-wrap {
+    margin-top: 10px;
+}
+
+.corp-mems-wrap td {
+    padding:5px;
+    border:solid 1px;
+}
+
+.corp-mems-wrap th {
+    padding:5px;
+    border:solid 1px;
+    background-color: #CCCCCC;
+}
+
+.corp-mems-stats {
+    padding-left:20px;
+}
