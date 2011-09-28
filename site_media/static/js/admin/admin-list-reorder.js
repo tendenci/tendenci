@@ -1,8 +1,8 @@
 $(document).ready(function() {
-    // Set this to the name of the column holding the position
-    pos_field = 'position';
+    // Set this to the name of the column holding the ordering
+    pos_field = 'ordering';
     
-    // Determine the column number of the position field
+    // Determine the column number of the ordering field
     pos_col = null;
     
     cols = $('#result_list tbody tr:first').children()
@@ -26,7 +26,7 @@ $(document).ready(function() {
     $(header).css('width', '1em')
     $(header).children('a').text('Move')
     
-    // Hide position field
+    // Hide ordering field
     $('#result_list tbody tr').each(function(index) {
         pos_td = $(this).children()[pos_col]
         input = $(pos_td).children('input').first()
@@ -43,7 +43,7 @@ $(document).ready(function() {
     sort_order = sorted.hasClass('descending') ? 'desc' : 'asc';
     
     if (sorted_col != pos_col) {
-        // Sorted column is not position column, bail out
+        // Sorted column is not ordering column, bail out
         console.info("Sorted column is not %s, bailing out", pos_field);
         return;
     }

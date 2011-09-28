@@ -1,21 +1,21 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import DataMigration
+from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(DataMigration):
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        for video in orm.Video.objects.all():
-            video.position = video.pk
-            video.save()
+        
+        # Adding field 'Video.ordering'
+        db.add_column('videos_video', 'ordering', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True), keep_default=False)
 
 
     def backwards(self, orm):
-        for video in orm.Video.objects.all():
-            video.position = 0
-            video.save()
+        
+        # Deleting field 'Video.ordering'
+        db.delete_column('videos_video', 'ordering')
 
 
     models = {
@@ -71,7 +71,7 @@ class Migration(DataMigration):
             'width': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'})
         },
         'videos.video': {
-            'Meta': {'ordering': "('position',)", 'object_name': 'Video'},
+            'Meta': {'ordering': "('ordering',)", 'object_name': 'Video'},
             'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -87,7 +87,7 @@ class Migration(DataMigration):
             'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'video_owner'", 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'position': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'ordering': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
