@@ -6,7 +6,8 @@
 <h1>{% trans "New and Renewing Corporate Memberships Overtime" %}</h1>
 
 {% for stat in stats %}
-    <h2>{{ stat.start_dt }} to {{ stat.end_dt }}</h2>
+    <h2>{{ stat.time }} to date</h2>
+    <p>({{ stat.start_dt }} to {{ stat.end_dt }})</p>
     <p>
         New Members:{{ stat.new }}
     </p>
