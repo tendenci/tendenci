@@ -32,11 +32,25 @@ def search(request, template_name="navs/search.html"):
         context_instance=RequestContext(request)
     )
 
+@login_required
 def detail(request, id, template_name="navs/detail.html"):
     nav = get_object_or_404(Nav, id=id)
     
     if not has_perm(request.user, 'navs.view_nave', nav):
         raise Http403
+        
+    log_defaults = {
+        'event_id': 195500,
+        'event_data': '%s (%d) viewed by %s' % (
+             nav._meta.object_name,
+             nav.pk, request.user
+        ),
+        'description': '%s viewed' % nav._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': nav,
+    }
+    EventLog.objects.log(**log_defaults)
     
     return render_to_response(
         template_name,
@@ -44,6 +58,7 @@ def detail(request, id, template_name="navs/detail.html"):
         context_instance=RequestContext(request),
     )
 
+@login_required
 def add(request, form_class=NavForm, template_name="navs/add.html"):
     if not has_perm(request.user, 'navs.add_nav'):
         raise Http403
@@ -53,8 +68,17 @@ def add(request, form_class=NavForm, template_name="navs/add.html"):
         if form.is_valid():
             nav = form.save(commit=False)
             nav = update_perms_and_save(request, form, nav)
+            log_defaults = {
+                    'event_id' : 195100,
+                    'event_data': '%s (%d) added by %s' % (nav._meta.object_name, nav.pk, request.user),
+                    'description': '%s added' % nav._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': nav,
+                }
+            EventLog.objects.log(**log_defaults)
             messages.add_message(request, messages.INFO, 'Successfully added %s' % nav)
-            return redirect('navs.detail', id=nav.id)
+            return redirect('navs.search')
     else:
         form = form_class(user=request.user)
         
@@ -64,7 +88,8 @@ def add(request, form_class=NavForm, template_name="navs/add.html"):
         context_instance=RequestContext(request),
     )
 
-def edit(request, id, form_class=NavForm, template_name="navs/add.html"):
+@login_required
+def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
     nav = get_object_or_404(Nav, id=id)
     if not has_perm(request.user, 'navs.change_nav'):
         raise Http403
@@ -74,13 +99,22 @@ def edit(request, id, form_class=NavForm, template_name="navs/add.html"):
         if form.is_valid():
             nav = form.save(commit=False)
             nav = update_perms_and_save(request, form, nav)
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % nav)
-            return redirect('navs.detail', id=nav.id)
+            log_defaults = {
+                    'event_id' : 195200,
+                    'event_data': '%s (%d) updated by %s' % (nav._meta.object_name, nav.pk, request.user),
+                    'description': '%s updated' % nav._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': nav,
+                }
+            EventLog.objects.log(**log_defaults)
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % nav)
+            return redirect('navs.search')
     else:
         form = form_class(user=request.user, instance=nav)
         
     return render_to_response(
         template_name,
-        {'form':form},
+        {'form':form, 'nav':nav},
         context_instance=RequestContext(request),
     )
