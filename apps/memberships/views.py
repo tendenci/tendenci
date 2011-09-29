@@ -731,7 +731,7 @@ def membership_import(request, step=None):
 
         result = ImportMembershipsTask.delay(app, memberships, fields)
         result.wait()
-        
+
         #clear these from the session
         request.session['membership.import.memberships'] = []
         request.session['membership.import.fields'] = []
