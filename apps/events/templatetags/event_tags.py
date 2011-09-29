@@ -102,7 +102,7 @@ def registration_pricing_and_button(context, event, user):
 
 class EventListNode(Node):
     def __init__(self, day, type_slug, ordering, context_var):
-        print ordering
+        #print ordering
         self.day = Variable(day)
         self.type_slug = Variable(type_slug)
         self.ordering = ordering
@@ -118,6 +118,7 @@ class EventListNode(Node):
             type = None
         
         day = datetime(day.year, day.month, day.day)
+        weekday = day.strftime('%a')
         #one day offset so we can get all the events on that day
         bound = timedelta(hours=23, minutes=59)
         
@@ -125,11 +126,16 @@ class EventListNode(Node):
         
         if type:
             sqs = sqs.filter(type_id=type.pk)
+            
+        if weekday == 'Sun' or weekday == 'Sat':
+            sqs = sqs.filter(on_weekend=True)
         
         if self.ordering:
             sqs = sqs.order_by(self.ordering)
         else:
             sqs = sqs.order_by('number_of_days', 'start_dt')
+            
+        print sqs
         events = [sq.object for sq in sqs]
         
         context[self.context_var] = events
