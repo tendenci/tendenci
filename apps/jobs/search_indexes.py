@@ -9,6 +9,7 @@ from perms.indexes import TendenciBaseSearchIndex
 
 class JobIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')
+    list_type = indexes.CharField(model_attr='list_type')
     description = indexes.CharField(model_attr='description')
     post_dt = indexes.DateTimeField(model_attr='post_dt', null=True)
     syndicate = indexes.BooleanField(model_attr='syndicate')
