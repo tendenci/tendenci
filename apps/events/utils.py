@@ -2,7 +2,7 @@ import re
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
 from django.contrib.auth.models import User
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 from profiles.models import Profile
@@ -919,3 +919,31 @@ def copy_event(event, user):
         )
     return new_event
 
+def get_active_days(event):
+    """
+    Returns date ranges where the event is active.
+    Each date range is a 2-tuple of dates.
+    [(start_dt, end_dt), (start_dt, end_dt)]
+    """
+    current_dt = event.start_dt
+    end_dt = event.end_dt
+    day_list = []
+    
+    start_dt = current_dt
+    while(current_dt<end_dt):
+        current_dt += timedelta(days=1)
+        start_weekday = start_dt.strftime('%a')
+        current_weekday = current_dt.strftime('%a')
+        if start_weekday == 'Sun' or start_weekday == 'Sat':
+            #skip if the event starts on a weekday
+            start_dt = current_dt
+        else:
+            if (current_weekday == 'Sun' or current_weekday == 'Sat') and not event.on_weekend:
+                day_list.append((start_dt, current_dt-timedelta(days=1)))
+                start_dt = current_dt
+    next_dt = current_dt-timedelta(days=1)
+    next_weekday = next_dt.strftime('%a')
+    if next_weekday != 'Sun' and next_weekday != 'Sat':
+        day_list.append((start_dt, next_dt))
+    
+    return day_list
