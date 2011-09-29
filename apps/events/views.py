@@ -34,7 +34,7 @@ from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
 from events.utils import get_event_spots_taken, update_event_spots_taken
-from events.utils import get_ievent, copy_event, email_admins
+from events.utils import get_ievent, copy_event, email_admins, get_active_days
 from perms.utils import has_perm, get_notice_recipients, \
     update_perms_and_save, get_administrators, is_admin
 from event_logs.models import EventLog
@@ -56,7 +56,12 @@ def index(request, id=None, template_name="events/view.html"):
         return HttpResponseRedirect(reverse('event.month'))
 
     event = get_object_or_404(Event, pk=id)
-
+    
+    if not event.on_weekend:
+        days = get_active_days(event)
+    else:
+        days = []
+    
     if has_perm(request.user, 'events.view_event', event):
 
         EventLog.objects.log(
@@ -80,6 +85,7 @@ def index(request, id=None, template_name="events/view.html"):
             'speakers': speakers,
             'organizer': organizer,
             'now': datetime.now(),
+            'days':days,
             },
             context_instance=RequestContext(request))
     else:

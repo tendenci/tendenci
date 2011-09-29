@@ -3,29 +3,75 @@
 {% load i18n %}
 {% load base_tags %}
 
+{% block title %}{{ product.name }} {{ product.category }} {{ product.subcategory }}{% endblock title %}
+{% block meta_description %}{{ product.name }} {% if product.brand %}by: {{ product.brand }}{% endif %} {{ product.description|striptags|truncatewords:"20" }}{% endblock %}
+
 {% block extra_head %}
 {{ block.super }}
+
+<meta property="og:image" content="{{ SITE_GLOBAL_SITEURL }}{% for f in product.productfile_set.all %}{% if forloop.first %}{% image_url f size=300x300 quality=90 %}{% endif %}{% endfor %}" />
+<meta property="og:title" content="{{ product.name }}"/>
+<meta property="og:description" content="{{ product.description|striptags|truncatewords:"20" }}"/>
+<meta property="og:url" content="{{ SITE_GLOBAL_SITEURL }}{{ product.get_absolute_url }}" />
+
 <style type="text/css">
 {% include "products/media/css/products.css" %}
+.product-image { float: left; width: 240px;}
+.product-image p { text-align: center; }
+.product-image .small-img { padding: 4px; border: solid 2px #ddd; }
+.product-info { float: right; width: 370px; }
+.product-info li { list-style-type: square; line-height: 16px; margin-bottom: 10px;}
+.more-products {clear: both;}
 </style>
 <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest Products' %}" href="{% url products.feed %}" />
 {% endblock %}
 
 {% block body %}
-<h1>{{ product.name }}</h1>
+
+<div class="product-image">
 {% for f in product.productfile_set.all %}
     {% if forloop.first %}
-        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=300x300 quality=90 %}" /></a><br />
+        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=220x220 quality=90 crop=true %}" /></a>
+        <p>{{ f.photo_description }}</p>
     {% else %}
-        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=90x90 quality=95 %}" /></a>
+        <a href="{% url file f.file_ptr_id %}"><img class="small-img" alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=80x80 quality=95 %}" /></a>
     {% endif %}
 {% endfor %}
-<div>{{ product.brand }}</div>
-{%if product.url %}<div>URL: <a href="{{ product.url }}">{{ product.url }}</a></div>{% endif %}
-<div>{{ product.item_number }}</div>
-<div>{{ product.description|safe }}</div>
+</div>
+<div class="product-info">
+    <h1>{{ product.name }}</h1>
+    {% if product.brand %}by: {{ product.brand }}{% endif %}
+    <div>{{ product.description|safe }}</div>
+    <ul>
+        {% if product.url %}<li><a href="{{ product.url }}">{{ product.url }}</a></li>{% endif %}
+        {% if product.item_number %}<li>Item number: {{ product.item_number }}</li>{% endif %}
+    </ul>
+    <div id="fb-root"></div>
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="true"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
 
-<div id="fb-root"></div>
+    
+    <!-- AddThis Button BEGIN -->
+    <div class="addthis_toolbox addthis_default_style ">
+    <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    <a class="addthis_button_tweet"></a>
+    <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    <a class="addthis_counter addthis_pill_style"></a>
+    </div>
+    <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-4e80e97c36c01c63"></script>
+    <!-- AddThis Button END -->
+    <p><a href="">Get a quote</a></p>
+</div>
+<div class="more-products"><a href="{% url products.search %}">&larr; {% trans 'See all products' %}</a></div>
+{% include "products/meta.html" %}
+
+
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) {return;}
@@ -34,7 +80,5 @@
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
 
-<div class="fb-like" data-send="true" data-width="450" data-show-faces="true"></div>
 
-<br /><a href="{% url products.search %}">{% trans 'See all products' %}</a>
 {% endblock body %}

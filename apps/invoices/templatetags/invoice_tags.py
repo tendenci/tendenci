@@ -58,7 +58,6 @@ def invoice_object_display(request, invoice):
 
         app_label = invoice.object_type.app_label
         template_name = "%s/invoice_view_display.html" % (app_label)
-        print template_name
         try:
             object_display = render_to_string(
                 template_name,

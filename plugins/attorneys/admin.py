@@ -131,6 +131,7 @@ class AttorneyAdmin(admin.ModelAdmin):
                 file.attorney = form.save()
                 file.content_type = ContentType.objects.get_for_model(file.attorney)
                 file.object_id = file.attorney.pk
+                file.name = file.file.name
                 file.creator = request.user
                 file.owner = request.user
                 file.save()

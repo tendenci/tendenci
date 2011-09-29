@@ -226,6 +226,7 @@ INSTALLED_APPS = (
     'social_auth',
     'campaign_monitor',
     'wp_importer',
+    'wp_exporter',
     'theme',
     'discounts',
     'metrics',
@@ -348,6 +349,9 @@ AUTHNET_MD5_HASH_VALUE = ''
 FIRSTDATA_POST_URL = 'https://secure.linkpt.net/lpcentral/servlet/lppay'
 MERCHANT_LOGIN = ""
 MERCHANT_TXN_KEY = ""
+
+AUTHNET_CIM_API_TEST_URL = "https://apitest.authorize.net/xml/v1/request.api"
+AUTHNET_CIM_API_URL = "https://api.authorize.net/xml/v1/request.api"
 
 # --------------------------------------#
 # RSS

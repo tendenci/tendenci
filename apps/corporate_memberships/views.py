@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -42,7 +43,9 @@ from corporate_memberships.utils import (get_corporate_membership_type_choices,
                                          dues_rep_emails_list,
                                          corp_memb_update_perms,
                                          validate_import_file,
-                                         new_corp_mems_from_csv)
+                                         new_corp_mems_from_csv,
+                                         get_over_time_stats,
+                                         get_summary)
 #from memberships.models import MembershipType
 from memberships.models import Membership
 
@@ -1219,13 +1222,28 @@ def corp_export(request):
     return render_to_response(template_name, {
             'form':form
             }, context_instance=RequestContext(request))
-            
-            
-            
+
+@staff_member_required             
+def new_over_time_report(request, template_name='reports/corp_mems_over_time.html'):
+    """
+    Shows a report of corp memberships over time.
+    1 report for 1 month, 2 months, 3 months, 6 months, and 1 year
+    """
     
+    stats = get_over_time_stats()
     
+    return render_to_response(template_name, {
+        'stats':stats,
+        }, context_instance=RequestContext(request))
+
+@staff_member_required 
+def corp_mems_summary(request, template_name='reports/corp_mems_summary.html'):
+    """
+    Shows a report of corporate memberships per corporate membership type.
+    """
     
+    summary = get_summary()
     
-    
-    
-    
+    return render_to_response(template_name, {
+        'summary':summary,
+        }, context_instance=RequestContext(request))

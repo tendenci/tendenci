@@ -1,0 +1,28 @@
+{% extends "reports/base.html" %}
+{% load reports_tags %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% trans "New and Renewing Corporate Memberships Overtime" %}</h1>
+<div class="corp-mems-wrap">
+{% for stat in stats %}
+    <h2>{{ stat.time }} to date</h2>
+    <div class="corp-mems-stats">
+        <p>({{ stat.start_dt }} to {{ stat.end_dt }})</p>
+        <p>
+            {% trans "New Members" %}: {{ stat.new }}
+        </p>
+        <p>
+            {% trans "Renewing Members" %}: {{ stat.renewing }}
+        </p>
+        <p>
+            {% trans "Total" %}: {{ stat.new|add:stat.renewing }}
+        </p>
+        <p>
+            {% trans "Total Active Corporate Memberships" %}: {{ stat.active }}
+        </p>
+    </div>
+{% endfor %}
+</div>
+{% endblock content %}
+

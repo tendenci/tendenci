@@ -23,7 +23,7 @@ from memberships.forms import AppForm, AppEntryForm, \
     AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm, EntryEditForm, \
     ExportForm
 from memberships.utils import new_mems_from_csv, is_import_valid, \
-    prepare_chart_data, get_days, has_app_perm
+    prepare_chart_data, get_days, has_app_perm, get_over_time_stats
 from memberships.tasks import ImportMembershipsTask
 from user_groups.models import GroupMembership
 from perms.utils import get_notice_recipients, \
@@ -681,9 +681,10 @@ def membership_import(request, step=None):
                 cleaned_data = form.save(step=step)
                 file_path = request.session.get('membership.import.file_path')
 
-                memberships = new_mems_from_csv(file_path, app, cleaned_data)
+                memberships, no_memtypes = new_mems_from_csv(file_path, app, cleaned_data)
 
                 request.session['membership.import.memberships'] = memberships
+                request.session['membership.import.no_memtypes'] = no_memtypes
                 request.session['membership.import.fields'] = cleaned_data
 
                 return redirect('membership_import_preview')
@@ -699,16 +700,23 @@ def membership_import(request, step=None):
     if step_numeral == 3:  # preview
         template_name = 'memberships/import-preview.html'
         memberships = request.session.get('membership.import.memberships')
-
-        added, skipped = [], []
+        no_memtypes = request.session.get('membership.import.no_memtypes')
+        added = []
+        skipped = []
+        
+        for skip in skipped:
+            print skip
+        
         for membership in memberships:
+            print membership
             if membership.pk: skipped.append(membership)
             else: added.append(membership)
-
+        
         return render_to_response(template_name, {
         'memberships':memberships,
         'added': added,
         'skipped': skipped,
+        'no_memtypes':no_memtypes,
         'datetime': datetime,
         }, context_instance=RequestContext(request))
 
@@ -723,6 +731,10 @@ def membership_import(request, step=None):
 
         result = ImportMembershipsTask.delay(app, memberships, fields)
         result.wait()
+
+        #clear these from the session
+        request.session['membership.import.memberships'] = []
+        request.session['membership.import.fields'] = []
 
         return redirect('membership_import_status', result.task_id)
         
@@ -742,7 +754,9 @@ def membership_import_status(request, task_id, template_name = 'memberships/impo
         task = None
     
     if task and task.status == "SUCCESS":
+        
         memberships, added, skipped = task.result
+        
         return render_to_response(template_name, {
             'memberships': memberships,
             'added': added,
@@ -923,3 +937,10 @@ def report_members_summary(request, template_name='reports/membership_summary.ht
                 'date_range': (days[0], days[-1]),
             }, context_instance=RequestContext(request))
             
+@staff_member_required
+def report_members_over_time(request, template_name='reports/membership_over_time.html'):
+    stats = get_over_time_stats()
+    
+    return render_to_response(template_name, {
+        'stats': stats,
+    }, context_instance=RequestContext(request))

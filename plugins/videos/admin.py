@@ -4,6 +4,7 @@ from django.utils.encoding import iri_to_uri
 from django.conf import settings
 
 from event_logs.models import EventLog
+from perms.utils import update_perms_and_save
 from perms.object_perms import ObjectPermission
 from models import Video, Category
 from forms import VideoForm
@@ -14,8 +15,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class VideoAdmin(admin.ModelAdmin):
 
-    list_display = ['view_on_site', 'edit_link' ,'title', 'category']
+    list_display = ['view_on_site', 'edit_link' ,'title', 'category', 'ordering']
     list_filter = ['category']
+    list_editable = ['ordering']
     prepopulated_fields = {'slug': ['title']}
     search_fields = ['question','answer']
     fieldsets = (
@@ -32,10 +34,14 @@ class VideoAdmin(admin.ModelAdmin):
         )}),
     )
     form = VideoForm
+    ordering = ['-ordering']
 
     class Media:
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery-ui-1.8.2.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
     
     def edit_link(self, obj):
@@ -45,7 +51,7 @@ class VideoAdmin(admin.ModelAdmin):
     edit_link.short_description = 'edit'
     
     def view_on_site(self, obj):
-        link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
+        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
             reverse('video.details', args=[obj.slug]),
             obj.title,
@@ -54,7 +60,7 @@ class VideoAdmin(admin.ModelAdmin):
         return link
     view_on_site.allow_tags = True
     view_on_site.short_description = 'view'
-    
+
     def log_deletion(self, request, object, object_repr):
         super(VideoAdmin, self).log_deletion(request, object, object_repr)
         log_defaults = {
@@ -95,34 +101,11 @@ class VideoAdmin(admin.ModelAdmin):
         EventLog.objects.log(**log_defaults)
     
     def save_model(self, request, object, form, change):
+        """
+        update the permissions backend
+        """
         instance = form.save(commit=False)
-
-        # set up user permission
-        instance.allow_user_view, instance.allow_user_edit = form.cleaned_data['user_perms']
-        
-        # adding the helpfile
-        if not change:
-            instance.creator = request.user
-            instance.creator_username = request.user.username
-            instance.owner = request.user
-            instance.owner_username = request.user.username
- 
-        # save the object
-        instance.save()
-        form.save_m2m()
-
-        # permissions
-        if not change:
-            # assign permissions for selected groups
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
-            # assign creator permissions
-            ObjectPermission.objects.assign(instance.creator, instance) 
-        else:
-            # assign permissions
-            ObjectPermission.objects.remove_all(instance)
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
-            ObjectPermission.objects.assign(instance.creator, instance) 
-        
+        instance = update_perms_and_save(request, form, instance)
         return instance
 
     def change_view(self, request, object_id, extra_context=None):

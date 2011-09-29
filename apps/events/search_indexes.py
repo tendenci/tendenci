@@ -13,6 +13,9 @@ class EventIndex(TendenciBaseSearchIndex):
     description = indexes.CharField(model_attr='description')
     start_dt = indexes.DateTimeField(model_attr='start_dt')
     end_dt = indexes.DateTimeField(model_attr='end_dt')
+    on_weekend = indexes.BooleanField(model_attr='on_weekend')
+    
+    # event type id
     type_id = indexes.IntegerField(null=True)
     
     # amount of registrations spots left
