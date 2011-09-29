@@ -1,0 +1,4 @@
+body { height:100%; }
+#divAuthorizeNetPopupScreen { position:absolute; }
+.AuthorizeNetShadow { display:none; }
+.AuthorizeNetPopupGrayFrameTheme .AuthorizeNetPopupLogo { background-image:none; filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='powered_simple.png', sizingMethod='scale'); }

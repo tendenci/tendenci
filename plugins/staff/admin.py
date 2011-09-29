@@ -172,6 +172,7 @@ class StaffAdmin(admin.ModelAdmin):
                 file.staff = form.save()
                 file.content_type = ContentType.objects.get_for_model(file.staff)
                 file.object_id = file.staff.pk
+                file.name = file.file.name
                 file.creator = request.user
                 file.owner = request.user
                 file.save()

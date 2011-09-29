@@ -168,6 +168,7 @@ class CaseStudyAdmin(admin.ModelAdmin):
                 image.case_study = form.save()
                 image.content_type = ContentType.objects.get_for_model(image.case_study)
                 image.object_id = image.case_study.pk
+                image.name = image.file.name
                 image.creator = request.user
                 image.owner = request.user
                 image.save()

@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 import dateutil.parser as dparser
 from django.utils.encoding import smart_str
@@ -450,11 +450,50 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
         
     return corp_memb_set
 
-        
+def get_over_time_stats():
+    now = datetime.now()
     
+    times = [
+        ("Month", timedelta(weeks=4), 0),
+        ("Last Month", timedelta(weeks=8), 1),
+        ("Last 3 Months", timedelta(weeks=12), 2),
+        ("Last 6 Months", timedelta(weeks=24), 3),
+        ("Year", timedelta(days=365), 4),
+    ]
+    
+    stats = []
+    
+    for time in times:
+        start_dt = now - time[1]
+        d = {}
+        active_mems = CorporateMembership.objects.filter(expiration_dt__gt=start_dt, approved=True)
+        d['new'] = active_mems.filter(join_dt__gt=start_dt).count() #just joined in that time period
+        d['renewing'] = active_mems.filter(renewal=True).count()
+        d['active'] = active_mems.count()
+        d['time'] = time[0]
+        d['start_dt'] = start_dt
+        d['end_dt'] = now
+        d['order'] = time[2]
+        stats.append(d)
+    
+    return sorted(stats, key=lambda x:x['order'])
 
-            
-            
-        
-               
+def get_summary():
+    now = datetime.now()
+    summary = []
+    types = CorporateMembershipType.objects.all()
     
+    for type in types:
+        mems = CorporateMembership.objects.filter(corporate_membership_type = type)
+        active = mems.filter(expiration_dt__gt=now, approved=True)
+        expired = mems.filter(expiration_dt__lte=now, approved=True)
+        pending = mems.filter(approved=False)
+        summary.append({
+            'type':type,
+            'active':active.count(),
+            'pending':pending.count(),
+            'expired':expired.count(),
+            'total':mems.count(),
+        })
+    
+    return sorted(summary, key=lambda x:x['type'].name)

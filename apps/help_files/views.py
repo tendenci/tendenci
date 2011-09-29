@@ -6,9 +6,15 @@ from django.core.urlresolvers import reverse
 
 from base.http import Http403
 from event_logs.models import EventLog
-from perms.utils import has_perm
-from models import Topic, HelpFile, HelpFileMigration
-from forms import RequestForm
+from perms.utils import has_perm, is_admin, get_notice_recipients
+
+from help_files.models import Topic, HelpFile, HelpFileMigration, Request
+from help_files.forms import RequestForm
+
+try:
+    from notification import models as notification
+except:
+    notification = None
 
 
 def index(request, template_name="help_files/index.html"):
@@ -92,7 +98,17 @@ def request_new(request, template_name="help_files/request_new.html"):
     if request.method == 'POST':
         form = RequestForm(request.POST)
         if form.is_valid():
-            form.save()
+            instance = form.save()
+            if not is_admin(request.user):
+                # send notification to administrators
+                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
+                if recipients:
+                    if notification:
+                        extra_context = {
+                            'object': instance,
+                            'request': request,
+                        }
+                        notification.send_emails(recipients,'help_file_requested', extra_context)
             messages.add_message(request, messages.INFO, 'Thanks for requesting a new help file!')
             return HttpResponseRedirect(reverse('help_files'))
     else:
@@ -115,3 +131,16 @@ def redirects(request, id):
             return HttpResponsePermanentRedirect(reverse('help_files'))
     except:
         return HttpResponsePermanentRedirect(reverse('help_files'))
+
+def requests(request, template_name="help_files/request_list.html"):
+    """
+        Display a list of help file requests
+    """
+    if not is_admin(request.user):
+        raise Http403
+    
+    requests = Request.objects.all()
+    
+    return render_to_response(template_name, {
+        'requests': requests,
+        }, context_instance=RequestContext(request))

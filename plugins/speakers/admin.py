@@ -171,6 +171,7 @@ class SpeakerAdmin(admin.ModelAdmin):
                 file.speaker = form.save()
                 file.content_type = ContentType.objects.get_for_model(file.speaker)
                 file.object_id = file.speaker.pk
+                file.name = file.file.name
                 file.creator = request.user
                 file.owner = request.user
                 file.save()
