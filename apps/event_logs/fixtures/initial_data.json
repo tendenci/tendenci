@@ -2050,5 +2050,14 @@
             "source": "before_and_afters",
             "hex_color": "FFCCBB"
         }
+    },
+    {
+        "pk": 50,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1120000,
+            "source": "recurring_payments",
+            "hex_color": "1A7731"
+        }
     }
 ]

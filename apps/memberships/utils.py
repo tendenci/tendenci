@@ -124,6 +124,7 @@ def new_mems_from_csv(file_path, app, columns):
         membership_dicts.append(membership)
 
     membership_set = []
+    skipped_set = []
 
     def clean_username(un):
         import re
@@ -154,6 +155,9 @@ def new_mems_from_csv(file_path, app, columns):
         try:  # if membership type exists; import membership
             membership_type = MembershipType.objects.get(name = m['membership-type'])
         except:
+            for key in m.keys():
+                m[slugify(key).replace('-', '_')] = m.pop(key)
+            skipped_set.append(m)
             continue  # on to the next one
         
         try: join_dt = dt_parse(m['join-date'])
@@ -224,8 +228,8 @@ def new_mems_from_csv(file_path, app, columns):
         )
 
         # get subscribe_dt
-        subscribe_dt = renew_dt or join_dt or datetime.now()
-
+        subscribe_dt = join_dt or datetime.now()
+        
         if 'cc' in m.get('payment-method', ''):
             payment_method_id = 1
         elif 'check' in m.get('payment-method', ''):
@@ -265,7 +269,7 @@ def new_mems_from_csv(file_path, app, columns):
 
         membership_set.append(membership)
 
-    return membership_set
+    return membership_set, skipped_set
 
 def is_import_valid(file_path):
     """
@@ -346,4 +350,41 @@ def has_app_perm(user, perm, obj=None):
         return allow
     else:
         return False
+
+def get_over_time_stats():
+    """
+    Returns membership statistics over time.
+    time ranges are:
+    1 month,
+    2 months,
+    3 months,
+    6 months,
+    1 year
+    """
     
+    now = datetime.now()
+    
+    times = [
+        ("Month", timedelta(weeks=4), 0),
+        ("Last Month", timedelta(weeks=8), 1),
+        ("Last 3 Months", timedelta(weeks=12), 2),
+        ("Last 6 Months", timedelta(weeks=24), 3),
+        ("Year", timedelta(days=365), 4),
+    ]
+    
+    stats = []
+    
+    for time in times:
+        start_dt = now - time[1]
+        d = {}
+        active_mems = Membership.objects.filter(expire_dt__gt=start_dt)
+        d['new'] = active_mems.filter(subscribe_dt__gt=start_dt).count() #just joined in that time period
+        d['renewing'] = active_mems.filter(renewal=True).count()
+        d['active'] = active_mems.count()
+        d['time'] = time[0]
+        d['start_dt'] = start_dt
+        d['end_dt'] = now
+        d['order'] = time[2]
+        stats.append(d)
+    
+    return sorted(stats, key=lambda x:x['order'])

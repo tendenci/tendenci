@@ -73,9 +73,10 @@ class EventForm(TendenciBaseForm):
         model = Event
         fields = (
             'title',
-            'description', 
+            'description',
             'start_dt',
             'end_dt',
+            'on_weekend',
             'timezone',
             'type',
             'allow_anonymous_view',
@@ -90,6 +91,7 @@ class EventForm(TendenciBaseForm):
                                  'description',
                                  'start_dt',
                                  'end_dt',
+                                 'on_weekend',
                                  'timezone',
                                  'type',
                                  ],

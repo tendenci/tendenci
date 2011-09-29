@@ -121,5 +121,54 @@
             });
         });
 	</script>
+    <script type="text/javascript">
+        //script for hiding and showing the 'On weekend' field
+        //when nesessary.
+        
+        function find_field(name) {
+            //finds a field given a label
+            //don't use if multiple fields share the same label
+            labels = $(".forms").find("label");
+            label = labels[0];
+            i = 0;
+            while((label.innerHTML!=name) && (i < labels.length)) {
+                i++;
+                label = labels[i];
+            };
+            field = $('.'+$.trim(label.parentNode.parentNode.attributes[0].value));
+            return field;
+        };
+        
+        weekend = find_field("On weekend");
+        start_dt = $(find_field("Start Date/Time").find('input')[0]);
+        start_dt_val = start_dt.val();
+        end_dt = $(find_field("End Date/Time").find('input')[0]);
+        end_dt_val = end_dt.val();
+        
+        if(start_dt_val != end_dt_val){
+            weekend.show();
+        } else {
+            weekend.hide();
+        }
+        
+        start_dt.change(function() {
+            val = end_dt.val()
+            if ($(this).val() == val) {
+                weekend.hide();
+            } else {
+                weekend.show();
+            }
+        });
+        
+        end_dt.change(function() {
+            val = start_dt.val()
+            if ($(this).val() == val) {
+                weekend.hide();
+            } else {
+                weekend.show();
+            }
+        });
+        
+    </script>
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&callback=initialize"></script>
 {% endblock %}

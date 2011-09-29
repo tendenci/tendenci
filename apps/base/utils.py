@@ -103,6 +103,7 @@ def format_datetime_range(start_dt, end_dt, format_date='%A, %B %d, %Y', format_
                                       end_dt.strftime(format_date),
                                       end_dt.strftime(format_time))
             
+            
 def day_validate(dt, day):
     """
         validate if this day is valid in the month of dt, and correct it if not.
@@ -434,7 +435,7 @@ def image_rescale(img, size, force=True):
             crop_height = crop_width / dst_ratio
             x_offset = 0
             y_offset = float(src_height - crop_height) / 3
-        img = img.crop((x_offset, y_offset, x_offset+int(crop_width), y_offset+int(crop_height)))
+        img = img.crop((int(x_offset), int(y_offset), int(x_offset)+int(crop_width), int(y_offset)+int(crop_height)))
         img = img.resize((dst_width, dst_height), pil.ANTIALIAS)
     
     return img

@@ -385,6 +385,13 @@ colors = {
     '1090300':'AA2222', # delete
     '1090400':'CC55EE', # search
     '1090500':'55AACC', # detail
+    
+    # recurring payments - green
+    '1120000':'1A7731', #base
+    '1120100':'14A037', # add
+    '1120200':'478256', # edit
+    '1120300':'8FBA9A', # delete
+    '1120400':'14E548', # search
 
 #    '':'', # base
 #    '':'119933', # add
