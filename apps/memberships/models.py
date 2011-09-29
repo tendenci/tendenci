@@ -372,6 +372,9 @@ class Membership(TendenciBaseModel):
         memb_archive.archive_user = user
         memb_archive.save()
 
+    def get_join_dt(self):
+        pass
+
 class MembershipArchive(TendenciBaseModel):
     """
     Keep a record of the old memberships.
@@ -693,7 +696,7 @@ class App(TendenciBaseModel):
     description = models.TextField(blank=True,
         help_text="Description of this application. Displays at top of application.")
     confirmation_text = tinymce_models.HTMLField()
-    notes = tinymce_models.HTMLField()
+    notes = tinymce_models.HTMLField(blank=True)
     use_captcha = models.BooleanField(_("Use Captcha"), default=1)
     membership_types = models.ManyToManyField(MembershipType, verbose_name="Membership Types")
     payment_methods = models.ManyToManyField(PaymentMethod, verbose_name="Payment Methods")
@@ -925,6 +928,28 @@ class AppEntry(TendenciBaseModel):
         if self.membership:
             return self.membership.user
 
+    def get_expire_dt(self):
+        """
+        Get the expiration date.
+        Consider their corporate membership.
+
+        Members under a corporate membership expire
+        when their corporate membership expires.
+        """
+        from corporate_memberships.models import CorporateMembership
+
+        expire_dt = None
+        if self.corporate_membership_id:
+            try:
+                expire_dt = CorporateMembership.objects.get(pk=self.corporate_membership_id).corp_memb.expiration_dt
+            except CorporateMembership.DoesNotExist:
+                pass
+
+        if not expire_dt:  # membership record not found; new membership
+            expire_dt = self.membership_type.get_expiration_dt(join_dt=datetime.now())
+
+        return expire_dt
+
     def approve(self):
         """
         # Create membership/archive membership
@@ -981,6 +1006,20 @@ class AppEntry(TendenciBaseModel):
                 'membership_update_dt':membership.update_dt,
             })
 
+            # update current membership record
+            membership.membership_type = self.membership_type
+            membership.renewal = self.membership_type.renewal
+            membership.subscribe_dt = datetime.now()
+            membership.expire_dt = self.get_expire_dt()
+            membership.payment_method = None
+            membership.ma = self.app
+            membership.corporate_membership_id = self.corporate_membership_id
+            membership.creator = user
+            membership.creator_username = user.username
+            membership.owner = user
+            membership.owner_username = user.username
+            membership.save()
+
         try: # get membership
             membership = Membership.objects.get(**{
                 'membership_type': self.membership_type,
@@ -989,19 +1028,6 @@ class AppEntry(TendenciBaseModel):
                 'status_detail': 'active',
             })
         except: # or create membership
-            # for the individual members under a corporate, their expire_dt should be 
-            # the same as their corporate membership.
-            expire_dt = ''
-            if self.corporate_membership_id:
-                from corporate_memberships.models import CorporateMembership
-                try:
-                    corp_memb = CorporateMembership.objects.get(pk=self.corporate_membership_id)
-                    expire_dt = corp_memb.expiration_dt
-                except CorporateMembership.DoesNotExist:
-                    self.corporate_membership_id = 0
-
-            if not expire_dt:  # membership record not found; new membership (join; not renewal)
-                expire_dt = self.membership_type.get_expiration_dt(join_dt=datetime.now())
                 
             membership = Membership.objects.create(**{
                 'member_number': self.app.entries.count() + 1000,
@@ -1009,7 +1035,7 @@ class AppEntry(TendenciBaseModel):
                 'user':user,
                 'renewal': self.membership_type.renewal,
                 'subscribe_dt':datetime.now(),
-                'expire_dt': expire_dt,
+                'expire_dt': self.get_expire_dt(),
                 'payment_method': None,
                 'ma':self.app,
                 'corporate_membership_id': self.corporate_membership_id,
