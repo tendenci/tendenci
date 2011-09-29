@@ -135,7 +135,7 @@ class EventListNode(Node):
         else:
             sqs = sqs.order_by('number_of_days', 'start_dt')
             
-        print sqs
+        #print sqs
         events = [sq.object for sq in sqs]
         
         context[self.context_var] = events
