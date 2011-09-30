@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from perms.models import TendenciBaseModel
+from pages.models import Page
 from navs.managers import NavManager
 
 class Nav(TendenciBaseModel):
@@ -22,9 +23,9 @@ class Nav(TendenciBaseModel):
         return('navs.detail', [self.pk])
     
 class NavItem(models.Model):
-    menu = models.ForeignKey(Nav)
+    nav = models.ForeignKey(Nav)
     label = models.CharField(max_length=100)
-    link = models.URLField()
+    page = models.ForeignKey(Page)
     
     def __unicode__(self):
-        return '%s - %s' % (self.menu.title, self.label)
+        return '%s - %s' % (self.nav.title, self.label)

@@ -8,8 +8,9 @@ from django.http import HttpResponse
 from base.http import Http403
 from event_logs.models import EventLog
 from perms.utils import has_perm, update_perms_and_save, is_admin
-from navs.models import Nav
-from navs.forms import NavForm
+from pages.models import Page
+from navs.models import Nav, NavItem
+from navs.forms import NavForm, PageSelectForm
 
 @login_required
 def search(request, template_name="navs/search.html"):
@@ -36,7 +37,7 @@ def search(request, template_name="navs/search.html"):
 def detail(request, id, template_name="navs/detail.html"):
     nav = get_object_or_404(Nav, id=id)
     
-    if not has_perm(request.user, 'navs.view_nave', nav):
+    if not has_perm(request.user, 'navs.view_nav', nav):
         raise Http403
         
     log_defaults = {
@@ -91,7 +92,7 @@ def add(request, form_class=NavForm, template_name="navs/add.html"):
 @login_required
 def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
     nav = get_object_or_404(Nav, id=id)
-    if not has_perm(request.user, 'navs.change_nav'):
+    if not has_perm(request.user, 'navs.change_nav', nav):
         raise Http403
     
     if request.method == "POST":
@@ -118,3 +119,35 @@ def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
         {'form':form, 'nav':nav},
         context_instance=RequestContext(request),
     )
+
+@login_required
+def edit_items(request, id, template_name="navs/nav_items.html"):
+    nav = get_object_or_404(Nav, id=id)
+    if not has_perm(request.user, 'navs.change_nav', nav):
+        raise Http403
+    
+    if request.method == "POST":
+        form = PageSelectForm(request.POST)
+        if form.is_valid():
+            pages = form.cleaned_data['pages']
+            for page in pages:
+                item = NavItem.objects.create(page=page, nav=nav, label=page.title)
+    else:
+        form = PageSelectForm()
+        
+    return render_to_response(
+        template_name,
+        {'form':form, 'nav':nav},
+        context_instance=RequestContext(request),
+    )
+
+@login_required
+def delete_item(request):
+    if request.method == "POST":
+        id = request.POST.get('id')
+        item = get_object_or_404(NavItem, id=id)
+        nav = item.nav
+        if not has_perm(request.user, 'navs.change_nav', nav):
+            raise Http403
+        item.delete()
+    return redirect("navs.edit_items", id=nav.id)

@@ -16,7 +16,7 @@
 }
 
 .t h1 {
-	margin: 0;
+	margin: 0 auto 10px 0;
 }
 
 .t .navs-wrap {
@@ -111,4 +111,25 @@ div.forms div.form-field div.id_end_dt .field input {
 
 div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
 	width: 80px;
+}
+
+.page-select {
+    overflow-x: auto;
+    overflow-y: visible;
+    width: 95%;
+    height: 300px;
+}
+
+.nav-edit-menu {
+    float: left;
+    width: 25%;
+}
+
+.nav-edit-content {
+    padding-left: 25%;
+}
+
+.nav-item {
+    border: 1px solid #CCC;
+    padding: 5px;
 }
