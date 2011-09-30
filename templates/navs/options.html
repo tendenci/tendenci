@@ -9,7 +9,7 @@
     
 	{% if can_edit %}
 		<a class="option-link edit" href="{% url navs.edit opt_object.pk %}">{% trans "Edit" %}</a>
-        <a class="option-link edit" href="">{% trans "Edit Nav Items" %}</a>
+        <a class="option-link edit" href="{% url navs.edit_items opt_object.pk %}">{% trans "Edit Nav Items" %}</a>
 	{% endif %}
     
     {% if can_delete %}
