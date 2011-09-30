@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
-
+from pages.models import Page
 from navs.models import Nav, NavItem
 
 class NavForm(TendenciBaseForm):
@@ -44,3 +44,10 @@ class NavForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })
                     ]
+
+class PageSelectForm(forms.Form):
+    pages = forms.ModelMultipleChoiceField(label = _('Pages'),
+                queryset = Page.objects.all(), widget=forms.CheckboxSelectMultiple)
+    
+    def __init__(self, *args, **kwargs):
+        super(PageSelectForm, self).__init__(*args, **kwargs)

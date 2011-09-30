@@ -1,0 +1,52 @@
+{% extends 'navs/base-wide.html' %}
+{% load nav_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} {% trans "Items" %}{% endblock title %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/navs.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+	{% nav_nav request.user nav %}
+    <h1>{% trans "Items" %} for {{ nav.title }}</h1>
+    
+    <div class="nav-wrap">
+        <div class="nav-edit-menu">
+            <div class="forms">
+                <form action="{% url navs.edit_items nav.id %}" method="post">{% csrf_token %}
+                <h2>{{ form.pages.label }}</h2>
+                <div class="page-select">
+                    {{ form.pages }}
+                </div>
+                <input type="submit" value="{% trans 'Add to' %} {{ nav.title }}" />
+                </form>
+            </div>
+        </div>
+        <div class="nav-edit-content">
+            {% for item in nav.navitem_set.all %}
+                <div class="nav-item">
+                    <h2>{{ item.label }}</h2>
+                    <p>Page: <a href="{{ item.page.get_absolute_url }}">{{ item.label }}</a></p>
+                    <form method="POST" action="{% url navs.delete_item %}">{% csrf_token %}
+                        <input style="display:none;" type="text" name="id" value={{ item.id }}>
+                        <input type="submit" value="Remove">
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+        <div style="clear:both"></div>
+    </div>
+</div>
+{% endblock body %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}
+
