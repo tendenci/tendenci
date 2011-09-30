@@ -55,6 +55,7 @@
 
             <!-- delete-contact form -->
             <form name="contact-delete" method="POST" action="{% url contact.delete contact.pk %}">
+                {% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
 
