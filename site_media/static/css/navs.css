@@ -132,4 +132,13 @@ div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
 .nav-item {
     border: 1px solid #CCC;
     padding: 5px;
+    margin-bottom: 10px;
+}
+
+.nav-item-label {
+    cursor: pointer;
+}
+
+.nav-item-field{
+    padding: 5px;
 }
