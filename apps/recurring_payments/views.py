@@ -2,9 +2,8 @@ from datetime import datetime
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse
+#from django.conf import settings
+#from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum
 
@@ -12,14 +11,11 @@ from recurring_payments.models import (RecurringPayment,
                                        PaymentProfile, 
                                        PaymentTransaction,
                                        RecurringPaymentInvoice)
-from recurring_payments.authnet.cim import (CIMCustomerProfile,
-                                            CIMCustomerPaymentProfile,
-                                            CIMHostedProfilePage)
-from recurring_payments.authnet.utils import get_token, get_test_mode
+from recurring_payments.authnet.utils import get_test_mode
 
-from perms.utils import has_perm, is_admin
+from perms.utils import is_admin
 from base.http import Http403
-from site_settings.utils import get_setting
+#from site_settings.utils import get_setting
 
 @login_required
 def view_account(request, recurring_payment_id, 
@@ -145,6 +141,7 @@ def transaction_receipt(request, recurring_payment_id, payment_transaction_id,
                     'payment_transaction': payment_transaction
                                               }, 
         context_instance=RequestContext(request))
+    
     
     
     

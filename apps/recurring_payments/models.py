@@ -478,6 +478,7 @@ class PaymentTransaction(models.Model):
     #status_detail = models.CharField(max_length=50,  null=True)
     
     
+    
 from django.db.models.signals import post_save
 
 def create_customer_profile(sender, instance=None, created=False, **kwargs):
