@@ -25,6 +25,10 @@ class Nav(TendenciBaseModel):
 class NavItem(models.Model):
     nav = models.ForeignKey(Nav)
     label = models.CharField(max_length=100)
+    title = models.CharField(_("Title Attribute"), max_length=100, blank=True, null=True)
+    css = models.CharField(_("CSS Class"), max_length=100, blank=True, null=True)
+    ordering = models.IntegerField(default=0)
+    level = models.IntegerField(default=0)
     page = models.ForeignKey(Page)
     
     def __unicode__(self):
