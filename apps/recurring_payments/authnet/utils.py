@@ -142,6 +142,7 @@ def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage):
         token = response_d['token']
     
     return token, gateway_error
+
     
     
     
