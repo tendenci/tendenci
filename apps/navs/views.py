@@ -4,13 +4,15 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
 from django.http import HttpResponse
+from django.forms.models import modelformset_factory
+from django.utils import simplejson as json
 
 from base.http import Http403
 from event_logs.models import EventLog
 from perms.utils import has_perm, update_perms_and_save, is_admin
 from pages.models import Page
 from navs.models import Nav, NavItem
-from navs.forms import NavForm, PageSelectForm
+from navs.forms import NavForm, PageSelectForm, ItemForm
 
 @login_required
 def search(request, template_name="navs/search.html"):
@@ -126,28 +128,45 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
     if not has_perm(request.user, 'navs.change_nav', nav):
         raise Http403
     
+    ItemFormSet = modelformset_factory(NavItem,
+                        form=ItemForm,
+                        extra=0,
+                        can_delete=True)
+    page_select = PageSelectForm()
+    
     if request.method == "POST":
-        form = PageSelectForm(request.POST)
-        if form.is_valid():
-            pages = form.cleaned_data['pages']
-            for page in pages:
-                item = NavItem.objects.create(page=page, nav=nav, label=page.title)
+        formset = ItemFormSet(request.POST, queryset=nav.navitem_set.all())
+        if formset.is_valid():
+            formset.save()
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % nav)
     else:
-        form = PageSelectForm()
+        formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('ordering'))
         
     return render_to_response(
         template_name,
-        {'form':form, 'nav':nav},
+        {'page_select':page_select, 'formset':formset, 'nav':nav},
         context_instance=RequestContext(request),
     )
 
 @login_required
-def delete_item(request):
-    if request.method == "POST":
-        id = request.POST.get('id')
-        item = get_object_or_404(NavItem, id=id)
-        nav = item.nav
-        if not has_perm(request.user, 'navs.change_nav', nav):
-            raise Http403
-        item.delete()
-    return redirect("navs.edit_items", id=nav.id)
+def page_select(request, form_class=PageSelectForm):
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method=="POST":
+        form = form_class(request.POST)
+        if form.is_valid():
+            pages = form.cleaned_data['pages']
+            infos = []
+            for page in pages:
+                infos.append({
+                    "url":page.get_absolute_url(),
+                    "label":page.title,
+                    "id":page.id,
+                })
+            return HttpResponse(json.dumps({
+                "pages": infos,
+            }), mimetype="text/plain")
+    return HttpResponse(json.dumps({
+                "error": True
+            }), mimetype="text/plain")
