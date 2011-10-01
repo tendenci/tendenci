@@ -10,6 +10,8 @@ themes/*
 !themes/default/
 !themes/iceman/
 !themes/thinksmart/
+!themes/emptytheme/
+!themes/bulletpoints/
 
 # Ignore media files
 site_media/directories/
