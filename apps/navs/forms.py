@@ -51,3 +51,21 @@ class PageSelectForm(forms.Form):
     
     def __init__(self, *args, **kwargs):
         super(PageSelectForm, self).__init__(*args, **kwargs)
+
+class ItemForm(forms.ModelForm):
+    
+    class Meta:
+        model = NavItem
+        fields = (
+            'label',
+            'title',
+            'css',
+            'ordering',
+            'level',
+            'page',
+            )
+    
+    def __init__(self, *args, **kwargs):
+        super(ItemForm, self).__init__(*args, **kwargs)
+        #we dont need the select widget for this since it will be hidden
+        self.fields['page'].widget = forms.TextInput()
