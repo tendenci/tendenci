@@ -4,6 +4,7 @@
 {% load story_tags %}
 {% load box_tags %}
 {% load forms_tags %}
+{% load event_tags %}
 {% load theme_tags %}
 {% load i18n %}
 
@@ -13,6 +14,7 @@
 {{ block.super }}
     <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
     <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+    <link href='http://fonts.googleapis.com/css?family=Rationale' rel='stylesheet' type='text/css'>
     <link rel="stylesheet/less" href="{{ THEME_URL }}media/css/styles.less" type="text/css" media="screen" />
     <script src="{{ THEME_URL }}media/js/less-1.1.3.min.js" type="text/javascript"></script>
     <script src="{{ THEME_URL }}media/js/libs/modernizr-1.6.min.js" type="text/javascript"></script>
@@ -25,109 +27,167 @@
 <div id="wrapper" class="container">
     {% theme_include "header.html" %}
     <div class="container">
-        <section id="rotator">
-            <div id="stories">
-            {% list_stories as rotator_list limit=6 tags="rotator" %}
-            {% if rotator_list %}
-                {% for story in rotator_list %}
-                <div class="story story-{% cycle "even" "odd" %}">
-                  <div class="story-image"><a href="{{ story.full_story_link }}"><img style="height: 324px; width: 644px;" src="{% image_url story.photo size=644x324 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
+        <section id="rotator-featured" class="center clearfix">
+            <section id="rotator">
+                <div id="stories">
+                {% list_stories as rotator_list limit=6 tags="rotator" %}
+                {% if rotator_list %}
+                    {% for story in rotator_list %}
+                    <div class="story story-{% cycle "even" "odd" %}">
+                      <div class="story-image"><a href="{{ story.full_story_link }}"><img style="height: 324px; width: 644px;" src="{% image_url story.photo size=644x324 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
+                        <div class="story-text">
+                            <h2 class="headline"><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
+                            <div class="story-summary">
+                                <p>{{ story.title|striptags|truncatewords_html:"12" }}</p> 
+                                <span class="readmore"><a href="{{ story.full_story_link }}">{% trans "Read More" %}</a></span>
+                            </div>
+                        </div>
+                    </div><!-- /.story {{ forloop.counter }} -->
+                    {% endfor %}
+                {% else %}
+                <div class="story story-even">
+                  <div class="story-image"><a href="#"><img style="height: 324px; width: 644px;" src="http://schipul.com/files/2371/644x324/crop/88" alt="Stories"></a></div>
                     <div class="story-text">
-                        <h2 class="headline"><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
-                        <div class="story-summary"><p>{{ story.title|striptags|truncatewords_html:"12" }}</p> <span class="readmore"><a href="{{ story.full_story_link }}">{% trans "Read More" %}</a></span></div>
+                        <h2 class="headline"><a href="#">Golden Gate</a></h2>
+                        <div class="story-summary">
+                            <p>Golden Gate Bridge shot with the sun by Ed Schipul. 
+                            {% if request.user.is_authenticated %}<a href="/stories/add/">Add Stories</a> with the tag <strong>rotator</strong> and they will appear here.{% endif %}</p>
+                            <span><a class="readmore" href="#">Read More</a></span>
+                        </div>
                     </div>
-                </div><!-- /.story {{ forloop.counter }} -->
-                {% endfor %}
-            {% else %}
-            {% endif %}
-            </div>
-        </section><!-- /#rotator -->
-        <section id="featured">
-            {% list_stories as featured_stories limit=3 tags="featured" %}
-            {% if featured_stories %}
-                {% for story in featured_stories %}
+                </div>
+                <div class="story story-odd">
+                  <div class="story-image"><a href="#"><img style="height: 324px; width: 644px;" src="http://schipul.com/files/2373/644x324/crop/88" alt="Something"></a></div>
+                    <div class="story-text">
+                        <h2 class="headline"><a href="#">the TECH</a></h2>
+                        <div class="story-summary">
+                            <p>The TECH shot by Ed Schipul. {% if request.user.is_authenticated %}<a href="/stories/add/">Add Stories</a> with the tag <strong>featured</strong> and they will appear to the right.{% endif %}</p>
+                            <span><a class="readmore" href="#">Read More</a></span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                </div>
+                <div id="stories-pager"></div>
+            </section><!-- /#rotator -->
+            <section id="featured">
+                {% list_stories as featured_stories limit=3 tags="featured" %}
+                {% if featured_stories %}
+                    {% for story in featured_stories %}
+                        <div class="featured-item">
+                            <a href="{{ story.full_story_link }}">{{ story.title }}</a>
+                        </div>
+                    {% endfor %}
+                {% else %}
                     <div class="featured-item">
-                        <a href="{{ story.full_story_link }}">{{ story.title }}</a>
+                        <a href="#">Business Strategy</a>
                     </div>
-                {% endfor %}
-            {% else %}
-                <div class="featured-item">
-                    <a href="#">Business Strategy</a>
-                </div>
-                <div class="featured-item">
-                    <a href="#">Talking Points</a>
-                </div>
-                <div class="featured-item">
-                    <a href="#">Who We Are</a>
-                </div>
-            {% endif %}
-        </section><!-- /#featured -->
+                    <div class="featured-item">
+                        <a href="#">Talking Points</a>
+                    </div>
+                    <div class="featured-item">
+                        <a href="#">Who We Are</a>
+                    </div>
+                {% endif %}
+            </section><!-- /#featured -->
+        </section>
     </div>
     <div class="container">
-        <section id="home-content">
-            <section id="top-row">
+        <section id="home-content" class="center">
+            <section id="top-row" class="clearfix">
                 <div id="home-blog">
                     <h3>{% trans 'Blog' %}</h3>
-                    <div class="rss-items">
-                      {% get_rss "￼http://blog.com" as rss %}
-                        <ul>
+                    <div class="blog-items clearfix">
+                      {% get_rss "http://blog.schipul.com/feed/" as rss %}
                         {% for entry in rss.entries|slice:":3" %}
-                            <li>
+                            <div class="blog-item">
                                 {% spaceless %}<img style="height: 90px; width: 200px;" alt="{{ entry.title }}" src="
                                 {% if entry.thumbnail|slice:":4" == "http" %}
                                     {{ entry.thumbnail }}
                                 {% else %}
-                                    http://blog.com/{{ entry.thumbnail }}
+                                    http://blog.schipul.com/{{ entry.thumbnail }}
                                 {% endif %}
                                 " />{% endspaceless %}
                                 <h4><a href="{{ entry.link }}">{{ entry.title }}</a></h4>
-                                
-                                <p><em>{{ entry.updated_parsed|rss_date:"F j, Y" }}</em></p>
-                                <p>{{ entry.summary|striptags|safe|truncatewords:"20" }}</p>
-                                <p><span class="readmore"><a href="{{ event.get_absolute_url }}">{% trans 'Read More ...' %}</a></span></p>
-                            </li>
+                                <p>{{ entry.summary|striptags|safe|truncatewords:"12" }}</p>
+                                <p><span><a class="readmore" href="{{ entry.link }}">{% trans 'Read More ...' %}</a></span></p>
+                            </div>
                         {% endfor %}
-                        </ul>
                     </div>
                 </div>
-                <div id="newsletter-form">
+                <div id="newsletter-form" class="clearfix">
                     <h3>{% trans 'Newsletter Sign-Up' %}</h3>
                     {# embed_form 1 #}
-                </div>
+                    <form action="/contact/" method="post">{% csrf_token %}
+                        <div class="forms">
+                        <div class="form-field">
+                            <div class="id_first_name">
+                                <div class="label">
+                                    <label for="id_first_name">{% trans 'First Name' %}</label>
+                                </div>
+                                
+                                <div class="field">
+                                    <input id="id_first_name" type="text" name="first_name" maxlength="100">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <div class="id_email">
+                                <div class="label">
+                                    <label for="id_email">{% trans 'Email Address' %}</label>
+                                </div>
+                                <div class="field">
+                                    <input id="id_email" type="text" name="email" maxlength="100">
+                                </div>
+                            </div>
+                        </div>
+                            <input type="submit" id="newsletter-submit" value="{% trans 'Register' %}">
+                        </div>
+                    </form>
+                </div><!-- /#newsletter-form -->
             </section><!-- /#top-row -->
-            <section id="bottom-row">
+            <section id="bottom-row" class="clearfix">
                 <div id="home-events">
                     <h3>{% trans 'Upcoming Events' %}</h3>
                     {% list_events as events_list limit=1 %}
-                    <div id="home-event-item">
+                    <div id="home-event-item" class="clearfix">
                     {% if events_list %}
                         {% for event in events_list %}
-                            <div class="event-img">
-                             <img src="" style="height: 170px; width: 200px;"/>
-                            </div>
-                            <div class="event-info">
-                                <h4>{{ event.title }}</h4>
-                                <span class="event-date">{{ event.start_dt|date:"d, Y" }}</span>
-                                <p>{{ event.description|striptags|truncatewords:"30" }}</p>
-                                <p><span class="readmore"><a href="{{ event.get_absolute_url }}">{% trans 'Read More ...' %}</a></span></p>
-                            </div>
+                        <div class="event-img">
+                            <img src="" style="height: 170px; width: 200px;"/>
+                        </div>
+                        <div class="event-info">
+                            <h4><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
+                            <p class="event-date">{{ event.start_dt|date:"F d, Y" }}</p>
+                            <p>{{ event.description|striptags|truncatewords:"30" }}</p>
+                            <p><span><a class="readmore" href="{{ event.get_absolute_url }}">{% trans 'Read More ...' %}</a></span></p>
+                        </div>
                         {% endfor %}
                     {% else %}
-                    
+                        <div class="event-img">
+                            <img src="http://schipul.com/files/2369/170x200/crop/90" style="height: 200px; width: 170px;"/>
+                        </div>
+                        <div class="event-info">
+                            <h4><a href="#">Our Next Event</a></h4>
+                            <p class="event-date">{% now "F d, Y" %}</p>
+                            <p>Come join us at our next event!</p>
+                            {% if request.user.is_authenticated %}<p>Display your next upcoming event right on your homepage. Once you <a href="/events/add/">add your first event</a>, this area will be replaced by that information. Don't forget to add a speaker photo!</p>{% endif %}
+                            <p><span><a class="readmore" href="#">{% trans 'Read More ...' %}</a></span></p>
+                        </div>
                     {% endif %}
                     </div>
                 </div>
                 <div id="locations-map">
                     <h3>{% trans 'Locations' %}</h3>
                     {# box 1 #}
-                    <iframe src="Googlemap"></iframe>
-                    <p><span class="readmore"><a href="/locations">{% trans 'See all our Locations ...' %}</a></span></p>
+                    <iframe width="460" height="200" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?ie=UTF8&amp;q=schipul+map&amp;fb=1&amp;gl=us&amp;hq=schipul&amp;hnear=Houston,+Harris,+Texas&amp;ll=29.753978,-95.37434&amp;spn=0.189547,0.508464&amp;t=m&amp;vpsrc=0&amp;output=embed"></iframe><br />
+                    <p><span><a class="readmore" href="/locations">{% trans 'See all our Locations ...' %}</a></span></p>
                 </div>
             </section><!-- /#bottom-row -->
         </section><!-- /#home-content -->
     </div>
-    <div class="container">
-        <section id="footer" class="band">
+    <div class="container compliment topborder">
+        <section id="footer" class="center">
             <footer>{% theme_include "footer.html" %}</footer>  
         </section><!-- /#footer -->
     </div>
@@ -140,7 +200,7 @@
     <script type="text/javascript">
     $(document).ready(function() {
         $("#stories").cycle({
-            timeout: 10000,
+            timeout: 8000,
             speed: 2000,
             pager: '#stories-pager',
             pagerEvent: 'mouseover'
