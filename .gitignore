@@ -12,6 +12,7 @@ themes/*
 !themes/thinksmart/
 !themes/emptytheme/
 !themes/bulletpoints/
+!themes/prfirm/
 
 # Ignore media files
 site_media/directories/

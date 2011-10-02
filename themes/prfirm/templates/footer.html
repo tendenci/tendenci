@@ -1,0 +1,51 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load cache %}
+{% load box_tags %}
+{% load story_tags %}
+{% load news_tags %}
+{% load event_tags %}
+{% load theme_tags %}
+{% load i18n %}
+
+<section id="sponsor">
+	<h2>Sponsors</h2>
+	{% list_stories as featured_stories limit=1 random=true %}
+	{% for story in featured_stories %}
+	<img alt="Visit our Sponsor" src="{% image_url story.image size=650x110 crop=true quality=90 %}" />
+	{% endfor %}
+</section>
+
+<section id="contact-us">
+
+	<h2>Contact Us</h2>
+
+	<div id="contact-info">
+		12345 Main Street</br>
+		Houston, Texas 77071<br />
+		Phone: 555-555-555<br />
+		Fax: 555-555-555<br />
+		Email: info@prfirmhouston.com
+	</div>
+
+	<div id="social-links">
+		<img alt="Find us on Twitter" src="{{ THEME_URL }}media/images/twitter.png" />
+		<img alt="Find us on LinkedIn" src="{{ THEME_URL }}media/images/linkedin.png" />
+		<img alt="Find us on Facebook" src="{{ THEME_URL }}media/images/facebook.png" />
+	</div>
+
+	<div id="mini-search">
+		<input name="q" type="text" />
+		<input type="submit" value="SEARCH">
+	</div>
+
+</section>
+
+<section id="footer-links">
+	<ul>
+		<li><a href="">Site Map</a></li>
+		<li><a href="">Feed</a></li>
+		<li><a href="">Schipul Web Design</a></li>
+		<li><a href="">Tendenci&reg; Membership Management Software</a></li>
+	</ul>
+</section>
