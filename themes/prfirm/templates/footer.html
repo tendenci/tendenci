@@ -10,7 +10,7 @@
 
 <section id="sponsor">
 	<h2>Sponsors</h2>
-	{% list_stories as featured_stories limit=1 random=true %}
+	{% list_stories as featured_stories tags=sponsor limit=1 random=true %}
 	{% for story in featured_stories %}
 	<img alt="Visit our Sponsor" src="{% image_url story.image size=650x110 crop=true quality=90 %}" />
 	{% endfor %}
