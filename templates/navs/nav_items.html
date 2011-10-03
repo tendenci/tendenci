@@ -144,7 +144,7 @@
                 <div style="display: none;" > 
                     <input type="text" name="form-0-page" id="id_form-0-page" /> 
                 </div> 
-                <a href="#" class="item-delete">Remove</a> 
+                <a class="item-delete">Remove</a> 
             </div> 
         </div> 
     </div>
@@ -156,6 +156,22 @@
     <script type="text/javascript">
         $('#base').hide();
         $('.nav-item-detail').hide();
+        function updateElementIndex(el, prefix, ndx) {
+            var id_regex = new RegExp('(' + prefix + '-\\d+)');
+            var replacement = prefix + '-' + ndx;
+            if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+            if (el.id) el.id = el.id.replace(id_regex, replacement);
+            if (el.name) el.name = el.name.replace(id_regex, replacement);
+        }
+        apply_delete = function(thing){
+            thing.click(function(){
+                $(this).parent().parent().remove();
+                total = $("#id_form-TOTAL_FORMS").val();
+                updateElementIndex($(this).parent().parent().parent(), 'form', total);
+                $("#id_form-TOTAL_FORMS").val(total-1);
+                return false;
+            });
+        }
         apply_toggle = function(thing){
             thing.click(function(){
                 $(this).parent().find('.nav-item-detail').toggle();
@@ -168,7 +184,8 @@
                 return false;
             });
         }
-        apply_toggle($($.find('.nav-item-label')));
+        apply_toggle($('.nav-item-label'));
+        apply_delete($('.item-delete'));
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}/js/jquery.form.js"></script>
     <script type="text/javascript">
@@ -225,6 +242,7 @@
                     
                     //apply the toggle effect
                     apply_toggle(clone.find('.nav-item-label'));
+                    apply_delete(clone.find('.item-delete'));
                     //append to the formset
                     items.append(clone);
                     //increment id count
@@ -233,8 +251,5 @@
                 $("#id_form-TOTAL_FORMS").val(form_number);
             }
         }
-    </script>
-    <script type="text/javascript">
-        
     </script>
 {% endblock %}
