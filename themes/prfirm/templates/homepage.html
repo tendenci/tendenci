@@ -27,7 +27,7 @@
 
 	<div id="story-item">
 
-		{% list_stories as featured_stories %}
+		{% list_stories as featured_stories tags=rotator %}
 	    {% for story in featured_stories %}
 	    <img src="{% image_url story.image size=1010x540 crop=true quality=90 %}" />
 		<div id="blurb">
