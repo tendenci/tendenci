@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from emails.models import Email
 from site_settings.utils import get_setting
 from profiles.models import Profile
-from recurring_payments.models import RecurringPayment
+from recurring_payments.models import RecurringPayment, PaymentProfile
 from recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
 from recurring_payments.authnet.utils import get_token
         
@@ -306,6 +306,37 @@ def api_get_rp_token(data):
         status = True
         
     return status, d
+
+
+def api_verify_rp_payment_profile(data):
+    """Verify if this recurring payment account
+        has a valid payment profile.
+        Accepted format: json
+    
+    Input fields:
+        rp_id - required
+        
+    Output:
+        has_payment_profile
+        result_code
+    """
+    rp_id = data.get('rp_id', 0)
+    
+    try:
+        rp = RecurringPayment.objects.get(id=int(rp_id))
+    except:
+        return False, {}
+    
+    rp.populate_payment_profile()
+    
+    has_payment_profile = PaymentProfile.objects.filter(
+                                       recurring_payment=rp,
+                                       status=1,
+                                       status_detail='active').exists()
+          
+    d = {'has_payment_profile': has_payment_profile}
+        
+    return True, d
 
 
     
