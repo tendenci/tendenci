@@ -154,7 +154,17 @@
                     {% if events_list %}
                         {% for event in events_list %}
                         <div class="event-img">
-                            <img src="" style="height: 170px; width: 200px;"/>
+                        {% for speaker in event.speaker_set.all %}
+                            {% if forloop.first %}
+                                {% for img in speaker.files %}
+                                  {% if forloop.last %}
+                                          <img alt="Speaker: {{ speaker.name }}" src="{% url file img.pk %}170x200/crop/" height="200" width="170" />
+                                  {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <img src="http://schipul.com/files/2369/170x200/crop/90" alt="{{ event.title }}" style="height: 200px; width: 170px;"/>
+                            {% endif %}
+                        {% endfor %}
                         </div>
                         <div class="event-info">
                             <h4><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
