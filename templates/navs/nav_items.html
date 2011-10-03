@@ -34,7 +34,7 @@
                 {{ formset.management_form }}
                 <div id="nav-items">
                 {% for form in formset.forms %}
-                <div class="nav-item">
+                <div class="nav-item" {% if forloop.first %}id="first-item"{% endif %}>
                     {{ form.id }}
                     <a href="#" class="nav-item-label">
                         <h2>+ {{ form.instance.label }}</h2>
@@ -96,6 +96,7 @@
                         <div style="display: none;" >
                             {{ form.page }}
                         </div>
+                        <a href="#" class="item-delete">Remove</a>
                     </div>
                 </div>
             {% endfor %}
@@ -104,6 +105,48 @@
             </form>
         </div>
         <div style="clear:both"></div>
+        <!-- The next div is a base template for the form in form sets -->
+        <div class="nav-item" id="base"> 
+            <input type="hidden" name="form-0-id" id="id_form-0-id" /> 
+            <a href="#" class="nav-item-label"> 
+                <h2>+ </h2> 
+            </a> 
+            <div class="nav-item-detail"> 
+                
+                <div class="nav-item-field"> 
+                    URL: <input class="url-field" disabled="disabled" type="text" value=""> 
+                </div> 
+                <div class="nav-item-field"> 
+                    
+                    Label
+                    <input id="id_form-0-label" type="text" name="form-0-label" maxlength="100" /> 
+                </div> 
+                <div class="nav-item-field"> 
+                    
+                    Title Attribute
+                    <input id="id_form-0-title" type="text" name="form-0-title" maxlength="100" /> 
+                </div> 
+                <div class="nav-item-field"> 
+                    
+                    CSS Class
+                    <input id="id_form-0-css" type="text" name="form-0-css" maxlength="100" /> 
+                </div> 
+                <div class="nav-item-field"> 
+                    
+                    Ordering
+                    <input type="text" name="form-0-ordering" value="0" id="id_form-0-ordering" /> 
+                </div> 
+                <div class="nav-item-field"> 
+                    
+                    Level
+                    <input type="text" name="form-0-level" value="0" id="id_form-0-level" /> 
+                </div> 
+                <div style="display: none;" > 
+                    <input type="text" name="form-0-page" id="id_form-0-page" /> 
+                </div> 
+                <a href="#" class="item-delete">Remove</a> 
+            </div> 
+        </div> 
     </div>
 </div>
 {% endblock body %}
@@ -111,7 +154,8 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-        $($.find('.nav-item-detail')).hide()
+        $('#base').hide();
+        $('.nav-item-detail').hide();
         apply_toggle = function(thing){
             thing.click(function(){
                 $(this).parent().find('.nav-item-detail').toggle();
@@ -146,43 +190,51 @@
             if (response.error) {
                 alert("An error occured");
             } else {
-                form_number = $("#id_form-TOTAL_FORMS").val()
+                form_number = parseInt($("#id_form-TOTAL_FORMS").val())
                 pages = response.pages
                 for(i=0;i<pages.length;i++){
-                    items = $($.find("#nav-items"));
-                    item = $(items.find(".nav-item")[0]);
-                    //clone the first form
+                    items = $("#nav-items");
+                    item = $("#base");
+                    //copy the template form
                     clone = item.clone();
                     //customize the form based on the page info
-                    clone.find('#id_form-0-id').val(pages[i].id);
+                    clone.attr('id', '')
+                    clone.show();
+                    clone.find('#id_form-0-id').remove();
                     clone.find('.url-field').val(pages[i].url);
                     clone.find('#id_form-0-label').val(pages[i].label);
                     clone.find('.nav-item-label h2').html("+ "+pages[i].label);
                     clone.find('#id_form-0-page').val(pages[i].id);
                     
                     //relace the names and ids of the elements in the form
-                    clone.find('#id_form-0-id').attr('name', 'placeholder' + form_number);
-                    clone.find('#id_form-0-label').attr('name', 'placeholder' + form_number);
-                    clone.find('#id_form-0-title').attr('name', 'placeholder' + form_number);
-                    clone.find('#id_form-0-css').attr('name', 'placeholder' + form_number);
-                    clone.find('#id_form-0-page').attr('name', 'placeholder' + form_number);
-                    clone.find('#id_form-0-ordering').attr('name', 'placeholder' + form_number);
-                    clone.find('#id_form-0-level').attr('name', 'placeholder' + form_number);
+                    //clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
+                    clone.find('#id_form-0-label').attr('name', 'form-' + form_number + '-label');
+                    clone.find('#id_form-0-title').attr('name', 'form-' + form_number + '-title');
+                    clone.find('#id_form-0-css').attr('name', 'form-' + form_number + '-css');
+                    clone.find('#id_form-0-page').attr('name', 'form-' + form_number + '-page');
+                    clone.find('#id_form-0-ordering').attr('name', 'form-' + form_number + '-ordering');
+                    clone.find('#id_form-0-level').attr('name', 'form-' + form_number + '-level');
                     
-                    clone.find('#id_form-0-id').attr('id', 'placeholder' + form_number);
-                    clone.find('#id_form-0-label').attr('id', 'placeholder' + form_number);
-                    clone.find('#id_form-0-title').attr('id', 'placeholder' + form_number);
-                    clone.find('#id_form-0-css').attr('id', 'placeholder' + form_number);
-                    clone.find('#id_form-0-page').attr('id', 'placeholder' + form_number);
-                    clone.find('#id_form-0-ordering').attr('id', 'placeholder' + form_number);
-                    clone.find('#id_form-0-level').attr('id', 'placeholder' + form_number);
+                    //clone.find('#id_form-0-id').attr('id', 'id_form-' + form_number + '-id');
+                    clone.find('#id_form-0-label').attr('id', 'id_form-' + form_number + '-label');
+                    clone.find('#id_form-0-title').attr('id', 'id_form-' + form_number + '-title');
+                    clone.find('#id_form-0-css').attr('id', 'id_form-' + form_number + '-css');
+                    clone.find('#id_form-0-page').attr('id', 'id_form-' + form_number + '-page');
+                    clone.find('#id_form-0-ordering').attr('id', 'id_form-' + form_number + '-ordering');
+                    clone.find('#id_form-0-level').attr('id', 'id_form-' + form_number + '-level');
                     
                     //apply the toggle effect
                     apply_toggle(clone.find('.nav-item-label'));
                     //append to the formset
                     items.append(clone);
+                    //increment id count
+                    form_number++;
                 }
+                $("#id_form-TOTAL_FORMS").val(form_number);
             }
         }
+    </script>
+    <script type="text/javascript">
+        
     </script>
 {% endblock %}
