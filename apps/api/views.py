@@ -17,7 +17,7 @@ def api_rp(request):
         
     Test command:
     curl --dump-header - -H "Content-Type: application/json" -X POST 
-    --data '{"api_method": "add_rp", "email": "jqian@schipul.com", 
+    --data '{"api_method": "api_add_rp", "email": "jqian@schipul.com", 
     "description": "self signup", "payment_amount": "20",
     "access_id":"jennytest", "time_stamp":"1317505435.040309", 
     "h_sequence":"3b0b9655af8698d3d1b87ea913da3a41"}' 
