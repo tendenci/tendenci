@@ -236,12 +236,12 @@ def api_add_rp(data):
     try:
         rp.num_days = int(rp.num_days)
     except:
-        rp.num_days = 0
-    if rp.has_trial_period in ['True', '1',  True, 1] and all([rp.trial_period_start_dt],
-                                                              rp.trial_period_end_dt):
-        rp.has_trial_period = False
-    else:
+        rp.num_days = 1
+    if rp.has_trial_period in ['True', '1',  True, 1] and all([rp.trial_period_start_dt,
+                                                              rp.trial_period_end_dt]):
         rp.has_trial_period = True
+    else:
+        rp.has_trial_period = False
         
     # start the real work
     
@@ -279,6 +279,7 @@ def api_get_rp_token(data):
     
     Input fields:
         rp_id - required
+        iframe_communicator_url
         
     Output:
         token
@@ -286,14 +287,16 @@ def api_get_rp_token(data):
         result_code
     """
     rp_id = data.get('rp_id', 0)
-    print rp_id
+    iframe_communicator_url = data.get('iframe_communicator_url', '')
     
     try:
         rp = RecurringPayment.objects.get(id=int(rp_id))
     except:
         return False, {}
     
-    token, gateway_error = get_token(rp, CIMCustomerProfile, CIMHostedProfilePage)
+    token, gateway_error = get_token(rp, CIMCustomerProfile, 
+                                     CIMHostedProfilePage, 
+                                     iframe_communicator_url)
     
     d = {'token': token,
          'gateway_error': gateway_error}
