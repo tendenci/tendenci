@@ -23,7 +23,14 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
         form = build_settings_form(request.user, settings)(request.POST)
         if form.is_valid():
             # this save method is overriden in the forms.py
-            form.save() 
+            form.save()
+            try:
+                if form.cleaned_data['theme']:
+                    from django.core.management import call_command
+                    call_command('hide_settings', 'theme')
+                    call_command('update_settings', 'themes.%s' % form.cleaned_data['theme'].lstrip())
+            except:
+                pass
 
             # if localizationlanguage is changed, update local settings
             from django.conf import settings as django_settings
