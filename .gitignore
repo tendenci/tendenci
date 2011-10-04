@@ -10,6 +10,7 @@ themes/*
 !themes/default/
 !themes/iceman/
 !themes/thinksmart/
+git.
 
 # Ignore media files
 site_media/directories/
