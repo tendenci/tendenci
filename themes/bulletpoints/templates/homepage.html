@@ -169,7 +169,7 @@
                         <div class="event-info">
                             <h4><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
                             <p class="event-date">{{ event.start_dt|date:"F d, Y" }}</p>
-                            <p>{{ event.description|striptags|truncatewords:"30" }}</p>
+                            <p>{{ event.description|striptags|truncatewords:"30"|safe }}</p>
                             <p><span><a class="readmore" href="{{ event.get_absolute_url }}">{% trans 'Read More ...' %}</a></span></p>
                         </div>
                         {% endfor %}
