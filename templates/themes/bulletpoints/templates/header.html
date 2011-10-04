@@ -1,0 +1,20 @@
+{% load theme_tags %}
+    <div class="container topborder">
+        <section id="header" class="center">
+            <header>
+                <div id="logo"><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a></div>
+                <div id="search-box">
+                    <form method="get" action="/search/">
+                        <input name="q" id="q" type="text" placeholder="Search" />
+                        <input type="submit" name="Go" value="" id="search-box-submit" />
+                    </form>
+                </div>
+                <div id="phone">
+                    <span>123-456-7890</span>
+                </div>
+                <div id="nav">
+                    <nav class="clearfix">{% theme_include "nav.html" %}</nav>
+                </div><!-- /#nav -->
+            </header>
+        </section><!-- /#header -->
+    </div>
