@@ -45,7 +45,7 @@ class Command(BaseCommand):
             u.is_superuser = False
             u.save()
 
-            user_auth_groups = user.groups.all()
+            user_auth_groups = u.groups.all()
 
             if auth_group not in user_auth_groups:
                 user_auth_groups.append(auth_group)
