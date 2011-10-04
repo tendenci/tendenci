@@ -157,7 +157,7 @@ class Command(BaseCommand):
         for appname in appnames:
             print
             print 'Processing for %s ...' % appname
-            if appname.startswith('plugins.'):
+            if appname.startswith('plugins.') or appname.startswith('themes.'):
                 json_file = os.path.abspath(os.path.join(
                                 django_settings.PROJECT_ROOT,
                                 '/'.join(appname.split('.')),
