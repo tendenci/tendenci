@@ -27,4 +27,5 @@ def theme_choices():
     Returns a list of available themes in THEME_DIR
     """
     for theme in os.listdir(settings.THEME_DIR):
-        yield theme
+        if os.path.isdir(theme):
+            yield theme
