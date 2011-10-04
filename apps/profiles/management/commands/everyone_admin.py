@@ -45,13 +45,13 @@ class Command(BaseCommand):
             u.is_superuser = False
             u.save()
 
+            user_auth_groups = user.groups.all()
+
             if auth_group not in user_auth_groups:
                 user_auth_groups.append(auth_group)
                 user.groups = user_auth_groups
-                group_updated = True
             else:
                 user.groups = [auth_group]
-                group_updated = True
 
             user.save()
             count += 1
