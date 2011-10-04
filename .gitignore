@@ -39,3 +39,12 @@ plugins/apps.json
 
 # except for .gitignore
 !.gitignore
+
+/themes/thinksmart/media/css/styles.css
+/themes/thinksmart/media/css/styles.less
+/themes/thinksmart/media/images/logo-blue.png
+/themes/thinksmart/settings.json
+/themes/thinksmart/templates/admin_menu/
+/themes/thinksmart/templates/header.html
+/themes/thinksmart/templates/nav.html
+/themes/thinksmart/templates/sidebar.html
