@@ -27,6 +27,7 @@ Version: 1.0
 //@base: spin(@main, 280); @logo: "teal";
 //@base: spin(@main, 330); @logo: "aqua";
 
+@primary: @base;
 @band: @base;
 @bandborder: darken(@base, 15%);
 @no-band: lighten(@base, 46%);
@@ -127,7 +128,7 @@ blockquote { margin: 0 0 10px 20px; }
 
 #header { height: 178px; position: relative; }
 #logo { position: absolute; top: 24px; left: 14px; }
-#logo a { display: block; background-image: url('../images/logo-@{logo}.png'); width: 275px; height: 123px; }
+#logo a { display: block; background: url('../images/logo-@{logo}.png') top center no-repeat; width: 275px; height: 55px; padding-top: 78px; font-size: 46px; text-decoration: none; text-align: center; text-transform: uppercase; color: @text; font-weight: normal; }
 #search-box { 
     position: absolute; top: 0; right: 0; width: 306px; height: 46px; background-color: @band; background-image: url('../images/search-gradient-17.png') repeat-x top left; .gradient-bg(@band, 10%);
     
@@ -138,21 +139,40 @@ blockquote { margin: 0 0 10px 20px; }
 #phone { position: absolute; top: 50px; right: 16px; color: @text; font-style: italic; font-size: 24px; }
 
 #nav { }
-nav { padding: 0 0 0 20px; background-image: url('../images/nav-gradient-17.png') repeat-x top left; .gradient-bg(@band, 10%);
-    ul { margin: 0; }
-    ul,
-    ul li, 
-    .sub { display: inline; }
-    li { float: left; position: relative;  text-transform: uppercase; }
-    li a { display: block; padding: 14px 24px; font-size: 15px; line-height: 16px; text-decoration: none; border-right: 2px solid @bandborder; text-shadow: @background 0 1px 2px; font-weight: bold; }
-    li a.last { border: none; }
-    li a:hover { background-color: @bandborder; }
-    
-    li .sub { display: none; }
-    li:hover .sub { display: inline; position: absolute; top: 44px; z-index: 999;}
-    li li { border-top: 2px solid @bandborder; margin-left: -2px; background-image: url('../images/nav-gradient-17.png') repeat-x top left; .gradient-bg(@band, 10%);}
-    li li a { border: none; width: 120px; }
+
+/* Standard Nav organization for a dropdown
+The ul li a line-height and the top of ul li ul need to match
+colors, heights, and borders can be overridden */
+nav {display: block;
+    ul { list-style: none;
+        li { float: left; position: relative;
+            a { line-height: 40px; padding: 0 12px; background-color: transparent; display: block; color: @primary; 
+                &:hover {color: @primary }
+            }
+            ul { display: none; float: left; margin: 0; position: absolute; top: 40px; width: 148px; z-index: 99999;
+                a { height: auto; line-height: 20px; padding: 10px; width: 120px; }
+                ul { left: 100%; top: 0; }
+            }
+        }
+        li:hover > a, a:focus { /* background-color: transparent; */ }
+        li:hover > ul { display: block; }
+    }
 }
+
+nav { padding: 0 0 0 20px; background-image: url('../images/nav-gradient-17.png') repeat-x top left; .gradient-bg(@band, 10%);
+    ul { margin: 0;
+        li { text-transform: uppercase;
+            a { text-decoration: none; font-size: 15px; border-right: 2px solid @bandborder; text-shadow: @background 0 1px 2px; font-weight: bold; line-height: 50px; background-image: url('../images/nav-gradient-17.png') repeat-x top left; .gradient-bg(@band, 10%);
+                &.last { border: none; }
+                &:hover { background-image: none; background-color: @bandborder; color: @bandtext; }
+            }
+            ul { top: 50px; 
+                a { border: 2px solid @bandborder; border-bottom: none; margin-left: -2px;}
+            }
+        }
+    }
+}
+
 
 #footer { background-image: url('../images/footer-gradient-17.png') repeat-x top left; .gradient-bg(@band, 10%); }
 footer { font-size: 12px; padding: 12px 0 6px 0; text-align: center; 
