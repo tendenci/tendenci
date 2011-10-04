@@ -1199,6 +1199,9 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         month, year = int(month), int(year)
     else:
         month, year = datetime.now().month, datetime.now().year
+    
+    if year < 1900:
+        raise Http404
 
     calendar.setfirstweekday(calendar.SUNDAY)
     Calendar = calendar.Calendar
@@ -1234,6 +1237,9 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         context_instance=RequestContext(request))
 
 def day_view(request, year=None, month=None, day=None, template_name='events/day-view.html'):
+    year = int(year)
+    if year < 1900:
+        raise Http404
     
     return render_to_response(template_name, {
         'date': datetime(year=int(year), month=int(month), day=int(day)),
