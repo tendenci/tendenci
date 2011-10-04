@@ -26,13 +26,13 @@ class Command(BaseCommand):
         except Auth_Group.DoesNotExist:
             auth_group = Auth_Group(name=name)
             auth_group.save()
-        
-            # assign permission to group, but exclude the auth content
-            content_to_exclude = ContentType.objects.filter(app_label='auth')    
-            permissions = Permission.objects.all().exclude(content_type__in=content_to_exclude)
-            auth_group.permissions = permissions
-            auth_group.save()
             print 'Successfully added admin auth group "%s".' % name
+
+        # assign permission to group, but exclude the auth content
+        content_to_exclude = ContentType.objects.filter(app_label='auth')    
+        permissions = Permission.objects.all().exclude(content_type__in=content_to_exclude)
+        auth_group.permissions = permissions
+        auth_group.save()
         
         print "Adding users (admins) to admin auth group...\n"
 
@@ -43,17 +43,9 @@ class Command(BaseCommand):
         for u in users:
             u.is_staff = True
             u.is_superuser = False
+            u.groups = [auth_group]
             u.save()
 
-            user_auth_groups = u.groups.all()
-
-            if auth_group not in user_auth_groups:
-                user_auth_groups.append(auth_group)
-                user.groups = user_auth_groups
-            else:
-                user.groups = [auth_group]
-
-            user.save()
             count += 1
             print 'User "%s(%s)" -- added' % (u.get_full_name(), u.username)
         
