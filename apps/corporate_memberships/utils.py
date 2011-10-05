@@ -451,6 +451,9 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
     return corp_memb_set
 
 def get_over_time_stats():
+    """
+    return a dict of membership statistics overtime.
+    """
     now = datetime.now()
     this_month = datetime(day=1, month=now.month, year=now.year)
     this_year = datetime(day=1, month=1, year=now.year)
@@ -500,6 +503,9 @@ def get_summary():
     return sorted(summary, key=lambda x:x['type'].name)
 
 def last_n_month(n):
+    """
+        Get the first day of the last n months.
+    """
     now = datetime.now()
     last = datetime(day=1, month=(now.month-n)%12, year=now.year-(now.month-n)/12)
     return last
