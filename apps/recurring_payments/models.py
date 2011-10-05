@@ -14,6 +14,7 @@ from recurring_payments.authnet.cim import (CIMCustomerProfile,
                                             CIMCustomerPaymentProfile,
                                             CIMCustomerProfileTransaction)
 from recurring_payments.authnet.utils import payment_update_from_response
+from recurring_payments.authnet.utils import direct_response_dict
 from payments.models import Payment
 
 BILLING_PERIOD_CHOICES = (
@@ -111,25 +112,74 @@ class RecurringPayment(models.Model):
         """
         Check payment gateway for the payment profiles for this customer 
         and store the payment profile info locally
+        
+        Returns a list of valid and a list of invalid customer_payment_profile_ids
+        
+        Specifically,
+             1) get a list of payment_profiles from gateway
+             2) validate each one, if not valid, remove from the list
+             3) if customer_payment_profile_id is not valid,
+                delete it from database - keep only the valid ones on local.
         """
+        valid_cim_payment_profile_ids = []
+        invalid_cim_payment_profile_ids = []
+        
+        validation_mode = kwargs.get('validation_mode')
         customer_profile = CIMCustomerProfile(self.customer_profile_id)
         success, response_d = customer_profile.get()
         
         if success:
             if response_d['profile'].has_key('payment_profiles'):
+                # 1) get a list of payment_profiles from gateway
                 cim_payment_profiles = response_d['profile']['payment_profiles']
                 if not type(cim_payment_profiles) is list:
                     cim_payment_profiles = list([cim_payment_profiles])
+                
+                # 2) validate payment_profile, if not valid, remove it from the list
+                if validation_mode:
+                    for cim_payment_profile in cim_payment_profiles:
+                        customer_payment_profile_id = cim_payment_profile['customer_payment_profile_id']
+                        is_valid = False
+                        # validate this payment profile
+                        cpp = CIMCustomerPaymentProfile(self.customer_profile_id, 
+                                                        customer_payment_profile_id,
+                                                        )
+                        success, response_d  = cpp.validate(validation_mode=validation_mode)
+                        # convert direct_response string into a dict
+                        response_dict = direct_response_dict(response_d['direct_response'])
+                        response_code = response_dict.get('response_code', '')
+                        response_reason_code = response_dict.get('response_reason_code', '')
+                        
+                        if all([success, response_code == '1', response_reason_code == '1']):
+                            is_valid = True
+                            
+                        if not is_valid:
+                            invalid_cim_payment_profile_ids.append(cim_payment_profile['customer_payment_profile_id'])
+                            # remove it from the list
+                            cim_payment_profiles.remove(cim_payment_profile)
+                        else:
+                            valid_cim_payment_profile_ids.append(cim_payment_profile['customer_payment_profile_id'])
+                            
+               
+                list_cim_payment_profile_ids = [cim_payment_profile['customer_payment_profile_id'] 
+                                                for cim_payment_profile in cim_payment_profiles]
+                if not validation_mode:
+                    valid_cim_payment_profile_ids.extend(list_cim_payment_profile_ids)
+                
+                # 3) if customer_payment_profile_id is not valid,
+                #    delete it from database - keep only the valid ones on local
+                payment_profiles = PaymentProfile.objects.filter(recurring_payment=self)
+                for pp in payment_profiles:
+                    if pp.payment_profile_id not in list_cim_payment_profile_ids:
+                        pp.delete()
+                
                 for cim_payment_profile in cim_payment_profiles:
-                    customer_payment_profile_id = cim_payment_profile['customer_payment_profile_id']
-                    
+                    customer_payment_profile_id = cim_payment_profile['customer_payment_profile_id']        
                     # check if already exists, if not, insert to payment profiles table
-                    payment_profile_exists = PaymentProfile.objects.filter(
-                                                    payment_profile_id=customer_payment_profile_id
-                                                    ).exists()
-                    
-                    if not payment_profile_exists:
-                    
+                    payment_profiles = PaymentProfile.objects.filter(
+                                payment_profile_id=customer_payment_profile_id)
+                        
+                    if not payment_profiles:
                         payment_profile = PaymentProfile(recurring_payment=self,
                                                          payment_profile_id=customer_payment_profile_id,
                                                          creator=self.user,
@@ -137,14 +187,19 @@ class RecurringPayment(models.Model):
                                                          creator_username= self.user.username,
                                                          owner_username = self.user.username,
                                                          )
-                        if cim_payment_profile['payment'].has_key('credit_card') and \
-                                    cim_payment_profile['payment']['credit_card'].has_key('card_number'):
-    
-                            card_num = cim_payment_profile['payment']['credit_card']['card_number'][-4:]
-    
-                            payment_profile.card_num = card_num
                         payment_profile.save()
-        
+                    else:
+                        payment_profile = payment_profiles[0]
+                        
+                    if cim_payment_profile['payment'].has_key('credit_card') and \
+                                cim_payment_profile['payment']['credit_card'].has_key('card_number'):
+
+                        card_num = cim_payment_profile['payment']['credit_card']['card_number'][-4:]
+                        if payment_profile.card_num <> card_num:
+                            payment_profile.card_num = card_num
+                            payment_profile.save()
+                        
+        return valid_cim_payment_profile_ids, invalid_cim_payment_profile_ids
         
         
     def within_trial_period(self):
@@ -361,7 +416,6 @@ class PaymentProfile(models.Model):
                                 self.recurring_payment.customer_profile_id, 
                                 self.payment_profile_id)
         success, response_d = cim_payment_profile.get()
-        print success, response_d 
         
         if success:
             if response_d['payment_profile'].has_key('payment'):
