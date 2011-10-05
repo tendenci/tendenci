@@ -486,12 +486,19 @@ def get_summary():
     now = datetime.now()
     summary = []
     types = CorporateMembershipType.objects.all()
-    
+    total_active = 0
+    total_pending = 0
+    total_expired = 0
+    total_total = 0
     for type in types:
         mems = CorporateMembership.objects.filter(corporate_membership_type = type)
         active = mems.filter(expiration_dt__gt=now, approved=True)
         expired = mems.filter(expiration_dt__lte=now, approved=True)
         pending = mems.filter(approved=False)
+        total_active += active.count()
+        total_pending += pending.count()
+        total_expired += expired.count()
+        total_total += mems.count()
         summary.append({
             'type':type,
             'active':active.count(),
@@ -500,7 +507,8 @@ def get_summary():
             'total':mems.count(),
         })
     
-    return sorted(summary, key=lambda x:x['type'].name)
+    return (sorted(summary, key=lambda x:x['type'].name),
+        (total_active, total_pending, total_expired, total_total))
 
 def last_n_month(n):
     """
