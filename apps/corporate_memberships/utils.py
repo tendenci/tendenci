@@ -452,19 +452,20 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
 
 def get_over_time_stats():
     now = datetime.now()
-    
+    this_month = datetime(day=1, month=now.month, year=now.year)
+    this_year = datetime(day=1, month=1, year=now.year)
     times = [
-        ("Month", timedelta(weeks=4), 0),
-        ("Last Month", timedelta(weeks=8), 1),
-        ("Last 3 Months", timedelta(weeks=12), 2),
-        ("Last 6 Months", timedelta(weeks=24), 3),
-        ("Year", timedelta(days=365), 4),
+        ("Month", this_month, 0),
+        ("Last Month", last_n_month(1), 1),
+        ("Last 3 Months", last_n_month(2), 2),
+        ("Last 6 Months", last_n_month(5), 3),
+        ("Year", this_year, 4),
     ]
     
     stats = []
     
     for time in times:
-        start_dt = now - time[1]
+        start_dt = time[1]
         d = {}
         active_mems = CorporateMembership.objects.filter(expiration_dt__gt=start_dt, approved=True)
         d['new'] = active_mems.filter(join_dt__gt=start_dt).count() #just joined in that time period
@@ -497,3 +498,8 @@ def get_summary():
         })
     
     return sorted(summary, key=lambda x:x['type'].name)
+
+def last_n_month(n):
+    now = datetime.now()
+    last = datetime(day=1, month=(now.month-n)%12, year=now.year-(now.month-n)/12)
+    return last
