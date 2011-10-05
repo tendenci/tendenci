@@ -6,6 +6,8 @@
 {% has_perm user navs.delete_nav opt_object as can_delete %}
 
 <div class="t-iconrow">
+
+    <a class="option-link" href="{% url navs.tag_test opt_object.pk %}">{% trans "Preview" %}</a>
     
 	{% if can_edit %}
 		<a class="option-link edit" href="{% url navs.edit opt_object.pk %}">{% trans "Edit" %}</a>

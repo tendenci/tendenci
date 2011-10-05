@@ -179,3 +179,11 @@ def page_select(request, form_class=PageSelectForm):
     return HttpResponse(json.dumps({
                 "error": True
             }), mimetype="text/plain")
+
+def tag_test(request, id, template_name="navs/tag_test.html"):
+    nav = get_object_or_404(Nav, id=id)
+    return render_to_response(
+        template_name,
+        {'nav':nav},
+        context_instance=RequestContext(request),
+    )
