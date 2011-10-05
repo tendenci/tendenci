@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import patterns, url
+from django.views.generic.simple import direct_to_template
 
 urlpatterns = patterns('navs',
     url(r'^$', 'views.search', name="navs.search"),
@@ -7,4 +8,5 @@ urlpatterns = patterns('navs',
     url(r'^edit/(?P<id>\d+)/$', 'views.edit', name="navs.edit"),
     url(r'^edit/(?P<id>\d+)/items/$', 'views.edit_items', name="navs.edit_items"),
     url(r'^page-select/$', 'views.page_select', name="navs.page_select"),
+    url(r'^test/(?P<id>\d+)/$', 'views.tag_test', name="navs.tag_test"),
 )

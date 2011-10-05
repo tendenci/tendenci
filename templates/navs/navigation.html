@@ -1,0 +1,8 @@
+{% load nav_tags %}
+
+<h1>{{ nav.title }}</h1>
+<ul>
+    {% for item in items %}
+        {% nav_item item %}
+    {% endfor %}
+</ul>
