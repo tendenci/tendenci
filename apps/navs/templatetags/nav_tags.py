@@ -28,7 +28,8 @@ def nav_search(context):
     return context
     
 @register.inclusion_tag("navs/navigation.html", takes_context=True)
-def navigation(context, nav):
+def navigation(context, nav_id):
+    nav = Nav.objects.get(id=nav_id)
     context.update({
         "nav": nav,
         "items": nav.items(),
