@@ -1,0 +1,10 @@
+{% load nav_tags %}
+
+<li><a href="{{ item.page.get_absolute_url }}">{{ item.label }}</a></li>
+{% if item.children %}
+    <ul>
+    {% for child in item.children %}
+        {% nav_item child %}
+    {% endfor %}
+    </ul>
+{% endif %}

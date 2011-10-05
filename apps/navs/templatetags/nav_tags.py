@@ -27,3 +27,17 @@ def nav_nav(context, user, nav=None):
 def nav_search(context):
     return context
     
+@register.inclusion_tag("navs/navigation.html", takes_context=True)
+def navigation(context, nav):
+    context.update({
+        "nav": nav,
+        "items": nav.items(),
+    })
+    return context
+
+@register.inclusion_tag("navs/navigation_item.html", takes_context=True)
+def nav_item(context, item):
+    context.update({
+        "item": item,
+    })
+    return context
