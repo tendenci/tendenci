@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import time
-import traceback
+#import traceback
 from django.core.management.base import BaseCommand
-from django.template.loader import render_to_string
-from django.template import TemplateDoesNotExist
+#from django.template.loader import render_to_string
+#from django.template import TemplateDoesNotExist
 
 UNSUCCESSFUL_TRANS_CODE = ['E00027']
 
@@ -31,10 +31,7 @@ class Command(BaseCommand):
             
         from recurring_payments.models import (RecurringPayment,
                                                RecurringPaymentInvoice,
-                                               PaymentProfile,
-                                               PaymentTransaction)
-        from recurring_payments.authnet.cim import CIMCustomerProfile
-        from emails.models import Email
+                                               PaymentProfile)
         from site_settings.utils import get_setting
         from recurring_payments.utils import RecurringPaymentEmailNotices
         rp_email_notice = RecurringPaymentEmailNotices()

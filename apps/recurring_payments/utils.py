@@ -251,6 +251,7 @@ def api_add_rp(data):
         u = users[0]
     else:
         u = User()
+        u.email=email
         u.username = email.split('@')[0]
         u.username = get_unique_username(u)
         u.set_password(User.objects.make_random_password(length=8))
@@ -284,6 +285,7 @@ def api_get_rp_token(data):
     Output:
         token
         gateway_error
+        payment_profile_id
         result_code
     """
     rp_id = data.get('rp_id', 0)
@@ -300,6 +302,19 @@ def api_get_rp_token(data):
     
     d = {'token': token,
          'gateway_error': gateway_error}
+    
+    # also pass the payment_profile_id
+    payment_profiles = PaymentProfile.objects.filter(recurring_payment=rp, 
+                                                    status=1, 
+                                                    status_detail='active')
+    if payment_profiles:
+        payment_profile_id = (payment_profiles[0]).payment_profile_id
+    else:
+        payment_profile_id = ''
+        
+    d['payment_profile_id'] = payment_profile_id
+    
+    
     if gateway_error:
         status = False
     else:
@@ -327,15 +342,15 @@ def api_verify_rp_payment_profile(data):
     except:
         return False, {}
     
-    rp.populate_payment_profile()
+    d = {}
+    # pp - customer payment_profile
+    valid_cpp_ids, invalid_cpp_ids = rp.populate_payment_profile(validation_mode='liveMode')
+    if valid_cpp_ids:
+        d['valid_cpp_id'] = valid_cpp_ids[0]
     
-    has_payment_profile = PaymentProfile.objects.filter(
-                                       recurring_payment=rp,
-                                       status=1,
-                                       status_detail='active').exists()
-          
-    d = {'has_payment_profile': has_payment_profile}
-        
+    if invalid_cpp_ids:
+        d['invalid_cpp_id']= invalid_cpp_ids[0]
+                  
     return True, d
 
 
