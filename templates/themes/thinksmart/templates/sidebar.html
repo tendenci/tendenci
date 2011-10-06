@@ -1,0 +1,63 @@
+{% load event_tags %}
+{% load i18n %}
+
+<div id="events-box">
+    <h3><a href="/events"><span>{% trans "Upcoming" %}</span> {% trans "Events" %}</a></h3>
+    {% list_events as sidebar_events limit=3 %}
+    {% if sidebar_events %}
+        {% for event in sidebar_events %}
+            <div class="event clearfix">
+                <div class="event-date">
+                    <span class="day">{{ event.start_dt|date:"j" }}</span>
+                    <span class="month">{{ event.start_dt|date:"M" }}</span>
+                </div>
+                <div class="event-text">
+                    <a class="title" href="{{ event.get_absolute_url }}">{{ event.title }}</a>
+                    <p>{{ event.get_description|striptags|truncatewords:"10"|safe }}</p>
+                    <a class="readmore" href="{{ event.get_absolute_url }}">{% trans 'Read More' %}</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+    <div class="event clearfix">
+        <div class="event-date">
+            <span class="day">9</span>
+            <span class="month">Aug</span>
+        </div>
+        <div class="event-text">
+            <a class="title" href="#">Upcoming Events Here</a>
+            <p>See our latest events...</p>
+            <a class="readmore" href="#">Read More</a>
+        </div>
+    </div>
+    {% if request.user.is_authenticated %}
+    <div class="event clearfix">
+        <div class="event-date">
+            <span class="day">22</span>
+            <span class="month">Aug</span>
+        </div>
+        <div class="event-text">
+            <a class="title" href="#">Add events to go here</a>
+            <p><a href="/events/add/">Add an event</a> to make this default information disappear.</p>
+            <a class="readmore" href="#">Read More</a>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+<div id="signup-form">
+    <h3><span>{% trans "Newsletter" %}</span> {% trans "Signup" %}</h3>
+    <form>
+        <input type="text" placeholder="full name" name="full_name" id="full-name" />
+        <input type="text" placeholder="email address" name="email" id="email" />
+        <input type="submit" name="GO" id="signup-form-submit" value="Go" />
+    </form>
+</div>
+<div id="follow-box">
+    <h3><span>{% trans "Follow" %}</span> {% trans "Us" %}</h3>
+    <a href="http://facebook.com/name"><img src="{{ THEME_URL }}media/images/facebook.png" alt="Facebook for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
+    <a href="http://linkedin.com/name"><img src="{{ THEME_URL }}media/images/linkedin.png" alt="LinkedIn for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
+    <a href="http://twitter.com/{{ MODULE_THEME_TWITTER }}"><img src="{{ THEME_URL }}media/images/twitter.png" alt="Twitter for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
+    <a href="http://youtube.com/name"><img src="{{ THEME_URL }}media/images/youtube.png" alt="Youtube for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
+    <a href="/feed"><img src="{{ THEME_URL }}media/images/rss.png" alt="RSS for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
+</div>

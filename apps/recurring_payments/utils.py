@@ -1,8 +1,14 @@
+from datetime import datetime
 from django.template.loader import render_to_string
 from django.template import TemplateDoesNotExist
 from django.conf import settings
+from django.contrib.auth.models import User
 from emails.models import Email
 from site_settings.utils import get_setting
+from profiles.models import Profile
+from recurring_payments.models import RecurringPayment, PaymentProfile
+from recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
+from recurring_payments.authnet.utils import get_token
         
   
 class RecurringPaymentEmailNotices(object):
@@ -143,5 +149,218 @@ class RecurringPaymentEmailNotices(object):
                 self.email.send()
             except TemplateDoesNotExist:
                 pass
+            
+            
+def api_add_rp(data):
+    """Create a recurrring payment account. Accepted format: json
+    
+    Input fields:
+        email - required
+        description - required
+        payment_amount - required
+        billing_period - optional, default to 'month'
+        billing_frequency - optional, default to 1
+        billing_start_dt - optional, default to today
+        num_days - optional, default to 0
+        has_trial_period - optional, default to False
+        trial_period_start_dt - optional, default to today
+        trial_period_end_dt - optional, default to today
+        trial_amount - optional, default to 0
+        
+    Output:
+        rp_id - a recurring payment id
+        result_code
+    """
+    ALLOWED_FIELES = ('email',
+                      'description',
+                      'payment_amount',
+                      'billing_period',
+                      'billing_frequency',
+                      'billing_start_dt',
+                      'num_days',
+                      'has_trial_period',
+                      'trial_period_start_dt',
+                      'trial_period_end_dt',
+                      'trial_amount',
+                      )
+    from decimal import Decimal
+    from django.core.validators import email_re
+    import dateutil.parser as dparser
+    from imports.utils import get_unique_username
+    
+    email = data.get('email', '')
+    payment_amount = data.get('payment_amount', '')
+    try:
+        payment_amount = Decimal(payment_amount)
+    except:
+        payment_amount = 0
+    
+    
+    if not all([email_re.match(email), 
+                data.has_key('description'),
+                payment_amount>0]):
+        return False, {}
+    
+    
+    rp = RecurringPayment()
+    for key, value in data.items():
+        if key in ALLOWED_FIELES:
+            if hasattr(rp, key):
+                exec('rp.%s="%s"' % (key, value))
+            
+    if rp.billing_start_dt:
+        try:
+            rp.billing_start_dt = dparser.parse(rp.billing_start_dt)
+        except:
+            rp.billing_start_dt = datetime.now()
+    else:
+        rp.billing_start_dt = datetime.now()
+    if rp.trial_period_start_dt:
+        try:
+            rp.trial_period_start_dt = dparser.parse(rp.trial_period_start_dt)
+        except:
+            rp.trial_period_start_dt = datetime.now()
+    
+    if rp.trial_period_end_dt:
+        try:
+            rp.trial_period_end_dt = dparser.parse(rp.trial_period_end_dt)
+        except:
+            rp.trial_period_end_dt = datetime.now()
+        
+    rp.payment_amount = Decimal(rp.payment_amount)
+    
+    try:
+        rp.billing_frequency = int(rp.billing_frequency)
+    except:
+        rp.billing_frequency = 1
+    try:
+        rp.num_days = int(rp.num_days)
+    except:
+        rp.num_days = 1
+    if rp.has_trial_period in ['True', '1',  True, 1] and all([rp.trial_period_start_dt,
+                                                              rp.trial_period_end_dt]):
+        rp.has_trial_period = True
+    else:
+        rp.has_trial_period = False
+        
+    # start the real work
+    
+    # get or create a user account s with this email
+    users = User.objects.filter(email=email)
+    if users:
+        u = users[0]
+    else:
+        u = User()
+        u.email=email
+        u.username = email.split('@')[0]
+        u.username = get_unique_username(u)
+        u.set_password(User.objects.make_random_password(length=8))
+        u.is_staff = False
+        u.is_superuser = False
+        u.save()
+        
+        profile = Profile.objects.create(user=u, 
+               creator=u, 
+               creator_username=u.username,
+               owner=u, 
+               owner_username=u.username, 
+               email=u.email
+            )
+    
+    # add a recurring payment entry for this user
+    rp.user = u
+    rp.save()
+    
+    return True, {'rp_id': rp.id}
+        
+        
+def api_get_rp_token(data):
+    """Get the token for using authorize.net hosted profile page
+        Accepted format: json
+    
+    Input fields:
+        rp_id - required
+        iframe_communicator_url
+        
+    Output:
+        token
+        gateway_error
+        payment_profile_id
+        result_code
+    """
+    rp_id = data.get('rp_id', 0)
+    iframe_communicator_url = data.get('iframe_communicator_url', '')
+    
+    try:
+        rp = RecurringPayment.objects.get(id=int(rp_id))
+    except:
+        return False, {}
+    
+    token, gateway_error = get_token(rp, CIMCustomerProfile, 
+                                     CIMHostedProfilePage, 
+                                     iframe_communicator_url)
+    
+    d = {'token': token,
+         'gateway_error': gateway_error}
+    
+    # also pass the payment_profile_id
+    payment_profiles = PaymentProfile.objects.filter(recurring_payment=rp, 
+                                                    status=1, 
+                                                    status_detail='active')
+    if payment_profiles:
+        payment_profile_id = (payment_profiles[0]).payment_profile_id
+    else:
+        payment_profile_id = ''
+        
+    d['payment_profile_id'] = payment_profile_id
+    
+    
+    if gateway_error:
+        status = False
+    else:
+        status = True
+        
+    return status, d
+
+
+def api_verify_rp_payment_profile(data):
+    """Verify if this recurring payment account
+        has a valid payment profile.
+        Accepted format: json
+    
+    Input fields:
+        rp_id - required
+        
+    Output:
+        has_payment_profile
+        result_code
+    """
+    rp_id = data.get('rp_id', 0)
+    
+    try:
+        rp = RecurringPayment.objects.get(id=int(rp_id))
+    except:
+        return False, {}
+    
+    d = {}
+    # pp - customer payment_profile
+    valid_cpp_ids, invalid_cpp_ids = rp.populate_payment_profile(validation_mode='liveMode')
+    if valid_cpp_ids:
+        d['valid_cpp_id'] = valid_cpp_ids[0]
+    
+    if invalid_cpp_ids:
+        d['invalid_cpp_id']= invalid_cpp_ids[0]
+                  
+    return True, d
+
+
+    
+        
+    
+    
+        
+    
+    
+    
             
     

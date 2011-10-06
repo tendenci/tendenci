@@ -41,14 +41,14 @@ class Video(TendenciBaseModel):
     def save(self, *args, **kwargs):
         model = self.__class__
         
-        if self.position is None:
+        if self.ordering is None:
             # Append
             try:
                 last = model.objects.order_by('-ordering')[0]
-                self.position = last.position + 1
+                self.ordering = last.ordering + 1
             except IndexError:
                 # First row
-                self.position = 0
+                self.ordering = 0
         
         return super(Video, self).save(*args, **kwargs)
     

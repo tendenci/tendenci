@@ -451,20 +451,24 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
     return corp_memb_set
 
 def get_over_time_stats():
+    """
+    return a dict of membership statistics overtime.
+    """
     now = datetime.now()
-    
+    this_month = datetime(day=1, month=now.month, year=now.year)
+    this_year = datetime(day=1, month=1, year=now.year)
     times = [
-        ("Month", timedelta(weeks=4), 0),
-        ("Last Month", timedelta(weeks=8), 1),
-        ("Last 3 Months", timedelta(weeks=12), 2),
-        ("Last 6 Months", timedelta(weeks=24), 3),
-        ("Year", timedelta(days=365), 4),
+        ("Month", this_month, 0),
+        ("Last Month", last_n_month(1), 1),
+        ("Last 3 Months", last_n_month(2), 2),
+        ("Last 6 Months", last_n_month(5), 3),
+        ("Year", this_year, 4),
     ]
     
     stats = []
     
     for time in times:
-        start_dt = now - time[1]
+        start_dt = time[1]
         d = {}
         active_mems = CorporateMembership.objects.filter(expiration_dt__gt=start_dt, approved=True)
         d['new'] = active_mems.filter(join_dt__gt=start_dt).count() #just joined in that time period
@@ -482,12 +486,19 @@ def get_summary():
     now = datetime.now()
     summary = []
     types = CorporateMembershipType.objects.all()
-    
+    total_active = 0
+    total_pending = 0
+    total_expired = 0
+    total_total = 0
     for type in types:
         mems = CorporateMembership.objects.filter(corporate_membership_type = type)
         active = mems.filter(expiration_dt__gt=now, approved=True)
         expired = mems.filter(expiration_dt__lte=now, approved=True)
         pending = mems.filter(approved=False)
+        total_active += active.count()
+        total_pending += pending.count()
+        total_expired += expired.count()
+        total_total += mems.count()
         summary.append({
             'type':type,
             'active':active.count(),
@@ -496,4 +507,13 @@ def get_summary():
             'total':mems.count(),
         })
     
-    return sorted(summary, key=lambda x:x['type'].name)
+    return (sorted(summary, key=lambda x:x['type'].name),
+        (total_active, total_pending, total_expired, total_total))
+
+def last_n_month(n):
+    """
+        Get the first day of the last n months.
+    """
+    now = datetime.now()
+    last = datetime(day=1, month=(now.month-n)%12, year=now.year-(now.month-n)/12)
+    return last
