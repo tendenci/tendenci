@@ -81,7 +81,7 @@ def add(request, form_class=NavForm, template_name="navs/add.html"):
                 }
             EventLog.objects.log(**log_defaults)
             messages.add_message(request, messages.INFO, 'Successfully added %s' % nav)
-            return redirect('navs.search')
+            return redirect('navs.edit_items', id=nav.id)
     else:
         form = form_class(user=request.user)
         
@@ -112,7 +112,7 @@ def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
                 }
             EventLog.objects.log(**log_defaults)
             messages.add_message(request, messages.INFO, 'Successfully updated %s' % nav)
-            return redirect('navs.search')
+            return redirect('navs.edit_items', id=nav.id)
     else:
         form = form_class(user=request.user, instance=nav)
         
