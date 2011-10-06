@@ -26,7 +26,7 @@
                 <div class="page-select">
                     {{ page_select.pages }}
                 </div>
-                Select pages above to be added to Main Nav
+                <p>Select pages above to be added to Main Nav</p>
                 <input class="nav-add" type="submit" value="{% trans 'Add to' %} {{ nav.title }}" />
                 </div>
             </form>
@@ -47,35 +47,39 @@
                                 {{ form.non_field_errors }}
                             </div>
                         {% endif %}
-                        <div class="nav-item-field">
-                            URL: <input class="url-field" disabled="disabled" type="text" value="{{ form.instance.page.get_absolute_url }}">
+                        <div class="nav-item-left">
+                            <div class="nav-item-field">
+                                URL: <input class="url-field" disabled="disabled" type="text" value="{{ form.instance.page.get_absolute_url }}">
+                            </div>
+                            <div class="nav-item-field">
+                                {% if form.label.errors %}
+                                    <div class="errors">
+                                        {{ form.label.errors }}
+                                    </div>
+                                {% endif %}
+                                {{ form.label.label }}
+                                {{ form.label }}
+                            </div>
                         </div>
-                        <div class="nav-item-field">
-                            {% if form.label.errors %}
-                                <div class="errors">
-                                    {{ form.label.errors }}
-                                </div>
-                            {% endif %}
-                            {{ form.label.label }}
-                            {{ form.label }}
-                        </div>
-                        <div class="nav-item-field">
-                            {% if form.title.errors %}
-                                <div class="errors">
-                                    {{ form.title.errors }}
-                                </div>
-                            {% endif %}
-                            {{ form.title.label }}
-                            {{ form.title }}
-                        </div>
-                        <div class="nav-item-field">
-                            {% if form.css.errors %}
-                                <div class="errors">
-                                    {{ form.css.errors }}
-                                </div>
-                            {% endif %}
-                            {{ form.css.label }}
-                            {{ form.css }}
+                        <div class="nav-item-right">
+                            <div class="nav-item-field">
+                                {% if form.title.errors %}
+                                    <div class="errors">
+                                        {{ form.title.errors }}
+                                    </div>
+                                {% endif %}
+                                {{ form.title.label }}
+                                {{ form.title }}
+                            </div>
+                            <div class="nav-item-field">
+                                {% if form.css.errors %}
+                                    <div class="errors">
+                                        {{ form.css.errors }}
+                                    </div>
+                                {% endif %}
+                                {{ form.css.label }}
+                                {{ form.css }}
+                            </div>
                         </div>
                         <div style="display: none;" >
                             {{ form.ordering }}
@@ -98,7 +102,7 @@
                 <h2>+ </h2> 
             </a> 
             <div class="nav-item-detail"> 
-                
+                <div class="nav-item-left">
                 <div class="nav-item-field"> 
                     URL: <input class="url-field" disabled="disabled" type="text" value=""> 
                 </div> 
@@ -107,6 +111,8 @@
                     Label
                     <input id="id_form-0-label" type="text" name="form-0-label" maxlength="100" /> 
                 </div> 
+                </div>
+                <div class="nav-item-right">
                 <div class="nav-item-field"> 
                     
                     Title Attribute
@@ -117,6 +123,7 @@
                     CSS Class
                     <input id="id_form-0-css" type="text" name="form-0-css" maxlength="100" /> 
                 </div> 
+                </div>
                 <div style="display: none;" >
                     <input type="hidden" name="form-0-ordering" value="0" id="id_form-0-ordering" /> 
                     <input type="hidden" name="form-0-level" value="2" id="id_form-0-level" /> 
@@ -157,9 +164,15 @@
         }
         apply_delete = function(thing){
             thing.click(function(){
-                $(this).parent().parent().remove();
                 total = $("#id_form-TOTAL_FORMS").val();
-                updateElementIndex($(this).parent().parent().parent(), 'form', total);
+                $(this).parent().parent().remove();
+                items = $("#nav-items").find(".nav-item")
+                for(i=0;i<total-1;i++){
+                    inputs = $(items[i]).find('input');
+                    for(j=0;j<inputs.length;j++){
+                        updateElementIndex(inputs[j], 'form', i);
+                    }
+                }
                 $("#id_form-TOTAL_FORMS").val(total-1);
                 return false;
             });
