@@ -19,14 +19,15 @@
     
     <div class="nav-wrap">
         <div class="nav-edit-menu">
+            <h2>{{ page_select.pages.label }}</h2>
+            Search:<input id="search-box" type="text">
             <form method="post" action="{% url navs.page_select %}" id="page-select">
-            <div class="forms">{% csrf_token %}
-                <h2>{{ page_select.pages.label }}</h2>
+                <div class="forms">{% csrf_token %}
                 <div class="page-select">
                     {{ page_select.pages }}
                 </div>
                 <input class="nav-add" type="submit" value="{% trans 'Add to' %} {{ nav.title }}" />
-            </div>
+                </div>
             </form>
         </div>
         <div class="nav-edit-content">
@@ -153,6 +154,20 @@
 
 {% block extra_body %}
     {{ block.super }}
+    <script type="text/javascript">
+        $('#search-box').keypress(function(){
+            // hide all pages that do not match search-box's value
+            val = $('#search-box').val();
+            pages = $('.page-select li');
+            for(i=0;i<pages.length;i++){
+                if($(pages[i]).html().indexOf(val)==-1){
+                    $(pages[i]).hide();
+                }else{
+                    $(pages[i]).show();
+                }
+            }
+        });
+    </script>
     <script type="text/javascript">
         $('#base').hide();
         $('.nav-item-detail').hide();
