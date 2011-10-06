@@ -69,3 +69,5 @@ class ItemForm(forms.ModelForm):
         super(ItemForm, self).__init__(*args, **kwargs)
         #we dont need the select widget for this since it will be hidden
         self.fields['page'].widget = forms.TextInput()
+        self.fields['ordering'].widget = forms.HiddenInput()
+        self.fields['level'].widget = forms.HiddenInput()
