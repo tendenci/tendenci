@@ -21,7 +21,8 @@ class Nav(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return('navs.detail', [self.pk])
-        
+    
+    @property
     def items(self, level=0):
         # get all items of a given level
         rel = self.navitem_set.filter(level=level)
@@ -38,7 +39,8 @@ class NavItem(models.Model):
     
     def __unicode__(self):
         return '%s - %s' % (self.nav.title, self.label)
-        
+    
+    @property
     def children(self):
         # gets all subnavigations
         rel = self.nav.navitem_set.filter(ordering=self.ordering)

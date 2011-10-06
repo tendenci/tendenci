@@ -13,6 +13,7 @@ from perms.utils import has_perm, update_perms_and_save, is_admin
 from pages.models import Page
 from navs.models import Nav, NavItem
 from navs.forms import NavForm, PageSelectForm, ItemForm
+from navs.utils import cache_nav
 
 @login_required
 def search(request, template_name="navs/search.html"):
@@ -102,6 +103,7 @@ def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
         if form.is_valid():
             nav = form.save(commit=False)
             nav = update_perms_and_save(request, form, nav)
+            cache_nav(nav)
             log_defaults = {
                     'event_id' : 195200,
                     'event_data': '%s (%d) updated by %s' % (nav._meta.object_name, nav.pk, request.user),
@@ -147,6 +149,7 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
             for old_item in old_items:
                 if not(old_item in items):
                     old_item.delete()
+            cache_nav(nav)
             messages.add_message(request, messages.INFO, 'Successfully updated %s' % nav)
     else:
         formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('ordering'))
@@ -180,7 +183,7 @@ def page_select(request, form_class=PageSelectForm):
                 "error": True
             }), mimetype="text/plain")
 
-def tag_test(request, id, template_name="navs/tag_test.html"):
+def tag_test(request, id, template_name="navs/preview_nav.html"):
     nav = get_object_or_404(Nav, id=id)
     return render_to_response(
         template_name,
