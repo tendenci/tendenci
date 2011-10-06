@@ -26,6 +26,7 @@
                 <div class="page-select">
                     {{ page_select.pages }}
                 </div>
+                Select pages above to be added to Main Nav
                 <input class="nav-add" type="submit" value="{% trans 'Add to' %} {{ nav.title }}" />
                 </div>
             </form>
@@ -76,25 +77,9 @@
                             {{ form.css.label }}
                             {{ form.css }}
                         </div>
-                        <div class="nav-item-field">
-                            {% if form.ordering.errors %}
-                                <div class="errors">
-                                    {{ form.ordering.errors }}
-                                </div>
-                            {% endif %}
-                            {{ form.ordering.label }}
-                            {{ form.ordering }}
-                        </div>
-                        <div class="nav-item-field">
-                            {% if form.level.errors %}
-                                <div class="errors">
-                                    {{ form.level.errors }}
-                                </div>
-                            {% endif %}
-                            {{ form.level.label }}
-                            {{ form.level }}
-                        </div>
                         <div style="display: none;" >
+                            {{ form.ordering }}
+                            {{ form.level }}
                             {{ form.page }}
                         </div>
                         <a href="#" class="item-delete">Remove</a>
@@ -132,17 +117,9 @@
                     CSS Class
                     <input id="id_form-0-css" type="text" name="form-0-css" maxlength="100" /> 
                 </div> 
-                <div class="nav-item-field"> 
-                    
-                    Ordering
-                    <input type="text" name="form-0-ordering" value="0" id="id_form-0-ordering" /> 
-                </div> 
-                <div class="nav-item-field"> 
-                    
-                    Level
-                    <input type="text" name="form-0-level" value="0" id="id_form-0-level" /> 
-                </div> 
-                <div style="display: none;" > 
+                <div style="display: none;" >
+                    <input type="hidden" name="form-0-ordering" value="0" id="id_form-0-ordering" /> 
+                    <input type="hidden" name="form-0-level" value="2" id="id_form-0-level" /> 
                     <input type="text" name="form-0-page" id="id_form-0-page" /> 
                 </div> 
                 <a class="item-delete">Remove</a> 
@@ -237,6 +214,7 @@
                     clone.find('#id_form-0-label').val(pages[i].label);
                     clone.find('.nav-item-label h2').html("+ "+pages[i].label);
                     clone.find('#id_form-0-page').val(pages[i].id);
+                    clone.find('#id_form-0-title').val(pages[i].label);
                     
                     //relace the names and ids of the elements in the form
                     //clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
