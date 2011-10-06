@@ -2,9 +2,8 @@ from datetime import datetime
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse
+#from django.conf import settings
+#from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum
 
@@ -12,14 +11,11 @@ from recurring_payments.models import (RecurringPayment,
                                        PaymentProfile, 
                                        PaymentTransaction,
                                        RecurringPaymentInvoice)
-from recurring_payments.authnet.cim import (CIMCustomerProfile,
-                                            CIMCustomerPaymentProfile,
-                                            CIMHostedProfilePage)
-from recurring_payments.authnet.utils import get_token, get_test_mode
+from recurring_payments.authnet.utils import get_test_mode
 
-from perms.utils import has_perm, is_admin
+from perms.utils import is_admin
 from base.http import Http403
-from site_settings.utils import get_setting
+#from site_settings.utils import get_setting
 
 @login_required
 def view_account(request, recurring_payment_id, 
@@ -105,11 +101,15 @@ def customers(request, template_name="recurring_payments/customers.html"):
                                 invoice__balance=0,
                                 ).aggregate(total_amount_received=Sum('invoice__total'))
     total_amount_received = d['total_amount_received']
+    if not total_amount_received:
+        total_amount_received = 0
     # get total amount unpaid
     d = RecurringPaymentInvoice.objects.filter(
                                 invoice__balance__gt=0,
                                 ).aggregate(total_amount_unpaid=Sum('invoice__balance'))
     total_amount_unpaid = d['total_amount_unpaid']
+    if not total_amount_unpaid:
+        total_amount_unpaid = 0
     
     # get total amount past due
     d = RecurringPaymentInvoice.objects.filter(
@@ -117,6 +117,8 @@ def customers(request, template_name="recurring_payments/customers.html"):
                                 billing_dt__lte=datetime.now()
                                 ).aggregate(total_amount_past_due=Sum('invoice__balance'))
     total_amount_past_due = d['total_amount_past_due']
+    if not total_amount_past_due:
+        total_amount_past_due = 0
     
     return render_to_response(template_name, {
                     'recurring_payments': recurring_payments,
@@ -145,6 +147,7 @@ def transaction_receipt(request, recurring_payment_id, payment_transaction_id,
                     'payment_transaction': payment_transaction
                                               }, 
         context_instance=RequestContext(request))
+    
     
     
     
