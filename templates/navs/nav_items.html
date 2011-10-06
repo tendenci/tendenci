@@ -47,7 +47,9 @@
                                 {{ form.non_field_errors }}
                             </div>
                         {% endif %}
-                        <div class="nav-item-left">
+                        <table>
+                        <tr>
+                        <td>
                             <div class="nav-item-field">
                                 URL: <input class="url-field" disabled="disabled" type="text" value="{{ form.instance.page.get_absolute_url }}">
                             </div>
@@ -61,7 +63,8 @@
                                 {{ form.label }}
                             </div>
                         </div>
-                        <div class="nav-item-right">
+                        </td>
+                        <td>
                             <div class="nav-item-field">
                                 {% if form.title.errors %}
                                     <div class="errors">
@@ -80,7 +83,9 @@
                                 {{ form.css.label }}
                                 {{ form.css }}
                             </div>
-                        </div>
+                        </td>
+                        </tr>
+                        </table>
                         <div style="display: none;" >
                             {{ form.ordering }}
                             {{ form.level }}
@@ -101,8 +106,10 @@
             <a href="#" class="nav-item-label"> 
                 <h2>+ </h2> 
             </a> 
-            <div class="nav-item-detail"> 
-                <div class="nav-item-left">
+            <div class="nav-item-detail">
+                <table>
+                <tr>
+                <td>
                 <div class="nav-item-field"> 
                     URL: <input class="url-field" disabled="disabled" type="text" value=""> 
                 </div> 
@@ -111,8 +118,8 @@
                     Label
                     <input id="id_form-0-label" type="text" name="form-0-label" maxlength="100" /> 
                 </div> 
-                </div>
-                <div class="nav-item-right">
+                </td>
+                <td>
                 <div class="nav-item-field"> 
                     
                     Title Attribute
@@ -123,7 +130,9 @@
                     CSS Class
                     <input id="id_form-0-css" type="text" name="form-0-css" maxlength="100" /> 
                 </div> 
-                </div>
+                </td>
+                </tr>
+                </table>
                 <div style="display: none;" >
                     <input type="hidden" name="form-0-ordering" value="0" id="id_form-0-ordering" /> 
                     <input type="hidden" name="form-0-level" value="2" id="id_form-0-level" /> 
