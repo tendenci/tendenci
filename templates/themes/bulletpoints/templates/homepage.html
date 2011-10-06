@@ -101,7 +101,7 @@
                       {% get_rss "http://blog.schipul.com/feed/" as rss %}
                         {% for entry in rss.entries|slice:":3" %}
                             <div class="blog-item">
-                                {% spaceless %}<img style="height: 90px; width: 200px;" alt="{{ entry.title }}" src="
+                                {% spaceless %}<img style="height: 90px; width: 100px;" alt="{{ entry.title }}" src="
                                 {% if entry.thumbnail|slice:":4" == "http" %}
                                     {{ entry.thumbnail }}
                                 {% else %}
@@ -116,7 +116,7 @@
                     </div>
                 </div>
                 <div id="newsletter-form" class="clearfix">
-                    <h3>{% trans 'Newsletter Sign-Up' %}</h3>
+                    <h3>{% trans 'Newsletter' %}</h3>
                     {# embed_form 1 #}
                     <form action="/contact/" method="post">{% csrf_token %}
                         <div class="forms">
