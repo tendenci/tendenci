@@ -142,3 +142,11 @@ div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
 .nav-item-field{
     padding: 5px;
 }
+
+.nav-item-left{
+    float: left;
+}
+
+.nav-item-right{
+    float: left;
+}
