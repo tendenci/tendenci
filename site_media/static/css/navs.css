@@ -150,3 +150,11 @@ div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
 .nav-item-right{
     float: left;
 }
+
+.nav-move-left{
+    float: right;
+}
+
+.nav-move-right{
+    float: right;
+}
