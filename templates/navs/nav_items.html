@@ -231,7 +231,7 @@
                     //customize the form based on the page info
                     clone.attr('id', '')
                     clone.show();
-                    clone.find('#id_form-0-id').remove();
+                    clone.find('#id_form-0-id').removeAttr('value');
                     clone.find('.url-field').val(pages[i].url);
                     clone.find('#id_form-0-label').val(pages[i].label);
                     clone.find('.nav-item-label h2').html("+ "+pages[i].label);
