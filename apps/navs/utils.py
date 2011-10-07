@@ -6,12 +6,10 @@ from navs.models import Nav
 
 def cache_nav(nav):
     """
-    Caches a nav and all its items
-    The cache should be a nested dictionary so we can 
-    smoothly load the subnavs under their parents
+    Caches a nav's rendered html code
     """
     
-    keys = [NAV_PRE_KEY, unicode(nav.id)]
+    keys = [NAV_PRE_KEY, str(nav.id)]
     key = '.'.join(keys)
     value = render_to_string("navs/render_nav.html", {'nav':nav})
     is_set = cache.add(key, value, 432000) #5 days
@@ -21,9 +19,8 @@ def cache_nav(nav):
 def get_nav(id):
     """
     Get the nav from the cache.
-    Get it from the db if its not in the cache.
     """
-    keys = [NAV_PRE_KEY, unicode(id)]
+    keys = [NAV_PRE_KEY, str(id)]
     key = '.'.join(keys)
     nav = cache.get(key)
     return nav

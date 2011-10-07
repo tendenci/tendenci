@@ -2,7 +2,7 @@ from datetime import datetime
 from django.template import Library, TemplateSyntaxError, Variable
 from base.template_tags import ListNode, parse_tag_kwargs
 from navs.models import Nav
-from navs.utils import get_nav
+from navs.utils import get_nav, cache_nav
 
 register = Library()
 
@@ -57,6 +57,9 @@ def nav(context, nav_id):
     if not will use the navigation tag for rendering the nav
     """
     nav = get_nav(nav_id)
+    if not nav:
+        #cache the nav if its not cached
+        cache_nav(Nav.objects.get(id=nav_id))
     context.update({
         "cached": nav,
         "nav_id": nav_id,
