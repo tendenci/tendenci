@@ -39,8 +39,10 @@
                 <div class="nav-item" {% if forloop.first %}id="first-item"{% endif %}>
                     {{ form.id }}
                     <a href="#" class="nav-item-label">
-                        <h2>+ {{ form.instance.label }}</h2>
+                        <b>+ {{ form.instance.label }}</b>
                     </a>
+                    <a href="#" class="nav-move-right">&rarr;</a>
+                    <a href="#" class="nav-move-left">&larr;</a>
                     <div class="nav-item-detail">
                         {% if form.non_field_errors %}
                             <div class="errors">
@@ -88,7 +90,7 @@
                         </table>
                         <div style="display: none;" >
                             {{ form.ordering }}
-                            {{ form.level }}
+                            <div class="level">{{ form.level }}</div>
                             {{ form.page }}
                         </div>
                         <a href="#" class="item-delete">Remove</a>
@@ -135,7 +137,9 @@
                 </table>
                 <div style="display: none;" >
                     <input type="hidden" name="form-0-ordering" value="0" id="id_form-0-ordering" /> 
+                    <div class="level">
                     <input type="hidden" name="form-0-level" value="0" id="id_form-0-level" /> 
+                    </div>
                     <input type="text" name="form-0-page" id="id_form-0-page" /> 
                 </div> 
                 <a class="item-delete">Remove</a> 
@@ -198,8 +202,30 @@
                 return false;
             });
         }
+        apply_move_left = function(thing){
+            thing.click(function(){
+                level = parseInt($($($(this).parent()).find('.level input')).val()) - 1;
+                if (level > -1){
+                    $($(this).parent()).css('margin-left', (level*20)+'px');
+                    $($($(this).parent()).find('.level input')).val(level)
+                }
+                return false;
+            });
+        }
+        apply_move_right = function(thing){
+            thing.click(function(){
+                level = parseInt($($($(this).parent()).find('.level input')).val()) + 1;
+                if (level < 3){
+                    $($(this).parent()).css('margin-left', (level*20)+'px');
+                    $($($(this).parent()).find('.level input')).val(level)
+                }
+                return false;
+            });
+        }
         apply_toggle($('.nav-item-label'));
         apply_delete($('.item-delete'));
+        apply_move_left($('.nav-move-left'));
+        apply_move_right($('.nav-move-right'));
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}/js/jquery.form.js"></script>
     <script type="text/javascript">
