@@ -14,9 +14,9 @@ def cache_nav(nav):
     keys = [NAV_PRE_KEY, unicode(nav.id)]
     key = '.'.join(keys)
     value = render_to_string("navs/render_nav.html", {'nav':nav})
-    is_set = cache.add(key, value)
+    is_set = cache.add(key, value, 432000) #5 days
     if not is_set:
-        cache.set(key, value)
+        cache.set(key, value, 432000) #5 days
         
 def get_nav(id):
     """
@@ -27,19 +27,3 @@ def get_nav(id):
     key = '.'.join(keys)
     nav = cache.get(key)
     return nav
-
-def nav_to_dict(nav):
-    """
-        Create a dictionary version of a Nav and
-        include the items into it.
-    """
-    d = model_to_dict(nav)
-    for item in nav.items:
-        d['items'] = item_to_dict(item)
-    return d
-    
-def item_to_dict(item):
-    d = model_to_dict(item)
-    for child in d.children:
-        d['children'] = item_to_dict(child)
-    return d

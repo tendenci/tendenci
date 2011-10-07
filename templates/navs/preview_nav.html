@@ -1,5 +1,20 @@
-{% extends 'navs/base.html' %}
+{% extends "navs/base.html" %}
 {% load nav_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} {{ nav.title }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/navs.css">
+{% endblock %}
+
 {% block body %}
+
+<div class="t">
+    {% nav_nav request.user nav %}
     {% nav nav.id %}
+</div>
 {% endblock %}
