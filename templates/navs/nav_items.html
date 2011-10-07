@@ -105,9 +105,9 @@
         <!-- The next div is a base template for the form in form sets -->
         <div class="nav-item" id="base"> 
             <input type="hidden" name="form-0-id" id="id_form-0-id" /> 
-            <a href="#" class="nav-item-label"> 
-                <h2>+ </h2> 
-            </a> 
+            <a href="#" class="nav-item-label"><b>+ </b></a> 
+            <a href="#" class="nav-move-right">&rarr;</a>
+            <a href="#" class="nav-move-left">&larr;</a>
             <div class="nav-item-detail">
                 <table>
                 <tr>
@@ -260,12 +260,13 @@
                     clone.find('#id_form-0-id').removeAttr('value');
                     clone.find('.url-field').val(pages[i].url);
                     clone.find('#id_form-0-label').val(pages[i].label);
-                    clone.find('.nav-item-label h2').html("+ "+pages[i].label);
+                    clone.find('.nav-item-label b').html("+ "+pages[i].label);
                     clone.find('#id_form-0-page').val(pages[i].id);
                     clone.find('#id_form-0-title').val(pages[i].label);
                     
                     //relace the names and ids of the elements in the form
                     //clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
+                    clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
                     clone.find('#id_form-0-label').attr('name', 'form-' + form_number + '-label');
                     clone.find('#id_form-0-title').attr('name', 'form-' + form_number + '-title');
                     clone.find('#id_form-0-css').attr('name', 'form-' + form_number + '-css');
@@ -274,6 +275,7 @@
                     clone.find('#id_form-0-level').attr('name', 'form-' + form_number + '-level');
                     
                     //clone.find('#id_form-0-id').attr('id', 'id_form-' + form_number + '-id');
+                    clone.find('#id_form-0-id').attr('id', 'form-' + form_number + '-id');
                     clone.find('#id_form-0-label').attr('id', 'id_form-' + form_number + '-label');
                     clone.find('#id_form-0-title').attr('id', 'id_form-' + form_number + '-title');
                     clone.find('#id_form-0-css').attr('id', 'id_form-' + form_number + '-css');
@@ -281,9 +283,11 @@
                     clone.find('#id_form-0-ordering').attr('id', 'id_form-' + form_number + '-ordering');
                     clone.find('#id_form-0-level').attr('id', 'id_form-' + form_number + '-level');
                     
-                    //apply the toggle effect
+                    //apply the click effects
                     apply_toggle(clone.find('.nav-item-label'));
                     apply_delete(clone.find('.item-delete'));
+                    apply_move_left(clone.find('.nav-move-left'));
+                    apply_move_right(clone.find('.nav-move-right'));
                     //append to the formset
                     items.append(clone);
                     //increment id count
