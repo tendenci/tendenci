@@ -2,6 +2,7 @@ import os
 import traceback
 from datetime import datetime
 import time
+from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -14,13 +15,22 @@ class Command(BaseCommand):
     and update setting CAMPAIGNMONITOR_API_CLIENT_ID in the local_settings.py
     with the client_id returned from campaign monitor.
     
-    Usage: ./manage.py setup_campaign_monitor
+    Usage: ./manage.py setup_campaign_monitor --password yourpassword
     
     """
     help = 'Set up a campaign monitor account'
     
     # https://github.com/campaignmonitor/createsend-python/tree/master/createsend
-    # http://www.campaignmonitor.com/api/clients/   
+    # http://www.campaignmonitor.com/api/clients/ 
+    
+    option_list = BaseCommand.option_list + (
+        make_option('--password',
+            action='store',
+            dest='password',
+            default=None,
+            help='Password of the campaign monitor account being created'),
+        )
+      
     def handle(self, *args, **options):
         from createsend import CreateSend, Client, List, Subscriber, \
                 BadRequest, Unauthorized
@@ -33,7 +43,7 @@ class Command(BaseCommand):
             email = 't5+%s@schipul.com' % site_name.replace(' ', '')
             return email 
     
-        def setup_cm_account():
+        def setup_cm_account(password=''):
             # check if already setup
             client_id =  getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', '')
             if not client_id or client_id == '[CAMPAIGNMONITOR_API_CLIENT_ID]':
@@ -76,9 +86,10 @@ class Command(BaseCommand):
                     # 2) Set access with username and password
                     # access level = 63  full access
                     username = company_name.replace(' ', '')
-                    # generate a random password with 6 in length
-                    allowed_chars='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789()#$%'
-                    password = User.objects.make_random_password(length=6, allowed_chars=allowed_chars)
+                    if not password:
+                        # generate a random password with 6 in length
+                        allowed_chars='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789()#$%'
+                        password = User.objects.make_random_password(length=6, allowed_chars=allowed_chars)
                     
                     cl.set_access(username, password, 63)
                     
@@ -147,7 +158,8 @@ class Command(BaseCommand):
             return None
         
         try:
-            setup_cm_account()
+            password = options['password']
+            setup_cm_account(password)
         except:
             err_msg = traceback.format_exc()
             email_script_errors(err_msg)
