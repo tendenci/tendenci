@@ -101,11 +101,15 @@ def customers(request, template_name="recurring_payments/customers.html"):
                                 invoice__balance=0,
                                 ).aggregate(total_amount_received=Sum('invoice__total'))
     total_amount_received = d['total_amount_received']
+    if not total_amount_received:
+        total_amount_received = 0
     # get total amount unpaid
     d = RecurringPaymentInvoice.objects.filter(
                                 invoice__balance__gt=0,
                                 ).aggregate(total_amount_unpaid=Sum('invoice__balance'))
     total_amount_unpaid = d['total_amount_unpaid']
+    if not total_amount_unpaid:
+        total_amount_unpaid = 0
     
     # get total amount past due
     d = RecurringPaymentInvoice.objects.filter(
@@ -113,6 +117,8 @@ def customers(request, template_name="recurring_payments/customers.html"):
                                 billing_dt__lte=datetime.now()
                                 ).aggregate(total_amount_past_due=Sum('invoice__balance'))
     total_amount_past_due = d['total_amount_past_due']
+    if not total_amount_past_due:
+        total_amount_past_due = 0
     
     return render_to_response(template_name, {
                     'recurring_payments': recurring_payments,
