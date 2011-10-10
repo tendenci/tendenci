@@ -158,3 +158,11 @@ div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
 .nav-move-right{
     float: right;
 }
+
+.nav-move-up{
+    float: right;
+}
+
+.nav-move-down{
+    float: right;
+}

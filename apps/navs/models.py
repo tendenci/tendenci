@@ -22,12 +22,6 @@ class Nav(TendenciBaseModel):
     def get_absolute_url(self):
         return('navs.detail', [self.pk])
     
-    @property
-    def items(self, level=0):
-        # get all items of a given level
-        rel = self.navitem_set.filter(level=level)
-        return rel
-    
 class NavItem(models.Model):
     nav = models.ForeignKey(Nav)
     label = models.CharField(max_length=100)
@@ -41,9 +35,17 @@ class NavItem(models.Model):
         return '%s - %s' % (self.nav.title, self.label)
     
     @property
-    def children(self):
-        # gets all subnavigations
-        rel = self.nav.navitem_set.filter(ordering=self.ordering)
-        children = rel.filter(level=self.level+1)
-        return children
-        
+    def next(self):
+        try:
+            next = NavItem.objects.get(ordering=self.ordering, nav=self.nav)
+        except NavItem.DoesNotExist:
+            return None
+        return next
+    
+    @property
+    def next_range(self):
+        if not self.next:
+            return range(0, self.level)
+        if self.level > self.next.level:
+            return range(self.next.level, self.level)
+        return range(self.level, self.next.level)
