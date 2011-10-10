@@ -5,6 +5,7 @@ import time
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 
 
 class Command(BaseCommand):
@@ -28,8 +29,9 @@ class Command(BaseCommand):
             
             
         def get_contact_email():
-            u = User.objects.get(id=2)
-            return u.email 
+            site_name = get_setting('site', 'global', 'sitedisplayname')
+            email = 't5+%s@schipul.com' % site_name.replace(' ', '')
+            return email 
     
         def setup_cm_account():
             # check if already setup
@@ -83,6 +85,20 @@ class Command(BaseCommand):
                     # 3) Set up billing - client will pay monthly
                     #cl.set_payg_billing('USD', True, True, 0)
                     cl.set_monthly_billing('USD', True, 0)
+                    
+                    # send an email to t5@schipul.com
+                    now = datetime.now()
+                    now_str = now.strftime('%m/%d/%Y %H:%M')
+                    sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
+                    recipient = 't5@schipul.com'
+                    subject = 'Campaign Monitor New client Account "%s" Created' % company_name
+                    email_body = """Company Name: %s
+                                    \n\nContact Name: %s
+                                    \n\nContact Email: %s
+                                    \n\n\nThanks,\n%s\n
+                                """ % (company_name, contact_name, contact_email, now_str)
+                    send_mail(subject, email_body, sender, [recipient], fail_silently=True)
+                    
                                     
                 
                 # add/update the client_id in the local_settings.py
@@ -92,19 +108,20 @@ class Command(BaseCommand):
                 if client_id == '[CAMPAIGNMONITOR_API_CLIENT_ID]':
                     content = content.replace('[CAMPAIGNMONITOR_API_CLIENT_ID]', cm_client_id)
                 else:
-                    content = "\n%s\n" % cm_client_id
+                    content = "%s\nCAMPAIGNMONITOR_API_CLIENT_ID='%s'\n" % (content, cm_client_id)
                 f.close()
                 f = open(local_setting_file, 'w')
                 f.write(content)
                 f.close()
                 
                 print('Success!')
+                
             else:
                 print('Already has a campaign monitor account')
         
         
         def email_script_errors(err_msg):
-            """Send error message to us if any.
+            """Send error message to us in case of an error.
             """
             email = Email()
             email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
