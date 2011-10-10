@@ -433,11 +433,12 @@ def photos_batch_add(request, photoset_id=0):
             filename, extension = os.path.splitext(uploaded_file.name)
             request.POST.update({'title': filename, })
 
+            # clean filename; alphanumeric with dashes
             filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
 
             # truncate; make unique; append extension
             request.FILES[field_name].name = \
-                filename[:90] + '-' + unicode(uuid.uuid1())[:5] + extension
+                filename[:70] + '-' + unicode(uuid.uuid1())[:5] + extension
 
             # photoset_id set in swfupload
             photoset_id = int(request.POST["photoset_id"])
