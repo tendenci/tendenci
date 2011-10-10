@@ -1,10 +1,12 @@
 {% load nav_tags %}
 
 <li><a href="{{ item.page.get_absolute_url }}">{{ item.label }}</a></li>
-{% if item.children %}
-    <ul>
-    {% for child in item.children %}
-        {% nav_item child %}
+{% if item.next.level and item.level > item.next.level %}
+    {% for i in item.next_range %}
+        <ul>
     {% endfor %}
-    </ul>
+{% else %}
+    {% for i in item.next_range %}
+        </ul>
+    {% endfor %}
 {% endif %}
