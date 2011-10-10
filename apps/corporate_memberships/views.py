@@ -1242,8 +1242,9 @@ def corp_mems_summary(request, template_name='reports/corp_mems_summary.html'):
     Shows a report of corporate memberships per corporate membership type.
     """
     
-    summary = get_summary()
+    summary,total = get_summary()
     
     return render_to_response(template_name, {
         'summary':summary,
+        'total':total,
         }, context_instance=RequestContext(request))

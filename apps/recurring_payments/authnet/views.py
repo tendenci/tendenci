@@ -3,17 +3,18 @@ from django.shortcuts import render_to_response, get_object_or_404
 #from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.core.urlresolvers import reverse
+#from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+#from django.views.decorators.csrf import csrf_exempt
+from django.utils import simplejson
 
 from recurring_payments.models import RecurringPayment, PaymentProfile
-from recurring_payments.authnet.cim import CIMCustomerProfile, CIMCustomerPaymentProfile, CIMHostedProfilePage
+from recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
 from recurring_payments.authnet.utils import get_token, get_test_mode
 
-from perms.utils import has_perm, is_admin
+from perms.utils import is_admin
 from base.http import Http403
-from site_settings.utils import get_setting
+#from site_settings.utils import get_setting
 
 @login_required
 def manage_payment_info(request, recurring_payment_id, 
@@ -106,7 +107,6 @@ def update_payment_info(request, recurring_payment_id,
     
     
 @login_required
-@csrf_exempt
 def update_payment_profile_local(request):
     """
     Update the local payment profile entry.
@@ -119,18 +119,22 @@ def update_payment_profile_local(request):
     if not is_admin(request.user) and request.user.id <> rp.user.id:
         raise Http403
     
-    if payment_profile_id:
-        payment_profile = get_object_or_404(PaymentProfile,
-                                            recurring_payment=rp, 
-                                            id=payment_profile_id)
-        payment_profile.update_local(request)
-    else:
-        rp.populate_payment_profile()
+    ret_d = {}
+    valid_cpp_ids, invalid_cpp_ids = rp.populate_payment_profile(validation_mode='liveMode')
+    if valid_cpp_ids:
+        if payment_profile_id in valid_cpp_ids:
+            ret_d['valid_cpp_id'] = payment_profile_id
+        else:
+            ret_d['valid_cpp_id'] = valid_cpp_ids[0]
+    if invalid_cpp_ids:
+        if payment_profile_id in invalid_cpp_ids:
+            ret_d['invalid_cpp_id'] = payment_profile_id
+        else:
+            ret_d['invalid_cpp_id'] = invalid_cpp_ids[0]
         
-    return HttpResponse('Success')
+    return HttpResponse(simplejson.dumps(ret_d))
 
 @login_required
-@csrf_exempt
 def retrieve_token(request):
     """
     retrieve a token for a given recurring payment.

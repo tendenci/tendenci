@@ -92,20 +92,6 @@
   <link href="{{ STATIC_URL }}authnet_cim/paymentShippingIELTE6.css" rel="stylesheet" type="text/css" />
  <![endif]-->
   
-<script type="text/javascript" src="{{ STATIC_URL }}authnet_cim/popup.js"></script>
-  
- <script type="text/javascript">
-  //<![CDATA[
-  // Uncomment this line if eCheck is enabled. This does not affect functionality, only the initial sizing of the popup page for add payment.
-  AuthorizeNetPopup.options.eCheckEnabled = false;
-
-  // Uncomment this line if you do not have absolutely positioned elements on your page that can obstruct the view of the popup.
-  // This can speed up the processing of the page slightly.
- // AuthorizeNetPopup.options.skipZIndexCheck = true;
-
-  AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }}
-  //]]>
-  </script>
   
 
 {% endblock %}
@@ -303,6 +289,22 @@
 </script>
 <script type="text/javascript" src="/site_media/static/js/jquery_tabs/jquery-ui-1.8.custom.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script> 
+
+<script type="text/javascript" src="{{ STATIC_URL }}authnet_cim/popup.js"></script>
+  
+<script type="text/javascript">
+  //<![CDATA[
+  // Uncomment this line if eCheck is enabled. This does not affect functionality, only the initial sizing of the popup page for add payment.
+  AuthorizeNetPopup.options.eCheckEnabled = false;
+
+  // Uncomment this line if you do not have absolutely positioned elements on your page that can obstruct the view of the popup.
+  // This can speed up the processing of the page slightly.
+ // AuthorizeNetPopup.options.skipZIndexCheck = true;
+
+  AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }}
+  //]]>
+</script>
+
 <script type="text/javascript">
 $(document).ready(function(){
     if(document.location.hash != ""){window.scrollTo(0,0);}

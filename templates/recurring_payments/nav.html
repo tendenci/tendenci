@@ -29,6 +29,7 @@
 			{% if nav_object %}
 				{% if isadmin or user.id == nav_object.user.id %}
 				<li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %}</a></li>
+				<li><a href="{% url recurring_payment.authnet.update_payment_info  nav_object.id %}">{% trans "Payment Method" %}</a></li>
 				{% endif %}
 				{% if isadmin %}
 				<li><a href="{% url admin:recurring_payments_recurringpayment_change nav_object.id %}">{% trans "Edit" %}</a></li>
