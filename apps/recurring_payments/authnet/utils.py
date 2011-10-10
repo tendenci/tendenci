@@ -107,11 +107,18 @@ def get_test_mode():
        
     return test_mode
     
-def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage):
+def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, iframe_communicator_url=''):
     """Get the token from payment gateway for this customer (ex: customer_profile_id=4356210).
        Return token and gateway_error
     """
     gateway_error = False
+    
+    site_url = get_setting('site', 'global', 'siteurl')
+    if not iframe_communicator_url:
+        iframe_communicator_url = '%s%s' % (
+                                site_url, 
+                                reverse('recurring_payment.authnet.iframe_communicator'))
+    
     if not rp.customer_profile_id:
         # customer_profile is not available yet for this customer, create one now
         cp = CIMCustomerProfile()
@@ -127,12 +134,10 @@ def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage):
             
     token = ""
     hosted_profile_page = CIMHostedProfilePage(rp.customer_profile_id)
-    site_url = get_setting('site', 'global', 'siteurl')
+    
     d = {'hosted_profile_settings': 
          {'hosted_profile_heading_bg_color': '#e0e0e0',     # the bg color of sections can be customized
-         'hosted_profile_iFrame_communicator_url': '%s%s' % (
-                                        site_url, 
-                                        reverse('recurring_payment.authnet.iframe_communicator'))}}
+         'hosted_profile_iFrame_communicator_url': '%s' % iframe_communicator_url}}
     success, response_d = hosted_profile_page.get(**d)
     #print success, response_d
     
@@ -142,6 +147,7 @@ def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage):
         token = response_d['token']
     
     return token, gateway_error
+
     
     
     

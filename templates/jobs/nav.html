@@ -49,8 +49,9 @@
 			{% endif %}
 			<li><a href="{% url job.search %}">{% trans "Search" %}</a></li>
 			<li><a href="{% url job.add %}">{% trans "Add" %}</a></li>
+            {% if user.is_authenticated %}
             <li><a href="{% url job_pricing.search %}">{% trans "Pricing" %}</a></li>
-			
+            {% endif %}
 			{% if user.is_authenticated %}
 			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}

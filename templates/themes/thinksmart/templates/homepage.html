@@ -43,31 +43,17 @@
                 {% endfor %}
             {% else %}
                 <div class="story story-even">
-                  <div class="story-image"><a href="http://discoverygreen.com/features/"><img width="954" height="376" src="http://discoverygreen.com/files/581/954x376/crop/88" alt="Gateway Fountain Hours"></a></div>
+                  <div class="story-image"><a href="#"><img width="954" height="376" src="http://schipul.com/files/2371/954x376/crop/88" alt="San Fran"></a></div>
                     <div class="story-text">
-                        <h2 class="headline"><a href="http://discoverygreen.com/features/">Gateway Fountain Hours</a></h2>
-                        <div class="story-summary">Due to the extreme drought, the Gateway Fountain will be closed Monday through Friday beginning August 22 and open on weekends only from 8 a.m. to 7 p.m. | <span class="read-more"><a href="http://discoverygreen.com/features/">Read More</a></span></div>
+                        <h2 class="headline"><a href="#">Golden Gate</a></h2>
+                        <div class="story-summary">Golden Gate Bridge shot with the sun by Ed Schipul. {% if request.user.is_authenticated %}<a href="/stories/add/">Add Stories</a> with the tag <strong>rotator</strong> and they will appear here.{% endif %} | <span class="read-more"><a href="#">Read More</a></span></div>
                     </div>
                 </div>
                 <div class="story story-odd">
-                  <div class="story-image"><a href="http://www.discoverygreen.com/discovery-green-flea/"><img width="954" height="376" src="http://discoverygreen.com/files/556/954x376/crop/88" alt="Discovery Green Flea"></a></div>
+                  <div class="story-image"><a href="#"><img width="954" height="376" src="http://schipul.com/files/2373/954x376/crop/88" alt="The TECH"></a></div>
                     <div class="story-text">
-                        <h2 class="headline"><a href="http://www.discoverygreen.com/discovery-green-flea/">Discovery Green Flea</a></h2>
-                        <div class="story-summary">Where everything old is new again. Coming soon! | <span class="read-more"><a href="http://www.discoverygreen.com/discovery-green-flea/">Read More</a></span></div>
-                    </div>
-                </div>
-                <div class="story story-even">
-                  <div class="story-image"><a href="http://www.discoverygreen.com/vote-4-art/"><img width="954" height="376" src="http://discoverygreen.com/files/508/954x376/crop/88" alt="H-E-B Celebration Station Tent Design Competition"></a></div>
-                    <div class="story-text">
-                        <h2 class="headline"><a href="http://www.discoverygreen.com/vote-4-art/">H-E-B Celebration Station Tent Design Competition</a></h2>
-                        <div class="story-summary">Cast your vote for your favorite design! | <span class="read-more"><a href="http://www.discoverygreen.com/vote-4-art/">Read More</a></span></div>
-                    </div>
-                </div>
-                <div class="story story-odd">
-                  <div class="story-image"><a href="http://www.discoverygreen.com/insperity-golf-experience/"><img width="954" height="376" src="http://discoverygreen.com/files/535/954x376/crop/88" alt="Insperity Golf Experience at Discovery Green"></a></div>
-                    <div class="story-text">
-                        <h2 class="headline"><a href="http://www.discoverygreen.com/insperity-golf-experience/">Insperity Golf Experience at Discovery Green</a></h2>
-                        <div class="story-summary">Come play this artist made putt-putt golf in the park! $5 per person; 12 and under $3. | <span class="read-more"><a href="http://www.discoverygreen.com/insperity-golf-experience/">Read More</a></span></div>
+                        <h2 class="headline"><a href="#">The TECH</a></h2>
+                        <div class="story-summary">The TECH shot by Ed Schipul. {% if request.user.is_authenticated %}<a href="/stories/add/">Add Stories</a> with the tag <strong>featured</strong> and they will appear in the section below.{% endif %} | <span class="read-more"><a href="#">Read More</a></span></div>
                     </div>
                 </div>
             {% endif %}
@@ -107,10 +93,20 @@
                 {% theme_include "sidebar.html" %}
             </section>
             <div id="info-box-large">
-                {# box 1 #}
+                {% list_boxes as aboutus_box tags=aboutus limit=1 %}
+                {% if aboutus_box %}
+                    {% for box in aboutus_box %}
+                        <div id="box-{{ box.pk }}" class="boxes">
+                            <h3><a href="/"><span>{{ box.title }}</span></a></h3>
+                            <div class="box-content">{{ box.safe_content }}</div>
+                            {% include 'boxes/edit-link.html' %}
+                        </div>
+                    {% endfor %}
+                {% else %}
                 <h3><a href="/about"><span>{% trans "About" %}</span> {% trans "Us" %}</a></h3>
                 <img src="{{ THEME_URL }}media/images/info-large.jpg" alt="About {{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
-                <p>Organic sustainable lomo, +1 irony McSweeney's skateboard Portland PBR tattooed farm-to-table Terry Richardson Williamsburg. Organic farm-to-table wolf, next level stuff put a bird on it freegan American Apparel Williamsburg chambray gentrify viral you probably haven't heard of them keffiyeh Cosby sweater. Pitchfork photo booth, DIY cardigan messenger bag butcher Thundercats tofu you probably haven't heard of them. <a href="/" class="readmore">Read more</a></p>
+                <p>All about us. {% if request.user.is_authenticated %}</p><p><a href="/admin/boxes/box/add/">Add a box</a> and use the tag <strong>aboutus</strong> to bring that content into this area. This will replace the image and the text, The title of the box will appear as the heading.{% endif %} <a href="/" class="readmore">Read more</a></p>
+                {% endif %}
             </div>
             <div id="photo-box">
                 <h3><a href="/photos"><span>{% trans "Photo" %}</span> {% trans "Gallery" %}</a></h3>
@@ -120,26 +116,36 @@
                     <a href="{{ photo.get_absolute_url }}"><img src="{% photo_image_url photo size=80x80 crop=True %}" alt="{{ photo.title }}" /></a>
                     {% endfor %}
                 {% else %}
-                <a href="#"><img src="{{ THEME_URL }}/media/images/sample-image.jpg" alt="title" /></a>
-                <a href="#"><img src="{{ THEME_URL }}/media/images/sample-image.jpg" alt="title" /></a>
-                <a href="#"><img src="{{ THEME_URL }}/media/images/sample-image.jpg" alt="title" /></a>
-                <a href="#"><img src="{{ THEME_URL }}/media/images/sample-image.jpg" alt="title" /></a>
-                <a href="#"><img src="{{ THEME_URL }}/media/images/sample-image.jpg" alt="title" /></a>
-                <a href="#"><img src="{{ THEME_URL }}/media/images/sample-image.jpg" alt="title" /></a>
+                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
+                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
+                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
+                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
+                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
+                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
                 {% endif %}
                 <a href="/photos/" class="readmore">{% trans "See More Photos" %}</a>
             </div>
             <div id="border-box"></div>
             <div id="info-box-small">
-                {# box 2 #}
+                {% list_boxes as people_box tags=people limit=1 %}
+                {% if people_box %}
+                    {% for box in people_box %}
+                        <div id="box-{{ box.pk }}" class="boxes">
+                            <h3><a href="/"><span>{{ box.title }}</span></a></h3>
+                            <div class="box-content">{{ box.safe_content }}</div>
+                            {% include 'boxes/edit-link.html' %}
+                        </div>
+                    {% endfor %}
+                {% else %}
                 <h3><a href="/about"><span>{% trans "Our" %}</span> {% trans "People" %}</a></h3>
                 <a href="#"><img src="{{ THEME_URL }}/media/images/person.jpg" alt="title" /></a>
                 <div class="info-small-text">
                     <h4><a href="#">Thomas Purser</a></h4>
                     <strong><em>Sales Manager</em></strong>
-                    <p>Etsy, photo booth messenger bag artisan raw denim beard Tumblr retro Austin. Wes Anderson sustainable you probably haven't heard of ..</p>
+                    <p>Thomas is our top sales manager. He manages sales better than anyone at the company. {% if request.user.is_authenticated %}</p><p><a href="/admin/boxes/box/add/">Add a box</a> and use the tag <strong>people</strong> to bring that content into this area. This will replace the image and the text, The title of the box will appear as the heading.{% endif %}
                     <a href="/" class="readmore">{% trans "See More People" %}</a>
                 </div>
+                {% endif %}
             </div>
         </section><!-- /#home-content -->
     </div>
