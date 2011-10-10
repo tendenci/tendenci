@@ -89,7 +89,7 @@
                         </tr>
                         </table>
                         <div style="display: none;" >
-                            {{ form.ordering }}
+                            <div class="ordering">{{ form.ordering }}</div>
                             <div class="level">{{ form.level }}</div>
                             {{ form.page }}
                         </div>
@@ -105,7 +105,7 @@
         <!-- The next div is a base template for the form in form sets -->
         <div class="nav-item" id="base"> 
             <input type="hidden" name="form-0-id" id="id_form-0-id" /> 
-            <a href="#" class="nav-item-label"><b>+ </b></a> 
+            <a href="#" class="nav-item-label"><b>+ </b></a>
             <a href="#" class="nav-move-right">&rarr;</a>
             <a href="#" class="nav-move-left">&larr;</a>
             <div class="nav-item-detail">
@@ -136,9 +136,11 @@
                 </tr>
                 </table>
                 <div style="display: none;" >
-                    <input type="hidden" name="form-0-ordering" value="0" id="id_form-0-ordering" /> 
+                    <div class="ordering">
+                        <input type="hidden" name="form-0-ordering" value="0" id="id_form-0-ordering" /> 
+                    </div>
                     <div class="level">
-                    <input type="hidden" name="form-0-level" value="0" id="id_form-0-level" /> 
+                        <input type="hidden" name="form-0-level" value="0" id="id_form-0-level" /> 
                     </div>
                     <input type="text" name="form-0-page" id="id_form-0-page" /> 
                 </div> 
@@ -151,6 +153,7 @@
 
 {% block extra_body %}
     {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript">
         $('#search-box').keypress(function(){
             // hide all pages that do not match search-box's value
@@ -168,7 +171,7 @@
     <script type="text/javascript">
         $('#base').hide();
         $('.nav-item-detail').hide();
-        function updateElementIndex(el, prefix, ndx) {
+        function updateElementIndex(el, prefix, ndx){
             var id_regex = new RegExp('(' + prefix + '-\\d+)');
             var replacement = prefix + '-' + ndx;
             if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
@@ -179,12 +182,13 @@
             thing.click(function(){
                 total = $("#id_form-TOTAL_FORMS").val();
                 $(this).parent().parent().remove();
-                items = $("#nav-items").find(".nav-item")
+                items = $("#nav-items").find(".nav-item");
                 for(i=0;i<total-1;i++){
                     inputs = $(items[i]).find('input');
                     for(j=0;j<inputs.length;j++){
                         updateElementIndex(inputs[j], 'form', i);
                     }
+                    $($(items[i]).find('#id_form-'+i+'-ordering')).val(i);
                 }
                 $("#id_form-TOTAL_FORMS").val(total-1);
                 return false;
@@ -193,7 +197,7 @@
         apply_toggle = function(thing){
             thing.click(function(){
                 $(this).parent().find('.nav-item-detail').toggle();
-                str = $(this).html()
+                str = $(this).html();
                 if (str.indexOf("+") >= 0) {
                     $(this).html(str.replace('+', '-'));
                 } else {
@@ -217,7 +221,7 @@
                 level = parseInt($($($(this).parent()).find('.level input')).val()) + 1;
                 if (level < 3){
                     $($(this).parent()).css('margin-left', (level*20)+'px');
-                    $($($(this).parent()).find('.level input')).val(level)
+                    $($($(this).parent()).find('.level input')).val(level);
                 }
                 return false;
             });
@@ -227,7 +231,7 @@
         apply_move_left($('.nav-move-left'));
         apply_move_right($('.nav-move-right'));
     </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}/js/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
     <script type="text/javascript">
         //when pages are chosen to be included in the nav an ajax call will be triggered
         //the ajax will retrieve info from the chosen pages and then append additional forms
@@ -263,6 +267,7 @@
                     clone.find('.nav-item-label b').html("+ "+pages[i].label);
                     clone.find('#id_form-0-page').val(pages[i].id);
                     clone.find('#id_form-0-title').val(pages[i].label);
+                    clone.find('#id_form-0-ordering').val(form_number);
                     
                     //relace the names and ids of the elements in the form
                     //clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
@@ -296,5 +301,20 @@
                 $("#id_form-TOTAL_FORMS").val(form_number);
             }
         }
+    </script>
+    <script>
+    //set the nav items to become sortable
+    $(document).ready(function() {
+        $("#nav-items").sortable({
+            cursor: 'move',
+            update: function(event, ui){
+                    items = $(this).find('.nav-item');
+                    for(i=0;i<items.length;i++){
+                        input = $($(items[i]).find('.ordering input'));
+                        input.attr('value', i);
+                    }
+                },
+        });
+    });
     </script>
 {% endblock %}
