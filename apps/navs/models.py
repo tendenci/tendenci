@@ -37,15 +37,23 @@ class NavItem(models.Model):
     @property
     def next(self):
         try:
-            next = NavItem.objects.get(ordering=self.ordering, nav=self.nav)
+            next = NavItem.objects.get(ordering=self.ordering+1, nav=self.nav)
         except NavItem.DoesNotExist:
             return None
         return next
+        
+    @property
+    def prev(self):
+        try:
+            prev = NavItem.objects.get(ordering=self.ordering-1, nav=self.nav)
+        except NavItem.DoesNotExist:
+            return None
+        return prev
     
     @property
     def next_range(self):
-        if not self.next:
-            return range(0, self.level)
-        if self.level > self.next.level:
-            return range(self.next.level, self.level)
         return range(self.level, self.next.level)
+        
+    @property
+    def prev_range(self):
+        return range(self.prev.level, self.level)
