@@ -37,7 +37,7 @@
                 <div id="nav-items">
                 {% for form in formset.forms %}
                 <div class="nav-item" {% if forloop.first %}id="first-item"{% endif %}>
-                    {{ form.id }}
+                    <input type="hidden" name="form-{{ forloop.counter0 }}-id" id="id_form-{{ forloop.counter0 }}-id" /> 
                     <a href="#" class="nav-item-label">
                         <b>+ {{ form.instance.label }}</b>
                     </a>
@@ -169,6 +169,17 @@
         });
     </script>
     <script type="text/javascript">
+        //initialize the formset details and events
+        //override and set the initial number of forms to be 0
+        //this is to avoid some validation bugs with the dynamic add/delete
+        //of the forms.
+        initial = $("#id_form-INITIAL_FORMS").val(0);
+        total = $("#id_form-TOTAL_FORMS").val();
+        items = $("#nav-items").find(".nav-item");
+        for(i=0;i<total;i++){
+            level = $($(items[i]).find('.level input')).val();
+            $(items[i]).css('margin-left', (level*20)+'px');
+        }
         $('#base').hide();
         $('.nav-item-detail').hide();
         function updateElementIndex(el, prefix, ndx){
