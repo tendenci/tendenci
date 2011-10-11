@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} {{ nav.title }}{% endblock %}
+{% block title %}{{ block.super }} {% trans 'Preview' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,6 +15,7 @@
 
 <div class="t">
     {% nav_nav request.user nav %}
+    <h1>{{ nav.title }} {% trans 'Preview' %}</h1>
     {% nav nav.id %}
 </div>
 {% endblock %}
