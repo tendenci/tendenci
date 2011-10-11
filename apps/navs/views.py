@@ -137,18 +137,15 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
     page_select = PageSelectForm()
     
     if request.method == "POST":
-        formset = ItemFormSet(request.POST, queryset=nav.navitem_set.all().order_by('ordering'))
+        formset = ItemFormSet(request.POST)
         if formset.is_valid():
-            old_items = nav.navitem_set.all()
+            #delete old nav items
+            nav.navitem_set.all().delete()
             items = formset.save(commit=False)
             # update or create nav items
             for item in items:
                 item.nav = nav
                 item.save()
-            # delete items no removed from the formset
-            for old_item in old_items:
-                if not(old_item in items):
-                    old_item.delete()
             cache_nav(nav)
             messages.add_message(request, messages.INFO, 'Successfully updated %s' % nav)
             return redirect('navs.tag_test', id=nav.id)
