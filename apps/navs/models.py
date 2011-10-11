@@ -52,8 +52,18 @@ class NavItem(models.Model):
     
     @property
     def next_range(self):
-        return range(self.level, self.next.level)
+        if self.next:
+            next = range(0, self.next.level-self.level)
+        else:
+            #first item
+            next = range(0, self.level+1)
+        return next
         
     @property
     def prev_range(self):
-        return range(self.prev.level, self.level)
+        if self.prev:
+            prev = range(0, self.prev.level-self.level)
+        else:
+            #last item
+            prev = range(0, self.level+1)
+        return prev
