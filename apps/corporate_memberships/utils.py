@@ -470,7 +470,7 @@ def get_over_time_stats():
     for time in times:
         start_dt = time[1]
         d = {}
-        active_mems = CorporateMembership.objects.filter(expiration_dt__gt=start_dt, approved=True)
+        active_mems = CorporateMembership.objects.filter(expiration_dt__gt=start_dt, status_detail='active')
         d['new'] = active_mems.filter(join_dt__gt=start_dt).count() #just joined in that time period
         d['renewing'] = active_mems.filter(renewal=True).count()
         d['active'] = active_mems.count()
@@ -492,9 +492,9 @@ def get_summary():
     total_total = 0
     for type in types:
         mems = CorporateMembership.objects.filter(corporate_membership_type = type)
-        active = mems.filter(expiration_dt__gt=now, approved=True)
-        expired = mems.filter(expiration_dt__lte=now, approved=True)
-        pending = mems.filter(approved=False)
+        active = mems.filter(status_detail='active')
+        expired = mems.filter(status_detail='expired')
+        pending = mems.filter(status_detail__contains='ending')
         total_active += active.count()
         total_pending += pending.count()
         total_expired += expired.count()
