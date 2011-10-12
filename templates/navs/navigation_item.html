@@ -1,28 +1,12 @@
 {% load nav_tags %}
-{% if item.prev %}
-    {% if item.prev.level > item.level %}
-        <!-- if previous is deeper. close ul -->
-        {% for i in item.prev_range %}
-            </ul>
-        {% endfor %}
-    {% endif %}
-{% else %}
-    <!--if first item create ul as many as level of first item-->
-    {% for i in item.prev_range %}
+
+<li>
+    <a href="{{ item.get_url }}">{{ item.label }} - {{ item.ordering }} - {{ item.level }}</a>
+    {% if item.children %}
         <ul>
-    {% endfor %}
-{% endif %}
-<li><a href="{{ item.get_url }}">{{ item.label }}</a></li>
-{% if item.next %}
-    {% if item.next.level > item.level %}
-        <!-- if next is deeper. create ul -->
-        {% for i in item.next_range %}
-            <ul>
+        {% for child in item.children %}
+            {% nav_item child %}
         {% endfor %}
-    {% endif %}
-{% else %}
-    <!-- if last item. close as many ul as level of last item-->
-    {% for i in item.next_range %}
         </ul>
-    {% endfor %}
-{% endif %}
+    {% endif %}
+</li>

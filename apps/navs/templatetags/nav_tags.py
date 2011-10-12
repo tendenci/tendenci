@@ -36,7 +36,7 @@ def navigation(context, nav_id):
     nav = Nav.objects.get(id=nav_id)
     context.update({
         "nav": nav,
-        "items": nav.navitem_set.all().order_by('ordering'),
+        "items": nav.top_items,
     })
     return context
 

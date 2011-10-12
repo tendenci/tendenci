@@ -21,6 +21,13 @@ class Nav(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return('navs.detail', [self.pk])
+        
+    @property
+    def top_items(self):
+        """
+        Returns all items with level 0.
+        """
+        return self.navitem_set.filter(level=0).order_by('ordering')
     
 class NavItem(models.Model):
     nav = models.ForeignKey(Nav)
@@ -40,6 +47,26 @@ class NavItem(models.Model):
             return self.page.get_absolute_url()
         else:
             return self.url
+        
+    @property
+    def children(self):
+        """
+        returns the item's direct children
+        """
+        #get the first sibling among the ones with greater ordering
+        siblings = NavItem.objects.filter(nav=self.nav,
+            ordering__gt=self.ordering,
+            level=self.level).order_by('ordering')
+        if siblings:
+            sibling = siblings[0]
+            #return all the items between the adjacent siblings.
+            children = NavItem.objects.filter(nav=self.nav,
+                level = self.level+1,
+                ordering__gt=self.ordering,
+                ordering__lt=sibling.ordering).order_by('ordering')
+            return children
+        else:
+            return None
     
     @property
     def next(self):
