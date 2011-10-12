@@ -32,7 +32,7 @@ class Command(BaseCommand):
         verbosity = options['verbosity'] 
 
         cursor = connection.cursor()
-        root_dir = os.path.join(settings.PROJECT_ROOT,'plugins','products','site_media','media','uploads','catalogs')
+        root_dir = os.path.join(settings.PROJECT_ROOT,'site_media','media','uploads','catalogs')
 
         print 'root_dir', root_dir
 
@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
             # match photo with product ----------------
             t4_pk = int(base_name)
-            cursor.execute("SELECT t5_id FROM mig_product_t4_to_t5 WHERE t4_id = %s", [t4_pk])
+            cursor.execute("SELECT t5_id FROM mig_products_t4_to_t5 WHERE t4_id = %s", [t4_pk])
             row = cursor.fetchone()
 
             if not row:
@@ -89,7 +89,7 @@ class Command(BaseCommand):
                 print 'file object', file_object.name
                 file_object.close()
 
-            # product_file.bind_files_to_instance(
-            #     files = [file_object],
-            #     instance = instance,
-            # )
+            product_file.bind_files_to_instance(
+                files = [file_object],
+                instance = instance,
+            )
