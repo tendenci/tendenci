@@ -12,7 +12,7 @@
         <ul>
     {% endfor %}
 {% endif %}
-<li><a href="{{ item.page.get_absolute_url }}">{{ item.label }}</a></li>
+<li><a href="{{ item.get_url }}">{{ item.label }}</a></li>
 {% if item.next %}
     {% if item.next.level > item.level %}
         <!-- if next is deeper. create ul -->

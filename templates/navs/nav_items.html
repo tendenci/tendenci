@@ -30,6 +30,7 @@
                 <input class="nav-add" type="submit" value="{% trans 'Add to' %} {{ nav.title }}" />
                 </div>
             </form>
+            <input type="submit" id="add-custom" value="Add a Custom Navigation Item">
         </div>
         <div class="nav-edit-content">
             <form method="post" action="">{% csrf_token %}
@@ -53,7 +54,17 @@
                         <tr>
                         <td>
                             <div class="nav-item-field">
-                                URL: <input class="url-field" disabled="disabled" type="text" value="{{ form.instance.page.get_absolute_url }}">
+                                {% if form.url.errors %}
+                                    <div class="errors">
+                                        {{ form.url.errors }}
+                                    </div>
+                                {% endif %}
+                                {% if form.instance.page %}
+                                    URL <input class="url-field" disabled="disabled" type="text" value="{{ form.instance.page.get_absolute_url }}">
+                                {% else %}
+                                    {{ form.url.label }}
+                                    {{ form.url }}
+                                {% endif %}
                             </div>
                             <div class="nav-item-field">
                                 {% if form.label.errors %}
@@ -113,22 +124,20 @@
                 <tr>
                 <td>
                 <div class="nav-item-field"> 
-                    URL: <input class="url-field" disabled="disabled" type="text" value=""> 
+                    URL
+                    <input class="url-field" id="id_form-0-url" type="text" name="form-0-url" maxlength="200" > 
                 </div> 
-                <div class="nav-item-field"> 
-                    
+                <div class="nav-item-field">
                     Label
                     <input id="id_form-0-label" type="text" name="form-0-label" maxlength="100" /> 
                 </div> 
                 </td>
                 <td>
-                <div class="nav-item-field"> 
-                    
+                <div class="nav-item-field">
                     Title Attribute
                     <input id="id_form-0-title" type="text" name="form-0-title" maxlength="100" /> 
                 </div> 
-                <div class="nav-item-field"> 
-                    
+                <div class="nav-item-field">
                     CSS Class
                     <input id="id_form-0-css" type="text" name="form-0-css" maxlength="100" /> 
                 </div> 
@@ -279,6 +288,7 @@
                     clone.find('#id_form-0-page').val(pages[i].id);
                     clone.find('#id_form-0-title').val(pages[i].label);
                     clone.find('#id_form-0-ordering').val(form_number);
+                    clone.find('.url-field').attr('disabled', 'disabled');
                     
                     //relace the names and ids of the elements in the form
                     //clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
@@ -325,6 +335,55 @@
                         input.attr('value', i);
                     }
                 },
+        });
+    });
+    </script>
+    <script>
+    //custom form add
+    $(document).ready(function(){
+        $('#add-custom').click(function(){
+            form_number = parseInt($("#id_form-TOTAL_FORMS").val())
+            items = $("#nav-items");
+            item = $("#base");
+            //copy the template form
+            clone = item.clone();
+            //set default values to the form
+            clone.attr('id', '')
+            clone.show();
+            clone.find('.nav-item-detail').show();
+            clone.find('#id_form-0-ordering').val(form_number);
+            
+            //relace the names and ids of the elements in the form
+            //clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
+            clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
+            clone.find('#id_form-0-label').attr('name', 'form-' + form_number + '-label');
+            clone.find('#id_form-0-title').attr('name', 'form-' + form_number + '-title');
+            clone.find('#id_form-0-css').attr('name', 'form-' + form_number + '-css');
+            clone.find('#id_form-0-page').attr('name', 'form-' + form_number + '-page');
+            clone.find('#id_form-0-ordering').attr('name', 'form-' + form_number + '-ordering');
+            clone.find('#id_form-0-level').attr('name', 'form-' + form_number + '-level');
+            clone.find('#id_form-0-url').attr('name', 'form-' + form_number + '-url');
+            
+            //clone.find('#id_form-0-id').attr('id', 'id_form-' + form_number + '-id');
+            clone.find('#id_form-0-id').attr('id', 'form-' + form_number + '-id');
+            clone.find('#id_form-0-label').attr('id', 'id_form-' + form_number + '-label');
+            clone.find('#id_form-0-title').attr('id', 'id_form-' + form_number + '-title');
+            clone.find('#id_form-0-css').attr('id', 'id_form-' + form_number + '-css');
+            clone.find('#id_form-0-page').attr('id', 'id_form-' + form_number + '-page');
+            clone.find('#id_form-0-ordering').attr('id', 'id_form-' + form_number + '-ordering');
+            clone.find('#id_form-0-level').attr('id', 'id_form-' + form_number + '-level');
+            clone.find('#id_form-0-url').attr('id', 'id_form-' + form_number + '-url');
+            
+            //apply the click effects
+            apply_toggle(clone.find('.nav-item-label'));
+            apply_delete(clone.find('.item-delete'));
+            apply_move_left(clone.find('.nav-move-left'));
+            apply_move_right(clone.find('.nav-move-right'));
+            //append to the formset
+            items.append(clone);
+            //increment id count
+            form_number++;
+            $("#id_form-TOTAL_FORMS").val(form_number);
         });
     });
     </script>
