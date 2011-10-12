@@ -1,0 +1,42 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load directory_tags %}
+{% load perm_tags %}
+{% load tagging_tags %}
+{% load category_tags %}
+{% load i18n %}
+
+{% has_perm user pages.change_page page as can_edit %}
+{% has_perm user pages.delete_page page as can_delete %}
+{% get_category_for_object page as category %}
+{% get_sub_category_for_object page as sub_category %}
+{% tags_hash_tags page as hash_tags %}
+{% tags_strip_hash page as nonhash_tags %}
+
+
+<div class="meta">
+    <div class="categories">
+        {% get_category_for_object directory as category %}
+        {% if category %}
+            {% trans "Category:" %}&nbsp;<a href="{% url directory.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
+        {% endif %}
+        {% get_sub_category_for_object directory as sub_category %}
+        {% if sub_category %}
+            {% trans "Sub Category:" %}&nbsp;<a href="{% url directory.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
+        {% endif %}				
+    </div>
+    
+    <div class="tags">
+        {% if tags %}
+            {% trans "Tags: " %}
+            {% for tag in tags %}
+                <a href="{% url directory.search %}?q={{ tag }}">{{ tag }}</a>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="submitted">
+        Submitted on {{ directory.create_dt|date:"long" }} by: 
+        {% firstof directory.creator.get_profile.display_name directory.creator %} 
+    </div>
+</div>
