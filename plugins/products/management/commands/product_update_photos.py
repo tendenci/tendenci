@@ -39,33 +39,33 @@ class Command(BaseCommand):
         # loop through directories
         for root, dirs, file_names in os.walk(root_dir):
 
-            # print 'root', root
-            # print 'dirs', dirs
-            # print 'file_names', file_names
+            print 'root', root
+            print 'dirs', dirs
+            print 'file_names', file_names
 
             # directory name must be digit
             base_name = os.path.basename(root)
             if not base_name.isdigit():
                 continue # on to the next one
 
-            # # match photo with product ----------------
-            # t4_pk = int(base_name)
-            # cursor.execute("SELECT t5_id FROM mig_product_t4_to_t5 WHERE t4_id = %s", [t4_pk])
-            # row = cursor.fetchone()
+            # match photo with product ----------------
+            t4_pk = int(base_name)
+            cursor.execute("SELECT t5_id FROM mig_product_t4_to_t5 WHERE t4_id = %s", [t4_pk])
+            row = cursor.fetchone()
 
-            # if not row:
-            #     logger.error('Product not found in south_migraiton table (T4 id: %s)' % t4_pk)
-            #     continue  # on to the next one
-            # # -----------------------------------------
+            if not row:
+                logger.error('Product not found in south_migraiton table (T4 id: %s)' % t4_pk)
+                continue  # on to the next one
+            # -----------------------------------------
 
-            # try:  # get instance; use directory name
-            #     instance = Product.objects.get(pk=row[0])
-            # except Product.DoesNotExist as e:
-            #     logger.error('Product (T5 id: %s) not found in T5 table (T4 id: %s)' % (row[0], t4_pk))
-            #     continue  # on to the next one
+            try:  # get instance; use directory name
+                instance = Product.objects.get(pk=row[0])
+            except Product.DoesNotExist as e:
+                logger.error('Product (T5 id: %s) not found in T5 table (T4 id: %s)' % (row[0], t4_pk))
+                continue  # on to the next one
 
-            # if verbosity > 0:
-            #     print instance, file_names
+            if verbosity > 0:
+                print instance, file_names
 
             # get list of file paths
             file_paths = [os.path.join(root_dir, base_name, file_name) for file_name in file_names]
