@@ -29,10 +29,17 @@ class NavItem(models.Model):
     css = models.CharField(_("CSS Class"), max_length=100, blank=True, null=True)
     ordering = models.IntegerField(default=0)
     level = models.IntegerField(default=0)
-    page = models.ForeignKey(Page)
+    page = models.ForeignKey(Page, null=True)
+    url = models.CharField(_("URL"), max_length=200, blank=True, null=True)
     
     def __unicode__(self):
         return '%s - %s' % (self.nav.title, self.label)
+        
+    def get_url(self):
+        if self.page:
+            return self.page.get_absolute_url()
+        else:
+            return self.url
     
     @property
     def next(self):
