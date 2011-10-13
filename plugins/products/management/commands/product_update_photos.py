@@ -34,14 +34,8 @@ class Command(BaseCommand):
         cursor = connection.cursor()
         root_dir = os.path.join(settings.PROJECT_ROOT,'site_media','media','uploads','catalogs')
 
-        print 'root_dir', root_dir
-
         # loop through directories
         for root, dirs, file_names in os.walk(root_dir):
-
-            print 'root', root
-            print 'dirs', dirs
-            print 'file_names', file_names
 
             # directory name must be digit
             base_name = os.path.basename(root)
@@ -76,21 +70,20 @@ class Command(BaseCommand):
             for f in file_paths:
                 if os.path.getsize(f) > file_size:
                     file_size = os.path.getsize(f)
-                    file_path = f            
-
-            # # copy files to directory
-            # dst = os.path.join(settings.MEDIA_ROOT,'files','product', os.path.basename(file_path))
-            # shutil.copy2(src, dst)  # copy2; metadata is copied as well
+                    file_path = f
 
             file_object = ''
 
             if file_path:
                 file_object = open(file_path)
-                print 'file object', file_object.name
                 django_file = DjangoFile(file_object)
                 ProductFile.objects.bind_files_to_instance(
                     files = [django_file],
                     instance = instance,
                 )
-
                 file_object.close()
+
+                print 't4:%s t5:%s file:%s' % (t4_pk,instance.pk,file_path)
+
+
+
