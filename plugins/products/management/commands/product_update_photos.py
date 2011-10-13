@@ -87,11 +87,10 @@ class Command(BaseCommand):
             if file_path:
                 file_object = open(file_path)
                 print 'file object', file_object.name
+                django_file = DjangoFile(file_object)
+                File.objects.bind_files_to_instance(
+                    files = [django_file],
+                    instance = instance,
+                )
+
                 file_object.close()
-
-            django_file = DjangoFile(file_object)
-
-            File.objects.bind_files_to_instance(
-                files = [django_file],
-                instance = instance,
-            )
