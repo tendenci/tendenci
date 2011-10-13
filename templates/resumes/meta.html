@@ -10,12 +10,10 @@
 {% if tags %}
 <div class="meta">
     <div class="tags">
-
-            {% trans "Tags:" %} 
-            {% for tag in tags %}
-                <a href="{% url resume.search %}?q={{ tag }}">{{ tag }}</a>
-            {% endfor %}
-
+        {% trans "Tags:" %} 
+        {% for tag in tags %}
+            <a href="{% url resume.search %}?q={{ tag }}">{{ tag }}</a>
+        {% endfor %}
     </div>
 </div>
 {% endif %}

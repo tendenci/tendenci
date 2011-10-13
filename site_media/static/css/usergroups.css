@@ -53,6 +53,7 @@
 	background-color: #F7F7F7;
 	margin-top: 10px;
 }
+
 .t .group-wrap .meta .tags {
 	margin-bottom: 5px;
 }
@@ -124,6 +125,16 @@
 
 .t .group-view .group-member-list .gray {
     background-color: #EEE;
+}
+
+.t .group-view .meta{
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F7F7F7;
+	margin-top: 10px;
+}
+.t .group-view .meta .tags {
+	margin-bottom: 5px;
 }
 
  /* Groups Add/Edit

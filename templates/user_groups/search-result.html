@@ -1,0 +1,19 @@
+{% load user_group_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+<div class="group-wrap {% cycle row1,row2 as rowcolours %}">
+    <div class="options options-search">
+        <div class="quick-options">
+            {% user_group_options request.user group %} 	
+        </div>
+    </div>
+
+    <h2><a href="{{ group.get_absolute_url }}">{% firstof group.name group.label trans 'Untitled' %}</a></h2>
+    <div class="clear-right"></div>
+    <div class="content">{{ group.notes|striptags|truncatewords:20 }}</div>
+    
+    {% include 'user_groups/meta.html' %}
+    
+</div>
