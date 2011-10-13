@@ -50,30 +50,7 @@
 		         {% endif %}		
 	         </div>                 
         </div>
-        <div class="meta">
-			<div class="categories">
-				{% get_category_for_object news as category %}
-				{% if category %}
-					{% trans "Category:" %}&nbsp;<a href="{% url news.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
-				{% endif %}
-				{% get_sub_category_for_object news as sub_category %}
-				{% if sub_category %}
-					{% trans "Sub Category:" %}&nbsp;<a href="{% url news.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
-				{% endif %}				
-			</div>
-			
-			<div class="tags">
-				{% if tags %}
-					{% trans "Tags:" %}
-					{% for tag in tags %}
-						<a href="{% url news.search %}?q={{ tag }}">{{ tag }}</a>
-					{% endfor %}
-				{% endif %}
-			</div>
-
-            <div class="submitted">{% blocktrans with news.release_dt|date:"D d M Y P" as new_release%}Released on {{ new_release }} by:{% endblocktrans %} {% firstof news.creator.get_profile.display_name news.creator %}</div>
-        </div>
-
+        {% include "news/meta.html" %}
 		<br />
         {% url news.view news.pk as the_url %}
         <p>{% fb_like_button_iframe the_url %}</p>

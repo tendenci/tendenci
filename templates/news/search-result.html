@@ -19,19 +19,7 @@
     {% else %}
         <div class="content">{{ news.body|striptags|truncatewords:20|safe }}</div>	
     {% endif %}
-    <div class="meta">
-        <div class="submitted">{% blocktrans with news.create_dt|date:"long" as ncreate and news.creator as ncreator %}Submitted on {{ ncreate }} by {{ ncreator }}{% endblocktrans %}</div>
-        <div class="category">
-        {% get_category_for_object news as category %}
-        {% if category %}
-            {% trans "Category:" %} <a href="{% url news.search %}?q=category:{{ category }}">{{ category }}</a> 
-        {% endif %}
-        {% get_sub_category_for_object news as sub_category %}
-        {% if sub_category %}
-            {% trans "Sub Category:" %} <a href="{% url news.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a> 
-        {% endif %}
-        </div>
-    </div>
+    {% include 'news/meta.html' %}
 
     <!-- delete-article form -->
     <form name="news-delete" method="POST" action="{% url news.delete news.pk %}">{% csrf_token %}

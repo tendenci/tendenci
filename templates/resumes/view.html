@@ -17,7 +17,6 @@
 {% endblock %}
 
 {% block body %}
-{% tags_for_object resume as tags %}
 
 <div class="t">
     {% resume_nav request.user resume %}
@@ -80,18 +79,7 @@
                 </div>
         {% endif %}
 
-        {% if tags %}
-        <div class="meta">
-			<div class="tags">
-
-					{% trans "Tags:" %} 
-					{% for tag in tags %}
-						<a href="{% url resume.search %}?q={{ tag }}">{{ tag }}</a>
-					{% endfor %}
-
-			</div>
-        </div>
-    	{% endif %}
+        {% include "resumes/meta.html" %}
         
         {% url resume resume.pk as the_url %}
         <p>{% fb_like_button_iframe the_url %}</p>
