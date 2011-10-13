@@ -4,6 +4,15 @@ by {{ object.creator }}
 by {{ object.object.creator.get_profile.display_name }}
 {{ object.description }}
 
+{{ object.code }}
+{{ object.location }}
+{{ object.level }}
+{{ object.period }}
+{{ object.contact_company }}
+{{ object.contact_name }}
+{{ object.contact_city }}
+
+location:{{ object.location }}
 is:{{ object.status_detail }}
 
 {% tags_for_object object as tags %}
