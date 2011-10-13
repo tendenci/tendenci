@@ -67,7 +67,7 @@ class ProductFile(File):
     photo_description = models.CharField(_('description'), max_length=50, blank=True)
     position = models.IntegerField(blank=True)
 
-    objects = ProductFileManager
+    objects = ProductFileManager()
 
     def save(self, *args, **kwargs):
         if self.position is None:

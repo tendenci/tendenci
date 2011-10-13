@@ -1,7 +1,6 @@
-from djang.core.files import File as DjangoFile
+from django.core.files import File as DjangoFile
 from perms.managers import TendenciBaseManager
 from files.managers import FileManager
-from products.models import ProductFile
 
 
 class ProductManager(TendenciBaseManager):
@@ -21,7 +20,7 @@ class ProductFileManager(FileManager):
 
         for file in files:
             django_file = DjangoFile(file)
-            ProductFile.objects.create(**{
+            self.create(**{
                 'file':django_file,
                 'product':instance,
             })
