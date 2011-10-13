@@ -1,0 +1,34 @@
+{% extends "navs/base.html" %}
+{% load nav_tags %}
+{% load pagination_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} {% trans "Search" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/navs.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% nav_nav request.user %}
+    <h1>{% firstof MODULE_NAVS_LABEL "Navs" %}  {% trans "Search" %}</h1>  
+
+	{% nav_search %}
+    {% autopaginate navs 50 %}
+	
+	<div class="navs-wrap">
+    {% for nav in navs %}
+		{% search_result nav %}
+	{% empty %}
+		<div>{% trans "0 Results Found" %}</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
