@@ -14,9 +14,7 @@
         <h2><a href="{{ job.get_absolute_url }}">{% firstof job.title "Untitled" %}</a></h2>
         <div class="content">{{ job.description|striptags|truncatewords:20|safe }}</div>
     </div>
-    <div class="meta">
-        <div class="submitted">{% blocktrans with job.release_dt|date:"D d M Y P" as release_date and job.creator as job_creator %}Released on {{ release_date }} by {{ job_creator }}{% endblocktrans %}</div>
-    </div>
+    {% include 'jobs/meta.html' %}
 
     <!-- delete-job form -->
     <form name="job-delete" method="POST" action="{% url job.delete job.pk %}">{% csrf_token %}
