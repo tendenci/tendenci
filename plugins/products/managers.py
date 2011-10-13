@@ -22,6 +22,6 @@ class ProductFileManager(FileManager):
         for file in files:
             django_file = DjangoFile(file)
             ProductFile.objects.create(**{
-                file = django_file,
-                product = instance,
+                'file':django_file,
+                'product':instance,
             })
