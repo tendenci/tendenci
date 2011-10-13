@@ -1,0 +1,21 @@
+{% load resume_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load category_tags %}
+{% load i18n %}
+
+{% tags_for_object resume as tags %}
+
+{% if tags %}
+<div class="meta">
+    <div class="tags">
+
+            {% trans "Tags:" %} 
+            {% for tag in tags %}
+                <a href="{% url resume.search %}?q={{ tag }}">{{ tag }}</a>
+            {% endfor %}
+
+    </div>
+</div>
+{% endif %}
