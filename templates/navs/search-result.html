@@ -1,0 +1,17 @@
+{% load nav_tags %}
+<div class="wrap-search-item">
+    <div class="search-item nav-search-item">
+        <div class="quick-options">
+        {% nav_options request.user nav %}
+        </div>
+        <h2><a href="{{ nav.get_absolute_url }}">{{ nav.title }}</a></h2>
+        <div class="item-content">
+            <div class="search-text">
+                <p>
+                    <i>{{ nav.description }}</i>
+                </p>
+                <p> ID: {{ nav.pk }}</p>
+            </div>
+        </div>
+    </div>
+</div>
