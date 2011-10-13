@@ -6,13 +6,6 @@
 {% load category_tags %}
 {% load i18n %}
 
-{% has_perm user pages.change_page page as can_edit %}
-{% has_perm user pages.delete_page page as can_delete %}
-{% get_category_for_object page as category %}
-{% get_sub_category_for_object page as sub_category %}
-{% tags_hash_tags page as hash_tags %}
-{% tags_strip_hash page as nonhash_tags %}
-
 
 <div class="meta">
     <div class="categories">
