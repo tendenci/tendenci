@@ -327,7 +327,7 @@
             <div>{% trans "Joined:" %} <strong>{{ membership.subscribe_dt|date }} ({{ membership.subscribe_dt|timesince }})</strong></div>
 
             {% if membership.expire_dt %}
-	            <div>{% trans "Expires:" %} <strong>{{ membership.expiration_dt|date }}</strong></div>
+	            <div>{% trans "Expires:" %} <strong>{{ membership.expire_dt|date }}</strong></div>
 				{% renew_button %}
             {% else %}
                 <div>{% trans "Never Expires" %}</div>
