@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from tagging.fields import TagField
 from base.fields import SlugField
 from perms.models import TendenciBaseModel
-from products.managers import ProductManager
+from products.managers import ProductManager, ProductFileManager
 from files.models import File
 
 
@@ -66,6 +66,8 @@ class ProductFile(File):
     product = models.ForeignKey(Product)
     photo_description = models.CharField(_('description'), max_length=50, blank=True)
     position = models.IntegerField(blank=True)
+
+    objects = ProductFileManager
 
     def save(self, *args, **kwargs):
         if self.position is None:
