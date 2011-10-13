@@ -1,46 +1,9 @@
-import os
-import re
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import User
 from django.core.files import File as DjangoFile
 from perms.managers import TendenciBaseManager
 from files.managers import FileManager
-from settings import MEDIA_ROOT
+from files.managers import save_to_disk
 
-
-def save_to_disk(f, instance):
-    """
-    Takes file object and instance (or model).
-    Returns back relative path of file.
-    """
-
-    file_name = re.sub(r'[^a-zA-Z0-9._]+', '-', f.name)
-
-    # make dir with app and module name
-    relative_directory = os.path.join(
-        'files',
-        instance._meta.app_label,
-        instance._meta.module_name,
-    )
-
-    # make directory with pk
-    if isinstance(instance.pk, long):
-        relative_directory = os.path.join(
-            relative_directory,
-            unicode(instance.pk),
-        )
-
-    absolute_directory = os.path.join(MEDIA_ROOT, relative_directory)
-
-    if not os.path.exists(absolute_directory):
-        os.makedirs(absolute_directory)
-
-    destination = open(os.path.join(absolute_directory, file_name), 'wb+')
-    for chunk in f.chunks():
-        destination.write(chunk)
-    destination.close()
-
-    # relative path
-    return os.path.join(relative_directory, file_name)
 
 class ProductManager(TendenciBaseManager):
     """
@@ -59,12 +22,10 @@ class ProductFileManager(FileManager):
         Save files and associate with instance.
         Return list of files saved.
         """
-        from django.contrib.auth.models import User
-
-        try:  # explicit user; default to admin
+        try:  # explicit user or default to admin
             user = kwargs.get('user') or User.objects.get(id=1)
         except User.DoesNotExist as e:
-            return []
+            return [] # return empty list
 
         # loop; save file; save file record in db
         # ----------------------------------------
@@ -78,23 +39,21 @@ class ProductFileManager(FileManager):
             # update file record; or create new file record
             # ----------------------------------------------
 
-            instance_pk = None
-            if isinstance(instance.pk, long):
-                instance_pk = instance.pk
-
             try:
+                # get tendenci file object
                 file = self.get(file=file_path)
                 file.name = file.name
                 file.owner = user
                 file.owner_username = user.username
                 file.update_dt = datetime.now()
             except:
+                # make tendenci file object
                 file = self.model(**{
                     'product': instance,
                     'file':file_path,
                     'name':file.name,
                     'content_type':ContentType.objects.get_for_model(instance),
-                    'object_id':instance_pk,
+                    'object_id':instance.pk,
                     'creator':user,
                     'creator_username':user.username,
                     'owner':user,
