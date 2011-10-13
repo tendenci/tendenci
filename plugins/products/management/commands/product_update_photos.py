@@ -14,9 +14,9 @@ class Command(BaseCommand):
         import logging
         from django.conf import settings
         from django.db import connection, transaction
-        from products.models import Product, ProductFile
-
-        product_file = ProductFile()
+        from django.core.files import File as DjangoFile
+        from products.models import Product
+        from files.models import File
 
         # declare logger
         logger = logging.getLogger('image_log')
@@ -89,7 +89,9 @@ class Command(BaseCommand):
                 print 'file object', file_object.name
                 file_object.close()
 
-            product_file.bind_files_to_instance(
-                files = [file_object],
+            django_file = DjangoFile(file_object)
+
+            File.objects.bind_files_to_instance(
+                files = [django_file],
                 instance = instance,
             )
