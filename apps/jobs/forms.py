@@ -249,7 +249,8 @@ class JobForm(TendenciBaseForm):
         chosen pricing.
         """
         job = super(JobForm, self).save(commit=False)
-        job.requested_duration = self.cleaned_data['pricing'].duration
+        if self.cleaned_data.has_key('pricing'):
+            job.requested_duration = self.cleaned_data['pricing'].duration
         if kwargs['commit']:
             job.save()
         return job
