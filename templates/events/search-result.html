@@ -13,6 +13,22 @@
             {{ event.start_dt|timeuntil }}
         </div>
         {% endif %}
+        
+        {% if event.type %}
+            <style type="text/css">
+                .event-type-label {
+                    margin: 5px;
+                    padding: 3px 5px;
+                    font-size: 11px;
+                }
+            </style>
+            <div class="event-type-label"
+            style="color:#{{ event.type.color_set.fg_color }}; 
+            background-color:#{{ event.type.color_set.bg_color }}"
+            title="{{ event.type.name }}">
+            {{ event.type.name|truncatewords:3 }}
+            </div>
+        {% endif %}
     </div>
     <div class="event-info">
 
