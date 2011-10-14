@@ -5,38 +5,27 @@
 {% load humanize %}
 
 
-<div class="photo-set">
-<table><tr>
-
-    <td class="image">
-        <a href="{{ image.get_absolute_url }}">
-
-            {% if photo.file_exists %}
-                <a href="{% url image image.pk %}"><img src="{{ image.get_small_crop_url }}" alt="{{ image.title }}"/></a>
-            {% else %}
-                <img src="{{ image.default_thumbnail }}" />
-            {% endif %}
-
-        </a>
-    </td>
-
-    <td class="info">
-        <h2><a href="{{ image.get_absolute_url }}">{{ image.title }}</a></h2>
-        <div class="description">{{ image.caption|striptags|truncatewords_html:25|safe }}</div>
-        
-        
-        <div class="extra-info">
-        {% if admin %}
-        <div class="visibility">
-            {% obj_perms image %} &middot; {% obj_status image %}
-        </div>
-        {% endif %}
-
-        <div class="actions">
-            {% photo_options request.user image %}
-        </div>
-        </div>
-
-    </td>
-</tr></table>
+<div class="photo-search-item">
+    <div class="search-item">
+        <table>
+        <td>
+            <a href="{{ image.get_absolute_url }}">
+                {% if image.file_exists %}
+                    <a href="{% url photo image.pk %}"><img class="photo-search-photo" src="{{ image.get_small_crop_url }}" alt="{{ image.title }}"/></a>
+                {% else %}
+                    <img class="photo-search-photo" src="{{ image.default_thumbnail }}" />
+                {% endif %}
+            </a>
+        </td>
+        <td>
+            <div class="photo-search-info">
+                <h2><a href="{{ image.get_absolute_url }}">{{ image.title }}</a></h2>
+                <div class="description">
+                    {{ image.caption|striptags|truncatewords_html:25|safe }}
+                </div>
+            </div>
+        </td>
+        </table>
+    </div>
+    {% include "photos/meta.html" %}
 </div>

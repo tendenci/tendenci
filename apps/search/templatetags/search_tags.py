@@ -20,7 +20,7 @@ class SearchResultNode(IncludeNode):
             result_object = result.object
             var_name = result_object._meta.verbose_name.replace(' ', '_')
             if var_name == 'photo_set':
-                #special case. Photos we're conflicting with Photo sets.
+                #special case since Image and PhotoSet share the same app.
                 template_name = "photos/photo-set/search-result.html"
             else:
                 template_name = "%s/search-result.html" % (result_object._meta.app_label)
