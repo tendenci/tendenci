@@ -27,7 +27,8 @@
 	<li>
 		<span>{{ MODULE_PHOTOS_LABEL }}</span>
 		<ul id="secondary">
-			<li><a href="{% url photoset_latest %}">{{ MODULE_PHOTOS_LABEL }}:</a></li> 
+			<li><a href="{% url photos_search %}">{{ MODULE_PHOTOS_LABEL }}:</a></li> 
+            <li><a href="{% url photoset_latest %}">{% trans "Photo Sets" %}:</a></li> 
 			{% if can_edit_setting %}
 				<li><a href="{% url settings.index "module" "photos" %}">{% trans "Settings" %}</a></li>
 			{% endif %}

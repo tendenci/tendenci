@@ -13,8 +13,12 @@ urlpatterns = patterns('',
     url(r'^(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.photo', name="photo"),
     # /photos/partial/23/in/36
     url(r'^partial/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.photo', kwargs={'partial':True}, name="photo_partial"),
+    # /photos/delete/23/
+    url(r'^delete/(?P<id>\d+)/$', 'photos.views.delete', name='photo_destroy'),
     # /photos/delete/23/in/36
     url(r'^delete/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.delete', name='photo_destroy'),
+    # /photos/edit/23/
+    url(r'^edit/(?P<id>\d+)/$', 'photos.views.edit', name='photo_edit'),
     # /photos/edit/23/in/36
     url(r'^edit/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.edit', name='photo_edit'),
     # /photos/sizes/23
@@ -31,7 +35,10 @@ urlpatterns = patterns('',
     url(r'^sizes/original/(?P<id>\d+)/$', 'photos.views.sizes', kwargs={'size_name':'original'}, name='photo_original'),
 
     ## swfupload ##
-
+    
+    # /photos/
+    url(r'^$', 'photos.views.search', name='photos_search'),
+    url(r'^search/$', 'photos.views.search', name='photos_search'),
     # /photos/batch-add/
     url(r'^batch-add/$', 'photos.views.photos_batch_add', name='photos_batch_add'),
     # /photos/batch-add/36/
@@ -50,7 +57,6 @@ urlpatterns = patterns('',
     # /photos/set/delete/23
     url(r'^set/delete/(?P<id>\d+)$', 'photos.views.photoset_delete', name='photoset_delete'),
     # /photos/set/latest/
-    url(r'^$', 'photos.views.photoset_view_latest', name='photoset_latest'),
     url(r'^sets/$', 'photos.views.photoset_view_latest', name='photoset_latest'),
     url(r'^set/latest/$', 'photos.views.photoset_view_latest', name='photoset_latest'),
     # /photos/set/23/
