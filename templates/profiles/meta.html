@@ -1,0 +1,9 @@
+{% load avatar_tags %}
+{% load profile_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+<div class="meta">
+    <div class="submitted"><small>{% blocktrans with profile.create_dt|date:"long" as create_date and profile.creator as profile_creator %}Added on {{ create_date }} by {{ profile_creator }}{% endblocktrans %}</small></div>
+</div>
