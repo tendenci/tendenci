@@ -1,0 +1,42 @@
+{% load i18n %}
+{% load pagination_tags %}
+{% load photo_tags %}
+{% load perm_tags %}
+{% load humanize %}
+
+
+<div class="photo-set">
+<table><tr>
+
+    <td class="image">
+        <a href="{{ image.get_absolute_url }}">
+
+            {% if photo.file_exists %}
+                <a href="{% url image image.pk %}"><img src="{{ image.get_small_crop_url }}" alt="{{ image.title }}"/></a>
+            {% else %}
+                <img src="{{ image.default_thumbnail }}" />
+            {% endif %}
+
+        </a>
+    </td>
+
+    <td class="info">
+        <h2><a href="{{ image.get_absolute_url }}">{{ image.title }}</a></h2>
+        <div class="description">{{ image.caption|striptags|truncatewords_html:25|safe }}</div>
+        
+        
+        <div class="extra-info">
+        {% if admin %}
+        <div class="visibility">
+            {% obj_perms image %} &middot; {% obj_status image %}
+        </div>
+        {% endif %}
+
+        <div class="actions">
+            {% photo_options request.user image %}
+        </div>
+        </div>
+
+    </td>
+</tr></table>
+</div>

@@ -8,18 +8,17 @@
 
 {% is_admin user as admin %}
 
-{% block title %}{% blocktrans %}Latest Photo Sets{% endblocktrans %}{% endblock %}
+{% block title %}{% blocktrans %}Photos{% endblocktrans %}{% endblock %}
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
-<link rel="alternate" type="application/rss+xml" title="Latest photo albums" href="{% url photo.feed.latest-albums %}" />
 {% endblock %}
 
 {% block body %}
 <div class="t">
-
-    {% photo_set_nav user %}
-
+    
+    {% photo_nav user %}
+    
     <div id="photo-sets-header-wrap">
         <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
     </div>
@@ -92,20 +91,20 @@
 </style>
 
 
-	{% photo_set_search %}
-    {% autopaginate photo_sets %}
+	{% photo_search %}
+    {% autopaginate photos %}
 
-    {% if photo_sets %}
+    {% if photos %}
 
-        {% for photo_set in photo_sets %}
-        {% with photo_set.object as photo_set %}
-            {% include 'photos/photo-set/search-result.html' %}
+        {% for photo in photos %}
+        {% with photo.object as photo %}
+            {% include 'photos/search-result.html' %}
         {% endwith %}
         {% endfor %}
 
         {% paginate %}
     {% else %}
-    <p>{% trans "No photo sets were found." %}</p>
+    <p>{% trans "No photos were found." %}</p>
     {% endif %}
 
 </div>
@@ -113,12 +112,4 @@
 {% endblock %}
 {% block extra_body %}
 {{ block.super }}
-<script type="text/javascript">
-
-	// photo: delete confirmation
-	$('.photo-set .info .actions .delete-set').click(function(){
-		var delete_photo = confirm('Permenantly delete photo set?'); // confirm
-		if(!delete_photo) return false; // do not delete
-	});
-</script>
 {% endblock %}

@@ -24,6 +24,25 @@ from photos.search_indexes import PhotoSetIndex
 from photos.models import Image, Pool, PhotoSet, AlbumCover, License
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 
+def search(request, template_name="photos/search.html"):
+    """ Photos search """
+    
+    query = request.GET.get('q', None)
+    photos = Image.objects.search(query, 
+        user=request.user).order_by('-create_dt')
+    
+    log_defaults = {
+        'event_id' : 990400,
+        'event_data': '%s searched by %s' % ('Image', request.user),
+        'description': '%s searched' % 'Image',
+        'user': request.user,
+        'request': request,
+        'source': 'photos'
+    }
+    EventLog.objects.log(**log_defaults)
+    
+    return render_to_response(template_name, {"photos": photos}, 
+        context_instance=RequestContext(request))
 
 def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     """ Show all photo sizes """
