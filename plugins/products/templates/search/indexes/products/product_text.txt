@@ -13,3 +13,6 @@
 {{ object.item_number }}
 {{ object.summary }}
 {{ object.description }}
+
+category:{{ object.category }}
+subcategory:{{ object.subcategory }}
