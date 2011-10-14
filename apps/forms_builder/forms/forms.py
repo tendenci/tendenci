@@ -121,7 +121,7 @@ class FormAdminForm(TendenciBaseForm):
         fields = ('title',
                   'intro',
                   'response',
-                  # 'send_email', removed per ed's request
+                  'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
                   'subject_template',
                   'completion_url',
                   'email_from',
@@ -143,7 +143,7 @@ class FormForm(TendenciBaseForm):
         fields = ('title',
                   'intro',
                   'response',
-                  # 'send_email', removed per ed's request
+                  'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
                   'completion_url',
                   'subject_template',
                   'email_from',
