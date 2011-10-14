@@ -181,3 +181,14 @@ p.search-adv-header {
     padding: 10px;
     padding-bottom: 0px;
 }
+
+/* PHOTOS */
+
+.photo-search-item .photo-search-photo {
+    padding: 5px;
+    border: 1px solid gray;
+}
+
+.photo-search-item .photo-search-info {
+    padding: 5px;
+}

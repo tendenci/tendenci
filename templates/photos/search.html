@@ -1,115 +1,42 @@
 {% extends "photos/base.html" %}
-
-{% load i18n %}
 {% load pagination_tags %}
 {% load photo_tags %}
 {% load perm_tags %}
+{% load search_tags %}
 {% load humanize %}
+{% load i18n %}
 
 {% is_admin user as admin %}
 
 {% block title %}{% blocktrans %}Photos{% endblocktrans %}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
+<link rel="stylesheet" type="text/css" href="/site_media/static/css/search.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
+    {% photo_nav request.user %}
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
     
-    {% photo_nav user %}
-    
-    <div id="photo-sets-header-wrap">
-        <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
-    </div>
-
-<style type="text/css">
-
-    .photo-set {
-        position: relative;
-    }
-
-    .info {
-        font-size: 12px;
-        line-height: 16px;
-    }
-
-    .info .actions {
-        font-size: 12px;
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-    }
-
-    .info .visibility {
-        font-size: 12px;
-        position: absolute;
-        bottom: 10px;
-    }
-
-    .info .actions a {
-        text-decoration: underline;
-    }
-
-    .extra-info {
-        font-size: 12px;
-        height: 35px;
-    }
-
-    .perm-public {
-        font-weight: bold;
-        color: green;
-    }
-    .perm-users, .perm-members, .perm-groups {
-        font-weight: bold;
-        color: darkblue;
-    }
-    .perm-private {
-        font-weight: bold;
-        color: red;
-    }
-    .status-active {
-        font-weight: bold;
-        color: green;
-    }
-
-    .status-pending {
-        font-weight: bold;
-        color: orange;
-    }
-
-    .status-inactive {
-        font-weight: bold;
-        color: red;
-    }
-
-    td.image a {
-        text-decoration: none;
-        display: block;
-    }
-
-</style>
-
-
 	{% photo_search %}
-    {% autopaginate photos %}
-
-    {% if photos %}
-
-        {% for photo in photos %}
-        {% with photo.object as photo %}
-            {% include 'photos/search-result.html' %}
+    {% autopaginate photos 10 %}
+    
+    <div class="photos-wrap">
+    {% for photo in photos %}
+        {% with photo as image %}
+            {% search_result image %}
         {% endwith %}
-        {% endfor %}
-
-        {% paginate %}
-    {% else %}
-    <p>{% trans "No photos were found." %}</p>
-    {% endif %}
-
+    {% empty %}
+        <div>{% trans "No photos were found." %}</div>
+    {% endfor %}
+    </div>
+    
+    {% paginate %}
 </div>
+{% endblock %}
 
-{% endblock %}
-{% block extra_body %}
-{{ block.super }}
-{% endblock %}
