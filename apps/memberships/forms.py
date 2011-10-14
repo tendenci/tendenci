@@ -337,9 +337,8 @@ class NoticeForm(forms.ModelForm):
     notice_time_type = NoticeTimeTypeField(label='When to Send',
                                           widget=NoticeTimeTypeWidget)
     email_content = forms.CharField(widget=TinyMCE(attrs={'style':'width:70%'}, 
-                                            mce_attrs={'storme_app_label':"email_content", 
-                                                       'storme_model':"email_content"}))
-    
+        mce_attrs={'storme_app_label':Notice._meta.app_label, 
+        'storme_model':Notice._meta.module_name.lower()}))    
     class Meta:
         model = Notice
         fields = (
@@ -357,6 +356,10 @@ class NoticeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs): 
         super(NoticeForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['email_content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['email_content'].widget.mce_attrs['app_instance_id'] = 0
         
         initial_list = []
         if self.instance.pk:
