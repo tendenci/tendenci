@@ -57,6 +57,10 @@ p.search-adv-header {
     border-bottom: none;
 }
 
+.wrap-search-item .item-content {
+    margin-top: 10px;
+}
+
 .quick-options {
 	float: right;
 	margin-right: 5px;

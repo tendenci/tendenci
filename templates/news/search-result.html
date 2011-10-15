@@ -5,23 +5,20 @@
 {% load perm_tags %}
 {% load i18n %}
 
-<div class="news-wrap-search">
-
-    <div class="options options-search">
-        <div class="quick-options">
-            {% news_options request.user news %} 	       
+<div class="wrap-search-item">
+    <div class="search-item news-search-item">
+        <h2><a href="{{ news.get_absolute_url }}">{{ news.headline }}</a></h2>
+        <div class="item-content">
+            {% if news.summary %}
+                {{ news.summary|striptags|truncatewords:20|safe }}
+            {% else %}
+                {{ news.body|striptags|truncatewords:20|safe }}
+            {% endif %}
         </div>
     </div>
-
-    <h2><a href="{{ news.get_absolute_url }}">{{ news.headline }}</a></h2>
-    {% if news.summary %}
-        <div class="content">{{ news.summary|striptags|truncatewords:20|safe }}</div>
-    {% else %}
-        <div class="content">{{ news.body|striptags|truncatewords:20|safe }}</div>	
-    {% endif %}
+    
     {% include 'news/meta.html' %}
-
-    <!-- delete-article form -->
+    <!-- delete-news form -->
     <form name="news-delete" method="POST" action="{% url news.delete news.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">
     </form>
