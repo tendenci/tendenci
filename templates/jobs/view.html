@@ -173,10 +173,7 @@
 				</div>
 		{% endif %}
 {% endif %}
-
         {% include 'jobs/meta.html' %}
-        
-		<br />
         {% url job job.pk as the_url %}
         <p>{% fb_like_button_iframe the_url %}</p>
     </div>

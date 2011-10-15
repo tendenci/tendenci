@@ -54,6 +54,7 @@ p.search-adv-header {
 
 .wrap-search-item {
     margin-bottom: 0px;
+    border-bottom: none;
 }
 
 .quick-options {
@@ -182,10 +183,20 @@ p.search-adv-header {
 }
 
 /* JOBS */
-
-.job-info {
+.job-search-item .job-info {
     padding: 10px;
-    padding-bottom: 0px;
+}
+
+.job-search-item .content {
+    margin-bottom: 0px;
+}
+
+.job-search-item .premium {
+    background-color: #ffffcc;
+}
+
+.job-search-item .meta {
+    margin-top: 0px;
 }
 
 /* PHOTOS */
