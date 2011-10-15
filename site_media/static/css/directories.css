@@ -23,14 +23,6 @@
 	position: relative;
 }
 
-.t .directories-wrap .directory-wrap-search {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 20px;
-	position: relative;
-	background-color: white;
-}
-
 .t .directories-wrap .directory-wrap h2 {
 	width: 85%;
 }
@@ -109,15 +101,6 @@ div.id_expiration_dt .field input#id_expiration_dt_1 {
 
 /* Directory View
  ------------------------- */
-.t .directory-wrap .meta, .t .directory-wrap-search .meta {
-	border: 1px solid silver;
-	padding: 10px;
-	background-color: #F7F7F7;
-	margin-top: 10px;
-}
-.t .directory-wrap .meta .tags {
-	margin-bottom: 5px;
-}
 .t .directory-wrap .fb-connect {
 	margin-top: 10px;
 }
