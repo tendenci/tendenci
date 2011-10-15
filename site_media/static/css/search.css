@@ -198,3 +198,77 @@ p.search-adv-header {
 .photo-search-item .photo-search-info {
     padding: 5px;
 }
+
+/* PHOTO SETS */
+
+.photo-set {
+	padding: 10px;
+	background-color: white;
+    position: relative;
+}
+.photo-set table {
+	width: 100%;
+}
+.photo-set table td {
+	vertical-align: top;
+}
+.photo-set table td.image {
+	width: 1%;
+}
+.photo-set table td.image img {
+	padding: 5px;
+	border: 1px solid gray;
+}
+.photo-set table td.info h2 {
+	margin: 0 0 10px;
+}
+.photo-set table td.info div.actions a {
+	margin: 0 1px;
+}
+.photo-set td.image a {
+    position: relative;
+}
+.photo-set td.image a .photo-count {
+    color: white;
+    font-weight: bold;
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    padding: 7px 12px;
+
+    background: darkgreen;
+    background: -moz-linear-gradient(top, #26bc12 0%, darkgreen 100%);
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#26bc12), to(darkgreen));
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    border-radius: 100px;
+}
+.photo-set td.image {
+    padding-right: 20px;
+}
+.photo-set .info {
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.photo-set .info .actions {
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.photo-set .info .visibility {
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+}
+
+.photo-set .info .actions a {
+    text-decoration: underline;
+}
+
+.photo-set .extra-info {
+    font-size: 12px;
+    height: 35px;
+}
