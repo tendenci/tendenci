@@ -171,30 +171,6 @@
 	background-color: darkred;
 	border: 1px solid darkred;
 }
- 
-
-.t .event-wrap .meta, .t .event-wrap-search .meta {
-	border: 1px solid silver;
-	padding: 10px;
-	background-color: #F7F7F7;
-	margin-top: 10px;
-}
-.t .event-wrap .meta .tags {
-	margin-bottom: 5px;
-}
-
-.t .event-wrap-search .meta .submitted {
-	float: left;
-}
-
-.t .event-wrap-search .meta .attend-link {
-	float: right;
-}
-.t .event-wrap-search .meta .attend-link a {
-	padding: 5px;
-	background-color: #DDD;
-	border: 1px solid silver;
-}
 
 /* form */
 div.forms div.form-field div.id_release_dt .field input {
@@ -487,6 +463,11 @@ input.short_text_input{
 	background-color: silver;
 	height: 1px;
 	margin: 15px;
+}
+
+.event-wrap .meta {
+    margin-top: 0px;
+    border-top: solid 1px #CCC;
 }
 
 /*= Monthly View

@@ -8,7 +8,7 @@
 {% has_perm user photos.change_image image as can_edit %}
 {% has_perm user photos.delete_image image as can_delete %}
 
-<div class="meta">
+<div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left">
         {% if user.is_authenticated %}
             <div class="submitted">{% blocktrans with image.create_dt|date:"long" as create_date %}Created on {{ create_date }}

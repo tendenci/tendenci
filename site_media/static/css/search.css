@@ -91,7 +91,8 @@ p.search-adv-header {
 }
 
 .event-wrap h3 {
-    margin-top: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .event-wrap div.description {
@@ -117,6 +118,11 @@ p.search-adv-header {
     padding: 10px;
     margin-left: 110px;
     
+}
+
+.event-wrap .meta {
+    margin-top: 0px;
+    border-top: solid 1px #CCC;
 }
 
 .event-info .attend-wrap {
