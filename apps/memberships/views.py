@@ -704,11 +704,7 @@ def membership_import(request, step=None):
         added = []
         skipped = []
         
-        for skip in skipped:
-            print skip
-        
         for membership in memberships:
-            print membership
             if membership.pk: skipped.append(membership)
             else: added.append(membership)
         
@@ -721,7 +717,7 @@ def membership_import(request, step=None):
         }, context_instance=RequestContext(request))
 
     if step_numeral == 4:  # confirm
-        
+
         app = request.session.get('membership.import.app')
         memberships = request.session.get('membership.import.memberships')
         fields = request.session.get('membership.import.fields')
@@ -729,14 +725,20 @@ def membership_import(request, step=None):
         if not all([app, memberships, fields]):
             return redirect('membership_import_upload_file')
 
-        result = ImportMembershipsTask.delay(app, memberships, fields)
-        result.wait()
+        result = ImportMembershipsTask()
+        result = result.run(app, memberships, fields)
+        # result = ImportMembershipsTask.delay(app, memberships, fields)
+        # result.wait()
 
         #clear these from the session
         request.session['membership.import.memberships'] = []
         request.session['membership.import.fields'] = []
 
-        return redirect('membership_import_status', result.task_id)
+
+        if hasattr(result, 'task_id'):
+            return redirect('membership_import_status', result.task_id)
+        else:
+            return redirect('membership_import_status','0')
         
     
 @login_required
