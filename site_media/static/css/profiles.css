@@ -319,10 +319,12 @@
 	margin-bottom: 20px;
 }
 
-.t .profiles-wrap .profile-wrap {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 20px;
+.t .profiles-wrap .wrap-search-item {
+    border: 1px solid #CCC;
+}
+
+.t .profiles-wrap .profile-wrap {	
+	padding: 10px 10px 0px 10px;
 	position: relative;
 	background-color: white;
 }

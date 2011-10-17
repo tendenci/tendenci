@@ -3,7 +3,7 @@
 {% load perm_tags %}
 {% load base_filters %}
 {% load i18n %}
-
+<div class="wrap-search-item">
 <div class="profile-wrap">
     <h2>
         <a href="{% url profiles.views.index profile.user.username %}">{{ profile.user.last_name }}{%if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{profile.user.username}})</a>
@@ -29,11 +29,11 @@
 
     <div class="clear-left" style="clear: left;"></div>
 
-    {% include 'profiles/meta.html' %}
-
     <!-- delete-profile form -->
     <form name="profile-delete" method="POST" action="{% url profile.delete profile.user.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">
     </form>
 
+</div>
+{% include 'profiles/meta.html' %}
 </div>
