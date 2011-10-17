@@ -5,7 +5,6 @@
 {% load i18n %}
 
 <div class="profile-wrap">
-    {% users_options request.user profile.user %}
     <h2>
         <a href="{% url profiles.views.index profile.user.username %}">{{ profile.user.last_name }}{%if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{profile.user.username}})</a>
     </h2>
