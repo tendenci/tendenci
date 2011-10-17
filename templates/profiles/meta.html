@@ -5,10 +5,10 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% get_or_create_profile_for user_this as "user_this_profile" %}
-{% assign can_edit_user user_this_profile|args:request.user|call:'allow_edit_by' %}
-{% is_admin user_this as admin %}
-{% is_admin request.user as viewer_admin %}
+{% get_or_create_profile_for profile.user as "user_this_profile" %}
+{% assign can_edit_user profile|args:user|call:'allow_edit_by' %}
+{% is_admin profile.user as admin %}
+{% is_admin user as viewer_admin %}
 
 <div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left">
@@ -46,25 +46,25 @@
     <div class="edit-links">
     <ul>
         <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ profile.pk }}&source={{ profile.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
-        <li><a class="edit-link" href="{% url profile.edit user_this.id %}">{% trans "Edit" %}</a></li>
+        <li><a class="edit-link" href="{% url profile.edit profile.user.id %}">{% trans "Edit" %}</a></li>
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>
                 <li>
-                    <a href="{% url profile.edit_groups user_this.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
+                    <a href="{% url profile.edit_groups profile.user.username %}" class="usergroups" title=="Edit Groups">{% trans "Edit Groups" %}</a>
                 </li>
                 <li>
-                    <a href="{% url auth_password_change user_this.id %}" class="changepassword" title="Change Password">{% trans "Change Password" %}</a>
+                    <a href="{% url auth_password_change profile.user.id %}" class="changepassword" title="Change Password">{% trans "Change Password" %}</a>
                 </li> 
                 {% if viewer_admin %}
                     <li>
-                        <a href="{% url profile.edit_perms user_this.id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
+                        <a href="{% url profile.edit_perms profile.user.id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
                     </li>
                     <li>
-                        <a href="{{ request.path }}?_impersonate={{ user_this.username }}" class="permissions" title="Impersonate">{% trans "Impersonate" %}</a>
+                        <a href="{{ request.path }}?_impersonate={{ profile.user.username }}" class="permissions" title="Impersonate">{% trans "Impersonate" %}</a>
                     </li>
                     <li>
-                        <a href="{% url profile.delete user_this.id %}" class="delete" title="Delete User">{% trans "Delete" %}</a>
+                        <a href="{% url profile.delete profile.user.id %}" class="delete" title="Delete User">{% trans "Delete" %}</a>
                     </li>
                 {% endif %}
             </ul>
