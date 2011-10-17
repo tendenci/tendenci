@@ -199,7 +199,6 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             entry = app_entry_form.save(commit=False)
             entry_invoice = entry.save_invoice()
 
-
             if user.is_authenticated():
                 entry.user = user  # bind to user
                 if all(user_member_requirements):  # save as renewal
@@ -228,7 +227,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                     args=[entry_invoice.pk, entry_invoice.guid]
                 ))
 
-            if not entry.approval_required:
+            if not entry.approval_required():
 
                     entry.approve()
 
