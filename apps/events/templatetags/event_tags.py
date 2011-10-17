@@ -105,7 +105,7 @@ class EventListNode(Node):
         #print ordering
         self.day = Variable(day)
         self.type_slug = Variable(type_slug)
-        self.ordering = ordering
+        self.ordering = ordering.replace("'",'')
         self.context_var = context_var
 
     def render(self, context):
