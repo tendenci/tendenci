@@ -3,17 +3,14 @@
 {% load base_filters %}
 {% load i18n %}
 
-<div class="group-wrap {% cycle row1,row2 as rowcolours %}">
-    <div class="options options-search">
-        <div class="quick-options">
-            {% user_group_options request.user group %} 	
-        </div>
-    </div>
+<div class="wrap-search-item">
+    <div class="group-wrap {% cycle row1,row2 as rowcolours %}">
 
-    <h2><a href="{{ group.get_absolute_url }}">{% firstof group.name group.label trans 'Untitled' %}</a></h2>
-    <div class="clear-right"></div>
-    <div class="content">{{ group.notes|striptags|truncatewords:20 }}</div>
-    
+        <h2><a href="{{ group.get_absolute_url }}">{% firstof group.name group.label trans 'Untitled' %}</a></h2>
+        <a href="{{ group.get_absolute_url }}">{% blocktrans count group.members.count as count_members %}{{ count_members  }} member{% plural %}{{ count_members  }} Members{% endblocktrans %}</a>
+        {% if group.notes %}
+            <div class="content">{{ group.notes|striptags|truncatewords:20 }}</div>
+        {% endif %}
+    </div>
     {% include 'user_groups/meta.html' %}
-    
 </div>
