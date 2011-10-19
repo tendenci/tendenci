@@ -79,11 +79,13 @@
 		</div> <!-- END month-grid -->
 	</div> <!-- END month-wrap -->
 
+	{# TODO: If there are no types, don't show sidebar #}
+
 	<div class="side-bar">
 
-		<div class="header">{% trans "Types of Events" %}</div>
+		<div class="header">{% trans "Filter by Type" %}</div>
 		<div class="types">
-			<div class="type all-types"><a href="{% url event.month year month %}">{% trans "All Event Types" %}</a></div>
+			<div class="type all-types"><a href="{% url event.month year month %}">{% trans "All Events" %}</a></div>
 			{% with type as curr_type %}
 			{% for type in types %}
 
