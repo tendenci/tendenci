@@ -593,5 +593,39 @@
         "scope_category": "global", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "", 
+        "description": "This is a setting to demonstrate <form_list>.", 
+        "data_type": "string", 
+        "update_dt": "2010-08-13 09:33:29", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "sample_form", 
+        "value": "", 
+        "label": "Sample Form", 
+        "input_value": "<form_list>", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "global", 
+        "store": true, 
+        "updated_by": ""
+    },
+    {
+        "default_value": "", 
+        "description": "This is a setting to demonstrate <box_list>.", 
+        "data_type": "string", 
+        "update_dt": "2010-08-13 09:33:29", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "sample_box", 
+        "value": "", 
+        "label": "Sample Box", 
+        "input_value": "<box_list>", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "global", 
+        "store": true, 
+        "updated_by": ""
     }
 ]
