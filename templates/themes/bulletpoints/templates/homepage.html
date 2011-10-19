@@ -39,7 +39,7 @@
                         <div class="story-text">
                             <h2 class="headline"><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
                             <div class="story-summary">
-                                <p>{{ story.title|striptags|truncatewords_html:"12" }}</p> 
+                                <p>{{ story.content|striptags|truncatewords_html:"12" }}</p> 
                                 <span class="readmore"><a href="{{ story.full_story_link }}">{% trans "Read More" %}</a></span>
                             </div>
                         </div>
