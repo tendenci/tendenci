@@ -129,7 +129,6 @@ def get_form_list(user):
     """
     from forms_builder.forms.models import Form
     forms = Form.objects.search(user=user)
-    print forms
     #To avoid hitting the database n time by calling .object
     #We will use the values in the index field.
     l = []
@@ -145,7 +144,6 @@ def get_box_list(user):
     """
     from boxes.models import Box
     boxes = Box.objects.search(user=user)
-    print boxes
     #To avoid hitting the database n time by calling .object
     #We will use the values in the index field.
     l = []
