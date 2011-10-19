@@ -1545,7 +1545,7 @@ def registrant_export(request, event_id, roster_view=''):
         ('phone', 'phone'),
         ('email', 'email'),
         ('registration_id', 'registration__pk'),
-        ('price type', 'registration__reg_conf_price__title')
+        ('price type', 'registration__reg_conf_price__title'),
         ('invoice_id', 'registration__invoice__pk'),
         ('registration price', 'registration__amount_paid'),
         ('payment method', 'registration__payment_method__machine_name'),
