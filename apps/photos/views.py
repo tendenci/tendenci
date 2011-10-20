@@ -290,8 +290,13 @@ def delete(request, id, set_id=0):
         EventLog.objects.log(**log_defaults)
 
         photo.delete()
-
-        return HttpResponseRedirect(reverse("photoset_details", args=[set_id]))
+        messages.add_message(request, messages.INFO, 'Photo %s deleted' % id)
+        
+        try:
+            photo_set = PhotoSet.objects.get(id=set_id)
+            return HttpResponseRedirect(reverse("photoset_details", args=[set_id]))
+        except PhotoSet.DoesNotExist:
+            return HttpResponseRedirect(reverse("photos_search"))
 
     return render_to_response("photos/delete.html", {
         "photo": photo,
