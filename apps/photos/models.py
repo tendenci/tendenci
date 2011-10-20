@@ -48,10 +48,10 @@ class PhotoSet(TendenciBaseModel):
         super(PhotoSet, self).save()
 
     def get_default_cover_photo_small(self):
-        return settings.STATIC_URL + "/images/default-photo-small.jpg"
+        return settings.STATIC_URL + "images/default-photo-small.jpg"
 
     def get_default_cover_photo(self):
-        return settings.STATIC_URL + "/images/default-photo-album-cover.jpg"
+        return settings.STATIC_URL + "images/default-photo-album-cover.jpg"
 
     def get_cover_photo(self, *args, **kwargs):
         """ get latest thumbnail url """
@@ -219,6 +219,9 @@ class Image(ImageModel, TendenciBaseModel):
     def file_exists(self):
         import os
         return os.path.exists(self.image.path)
+        
+    def default_thumbnail(self):
+        return settings.STATIC_URL + "images/default-photo-album-cover.jpg"
 
     objects = PhotoManager()
 

@@ -1,0 +1,39 @@
+{% load avatar_tags %}
+{% load profile_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+{% load i18n %}
+<div class="wrap-search-item">
+<div class="profile-wrap">
+    <h2>
+        <a href="{% url profiles.views.index profile.user.username %}">{{ profile.user.last_name }}{%if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{profile.user.username}})</a>
+    </h2>
+    <div class="clear-right"></div>
+
+    <div class="profile-avatar-left" style="float: left; padding-right:1em;">
+        {% avatar user_this 56 %}
+    </div>
+
+
+    <div class="content" style="float: left; margin-left:5px;">
+        {% if profile.user.email %}
+        <b>{% trans "Email:" %}</b> {{ profile.user.email|obfuscate_email }}<br />
+        {% endif %}
+        {% if profile.phone %}
+        <b>{% trans "Phone:" %}</b> {{ profile.phone }}<br />
+        {% endif %}
+        {% if profile.company %}
+        <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
+        {% endif %}
+    </div>
+
+    <div class="clear-left" style="clear: left;"></div>
+
+    <!-- delete-profile form -->
+    <form name="profile-delete" method="POST" action="{% url profile.delete profile.user.pk %}">{% csrf_token %}
+        <input type="hidden" name="action" value="delete">
+    </form>
+
+</div>
+{% include 'profiles/meta.html' %}
+</div>

@@ -173,36 +173,7 @@
 				</div>
 		{% endif %}
 {% endif %}
-
-        <div class="meta">
-			<div class="categories">
-				{% get_category_for_object job as category %}
-				{% if category %}
-					{% trans "Category:" %}&nbsp;<a href="{% url job.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
-				{% endif %}
-				{% get_sub_category_for_object job as sub_category %}
-				{% if sub_category %}
-					{% trans "Sub Category:" %}&nbsp;<a href="{% url job.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
-				{% endif %}				
-			</div>
-			
-			<div class="tags">
-				{% if tags %}
-					{% trans "Tags:" %}
-					{% for tag in tags %}
-						<a href="{% url job.search %}?q={{ tag }}">{{ tag }}</a>
-					{% endfor %}
-				{% endif %}
-			</div>
-
-            <div class="submitted">
-                {% blocktrans with job.create_dt|date:"long" as create_date %}
-                    Submitted on {{ create_date }} by:
-                {% endblocktrans %}{% firstof job.creator.get_profile.display_name job.creator %}
-            </div>
-        </div>
-        
-		<br />
+        {% include 'jobs/meta.html' %}
         {% url job job.pk as the_url %}
         <p>{% fb_like_button_iframe the_url %}</p>
     </div>

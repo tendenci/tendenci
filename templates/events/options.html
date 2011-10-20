@@ -7,19 +7,8 @@
 {% has_perm user events.delete_event opt_object as can_delete %}
 
 {% if opt_object %}
-<style type="text/css">
-	.event-type-label {
-		padding: 3px 5px;
-	}
-</style>
 
 <div class="t-iconrow">
-
-	<span class="event-type-label"
-	style="color:#{{ opt_object.type.color_set.fg_color }}; 
-	background-color:#{{ opt_object.type.color_set.bg_color }}"
-	title="{{ opt_object.type.name }}">
-	{{ opt_object.type.name|truncatewords:3 }}</span>
 
 	<a class="option-link print" href="{% url event.print_view opt_object.pk %}">{% trans "Print" %}</a>
     

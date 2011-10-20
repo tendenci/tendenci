@@ -24,14 +24,6 @@
 	position: relative;
 }
 
-.t .news-wrap .news-wrap-search {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 20px;
-	position: relative;
-	background-color: white;
-}
-
 .t .news-wrap .news-wrap h2 {
 	width: 85%;
 }
@@ -86,17 +78,8 @@
 	cursor: pointer;
 }
 
-/* Article View
+/* News View
  ------------------------- */
-.t .news-wrap .meta, .t .news-wrap-search .meta {
-	border: 1px solid silver;
-	padding: 10px;
-	background-color: #F7F7F7;
-	margin-top: 10px;
-}
-.t .news-wrap .meta .tags {
-	margin-bottom: 5px;
-}
 
 /* form */
 div.forms div.form-field div.id_first_name .field input {

@@ -21,12 +21,24 @@
 	position: relative;
 }
 
-.t .jobs-wrap .job-wrap-search {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 20px;
-	position: relative;
-	background-color: white;
+.t .jobs-wrap .wrap-search-item {
+	border: 1px solid silver;
+}
+
+.t .jobs-wrap .wrap-search-item .job-search-item .job-info {
+    padding: 10px;
+}
+
+.t .jobs-wrap .wrap-search-item .job-search-item .content {
+    margin-bottom: 0px;
+}
+
+.t .jobs-wrap .wrap-search-item .job-search-item .premium {
+    background-color: #ffffcc;
+}
+
+.t .jobs-wrap .wrap-search-item .job-search-item .meta {
+    margin-top: 0px;
 }
 
 .t .jobs-wrap .job-wrap h2 {
@@ -123,19 +135,8 @@ div.forms fieldset.payment_method legend {
 	padding: 5px;
 }
 
-.t .jobs-wrap div.premium {background-color: #ffffcc;}
-
 /* Job View
  ------------------------- */
-.t .job-wrap .meta, .t .job-wrap-search .meta {
-	border: 1px solid silver;
-	padding: 10px;
-	background-color: #F7F7F7;
-	margin-top: 10px;
-}
-.t .job-wrap .meta .tags {
-	margin-bottom: 5px;
-}
 
 .section-block {
 	margin-bottom: 10px;

@@ -1,12 +1,8 @@
 {% load resume_tags %}
-<div class="resume-wrap-search">
-
-    <div class="options options-search">
-        <div class="quick-options">
-            {% resume_options request.user resume %} 	       
-        </div>
+<div class="wrap-search-item">
+    <div class="search-item resume-search-item">
+        <h2><a href="{{ resume.get_absolute_url }}">{% firstof resume.title "Untitled" %}</a></h2>
+        <div class="item-content">{{ resume.description|striptags|truncatewords:20|safe }}</div>
     </div>
-
-    <h2><a href="{{ resume.get_absolute_url }}">{% firstof resume.title "Untitled" %}</a></h2>
-    <div class="content">{{ resume.description|striptags|truncatewords:20|safe }}</div>
+    {% include "resumes/meta.html" %}
 </div>

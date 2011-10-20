@@ -99,43 +99,7 @@
 
         {% for photo_set in photo_sets %}
         {% with photo_set.object as photo_set %}
-		<div class="photo-set">
-        	<table><tr>
-
-            	<td class="image">
-                	<a title="{{ photo_set.image_set.count }} Photo{{ photo_set.image_set.count|pluralize }}" 
-                        href="{{ photo_set.get_absolute_url }}">
-
-                        {% if photo_set.get_cover_photo %}
-                            <img src="{{ photo_set.get_cover_photo.get_album_cover_url }}" />
-                        {% else %}
-                            <img src="{{ photo_set.get_default_cover_photo }}" />
-                        {% endif %}
-
-                        <div class="photo-count">{{ photo_set.image_set.count|intcomma }} </div>
-                    </a>
-                </td>
-
-                <td class="info">
-                	<h2><a href="{{ photo_set.get_absolute_url }}">{{ photo_set.name }}</a></h2>
-                    <div class="description">{{ photo_set.description|striptags|truncatewords_html:25|safe }}</div>
-
-
-                    <div class="extra-info">
-                    {% if admin %}
-                    <div class="visibility">
-                        {% obj_perms photo_set %} &middot; {% obj_status photo_set %}
-                    </div>
-                    {% endif %}
-
-                    <div class="actions">
-						{% photo_set_options request.user photo_set %}
-                    </div>
-                    </div>
-
-                </td>
-			</tr></table>
-        </div>
+            {% include 'photos/photo-set/search-result.html' %}
         {% endwith %}
         {% endfor %}
 

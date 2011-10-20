@@ -2,36 +2,20 @@
 {% load category_tags %}
 {% load i18n %}
 
-<div class="directory-wrap-search">
-    <div class="options options-search">
-        <div class="quick-options">
-            {% directory_options request.user directory %} 	       
-        </div>
-    </div>
-    <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline trans "Untitled" %}</a></h2>
-    {% if directory.logo %} 
-        <div class="directory-image"><img src="{{ MEDIA_URL }}{{ directory.logo }}" alt="{% firstof directory.headline 'Untitled' %}" /></div>
-    {% endif %}
-    {% if directory.summary %}
-        <div class="content">{{ directory.summary|striptags|truncatewords:20|safe }}</div>
-    {% else %}
-        <div class="content">{{ directory.body|striptags|truncatewords:20|safe }}</div>	
-    {% endif %}
-
-    <div class="meta">
-        <div class="submitted">{% blocktrans with directory.activation_dt|date:"D d M Y P" as da_create and directory.creator as da_creator %}Released on {{ da_create }} by {{ da_creator }}{% endblocktrans %}</div>
-        <div class="category">
-        {% get_category_for_object directory as category %}
-        {% if category %}
-            {% trans "Category: " %}<a href="{% url directory.search %}?q=category:{{ category }}">{{ category }}</a> 
+<div class="wrap-search-item">
+    <div class="search-item directory-search-item">
+        <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline trans "Untitled" %}</a></h2>
+        {% if directory.logo %} 
+            <div class="directory-image"><img src="{{ MEDIA_URL }}{{ directory.logo }}" alt="{% firstof directory.headline 'Untitled' %}" /></div>
         {% endif %}
-        {% get_sub_category_for_object directory as sub_category %}
-        {% if sub_category %}
-            {% trans "Sub Category: " %}<a href="{% url directory.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a> 
+        {% if directory.summary %}
+            <div class="content">{{ directory.summary|striptags|truncatewords:20|safe }}</div>
+        {% else %}
+            <div class="content">{{ directory.body|striptags|truncatewords:20|safe }}</div>	
         {% endif %}
-        </div>
     </div>
 
+    {% include 'directories/meta.html' %}
     <!-- delete-directory form -->
     <form name="directory-delete" method="POST" action="{% url directory.delete directory.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">

@@ -1,0 +1,42 @@
+{% extends "photos/base.html" %}
+{% load pagination_tags %}
+{% load photo_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+{% load humanize %}
+{% load i18n %}
+
+{% is_admin user as admin %}
+
+{% block title %}{% blocktrans %}Photos{% endblocktrans %}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
+<link rel="stylesheet" type="text/css" href="/site_media/static/css/search.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% photo_nav request.user %}
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
+    
+	{% photo_search %}
+    {% autopaginate photos 10 %}
+    
+    <div class="photos-wrap">
+    {% for photo in photos %}
+        {% with photo as image %}
+            {% search_result image %}
+        {% endwith %}
+    {% empty %}
+        <div>{% trans "No photos were found." %}</div>
+    {% endfor %}
+    </div>
+    
+    {% paginate %}
+</div>
+{% endblock %}
+

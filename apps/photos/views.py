@@ -24,6 +24,25 @@ from photos.search_indexes import PhotoSetIndex
 from photos.models import Image, Pool, PhotoSet, AlbumCover, License
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 
+def search(request, template_name="photos/search.html"):
+    """ Photos search """
+    
+    query = request.GET.get('q', None)
+    photos = Image.objects.search(query, 
+        user=request.user).order_by('-create_dt')
+    
+    log_defaults = {
+        'event_id' : 990400,
+        'event_data': '%s searched by %s' % ('Image', request.user),
+        'description': '%s searched' % 'Image',
+        'user': request.user,
+        'request': request,
+        'source': 'photos'
+    }
+    EventLog.objects.log(**log_defaults)
+    
+    return render_to_response(template_name, {"photos": photos}, 
+        context_instance=RequestContext(request))
 
 def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     """ Show all photo sizes """
@@ -271,8 +290,13 @@ def delete(request, id, set_id=0):
         EventLog.objects.log(**log_defaults)
 
         photo.delete()
-
-        return HttpResponseRedirect(reverse("photoset_details", args=[set_id]))
+        messages.add_message(request, messages.INFO, 'Photo %s deleted' % id)
+        
+        try:
+            photo_set = PhotoSet.objects.get(id=set_id)
+            return HttpResponseRedirect(reverse("photoset_details", args=[set_id]))
+        except PhotoSet.DoesNotExist:
+            return HttpResponseRedirect(reverse("photos_search"))
 
     return render_to_response("photos/delete.html", {
         "photo": photo,
@@ -357,26 +381,37 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
     }, context_instance=RequestContext(request))
 
 @login_required
-def photoset_delete(request, id, template_name="photos/photo_set/delete.html"):
+def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
     if not has_perm(request.user,'photos.delete_photoset',photo_set):
         raise Http403
+    
+    if request.method == "POST":
+        log_defaults = {
+            'event_id' : 991300,
+            'event_data': '%s (%d) deleted by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
+            'description': '%s deleted' % photo_set._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': photo_set,
+        }
+        EventLog.objects.log(**log_defaults)
 
-    log_defaults = {
-        'event_id' : 991300,
-        'event_data': '%s (%d) deleted by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
-        'description': '%s deleted' % photo_set._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': photo_set,
-    }
-    EventLog.objects.log(**log_defaults)
-
-    photo_set.delete()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', None))
-
+        photo_set.delete()
+        messages.add_message(request, messages.INFO, 'Photo Set %s deleted' % photo_set)
+        
+        if "delete" in request.META.get('HTTP_REFERER', None):
+            #if the referer is the get page redirect to the photo set search
+            return redirect('photoset_latest')
+            
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', None))
+    
+    return render_to_response(template_name, {
+        'photo_set': photo_set,
+    }, context_instance=RequestContext(request))
+    
 def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     """ View latest photo set """
 
@@ -433,11 +468,12 @@ def photos_batch_add(request, photoset_id=0):
             filename, extension = os.path.splitext(uploaded_file.name)
             request.POST.update({'title': filename, })
 
+            # clean filename; alphanumeric with dashes
             filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
 
             # truncate; make unique; append extension
             request.FILES[field_name].name = \
-                filename[:90] + '-' + unicode(uuid.uuid1())[:5] + extension
+                filename[:70] + '-' + unicode(uuid.uuid1())[:5] + extension
 
             # photoset_id set in swfupload
             photoset_id = int(request.POST["photoset_id"])

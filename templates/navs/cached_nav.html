@@ -1,0 +1,6 @@
+{% load nav_tags %}
+{% if cached %}
+    {{ cached }}
+{% else %}
+    {% navigation nav_id %}
+{% endif %}
