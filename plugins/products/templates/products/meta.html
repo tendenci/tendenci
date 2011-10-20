@@ -17,7 +17,7 @@
                     <div class="categories">
                         <strong>{% trans "Category:" %} </strong><a href="{% url products.search %}?q=category:{{ product.category }}">{{ product.category }}</a>
                     {% if product.subcategory %}
-                        | <strong>{% trans "Sub Category:" %} </strong><a href="{% url products.search %}?q=sub_category:{{ product.subcategory }}">{{ product.subcategory }}</a>
+                        | <strong>{% trans "Sub Category:" %} </strong><a href="{% url products.search %}?q=subcategory:{{ product.subcategory }}">{{ product.subcategory }}</a>
                     {% endif %} 
                     </div>
                     {% endif %}
@@ -91,3 +91,4 @@
                 </div>
             </div> 
             {% endif %}
+​

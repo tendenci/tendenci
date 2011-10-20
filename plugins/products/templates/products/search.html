@@ -14,6 +14,11 @@
 <style type="text/css">
 {% include "products/media/css/products.css" %}
 .t .products-search-wrap {width: 100%}
+.products-wrap .wrap-search-item { float: left; }
+.t .product-search-item { width: 164px; }
+ .product-photo {height: 160px;}
+.pagination { margin-bottom: 10px; font-size: 14px; }
+.pagination a { margin: 0 2px; }
 </style>
 <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest Products' %}" href="{% url products.feed %}" />
 {% endblock %}
@@ -38,3 +43,4 @@
     {% paginate %}
 </div>
 {% endblock body %}
+​
