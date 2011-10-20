@@ -381,26 +381,37 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
     }, context_instance=RequestContext(request))
 
 @login_required
-def photoset_delete(request, id, template_name="photos/photo_set/delete.html"):
+def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
     if not has_perm(request.user,'photos.delete_photoset',photo_set):
         raise Http403
+    
+    if request.method == "POST":
+        log_defaults = {
+            'event_id' : 991300,
+            'event_data': '%s (%d) deleted by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
+            'description': '%s deleted' % photo_set._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': photo_set,
+        }
+        EventLog.objects.log(**log_defaults)
 
-    log_defaults = {
-        'event_id' : 991300,
-        'event_data': '%s (%d) deleted by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
-        'description': '%s deleted' % photo_set._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': photo_set,
-    }
-    EventLog.objects.log(**log_defaults)
-
-    photo_set.delete()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', None))
-
+        photo_set.delete()
+        messages.add_message(request, messages.INFO, 'Photo Set %s deleted' % photo_set)
+        
+        if "delete" in request.META.get('HTTP_REFERER', None):
+            #if the referer is the get page redirect to the photo set search
+            return redirect('photoset_latest')
+            
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', None))
+    
+    return render_to_response(template_name, {
+        'photo_set': photo_set,
+    }, context_instance=RequestContext(request))
+    
 def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     """ View latest photo set """
 
