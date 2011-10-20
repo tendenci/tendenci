@@ -1,0 +1,71 @@
+{% load quote_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load category_tags %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% has_perm user quotes.change_quote quote as can_edit %}
+{% has_perm user quotes.delete_quote quote as can_delete %}
+{% get_category_for_object quote as category %}
+{% get_sub_category_for_object quote as sub_category %}
+{% tags_hash_tags quote as hash_tags %}
+{% tags_strip_hash quote as nonhash_tags %}
+
+<div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+    <div class="meta-left">
+        {% if nonhash_tags or hash_tags %}
+        <div class="tags">
+            {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
+            {% for tag in nonhash_tags %}
+                <a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            
+            {% if hash_tags and can_edit %}
+            {% for tag in hash_tags %}
+                {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+            <div class="submitted">{% blocktrans with quote.create_dt|date:"long" as create_date %}Created on {{ create_date }}
+            by:{% endblocktrans %} <a href="{{ quote.creator.get_absolute_url }}">
+            {% if quote.creator.first_name %}{{ quote.creator.first_name }} {{ quote.creator.last_name }}
+            {% else %}
+            {{ quote.creator }}
+            {% endif %}</a>
+            </div>
+            <div class="submitted">{% blocktrans with quote.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
+            by:{% endblocktrans %} <a href="{{ quote.owner.get_absolute_url }}">
+            {% if quote.owner.first_name %}{{ quote.owner.first_name }} {{ quote.owner.last_name }}
+            {% else %}
+            {{ quote.owner }}
+            {% endif %}</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="meta-right">
+        <a class="share-link" >{% trans "Share" %}</a>
+    </div>
+    
+</div>
+{% if can_edit %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ quote.obj_perms }}</li>
+        <li>{{ quote.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ quote.pk }}&source={{ quote.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+    </ul>
+    </div>
+</div> 
+{% endif %}
