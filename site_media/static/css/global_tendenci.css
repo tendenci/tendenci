@@ -4,28 +4,16 @@
 @import url('messages.css');
 @import url('perms.css');
 
-.wrap-search-item {
-	border-bottom: 1px solid #CCC;
-	margin-bottom: 20px;
-}
+.wrap-search-item {border-bottom: 1px solid #CCC; margin-bottom: 20px;}
 .search-item {padding: 10px 10px 0 10px;}
-.meta {
-	padding: 10px 10px 5px;
-	background-color: #EEEEEE;
-	margin-top: 10px;
-	font-size: 13px;
-	position: relative;
-}
+.meta {padding: 10px 10px 5px; background-color: #EEEEEE; margin-top: 10px; font-size: 13px; position: relative; clear: both;}
 
 .meta.anon {background-color: transparent;}
 
 .meta .submitted,
 .meta .categories,
 .meta .tags,
-.meta .contact {
-	margin-bottom: 2px;
-	line-height: 16px;
-}
+.meta .contact {margin-bottom: 2px; line-height: 16px;}
 
 .meta-left {left: 0; width: 74%;}
 .meta-right {right: 8px; bottom: 10px; width: 25%;position: absolute;}
