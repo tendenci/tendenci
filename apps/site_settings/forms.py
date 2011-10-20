@@ -3,9 +3,9 @@ from ordereddict import OrderedDict
 from django import forms
 from django.core.cache import cache
 
-from site_settings.utils import delete_setting_cache, cache_setting, delete_all_settings_cache
+from site_settings.utils import (delete_setting_cache, cache_setting,
+    delete_all_settings_cache, get_form_list, get_box_list)
 from site_settings.cache import SETTING_PRE_KEY
-
 
 def clean_settings_form(self):
     """
@@ -72,11 +72,17 @@ def build_settings_form(user, settings):
                     fields.update({"%s" % setting.name : forms.CharField(**options) })
                     
         if setting.input_type == 'select':
+            if setting.input_value == '<form_list>':
+                choices = get_form_list(user)
+            elif setting.input_value == '<box_list>':
+                choices = get_box_list(user)
+            else:
+                choices = tuple([(s,s)for s in setting.input_value.split(',')])
             options = {
                 'label': setting.label,
                 'help_text': setting.description,
                 'initial': setting.value,
-                'choices': tuple([(s,s)for s in setting.input_value.split(',')])
+                'choices': choices,
             }
             if setting.client_editable:
                 fields.update({"%s" % setting.name : forms.ChoiceField(**options) }) 

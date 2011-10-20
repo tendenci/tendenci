@@ -1,0 +1,95 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load directory_tags %}
+{% load perm_tags %}
+{% load tagging_tags %}
+{% load category_tags %}
+{% load i18n %}
+
+{% has_perm user directories.change_directory directory as can_edit %}
+{% has_perm user directory.delete_directory directory as can_delete %}
+{% get_category_for_object directory as category %}
+{% get_sub_category_for_object directory as sub_category %}
+{% tags_hash_tags directory as hash_tags %}
+{% tags_strip_hash directory as nonhash_tags %}
+
+<div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+    <div class="meta-left">
+        {% if category %}
+        <div class="categories">
+            <strong>{% trans "Category:" %} </strong><a href="{% url directory.search %}?q=category:{{ category }}">{{ category }}</a>
+            {% if sub_category %}
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url directory.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>
+            {% endif %} 
+        </div>
+        {% endif %}
+
+        {% if nonhash_tags or hash_tags %}
+        <div class="tags">
+            {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
+            {% for tag in nonhash_tags %}
+                <a href="{% url directory.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            
+            {% if hash_tags and can_edit %}
+            {% for tag in hash_tags %}
+                {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url directory.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+            <div class="submitted">{% blocktrans with directory.create_dt|date:"long" as create_date %}Created on {{ create_date }}
+            by:{% endblocktrans %} <a href="{{ directory.creator.get_absolute_url }}">
+            {% if directory.creator.first_name %}{{ directory.creator.first_name }} {{ directory.creator.last_name }}
+            {% else %}
+            {{ directory.creator }}
+            {% endif %}</a>
+            </div>
+            <div class="submitted">{% blocktrans with directory.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
+            by:{% endblocktrans %} <a href="{{ directory.owner.get_absolute_url }}">
+            {% if directory.owner.first_name %}{{ directory.owner.first_name }} {{ directory.owner.last_name }}
+            {% else %}
+            {{ directory.owner }}
+            {% endif %}</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="meta-right">
+        <a class="print-link" href="{% url directory.print_view directory.slug %}">{% trans "Print" %}</a>
+        <a class="share-link" >{% trans "Share" %}</a>
+    </div>
+    
+</div>
+{% if can_edit %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ directory.obj_perms }}</li>
+        <li>{{ directory.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ directory.pk }}&source={{ directory.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url directory.edit directory.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                {% if can_delete %}
+                <li>
+                    <a class="delete" href="{% url directory.delete directory.pk %}">{% trans "Delete" %}</a>
+                </li>
+                {% endif %}
+                <li><a href="{% url directory.edit.meta directory.pk %}">{% trans "Edit Meta" %}</a></li>
+                <li><a href="{% url category.update directory.opt_app_label directory.opt_module_name directory.pk %}">{% trans "Edit Categories" %}</a></li>
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div> 
+{% endif %}

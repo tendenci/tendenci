@@ -13,10 +13,24 @@
             {{ event.start_dt|timeuntil }}
         </div>
         {% endif %}
+        
+        {% if event.type %}
+            <style type="text/css">
+                .event-type-label {
+                    margin: 5px;
+                    padding: 3px 5px;
+                    font-size: 11px;
+                }
+            </style>
+            <div class="event-type-label"
+            style="color:#{{ event.type.color_set.fg_color }}; 
+            background-color:#{{ event.type.color_set.bg_color }}"
+            title="{{ event.type.name }}">
+            {{ event.type.name|truncatewords:3 }}
+            </div>
+        {% endif %}
     </div>
     <div class="event-info">
-
-        <div class="options">{% event_options user event %}</div>
         
         <h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
         <div class="place">{{ event.place }}</div>
@@ -63,7 +77,7 @@
 
     </div>
     <div style="clear:both;"></div>
-
+    {% include 'events/meta.html' %}
     <!-- delete-event form -->
     <form name="event-delete" method="POST" action="{% url event.delete event.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">

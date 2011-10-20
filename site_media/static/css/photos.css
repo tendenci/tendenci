@@ -64,6 +64,11 @@ div.gallery-photo-thumb img {
 	display: block;
 }
 
+.photos-wrap .photo-search-item {
+    border: 1px solid silver;
+    margin-bottom: 20px;
+}
+
 #photos-wrap {
 	position: relative;
 }
@@ -691,3 +696,4 @@ div.gallery-photo-thumb img {
 	width: 400px;
 	height: 50px;
 }
+

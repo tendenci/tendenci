@@ -21,14 +21,6 @@
 	position: relative;
 }
 
-.t .resumes-wrap .resume-wrap-search {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 20px;
-	position: relative;
-	background-color: white;
-}
-
 .t .resumes-wrap .resume-wrap h2 {
 	width: 85%;
 }
@@ -115,15 +107,6 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 
 /* Resume View
  ------------------------- */
-.t .resume-wrap .meta, .t .resume-wrap-search .meta {
-	border: 1px solid silver;
-	padding: 10px;
-	background-color: #F7F7F7;
-	margin-top: 10px;
-}
-.t .resume-wrap .meta .tags {
-	margin-bottom: 5px;
-}
 
 .section-block {
 	margin-bottom: 10px;

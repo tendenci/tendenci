@@ -178,8 +178,7 @@ class GetProfileNode(Node):
                 profile = user_obj.get_profile()
             except Profile.DoesNotExist:
                 profile = Profile.objects.create_profile(user=user_obj)
-    
-        context[var_name] = profile
+            context[var_name] = profile
         return ""
 
 def get_or_create_profile_for(parser, token):

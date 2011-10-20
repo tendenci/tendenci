@@ -83,7 +83,7 @@ class Command(BaseCommand):
                 )
                 file_object.close()
 
-                print 't4:%s t5:%s file:%s' % (t4_pk,instance.pk,file_path)
-
-
-
+            product_file.bind_files_to_instance(
+                files = [file_object],
+                instance = instance,
+            )

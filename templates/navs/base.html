@@ -1,0 +1,6 @@
+{% extends "site_base.html" %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_NAVS_LABEL "Navs" %} {% endblock %}
+
+{% block messages %}{{ block.super }}{% endblock %}

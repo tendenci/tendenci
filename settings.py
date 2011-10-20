@@ -232,6 +232,7 @@ INSTALLED_APPS = (
     'metrics',
     'search',
     'plugin_builder',
+    'navs',
     # celery task system, must stay at the bottom
     # of installed apps
     'djkombu',
