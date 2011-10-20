@@ -24,27 +24,8 @@
 
 	<div class="groups-wrap">
     {% for group in groups %}
-    {% with group.object as group %}
-		<div class="group-wrap {% cycle row1,row2 as rowcolours %}">
-
-			<div class="options options-search">
-				<div class="quick-options">
-					{% user_group_options request.user group %} 	
-				</div>
-			</div>
-
-            <h2><a href="{{ group.get_absolute_url }}">{% firstof group.name group.label trans 'Untitled' %}</a></h2>
-            <div class="clear-right"></div>
-            <div class="content">{{ group.notes|striptags|truncatewords:20 }}</div>
-			<div class="meta">
-				<a href="{{ group.get_absolute_url }}">{% trans "View Group Members:" %} 
-            	{% blocktrans count group.members.count as count_members %}{{ count_members  }} member{% plural %}{{ count_members  }} members{% endblocktrans %}
-            	</a>
-            	<div class="submitted">{% blocktrans with group.create_dt|date:"long" as create_date and group.creator as group_creator %}Created on {{ create_date }} by {{ group_creator }}{% endblocktrans %}</div>
-            </div>
-
-            
-		</div>
+        {% with group.object as group %}
+            {% include 'user_groups/search-result.html' %}
 		{% endwith %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>

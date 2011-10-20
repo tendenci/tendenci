@@ -154,6 +154,9 @@ def icalendar_single(request, id):
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
 
+    if not Event.objects.filter(pk=id).exists():
+        raise Http404
+
     d['site_url'] = get_setting('site', 'global', 'siteurl')
     match = p.search(d['site_url'])
     if match:

@@ -20,7 +20,7 @@
 
 <h1>Edit photo</h1>
 
-<div style="margin-bottom: 10px;">{% photo_nav request.user %}</div>
+<div style="margin-bottom: 10px;">{% photo_nav request.user photo %}</div>
 
 <form name="photo-edit" method="post" action="">{% csrf_token %}
     <div class="forms">

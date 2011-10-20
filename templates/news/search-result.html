@@ -5,35 +5,20 @@
 {% load perm_tags %}
 {% load i18n %}
 
-<div class="news-wrap-search">
-
-    <div class="options options-search">
-        <div class="quick-options">
-            {% news_options request.user news %} 	       
+<div class="wrap-search-item">
+    <div class="search-item news-search-item">
+        <h2><a href="{{ news.get_absolute_url }}">{{ news.headline }}</a></h2>
+        <div class="item-content">
+            {% if news.summary %}
+                {{ news.summary|striptags|truncatewords:20|safe }}
+            {% else %}
+                {{ news.body|striptags|truncatewords:20|safe }}
+            {% endif %}
         </div>
     </div>
-
-    <h2><a href="{{ news.get_absolute_url }}">{{ news.headline }}</a></h2>
-    {% if news.summary %}
-        <div class="content">{{ news.summary|striptags|truncatewords:20|safe }}</div>
-    {% else %}
-        <div class="content">{{ news.body|striptags|truncatewords:20|safe }}</div>	
-    {% endif %}
-    <div class="meta">
-        <div class="submitted">{% blocktrans with news.create_dt|date:"long" as ncreate and news.creator as ncreator %}Submitted on {{ ncreate }} by {{ ncreator }}{% endblocktrans %}</div>
-        <div class="category">
-        {% get_category_for_object news as category %}
-        {% if category %}
-            {% trans "Category:" %} <a href="{% url news.search %}?q=category:{{ category }}">{{ category }}</a> 
-        {% endif %}
-        {% get_sub_category_for_object news as sub_category %}
-        {% if sub_category %}
-            {% trans "Sub Category:" %} <a href="{% url news.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a> 
-        {% endif %}
-        </div>
-    </div>
-
-    <!-- delete-article form -->
+    
+    {% include 'news/meta.html' %}
+    <!-- delete-news form -->
     <form name="news-delete" method="POST" action="{% url news.delete news.pk %}">{% csrf_token %}
         <input type="hidden" name="action" value="delete">
     </form>

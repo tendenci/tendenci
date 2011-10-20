@@ -9,19 +9,21 @@
 	margin-bottom: 20px;
 }
 
+.t .groups-wrap .wrap-search-item {
+    border: 1px solid #CCC;
+}
+
 .t .groups-wrap .group-wrap {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 20px;
+	padding: 10px 10px 0px 10px;
 	position: relative;
-	background-color: white;
 }
 
 .t .groups-wrap .group-wrap h2 {
 	width: 85%;
 }
+
 .t .groups-wrap .group-wrap .content {
-	margin-bottom: 10px;
+    margin-bottom: 0px;
 }
 
 .t .options {
@@ -45,16 +47,6 @@
 }
 .t .quick-options ul li {
 	display: inline;
-}
-
-.t .groups-wrap .meta, .t .group-wrap .meta {
-	border: 1px solid silver;
-	padding: 10px;
-	background-color: #F7F7F7;
-	margin-top: 10px;
-}
-.t .group-wrap .meta .tags {
-	margin-bottom: 5px;
 }
 
 .t .dropdown-options {

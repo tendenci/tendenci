@@ -122,3 +122,32 @@ def check_setting(scope, scope_category, name):
     return Setting.objects.filter(scope=scope, 
         scope_category=scope_category, name=name).exists()
 
+def get_form_list(user):
+    """
+    Generate a list of 2-tuples of form id and form title
+    This will be used as a special select
+    """
+    from forms_builder.forms.models import Form
+    forms = Form.objects.search(user=user)
+    #To avoid hitting the database n time by calling .object
+    #We will use the values in the index field.
+    l = []
+    for form in forms:
+        l.append((form.primary_key, form.title))
+    
+    return l
+    
+def get_box_list(user):
+    """
+    Generate a list of 2-tuples of form id and form title
+    This will be used as a special select
+    """
+    from boxes.models import Box
+    boxes = Box.objects.search(user=user)
+    #To avoid hitting the database n time by calling .object
+    #We will use the values in the index field.
+    l = []
+    for box in boxes:
+        l.append((box.primary_key, box.title))
+    
+    return l

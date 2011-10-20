@@ -1,0 +1,31 @@
+{% load i18n %}
+{% load pagination_tags %}
+{% load photo_tags %}
+{% load perm_tags %}
+{% load humanize %}
+
+
+<div class="photo-search-item">
+    <div class="search-item">
+        <table>
+        <td>
+            <a href="{{ image.get_absolute_url }}">
+                {% if image.file_exists %}
+                    <a href="{% url photo image.pk %}"><img class="photo-search-photo" src="{{ image.get_small_crop_url }}" alt="{{ image.title }}"/></a>
+                {% else %}
+                    <img class="photo-search-photo" src="{{ image.default_thumbnail }}" />
+                {% endif %}
+            </a>
+        </td>
+        <td>
+            <div class="photo-search-info">
+                <h2><a href="{{ image.get_absolute_url }}">{{ image.title }}</a></h2>
+                <div class="description">
+                    {{ image.caption|striptags|truncatewords_html:25|safe }}
+                </div>
+            </div>
+        </td>
+        </table>
+    </div>
+    {% include "photos/meta.html" %}
+</div>

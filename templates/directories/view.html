@@ -26,12 +26,6 @@
 
         <h2>{{ directory.headline }}</h2>
 
-		<div class="options">
-             <div class="quick-options">
-				{% directory_options request.user directory %} 	       
-             </div>
-		</div>
-
 		<div class="content">
 		
 			{% if directory.logo %} 
@@ -85,33 +79,7 @@
 			</div>     
 		</div>
 
-		
-        <div class="meta">
-			<div class="categories">
-				{% get_category_for_object directory as category %}
-				{% if category %}
-					{% trans "Category:" %}&nbsp;<a href="{% url directory.search %}?q=category:{{ category }}">{{ category }}</a>&nbsp;
-				{% endif %}
-				{% get_sub_category_for_object directory as sub_category %}
-				{% if sub_category %}
-					{% trans "Sub Category:" %}&nbsp;<a href="{% url directory.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>&nbsp;
-				{% endif %}				
-			</div>
-			
-			<div class="tags">
-				{% if tags %}
-					{% trans "Tags: " %}
-					{% for tag in tags %}
-						<a href="{% url directory.search %}?q={{ tag }}">{{ tag }}</a>
-					{% endfor %}
-				{% endif %}
-			</div>
-
-            <div class="submitted">
-            	Submitted on {{ directory.create_dt|date:"long" }} by: 
-				{% firstof directory.creator.get_profile.display_name directory.creator %} 
-			</div>
-        </div>
+		{% include "directories/meta.html" %}
 
         <div>{% url directory directory.pk as the_url %}</div>
         <div class="fb-connect">{% fb_like_button_iframe the_url %}</div>

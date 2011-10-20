@@ -31,7 +31,7 @@
 <div class="product-image">
 {% for f in product.productfile_set.all %}
     {% if forloop.first %}
-        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=220x220 quality=90 crop=true %}" /></a>
+        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=220x220 crop=true quality=90 %}" /></a>
         <p>{{ f.photo_description }}</p>
     {% else %}
         <a href="{% url file f.file_ptr_id %}"><img class="small-img" alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=80x80 quality=95 %}" /></a>
@@ -56,10 +56,8 @@
       fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));</script>
 
-    
     <!-- AddThis Button BEGIN -->
     <div class="addthis_toolbox addthis_default_style ">
-    <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
     <a class="addthis_button_tweet"></a>
     <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
     <a class="addthis_counter addthis_pill_style"></a>
@@ -82,3 +80,4 @@
 
 
 {% endblock body %}
+​

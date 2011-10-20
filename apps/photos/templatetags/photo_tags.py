@@ -120,7 +120,10 @@ def photo_nav(context, user, photo=None):
         "user": user
     })
     return context
-
+    
+@register.inclusion_tag("photos/search-form.html", takes_context=True)
+def photo_search(context):
+    return context
 
 @register.inclusion_tag("photos/photo-set/options.html", takes_context=True)
 def photo_set_options(context, user, photo_set):

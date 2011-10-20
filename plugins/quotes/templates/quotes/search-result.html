@@ -1,0 +1,9 @@
+
+<div class="wrap-search-item">
+    <div class="quote search-item">
+        <p class="quote-text">{{ quote.quote|safe|linebreaks }}</p>
+        <p><strong>&mdash;<a href="{% url quote.search %}?q=author:{{ quote.author }}">{{ quote.author }}</a></strong></p>
+        <small><a href="{{ quote.get_absolute_url }}">Quote Link</a></small>
+    </div>
+    {% include 'quotes/meta.html' %}
+</div>

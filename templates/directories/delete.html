@@ -1,6 +1,32 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
 {% load i18n %}
 
 {% block body %}
-<h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} {% trans "Delete Page" %}</h1>
-<div class="back-to-search"><a href="{% url directory.search %}">&laquo;{% trans " Back to directories search" %}</a></div>
+<div class="t">
+    {% directory_nav user directory %}
+    <h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} {% trans "Delete Page" %}</h1>
+    <div class="delete-prompt"> 
+        {% trans "Are you sure you want to permanently delete this directory?" %}
+    </div>
+    <div class="info" style="margin: 10px 0px 10px 0px;">
+        <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline "Untitled" %}</a></h2>
+        {% if directory.logo %} 
+            <div class="directory-image"><img src="{{ MEDIA_URL }}{{ directory.logo }}" alt="{% firstof directory.headline 'Untitled' %}" /></div>
+        {% endif %}
+        <div style="margin: 10px 0px 10px 0px;">
+            {% if directory.summary %}
+                {{ directory.summary|striptags|truncatewords:20|safe }}
+            {% else %}
+                {{ directory.body|striptags|truncatewords:20|safe }}
+            {% endif %}
+        </div>
+    </div>
+    <div class="delete-form">
+        <form name="directory-delete" method="POST" action="{% url directory.delete directory.pk %}">{% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+        </form>
+    </div>
+</div>
 {% endblock %}
