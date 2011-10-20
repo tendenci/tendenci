@@ -3,16 +3,22 @@
 
 <div class="wrap-search-item">
     <div class="search-item product-search-item">
-        <div class="product-photo">  
+        <div class="product-photo">
+            {% if product.productfile_set.all|length > 0 %}
             {% for f in product.productfile_set.all %}
-            {% if forloop.first %}<a href="{{ product.get_absolute_url }}"><img alt="{{ product.name }}" src="{% image_url f size=184x184 quality=90 %}" /></a><br />{% endif %}
+                {% if forloop.first %}<a href="{{ product.get_absolute_url }}"><img alt="{{ product.name }}" src="{% image_url f size=160x160 quality=90 %}" /></a><br />{% endif %}
             {% endfor %}
+            {% else %}
+                <a href="{{ product.get_absolute_url }}"><img alt="{{ product.name }}" src="/plugin-media/products/images/default.jpg" /></a><br />
+            {% endif %}
+        </div>
+        <div class="product-description">
             <h4><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h4>
             <p>{% if product.summary %}
-                {{ product.summary|truncatewords_html:"6"|safe }}
+                {{ product.summary|truncatewords_html:"6"|striptags|safe }}
                 {% else %}
-                {{ product.description|truncatewords_html:"6"|safe }}
+                {{ product.description|truncatewords_html:"6"|striptags|safe }}
                 {% endif %}</p>
         </div>
     </div><!-- /product-item -->
-</div>
+</div>​
