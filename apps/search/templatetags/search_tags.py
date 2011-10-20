@@ -18,7 +18,7 @@ class SearchResultNode(IncludeNode):
         try:
             result = self.result.resolve(context)
             result_object = result.object
-            var_name = result_object._meta.verbose_name.replace(' ', '_')
+            var_name = result_object._meta.verbose_name.replace(' ', '_').lower()
             if var_name == 'photo_set':
                 #special case since Image and PhotoSet share the same app.
                 template_name = "photos/photo-set/search-result.html"
@@ -29,7 +29,7 @@ class SearchResultNode(IncludeNode):
             except TemplateDoesNotExist:
                 #load the default search result template
                 t = get_template("search/search-result.html")
-            
+                
             context.update({
                 "result": result,
                 var_name: result_object,
