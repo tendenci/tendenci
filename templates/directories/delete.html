@@ -10,7 +10,7 @@
         {% trans "Are you sure you want to permanently delete this directory?" %}
     </div>
     <div class="info" style="margin: 10px 0px 10px 0px;">
-        <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline trans "Untitled" %}</a></h2>
+        <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline "Untitled" %}</a></h2>
         {% if directory.logo %} 
             <div class="directory-image"><img src="{{ MEDIA_URL }}{{ directory.logo }}" alt="{% firstof directory.headline 'Untitled' %}" /></div>
         {% endif %}
