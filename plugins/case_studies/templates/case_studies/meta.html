@@ -1,0 +1,83 @@
+{% load case_study_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load category_tags %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% has_perm user case_studies.change_casestudy case_study as can_edit %}
+{% has_perm user case_studies.delete_casestudy case_study as can_delete %}
+{% get_category_for_object case_study as category %}
+{% get_sub_category_for_object case_study as sub_category %}
+{% tags_hash_tags case_study as hash_tags %}
+{% tags_strip_hash case_study as nonhash_tags %}
+
+<div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+    <div class="meta-left">
+        {% if nonhash_tags or hash_tags %}
+        <div class="tags">
+            {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
+            {% for tag in nonhash_tags %}
+                <a href="{% url case_study.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            
+            {% if hash_tags and can_edit %}
+            {% for tag in hash_tags %}
+                {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url case_study.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+            <div class="submitted">{% blocktrans with case_study.create_dt|date:"long" as create_date %}Created on {{ create_date }}
+            by:{% endblocktrans %} <a href="{{ case_study.creator.get_absolute_url }}">
+            {% if case_study.creator.first_name %}{{ case_study.creator.first_name }} {{ case_study.creator.last_name }}
+            {% else %}
+            {{ case_study.creator }}
+            {% endif %}</a>
+            </div>
+            <div class="submitted">{% blocktrans with case_study.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
+            by:{% endblocktrans %} <a href="{{ case_study.owner.get_absolute_url }}">
+            {% if case_study.owner.first_name %}{{ case_study.owner.first_name }} {{ case_study.owner.last_name }}
+            {% else %}
+            {{ case_study.owner }}
+            {% endif %}</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="meta-right">
+        <a class="share-link" >{% trans "Share" %}</a>
+    </div>
+    
+</div>
+{% if can_edit %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ case_study.obj_perms }}</li>
+        <li>{{ case_study.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ case_study.pk }}&source={{ case_study.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url admin:case_studies_casestudy_change case_study.pk %}?next={{ request.path }}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                {% if can_delete %}
+                <li>
+                    <a class="delete" href="{% url admin:case_studies_casestudy_delete case_study.pk %}">{% trans "Delete" %}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div> 
+{% endif %}
