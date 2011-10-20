@@ -11,9 +11,6 @@
     </div>
     <div class="info" style="margin: 10px 0px 10px 0px;">
         <h2><a href="{{ job.get_absolute_url }}">{% firstof job.title "Untitled" %}</a></h2>
-        {% if job.logo %} 
-            <div class="job-image"><img src="{{ MEDIA_URL }}{{ job.logo }}" alt="{% firstof job.title 'Untitled' %}" /></div>
-        {% endif %}
         <div style="margin: 10px 0px 10px 0px;">
             {{ job.description|striptags|safe }}
         </div>
