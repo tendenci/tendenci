@@ -27,7 +27,14 @@
                 <th>Code</th><th>Value</th><th>Uses</th><th>Cap</th><th>Status</th><th>Edit</th>
             </tr>
     {% for discount in discounts %}	
-		{% search_result discount %}
+		<tr>
+            <td class="left">{{ discount.discount_code }}</td>
+            <td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ discount.value }}</td>
+            <td>{{ discount.num_of_uses }}</td>
+            <td>{{ discount.cap }}</td>
+            <td>{% discount_expiration discount %}</td>
+            <td>{% discount_options request.user discount %}</td>
+        </tr>
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
