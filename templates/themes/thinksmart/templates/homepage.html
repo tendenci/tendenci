@@ -33,15 +33,13 @@
             {% list_stories as rotator_list limit=6 tags="rotator" %}
             {% if rotator_list %}
                 {% for story in rotator_list %}
-                {% if story.image %}
                 <div class="story story-{% cycle "even" "odd" %}">
-                  <div class="story-image"><a href="{{ story.full_story_link }}"><img width="954" height="376" src="{% image_url story.image size=954x376 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
+                  <div class="story-image"><a href="{{ story.full_story_link }}"><img width="954" height="376" src="{% image_url story.photo size=954x376 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
                     <div class="story-text">
                         <h2 class="headline"><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
                         <div class="story-summary">{{ story.title|striptags|truncatewords_html:"12" }} | <span class="read-more"><a href="{{ story.full_story_link }}">{% trans "Read More" %}</a></span></div>
                     </div>
                 </div>
-                {% endif %}
                 {% endfor %}
             {% else %}
                 <div class="story story-even">
