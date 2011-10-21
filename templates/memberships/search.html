@@ -44,25 +44,8 @@
     <div class="memberships-wrap">
 
     {% for member in members %}
-        {% with member.object as member %}
-        <div class="membership-wrap-search">
-
-            <div><a href="{% url profile member.user %}">
-                {{ member.user.first_name }} {{ member.user.last_name }}</a></div>
-            <div>{{ member.membership_type.name}}</div>
-
-            <!-- <table class="some-details">
-                <tr>
-                    <td><span class="company-label">Company</span>{{ member.entry_items.company }}</td>
-                    <td>{{ member.user.email }}</td>
-                </tr>
-                <tr>
-                    <td><span class="position-label">Position</span>{{ member.entry_items.title }}</td>
-                    <td>{{ member.entry_items.work_phone }}</td>
-                </tr>
-            </table> -->
-
-        </div>
+        {% with member.object as membership %}
+            {% include 'memberships/search-result.html' %}
         {% endwith %}
     {% empty %}
         <div>{% trans "0 Members Found" %}</div>
