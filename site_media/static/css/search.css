@@ -175,12 +175,12 @@ p.search-adv-header {
 /* VIDEOS */
 
 .video-wrap {
-    padding: 10px;
+    padding: 10px 10px 0px 10px;
 }
 
 .video-wrap .video-img {
     float: left;
-    padding-right: 5px;
+    padding-right: 10px;
 }
 
 .video-wrap .video-info {
