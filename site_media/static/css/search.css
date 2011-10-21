@@ -301,3 +301,30 @@ p.search-adv-header {
     padding: 5px;
     margin-bottom: 10px;
 }
+
+/* CORPORATE MEMBERSHIPS */
+clear-left{
+    clear: left;
+}
+.corpmember-box .corpmember-left{
+    width: 65%;
+}
+.corpmember-box .corpmember-right{
+    width: 35%;
+}
+.corpmember-box .float-left{
+    float: left;
+}
+.corpmember-box .corpmember-box-header{
+    font-size: 1.4em;
+    background-color: #f2f2f2;
+    padding: 3px;
+}
+.corpmember-box .corpmember-box-body{
+    margin-bottom: 1em;
+    padding: 0 2em;
+    line-height: 1.5em;
+}
+.corpmember-box .label{
+    font-weight: bold;
+}

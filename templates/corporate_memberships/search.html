@@ -11,10 +11,9 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 <style>
-	.t-search .corpmember-box{
-		border: 1px solid silver;
-		margin: 1em 0;
-	}
+    .wrap-search-item{
+        border: 1px solid #CCC;
+    }
 	.clear-left{
 		clear: left;
 	}
@@ -27,7 +26,7 @@
 	.t-search .float-left{
 	    float: left;
 	}
-	.t-search .corpmember-box-header{
+    .t-search .corpmember-box-header{
 		font-size: 1.4em;
 		background-color: #f2f2f2;
 		padding: 3px;
@@ -43,8 +42,9 @@
 	.t-search .search-form input[type="text"]{
 		width: 500px;
 	}
-	
-	
+	.t-search .search-form{
+        margin-bottom: 10px;
+    }
 </style>
 {% endblock %}
 
@@ -59,82 +59,8 @@
 {% autopaginate corp_members 10 %}
 <div class="corpmembers-wrap">
     {% for corp_memb in corp_members %}
-	    {% with corp_memb.object as corp_memb %}
-			
-	    	<div class="corpmember-box">
-		    	<div class="corpmember-box-header"><a href="{% url corp_memb.view corp_memb.pk %}">{{ corp_memb.name }}</a></div>
-		    	<div class="options options-search" align="right">
-	                <div class="quick-options">
-						{% corpmemb_options request.user corp_memb %} 	       
-	                </div>
-				</div>
-		    	<div class="corpmember-box-body">
-			    	<div class="float-left label">{% trans "Corporate Address: " %}</div>
-			    	<div class="float-left">
-				    	{% if corp_memb.address or corp_memb.address2 %}
-				    		{{ corp_memb.address }} {{ corp_memb.address2 }} <br />
-				    	{% endif %}
-				    	
-				    	{% if corp_memb.city %}{{ corp_memb.city }}{% endif %} {% if corp_memb.state %}{{ corp_memb.state }}{% endif %} 
-				    	{% if corp_memb.zip %}{{ corp_memb.zip }}{% endif %} {% if corp_memb.country %}{{ corp_memb.country }}{% endif %}
-				    	
-				    	
-			    	</div>
-			    	<div class="clear-left"></div>
-			    	
-			    	<div class="corpmember-left float-left">
-			    		<div><span class="label">{% trans "Corporate Phone:" %}</span> {% if corp_memb.phone %}{{ corp_memb.phone }}{% endif %}</div>
-			    		<div><span class="label">{% trans "Website:" %}</span> {% if corp_memb.url %}{{ corp_memb.url|safe|urlize }}{% endif %}</div>
-			    		<div><span class="label">{% trans "Member Type:" %}</span> {{ corp_memb.corporate_membership_type.name }}
-			    		{% if corp_memb.invoice %}
-			    			- {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corp_memb.invoice.total }}
-			    		{% endif %}
-			    		</div>
-			    		<div><a href="{% url membership.application_details_corp_pre corp_memb.corp_app.memb_app.slug corp_memb.id %}">{% trans "Join under this corporation" %}</a></div>
-			    	</div>
-			    	
-			    	<div class="corpmember-right float-left">
-			    		<div><span class="label">{% trans "Join Date:" %}</span> {{ corp_memb.join_dt|date:'Y-n-j' }}</div>
-			    		<div><span class="label">{% trans "Expiration Date:" %}</span> {% if corp_memb.expiration_dt %}
-			    							{{ corp_memb.expiration_dt|date:'Y-n-j' }}
-			    							{% else %}
-			    							{% trans "Never Expire" %}
-			    							{% endif %}
-			    		</div>
-			    		{% with corp_memb.get_pending_renewal_entry as pending_renewal_entry %}
-			    		{% if pending_renewal_entry %}
-			    			<div class="pending-info-box">
-			    			{% blocktrans with pending_renewal_entry.create_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
-			    			{% trans "Status of Renewal: " %}<span class="status-pending">{{ pending_renewal_entry.status_detail }}</span><br />
-			    			{% if is_admin %}
-			    				<b>{% trans "Admin" %}</b>: <a href="{% url corp_memb.approve corp_memb.pk %}">{% trans "Approve / Disapprove" %}</a>
-			    			{% endif %}
-			    			</div>
-			    		{% else %}
-			    			{% if is_admin and corp_memb.is_join_pending %}
-			    				<div class="pending-info-box">
-			    				<b>{% trans "Admin" %}</b>: <a href="{% url corp_memb.approve corp_memb.pk %}">{% trans "Approve / Disapprove" %}</a>
-			    				</div>
-			    			{% endif %}
-			    			
-				    		{% if corp_memb.can_renew %}
-				    			<a href="{% url corp_memb.renew corp_memb.id %}" style="background-color:yellow;">{% trans "Renew" %}</a>
-				    		{% endif %}
-			    		{% endif %}
-			    		
-			    		{% endwith %}
-			    		
-			    		
-			    	</div>
-			    	<div class="clear-left"></div>
-		    	</div>
-		    	
-		    	<!-- delete-corp_memb form -->
-	            <form name="corp-memb-delete" method="POST" action="{% url corp_memb.delete corp_memb.pk %}">{% csrf_token %}
-	                <input type="hidden" name="action" value="delete">
-	            </form>
-            
-			</div>
+	    {% with corp_memb.object as corporate_membership %}
+			{% include 'corporate_memberships/search-result.html' %}
 		{% endwith %}	
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
