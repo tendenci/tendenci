@@ -1,22 +1,22 @@
 {% load theme_tags %}
-    <div class="container">
-        <section id="header" class="no-band">
-            <header>
-                <div id="logo"><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}<!--<img src="{{ THEME_URL }}media/images/logo-green.png" />--></a></div>
-                <div id="search-box">
-                    <form method="get" action="/search/">
-                        <input name="q" id="q" type="text" placeholder="Search" />
-                        <input type="submit" name="Go" value="go" id="search-box-submit" />
-                    </form>
-                </div>
-                <div id="phone">
-                    <span>123-456-7890</span>
-                </div>
-            </header>
-        </section><!-- /#header -->
-    </div>
-    <div class="container">
-        <section id="nav" class="band">
-            <nav class="clearfix">{% theme_include "nav.html" %}</nav>
-        </section><!-- /#nav -->
-    </div>
+<div class="container">
+    <section id="header" class="no-band">
+        <header>
+            <div id="logo"><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}<!--<img src="{{ THEME_URL }}media/images/logo-green.png" />--></a></div>
+            <div id="search-box">
+                <form method="get" action="/search/">
+                    <input name="q" id="q" type="text" placeholder="Search" />
+                    <input type="submit" name="Go" value="go" id="search-box-submit" />
+                </form>
+            </div>
+            <div id="phone">
+                <span>123-456-7890</span>
+            </div>
+        </header>
+    </section><!-- /#header -->
+</div>
+<div class="container">
+    <section id="nav" class="band">
+        <nav class="clearfix">{% theme_include "nav.html" %}</nav>
+    </section><!-- /#nav -->
+</div>

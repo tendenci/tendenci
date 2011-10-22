@@ -1,0 +1,253 @@
+/*   
+Theme Name: PR Firm
+Theme URI: http://tendenci.com/
+Description: Custom theme design for Tendenci
+Designer: Trevor West
+Designer URI: http://schipul.com
+Developer: Eloy Zuniga, Jr.
+Developer URI: http://schipul.com/eloy/
+Version: 1.0
+*/
+
+// ------------------------------
+//  LESS CSS Styles
+// ------------------------------
+@primary: #ddd;
+@secondary: #102133;
+@complimentary: #f99; //#96A518;
+
+@background: @secondary;
+@text: #333;
+
+@alink: darken(@complimentary, 2%);
+@ahover: darken(@alink, 10%);
+@avisited: darken(@alink, 20%);
+
+@nav-height: 28px;
+
+@column: 60px;
+@base-width: (@column + 20)*12;
+
+.grid(@count: 1){ margin: 0 10px 0 10px; width: @count*(@column+20)-20; float: left; /*background-color: #aaa;*/ }
+.center() { width: @base-width; margin: 0 auto;}
+.gradient-bg(@color, @alpha: 10) {
+   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(@color), to(darken(@color, @alpha)));
+   background-image: -webkit-linear-gradient(top, @color, darken(@color, @alpha));
+   background-image:    -moz-linear-gradient(top, @color, darken(@color, @alpha));
+   background-image:     -ms-linear-gradient(top, @color, darken(@color, @alpha));
+   background-image:      -o-linear-gradient(top, @color, darken(@color, @alpha));
+}
+
+/* ------------------------------
+    Reset HTML 
+------------------------------ */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code, del, dfn, img, ins, kbd, q, samp,
+small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, #menu, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, #menu, section {
+  display: block;
+}
+
+/* ------------------------------
+    Base HTML Elements 
+------------------------------ */
+body { background-color: @background; font-family: Helvetica, Arial, "sans-serif"; font:13px/1.231 sans-serif; *font-size:small; color: @text; margin: 0; }
+
+h1, h1 a { font-size: 32px; line-height: 34px; text-decoration: none; font-weight: bold; margin-bottom: 10px; }
+h2, h2 a { font-size: 24px; line-height: 26px; text-decoration: none; font-weight: bold; margin-bottom: 10px; }
+h3, h3 a { font-size: 20px; line-height: 22px; text-decoration: none; font-weight: bold; margin-bottom: 6px; }
+h4, h4 a,
+h5, h5 a,
+h6, h6 a { font-size: 16px; line-height: 18px; text-decoration: none; font-weight: bold; margin-bottom: 6px; }
+
+a { color: @alink; }
+a:hover { color: @ahover; }
+a:visited, a:active { color: @avisited; }
+
+p { margin-bottom: 10px; line-height: 18px; }
+
+ul, ol { margin: 0 0 10px 24px; }
+ol { list-style-type: decimal; }
+
+select, input, textarea, button { font:99% sans-serif; }
+pre, code, kbd, samp { font-family: monospace, sans-serif; margin-bottom: 10px; padding: 8px; }
+
+small { font-size: 85%; }
+strong, th { font-weight: bold; }
+
+td, td img { vertical-align: top; } 
+
+sub { vertical-align: sub; font-size: smaller; }
+sup { vertical-align: super; font-size: smaller; }
+
+blockquote { margin: 0 0 10px 20px; }
+
+/* ------------------------------
+    Base Layout 
+------------------------------ */
+.container { width: 100%; margin: 0; padding: 0; }
+.primary { background-color: @primary; }
+.secondary { background-color: @secondary; }
+
+
+#header { .center; }
+header { position: relative; margin: 10px 0;
+    #logo { .grid(4);
+        img { background-color: #ccc; width: 215px; height: 100px; float: left; }
+    }
+    #login { .grid(8); margin-bottom: 44px; height: 28px; padding: 0; text-align: right;
+        form {display: block;}
+        input[type="text"], input[type="password"] { font-size: 14px; width: 120px; }
+        input[type="submit"] { font-size: 12px; font-weight: bold; background-color: @complimentary; padding: 4px 10px; border: 0; }
+        span { color: @primary; }
+    }
+}
+
+/* Standard Nav organization for a dropdown
+The ul li a line-height and the top of ul li ul need to match
+colors, heights, and borders can be overridden */
+nav {display: block;
+    ul { list-style: none;
+        li { float: left; position: relative;
+            a { line-height: 40px; padding: 0 12px; background-color: transparent; display: block; color: @primary; 
+                &:hover {color: @primary }
+            }
+            ul { display: none; float: left; margin: 0; position: absolute; top: 40px; width: 148px; z-index: 99999;
+                a { height: auto; line-height: 40px; width: 120px; }
+                ul { left: 100%; top: 0; }
+            }
+        }
+        li:hover > a, a:focus { /* background-color: transparent; */ }
+        li:hover > ul { display: block; }
+    }
+}
+
+nav { .grid(8); 
+    ul { margin: 0; display: inline; float: right;
+        li { border-right: solid 1px @primary; text-align: left;
+            a { line-height: @nav-height; text-decoration: none; color: @primary; 
+                &:hover { background-color: @primary; color: @complimentary; }
+            }
+            ul { top: @nav-height; 
+                a { line-height: @nav-height; background-color: @secondary; }
+            }
+        }
+        li:last-child {
+            border-right: none;
+        }
+    }
+}
+
+#footer { .center; }
+footer { color: @primary; font-size: 13px; padding: 10px 0;
+    h2 { font-size: 20px; }
+    #sponsors { .grid(8);
+        #sponsor-items { padding: 10px 0;}
+        img { background-color: #DDD; width: 140px; height: 80px; margin-right: 10px; }
+    }
+    #contact-us { .grid(4);
+        img { background-color: #DDD; width: 30px; height: 29px; margin: 10px 0 10px 0; }
+        form { text-align: right; }
+        input[type="text"] { font-size: 14px; width: 190px; }
+        input[type="submit"] { font-size: 12px; font-weight: bold; background-color: @complimentary; padding: 4px 10px; border: 0; }
+
+    }
+    #footer-links {
+        ul { padding: 0; margin: 0;
+            li { list-style-type: none; display: inline; border-right: 1px solid @complimentary; padding: 0 7px 0 5px;
+                a { text-decoration: none; }
+            }
+            li:last-child { border-right: none; }
+        }
+    }
+    .left-border-box { padding-left: 20px; border-left: 2px dashed @primary; }
+}
+
+/* ------------------------------
+    Homepage Content
+------------------------------ */
+#rotator { .center; padding: 10px 0; position: relative; margin-bottom: 20px; }
+#stories { .grid(12); }
+.story {
+    position: relative;
+    margin-bottom: 24px;
+    img { width: 100%; height: 544px; background-color: @primary; }
+    .blurb { position: absolute; bottom: 0; right: 0; background-color: fadeout(#fff,25); padding: 10px; width: 420px; height: 120px;
+        h2 { font-size: 24px; margin: 0; }
+        p { margin: 5px 0 0 0; }
+    }
+    .story-label { height: 0; display: none; }
+}
+#stories-pager { position: absolute; right: 10px; bottom: -8px; width: 440px; background-color: darken(@complimentary, 10); border-top: 1px dashed @secondary; z-index: 990;
+    a { width: 110px; display: block; color: @secondary; padding: 2px 0; float:left; text-align: center; background-color: darken(@complimentary, 10); text-decoration: none; font-size: 14px; }
+    a.activeSlide { background-color: @complimentary; }
+}
+
+#home-content { .center; padding: 10px 0;
+    h2 { color: darken(@complimentary, 16); font-size: 20px; margin: 0 0 10px 0; }
+    #about-info { .grid(4); }
+    #about-img { .grid(4);
+        img { width: 300px; height: 150px; background-color: #DDD; }
+    }
+    .separator { .grid(8); margin: 10px; border-bottom: dashed 2px @secondary; }
+    #news-featured { .grid(4); }
+    #news-others { .grid(4);
+        ul#news-items { list-style-type: square; list-style-position: inside; }
+        li { margin-bottom: 4px; }
+    }
+    .right-border-box { padding-right: 20px; border-right: 2px dashed @secondary; }
+}
+
+#upcoming-events { .grid(4);
+    ul { margin: 0 0 10px 0; }
+    li { list-style-type: none; margin-bottom: 10px;
+        .numeral { padding: 5px; border: 2px solid #aaa; float: left; text-align: center; font-weight: bold; font-size: 16px; }
+        .month { font-size: 16px; margin-left: 46px; }
+        .month a, .numeral a { color: @secondary; text-decoration: none; }
+        .blurb { margin-left: 46px; }
+    }
+    .cta-btn a { display: block; .gradient-bg(@complimentary, 15); color: #fff; font-weight: bold; padding: 14px; margin-bottom: 10px; position: relative; text-decoration: none;
+        span { position: absolute; top: -12px; right: 10px; font-size: 50px; font-weight: normal;}
+    }
+}
+
+/* ------------------------------
+    Sidebar 
+------------------------------ */
+#sidebar { .grid(3);
+    #upcoming-events { width: 100%; margin: 0; float: none; }
+}
+
+/* ------------------------------
+    Body Content
+------------------------------ */
+#body-content { .center; background-color: #fff; padding: 20px 0;
+    .content-middle { .grid(9); float: right; }
+    .content-wide { .grid(12); }
+}
+
+/* ------------------------------
+    Extras 
+------------------------------ */
+a.readmore { font-style: italic; }
+
+.clear { clear: both; }
+.clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; visibility: hidden; }
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }
+
