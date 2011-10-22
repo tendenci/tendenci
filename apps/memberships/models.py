@@ -1238,10 +1238,10 @@ class AppEntry(TendenciBaseModel):
             # send "approved" notification
             Notice.send_notice(
                 request = request,
-                emails=entry.email,
+                emails=self.email,
                 notice_type='approve',
                 membership=self.membership,
-                membership_type=entry.membership_type,
+                membership_type=self.membership_type,
             )
 
             # log entry approval
