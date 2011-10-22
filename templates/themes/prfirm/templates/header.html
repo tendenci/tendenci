@@ -1,14 +1,25 @@
 {% load theme_tags %}
-
-<header>
-    <div id="login">
-        <input name="username" type="text" />
-        <input name="password" type="password" />
-        <input type="submit" value="LOGIN" />
-    </div>
-    <div id="logo">
-        <img src="{{ THEME_URL }}media/images/logo.jpg" />
-    </div>
-    <div id="nav">{% theme_include "nav.html" %}</div>
-    <div class="clear" />
-</header>
+<div class="container">
+    <section id="header">
+        <header>
+            <div id="logo">
+                <a href="/"><img src="http://media.tendenciapp.com/images/logo.jpg" /></a>
+            </div>
+            <div id="login">
+                {% if request.user.is_authenticated %}
+                <span>Logged in as <a href="/profiles/">{{ request.user }}</a> | <a href="/accounts/logout/">Logout</a></span>
+                {% else %}
+                <form method="post" action="/accounts/login/">{% csrf_token %}
+                    <input id="id_username" value="Username" onfocus="clearDefault(this)" type="text" name="username" maxlength="30" />
+                    <input value="password" onfocus="clearDefault(this)" type="password" name="password" id="id_password"  />
+                    <input name="submit" type="submit" value="LOGIN" />
+                </form>
+                {% endif %}
+            </div>
+            <div id="nav">
+                <nav>{% theme_include "nav.html" %}</nav>
+            </div>
+            <div class="clear" />
+        </header>
+   </section><!-- /#header -->
+</div>
