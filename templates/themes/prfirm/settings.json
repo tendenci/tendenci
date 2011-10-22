@@ -1,0 +1,44 @@
+[
+  {
+    "name": "twitter",
+    "label": "Twitter Username",
+    "description": "The Twitter Username to link on the site template.",
+    "data_type": "string",
+    "default_value": "",
+    "input_type": "text",
+    "value": "",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  },
+    {
+    "name": "facebook",
+    "label": "Facebook URL",
+    "description": "The Facebook URL to link on the site template.",
+    "data_type": "string",
+    "default_value": "",
+    "input_type": "text",
+    "value": "",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  },
+    {
+    "name": "linkedin",
+    "label": "LinkedIn URL",
+    "description": "The LinkedIn URL to link on the site template.",
+    "data_type": "string",
+    "default_value": "",
+    "input_type": "text",
+    "value": "",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  }
+]
