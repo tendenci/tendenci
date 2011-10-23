@@ -99,16 +99,15 @@ def request_new(request, template_name="help_files/request_new.html"):
         form = RequestForm(request.POST)
         if form.is_valid():
             instance = form.save()
-            if not is_admin(request.user):
-                # send notification to administrators
-                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
-                if recipients:
-                    if notification:
-                        extra_context = {
-                            'object': instance,
-                            'request': request,
-                        }
-                        notification.send_emails(recipients,'help_file_requested', extra_context)
+            # send notification to administrators
+            recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': instance,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'help_file_requested', extra_context)
             messages.add_message(request, messages.INFO, 'Thanks for requesting a new help file!')
             return HttpResponseRedirect(reverse('help_files'))
     else:
