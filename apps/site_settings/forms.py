@@ -5,6 +5,7 @@ from django.core.cache import cache
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.forms.models import model_to_dict
+from django.contrib.contenttypes.models import ContentType
 
 from site_settings.utils import (delete_setting_cache, cache_setting,
     delete_all_settings_cache, get_form_list, get_box_list)
@@ -48,6 +49,7 @@ def save_settings_form(self):
                 uploaded_file.owner_username = self.user.username
                 uploaded_file.creator = self.user
                 uploaded_file.creator_username = self.user.username
+                uploaded_file.content_type = ContentType.objects.get(app_label="site_settings", model="setting")
                 uploaded_file.file.save(field_value.name, File(field_value))
                 uploaded_file.save()
                 field_value = uploaded_file.pk
@@ -108,9 +110,18 @@ def build_settings_form(user, settings):
                     fields.update({"%s" % setting.name : forms.ChoiceField(**options) })
             
         elif setting.input_type == 'file':
+            from files.models import File as TendenciFile
+            try:
+                tfile = TendenciFile.objects.get(pk=setting.value)
+                if tfile.file.name.lower().endswith(('.jpg', '.jpe', '.png', '.gif', '.svg')):
+                    file_display = '<img src="/files/%s/80x80/crop/">' % tfile.pk
+                else:
+                    file_display = tfile.file.name
+            except TendenciFile.DoesNotExist:
+                file_display = "No file"
             options = {
                 'label': setting.label,
-                'help_text': setting.description,
+                'help_text': "%s<br> Current File: %s" % (setting.description, file_display),
                 'initial': setting.value,
                 'required': False
             }
