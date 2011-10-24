@@ -283,7 +283,13 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         raise Http403
     
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
-        
+
+    for field in form_for_form.fields:
+        try:
+            form_for_form.fields[field].initial = request.GET.get(field, '')
+        except:
+            pass
+
     if request.method == "POST":
         if form_for_form.is_valid():
             entry = form_for_form.save()
