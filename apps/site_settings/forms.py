@@ -112,7 +112,10 @@ def build_settings_form(user, settings):
         elif setting.input_type == 'file':
             from files.models import File as TendenciFile
             try:
-                tfile = TendenciFile.objects.get(pk=setting.value)
+                try: val = int(setting.value)
+                except: val = 0
+                
+                tfile = TendenciFile.objects.get(pk=val)
                 if tfile.file.name.lower().endswith(('.jpg', '.jpe', '.png', '.gif', '.svg')):
                     file_display = '<img src="/files/%s/80x80/crop/">' % tfile.pk
                 else:
