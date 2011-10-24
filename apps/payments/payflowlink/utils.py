@@ -45,6 +45,7 @@ def prepare_payflowlink_form(request, payment):
 
 def payflowlink_thankyou_processing(request, response_d, **kwargs):
     from django.shortcuts import get_object_or_404
+    response_d = dict(map(lambda x: (x[0].lower(), x[1]), response_d.items()))
 
     paymentid = response_d.get('custid', 0)
     try:
@@ -105,7 +106,7 @@ def payment_update_payflowlink(request, response_d, payment, **kwargs):
     payment.ship_to_zip = response_d.get('ziptoship', '')
     payment.ship_to_country = response_d.get('countrytoship', '')
     
-    result = response_d.get('respmsg', '')
+    result = response_d.get('result', '')
     respmsg = (response_d.get('respmsg', '')).lower()
     payment.response_reason_text = respmsg
     

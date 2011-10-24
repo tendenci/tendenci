@@ -10,7 +10,7 @@ from payments.payflowlink.utils import payflowlink_thankyou_processing
 from payments.utils import log_silent_post
 
 @csrf_exempt
-def thank_you(request, payment_id, template_name='payments/receipt.html'):
+def thank_you(request, template_name='payments/receipt.html'):
     payment, processed = payflowlink_thankyou_processing(request, dict(request.POST.items()))
 
     return render_to_response(template_name,{'payment':payment}, 
