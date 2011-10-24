@@ -25,9 +25,9 @@ def clean_settings_form(self):
                 if field_value != ' ':
                     if not field_value.isdigit():
                         raise forms.ValidationError("'%s' must be a whole number" % setting.label)
-            if setting.data_type == "file":
-                if not isinstance(field_value, File):
-                    raise forms.ValidationError("'%s' must be a file" % setting.label)
+#            if setting.data_type == "file":
+#                if not isinstance(field_value, File):
+#                    raise forms.ValidationError("'%s' must be a file" % setting.label)
         except KeyError:
             pass
     return self.cleaned_data
