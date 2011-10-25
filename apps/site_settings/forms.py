@@ -25,9 +25,10 @@ def clean_settings_form(self):
                 if field_value != ' ':
                     if not field_value.isdigit():
                         raise forms.ValidationError("'%s' must be a whole number" % setting.label)
-#            if setting.data_type == "file":
-#                if not isinstance(field_value, File):
-#                    raise forms.ValidationError("'%s' must be a file" % setting.label)
+            if setting.data_type == "file":
+                if field_value:
+                    if not isinstance(field_value, File):
+                        raise forms.ValidationError("'%s' must be a file" % setting.label)
         except KeyError:
             pass
     return self.cleaned_data
@@ -41,18 +42,24 @@ def save_settings_form(self):
     for setting in self.settings:
         try:
             field_value = self.cleaned_data[setting.name]
+            
             if setting.input_type == "file":
-                # save a file object and set the value at that file object's id.
-                from files.models import File as TendenciFile
-                uploaded_file = TendenciFile()
-                uploaded_file.owner = self.user
-                uploaded_file.owner_username = self.user.username
-                uploaded_file.creator = self.user
-                uploaded_file.creator_username = self.user.username
-                uploaded_file.content_type = ContentType.objects.get(app_label="site_settings", model="setting")
-                uploaded_file.file.save(field_value.name, File(field_value))
-                uploaded_file.save()
-                field_value = uploaded_file.pk
+                if field_value:
+                    # save a file object and set the value at that file object's id.
+                    from files.models import File as TendenciFile
+                    uploaded_file = TendenciFile()
+                    uploaded_file.owner = self.user
+                    uploaded_file.owner_username = self.user.username
+                    uploaded_file.creator = self.user
+                    uploaded_file.creator_username = self.user.username
+                    uploaded_file.content_type = ContentType.objects.get(app_label="site_settings", model="setting")
+                    uploaded_file.file.save(field_value.name, File(field_value))
+                    uploaded_file.save()
+                    field_value = uploaded_file.pk
+                else:
+                    #retain the old file if no file is set
+                    field_value = setting.value
+                    
             if setting.value != field_value:
                 # delete the cache for all the settings to reset the context
                 key = [SETTING_PRE_KEY, 'all.settings']
@@ -125,7 +132,7 @@ def build_settings_form(user, settings):
             options = {
                 'label': setting.label,
                 'help_text': "%s<br> Current File: %s" % (setting.description, file_display),
-                'initial': setting.value,
+                'initial': tfile.file,
                 'required': False
             }
             if setting.client_editable:
