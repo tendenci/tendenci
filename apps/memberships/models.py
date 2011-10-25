@@ -941,7 +941,7 @@ class AppEntry(TendenciBaseModel):
         expire_dt = None
         if self.corporate_membership_id:
             try:
-                expire_dt = CorporateMembership.objects.get(pk=self.corporate_membership_id).corp_memb.expiration_dt
+                expire_dt = CorporateMembership.objects.get(pk=self.corporate_membership_id).expiration_dt
             except CorporateMembership.DoesNotExist:
                 pass
 
