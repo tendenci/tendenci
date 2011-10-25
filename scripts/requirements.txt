@@ -34,6 +34,9 @@ createsend>=0.3.2
 celery>=2.2.4
 django-celery>=2.2.4
 django-kombu>=0.9.4
+mimeparse>=0.1.3
+python-dateutil>=1.5
+django-tastypie>=0.9.9
 
 # git repositories
 git+http://github.com/notanumber/xapian-haystack.git
