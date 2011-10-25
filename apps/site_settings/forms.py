@@ -100,15 +100,19 @@ def build_settings_form(user, settings):
         elif setting.input_type == 'select':
             if setting.input_value == '<form_list>':
                 choices = get_form_list(user)
+                required = False
             elif setting.input_value == '<box_list>':
                 choices = get_box_list(user)
+                required = False
             else:
                 choices = tuple([(s,s)for s in setting.input_value.split(',')])
+                required = True
             options = {
                 'label': setting.label,
                 'help_text': setting.description,
                 'initial': setting.value,
                 'choices': choices,
+                'required': required,
             }
             if setting.client_editable:
                 fields.update({"%s" % setting.name : forms.ChoiceField(**options) }) 
