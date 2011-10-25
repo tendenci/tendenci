@@ -177,6 +177,8 @@ INSTALLED_APPS = (
     'haystack',
     'captcha',
     'south',
+    'tastypie',
+    'api_tasty',
     'forms_builder.forms',
     'pluginmanager',
     'base',
