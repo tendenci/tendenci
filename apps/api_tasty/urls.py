@@ -1,9 +1,12 @@
 from django.conf.urls.defaults import *
 
-from api_tasty.api import SettingResource
+from api_tasty.api import SafeApi, SettingResource, UserResource, DiscountResource
 
-setting_resource = SettingResource()
+api = SafeApi(api_name='v1')
+api.register(UserResource())
+api.register(SettingResource())
+api.register(DiscountResource())
 
 urlpatterns = patterns('',
-    (r'^', include(setting_resource.urls)),
+    (r'^', include(api.urls)),
 )
