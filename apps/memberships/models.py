@@ -885,7 +885,7 @@ class AppEntry(TendenciBaseModel):
 
     @property
     def hash(self):
-        return md5(str(self.pk)).hexdigest()
+        return md5(unicode(self.pk)).hexdigest()
 
     @models.permalink
     def hash_url(self):
