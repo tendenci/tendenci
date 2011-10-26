@@ -163,6 +163,7 @@ class FormForm(TendenciBaseForm):
                                     'subject_template',
                                     'email_from',
                                     'email_copies',
+                                    'send_email',
                                     ],
                         'legend': ''
                         }),
