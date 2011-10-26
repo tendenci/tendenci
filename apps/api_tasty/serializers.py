@@ -2,9 +2,8 @@ from tastypie.serializers import Serializer
 
 class SafeSerializer(Serializer):
     """
-    I should not need to create this but
-    for some reason the default format is always xml
-    which triggers errors because that lib is optional.
+    Removes the optional serializers from the available formats
+    to avoid dependency errors.
     """
     formats = ['json', 'jsonp', 'html']
     content_types = {
