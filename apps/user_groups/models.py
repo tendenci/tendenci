@@ -57,6 +57,8 @@ class Group(TendenciBaseModel):
         super(Group, self).save(force_insert, force_update)
 
     def is_member(self, user):
+        # impersonation
+        user = getattr(user, 'impersonated_user', user)
         return user in self.members.all()
 
     def add_user(self, user, **kwargs):

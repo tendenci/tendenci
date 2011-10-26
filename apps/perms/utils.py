@@ -111,6 +111,9 @@ def is_member(user):
     if not user or user.is_anonymous():
         return False
 
+    # impersonation
+    user = getattr(user, 'impersonated_user', user)
+
     if hasattr(user, 'is_member'):
         return getattr(user, 'is_member')
     else:
