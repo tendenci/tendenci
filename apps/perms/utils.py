@@ -115,7 +115,7 @@ def is_member(user):
         return getattr(user, 'is_member')
     else:
         try:
-            membership = user.memberships.get()
+            membership = user.memberships.get_membership()
             if user.is_active:
                 status = membership.status == 1
                 active = membership.status_detail.lower() == 'active'
