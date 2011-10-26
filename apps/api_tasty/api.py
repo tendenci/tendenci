@@ -8,6 +8,8 @@ from tastypie.serializers import Serializer
 from tastypie.utils import trailing_slash, is_valid_jsonp_callback_value
 from tastypie.utils.mime import determine_format, build_content_type
 
+from tastypie.authentication import Authentication
+from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource
 from tastypie.api import Api
 from tastypie import fields
@@ -59,17 +61,26 @@ class SafeApi(Api):
         return HttpResponse(content=serialized, content_type=build_content_type(desired_format))
 
 class SettingResource(ModelResource):
+    name = fields.CharField(readonly=True, attribute='name')
+    description = fields.CharField(readonly=True, attribute='description')
+    
+    def __init__(self, *args, **kwargs):
+        super(SettingResource, self).__init__(*args, **kwargs)
+    
     class Meta:
         queryset = Setting.objects.all()
         resource_name = 'setting'
         serializer = SafeSerializer()
+        authorization = Authorization()
+        fields = ['name', 'description', 'value']
+        allowed_methods = ['get', 'put']
         
 class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
         serializer = SafeSerializer()
-        fields = ['username', 'first_name', 'last_name', 'last_login']
+        fields = ['username', 'first_name', 'last_name']
         allowed_methods = ['get']
         
 class DiscountResource(ModelResource):
@@ -78,3 +89,5 @@ class DiscountResource(ModelResource):
     class Meta:
         queryset = Discount.objects.all()
         resource_name = 'discount'
+        serializer = SafeSerializer()
+        authorization = Authorization()
