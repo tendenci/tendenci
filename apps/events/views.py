@@ -1067,7 +1067,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                     
                     # update the invoice if invoice is not tendered
                     invoice = registrant.registration.invoice
-                    if not invoice.is_tendered:
+                    if invoice and not invoice.is_tendered:
                         invoice.total -= registrant.amount
                         invoice.subtotal -= registrant.amount
                         invoice.balance -= registrant.amount
