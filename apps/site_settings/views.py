@@ -20,7 +20,7 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
         raise Http404
     
     if request.method == 'POST':
-        form = build_settings_form(request.user, settings)(request.POST)
+        form = build_settings_form(request.user, settings)(request.POST, request.FILES)
         if form.is_valid():
             # this save method is overriden in the forms.py
             form.save()

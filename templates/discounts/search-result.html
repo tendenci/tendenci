@@ -1,30 +1,17 @@
 {% load discount_tags %}
-<tr>
-    <td class="left">{{ discount.discount_code }}</td>
-    <td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ discount.value }}</td>
-    <td>{{ discount.num_of_uses }}</td>
-    <td>{{ discount.cap }}</td>
-    <td>{% discount_expiration discount %}</td>
-    <td>{% discount_options request.user discount %}</td>
-</tr>
+{% load i18n %}
 
-
-<!-- <div class="wrap-search-item">
+<div class="wrap-search-item">
     <div class="search-item discount-search-item">
-        <div class="quick-options">
-        {% discount_options request.user discount %}
-        </div>
         <h2><a href="{{ discount.get_absolute_url }}">{{ discount.discount_code }}</a></h2>
         <div class="item-content">
             <div class="search-text">
-                <p>Value: ${{ discount.value }}</p>
-                <p>
-                    Available: {% if discount.available %}Yes{% else %}No{% endif %}
-                </p>
-                <p>
-                    Duration: {{ discount.start_dt }} to {{ discount.end_dt }}
-                </p>
+                <p>Value: {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ discount.value }}</p>
+                <p>Uses: {{ discount.num_of_uses }}</p>
+                <p>Cap: {{ discount.cap }}</p>
+                <p>Status: {% discount_expiration discount %}</p>
             </div>
         </div>
     </div>
-</div> -->
+    {% include 'discounts/meta.html' %}
+</div>

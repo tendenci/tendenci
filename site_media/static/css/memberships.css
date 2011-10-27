@@ -27,10 +27,11 @@
     margin-bottom: 10px;
 }
 
+.t .wrap-search-item {
+    border: 1px solid #CCC;
+}
+
 .t .memberships-wrap .membership-wrap-search {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 10px;
 	position: relative;
 	background-color: white;
 }

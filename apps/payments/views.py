@@ -55,6 +55,10 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
             from payments.firstdata.utils import prepare_firstdata_form
             form = prepare_firstdata_form(request, payment)
             post_url = settings.FIRSTDATA_POST_URL
+        elif merchant_account == 'paypalpayflowlink':
+            from payments.payflowlink.utils import prepare_payflowlink_form
+            form = prepare_payflowlink_form(request, payment)
+            post_url = settings.PAYFLOWLINK_POST_URL
         else:   # more vendors 
             form = None
             post_url = ""

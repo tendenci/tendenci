@@ -12,12 +12,6 @@ Version: 1.0
 // ------------------------------
 //  LESS CSS Styles
 // ------------------------------
-@background: #424242;
-@bandtext: #f3f3f3;
-@text: #333;
-@main: #356FD1; // Blue
-@dashes: #999;
-
 @base: spin(@main, 0); @logo: "blue";
 //@base: spin(@main, 60); @logo: "purple";
 //@base: spin(@main, 110); @logo: "pink";
@@ -32,11 +26,18 @@ Version: 1.0
 @bandborder: darken(@base, 15%);
 @no-band: lighten(@base, 46%);
 
+@background: #424242;
+@text: #333;
+
 @alink: darken(@base, 10%);
 @ahover: darken(@alink, 15%);
 @avisited: darken(@alink, 25%);
 
 @meta: darken(@no-band, 5%);
+
+@bandtext: #f3f3f3;
+@main: #356FD1; // Blue
+@dashes: #999;
 
 @bandwidth: 1016px;
 @no-bandwidth: @bandwidth - 36px;
@@ -58,10 +59,10 @@ Version: 1.0
    background-image:     -ms-linear-gradient(top, @color, darken(@color, @alpha));
    background-image:      -o-linear-gradient(top, @color, darken(@color, @alpha));
 }
+
 /* ------------------------------
     Reset HTML 
 ------------------------------ */
-
 html, body, div, span, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 abbr, address, cite, code, del, dfn, img, ins, kbd, q, samp,
@@ -255,10 +256,9 @@ footer { font-size: 12px; padding: 12px 0 6px 0; text-align: center;
 /* ------------------------------
     Body Content
 ------------------------------ */
-#body-content { padding: 20px; width: @no-bandwidth - 20px; }
-
-.content-middle { width: @bandwidth - 386px; float: @contentfloat; }
-
+#body-content { padding: 20px; width: @no-bandwidth - 20px; 
+    .content-middle { width: @bandwidth - 386px; float: @contentfloat; }
+}
 
 /* ------------------------------
     Extras 
