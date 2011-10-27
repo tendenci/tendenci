@@ -1,7 +1,25 @@
 from django import forms
+from django.contrib.auth.models import User
 
+from tastypie.models import ApiKey
 from site_settings.models import Setting
+from perms.utils import is_developer
 
+class ApiKeyForm(forms.ModelForm):
+    """
+    From for setting up ApiKeys for developers.
+    """
+    
+    class Meta:
+        model = ApiKey
+        exclude = ('created', 'key')
+        
+    def clean_user(self):
+        user = self.cleaned_data['user']
+        if not is_developer(user):
+            raise forms.ValidationError('This user is not a developer.')
+        return user
+        
 class SettingForm(forms.ModelForm):
     """
     Setting Form made specifically for API validation.
