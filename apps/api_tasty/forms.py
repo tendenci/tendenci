@@ -28,6 +28,7 @@ class SettingForm(forms.ModelForm):
                     'help_text': setting.description,
                     'initial': setting.value,
                     'choices': choices,
+                    'required': False,
                 }
             elif setting.input_type == 'file':
                 from files.models import File as TendenciFile
