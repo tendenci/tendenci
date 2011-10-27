@@ -488,8 +488,9 @@ input.short_text_input{
 	float: left;
 	background-color: white;
 	padding-right: 10px;
-	width: 80%;
+	width: 76%;
 }
+
 .month-view div.month-grid {
 	border: 1px solid silver;
 	border-right: none;
@@ -578,7 +579,13 @@ input.short_text_input{
 	top:0; right:0; bottom:0; left:0;
 }
 
-	.side-bar .header {
+.month-view .side-bar {
+	float: right;
+	padding-right: 10px;
+	width: 18%;
+}
+
+.side-bar .header {
 	text-align: center;
 	font-size: 1.4em;
 	padding: 20px 0 10px;
