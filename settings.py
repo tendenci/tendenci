@@ -355,6 +355,11 @@ MERCHANT_TXN_KEY = ""
 AUTHNET_CIM_API_TEST_URL = "https://apitest.authorize.net/xml/v1/request.api"
 AUTHNET_CIM_API_URL = "https://api.authorize.net/xml/v1/request.api"
 
+# PAYPAL PAYFLOW LINK 
+PAYFLOWLINK_PARTNER = ''
+PAYPAL_MERCHANT_LOGIN = ''
+PAYFLOWLINK_POST_URL = 'https://payflowlink.paypal.com'
+
 # --------------------------------------#
 # RSS
 # --------------------------------------#
