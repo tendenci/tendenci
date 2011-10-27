@@ -10,6 +10,7 @@ from tastypie.utils.mime import determine_format, build_content_type
 
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
+from tastypie.validation import CleanedDataFormValidation
 from tastypie.resources import ModelResource
 from tastypie.api import Api
 from tastypie import fields
@@ -17,6 +18,8 @@ from tastypie import fields
 from site_settings.models import Setting
 from discounts.models import Discount
 from api_tasty.serializers import SafeSerializer
+from api_tasty.forms import SettingForm
+from api_tasty.auth import DeveloperApiKeyAuthentication
 
 class SafeApi(Api):
     """
@@ -72,14 +75,18 @@ class SettingResource(ModelResource):
         resource_name = 'setting'
         serializer = SafeSerializer()
         authorization = Authorization()
+        authentication = DeveloperApiKeyAuthentication()
         fields = ['name', 'description', 'value']
         allowed_methods = ['get', 'put']
+        validation = CleanedDataFormValidation(form_class=SettingForm)
         
 class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
         resource_name = 'user'
         serializer = SafeSerializer()
+        authorization = Authorization()
+        authentication = DeveloperApiKeyAuthentication()
         fields = ['username', 'first_name', 'last_name']
         allowed_methods = ['get']
         
@@ -91,3 +98,4 @@ class DiscountResource(ModelResource):
         resource_name = 'discount'
         serializer = SafeSerializer()
         authorization = Authorization()
+        authentication = DeveloperApiKeyAuthentication()
