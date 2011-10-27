@@ -8,44 +8,53 @@
 {% load theme_tags %}
 {% load i18n %}
 
-<section id="sponsor">
-	<h2>Sponsors</h2>
-	{% list_stories as featured_stories tags=sponsor limit=1 random=true %}
-	{% for story in featured_stories %}
-	<img alt="Visit our Sponsor" src="{% image_url story.image size=650x110 crop=true quality=90 %}" />
-	{% endfor %}
-</section>
+<section id="sponsors">
+    <h2>Sponsors</h2>
+    {% list_stories as sponsor_stories tags=sponsor limit=4 random=true %}
+    <div id="sponsor-items">
+    {% if sponsor_stories %}
+    {% for story in sponsor_stories %}
+        <img alt="Visit our Sponsor" src="{% image_url story.image size=650x110 crop=true quality=90 %}" />
+    {% endfor %}
+    {% else %}
+        <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
+        <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
+        <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
+        <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
+    {% endif %}
+    </div>
+    <section id="footer-links">
+        <ul>
+            <li><a href="/login/">Login</a></li>
+            <li><a href="/sitemap/">Site Map</a></li>
+            <li><a href="/rss/">Feed</a></li>
+            <li><a href="http://schipul.com/">Schipul Web Design</a></li>
+            <li><a href="http://tendenci.com/">Tendenci&reg; Membership Management Software</a></li>
+        </ul>
+    </section>
+</section><!-- /#sponsors -->
 
 <section id="contact-us">
+    <div class="left-border-box">
+        <h2>Contact Us</h2>
+        <div id="contact-info">
+            12345 Main Street</br>
+            Houston, Texas 77071<br />
+            Phone: 555-555-555<br />
+            Fax: 555-555-555<br />
+            Email: info@prfirmhouston.com
+        </div>
+        <div id="social-links">
+            <a href="http://twitter.com/{% firstof MODULE_THEME_TWITTER 'tendenci' %}"><img alt="Find us on Twitter" src="{{ THEME_URL }}media/images/twitter.png" /></a>
+            <a href="{% firstof MODULE_THEME_LINKEDIN '#' %}"><img alt="Find us on LinkedIn" src="{{ THEME_URL }}media/images/linkedin.png" /></a>
+            <a href="{% firstof MODULE_THEME_FACEBOOK 'http://facebook.com/tendenci' %}"><img alt="Find us on Facebook" src="{{ THEME_URL }}media/images/facebook.png" /></a>
+        </div>
+        <div id="mini-search">
+            <form>
+            <input name="q" type="text" />
+            <input type="submit" value="SEARCH">
+            </form>
+        </div>
+    </div>
+</section><!-- /#contact-us -->
 
-	<h2>Contact Us</h2>
-
-	<div id="contact-info">
-		12345 Main Street</br>
-		Houston, Texas 77071<br />
-		Phone: 555-555-555<br />
-		Fax: 555-555-555<br />
-		Email: info@prfirmhouston.com
-	</div>
-
-	<div id="social-links">
-		<img alt="Find us on Twitter" src="{{ THEME_URL }}media/images/twitter.png" />
-		<img alt="Find us on LinkedIn" src="{{ THEME_URL }}media/images/linkedin.png" />
-		<img alt="Find us on Facebook" src="{{ THEME_URL }}media/images/facebook.png" />
-	</div>
-
-	<div id="mini-search">
-		<input name="q" type="text" />
-		<input type="submit" value="SEARCH">
-	</div>
-
-</section>
-
-<section id="footer-links">
-	<ul>
-		<li><a href="">Site Map</a></li>
-		<li><a href="">Feed</a></li>
-		<li><a href="">Schipul Web Design</a></li>
-		<li><a href="">Tendenci&reg; Membership Management Software</a></li>
-	</ul>
-</section>

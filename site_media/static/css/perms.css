@@ -6,4 +6,4 @@
 .perm-private {font-weight: bold; color: red;}
 .status-active {font-weight: bold; color: green;}
 .status-pending, .status-draft {font-weight: bold; color: orange;}
-.status-inactive {font-weight: bold; color: red;}
+.status-inactive, .status-expired {font-weight: bold; color: red;}

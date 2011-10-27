@@ -10,13 +10,11 @@
 
 <body bgcolor="#ffffff" text="#000000">
 <font size="2" face="Arial, Helvetica, sans-serif">
-<p>{% blocktrans with object.question as question %}A new help file has been requested on 
-{{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}</p>
 <p>
+{% blocktrans with object.question as question %}
 {{ question }}
+{% endblocktrans %}
 </p>
-
-<br>{% trans "Thanks!" %}
 
 <P>{% trans "Time submitted:" %} {% now "D d M Y P" %}</P>
 </font>

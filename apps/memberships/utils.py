@@ -7,7 +7,6 @@ from django.utils.datastructures import SortedDict
 from django.conf import settings
 from django.utils import simplejson
 from django.contrib.auth.models import User
-from django.template.defaultfilters import slugify
 from perms.utils import has_perm, is_admin
 from memberships.models import AppField, Membership, MembershipType
 from corporate_memberships.models import CorporateMembership
@@ -396,3 +395,4 @@ def last_n_month(n):
     now = datetime.now()
     last = datetime(day=1, month=(now.month-n)%12, year=now.year-(now.month-n)/12)
     return last
+

@@ -14,6 +14,7 @@
 
 {% block body %}
 <div class="t">
+    {% help_file_nav request.user %}
 	{% help_file_search %}
 	<div class="breadcrumbs"><p><a href="{% url help_files %}">{% trans "All Help Files" %}</a> > {% blocktrans %}{{ topic }} help files{% endblocktrans %}</p></div>
 	<h2>{% blocktrans with topic|title as topic_title %}{{ topic_title }} Help Files{% endblocktrans %}</h2>
