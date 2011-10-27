@@ -26,6 +26,7 @@ from directories.models import Directory
 from user_groups.models import Group
 from memberships.managers import MembershipManager, \
     MemberAppManager, MemberAppEntryManager
+from base.utils import fieldify
 from tinymce import models as tinymce_models
 from payments.models import PaymentMethod
 from user_groups.models import GroupMembership
@@ -304,15 +305,22 @@ class Membership(TendenciBaseModel):
         Returns a dictionary of entry items.
         The approved entry that is associated with this membership.
         """
+        return self.get_entry_items()
+        
+    
+    def get_entry_items(self, slugify_label=True):
         items = {}
         entry = self.get_entry()
 
         if entry:
             for field in entry.fields.all():
-                label = slugify(field.field.label).replace('-','_')
+                label = field.field.label
+                if slugify_label:
+                    label = slugify(label).replace('-','_')
                 items[label] = field.value
 
         return items
+        
 
     def get_renewal_period_dt(self):
         """
@@ -468,25 +476,36 @@ class Notice(models.Model):
         web based membership management software solution 
         www.tendenci.com developed by Schipul - The Web Marketing Company
         """
+        
+    def get_entry_items(self, entry, membership):
+        items = {}
+        if membership:
+            items = membership.entry_items
+        else:
+            if entry:
+                for field in entry.fields.all():
+                    label = slugify(field.field.label).replace('-','_')
+                    items[label] = field.value
+        return items
 
     def get_subject(self, entry=None, membership=None):
         """
         Return self.subject replace shortcode (context) variables
         The membership object takes priority over entry object
         """
-        context = {}
+        context = self.get_entry_items(entry, membership)
 
-        if membership: user = getattr(membership, 'user', None)
-        elif entry: user = getattr(entry, 'user', None)
-
-        if user:
-            context = {
-                'firstname': user.first_name,
-                'lastname': user.last_name,
-                'name': user.get_full_name(),
-                'username': user.username,
-                'email': user.email,
-            }
+#        if membership: user = getattr(membership, 'user', None)
+#        elif entry: user = getattr(entry, 'user', None)
+#
+#        if user:
+#            context = {
+#                'firstname': user.first_name,
+#                'lastname': user.last_name,
+#                'name': user.get_full_name(),
+#                'username': user.username,
+#                'email': user.email,
+#            }
 
         return self.build_notice(self.subject, context=context)
 
@@ -500,40 +519,42 @@ class Notice(models.Model):
         global_setting = partial(get_setting, 'site', 'global')
         corporate_msg = ''
         expiration_dt = ''
+        
+        context = self.get_entry_items(entry, membership)
 
-        if membership:
-            user = getattr(membership, 'user', None)
-        elif entry:
-            user = getattr(entry, 'user', None)
+#        if membership:
+#            user = getattr(membership, 'user', None)
+#        elif entry:
+#            user = getattr(entry, 'user', None)
 
-        try:
-            profile = user.get_profile()
-        except Profile.DoesNotExist as e:
-            profile = Profile.objects.create_profile(user=user)
-        except AttributeError as e:
-            profile = None  # no profile boo; no user/profile shortcode vars
-
-        if user:
-            context = {
-                'firstname': user.first_name,
-                'lastname': user.last_name,
-                'name': user.get_full_name(),
-                'username': user.username,
-                'email': user.email, 
-            }
-
-        if profile:
-            context = {
-                'title': profile.position_title,
-                'address': profile.address,
-                'city': profile.city,
-                'state': profile.state,
-                'zipcode': profile.zipcode,
-                'phone': profile.phone,
-                'workphone': profile.work_phone,
-                'homephone': profile.home_phone,
-                'fax': profile.fax,
-            }
+#        try:
+#            profile = user.get_profile()
+#        except Profile.DoesNotExist as e:
+#            profile = Profile.objects.create_profile(user=user)
+#        except AttributeError as e:
+#            profile = None  # no profile boo; no user/profile shortcode vars
+#
+#        if user:
+#            context = {
+#                'firstname': user.first_name,
+#                'lastname': user.last_name,
+#                'name': user.get_full_name(),
+#                'username': user.username,
+#                'email': user.email, 
+#            }
+#
+#        if profile:
+#            context = {
+#                'title': profile.position_title,
+#                'address': profile.address,
+#                'city': profile.city,
+#                'state': profile.state,
+#                'zipcode': profile.zipcode,
+#                'phone': profile.phone,
+#                'workphone': profile.work_phone,
+#                'homephone': profile.home_phone,
+#                'fax': profile.fax,
+#            }
 
         if membership:
 
@@ -552,21 +573,21 @@ class Notice(models.Model):
                     membership.expire_dt.timetuple()
                 )
 
-            context = {
+            context.update({
                 'membernumber': membership.member_number,
                 'membershiptype': membership.membership_type.name,
                 'membershiplink': '%s%s'.format(global_setting('siteurl'), membership.get_absolute_url()),
                 'renewlink': '%s%s'.format(global_setting('siteurl'), membership.get_absolute_url()),
-            } 
+            })
 
-        context = {
+        context.update({
             'expirationdatetime': expiration_dt,
             'sitecontactname': global_setting('sitecontactname'),
             'sitecontactemail': global_setting('sitecontactemail'),
             'sitedisplayname': global_setting('site_displayname'),
             'timesubmitted': time.strftime("%d-%b-%y %I:%M %p", datetime.now().timetuple()),
             'corporatemembernotice': corporate_msg,
-        }
+        })
 
         content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
 
@@ -579,8 +600,9 @@ class Notice(models.Model):
         In the future, maybe we can pull from the membership application entry
         """
         context = kwargs.get('context') or {}  # get context
-        content = content.replace('[','{{')  # replace shortcode tags
-        content = content.replace(']','}}')  # replace shortcode tags
+#        content = content.replace('[','{{')  # replace shortcode tags
+#        content = content.replace(']','}}')  # replace shortcode tags
+        content = fieldify(content)
 
         context = Context(context)
         template = Template(content)
@@ -608,7 +630,8 @@ class Notice(models.Model):
 
         if isinstance(emails, basestring):
             emails = [emails]  # expecting list of emails
-
+        print 'emails=', emails
+            
         # allowed notice types
         if notice_type == 'join':
             template_type = 'joined'
@@ -1238,10 +1261,10 @@ class AppEntry(TendenciBaseModel):
             # send "approved" notification
             Notice.send_notice(
                 request = request,
-                emails=entry.email,
+                emails=self.email,
                 notice_type='approve',
                 membership=self.membership,
-                membership_type=entry.membership_type,
+                membership_type=self.membership_type,
             )
 
             # log entry approval

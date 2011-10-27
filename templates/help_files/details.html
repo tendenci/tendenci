@@ -13,6 +13,7 @@
 
 {% block body %}
 <div class="t">
+    {% help_file_nav request.user help_file %}
     {% help_file_search %}
 	<div class="breadcrumbs"><p><a href="{% url help_files %}">{% trans "All Help Files" %}</a> > {{ help_file.question|striptags|safe }}</p></div>
     <div class="help-file-wrap">

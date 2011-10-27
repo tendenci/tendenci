@@ -4,12 +4,14 @@ from django.core.management import call_command
 INPUT_TYPE_CHOICES = (
     ('text','Text'),
     ('select','Select'),         
+    ('file', 'File'),
 )
 
 DATA_TYPE_CHOICES = (
     ('string','string'),
     ('boolean','boolean'),
     ('integer','int'),         
+    ('file', 'file'),
 )
 
 

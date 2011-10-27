@@ -17,7 +17,7 @@ from invoices.models import Invoice
 from perms.utils import is_admin
 
 
-class Job(models.Model):
+class Job(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=250)
     slug = SlugField(_('URL Path'), unique=True)
@@ -76,23 +76,6 @@ class Job(models.Model):
     member_count = models.IntegerField(blank=True, null=True)
     non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     non_member_count = models.IntegerField(blank=True, null=True)
-
-    # authority fields
-    allow_anonymous_view = models.BooleanField(_("Public can view"))
-    allow_user_view = models.BooleanField(_("Signed in user can view"))
-    allow_member_view = models.BooleanField()
-    allow_anonymous_edit = models.BooleanField()
-    allow_user_edit = models.BooleanField(_("Signed in user can change"))
-    allow_member_edit = models.BooleanField()
-
-    create_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False, null=True)
-    creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="%(class)s_owner", null=True)
-    owner_username = models.CharField(max_length=50, null=True)
-    status = models.BooleanField("Active", default=True)
-    status_detail = models.CharField(max_length=50, default='active')
 
     objects = JobManager()
 

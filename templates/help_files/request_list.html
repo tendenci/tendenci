@@ -14,6 +14,7 @@
 {% block body %}
 
 <div class="t">
+    {% help_file_nav request.user %}
 	<h1>{% trans "Help File Requests" %}</h1>
     
     {% autopaginate requests 10 %}
