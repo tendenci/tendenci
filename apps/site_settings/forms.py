@@ -122,21 +122,27 @@ def build_settings_form(user, settings):
             
         elif setting.input_type == 'file':
             from files.models import File as TendenciFile
+            file_display = ''
             try:
                 try: val = int(setting.value)
                 except: val = 0
                 
-                tfile = TendenciFile.objects.get(pk=val)
-                if tfile.file.name.lower().endswith(('.jpg', '.jpe', '.png', '.gif', '.svg')):
-                    file_display = '<img src="/files/%s/80x80/crop/">' % tfile.pk
-                else:
-                    file_display = tfile.file.name
+                try:
+                    tfile = TendenciFile.objects.get(pk=val)
+                except:
+                    tfile = None
+
+                if tfile:
+                    if tfile.file.name.lower().endswith(('.jpg', '.jpe', '.png', '.gif', '.svg')):
+                        file_display = '<img src="/files/%s/80x80/crop/">' % tfile.pk
+                    else:
+                        file_display = tfile.file.name
             except TendenciFile.DoesNotExist:
                 file_display = "No file"
             options = {
                 'label': setting.label,
                 'help_text': "%s<br> Current File: %s" % (setting.description, file_display),
-                'initial': tfile.file,
+                'initial': tfile and tfile.file,
                 'required': False
             }
             if setting.client_editable:
