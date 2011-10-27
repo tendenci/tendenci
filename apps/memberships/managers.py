@@ -234,6 +234,11 @@ class MembershipManager(Manager):
             Get membership object
         """
         try:
-            return self.order_by('-pk')[0]
+            return self.filter(status=1, status_detail='active').order_by('-pk')[0]
         except:
             return None
+
+
+
+
+

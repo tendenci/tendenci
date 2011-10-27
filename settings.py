@@ -406,6 +406,11 @@ SOCIAL_AUTH_ASSOCIATE_BY_MAIL = True
 # ------------------------------------ #
 CAMPAIGNMONITOR_URL = 'https://tendenci.createsend.com'
 
+# ------------------------------------ #
+# PHOTOLOGUE SETTINGS
+# ------------------------------------ #
+PHOTOLOGUE_MAXBLOCK = 2**20  # prevents 'IOError: encoder error -2'
+
 # local settings for development
 try:
     from local_settings import *

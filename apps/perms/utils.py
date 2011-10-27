@@ -111,11 +111,14 @@ def is_member(user):
     if not user or user.is_anonymous():
         return False
 
+    # impersonation
+    user = getattr(user, 'impersonated_user', user)
+
     if hasattr(user, 'is_member'):
         return getattr(user, 'is_member')
     else:
         try:
-            membership = user.memberships.get()
+            membership = user.memberships.get_membership()
             if user.is_active:
                 status = membership.status == 1
                 active = membership.status_detail.lower() == 'active'
