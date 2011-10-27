@@ -1,10 +1,12 @@
 import os
+import re
 # python
 from datetime import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 
 from django.conf import settings
+from django.template.defaultfilters import slugify
 from site_settings.utils import get_setting
 from theme.utils import get_theme_root
 
@@ -485,3 +487,17 @@ def check_template(filename):
     """
     current_file = os.path.join(THEME_ROOT, template_directory, filename)
     return os.path.isfile(current_file)
+
+def fieldify(str):
+    """Convert the fields in the square brackets to the django field type. 
+    
+        Example: "[First Name]: Lisa" 
+                    will be converted to 
+                "{{ first_name }}: Lisa"
+    """
+    #p = re.compile('(\[([\w\d\s_-]+)\])')
+    p = re.compile('(\[(.*?)\])')
+    return p.sub(slugify_fields, str)
+
+def slugify_fields(match):
+    return '{{ %s }}' % (slugify(match.group(2))).replace('-', '_')

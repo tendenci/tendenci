@@ -1,3 +1,6 @@
+import os
+from datetime import datetime
+from django.conf import settings
 
 # update the object
 def payment_processing_object_updates(request, payment, **kwargs):
@@ -27,5 +30,40 @@ def payment_processing_object_updates(request, payment, **kwargs):
         
         # still want the end user know an error occurred
         raise Exception, err_msg
+    
+    
+def log_silent_post(request, payment):    
+    now_str = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
+    # log the post
+    output = """
+                %s \n
+                Referrer: %s \n
+                Remote Address: %s \n
+                Content-Type: %s \n
+                User-Agent: %s \n\n
+                Query-String: \n %s \n
+                Remote-Addr: %s \n\n
+                Remote-Host: %s \n
+                Remote-User: %s \n
+                Request-Method: %s \n
+            """ % (now_str, request.META.get('HTTP_REFERER', ''),
+                   request.META.get('REMOTE_ADDR', ''),
+                   request.META.get('CONTENT_TYPE', ''),
+                   request.META.get('HTTP_USER_AGENT', ''),
+                   request.META.get('QUERY_STRING', ''),
+                   request.META.get('REMOTE_ADDR', ''),
+                   request.META.get('REMOTE_HOST', ''),
+                   request.META.get('REMOTE_USER', ''),
+                   request.META.get('REQUEST_METHOD', ''))
+            
+    log_file_name = "silentpost_%d.log" % payment.id
+    log_path = os.path.join(settings.MEDIA_ROOT, 'silentposts/')
+    if not os.path.isdir(log_path):
+        os.mkdir(log_path)
+    log_path = os.path.join(log_path, log_file_name)
+    
+    fd = open(log_path, 'w')
+    fd.write(output)
+    fd.close()
         
         
