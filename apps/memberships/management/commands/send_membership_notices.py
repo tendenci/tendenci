@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.template import TemplateDoesNotExist
+from django.template import Context, Template
 
 
 class Command(BaseCommand):
@@ -22,6 +23,7 @@ class Command(BaseCommand):
             
         from django.conf import settings
         from memberships.models import Notice, Membership, NoticeLog, NoticeLogRecord
+        from base.utils import fieldify
         from emails.models import Email
         from profiles.models import Profile
         from site_settings.utils import get_setting
@@ -129,10 +131,6 @@ class Command(BaseCommand):
                 
             if memberships:
                 email.content_type = notice.content_type
-                notice.email_content = notice.email_content.replace("[sitedisplayname]", site_display_name)
-                notice.email_content = notice.email_content.replace("[sitecontactname]", site_contact_name)
-                notice.email_content = notice.email_content.replace("[sitecontactemail]", site_contact_email)
-                notice.email_content = notice.email_content.replace("[timesubmitted]", nowstr)
                 
                 # password
                 passwd_str = """
@@ -140,7 +138,15 @@ class Command(BaseCommand):
                             click <a href="%s%s">here</a> and follow the instructions on the page to 
                             reset your password.
                             """ % (site_url, reverse('auth_password_reset'))
-                notice.email_content = notice.email_content.replace("[password]", passwd_str)
+#                notice.email_content = notice.email_content.replace("[password]", passwd_str)
+                
+                global_context = {'sitedisplayname': site_display_name,
+                                  'sitecontactname': site_contact_name,
+                                  'sitecontactemail': site_contact_email,
+                                  'timesubmitted': nowstr,
+                                  'password': passwd_str
+                                  }
+                
                 
                 # log notice sent
                 notice_log = NoticeLog(notice=notice,
@@ -153,7 +159,7 @@ class Command(BaseCommand):
                 
                 for membership in memberships:
                     try:
-                        email_member(notice, membership)
+                        email_member(notice, membership, global_context)
                         if memberships_count <= 50:
                             notice.members_sent.append(membership)
                         num_sent += 1
@@ -172,26 +178,18 @@ class Command(BaseCommand):
                     
             return num_sent    
             
-        def email_member(notice, membership):
+        def email_member(notice, membership, global_context):
             user = membership.user
-            try:
-                profile = user.get_profile()
-            except Profile.DoesNotExist:
-                profile = Profile.objects.create_profile(user=user)
-            
+
             body = notice.email_content
-            body = body.replace("[firstname]", user.first_name)
-            body = body.replace("[lastname]", user.last_name)
-            body = body.replace("[name]", user.get_full_name())
-            body = body.replace("[title]", profile.position_title)
-            body = body.replace("[address]", profile.address)
-            body = body.replace("[city]", profile.city)
-            body = body.replace("[state]", profile.state)
-            body = body.replace("[zip]", profile.zipcode)
-            body = body.replace("[phone]", profile.phone)
-            body = body.replace("[homephone]", profile.home_phone)
-            body = body.replace("[fax]", profile.fax)
-            body = body.replace("[username]", user.username)
+            context = membership.entry_items
+            context.update(global_context)
+
+#            for key in entry_items.keys():
+#                search = '[%s]' % key
+#                if body.find(search) != -1:
+#                    body = body.replace(search, entry_items[key])
+            
             
             body = body.replace("[membershiptypeid]", str(membership.membership_type.id))
             body = body.replace("[membershiplink]", '%s%s' % (site_url, membership.get_absolute_url()))
@@ -208,7 +206,26 @@ class Command(BaseCommand):
             else:
                 body = body.replace("<!--[corporatemembernotice]-->", "")
                 
+                
+            context.update({'membershiptypeid': str(membership.membership_type.id),
+                            'membershiplink': '%s%s' % (site_url, membership.get_absolute_url()),
+                            'renewlink': '%s%s' % (site_url, membership.get_absolute_url())
+                            })
+            if membership.expire_dt:
+                context['expirationdatetime'] = time.strftime("%d-%b-%y %I:%M %p", 
+                                                    membership.expire_dt.timetuple())
+                
+            # corporate member corp_replace_str
+            if membership.corporate_membership_id:
+                context['corporatemembernotice'] =  corp_replace_str
+           
+            body = fieldify(body)
+                
             body = '%s <br /><br />%s' % (body, get_footer())
+            
+            context = Context(context)
+            template = Template(body)
+            body = template.render(context)
             
             email.recipient = user.email
             email.subject = notice.subject.replace('(name)', user.get_full_name())
