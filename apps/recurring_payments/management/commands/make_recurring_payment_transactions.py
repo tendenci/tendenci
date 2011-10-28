@@ -118,7 +118,7 @@ class Command(BaseCommand):
                         # to admin
                         rp_email_notice.email_admins_transaction_result(payment_transaction)
                         # to customer
-                        if payment_transaction.message_code in UNSUCCESSFUL_TRANS_CODE:
+                        if payment_transaction.message_code not in UNSUCCESSFUL_TRANS_CODE:
                             rp_email_notice.email_customer_transaction_result(payment_transaction)
                         else:
                             # the payment gateway is probably not configured correctly
