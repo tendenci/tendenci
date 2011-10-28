@@ -132,6 +132,9 @@ class Registrant(models.Model):
     
     objects = RegistrantManager()
 
+    class Meta:
+        permissions = (("view_registrant","Can view registrant"),)
+
     @property
     def lastname_firstname(self):
         fn = self.first_name or None
@@ -175,9 +178,6 @@ class Registrant(models.Model):
     @models.permalink
     def hash_url(self):
         return ('event.registration_confirmation', [self.registration.event.pk, self.hash])
-
-    class Meta:
-        permissions = (("view_registrant","Can view registrant"),)
 
     @models.permalink
     def get_absolute_url(self):
