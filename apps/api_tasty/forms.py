@@ -1,5 +1,14 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.core.cache import cache
+from django.core.files import File
+from django.core.files.base import ContentFile
+from django.forms.models import model_to_dict
+from django.contrib.contenttypes.models import ContentType
+
+from site_settings.utils import (delete_setting_cache, cache_setting,
+    delete_all_settings_cache, get_form_list, get_box_list)
+from site_settings.cache import SETTING_PRE_KEY
 
 from tastypie.models import ApiKey
 from site_settings.models import Setting
@@ -34,24 +43,41 @@ class SettingForm(forms.ModelForm):
         super(SettingForm, self).__init__(*args, **kwargs)
         setting = self.instance
         if setting:
-            if setting.input_type == 'select':
+            if setting.input_type == 'text':
+                options = {
+                    'label': setting.label,
+                    'help_text': setting.description,
+                    'initial': setting.value,
+                    'required': False
+                }
+                self.fields['value'] = forms.CharField(**options)
+                    
+            elif setting.input_type == 'select':
                 if setting.input_value == '<form_list>':
                     choices = get_form_list(user)
+                    required = False
                 elif setting.input_value == '<box_list>':
                     choices = get_box_list(user)
+                    required = False
                 else:
                     choices = tuple([(s,s)for s in setting.input_value.split(',')])
+                    required = True
                 options = {
                     'label': setting.label,
                     'help_text': setting.description,
                     'initial': setting.value,
                     'choices': choices,
-                    'required': False,
+                    'required': required,
                 }
+                self.fields['value'] = forms.ChoiceField(**options)
+            
             elif setting.input_type == 'file':
                 from files.models import File as TendenciFile
                 try:
-                    tfile = TendenciFile.objects.get(pk=setting.value)
+                    try: val = int(setting.value)
+                    except: val = 0
+                    
+                    tfile = TendenciFile.objects.get(pk=val)
                     if tfile.file.name.lower().endswith(('.jpg', '.jpe', '.png', '.gif', '.svg')):
                         file_display = '<img src="/files/%s/80x80/crop/">' % tfile.pk
                     else:
@@ -61,18 +87,10 @@ class SettingForm(forms.ModelForm):
                 options = {
                     'label': setting.label,
                     'help_text': "%s<br> Current File: %s" % (setting.description, file_display),
-                    'initial': setting.value,
+                    'initial': tfile.file,
                     'required': False
                 }
-            else:
-                options = {
-                    'label': setting.label,
-                    'help_text': setting.description,
-                    'initial': setting.value,
-                    'required': False
-                }
-            
-            self.fields['value'] = forms.CharField(**options)
+                self.fields['value'] = forms.FileField(**options)
         
     def clean(self):
         """
@@ -93,4 +111,4 @@ class SettingForm(forms.ModelForm):
                 if field_value:
                     if not isinstance(field_value, File):
                         raise forms.ValidationError("'%s' must be a file" % setting.label)
-            
+        return cleaned_data
