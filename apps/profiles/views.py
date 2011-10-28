@@ -118,9 +118,13 @@ def search(request, template_name="profiles/search.html"):
     allow_user_search = get_setting('module', 'users', 'allowusersearch')
 
     if request.user.is_anonymous():
-        if not allow_anonymous_search or not allow_user_search:
+        if not allow_anonymous_search:
             raise Http403
     
+    if request.user.is_authenticated():
+        if not allow_user_search and not is_admin(request.user):
+            raise Http403
+
     query = request.GET.get('q', None)
     profiles = Profile.objects.search(query, user=request.user)
     profiles = profiles.order_by('last_name_exact')
