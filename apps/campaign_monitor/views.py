@@ -140,25 +140,25 @@ def template_render(request, template_id):
     articles = request.GET.get('articles', 1)
     articles_days = request.GET.get('article_days', 60)
     if articles:
-        art_content = newsletter_articles_list(request, articles_days, simplified)
+        articles_list, articles_content = newsletter_articles_list(request, articles_days, simplified)
     
     news_content = ""
     news = request.GET.get('news', 1)
     news_days = request.GET.get('news_days',30)
     if news:
-        news_content = newsletter_news_list(request, news_days, simplified)
+        news_list, news_content = newsletter_news_list(request, news_days, simplified)
     
     jobs_content = ""
     jobs = request.GET.get('jobs', 1)
     jobs_days = request.GET.get('jobs_days', 30)
     if jobs:
-        jobs_content = newsletter_jobs_list(request, jobs_days, simplified)
+        jobs_list, jobs_content = newsletter_jobs_list(request, jobs_days, simplified)
     
     pages_content = ""
     pages = request.GET.get('pages', 0)
     pages_days = request.GET.get('pages_days', 7)
     if pages:
-        pages_content = newsletter_pages_list(request, pages_days, simplified)
+        pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
         
     events = request.GET.get('events', 1)
     start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
@@ -166,18 +166,24 @@ def template_render(request, template_id):
     end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
     event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
     if events:
-        events = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
+        events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
     
     text = DTemplate(apply_template_media(template))
     context = RequestContext(request, 
             {
                 'jumplink_content':jumplink_content,
                 'login_content':login_content,
-                "art_content":art_content,
+                "art_content":articles_content, # legacy usage in templates
+                "articles_content":articles_content,
+                "articles_list":articles_list,
                 "jobs_content":jobs_content,
+                "jobs_list":jobs_list,
                 "news_content":news_content,
+                "news_list":news_list,
                 "pages_content":pages_content,
-                "events":events
+                "pages_list":pages_content,
+                "events":events_list, # legacy usage in templates
+                "events_list":events_list
             })
     
     response = HttpResponse(text.render(context))
