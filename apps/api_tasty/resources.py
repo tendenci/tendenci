@@ -9,6 +9,8 @@ from django.db import transaction
 from django.db.models.sql.constants import QUERY_TERMS, LOOKUP_SEP
 from django.http import HttpResponse, HttpResponseNotFound
 from django.utils.cache import patch_cache_control
+from django.contrib.contenttypes.models import ContentType
+
 from tastypie.authentication import Authentication
 from tastypie.authorization import ReadOnlyAuthorization
 from tastypie.bundle import Bundle
@@ -79,7 +81,7 @@ class BetterModelResource(ModelResource):
         except ObjectDoesNotExist:
             raise NotFound("A model instance matching the provided arguments could not be found.")
         
-        self.is_valid(bundle, request)
+        self.is_valid(bundle, request)#raises errors if not valid
 
         try:
             updated_bundle = self.obj_update(bundle, request=request, **self.remove_api_resource_names(kwargs))
@@ -139,3 +141,5 @@ class BetterModelResource(ModelResource):
         m2m_bundle = self.hydrate_m2m(bundle)
         self.save_m2m(m2m_bundle)
         return bundle
+
+        
