@@ -23,7 +23,7 @@ class ModelFormValidation(CleanedDataFormValidation):
         if data is None:
             data = {}
 
-        form = self.form_class(data, instance=bundle.obj)
+        form = self.form_class(data, instance=bundle.obj, request=request)
 
         if form.is_valid():
             # We're different here & relying on having a reference to the same
