@@ -7,6 +7,8 @@ from django.forms.models import model_to_dict
 from django.contrib.contenttypes.models import ContentType
 
 from tastypie.models import ApiKey
+
+from site_settings.utils import get_form_list, get_box_list
 from site_settings.models import Setting
 from perms.utils import is_developer
 
@@ -44,21 +46,12 @@ class SettingForm(forms.ModelForm):
         super(SettingForm, self).__init__(*args, **kwargs)
         setting = self.instance
         if setting:
-            if setting.input_type == 'text':
-                options = {
-                    'label': setting.label,
-                    'help_text': setting.description,
-                    'initial': setting.value,
-                    'required': False
-                }
-                self.fields['value'] = forms.CharField(**options)
-                    
-            elif setting.input_type == 'select':
+            if setting.input_type == 'select':
                 if setting.input_value == '<form_list>':
-                    choices = get_form_list(user)
+                    choices = get_form_list(self.request.user)
                     required = False
                 elif setting.input_value == '<box_list>':
-                    choices = get_box_list(user)
+                    choices = get_box_list(self.request.user)
                     required = False
                 else:
                     choices = tuple([(s,s)for s in setting.input_value.split(',')])
@@ -71,13 +64,14 @@ class SettingForm(forms.ModelForm):
                     'required': required,
                 }
                 self.fields['value'] = forms.ChoiceField(**options)
-            
-            elif setting.input_type == 'file':
+            else:
                 options = {
                     'label': setting.label,
+                    'help_text': setting.description,
+                    'initial': setting.value,
                     'required': False
                 }
-                self.fields['value'] = forms.FileField(**options)
+                self.fields['value'] = forms.CharField(**options)
         
     def clean(self):
         """
@@ -86,7 +80,11 @@ class SettingForm(forms.ModelForm):
         setting = self.instance
         cleaned_data = super(SettingForm, self).clean()
         if setting:
-            field_value = cleaned_data['value']
+            try:
+                field_value = cleaned_data['value']
+            except KeyError:
+                field_value = None
+                
             if setting.data_type == "boolean":
                 if field_value != 'true' and field_value != 'false':
                     raise forms.ValidationError("'%s' must be true or false" % setting.label)
@@ -95,21 +93,17 @@ class SettingForm(forms.ModelForm):
                     if not field_value.isdigit():
                         raise forms.ValidationError("'%s' must be a whole number" % setting.label)
             if setting.data_type == "file":
+                #API can't support file uploads without a workaround to another view.
                 if field_value:
-                    if not isinstance(field_value, File):
-                        raise forms.ValidationError("'%s' must be a file" % setting.label)
-                    # save a file object and set the value at that file object's id.
+                    #file fields will be considered as id fields for Files
+                    if not field_value.isdigit():
+                        raise forms.ValidationError("'%s' must be a File pk" % setting.label)
+                    
+                    #if the value is an int use it as pk to get a File
                     from files.models import File as TendenciFile
-                    uploaded_file = TendenciFile()
-                    uploaded_file.owner = self.request.user
-                    uploaded_file.owner_username = self.request.user.username
-                    uploaded_file.creator = self.request.user
-                    uploaded_file.creator_username = self.request.user.username
-                    uploaded_file.content_type = ContentType.objects.get(app_label="site_settings", model="setting")
-                    uploaded_file.file.save(field_value.name, File(field_value))
-                    uploaded_file.save()
-                    field_value = uploaded_file.pk
-                else:
-                    #retain the old file if no file is set
-                    field_value = setting.value
+                    try:
+                        tfile = TendenciFile.objects.get(pk=field_value)
+                    except TendenciFile.DoesNotExist:
+                        raise forms.ValidationError("File entry does not exist.")
+                    
         return cleaned_data
