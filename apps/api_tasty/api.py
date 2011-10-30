@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+from django.core.cache import cache
+from django.core.files import File
 
 from tastypie.exceptions import NotRegistered
 from tastypie.serializers import Serializer
@@ -15,6 +17,8 @@ from tastypie.api import Api
 from tastypie import fields
 
 from site_settings.models import Setting
+from site_settings.utils import delete_setting_cache, cache_setting, delete_all_settings_cache
+from site_settings.cache import SETTING_PRE_KEY
 from discounts.models import Discount
 from api_tasty.resources import BetterModelResource
 from api_tasty.serializers import SafeSerializer

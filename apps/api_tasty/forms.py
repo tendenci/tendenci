@@ -40,6 +40,11 @@ class SettingForm(forms.ModelForm):
         fields = ('value',)
     
     def __init__(self, *args, **kwargs):
+        """
+        Builds the field for the setting's value based on the setting's
+        properties.
+        """
+        self.request = kwargs.pop('request', None)
         super(SettingForm, self).__init__(*args, **kwargs)
         setting = self.instance
         if setting:
@@ -72,22 +77,8 @@ class SettingForm(forms.ModelForm):
                 self.fields['value'] = forms.ChoiceField(**options)
             
             elif setting.input_type == 'file':
-                from files.models import File as TendenciFile
-                try:
-                    try: val = int(setting.value)
-                    except: val = 0
-                    
-                    tfile = TendenciFile.objects.get(pk=val)
-                    if tfile.file.name.lower().endswith(('.jpg', '.jpe', '.png', '.gif', '.svg')):
-                        file_display = '<img src="/files/%s/80x80/crop/">' % tfile.pk
-                    else:
-                        file_display = tfile.file.name
-                except TendenciFile.DoesNotExist:
-                    file_display = "No file"
                 options = {
                     'label': setting.label,
-                    'help_text': "%s<br> Current File: %s" % (setting.description, file_display),
-                    'initial': tfile.file,
                     'required': False
                 }
                 self.fields['value'] = forms.FileField(**options)
@@ -111,4 +102,18 @@ class SettingForm(forms.ModelForm):
                 if field_value:
                     if not isinstance(field_value, File):
                         raise forms.ValidationError("'%s' must be a file" % setting.label)
+                    # save a file object and set the value at that file object's id.
+                    from files.models import File as TendenciFile
+                    uploaded_file = TendenciFile()
+                    uploaded_file.owner = self.request.user
+                    uploaded_file.owner_username = self.request.user.username
+                    uploaded_file.creator = self.request.user
+                    uploaded_file.creator_username = self.request.user.username
+                    uploaded_file.content_type = ContentType.objects.get(app_label="site_settings", model="setting")
+                    uploaded_file.file.save(field_value.name, File(field_value))
+                    uploaded_file.save()
+                    field_value = uploaded_file.pk
+                else:
+                    #retain the old file if no file is set
+                    field_value = setting.value
         return cleaned_data
