@@ -37,7 +37,8 @@ def clean_settings_form(self):
 def save_settings_form(self):
     """
         Save the updated settings in the database 
-        Removes and updates the settings cache
+        Setting's save will trigger a cache update.
+        If the field type is 'file' a file entry will be created.
     """
     for setting in self.settings:
         try:
@@ -59,20 +60,13 @@ def save_settings_form(self):
                 else:
                     #retain the old file if no file is set
                     field_value = setting.value
-                    
+            
             if setting.value != field_value:
-                # delete the cache for all the settings to reset the context
-                key = [SETTING_PRE_KEY, 'all.settings']
-                key = '.'.join(key)
-                cache.delete(key)
-                
-                # delete and set cache for single key and save the value in the database
-                delete_all_settings_cache()
-                delete_setting_cache(setting.scope, setting.scope_category, setting.name)
+                #Setting changed. update the db entry.
+                #Setting model's save will recache.
                 setting.value = field_value
                 setting.save()
-                cache_setting(setting.scope, setting.scope_category, setting.name,
-                  setting)
+                
         except KeyError:
             pass
             
