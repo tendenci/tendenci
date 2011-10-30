@@ -93,7 +93,8 @@ class SettingResource(BetterModelResource):
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
         fields = ['name', 'description', 'value', 'data_type', 'input_value']
-        allowed_methods = ['get', 'put']
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get', 'put']
         validation = ModelFormValidation(form_class=SettingForm)
         
 class UserResource(ModelResource):
@@ -115,3 +116,5 @@ class DiscountResource(ModelResource):
         serializer = SafeSerializer()
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get', 'post', 'put', 'delete']
