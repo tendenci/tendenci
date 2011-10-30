@@ -6,10 +6,6 @@ from django.core.files.base import ContentFile
 from django.forms.models import model_to_dict
 from django.contrib.contenttypes.models import ContentType
 
-from site_settings.utils import (delete_setting_cache, cache_setting,
-    delete_all_settings_cache, get_form_list, get_box_list)
-from site_settings.cache import SETTING_PRE_KEY
-
 from tastypie.models import ApiKey
 from site_settings.models import Setting
 from perms.utils import is_developer
