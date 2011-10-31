@@ -388,7 +388,7 @@ def template_sync(request):
 
 @login_required
 def campaign_index(request, template_name='campaign_monitor/campaigns/index.html'):
-    if not has_perm(request.user, 'campaign_monitor.view_campaigns'):
+    if not has_perm(request.user, 'campaign_monitor.view_campaign'):
         raise Http403
     
     campaigns = Campaign.objects.all().order_by('name')
