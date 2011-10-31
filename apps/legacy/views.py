@@ -29,6 +29,8 @@ def redirect_for_search(content_type):
         name = 'quote.search'
     if content_type == 'attorneys':
         name = 'attorneys'
+    if content_type == 'before_and_after':
+        name = 'before_and_after.search'
 
     # app not found
     if not name:
@@ -91,11 +93,17 @@ def redirect_for_view(content_type, id):
     if content_type == 'quotes':
         redirect_name = 'quote.view'
         sql = "SELECT t5_id FROM mig_quotes_quote_t4_to_t5 WHERE t4_id = %s"
-        
+
     if content_type == 'attorneys':
         redirect_name = 'attorneys.detail'
         sql = "SELECT slug FROM mig_attorneys_attorney_t4_to_t5 as mig " \
               "JOIN attorneys_attorney as attn on attn.id = mig.t5_id " \
+              "WHERE t4_id = %s"
+
+    if content_type == 'before_and_after':
+        redirect_name = 'before_and_after.detail'
+        sql = "SELECT t5_id FROM mig_before_after_t4_to_t5 as mig " \
+              "JOIN before_and_after_beforeandafter as bfa on bfa.id = mig.t5_id " \
               "WHERE t4_id = %s"
 
     # app not found
