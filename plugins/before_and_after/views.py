@@ -60,12 +60,13 @@ def search(request, template_name='before_and_after/search.html'):
 
 def detail(request, id, template_name='before_and_after/detail.html'):
     bna = get_object_or_404(BeforeAndAfter, id=id)
-    
+    category = bna.category
+
     if not has_perm(request.user, 'before_and_after.view_beforeandafter', bna):
         raise Http403
     
     categories = Category.objects.all()
-    subcategories = Subcategory.objects.all()
+    subcategories = Subcategory.objects.filter(category=category.pk)
     
     log_defaults = {
             'event_id' : 1090500,
