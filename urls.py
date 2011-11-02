@@ -85,6 +85,7 @@ urlpatterns = patterns('',
     url(r'social_auth/', include('social_auth.urls')),
     url(r'plugin_builder/', include('plugin_builder.urls')),
     url(r'navs/', include('navs.urls')),
+    url(r'tendenci/', include('tendenci_guide.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
     url(r'^robots.txt', direct_to_template, {"template": "robots.txt", }, name="robots"),
