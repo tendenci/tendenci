@@ -51,9 +51,10 @@ class RegistrySite(object):
     def get_registered_apps(self):
         cached_apps = get_reg_apps()
         if cached_apps:
-            return cached_apps
-        
-        apps = RegisteredApps(self._registry)
+            #build RegisteredApps object from the cache
+            apps = RegisteredApps(cached_apps, build_from_cache=True)
+        else:
+            apps = RegisteredApps(self._registry)
         return apps
 
 site = RegistrySite()
