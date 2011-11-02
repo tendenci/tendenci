@@ -119,6 +119,15 @@ def get_setting(scope, scope_category, name):
     return value
 
 def check_setting(scope, scope_category, name):
+    #check cache first
+    keys = [SETTING_PRE_KEY, scope, scope_category, name]
+    key = '.'.join(keys)
+    
+    setting = cache.get(key)
+    if setting:
+        return True
+    
+    #check the db if it is not in the cache
     return Setting.objects.filter(scope=scope, 
         scope_category=scope_category, name=name).exists()
 
