@@ -61,7 +61,6 @@ class Command(BaseCommand):
                                                  billing_dt__lte=now
                                                  ).order_by('billing_cycle_start_dt')
 
-                                                 
             if rp_invoices:
                 payment_profiles = PaymentProfile.objects.filter(
                             recurring_payment=rp,

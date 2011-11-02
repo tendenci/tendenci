@@ -20,7 +20,7 @@ class RecurringPaymentAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('user', 'description',)}),
         ("Billing Settings", {'fields': ('payment_amount',  
-                           'billing_start_dt', 'billing_cycle', 'num_days', )}),
+                           'billing_start_dt', 'billing_cycle', 'billing_dt_select', )}),
         ("Trial Period", {'fields': ('has_trial_period',  'trial_amount', 
                            'trial_period_start_dt',  'trial_period_end_dt',  ),
                           'description': '*** Note that if the trial period overlaps with ' + \
@@ -35,10 +35,17 @@ class RecurringPaymentAdmin(admin.ModelAdmin):
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         
+        # billing_cycle
         billing_cycle = form.cleaned_data['billing_cycle']
         billing_cycle_list = billing_cycle.split(",")
         instance.billing_frequency = billing_cycle_list[0]
         instance.billing_period = billing_cycle_list[1]
+        
+        # billing_date
+        billing_dt_select = form.cleaned_data['billing_dt_select']
+        billing_dt_select_list = billing_dt_select.split(",")
+        instance.num_days = billing_dt_select_list[0]
+        instance.due_sore = billing_dt_select_list[1]
          
         if not change:
             instance.creator = request.user

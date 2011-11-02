@@ -31,6 +31,11 @@ STATUS_DETAIL_CHOICES = (
                         ('deleted', _('Deleted')),
                         )
 
+DUE_SORE_CHOICES = (
+                    ('start', _('start')),
+                    ('end', _('end')),
+                    )
+
 
 class RecurringPayment(models.Model):
     guid = models.CharField(max_length=50)
@@ -54,8 +59,8 @@ class RecurringPayment(models.Model):
     num_days = models.IntegerField(default=0)
 #    due_borf = models.CharField(_("Before or after"), max_length=20,
 #                                   choices=DUE_BORF_CHOICES, default='before') 
-#    due_sore = models.CharField(_("Billing cycle start or end date"), max_length=20,
-#                                   choices=DUE_SORE_CHOICES, default='start')
+    due_sore = models.CharField(_("Billing cycle start or end date"), max_length=20,
+                                   choices=DUE_SORE_CHOICES, default='start')
     
     #billing_cycle_start_dt = models.DateTimeField(_("Billing cycle start date"))
     #billing_cycle_end_dt = models.DateTimeField(_('Billing cycle end date'), blank=True, null=True)
@@ -107,7 +112,23 @@ class RecurringPayment(models.Model):
         except Profile.DoesNotExist:
             profile = Profile.objects.create_profile(user=self.user)
         return profile
-        
+    
+    def add_customer_profile(self):
+        """Add the customer profile on payment gateway
+        """
+        if self.id and (not self.customer_profile_id):
+            # create a customer profile on payment gateway
+            cp = CIMCustomerProfile()
+            d = {'email': self.user.email,
+                 'description': self.description,
+                 'customer_id': str(self.id)}
+            success, response_d = cp.create(**d)
+            print success, response_d
+            if success:
+                self.customer_profile_id = response_d['customer_profile_id']
+               
+                self.save()
+            
     def populate_payment_profile(self, *args, **kwargs):
         """
         Check payment gateway for the payment profiles for this customer 
@@ -122,7 +143,12 @@ class RecurringPayment(models.Model):
                 delete it from database - keep only the valid ones on local.
         """
         valid_cim_payment_profile_ids = []
-        invalid_cim_payment_profile_ids = []
+        invalid_cim_payment_profile_ids = [] 
+        print self.customer_profile_id
+        if not self.customer_profile_id:
+            self.add_customer_profile()
+            # return immediately -there is no payment profile yet
+            return [], []  
         
         validation_mode = kwargs.get('validation_mode')
         customer_profile = CIMCustomerProfile(self.customer_profile_id)
@@ -265,8 +291,11 @@ class RecurringPayment(models.Model):
         """
         Get the payment due date for the billing cycle.
         """
-        # num_days is the number days after billing cycle end date
-        billing_dt = billing_cycle['end'] + relativedelta(days=self.num_days)
+        # num_days is the number days after billing cycle start/end date
+        if self.due_sore == 'start':
+            billing_dt = billing_cycle['start'] + relativedelta(days=self.num_days)
+        else:
+            billing_dt = billing_cycle['end'] + relativedelta(days=self.num_days)
         
         return billing_dt         
         
@@ -283,8 +312,11 @@ class RecurringPayment(models.Model):
         billing_dt = self.get_payment_due_date(next_billing_cycle)
         
         # determine when to create the invoice - 
-        # on the billing cycle end date
-        invoice_create_dt = next_billing_cycle['end']
+        # on the billing cycle start or end date
+        if self.due_sore == 'start':
+            invoice_create_dt = next_billing_cycle['start']
+        else:
+            invoice_create_dt = next_billing_cycle['end']
         
         if invoice_create_dt <= now:
             self.create_invoice(next_billing_cycle, billing_dt)
@@ -541,15 +573,6 @@ def create_customer_profile(sender, instance=None, created=False, **kwargs):
     """
     if instance.id and (not instance.customer_profile_id):
         # create a customer profile on payment gateway
-        cp = CIMCustomerProfile()
-        d = {'email': instance.user.email,
-             'description': instance.description,
-             'customer_id': str(instance.id)}
-        success, response_d = cp.create(**d)
-        
-        if success:
-            instance.customer_profile_id = response_d['customer_profile_id']
-           
-            instance.save()
+        instance.add_customer_profile()
 
 post_save.connect(create_customer_profile, sender=RecurringPayment)   
