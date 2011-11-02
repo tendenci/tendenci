@@ -204,6 +204,7 @@ class FormForField(forms.ModelForm):
         field_function = cleaned_data.get("field_function")
         function_params = cleaned_data.get("function_params")
         field_type = cleaned_data.get("field_type")
+        required = cleaned_data.get("required")
         
         if field_function == "GroupSubscription":
             if field_type != "BooleanField":
@@ -220,5 +221,11 @@ class FormForField(forms.ModelForm):
         if field_function != None and field_function.startswith("Email"):
             if field_type != "CharField":
                 raise forms.ValidationError("This field's function requires Text as a field type")
-                
+        
+        #unrequire the display only fields
+        if field_type == "CharField/forms_builder.forms.widgets.Description":
+            cleaned_data['required'] = False
+        elif field_type == "CharField/forms_builder.forms.widgets.Header":
+            cleaned_data['required'] = False
+            
         return cleaned_data
