@@ -141,8 +141,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                                         
         
         if not is_verified:
-            return redirect(reverse('membership.application_details_corp_pre', args=[slug]))
-#       
+            return redirect(reverse('membership.application_details_corp_pre', args=[slug]))       
 
     # log application details view
     EventLog.objects.log(**{
