@@ -1252,7 +1252,13 @@ class AppEntry(TendenciBaseModel):
         # -------------------------------------------
         from notification import models as notification
 
-        if not self.membership_type.require_approval:
+        auto_approvals = (
+            not self.membership_type.require_approval,
+            not self.membership_type.renewal_require_approval,
+        )
+
+        # auto join or renew
+        if any(auto_approvals):
 
             self.approve()
 
