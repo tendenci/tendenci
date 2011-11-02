@@ -1210,12 +1210,18 @@ class AppEntry(TendenciBaseModel):
     def status_msg(self):
         status = 'Pending'
 
-        if self.is_approved == True:
+        if self.is_approved:  # property
             status = 'Approved'
-        elif self.is_approved == False:
+        elif self.is_disapproved():  # method
             status = 'Disapproved'
 
         return status
+
+    def is_pending(self):
+        return self.is_approved == None
+
+    def is_disapproved(self):
+        return self.is_approved == False
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """

@@ -31,39 +31,17 @@
     border: 1px solid #CCC;
 }
 
-.t .memberships-wrap .membership-wrap-search {
-	position: relative;
-	background-color: white;
-}
-
-.t .memberships-wrap .membership-wrap-search h2 {
-    padding-bottom: 10px;
-}
-
-.t .memberships-wrap .membership-wrap-search h3 {
-    float: left;
-}
-
-.t .memberships-wrap .membership-wrap-search div.membership-status {
-    float: right;
-}
-
-.t .memberships-wrap .membership-wrap h2 {
-	width: 85%;
-}
-.t .memberships-wrap .membership-wrap .content {
-	margin-bottom: 10px;
-}
-.t .memberships-wrap .category {
-    margin-top: 5px;
-}
-
 /*= Membership Application Entry
 ---------------------------------- */
+.t .application-entry-wrap #member-number {
+	font-size: 1.5em;
+	/*background-color: red;*/
+	padding: 10px;
+}
 .t .application-entry-wrap .field {
     border: 1px solid silver;
     padding: 10px;
-    margin: 10px 0;
+    margin: 0 0 10px;
 }
 .t .application-entry-wrap .field .label {
     font-weight: bold;
@@ -136,11 +114,87 @@
 
 /* Membership details
  ------------------------- */
+ .t .memberships-wrap .membership-wrap-search {
+	border: 1px solid silver;
+	/*padding: 10px;*/
+	margin-bottom: 10px;
+	position: relative;
+	background-color: white;
+
+}
+
+.result-head {
+	background-color: #EEE;
+	padding: 10px;
+	margin: 7px 7px 0 7px;
+	/*cursor: pointer;*/
+}
+.result-head.approved {
+	border-top: 5px solid #7AE309;
+}
+.result-head.disapproved {
+	border-top: 5px solid #E30918;
+}
+.result-head.pending {
+	border-top: 5px solid #FFE44B;
+}
+.result-head .member-requires-approval {
+	font-weight: bold;
+	float: left;
+}
+.result-head .member-number {
+	font-weight: bold;
+	float: left;
+}
+.result-head .member-subscription {
+	float: left;
+	margin-top: 4px;
+}
+
+.result-head .member-status {
+	text-align: right;
+}
+.result-head .member-status a {
+	color: black;
+	text-decoration: underline;
+}
+.result-head .member-date {
+	font-size: .8em;
+	text-align: right;
+	margin-top: 4px;
+}
+.result-content {
+	padding: 10px;
+}
+
+.result-content .member-name {
+	margin-bottom: 3px;
+}
+
+/*.t .memberships-wrap .membership-wrap-search h2 {
+    padding-bottom: 10px;
+}
+.t .memberships-wrap .membership-wrap-search h3 {
+    float: left;
+}
+.t .memberships-wrap .membership-wrap-search div.membership-status {
+    float: right;
+}*/
+
 .t .membership-wrap .meta, .t .membership-wrap-search .meta {
 	border: 1px solid silver;
 	padding: 10px;
 	background-color: #F7F7F7;
 	margin-top: 10px;
+}
+.t .memberships-wrap .membership-wrap h2 {
+	width: 85%;
+}
+.t .memberships-wrap .membership-wrap .content {
+	margin-bottom: 10px;
+}
+.t .memberships-wrap .category {
+    margin-top: 5px;
 }
 .t .membership-wrap .meta .tags {
 	margin-bottom: 5px;
@@ -358,7 +412,7 @@ div.forms fieldset.contact legend {
     font-size: 1em;
 }
 .approval-status.approved {
-    background-color: #92ff6c;
+    background-color: #7AE309;
     border-color: green;
 }
 .approval-status.disapproved {
