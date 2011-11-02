@@ -50,6 +50,11 @@
                 {{ entry.decision_dt|date_long }}
             {% endif %}
         </div>
+    
+
+        {% if entry.is_approved %}
+        <div id="member-number">{{ entry.membership.member_number }}</div>
+        {% endif %}
 
     	{% for field in entry.fields.all %}
     		{% if field.field.field_type == 'FileField' %}
@@ -97,7 +102,7 @@
 
     {% if entry.membership %}
     <div class="profile-link">
-        <a href="{% url profile  entry.membership.user %}#userview-memberships">{% trans "View Profile &nbsp; Membership" %}</a>
+        <a href="{% url profile  entry.membership.user %}#userview-memberships">{% trans "View Profile &amp; Membership" %}</a>
     </div>
     {% endif %}
 
