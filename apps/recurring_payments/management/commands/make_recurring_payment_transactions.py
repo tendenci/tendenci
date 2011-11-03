@@ -63,7 +63,7 @@ class Command(BaseCommand):
 
             if rp_invoices:
                 payment_profiles = PaymentProfile.objects.filter(
-                            recurring_payment=rp,
+                            customer_profile_id=rp.customer_profile_id,
                             status=1,
                             status_detail='active'
                             ).order_by('-update_dt')

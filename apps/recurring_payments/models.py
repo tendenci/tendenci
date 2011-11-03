@@ -1,4 +1,5 @@
 import uuid
+import re
 from datetime import datetime
 from decimal import Decimal
 from django.db import models
@@ -117,17 +118,32 @@ class RecurringPayment(models.Model):
         """Add the customer profile on payment gateway
         """
         if self.id and (not self.customer_profile_id):
-            # create a customer profile on payment gateway
-            cp = CIMCustomerProfile()
-            d = {'email': self.user.email,
-                 'description': self.description,
-                 'customer_id': str(self.id)}
-            success, response_d = cp.create(**d)
-            print success, response_d
-            if success:
-                self.customer_profile_id = response_d['customer_profile_id']
-               
+            # check if this user already has a customer profile,
+            # if so, no need to create a new one.
+            cp_id_list = RecurringPayment.objects.filter(user=self.user).exclude(
+                                customer_profile_id=''
+                                ).values_list('customer_profile_id', flat=True)
+            if cp_id_list:
+                self.customer_profile_id  = cp_id_list[0]
                 self.save()
+            else:         
+                # create a customer profile on payment gateway
+                cp = CIMCustomerProfile()
+                d = {'email': self.user.email,
+                     'customer_id': str(self.id)}
+                success, response_d = cp.create(**d)
+                if success:
+                    self.customer_profile_id = response_d['customer_profile_id']
+                    self.save()
+                else:
+                    if response_d["message_code"] == 'E00039':
+                        p = re.compile('A duplicate record with ID (\d+) already exists.', re.I)
+                        match = p.search(response_d['message_text'])
+                        if match:
+                            self.customer_profile_id  = match.group(1)
+                            self.save()
+                                     
+                
             
     def populate_payment_profile(self, *args, **kwargs):
         """
@@ -144,7 +160,7 @@ class RecurringPayment(models.Model):
         """
         valid_cim_payment_profile_ids = []
         invalid_cim_payment_profile_ids = [] 
-        print self.customer_profile_id
+
         if not self.customer_profile_id:
             self.add_customer_profile()
             # return immediately -there is no payment profile yet
@@ -187,14 +203,14 @@ class RecurringPayment(models.Model):
                             valid_cim_payment_profile_ids.append(cim_payment_profile['customer_payment_profile_id'])
                             
                
-                list_cim_payment_profile_ids = [cim_payment_profile['customer_payment_profile_id'] 
+                list_cim_payment_profile_ids = [cim_payment_profile['customer_payment_profile_id']
                                                 for cim_payment_profile in cim_payment_profiles]
                 if not validation_mode:
                     valid_cim_payment_profile_ids.extend(list_cim_payment_profile_ids)
                 
                 # 3) if customer_payment_profile_id is not valid,
                 #    delete it from database - keep only the valid ones on local
-                payment_profiles = PaymentProfile.objects.filter(recurring_payment=self)
+                payment_profiles = PaymentProfile.objects.filter(customer_profile_id=self.customer_profile_id)
                 for pp in payment_profiles:
                     if pp.payment_profile_id not in list_cim_payment_profile_ids:
                         pp.delete()
@@ -206,7 +222,7 @@ class RecurringPayment(models.Model):
                                 payment_profile_id=customer_payment_profile_id)
                         
                     if not payment_profiles:
-                        payment_profile = PaymentProfile(recurring_payment=self,
+                        payment_profile = PaymentProfile(customer_profile_id=self.customer_profile_id,
                                                          payment_profile_id=customer_payment_profile_id,
                                                          creator=self.user,
                                                          owner=self.user,
@@ -426,7 +442,8 @@ class RecurringPayment(models.Model):
         return d['total']
         
 class PaymentProfile(models.Model):
-    recurring_payment =  models.ForeignKey(RecurringPayment)
+    #recurring_payment =  models.ForeignKey(RecurringPayment)
+    customer_profile_id = models.CharField(max_length=100)
     # assigned by gateway
     payment_profile_id = models.CharField(max_length=100, unique=True)
     card_type = models.CharField(max_length=50, null=True)
