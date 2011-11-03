@@ -627,5 +627,39 @@
         "scope_category": "global", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "paid", 
+        "description": "Select whether or not this site is paid or is still on free trial.", 
+        "data_type": "string", 
+        "update_dt": "2011-11-01 16:24:03", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "freepaid", 
+        "value": "paid", 
+        "label": "Free or Paid", 
+        "input_value": "paid,free", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "developer", 
+        "store": true, 
+        "updated_by": ""
+    },
+    {
+        "default_value": "Schipul", 
+        "description": "Select the partner hosting this site.", 
+        "data_type": "string", 
+        "update_dt": "2011-11-01 16:24:03", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "partner", 
+        "value": "Schipul", 
+        "label": "Hosting Partner", 
+        "input_value": "Self-Signup,Schipul", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "developer", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

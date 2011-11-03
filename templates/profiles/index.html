@@ -325,6 +325,7 @@
     <div id="userview-memberships">
         {% for membership in memberships %}
         <div class="membership-wrap">
+        	<div><strong>{{ membership.member_number }}</strong></div>
             <div>{% trans "Membership Type:" %} <strong>{{ membership.membership_type }}</strong></div>
             <div>{% trans "Joined:" %} <strong>{{ membership.subscribe_dt|date }} ({{ membership.subscribe_dt|timesince }})</strong></div>
 

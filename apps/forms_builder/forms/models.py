@@ -28,6 +28,8 @@ FIELD_CHOICES = (
     ("FileField", _("File upload")),
     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
     ("DateTimeField", _("Date/time")),
+    ("CharField/forms_builder.forms.widgets.Description", _("Description")),
+    ("CharField/forms_builder.forms.widgets.Header", _("Section Heading")),
     #("ModelMultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi checkbox")),
 )
 
