@@ -304,7 +304,7 @@ def api_get_rp_token(data):
          'gateway_error': gateway_error}
     
     # also pass the payment_profile_id
-    payment_profiles = PaymentProfile.objects.filter(recurring_payment=rp, 
+    payment_profiles = PaymentProfile.objects.filter(customer_profile_id=rp.customer_profile_id, 
                                                     status=1, 
                                                     status_detail='active')
     if payment_profiles:
