@@ -242,7 +242,7 @@ def split_str(s, args):
     """
     if args:
         if isinstance(s, str):
-            splitter = args[1]
+            splitter = args[0]
             return s.split(splitter)
         return s
     return s

@@ -33,7 +33,7 @@ def newsletter_articles_list(request, articles_days, simplified):
                                     'simplified':simplified},
                                    context_instance=RequestContext(request))
     
-    return art_content
+    return articles, art_content
 
 def newsletter_news_list(request, news_days, simplified):
     from news.models import News
@@ -52,7 +52,7 @@ def newsletter_news_list(request, news_days, simplified):
                                     'simplified':simplified},
                                    context_instance=RequestContext(request))
     
-    return news_content
+    return news, news_content
 
 
 def newsletter_pages_list(request, pages_days, simplified):
@@ -73,7 +73,7 @@ def newsletter_pages_list(request, pages_days, simplified):
                                     'simplified':simplified},
                                    context_instance=RequestContext(request))
     
-    return page_content
+    return pages, page_content
 
 
 def newsletter_jobs_list(request, jobs_days, simplified):
@@ -93,4 +93,4 @@ def newsletter_jobs_list(request, jobs_days, simplified):
                                     'simplified':simplified},
                                    context_instance=RequestContext(request))
     
-    return job_content
+    return jobs, job_content

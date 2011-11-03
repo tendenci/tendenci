@@ -31,7 +31,36 @@
 		{% with entry.object as entry %}
 		<div class="membership-wrap-search">
 
-            <h2>
+            <div class="result-head {{ entry.status_msg|lower }}">
+                {% if entry.is_pending %}
+                {% else %}
+                <div class="member-number">{{ entry.membership.member_number }}</div>
+                {% endif %}
+
+                <div class="member-status"><a 
+                    href="{% url membership.application_entries entry.pk %}">
+                    {{ entry.status_msg }}</a></div>
+
+                {% if entry.is_renewal %}
+                <div class="member-subscription">Renewal</div>
+                {% else %}
+                <div class="member-subscription">Join</div>
+                {% endif %}
+
+                {% if entry.is_pending %}
+                <div class="member-date">Since {{ entry.create_dt|date }}</div>
+                {% else %}
+                <div class="member-date">{% firstof entry.decision_dt|date  entry.create_dt|date %}</div>
+                {% endif %}
+
+                <div style="clear:both:"></div>
+            </div>
+            <div class="result-content">
+                <div class="member-name">{{ entry.name }}</div>
+                <div class="member-email">{{ entry.email }}</div>
+            </div>
+
+            <!-- <h2>
                 <a href="{% url membership.application_entries entry.pk %}">
                 {% firstof entry.name trans "Name was not recorded" %}
                 &nbsp;-&nbsp; {% firstof entry.email trans "Email was not recorded" %}
@@ -52,7 +81,7 @@
                     </div>
                     {% endif %}
                 {% endif %}
-            {% endif %}
+            {% endif %} -->
 
             <div style="clear:both;"></div>
 

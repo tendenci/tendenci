@@ -1,7 +1,7 @@
 import copy
 from registry.exceptions import AlreadyRegistered, NotRegistered
 from registry.utils import RegisteredApps
-
+from registry.cache import cache_reg_apps, get_reg_apps, delete_reg_apps_cache
 
 class RegistrySite(object):
     """
@@ -31,6 +31,10 @@ class RegistrySite(object):
             raise AlreadyRegistered('The model %s is already registered' % model.__class__)
 
         self._registry[model] = registry_class(model)
+        
+        #reset cache of the registered apps
+        delete_reg_apps_cache()
+        cache_reg_apps(self.get_registered_apps())
 
     def unregister(self, model):
         """
@@ -39,8 +43,18 @@ class RegistrySite(object):
         if model not in self._registry:
             raise NotRegistered('The model %s is not registered' % model.__class__)
         del(self._registry[model])
+        
+        #reset cache of the registered apps
+        delete_reg_apps_cache()
+        cache_reg_apps(self.get_registered_apps())
 
     def get_registered_apps(self):
-        return RegisteredApps(self._registry)
+        cached_apps = get_reg_apps()
+        if cached_apps:
+            #build RegisteredApps object from the cache
+            apps = RegisteredApps(cached_apps, build_from_cache=True)
+        else:
+            apps = RegisteredApps(self._registry)
+        return apps
 
 site = RegistrySite()

@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     ## swfupload ##
     
     # /photos/
-    url(r'^$', 'photos.views.search', name='photos_search'),
+    url(r'^$', 'photos.views.photoset_view_latest', name='photoset_latest'),
     url(r'^search/$', 'photos.views.search', name='photos_search'),
     # /photos/batch-add/
     url(r'^batch-add/$', 'photos.views.photos_batch_add', name='photos_batch_add'),
