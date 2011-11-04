@@ -42,11 +42,15 @@
 {% dashboard_nav user %}	
 
 <div class="main-panel">
-    {% ifequal "Self-Signup" SITE_DEVELOPER_PARTNER|join:"" %}
-        {% if admin %}
-        <div style="padding: 10px 10px 0 10px; font-size: 16px; background-color: #efe; border: solid 2px #aca; "><p>Check out the <a href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">Tendenci Guide</a> to get started.</p></div>
-        {% endif %}
-    {% endifequal %}
+    {% if SITE_DEVELOPER_PARTNER %}
+        {% ifequal "Self-Signup" SITE_DEVELOPER_PARTNER|join:"" %}
+            {% if admin %}
+            <div style="padding: 10px 10px 0 10px; font-size: 16px; background-color: #efe; border: solid 2px #aca; ">
+                <p>Check out the <a href='{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}'>Tendenci Guide</a> to get started.</p>
+            </div>
+            {% endif %}
+        {% endifequal %}
+    {% endif %}
 	<div class="modules">
 	<ul>
 
