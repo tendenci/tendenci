@@ -247,35 +247,38 @@ def api_add_rp(data):
         
     # start the real work
     
-    # get or create a user account with this email
-    users = User.objects.filter(email=email)
-    if users:
-        u = users[0]
-    else:
-        u = User()
-        u.email=email
-        u.username = data.get('username', '')
-        if not u.username:
-            u.username = email.split('@')[0]
-        u.username = get_unique_username(u)
-        raw_password = data.get('password', '')
-        if not raw_password:
-            raw_password = User.objects.make_random_password(length=8)
-        u.set_password(raw_password)
-        u.first_name = data.get('first_name', '')
-        u.last_name = data.get('last_name', '')
-        u.is_staff = False
-        u.is_superuser = False
-        u.save()
-        
-        profile = Profile.objects.create(
-               user=u, 
-               creator=u, 
-               creator_username=u.username,
-               owner=u, 
-               owner_username=u.username, 
-               email=u.email
-            )
+#    # get or create a user account with this email
+#    users = User.objects.filter(email=email)
+#    if users:
+#        u = users[0]
+#    else:
+
+    # always create a new user account - This is very important!
+    # it is to prevent hacker from trying to use somebody else's account. 
+    u = User()
+    u.email=email
+    u.username = data.get('username', '')
+    if not u.username:
+        u.username = email.split('@')[0]
+    u.username = get_unique_username(u)
+    raw_password = data.get('password', '')
+    if not raw_password:
+        raw_password = User.objects.make_random_password(length=8)
+    u.set_password(raw_password)
+    u.first_name = data.get('first_name', '')
+    u.last_name = data.get('last_name', '')
+    u.is_staff = False
+    u.is_superuser = False
+    u.save()
+    
+#    profile = Profile.objects.create(
+#           user=u, 
+#           creator=u, 
+#           creator_username=u.username,
+#           owner=u, 
+#           owner_username=u.username, 
+#           email=u.email
+#        )
     
     # add a recurring payment entry for this user
     rp.user = u
