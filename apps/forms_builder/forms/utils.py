@@ -15,7 +15,10 @@ def generate_email_body(entry):
         if field.field.field_type == 'FileField':
             url = site_url + settings.MEDIA_URL + field.value
             body.append('<em><a href="%s">%s</a></em></p>' % (url, basename(field.value)))
-        else:    
+#         # Check if Boolean and display the output nicer than True/False
+#         elif field.field.field_type == 'CheckboxField':
+#             field.value.filter('yesno')
+        else:
             body.append('<em>%s</em></p>' % field.value)
         
     return ''.join(body)
