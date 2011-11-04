@@ -68,7 +68,9 @@ def view_account(request, recurring_payment_id,
                                         
     # get ready for the add/update payment method button
     rp.populate_payment_profile()
-    payment_profiles = PaymentProfile.objects.filter(recurring_payment=rp, status=1, status_detail='active')
+    payment_profiles = PaymentProfile.objects.filter(
+                        customer_profile_id=rp.customer_profile_id, 
+                        status=1, status_detail='active')
     if payment_profiles:
         payment_profile = payment_profiles[0]
     else:
@@ -129,22 +131,30 @@ def customers(request, template_name="recurring_payments/customers.html"):
                                               }, 
         context_instance=RequestContext(request))
 
-@login_required   
-def transaction_receipt(request, recurring_payment_id, payment_transaction_id, 
+  
+def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
                         template_name="recurring_payments/transaction_receipt.html"):
     """Display a transaction receipt.
     """
-    rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
+    if request.user.is_authenticated():
+        rp = get_object_or_404(RecurringPayment, pk=rp_id)
+        # only admin or user self can access this page
+        if not is_admin(request.user) and request.user.id <> rp.user.id:
+            raise Http403
+    else:
+        if not rp_guid: raise Http403
+        rp = get_object_or_404(RecurringPayment, pk=rp_id, guid=rp_guid)
+    
     payment_transaction = get_object_or_404(PaymentTransaction, 
                                             pk=payment_transaction_id)
-    
-    # only admin or user self can access this page
-    if not is_admin(request.user) and request.user.id <> rp.user.id:
-        raise Http403
+    payment_profile = PaymentProfile.objects.filter(
+                    payment_profile_id=payment_transaction.payment_profile_id)[0]
+
     
     return render_to_response(template_name, {
                     'rp': rp,
-                    'payment_transaction': payment_transaction
+                    'payment_transaction': payment_transaction,
+                    'payment_profile': payment_profile
                                               }, 
         context_instance=RequestContext(request))
     

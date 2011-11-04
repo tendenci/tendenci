@@ -45,7 +45,7 @@
  
 <div class="t">
 	<div class="rp-receipt">
-		<h1>Recurring Payment Receipt </h1>
+		<h1>Payment Receipt </h1>
 	    
 	
 		<div class="rp-receipt-label">Name</div>
@@ -59,6 +59,10 @@
 		
 		<div class="rp-receipt-label">Amount Received</div>
 		<div class="rp-receipt-field">{{ payment_transaction.amount|format_currency }}</div>
+		<div class="clear-left"></div>
+		
+		<div class="rp-receipt-label">Card #</div>
+		<div class="rp-receipt-field">****{{ payment_profile.card_num }}</div>
 		<div class="clear-left"></div>
 		
 		<div class="rp-receipt-label">Description</div>
