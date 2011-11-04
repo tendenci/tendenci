@@ -3,6 +3,8 @@ from django.template.loader import render_to_string
 from django.template import TemplateDoesNotExist
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from dateutil.relativedelta import relativedelta
 from emails.models import Email
 from site_settings.utils import get_setting
 from profiles.models import Profile
@@ -245,21 +247,29 @@ def api_add_rp(data):
         
     # start the real work
     
-    # get or create a user account s with this email
+    # get or create a user account with this email
     users = User.objects.filter(email=email)
     if users:
         u = users[0]
     else:
         u = User()
         u.email=email
-        u.username = email.split('@')[0]
+        u.username = data.get('username', '')
+        if not u.username:
+            u.username = email.split('@')[0]
         u.username = get_unique_username(u)
-        u.set_password(User.objects.make_random_password(length=8))
+        raw_password = data.get('password', '')
+        if not raw_password:
+            raw_password = User.objects.make_random_password(length=8)
+        u.set_password(raw_password)
+        u.first_name = data.get('first_name', '')
+        u.last_name = data.get('last_name', '')
         u.is_staff = False
         u.is_superuser = False
         u.save()
         
-        profile = Profile.objects.create(user=u, 
+        profile = Profile.objects.create(
+               user=u, 
                creator=u, 
                creator_username=u.username,
                owner=u, 
@@ -343,15 +353,44 @@ def api_verify_rp_payment_profile(data):
         return False, {}
     
     d = {}
+    pay_now = data.get('pay_now', '')
+    if pay_now == 'yes': pay_now = True
+    else: pay_now = False
+    
     # pp - customer payment_profile
-    valid_cpp_ids, invalid_cpp_ids = rp.populate_payment_profile(validation_mode='liveMode')
+    validation_mode=''
+    if not pay_now: 
+        validation_mode='liveMode'
+        
+    is_valid = True
+        
+    valid_cpp_ids, invalid_cpp_ids = rp.populate_payment_profile(validation_mode=validation_mode)
     if valid_cpp_ids:
         d['valid_cpp_id'] = valid_cpp_ids[0]
+        if pay_now:
+            # make a transaction NOW
+            billing_cycle = {'start': rp.billing_start_dt, 
+                             'end': rp.billing_start_dt + relativedelta(months=rp.billing_frequency)}
+            billing_dt = datetime.now()
+            rp_invoice = rp.create_invoice(billing_cycle, billing_dt)
+            payment_transaction = rp_invoice.make_payment_transaction(d['valid_cpp_id'])
+            if not payment_transaction.status:
+                d['invalid_cpp_id'] = d['valid_cpp_id']
+                d['valid_cpp_id'] = ''
+                is_valid = False
+            else:
+                # send out the invoice view page
+                d['receipt_url'] = '%s%s' % (get_setting('site', 'global', 'siteurl'), 
+                                             reverse('recurring_payment.transaction_receipt', 
+                                                args=[rp.id, 
+                                                payment_transaction.id,
+                                                rp.guid]))
+            
     
     if invalid_cpp_ids:
         d['invalid_cpp_id']= invalid_cpp_ids[0]
                   
-    return True, d
+    return is_valid, d
 
 
     
