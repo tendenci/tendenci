@@ -144,11 +144,16 @@ def format_currency(value):
     return tcurrency(value)
 format_currency.is_safe = True
 
-
 @register.filter
 def scope(object):
     return dir(object)
 
+@register.filter
+def obj_type(object):
+    """
+    Return object type
+    """
+    return type(object)
 
 @register.filter
 @stringfilter
