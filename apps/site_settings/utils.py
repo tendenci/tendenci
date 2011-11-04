@@ -140,7 +140,7 @@ def get_form_list(user):
     forms = Form.objects.search(user=user)
     #To avoid hitting the database n time by calling .object
     #We will use the values in the index field.
-    l = []
+    l = [('','None')]
     for form in forms:
         l.append((form.primary_key, form.title))
     
@@ -155,7 +155,7 @@ def get_box_list(user):
     boxes = Box.objects.search(user=user)
     #To avoid hitting the database n time by calling .object
     #We will use the values in the index field.
-    l = []
+    l = [('','None')]
     for box in boxes:
         l.append((box.primary_key, box.title))
     
