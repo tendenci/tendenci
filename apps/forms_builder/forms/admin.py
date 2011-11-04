@@ -5,6 +5,7 @@ from mimetypes import guess_type
 from os.path import join
 
 from django.conf import settings
+from django.utils.encoding import iri_to_uri
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
@@ -48,11 +49,13 @@ class FormAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {"fields": ("title", "intro", "response", "completion_url")}),
         (_("Email"), {"fields": ('subject_template', "email_from", "email_copies")}),
-        ('Administrative', {'fields': (
-            'allow_anonymous_view',
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
+        )}),
+        ('Publishing Status', {'fields': (
             'status',
             'status_detail'
         )}),
@@ -195,5 +198,12 @@ class FormAdmin(admin.ModelAdmin):
         instance = update_perms_and_save(request, form, instance)
         
         return instance
+    
+    def change_view(self, request, object_id, extra_context=None):
+        result = super(FormAdmin, self).change_view(request, object_id, extra_context)
+
+        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
+            result['Location'] = iri_to_uri("%s") % request.GET.get('next')
+        return result
 
 admin.site.register(Form, FormAdmin)

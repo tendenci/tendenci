@@ -1,5 +1,6 @@
 {% extends "site_base.html" %}
 {% load styled_forms %}
+{% load forms_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} Contact Us{% endblock %}
@@ -11,31 +12,24 @@
 
 {% block body %}
 <div class="t">
-    <h1>{% trans "How Can We Help You?" %}</h1>
+{% if SITE_GLOBAL_CONTACT_FORM %}
+    {% embed_form SITE_GLOBAL_CONTACT_FORM %}
+{% else %}
+    <h1>{% trans "Contact Us" %}</h1>
 
     <div class="contact-form-wrap">
-	
-		{% blocktrans %}
-		<p>Hi there!  Thanks for filling out a contact form, your website is feeling more optimized and marketable already.</p>
-		<p>Our Tendenci Membership Management software is a great way to power your website, grow your community and make your life easier.  We can't wait to help you get started!</p>
-		<div style="margin-bottom:20px;">
-			<p>If contact forms aren't your style, here are a few other ways to get in touch with our Tendenci team:</p>
-			<ul>
-				<li>Sales team:  (281) 497.6567, ext. 700 or email us at sales AT schipul DOT com</li>
-				<li>Help Desk:  (281) 497.6567, ext. 411 or email us at support AT schipul DOT com</li>
-				<li>PR and Communications:  (281) 497.6567, ext. 519 or email us at communications AT schipul DOT com</li>
-				<li>Connect on Twitter:  <a href="http://www.twitter.com/tendenci">www.twitter.com/tendenci</a></li>
-				<li>Friend us on Facebook:  <a href="http://www.facebook.com/tendenci">www.facebook.com/tendenci</a></li>
-			</ul>
-		</div>
-		{% endblocktrans %}
+    
+        {% blocktrans %}
+        <p>Please fill out the form below.</p>
+        {% endblocktrans %}
 
-    	<form action="{% url form %}" method="post">{% csrf_token %}
-    	<div class="forms">
+        <form action="{% url form %}" method="post">{% csrf_token %}
+        <div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Contact {{ SITE_GLOBAL_SITEDISPLAYNAME|capfirst }}" />
-		</div>
+            <input type="submit" value="Contact {{ SITE_GLOBAL_SITEDISPLAYNAME|capfirst }}" />
+        </div>
         </form>
     </div>
+{% endif %}
 </div>
 {% endblock %}
