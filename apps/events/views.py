@@ -870,8 +870,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                 [reg8n.registrant.email],
                                 'event_registration_confirmation',
                                 {   
-                                    'site_label': site_label,
-                                    'site_url': site_url,
+                                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                                    'SITE_GLOBAL_SITEURL': site_url,
                                     'self_reg8n': self_reg8n,
                                     'reg8n': reg8n,
                                     'event': event,

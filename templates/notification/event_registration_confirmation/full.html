@@ -3,7 +3,7 @@
 <html><body>
 
 <h1 style="margin-bottom:0;">{% blocktrans with event.title as title and event.start_dt|date:"N j, Y \a\t f A" as start_dt %}{{ title }} on {{ start_dt }}{% endblocktrans %}</h1>
-<h3 style="margin:0;">{{ site_label }} {% trans "Event Registration Confirmation" %}</h3>
+<h3 style="margin:0;">{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Event Registration Confirmation" %}</h3>
 
 {% if price <= 0 %}
     <h3 style="margin-top:0;">{% trans "Price: Free!" %}</h3>
@@ -39,7 +39,7 @@
                 </div>
             {% else %}
                 {% trans "Almost Registered. Payment is still required." %}
-                <a href="{{ site_url }}{% url payment.pay_online reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "Complete this registration." %}</a>
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url payment.pay_online reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "Complete this registration." %}</a>
             {% endif %}
         </div>
     {% else %}
@@ -67,15 +67,15 @@
 <h3 style="margin-bottom:3px;">{% trans "Helpful Links" %}</h3>
 <ol style="margin-top:0;">
     <li>
-        <a href="{{ site_url }}{% url event.registration_confirmation event.pk reg8n.registrant.hash %}">
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registration_confirmation event.pk reg8n.registrant.hash %}">
             {% trans "Registration Details" %}
         </a>
     </li>
-    <li><a href="{{ site_url }}{{ event.get_absolute_url }}">{% trans "Event Details" %}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "Event Details" %}</a></li>
     {% if for_admin %}
-        <li><a href="{{ site_url }}{% url event.registrant.roster event.pk %}">{% trans "Event Roster" %}</a></li>
+        <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registrant.roster event.pk %}">{% trans "Event Roster" %}</a></li>
     {% endif %}
-    <li><a href="{{ site_url }}">{{ site_label }} - {{ site_url }}</a></li>
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}">{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ SITE_GLOBAL_SITEURL }}</a></li>
 </ol>
 
 {% if for_admin %}
@@ -84,7 +84,7 @@
 {% else %}
     {% if self_reg8n and not reg8n.registrant.user %}
         <div style="margin-bottom:5px;">
-            <a href="{{ site_url }}{% url registration_register %}">
+            <a href="{{ SITE_GLOBAL_SITEURL }}{% url registration_register %}">
                 {% trans "You should register for an account!" %}
             </a>
         </div>
