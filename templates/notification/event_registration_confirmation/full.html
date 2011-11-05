@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load email_filters %}
 
 <html><body>
 
@@ -61,7 +62,7 @@
 {% endif %}
 
 {% if event.description %}
-<div>{{ event.description|safe }}</div>
+<div>{{ event.description|relative_to_absolute_urls|safe }}</div>
 {% endif %}
 
 <h3 style="margin-bottom:3px;">{% trans "Helpful Links" %}</h3>
