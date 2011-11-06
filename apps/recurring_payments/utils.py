@@ -378,16 +378,26 @@ def api_verify_rp_payment_profile(data):
             rp_invoice = rp.create_invoice(billing_cycle, billing_dt)
             payment_transaction = rp_invoice.make_payment_transaction(d['valid_cpp_id'])
             if not payment_transaction.status:
+                # payment failed
+                rp.num_billing_cycle_failed += 1
                 d['invalid_cpp_id'] = d['valid_cpp_id']
                 d['valid_cpp_id'] = ''
                 is_valid = False
             else:
+                # success
+                now = datetime.now()
+                rp.last_payment_received_dt = now
+                rp_invoice.payment_received_dt = now
+                rp_invoice.save()
+                rp.num_billing_cycle_completed += 1
+                
                 # send out the invoice view page
                 d['receipt_url'] = '%s%s' % (get_setting('site', 'global', 'siteurl'), 
                                              reverse('recurring_payment.transaction_receipt', 
                                                 args=[rp.id, 
                                                 payment_transaction.id,
                                                 rp.guid]))
+            rp.save()
             
     
     if invalid_cpp_ids:
