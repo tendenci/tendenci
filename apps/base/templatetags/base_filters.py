@@ -156,6 +156,18 @@ def obj_type(object):
     return type(object)
 
 @register.filter
+def is_iterable(object):
+    """
+    Return boolean
+    Is the object iterable or not
+    """
+    try:
+        iter(object)
+        return True
+    except TypeError:
+        return False
+
+@register.filter
 @stringfilter
 def basename(path):
     from os.path import basename
