@@ -128,20 +128,21 @@ def check_setting(scope, scope_category, name):
         return True
         
     #check the dne cache
-    keys.append("DNE")
-    dne_key = '.'.join(keys)
+    #keys.append("DNE")
+    #dne_key = '.'.join(keys)
     
-    setting = cache.get(dne_key)
-    if setting:
-        return False
+    #setting = cache.get(dne_key)
+    #if setting:
+    #    return False
     
     #check the db if it is not in the cache
     exists = Setting.objects.filter(scope=scope, 
         scope_category=scope_category, name=name).exists()
     
-    if not exists:
+    #if not exists:
+    #    print keys
         #cache with the dne_key if the setting doens't exist
-        cache.set(dne_key, True)
+    #    cache.set(dne_key, True)
     
     return exists
 
