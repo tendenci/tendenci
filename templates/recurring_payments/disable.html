@@ -43,9 +43,10 @@
 	 
 	 <h2 style="color: red;">Are you sure you want to disable <a href="{% url recurring_payment.view_account rp.id %}">this account</a>?</h2>
 	 <div> 		
-	<form action="{% url recurring_payment.view_account rp.id %}" method="post">{% csrf_token %}
+	<form action="{% url recurring_payment.disable_account rp.id %}" method="post">{% csrf_token %}
 	<input type="hidden" name="id" value="{{rp.id}}" />
-	<input type="submit" value="Disable Account" />
+	<input type="submit" name="cancel" value="Cancel" />
+	<input type="submit" name="submit" value="Disable Account" />
 	</form>
 	</div>
   </div>

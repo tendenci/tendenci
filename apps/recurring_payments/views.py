@@ -181,52 +181,55 @@ def disable_account(request, rp_id,
     # only admin or user self can access this page
     if not is_admin(request.user) and request.user.id <> rp.user.id:
         raise Http403
-    
     if request.method == "POST":
-        rp.status_detail = 'disabled'
-        rp.save()
-        
-        log_description = '%s disabled' % rp._meta.object_name
-        
-        # delete the CIM account - only if there is no other rps sharing the same customer profile
-        if rp.customer_profile_id:
+        if request.POST.get('cancel'):
+            return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
+        else:
             
-            has_other_rps = RecurringPayment.objects.filter(
-                                        customer_profile_id=rp.customer_profile_id
-                                        ).exclude(id=rp.id).exists()
-            if not has_other_rps:
-                cim_customer_profile = CIMCustomerProfile(rp.customer_profile_id)
-                cim_customer_profile.delete()
+            rp.status_detail = 'disabled'
+            rp.save()
+            
+            log_description = '%s disabled' % rp._meta.object_name
+            
+            # delete the CIM account - only if there is no other rps sharing the same customer profile
+            if rp.customer_profile_id:
                 
-                # delete payment profile belonging to this recurring payment
-                PaymentProfile.objects.filter(customer_profile_id=rp.customer_profile_id).delete()
-                
-                log_description = "%s as well as its CIM account." % log_description
-                
-                rp.customer_profile_id = ''
-                rp.save()
-                
-        
-        
-        # send an email to admin
-        rp_email_notice = RecurringPaymentEmailNotices()
-        rp_email_notice.email_admins_account_disabled(rp, request.user)
-        
-        
-        # log an event
-        log_defaults = {
-                    'event_id' : 1120700,
-                    'event_data': '%s (%d) disabled by %s' % (rp._meta.object_name, rp.pk, request.user),
-                    'description': log_description,
-                    'user': request.user,
-                    'request': request,
-                    'instance': rp,
-        }
-        EventLog.objects.log(**log_defaults)
-        
-        messages.add_message(request, messages.INFO, 'Successfully disabled %s' % rp)
-                                                                     
-        return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
+                has_other_rps = RecurringPayment.objects.filter(
+                                            customer_profile_id=rp.customer_profile_id
+                                            ).exclude(id=rp.id).exists()
+                if not has_other_rps:
+                    cim_customer_profile = CIMCustomerProfile(rp.customer_profile_id)
+                    cim_customer_profile.delete()
+                    
+                    # delete payment profile belonging to this recurring payment
+                    PaymentProfile.objects.filter(customer_profile_id=rp.customer_profile_id).delete()
+                    
+                    log_description = "%s as well as its CIM account." % log_description
+                    
+                    rp.customer_profile_id = ''
+                    rp.save()
+                    
+            
+            
+            # send an email to admin
+            rp_email_notice = RecurringPaymentEmailNotices()
+            rp_email_notice.email_admins_account_disabled(rp, request.user)
+            
+            
+            # log an event
+            log_defaults = {
+                        'event_id' : 1120700,
+                        'event_data': '%s (%d) disabled by %s' % (rp._meta.object_name, rp.pk, request.user),
+                        'description': log_description,
+                        'user': request.user,
+                        'request': request,
+                        'instance': rp,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            messages.add_message(request, messages.INFO, 'Successfully disabled %s' % rp)
+                                                                         
+            return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
         
         
     return render_to_response(template_name, {

@@ -109,9 +109,9 @@
 <div class="t">
 <div id="t-rp">
 <div id="t-view">
- {% if isadmin %}
+
  {% rp_nav request.user rp %}
- {% endif %}
+ 
 		{% if not is_active %}
 		<div class="not-active-alert">This account is {{ rp.status_detail }}</div>
 		{% endif %}
