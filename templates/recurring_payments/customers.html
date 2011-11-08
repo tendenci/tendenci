@@ -32,6 +32,9 @@
 	#rp-totals th{
 		border-bottom: 1px dotted #ccc;
 	}
+	.not-active{
+		color: #ff0000 !important;
+	}
 </style>
 
 {% endblock %}
@@ -97,7 +100,7 @@
 					<td>{{ rp.billing_start_dt|date:"n/j/Y" }}</td>
 					<td>{{ rp.total_paid }}</td>
 					<td>{{ rp.get_outstanding_balance }}</td>
-					<td>{{ rp.status_detail }} </td>
+					<td {% if rp.status_detail != 'active' %}class="not-active"{% endif %}>{{ rp.status_detail }} </td>
 				</tr>
 			{% endwith %}
 			{% endfor %}
