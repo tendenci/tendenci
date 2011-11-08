@@ -64,7 +64,7 @@
 			</div>
 			{% if can_view_original %}
 			<div class="size-wrap{% if size_name == "original" %} highlight{% endif %}">
-				<div class="size-name"><a target="_blank" href="{{ original_source_url }}">{% trans "Original (opens in new tab)" %}</a></div>
+				<div class="size-name"><a target="_blank" href="{% url photo_original photo.pk %}">{% trans "Original (opens in new tab)" %}</a></div>
 				<div class="size-numerals">{{ photo.image.width }} x {{ photo.image.height }}</div>
 			</div>
 			{% endif %}
