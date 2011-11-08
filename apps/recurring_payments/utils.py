@@ -152,6 +152,28 @@ class RecurringPaymentEmailNotices(object):
             except TemplateDoesNotExist:
                 pass
             
+    def email_admins_account_disabled(self, recurring_payment, user_by):
+        """Notify admin that the recurring payment account is disabled.
+        """
+        self.email.recipient = self.admin_emails
+        if self.email.recipient:
+            template_name = "recurring_payments/email_admins_account_disabled.html"
+            try:
+                email_content = render_to_string(template_name, 
+                                               {'rp':recurring_payment,
+                                                'user_by': user_by,
+                                                'site_display_name': self.site_display_name,
+                                                'site_url': self.site_url
+                                                })
+                self.email.body = email_content
+                self.email.content_type = "html"
+                self.email.subject = 'Recurring Payment Account (ID:%d) Disabled by %s on %s' % ( 
+                       recurring_payment.id, user_by, self.site_display_name)
+                
+                self.email.send()
+            except TemplateDoesNotExist:
+                pass
+            
             
 def api_add_rp(data):
     """Create a recurrring payment account. Accepted format: json
