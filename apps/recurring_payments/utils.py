@@ -100,11 +100,11 @@ class RecurringPaymentEmailNotices(object):
                 self.email.body = email_content
                 self.email.content_type = "html"
                 if payment_transaction.status:
-                    self.email.subject = 'Payment received on %s' % ( 
-                                                            self.site_display_name)
+                    self.email.subject = 'Payment received ' 
                 else:
-                    self.email.subject = 'Payment failed on %s' % ( 
-                                                            self.site_display_name)
+                    self.email.subject = 'Payment failed ' 
+                self.email.subject = "%s for \"%s\" " % (self.email.subject, 
+                                                   payment_transaction.recurring_payment.description)
                 
                 self.email.send()
             except TemplateDoesNotExist:
@@ -304,6 +304,8 @@ def api_add_rp(data):
     
     # add a recurring payment entry for this user
     rp.user = u
+    # activate it when payment info is received
+    rp.status_detail = 'inactive'
     rp.save()
     
     return True, {'rp_id': rp.id}
@@ -391,7 +393,8 @@ def api_verify_rp_payment_profile(data):
         
     valid_cpp_ids, invalid_cpp_ids = rp.populate_payment_profile(validation_mode=validation_mode)
     if valid_cpp_ids:
-        d['valid_cpp_id'] = valid_cpp_ids[0]
+        d['valid_cpp_id'] = valid_cpp_ids[0]      
+        
         if pay_now:
             # make a transaction NOW
             billing_cycle = {'start': rp.billing_start_dt, 
@@ -402,16 +405,24 @@ def api_verify_rp_payment_profile(data):
             if not payment_transaction.status:
                 # payment failed
                 rp.num_billing_cycle_failed += 1
+                rp.save()
                 d['invalid_cpp_id'] = d['valid_cpp_id']
                 d['valid_cpp_id'] = ''
                 is_valid = False
             else:
                 # success
+                
+                # update rp and rp_invoice
+                if rp.status_detail <> 'active':
+                    rp.status_detail = 'active'
+                
                 now = datetime.now()
                 rp.last_payment_received_dt = now
+                rp.num_billing_cycle_completed += 1
+                rp.save()
                 rp_invoice.payment_received_dt = now
                 rp_invoice.save()
-                rp.num_billing_cycle_completed += 1
+                
                 
                 # send out the invoice view page
                 d['receipt_url'] = '%s%s' % (get_setting('site', 'global', 'siteurl'), 
@@ -419,7 +430,11 @@ def api_verify_rp_payment_profile(data):
                                                 args=[rp.id, 
                                                 payment_transaction.id,
                                                 rp.guid]))
-            rp.save()
+                
+                # email to user
+                rp_email_notice = RecurringPaymentEmailNotices()
+                rp_email_notice.email_customer_transaction_result(payment_transaction)
+                
             
     
     if invalid_cpp_ids:
