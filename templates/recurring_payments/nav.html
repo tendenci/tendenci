@@ -24,7 +24,9 @@
 	<li>
 		<span>{% trans 'Recurring Payment' %}</span>
 		<ul id="secondary">
+			{% if isadmin %}
 			<li><a href="{% url recurring_payment.customers %}">{% trans 'Recurring Payment' %}:</a></li> 
+			{% endif %}
 			
 			{% if nav_object %}
 				{% if isadmin or user.id == nav_object.user.id %}
