@@ -209,7 +209,10 @@
 		<h2>{% trans "Payment Details" %}</h2>
 
         <div class="payment-links">
-
+            
+            
+            <p>{% trans "Payment Method: " %}{{ registration.payment_method }}</p>
+            
         	{% if registration.invoice %}
             <a href="{% url invoice.view registration.invoice.pk registration.invoice.guid %}">{% trans "View invoice" %}</a>
             {% endif %}
