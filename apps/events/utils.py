@@ -358,8 +358,8 @@ def email_admins(event, event_price, self_reg8n, reg8n):
         email_list,
         'event_registration_confirmation',
         {
-            'site_label': site_label,
-            'site_url': site_url,
+            'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+            'SITE_GLOBAL_SITEURL': site_url,
             'self_reg8n': self_reg8n,
             'reg8n': reg8n,
             'event': event,
