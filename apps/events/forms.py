@@ -390,24 +390,26 @@ class RegistrationForm(forms.Form):
         """
         user = kwargs.pop('user', None)
         self.count = kwargs.pop('count', 0)
+        self.free_event = event_price <= 0
         super(RegistrationForm, self).__init__(*args, **kwargs)
+        
+        reg_conf =  event.registration_configuration
+        if reg_conf.can_pay_online:
+            payment_methods = reg_conf.payment_method.all()
+        else:
+            filters = {
+                'machine_name': 'credit-card'
+            }
+            payment_methods = reg_conf.payment_method.exclude(**filters).order_by('pk')
+        
+        self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
+            queryset=payment_methods, widget=forms.RadioSelect(), initial=payment_methods[0])
 
-        free_event = event_price <= 0
-        if not free_event:
-            reg_conf =  event.registration_configuration
-            if reg_conf.can_pay_online:
-                payment_methods = reg_conf.payment_method.all()
-            else:
-                filters = {
-                    'machine_name': 'credit-card'
-                }
-                payment_methods = reg_conf.payment_method.exclude(**filters)
-            
-            self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
-                queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=False)
-                
+        if not self.free_event:
             if user and is_admin(user):
                 self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial = event_price)
+        else:
+            self.fields['payment_method'].widget = forms.HiddenInput()
 
     def get_discount(self):
         if self.is_valid() and self.cleaned_data['discount_code']:
