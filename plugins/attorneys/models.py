@@ -18,7 +18,7 @@ CATEGORY_CHOICES = (
 
 class Attorney(TendenciBaseModel):
     category = models.CharField(_('category'), max_length=2, choices=CATEGORY_CHOICES)
-    
+
     first_name = models.CharField(_('first name'), max_length=36)
     middle_initial = models.CharField(_('middle initial'), max_length=36, blank=True)
     last_name = models.CharField(_('last name'), max_length=36)
@@ -36,26 +36,45 @@ class Attorney(TendenciBaseModel):
     education = models.TextField(_('education'), blank=True)
     casework = models.TextField(_('practice area and casework'), blank=True)
     admissions = models.TextField(_('admissions'), blank=True)
+    ordering = models.IntegerField(blank=True, null=True)
     tags = tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
-    
+
     objects = AttorneyManager()
-    
+
+    def __unicode__(self):
+        return self.first_name
+
+    def save(self, *args, **kwargs):
+        model = self.__class__
+
+        if self.ordering is None:
+            # Append
+            try:
+                last = model.objects.order_by('-ordering')[0]
+                self.ordering = last.ordering + 1
+            except IndexError:
+                # First row
+                self.ordering = 0
+
+        return super(Attorney, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = _('Attorney')
         verbose_name_plural = _('Attorneys')
         permissions = (("view_attorney","Can view Attorney"),)
-    
+        ordering = ('ordering',)
+
     @models.permalink
     def get_absolute_url(self):
         return ('attorneys.detail', [self.slug])
-        
+
     @property
     def name(self):
         if self.middle_initial:   
             return "%s %s. %s" % (self.first_name, self.middle_initial, self.last_name)
         else:
             return "%s %s" % (self.first_name, self.last_name)
-        
+
     @property
     def photo(self):
         """
