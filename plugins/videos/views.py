@@ -8,7 +8,10 @@ from models import Video, Category
 
 
 def index(request, cat_slug=None, template_name="videos/list.html"):
-    query = cat_slug
+    if cat_slug:
+        query = 'cat:%s' % cat_slug
+    else:
+        query = ''
     videos = Video.objects.search(query, user=request.user)
     videos = videos.order_by('-ordering','-create_dt')
 
@@ -30,6 +33,15 @@ def index(request, cat_slug=None, template_name="videos/list.html"):
             
 def search(request, cat_slug=None, template_name="videos/list.html"):
     query = request.GET.get('q', None)
+    cat = request.GET.get('cat', cat_slug)
+    if cat:
+        cat_query = 'cat:%s' % cat
+        query = ' '.join([query, cat_query])
+        try:
+            category = Category.objects.get(slug=cat)
+        except:
+            pass
+
     videos = Video.objects.search(query, user=request.user)
     videos = videos.order_by('-ordering','-create_dt')
     categories = Category.objects.all()   
