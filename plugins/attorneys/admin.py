@@ -23,10 +23,12 @@ class AttorneyAdmin(admin.ModelAdmin):
     class Meta:
         model = Attorney
         
-    list_display = ['view_on_site', 'edit_link', "last_name", "first_name", "position", "category"]
+    list_display = ['view_on_site', 'edit_link', "last_name", "first_name", "position", "category", "ordering"]
     list_filter = ["category"]
     prepopulated_fields = {'slug': ['first_name','last_name']}
     form = AttorneyForm
+    ordering = ['ordering']
+    list_editable = ['ordering']
     inlines = [PhotoInline,]
     
     fieldsets = (
@@ -66,6 +68,9 @@ class AttorneyAdmin(admin.ModelAdmin):
     class Media:
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery-ui-1.8.2.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
 
     def edit_link(self, obj):

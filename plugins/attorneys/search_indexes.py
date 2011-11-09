@@ -15,5 +15,6 @@ class AttorneyIndex(TendenciBaseSearchIndex):
     city = indexes.CharField(model_attr='city')
     state = indexes.CharField(model_attr='state')
     zip = indexes.CharField(model_attr='zip')
+    ordering = indexes.IntegerField(model_attr='ordering')
 
 site.register(Attorney, AttorneyIndex)
