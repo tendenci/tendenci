@@ -15,6 +15,7 @@ from recurring_payments.authnet.utils import get_token, get_test_mode
 from perms.utils import is_admin
 from base.http import Http403
 #from site_settings.utils import get_setting
+from base.decorators import ssl_required
 
 @login_required
 def manage_payment_info(request, recurring_payment_id, 
@@ -70,8 +71,9 @@ def manage_payment_info(request, recurring_payment_id,
                                               'gateway_error': gateway_error
                                               }, 
         context_instance=RequestContext(request))
+
     
-    
+@ssl_required    
 @login_required
 def update_payment_info(request, recurring_payment_id, 
                           template_name="recurring_payments/authnet/cim_update_payment_info2.html"):
