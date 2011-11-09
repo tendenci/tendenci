@@ -21,8 +21,9 @@ from recurring_payments.authnet.cim import CIMCustomerProfile
 from perms.utils import is_admin
 from base.http import Http403
 from event_logs.models import EventLog
-#from site_settings.utils import get_setting
+from base.decorators import ssl_required
 
+@ssl_required
 @login_required
 def view_account(request, recurring_payment_id, 
                           template_name="recurring_payments/index.html"):
