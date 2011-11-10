@@ -642,8 +642,7 @@ class Event(TendenciBaseModel):
         return EventMeta().get_meta(self, name)
 
     def is_registrant(self, user):
-        return Registration.objects.filter(
-            event=self.event, registrant=user).exists()
+        return Registration.objects.filter(event=self, registrant=user).exists()
 
     @models.permalink
     def get_absolute_url(self):
