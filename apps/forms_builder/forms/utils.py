@@ -21,7 +21,7 @@ def generate_email_body(entry):
     # media_url necessary for file upload fields
     context['media_url'] = site_url + settings.MEDIA_URL
     # title to show in the email
-    context['title'] = entry.form.title
+    context['form'] = entry.form
     output = template.render(context)
 
     return output
