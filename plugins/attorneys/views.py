@@ -11,7 +11,7 @@ from attorneys.models import Attorney
 
 def index(request, template_name='attorneys/index.html'):
     attorneys = Attorney.objects.search(query=None, user=request.user)
-    attorneys = attorneys.order_by('create_dt')
+    attorneys = attorneys.order_by('ordering','create_dt')
     
     log_defaults = {
         'event_id' : 496000,
@@ -34,7 +34,7 @@ def search(request, template_name='attorneys/search.html'):
     q = request.GET.get('q', None)
     
     attorneys = Attorney.objects.search(query=q, user=request.user)
-    attorneys = attorneys.order_by('create_dt')
+    attorneys = attorneys.order_by('ordering','create_dt')
     
     if category:
         attorneys = attorneys.filter(category=category)

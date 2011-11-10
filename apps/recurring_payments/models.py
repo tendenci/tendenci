@@ -30,6 +30,7 @@ STATUS_DETAIL_CHOICES = (
                         ('inactive', _('Inactive')),
                         ('canceled', _('Canceled')),
                         ('deleted', _('Deleted')),
+                        ('disabled', _('Disabled')),
                         )
 
 DUE_SORE_CHOICES = (

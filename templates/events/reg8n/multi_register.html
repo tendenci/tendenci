@@ -245,7 +245,9 @@
                             </div>
                         {% endif %}
                         
-                        {% if reg_form.payment_method %}
+                        {% if reg_form.free_event %}
+                            {{ reg_form.payment_method }}
+                        {% else %}
                             <div class="form-field">
                                 <div class="error">{{ reg_form.payment_method.errors }}</div>
                                 <div class="required">{% trans "Payment Method" %}</div>

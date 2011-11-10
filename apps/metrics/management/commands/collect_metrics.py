@@ -1,5 +1,5 @@
 import commands
-from datetime import date
+from datetime import date, timedelta
 
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
@@ -70,10 +70,13 @@ class Command(BaseCommand):
         """
         from event_logs.models import EventLog
         today = date.today()
+        
+        # if the script runs today, we collect the data from yesterday
+        yesterday = today - timedelta(days=1)
 
         filters = {
             'robot__exact': None,
-            'create_dt__gt': today
+            'create_dt__range': (yesterday, today)
         }
 
         return EventLog.objects.filter(**filters)

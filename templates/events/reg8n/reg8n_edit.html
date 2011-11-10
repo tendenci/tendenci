@@ -55,11 +55,6 @@
     <div class="event-title">Event: <a href="{% url event reg8n.event.id%}">{{ reg8n.event.title }}</a></div>
 
     <div class="event-wrap">
-		<div class="options">
-             <div class="quick-options">
-				{% event_options user reg8n.event %} 	       
-             </div>
-		</div>
 	{% if formset_errors %}
 		<div class="errors-box">
 			<ul>

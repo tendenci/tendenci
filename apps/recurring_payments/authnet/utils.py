@@ -107,13 +107,15 @@ def get_test_mode():
        
     return test_mode
     
-def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, iframe_communicator_url=''):
+def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, iframe_communicator_url='', is_secure=False):
     """Get the token from payment gateway for this customer (ex: customer_profile_id=4356210).
        Return token and gateway_error
     """
     gateway_error = False
     
     site_url = get_setting('site', 'global', 'siteurl')
+    if is_secure:
+        site_url = site_url.replace('http://', 'https://')
     if not iframe_communicator_url:
         iframe_communicator_url = '%s%s' % (
                                 site_url, 

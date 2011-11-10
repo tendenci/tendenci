@@ -661,5 +661,22 @@
         "scope_category": "developer", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "", 
+        "description": "Select the name of the form that will be used at /contact/.", 
+        "data_type": "string", 
+        "update_dt": "2011-11-04 14:13:58", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "contact_form", 
+        "value": "", 
+        "label": "Contact Form", 
+        "input_value": "<form_list>", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "global", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

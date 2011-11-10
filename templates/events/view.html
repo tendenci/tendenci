@@ -159,11 +159,6 @@
 		<div style="clear:both;"></div>
     </div>
 
-    <!-- delete-article form -->
-    <form name="delete-item" method="POST" action="{% url event.delete event.pk %}">{% csrf_token %}
-        <input type="hidden" name="action" value="delete">
-    </form>
-
 </div>
 
 {% endblock %}
@@ -173,13 +168,6 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tipsy.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
-
-            // delete confirmation
-            $('a.delete').click(function(){
-                var delete_item = confirm('Permenantly delete {% firstof MODULE_EVENTS_LABEL 'Event' %}?');  // confirm
-                if(delete_item) $('.t').find('form[name="delete-item"]').submit() // delete: if OK
-                return false;   // cancel
-            });
 
             $('td.price-disabled').tipsy({
                 gravity: 'e', 

@@ -256,7 +256,10 @@ class FormEntry(models.Model):
         if not name:
             # pick the name from email
             if email:
-                [name, domain] = email.split('@')
+                if  '@' in email:
+                    name, domain = email.split('@')
+                else:
+                    name = email
             
         return (name, email)
         
