@@ -11,6 +11,8 @@ urlpatterns = patterns('',
     url(r'^(?P<id>\d+)/$', 'photos.views.photo', name="photo"),
     # /photos/23/in/36
     url(r'^(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.photo', name="photo"),
+    # /photos/23/original
+    url(r'^(?P<id>\d+)/original/$', 'photos.views.photo_original', name="photo_original"),
     # /photos/partial/23/in/36
     url(r'^partial/(?P<id>\d+)/in/(?P<set_id>\d+)/$', 'photos.views.photo', kwargs={'partial':True}, name="photo_partial"),
     # /photos/delete/23/
@@ -32,7 +34,7 @@ urlpatterns = patterns('',
     url(r'^sizes/medium-500/(?P<id>\d+)/$', 'photos.views.sizes', kwargs={'size_name':'medium_500'}, name='photo_medium_500'),
     url(r'^sizes/medium-640/(?P<id>\d+)/$', 'photos.views.sizes', kwargs={'size_name':'medium_640'}, name='photo_medium_640'),
     url(r'^sizes/large/(?P<id>\d+)/$', 'photos.views.sizes', kwargs={'size_name':'large'}, name='photo_large'),
-    url(r'^sizes/original/(?P<id>\d+)/$', 'photos.views.sizes', kwargs={'size_name':'original'}, name='photo_original'),
+    #url(r'^sizes/original/(?P<id>\d+)/$', 'photos.views.sizes', kwargs={'size_name':'original'}, name='photo_original'),
 
     ## swfupload ##
     

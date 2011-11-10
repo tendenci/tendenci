@@ -1,0 +1,3 @@
+INSERT INTO `forms_form` (`id`, `allow_anonymous_view`, `allow_user_view`, `allow_member_view`, `allow_anonymous_edit`, `allow_user_edit`, `allow_member_edit`, `create_dt`, `update_dt`, `creator_id`, `creator_username`, `owner_id`, `owner_username`, `status`, `status_detail`, `title`, `slug`, `intro`, `response`, `send_email`, `email_from`, `email_copies`, `subject_template`, `completion_url`)
+VALUES
+    (1, 1, 0, 0, 0, 0, 0, '2011-09-15 10:19:11', '2011-11-04 14:22:40', 1, 'default', 1, 'default', 1, 'published', 'Contact Us', 'contact-us', '<p>Please fill out the form below.</p>', '<p>Thank you for contacting us! We will be in touch shortly.</p>', 0, '', '', '[title] - [first name]  [last name] - [phone]', '');
