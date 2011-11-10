@@ -184,16 +184,15 @@ class Command(BaseCommand):
             body = notice.email_content
             context = membership.entry_items
             context.update(global_context)
-
-#            for key in entry_items.keys():
-#                search = '[%s]' % key
-#                if body.find(search) != -1:
-#                    body = body.replace(search, entry_items[key])
-            
             
             body = body.replace("[membershiptypeid]", str(membership.membership_type.id))
             body = body.replace("[membershiplink]", '%s%s' % (site_url, membership.get_absolute_url()))
-            body = body.replace("[renewlink]", '%s%s' % (site_url, membership.get_absolute_url()))
+
+            # memberships page ------------
+            memberships_page = "%s%s%s" % \
+                (site_url, reverse('profile', args=[membership.user]), "#userview-memberships")
+            body = body.replace("[renewlink]", memberships_page)
+
             if membership.expire_dt:
                 body = body.replace("[expirationdatetime]", 
                                     time.strftime("%d-%b-%y %I:%M %p", membership.expire_dt.timetuple()))
@@ -209,7 +208,7 @@ class Command(BaseCommand):
                 
             context.update({'membershiptypeid': str(membership.membership_type.id),
                             'membershiplink': '%s%s' % (site_url, membership.get_absolute_url()),
-                            'renewlink': '%s%s' % (site_url, membership.get_absolute_url())
+                            'renewlink': memberships_page,
                             })
             if membership.expire_dt:
                 context['expirationdatetime'] = time.strftime("%d-%b-%y %I:%M %p", 
