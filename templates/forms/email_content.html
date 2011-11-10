@@ -1,5 +1,6 @@
 {% load base_filters %}
-<h3>{{ title }}</h3>
+<h3>{{ form.title }}</h3>
+{# form.response|safe #}
 <table>
 {% for field in fields %}
     {% if field.field.field_type == 'FileField' %}
