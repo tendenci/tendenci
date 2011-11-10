@@ -247,6 +247,12 @@ def split_str(s, args):
         return s
     return s
 
+@register.filter_function
+def str_basename(s):
+    """
+    Get the basename using the python basename method
+    """
+    return basename(s)
 
 @register.filter
 @stringfilter
