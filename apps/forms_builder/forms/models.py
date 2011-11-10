@@ -50,6 +50,8 @@ class Form(TendenciBaseModel):
     slug = models.SlugField(editable=False, max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000)
     response = models.TextField(_("Confirmation Text"), max_length=2000)
+    email_text = models.TextField(_("Email Text to Submitter"), default='', blank=True, help_text=
+        _("If Send email is checked, this is the text that will be sent in an email to the person submitting the form."), max_length=2000)
 #    status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
 #        default=STATUS_PUBLISHED)
     subject_template = models.CharField(_("Template for email subject "),  

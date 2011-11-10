@@ -12,7 +12,7 @@ from django.utils.encoding import smart_str
 from base.http import Http403
 from forms_builder.forms.forms import FormForForm, FormForm, FormForField
 from forms_builder.forms.models import Form, Field, FormEntry
-from forms_builder.forms.utils import generate_email_body, generate_email_subject
+from forms_builder.forms.utils import generate_admin_email_body, generate_submitter_email_body, generate_email_subject
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
@@ -304,14 +304,16 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 
             subject = generate_email_subject(form, entry)
                 
-            # body = "\n".join(fields)
-            body = generate_email_body(entry)
+            # fields aren't included in submitter body to prevent spam
+            admin_body = generate_admin_email_body(entry)
+            submitter_body = generate_submitter_email_body(entry)
+            
             email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
             sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
             email_to = form_for_form.email_to()
-            if email_to and form.send_email:
+            if email_to and form.send_email and form.email_text:
                 # Send message to the person who submitted the form.
-                msg = EmailMessage(subject, body, sender, [email_to], headers=email_headers)
+                msg = EmailMessage(subject, submitter_body, sender, [email_to], headers=email_headers)
                 msg.content_subtype = 'html'
                 msg.send()
             
@@ -321,7 +323,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 if e.strip()]
             if email_copies:
                 # Send message to the email addresses listed in the copies.
-                msg = EmailMessage(subject, body, sender, email_copies, headers=email_headers)
+                msg = EmailMessage(subject, admin_body, sender, email_copies, headers=email_headers)
                 msg.content_subtype = 'html'
                 for f in form_for_form.files.values():
                     f.seek(0)
