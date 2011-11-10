@@ -1,27 +1,30 @@
 import re
 from os.path import basename
 from django.conf import settings
+from django.template import Context
+from django.template.loader import get_template
 from site_settings.utils import get_setting
 
 def generate_email_body(entry):
     """
         Generates the email body so that is readable
     """
-    body = []
-    body.append('<h3>%s</h3>' % entry.form.title)    
+    context = Context()
     site_url = get_setting('site', 'global', 'siteurl')
-    for field in entry.fields.all():
-        body.append('<p><strong>%s</strong><br />' % field.field.label)
-        if field.field.field_type == 'FileField':
-            url = site_url + settings.MEDIA_URL + field.value
-            body.append('<em><a href="%s">%s</a></em></p>' % (url, basename(field.value)))
-#         # Check if Boolean and display the output nicer than True/False
-#         elif field.field.field_type == 'CheckboxField':
-#             field.value.filter('yesno')
-        else:
-            body.append('<em>%s</em></p>' % field.value)
-        
-    return ''.join(body)
+    if site_url[-1:] == "/":
+        site_url = site_url[:-1]
+    print site_url
+    template = get_template('forms/email_content.html')
+    
+    # fields to loop through in the template
+    context['fields'] = entry.fields.all()
+    # media_url necessary for file upload fields
+    context['media_url'] = site_url + settings.MEDIA_URL
+    # title to show in the email
+    context['title'] = entry.form.title
+    output = template.render(context)
+
+    return output
 
 def generate_email_subject(form, form_entry):
     """

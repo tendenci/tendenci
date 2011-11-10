@@ -310,13 +310,17 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
             email_to = form_for_form.email_to()
             if email_to and form.send_email:
+                # Send message to the person who submitted the form.
                 msg = EmailMessage(subject, body, sender, [email_to], headers=email_headers)
                 msg.content_subtype = 'html'
                 msg.send()
+            
             email_from = email_to or email_from # Send from the email entered.
+            email_headers.update({'Reply-To':email_from})
             email_copies = [e.strip() for e in form.email_copies.split(",") 
                 if e.strip()]
             if email_copies:
+                # Send message to the email addresses listed in the copies.
                 msg = EmailMessage(subject, body, sender, email_copies, headers=email_headers)
                 msg.content_subtype = 'html'
                 for f in form_for_form.files.values():
