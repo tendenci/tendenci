@@ -5,7 +5,7 @@ from django.template import Context
 from django.template.loader import get_template
 from site_settings.utils import get_setting
 
-def generate_email_body(entry):
+def generate_admin_email_body(entry):
     """
         Generates the email body so that is readable
     """
@@ -13,14 +13,25 @@ def generate_email_body(entry):
     site_url = get_setting('site', 'global', 'siteurl')
     if site_url[-1:] == "/":
         site_url = site_url[:-1]
-    print site_url
-    template = get_template('forms/email_content.html')
+    template = get_template('forms/admin_email_content.html')
     
     # fields to loop through in the template
     context['fields'] = entry.fields.all()
     # media_url necessary for file upload fields
     context['media_url'] = site_url + settings.MEDIA_URL
-    # title to show in the email
+    # form details to show in the email
+    context['form'] = entry.form
+    output = template.render(context)
+
+    return output
+
+def generate_submitter_email_body(entry):
+    """
+        Generates the email body so that is readable
+    """
+    context = Context()
+    template = get_template('forms/submitter_email_content.html')
+
     context['form'] = entry.form
     output = template.render(context)
 
