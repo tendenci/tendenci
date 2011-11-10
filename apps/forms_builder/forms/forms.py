@@ -122,6 +122,7 @@ class FormAdminForm(TendenciBaseForm):
                   'intro',
                   'response',
                   'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
+                  'email_text',
                   'subject_template',
                   'completion_url',
                   'email_from',
@@ -144,6 +145,7 @@ class FormForm(TendenciBaseForm):
                   'intro',
                   'response',
                   'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
+                  'email_text',
                   'completion_url',
                   'subject_template',
                   'email_from',
@@ -164,6 +166,7 @@ class FormForm(TendenciBaseForm):
                                     'email_from',
                                     'email_copies',
                                     'send_email',
+                                    'email_text',
                                     ],
                         'legend': ''
                         }),
