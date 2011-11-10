@@ -81,7 +81,12 @@ class RegistrantIndex(indexes.RealTimeSearchIndex):
         return 'update_dt'
 
     def prepare_users_can_view(self, obj):
-        return ObjectPermission.objects.users_with_perms('registrants.view_registrant', obj)
+        user_ids = ObjectPermission.objects.users_with_perms('registrants.view_registrant', obj)
+
+        if obj.user:  # include the user bound to the registrant record
+            user_ids.append(obj.user.pk)
+
+        return user_ids
 
     def prepare_groups_can_view(self, obj):
         return ObjectPermission.objects.groups_with_perms('registrants.view_registrant', obj)
