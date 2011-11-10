@@ -83,6 +83,12 @@ def registration_pricing_and_button(context, event, user):
     # spots taken
     if limit > 0:
         spots_taken = get_event_spots_taken(event)
+
+    is_registrant = False
+    # check if user has already registere
+    if hasattr(user, 'registrant_set'):
+        is_registrant = user.registrant_set.filter(
+            registration__event=event).exists()
   
     context.update({
         'now': datetime.now(),
@@ -94,7 +100,8 @@ def registration_pricing_and_button(context, event, user):
         'reg_ended': reg_ended,
         'earliest_time': earliest_time,
         'pricing': q_pricing,
-        'user': user
+        'user': user,
+        'is_registrant': is_registrant,
     })
 
     return context
@@ -345,3 +352,4 @@ def list_events(parser, token):
         kwargs['order'] = 'next_upcoming'
 
     return ListEventsNode(context_var, *args, **kwargs)
+

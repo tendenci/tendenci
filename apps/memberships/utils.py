@@ -3,10 +3,13 @@ import sys
 import csv
 from dateutil.parser import parse as dt_parse
 from datetime import datetime, date, timedelta
-from django.utils.datastructures import SortedDict
+
 from django.conf import settings
 from django.utils import simplejson
+from django.utils.datastructures import SortedDict
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
+
 from perms.utils import has_perm, is_admin
 from memberships.models import AppField, Membership, MembershipType
 from corporate_memberships.models import CorporateMembership

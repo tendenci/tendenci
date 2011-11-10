@@ -1,4 +1,4 @@
-{% extends "recurring_payments/base.html" %}
+{% extends "recurring_payments/base-print.html" %}
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
@@ -32,6 +32,10 @@
 	.rp-receipt h1{
 		margin-bottom: 1em;
 	}
+	.rp-receipt{
+		width: 400px;
+		margin: 0 auto;
+	}
 
 </style>
 
@@ -45,7 +49,7 @@
  
 <div class="t">
 	<div class="rp-receipt">
-		<h1>Recurring Payment Receipt </h1>
+		<h1>Payment Receipt </h1>
 	    
 	
 		<div class="rp-receipt-label">Name</div>
@@ -59,6 +63,10 @@
 		
 		<div class="rp-receipt-label">Amount Received</div>
 		<div class="rp-receipt-field">{{ payment_transaction.amount|format_currency }}</div>
+		<div class="clear-left"></div>
+		
+		<div class="rp-receipt-label">Card #</div>
+		<div class="rp-receipt-field">****{{ payment_profile.card_num }}</div>
 		<div class="clear-left"></div>
 		
 		<div class="rp-receipt-label">Description</div>
@@ -98,6 +106,9 @@
 		<div class="rp-receipt-label">Email</div>
 		<div class="rp-receipt-field">{{ payment_transaction.payment.email }}</div>
 		<div class="clear-left"></div>
+		
+		<div>&nbsp;</div>
+		<div><a href="{% url recurring_payment.view_account rp.id %}">View Account</a></div>
 		
 	
 	</div>

@@ -182,6 +182,19 @@ def photo_size(request, id, size, crop=False, quality=90, download=False):
 
     return response
 
+def photo_original(request, id):
+    """
+    Returns a reponse with the original image.
+    """
+    photo = get_object_or_404(Image, id=id)
+    
+    image_data = open(photo.image.file.name, "rb").read()
+    try:
+        ext = photo.image.file.name.split('.')[-1]
+    except IndexError:
+        ext = "png"
+    
+    return HttpResponse(image_data, mimetype="image/%s" % ext)
 
 @login_required
 def memberphotos(request, username, template_name="photos/memberphotos.html", group_slug=None, bridge=None):

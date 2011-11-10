@@ -1,0 +1,55 @@
+{% extends "recurring_payments/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load recurring_payments_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+<style>
+	.body-bold{
+		font-weight: bold;
+	}
+	#rp-delete div{
+		padding: 0.5em 0;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ {% is_admin request.user as isadmin %}
+ {% if isadmin %}
+ {% rp_nav request.user rp %}
+ {% endif %}
+ 
+  <div id="rp-delete">
+  	<h1>Disabling Recurring Payment</h1>
+	
+	<div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
+	<div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
+	<div >Payment Amount: <span class="body-bold">{{ rp.payment_amount|format_currency }}</span></div>
+		
+	<div>Initial Billing Cycle Start Date: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>
+	
+	<div>Billing Frequency: <span class="body-bold">Once every {{ rp.billing_frequency }} 
+	{{ rp.billing_period }}{{ rp.billing_frequency|pluralize }}</span></div>
+	
+	<div>Billing Date: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  after each billing cycle {{ rp.due_sore }} date</span></div>
+	
+	<div>The number of billing cycle completed: <span class="body-bold">{{ rp.num_billing_cycle_completed }}</span></div>
+	<div>The number of billing cycle failed: <span class="body-bold">{{ rp.num_billing_cycle_failed }}</span></div>
+	 
+	 <h2 style="color: red;">Are you sure you want to disable <a href="{% url recurring_payment.view_account rp.id %}">this account</a>?</h2>
+	 <div> 		
+	<form action="{% url recurring_payment.disable_account rp.id %}" method="post">{% csrf_token %}
+	<input type="hidden" name="id" value="{{rp.id}}" />
+	<input type="submit" name="cancel" value="Cancel" />
+	<input type="submit" name="submit" value="Disable Account" />
+	</form>
+	</div>
+  </div>
+
+</div>
+{% endblock %}

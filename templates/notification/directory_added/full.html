@@ -1,5 +1,5 @@
 {% load i18n %}
-
+{% load email_filters %}
 {% load perm_tags %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd"> 
@@ -24,18 +24,22 @@
   <tr> 
     <td width="2%">&nbsp;</td>
     <td width="23%"> {% trans "Body:" %}</td>
-    <td width="75%"><b>{{ object.body|striptags|safe }}</b></td>
+    <td width="75%"><b>{{ object.body|relative_to_absolute_urls|safe }}</b></td>
   </tr>
 </table>
-<p>{% blocktrans %}To view the details of this 
-  directory, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
-
-{% if not isadmin %} 
-  <br>
-<p>{% blocktrans %}To activate this directory, 
-  go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b> </p>
-{% endif %}
- 
+<p>
+    {% blocktrans %}
+    To view the details of this directory, go to:{% endblocktrans %} 
+    <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b>
+    <br>
+    {% if not isadmin %} 
+        <br>
+        <p>
+            {% blocktrans %}To activate this directory, go to:{% endblocktrans %}
+            <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b>
+        </p>
+    {% endif %}
+</p>
 <P>{% trans "Time submitted:" %}  {% now "D d M Y P" %}</P>
  
 </body>

@@ -114,6 +114,9 @@
 				   		}
 				   }
 				 });
+		}else{
+			// go to view page
+			window.location = '{% url recurring_payment.view_account rp.id %}';
 		}
 	};
 

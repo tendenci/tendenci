@@ -83,6 +83,13 @@
 	   border-top-color: #1b435e;
 	   background: #1b435e;
 	   }
+	   
+	.not-active-alert{
+		border: 1px solid #F4EAA8;
+		padding: 5px;
+		color: #ff0000;
+		background-color: #F6F7E6;
+	}
 
 </style>
 
@@ -102,12 +109,19 @@
 <div class="t">
 <div id="t-rp">
 <div id="t-view">
- {% if isadmin %}
+
  {% rp_nav request.user rp %}
- {% endif %}
-	
+ 
+		{% if not is_active %}
+		<div class="not-active-alert">This account is {{ rp.status_detail }}</div>
+		{% endif %}
+		
 	    <h1>Recurring Payment Account </h1>
+	    
+	    {% if is_active %}
 	    <button id="btn-pm">{% if payment_profile %}Update Payment Info{% else %}Add Payment Method{% endif %}</button>
+	    {% endif %}
+
 	    <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
 	    <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
 	    <div style="clear: right;"></div>
@@ -164,7 +178,7 @@
 		<div>Billing Frequency: <span class="body-bold">Once every {{ rp.billing_frequency }} 
 		{{ rp.billing_period }}{{ rp.billing_frequency|pluralize }}</span></div>
 	
-		<div>Billing Date: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  after each billing cycle end date</span></div>
+		<div>Billing Date: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  after each billing cycle {{ rp.due_sore }} date</span></div>
 	
   		</div>
   		
@@ -251,7 +265,7 @@
 </div>
 </div>
 
-
+ {% if is_active %}
 <form method="post" action="" id="formAuthorizeNetPopup" name="formAuthorizeNetPopup" target="iframeAuthorizeNet" style="display:none;">
   <input type="hidden" name="Token" value="111" />
   <input type="hidden" name="PaymentProfileId" value="{% if payment_profile %}{{ payment_profile.payment_profile_id }}{% endif %}" />
@@ -274,7 +288,7 @@
 	</div>
 	
 	<div id="divAuthorizeNetPopupScreen" style="display:none;"></div>
-
+{% endif %}
 {% endblock %}
 
 {% block extra_body %}
@@ -290,6 +304,7 @@
 <script type="text/javascript" src="/site_media/static/js/jquery_tabs/jquery-ui-1.8.custom.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script> 
 
+ {% if is_active %}
 <script type="text/javascript" src="{{ STATIC_URL }}authnet_cim/popup.js"></script>
   
 <script type="text/javascript">
@@ -304,6 +319,7 @@
   AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }}
   //]]>
 </script>
+{% endif %}
 
 <script type="text/javascript">
 $(document).ready(function(){
@@ -376,7 +392,7 @@ $(document).ready(function(){
 		 });
      }); 
        
-        
+      {% if is_active %}  
      AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
 		if(action_result=="successfulSave"){
 			$.ajax({
@@ -392,11 +408,20 @@ $(document).ready(function(){
 				 });
 		}
 	};   
-    
+    {% endif %}
 	
 }); 
 
 
+</script>
+
+<script type="text/javascript">
+	// disable confirmation
+	$('.disable').click(function(){
+		var disable_account = confirm('Are you sure you want to disable this account?');	// confirm
+		if(disable_account) $('form[name="rp-disable"]').submit() // disable: if OK
+		return false;	// cancel
+	});
 </script>
 
 {% endblock %}

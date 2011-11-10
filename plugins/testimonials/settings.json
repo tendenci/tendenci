@@ -1,0 +1,19 @@
+[
+    {
+        "default_value": "true", 
+        "description": "Module is enabled or not.", 
+        "data_type": "boolean", 
+        "update_dt": "2010-08-12 17:19:12", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "enabled", 
+        "value": "true", 
+        "label": "Enabled", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "testimonials", 
+        "store": true, 
+        "updated_by": ""
+    }
+]
