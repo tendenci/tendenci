@@ -97,7 +97,8 @@ def update_payment_info(request, recurring_payment_id,
         payment_profile = None
         
     
-    token, gateway_error = get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, request.is_secure())
+    token, gateway_error = get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, 
+                                     is_secure=request.is_secure())
     test_mode = get_test_mode()
         
     
@@ -149,7 +150,7 @@ def retrieve_token(request):
     token, gateway_error = get_token(rp, 
                                      CIMCustomerProfile, 
                                      CIMHostedProfilePage,
-                                     request.is_secure())
+                                     is_secure=request.is_secure())
         
     return HttpResponse(token)
     
