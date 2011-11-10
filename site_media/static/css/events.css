@@ -769,3 +769,12 @@ table.pricing-list .price-disabled {
 table.pricing-list .price-disabled label {
 	cursor: default;
 }
+
+#is-registrant {
+	font-size: .9em;
+	margin-top: 3px;
+}
+#is-registrant a {
+	color: #666;
+	text-decoration: underline;
+}
