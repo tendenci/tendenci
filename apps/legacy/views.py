@@ -31,6 +31,8 @@ def redirect_for_search(content_type):
         name = 'attorneys'
     if content_type == 'before_and_after':
         name = 'before_and_after.search'
+    if content_type == 'products':
+        name = 'products.search'
 
     # app not found
     if not name:
@@ -104,6 +106,12 @@ def redirect_for_view(content_type, id):
         redirect_name = 'before_and_after.detail'
         sql = "SELECT t5_id FROM mig_before_after_t4_to_t5 as mig " \
               "JOIN before_and_after_beforeandafter as bfa on bfa.id = mig.t5_id " \
+              "WHERE t4_id = %s"
+
+    if content_type == 'products':
+        redirect_name = 'products.detail'
+        sql = "SELECT slug FROM mig_products_t4_to_t5 as mig " \
+              "JOIN products_product as prod on prod.id = mig.t5_id " \
               "WHERE t4_id = %s"
 
     # app not found

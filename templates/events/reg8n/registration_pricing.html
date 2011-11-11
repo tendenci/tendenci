@@ -76,6 +76,11 @@
                         <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
                     {% endif %}
                     </form>
+
+                {% if is_registrant %}
+                <div id="is-registrant"><a href="{% url event.registrant.search event.pk %}?q={{ user.email }}">You have already registered</a></div>
+                {% endif %}
+
                 </div>
             {% endif %}
         {% endif %}
