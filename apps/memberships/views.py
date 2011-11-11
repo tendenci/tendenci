@@ -763,6 +763,7 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             csv = File.objects.save_files_for_instance(request, memport)[0]
             
             file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
+            print file_path
             
             if not is_import_valid(file_path):
                 messages.add_message(request, messages.ERROR, "Invalid File! Please try again.")
