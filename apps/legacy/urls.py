@@ -39,3 +39,9 @@ if before_and_after:
     urlpatterns += patterns('legacy.views',
         url(r'^catalogs/?(plasticsurgery/)?((?P<view>(view|search)))\.asp/$', 'redirect', {'content_type': 'before_and_after'}),
     )
+
+products = PluginApp.objects.filter(is_enabled=True).filter(package__contains='products')
+if products:
+    urlpatterns += patterns('legacy.views',
+        url(r'^catalogs/?(items/)?((?P<view>(view|search)))\.asp/$', 'redirect', {'content_type': 'products'}),
+    )
