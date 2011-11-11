@@ -35,26 +35,3 @@
     {% paginate %}
 </div>
 {% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript">
-		$(document).ready(function(){
-
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_job = confirm('Permenantly delete {% firstof MODULE_JOBS_LABEL 'Job' %}?');	// confirm
-				if(delete_job) $(this).parents('.job-wrap-search').find('form[name="job-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
-	</script>
-{% endblock %}
