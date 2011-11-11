@@ -3,13 +3,19 @@ django.jQuery('document').ready(function() {
     
     if (path_name == '/admin/') {
         var hidden_modules = [
-            'Avatar', 
+            'Auth',
+            'Avatar',
+            'Djcelery',
             'Notification',
             'Payments',
             'Photologue',
             'Photos',
+            'Pluginmanager',
+            'Plugin_Builder',
             'Social_Auth',
-            'Tagging'
+            'Sites',
+            'Tagging',
+            'User_Groups'
         ];
         var content_main = django.jQuery('#content-main');
         var modules = content_main.find('div.module');
@@ -22,6 +28,7 @@ django.jQuery('document').ready(function() {
                 for (var i in hidden_modules) {
                     if (hidden_modules[i] == caption) {
                         module.hide();
+                        module.css("background-color", "#f3d4d4");
                     }
                 }
             });
