@@ -6,6 +6,7 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from django.forms.models import model_to_dict
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 
 from site_settings.utils import (delete_setting_cache, cache_setting,
     delete_all_settings_cache, get_form_list, get_box_list)
@@ -80,6 +81,14 @@ def save_settings_form(self):
                 setting.save()
                 cache_setting(setting.scope, setting.scope_category, setting.name,
                   setting)
+
+            if setting.name == "siteurl" and setting.scope == "site":
+                if field_value:
+                    # Update the django site value in the contrib backend
+                    django_site = Site.objects.get(pk=1)
+                    django_site.domain = field_value.replace("http://","")
+                    django_site.name = field_value.replace("http://","")
+                    django_site.save()
 
         except KeyError:
             pass
