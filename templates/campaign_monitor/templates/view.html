@@ -34,7 +34,7 @@
                     <p><b>{% trans "Screenshot:" %}</b>{% trans " Not Available" %}</p>
                 {% endif %}
                 {% if template.html_file %}
-                    <p><b>{% trans "Html File:" %}</b> <a href="{{ template.get_html_url }}">{% trans "Download" %}</a></p>
+                    <p><b>{% trans "Html File:" %}</b> <a href="{{ template.get_html_original_url }}">{% trans "Download" %}</a></p>
                 {% endif %}
                 {% if template.zip_file %}
                     <p><b>{% trans "Zip File:" %}</b><a href="{{ template.get_zip_url }}">{% trans "Download" %}</a></p>
