@@ -81,11 +81,11 @@ def index(request, id=None, template_name="events/view.html"):
             organizer = None
 
         return render_to_response(template_name, {
+            'days':days,
             'event': event,
             'speakers': speakers,
             'organizer': organizer,
             'now': datetime.now(),
-            'days':days,
             },
             context_instance=RequestContext(request))
     else:
@@ -953,7 +953,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
     perms = (
         has_perm(request.user, 'events.change_registration', reg8n),  # has perm
-        reg8n.registrant.hash == hash  # has secret hash
+        request.user == reg8n.registrant.user,  # main registrant
+        reg8n.registrant.hash == hash,  # has secret hash
     )
 
     if not any(perms):
@@ -1037,12 +1038,15 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
     except Registration.DoesNotExist as e:
         raise Http404
 
-    if hash:
-        if hash != registration.hash:
-            raise Http404
-    else:  # check permission
-        if not has_perm(request.user, 'events.view_registration', registration):
-            raise Http403     
+
+    perms = (
+        has_perm(request.user, 'events.change_registration', registration),  # has perm
+        request.user == registration.registrant.user,  # main registrant
+        registration.registrant.hash == hash,  # has secret hash
+    )
+
+    if not any(perms):
+        raise Http403
 
     registrants = registration.registrant_set.filter(cancel_dt__isnull=True)
     cancelled_registrants = registration.registrant_set.filter(cancel_dt__isnull=False)
@@ -1394,7 +1398,11 @@ def registrant_details(request, id=0, hash='', template_name='events/registrants
 
 def registration_confirmation(request, id=0, reg8n_id=0, hash='', 
     template_name='events/reg8n/register-confirm.html'):
-    """ Registration confirmation """
+    """
+    Registration information.
+    Any registrant (belonging to this registration) 
+    or administrator can see the entire registration.
+    """
 
     event = get_object_or_404(Event, pk=id)
     registrants_count = 1
@@ -1402,7 +1410,12 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
     if reg8n_id:
         registration = get_object_or_404(Registration, event=event, pk=reg8n_id)
-        if not has_perm(request.user, 'events.view_registration', registration):
+
+        is_permitted = has_perm(request.user, 'events.view_registration', registration)
+        is_registrant = request.user in [r.user for r in registration.registrant_set.all()]
+
+        # permission denied; if not given explicit permission or not registrant
+        if not any((is_permitted, is_registrant)):
             raise Http403
 
         registrant = registration.registrant

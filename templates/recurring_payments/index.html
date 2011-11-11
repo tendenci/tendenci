@@ -244,14 +244,16 @@
 			</thead>
 			<tbody>
 			{% for pt in  payment_transactions %}
+			{% with pt.recurring_payment_invoice as rp_invoice %}
 				<tr>
 					<td>{{ pt.create_dt|date:"n/j/Y" }}</td>
-					<td><a href="" title="view invoice" target="_blank">{{ pt.recurring_payment_invoice.invoice.id }}</a></td>
+					<td><a href="{% url invoice.view rp_invoice.invoice.id rp_invoice.invoice.guid  %}" title="view invoice" target="_blank">{{ pt.recurring_payment_invoice.invoice.id }}</a></td>
 					<td>{{ pt.amount|format_currency }} </td>
 					<td>{% if pt.status  %}<span class="transaction-success">Success</span>{% else %}<span class="transaction-failed">Failed</span>{% endif %}</td>
 					<td>{% if not pt.status %}{{ pt.message_text }}{% endif %}</td>
 					<td><a href="{% url recurring_payment.transaction_receipt rp.id pt.id %}" title="view receipt" target="_blank">{{ pt.payment.id }}</a></td>
 				</tr>
+			{% endwith %}
 			{% endfor %}
 			</tbody>
 		</table>	

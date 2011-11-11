@@ -144,11 +144,28 @@ def format_currency(value):
     return tcurrency(value)
 format_currency.is_safe = True
 
-
 @register.filter
 def scope(object):
     return dir(object)
 
+@register.filter
+def obj_type(object):
+    """
+    Return object type
+    """
+    return type(object)
+
+@register.filter
+def is_iterable(object):
+    """
+    Return boolean
+    Is the object iterable or not
+    """
+    try:
+        iter(object)
+        return True
+    except TypeError:
+        return False
 
 @register.filter
 @stringfilter
@@ -247,6 +264,12 @@ def split_str(s, args):
         return s
     return s
 
+@register.filter_function
+def str_basename(s):
+    """
+    Get the basename using the python basename method
+    """
+    return basename(s)
 
 @register.filter
 @stringfilter

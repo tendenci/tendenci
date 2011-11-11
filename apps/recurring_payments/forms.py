@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import User
 
 from models import RecurringPayment
 from memberships.fields import PriceInput
@@ -53,6 +54,10 @@ class RecurringPaymentForm(forms.ModelForm):
             initial_list= ['0', 'start']
         
         self.fields['billing_dt_select'].initial = initial_list
+        
+        self.fields['user'].choices = [(u.id, '%s %s (%s) - %s' % (
+                        u.first_name, u.last_name, u.username, u.email
+                        )) for u in User.objects.filter(is_active=1).order_by('first_name', 'last_name')]
         
     
     def clean_billing_cycle(self):
