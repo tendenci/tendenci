@@ -19,7 +19,8 @@ urlpatterns = patterns("memberships.views",
     #url(r"^import/status/(?P<task_id>[-\w]+)/$", "membership_import_status", name='membership_import_status'),
     
     # new import
-    url(r"^import/$", "membership_import_upload", name="membership_import_upload_file"),
+    url(r"^import/$", "membership_import_upload", name="membership_import"),
+    url(r"^import/upload-file$", "membership_import_upload", name="membership_import_upload_file"),
     url(r"^import/preview/$", "membership_import_preview", name="membership_import_preview"),
     
     # export
