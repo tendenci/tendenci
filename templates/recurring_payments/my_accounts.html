@@ -1,0 +1,90 @@
+{% extends "recurring_payments/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load recurring_payments_tags %}
+{% load i18n %}
+
+{% block title %}My Recurring Payment Accounts{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+	.clear-left{
+		clear: left;
+	}
+	.item-left, .item-right{
+		float: left;
+	}
+	.item-right{
+		padding-left: 1em;
+	}
+	.account-header{ 
+		font-size: 1.2em;
+		margin: 1em 0 0.2em;
+		}
+	#accounts-body{
+		font-size: 12px;
+		
+	}
+	#accounts-body div{
+		line-height: 1.5em;
+	}
+	.active{
+		color: #0066CC;
+	}
+	.disabled, .deleted{
+		color: red;
+	}
+	
+</style>
+
+{% endblock %}
+
+{% block body %}
+ 
+<div class="t">
+<div id="t-rp">
+{% rp_nav request.user %}
+<div id="t-view-accounts">
+		
+    <h1>{% if is_owner %}My {% else %}{{ account_user.get_full_name }}({{ account_user.username }})'s {% endif %}Recurring Payment Accounts </h1>
+    {% for rp in rps %}
+    
+    <div id="accounts-body">
+    	
+    	<div class="item-left account-header">Account #{{ forloop.counter }}: </div>
+    	
+    	<div class="item-right">
+    		<div class="account-header"><a href="{% url recurring_payment.view_account rp.id %}">{{ rp.description }}</a></div>
+    		<div >Payment Amount: <span class="body-bold"><b>{{ rp.payment_amount|format_currency }}</b></span></div>
+	
+			<div>Initial Billing Cycle Start Date: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>
+		
+			<div>Billing Frequency: <span class="body-bold">Once every {{ rp.billing_frequency }} 
+			{{ rp.billing_period }}{{ rp.billing_frequency|pluralize }}</span></div>
+		
+			<div>Billing Date: <span class="body-bold">{{ rp.num_days }} day{{ rp.num_days|pluralize }}  after each billing cycle {{ rp.due_sore }} date</span></div>
+		
+    		<div>Status: <span class="{{ rp.status_detail }}">{{ rp.status_detail }}</span></div>
+    	</div>
+    	
+    	<div class="clear-left"></div>
+    	
+    </div>
+    
+    {% endfor %}
+	
+</div>
+</div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+    
+
+{% endblock %}

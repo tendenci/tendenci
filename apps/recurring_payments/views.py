@@ -2,6 +2,7 @@ from datetime import datetime
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 #from django.conf import settings
 #from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
@@ -89,7 +90,10 @@ def view_account(request, recurring_payment_id,
     else:
         payment_profile = None
     
+    is_owner = False   
+    if request.user.id == rp.user.id: is_owner = True
     
+    num_accounts = RecurringPayment.objects.filter(user=rp.user).count()
     
     return render_to_response(template_name, {
                                               'rp': rp,
@@ -100,9 +104,49 @@ def view_account(request, recurring_payment_id,
                                               'payment_transactions': payment_transactions,
                                               'payment_profile': payment_profile,
                                               'test_mode': test_mode,
-                                              'is_active': is_active
+                                              'is_active': is_active,
+                                              'is_owner': is_owner,
+                                              'num_accounts': num_accounts
                                               }, 
         context_instance=RequestContext(request))
+    
+@ssl_required
+@login_required
+def my_accounts(request, username=None, 
+                        template_name="recurring_payments/my_accounts.html"):
+    """View a person's all recurring payment accounts.
+    """
+    isadmin = is_admin(request.user)
+    
+    if isadmin and username:
+        u = get_object_or_404(User, username=username)
+    else:
+        u = request.user
+        
+    #rps = RecurringPayment.objects.filter(user=u).values_list('id', flat=True).order_by('-id')
+    rps = RecurringPayment.objects.filter(user=u).order_by('status_detail', '-id')
+    
+    if not rps:
+        if isadmin:
+            return HttpResponseRedirect(reverse('recurring_payment.customers'))
+        raise Http404
+    
+    if len(rps) == 1:
+        # they have only 1 account, go directly to that account
+        return  HttpResponseRedirect(reverse('recurring_payment.view_account', args=[(rps[0]).id]))
+    
+    is_owner = False   
+    if request.user.id == u.id: is_owner = True
+    
+    return render_to_response(template_name, {'rps': rps,
+                                              'is_owner': is_owner,
+                                              'account_user': u
+                                              }, 
+        context_instance=RequestContext(request))
+    
+    
+    
+    
     
 @staff_member_required
 def customers(request, template_name="recurring_payments/customers.html"):

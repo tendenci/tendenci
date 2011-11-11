@@ -125,6 +125,10 @@
 	    <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
 	    <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
 	    <div style="clear: right;"></div>
+	    
+	    {% if num_accounts > 1 %}
+	    <div><a href="{% url recurring_payment.my_accounts rp.user.username %}">View all {% if is_owner %} my{% else %}{{ rp.user.first_name }}'s{% endif %} accounts</a></div>
+	  	{% endif %}
 	  
 	  <div id="rpview-tabs">
 	      <ul>
