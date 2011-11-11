@@ -31,6 +31,14 @@ def clean_settings_form(self):
                         raise forms.ValidationError("'%s' must be a file" % setting.label)
         except KeyError:
             pass
+
+        if setting.name == "siteurl" and setting.scope == "site":
+            field_value = self.cleaned_data["siteurl"] 
+            if field_value:
+                if field_value[-1:] == "/":
+                    field_value = field_value[:-1]
+                self.cleaned_data[setting.name] = field_value
+
     return self.cleaned_data
 
     
@@ -42,7 +50,6 @@ def save_settings_form(self):
     for setting in self.settings:
         try:
             field_value = self.cleaned_data[setting.name]
-            
             if setting.input_type == "file":
                 if field_value:
                     # save a file object and set the value at that file object's id.
@@ -73,6 +80,7 @@ def save_settings_form(self):
                 setting.save()
                 cache_setting(setting.scope, setting.scope_category, setting.name,
                   setting)
+
         except KeyError:
             pass
             
