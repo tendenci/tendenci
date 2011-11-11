@@ -15,16 +15,16 @@ class LatestEntriesFeed(SubFeed):
         return [sq.object for sq in sqs]
 
     def item_title(self, item):
-        return item.author
+        return item.name
 
     def item_description(self, item):
-        return item.product
+        return item.description
 
     def item_link(self, item):
         return item.get_absolute_url()
 
 class ProductSitemap(TendenciSitemap):
-    changefreq = "monthly"
+    changefreq = "weekly"
     priority = 0.5
 
     def items(self):
