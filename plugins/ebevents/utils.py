@@ -64,10 +64,8 @@ def get_event_by_id(id, **kwargs):
     except:
         end_date = ''
     try:
-        end_time = node.showtimes.subevent.string
-        end_time = end_time.replace('-', '')
-        
-        end_time =  datetime.strptime(end_time.strip(), '%I:%M %p')
+        end_time = node.showtimes.subevent['endtime']
+        end_time =  datetime.strptime(end_time.strip(), '%I:%M:%S %p')
     except:
         end_time = ''
      
