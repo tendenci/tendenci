@@ -883,7 +883,7 @@ class AppEntry(TendenciBaseModel):
         join_approval_required = self.membership_type.require_approval
         renew_approval_required = self.membership_type.renewal_require_approval
 
-        if self.user:
+        if self.is_renewal:
             return renew_approval_required
         else:
             return join_approval_required
