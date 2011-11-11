@@ -10,7 +10,9 @@ from registration.forms import RegistrationForm
 from forms import LoginForm
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
+from base.decorators import ssl_required
 
+@ssl_required
 def login(request, form_class=LoginForm, template_name="account/login.html"):
     if request.method == "POST":
         default_redirect_to = getattr(settings, "LOGIN_REDIRECT_URLNAME", None)
@@ -42,7 +44,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
         "form": form
     }, context_instance=RequestContext(request))
     
-    
+@ssl_required    
 def register(request, success_url=None,
              form_class=RegistrationForm, profile_callback=None,
              template_name='registration/registration_form.html',

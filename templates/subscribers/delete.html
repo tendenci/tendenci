@@ -28,13 +28,6 @@
         {% endif %}
     {% endfor %}
     <div style="color:red;font-weight:bold;">Are you sure you want to delete this Subscriber?</div>
-    <div>
-        Clicking Delete Subscriber will 
-        <ul>
-            <li>remove all members from the group</li>
-            <li>the group will be deleted from the system</li> <li>Deleted items cannot be recovered!</li>
-        </ul>
-    </div>
     <form action="{% url subscriber_delete grp_sub.id %}" method="post">{% csrf_token %}
         <input type="submit" value="Delete Subscriber" />
     </form>

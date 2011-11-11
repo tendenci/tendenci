@@ -1,0 +1,35 @@
+{% load base_filters %}
+<h3>{{ form.title }}</h3>
+<table>
+{% for field in fields %}
+    {% if field.field.field_type == 'FileField' %}
+    <tr>
+        <td><strong>{{ field.field.label }}</strong></td>
+        <td><a href="{{ media_url }}{{ field.value }}">{{ field.value|str_basename }}</a></td>
+    </tr>
+    {% else %}
+        {% if field.field.field_type == 'BooleanField' %}
+        <tr>
+            <td><strong>{{ field.field.label }}</strong></td>
+            <td>{{ field.value|yesno:"Yes,No" }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td><strong>{{ field.field.label }}</strong></td>
+            <td>{{ field.value }}</td>
+        </tr>
+        {% endif %}
+    {% endif %}
+{% endfor %}
+</table>
+
+{% if form.send_email %}
+<br />
+    {% if form.email_text %}
+        <p>The recipient received the following message in an email:</p>
+        {{ form.email_text|safe }}
+
+    {% else %}
+        The form submitter did not receive an email because no Email Text to Submitter was entered.
+    {% endif %}
+{% endif %}
