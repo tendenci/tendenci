@@ -46,7 +46,18 @@ def template_view(request, template_id, template_name='campaign_monitor/template
         
     return render_to_response(template_name, {'template':template}, 
         context_instance=RequestContext(request))
-        
+
+def template_html_original(request, template_id):
+    template = get_object_or_404(Template, template_id=template_id)
+    
+    if not template.html_file:
+        raise Http404
+
+    response = HttpResponse(template.html_file)
+    response['Content-Disposition'] = 'attachment; file=page.html'
+    
+    return response
+
 def template_html(request, template_id):
     template = get_object_or_404(Template, template_id=template_id)
     
