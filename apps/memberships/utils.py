@@ -280,7 +280,9 @@ def is_import_valid(file_path):
     """
     memberships = csv_to_dict(file_path)  # list of membership dicts
     membership_keys = [slugify(m) for m in memberships[0].keys()]
-    required = ('username','membership_type')
+    #required = ('username','membership-type')
+    #there is no username in the export at the moment.
+    required = ('membership-type',)
     requirements = [r in membership_keys for r in required]
 
     return all(requirements)
