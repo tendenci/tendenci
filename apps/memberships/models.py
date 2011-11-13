@@ -423,7 +423,7 @@ class MembershipImport(models.Model):
     creator = models.ForeignKey(User)
     create_dt = models.DateTimeField(auto_now_add=True)
     
-    def get_file():
+    def get_file(self):
         file = File.objects.get_for_model(self)[0]
         return file
         
