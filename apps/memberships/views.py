@@ -37,6 +37,7 @@ from memberships.forms import AppForm, AppEntryForm, \
 from memberships.utils import new_mems_from_csv, is_import_valid, \
     prepare_chart_data, get_days, has_app_perm, get_over_time_stats
 from memberships.tasks import ImportMembershipsTask
+from memberships.importer.utils import parse_mems_from_csv
 
 try:
     from notification import models as notification
@@ -763,7 +764,6 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             csv = File.objects.save_files_for_instance(request, memport)[0]
             
             file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
-            print file_path
             
             if not is_import_valid(file_path):
                 messages.add_message(request, messages.ERROR, "Invalid File! Please try again.")
@@ -779,14 +779,15 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
         'datetime':datetime,
         }, context_instance=RequestContext(request))
     
-def membership_import_preview(request, memport_id):
+def membership_import_preview(request, id, is_preview=True):
     """
-    This will load a given file then generate a preview of the import result
+    This will generate a form based on the uploaded CSV for field mapping.
+    A preview will be generated based on the mapping given.
     """
     if not is_admin(request.user):
         raise Http403
         
-    memport = get_object_or_404(MembershipImport, pk=memport_id)
+    memport = get_object_or_404(MembershipImport, pk=id)
     
     if request.method == 'POST':
         form = ImportMapForm(request.POST, memport=memport)
@@ -796,25 +797,26 @@ def membership_import_preview(request, memport_id):
             app = memport.app
             
             file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
-            memberships, no_memtypes = new_mems_from_csv(file_path, app, cleaned_data)
+            memberships = parse_mems_from_csv(file_path, cleaned_data)
             
-            added = []
-            skipped = []
-        
-            for membership in memberships:
-                if membership.pk:
-                    skipped.append(membership)
-                else:
-                    added.append(membership)
+            if is_preview:
+                template_name = 'memberships/import-preview.html'
+                return render_to_response(template_name, {
+                    'memberships':memberships,
+                    'memport':memport,
+                    'datetime': datetime,
+                }, context_instance=RequestContext(request))
             
-            template_name = 'memberships/import-preview.html'
-            return render_to_response(template_name, {
-                'memberships':memberships,
-                'added': added,
-                'skipped': skipped,
-                'no_memtypes':no_memtypes,
-                'datetime': datetime,
-            }, context_instance=RequestContext(request))
+            else:
+                result = ImportMembershipsTask()
+                result = result.run(app, memberships, fields)
+                # result = ImportMembershipsTask.delay(app, memberships, fields)
+                # result.wait()
+            
+            if hasattr(result, 'task_id'):
+                return redirect('membership_import_status', result.task_id)
+            else:
+                return redirect('membership_import_status','0')
 
     else:  # if not POST
         form = ImportMapForm(memport=memport)
@@ -822,9 +824,41 @@ def membership_import_preview(request, memport_id):
     template_name = 'memberships/import-map-fields.html'
     return render_to_response(template_name, {
         'form':form,
+        'memport':memport,
         'datetime':datetime,
         }, context_instance=RequestContext(request))
+
+@login_required
+def membership_import_confirm(request, id):
+    """
+    Confirm the membership import and continue with the process.
+    """
+    if not is_admin(request.user):
+        raise Http403
+        
+    memport = get_object_or_404(MembershipImport, pk=id)
     
+    app = request.session.get('membership.import.app')
+    memberships = request.session.get('membership.import.memberships')
+    fields = request.session.get('membership.import.fields')
+    
+    if not all([app, memberships, fields]):
+        return redirect('membership_import_upload_file')
+    
+    result = ImportMembershipsTask()
+    result = result.run(app, memberships, fields)
+    # result = ImportMembershipsTask.delay(app, memberships, fields)
+    # result.wait()
+    
+    #clear these from the session
+    request.session['membership.import.memberships'] = []
+    request.session['membership.import.fields'] = []
+    
+    if hasattr(result, 'task_id'):
+        return redirect('membership_import_status', result.task_id)
+    else:
+        return redirect('membership_import_status','0')
+
 @login_required
 def membership_import_status(request, task_id, template_name = 'memberships/import-confirm.html'):
     """

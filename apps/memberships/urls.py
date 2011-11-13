@@ -21,7 +21,8 @@ urlpatterns = patterns("memberships.views",
     # new import
     url(r"^import/$", "membership_import_upload", name="membership_import"),
     url(r"^import/upload-file$", "membership_import_upload", name="membership_import_upload_file"),
-    url(r"^import/preview/$", "membership_import_preview", name="membership_import_preview"),
+    url(r"^import/preview/(?P<id>\d+)/$", "membership_import_preview", name="membership_import_preview"),
+    url(r"^import/confirm/(?P<id>\d+)/$", "membership_import_confirm", name="membership_import_confirm"),
     
     # export
     url(r"^export/$", "membership_export", name="membership_export"),
