@@ -41,97 +41,50 @@
 {% block body %}
 
 <div id="import-wrap" class="preview">
-
+    
 	<h1>{% trans "Membership Import Preview" %}</h1>
-
+    
 	<p class="timestamp">{% trans "Step 3/4" %} &middot; {{ datetime.now }}</p>
-
-	<p class="msg"><em>{{ memberships|length}}</em> import{{ memberships|length|pluralize }}; 
-	<em>{{ added|length }}</em> will be added, and <em>{{ skipped|length }}</em> will be skipped.
-	<em><a title="Looks good!" href="{% url membership_import_confirm %}">Import Now &rarr;</a></em></p>
-    {% if added %}
+    
+	<p class="msg">
+        <em>{{ memberships|length}}</em> import{{ memberships|length|pluralize }};
+        <em><a title="Looks good!" href="{% url membership_import_confirm memport.id %}">Import Now &rarr;</a></em>
+    </p>
+    
     <div style="margin-top:10px;">
-    <h3>To be Added</h3>
-	<table>
-		<tr class="header">
-			<td></td>
-			<td>{% trans "Name" %}</td>
-			<td>{% trans "Number" %}</td>
-			<td>{% trans "Email" %}</td>
-			<td>{% trans "Type" %}</td>
-			<td>{% trans "Join Date" %}</td>
-			<td>{% trans "Expire Date" %}</td>
-		</tr>
+        <table>
+            <tr class="header">
+                <td></td>
+                <td>{% trans "Name" %}</td>
+                <td>{% trans "Number" %}</td>
+                <td>{% trans "Email" %}</td>
+                <td>{% trans "Type" %}</td>
+                <td>{% trans "Join Date" %}</td>
+                <td>{% trans "Expire Date" %}</td>
+                <td>{% trans "Skipped" %}</td>
+            </tr>
 
-	{% for membership in added|slice:":25" %}
-		<tr class="{% cycle 'odd' 'even' as rowcolors %}">
-			<td>{{ forloop.counter }}</td>
-			<td><div>{% firstof membership.user.get_full_name trans "No Name" %}</div></td>
-			<td><div>{{ membership.member_number }}</div></td>
-			<td><div>{{ membership.user.email }}</div></td>
-			<td><div>{{ membership.membership_type }}</div></td>
-			<td><div>{{ membership.subscribe_dt|date:"M d, Y" }}</div></td>
-			<td><div>{{ membership.expire_dt|date:"M d, Y" }}</div></td>
-		</tr>
-	{% endfor %}
-	</table>
-    </div>
-    {% endif %}
-    {% if skipped %}
-    <div style="margin-top:10px;">
-    <h3>To be Skipped (Already Exists)</h3>
-    <table>
-		<tr class="header">
-			<td></td>
-			<td>{% trans "Name" %}</td>
-			<td>{% trans "Number" %}</td>
-			<td>{% trans "Email" %}</td>
-			<td>{% trans "Type" %}</td>
-			<td>{% trans "Join Date" %}</td>
-			<td>{% trans "Expire Date" %}</td>
-		</tr>
-
-	{% for skip in skipped|slice:":25" %}
-        <tr class="{% cycle 'odd' 'even' as rowcolors %}">
-            <td>{{ forloop.counter }}</td>
-            <td><div>{% firstof skip.user.get_full_name trans "No Name" %}</div></td>
-            <td><div>{{ skip.member_number }}</div></td>
-            <td><div>{{ skip.user.email }}</div></td>
-            <td><div>{{ skip.membership_type }}</div></td>
-            <td><div>{{ skip.subscribe_dt|date:"M d, Y" }}</div></td>
-            <td><div>{{ skip.expire_dt|date:"M d, Y" }}</div></td>
-        </tr>
-	{% endfor %}
-	</table>
-    </div>
-    {% endif %}
-    <div style="margin-top:10px;">
-    <h3>To be Ignored (No Membeship Types)</h3>
-    <table>
-		<tr class="header">
-			<td></td>
-			<td>{% trans "Name" %}</td>
-			<td>{% trans "Number" %}</td>
-			<td>{% trans "Email" %}</td>
-			<td>{% trans "Type" %}</td>
-			<td>{% trans "Join Date" %}</td>
-			<td>{% trans "Expire Date" %}</td>
-		</tr>
-    {% if no_memtypes %}
-        {% for skip in no_memtypes|slice:":25" %}
+            {% for membership in memberships %}
                 <tr class="{% cycle 'odd' 'even' as rowcolors %}">
                     <td>{{ forloop.counter }}</td>
-                    <td><div>{{skip.first_name }} {{ skip.last_name }}</div></td>
-                    <td><div></div></td>
-                    <td><div>{{ skip.email }}</div></td>
-                    <td><div>{{ skip.membership_type }}</div></td>
-                    <td><div>{{ skip.subscribe_date|date:"M d, Y" }}</div></td>
-                    <td><div>{{ skip.expiration_date|date:"M d, Y" }}</div></td>
+                    <td><div>
+                            {% if membership.full_name %}
+                                {{ membership.full_name }}
+                            {% else %}
+                                {% trans "No Name" %}
+                            {% endif %}
+                    </div></td>
+                    <td><div>{{ membership.member_number }}</div></td>
+                    <td><div>{{ membership.email }}</div></td>
+                    <td><div>{{ membership.membership_type }}</div></td>
+                    <td><div>{{ membership.subscribe_dt|date:"M d, Y" }}</div></td>
+                    <td><div>{{ membership.expire_dt|date:"M d, Y" }}</div></td>
+                    <td><div>
+                        {% if membership.skipped %}{% trans "Yes" %}{% endif %}
+                    </div></td>
                 </tr>
-        {% endfor %}
-    </table>
+            {% endfor %}
+        </table>
     </div>
-    {% endif %}
-
 </div>
 {% endblock %}
