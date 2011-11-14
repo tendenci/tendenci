@@ -255,7 +255,7 @@
 					<td>{{ pt.amount|format_currency }} </td>
 					<td>{% if pt.status  %}<span class="transaction-success">Success</span>{% else %}<span class="transaction-failed">Failed</span>{% endif %}</td>
 					<td>{% if not pt.status %}{{ pt.message_text }}{% endif %}</td>
-					<td><a href="{% url recurring_payment.transaction_receipt rp.id pt.id %}" title="view receipt" target="_blank">{{ pt.payment.id }}</a></td>
+					<td>{% if pt.status  %}<a href="{% url recurring_payment.transaction_receipt rp.id pt.id %}" title="view receipt" target="_blank">{{ pt.payment.id }}</a>{% endif %}</td>
 				</tr>
 			{% endwith %}
 			{% endfor %}

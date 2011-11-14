@@ -8,6 +8,7 @@ from recurring_payments.models import RecurringPayment
 from recurring_payments.forms import RecurringPaymentForm
 
 from event_logs.models import EventLog
+from base.utils import tcurrency
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):
     """Remove the add-another + sign
@@ -73,8 +74,20 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         return '<a href="%s">Add/Edit payment info</a>' % (link)
     edit_payment_info_link.allow_tags = True
     
-    list_display = ['user', edit_payment_info_link, 'description', 'billing_start_dt',
-                     'billing_period', 'billing_frequency', 'payment_amount',  
+    def view_on_site(self):
+        link = reverse('recurring_payment.view_account', args=[self.id])
+        return '<a href="%s">View on site</a>' % (link)
+    view_on_site.allow_tags = True
+    
+    def how_much_to_pay(self):
+        if self.billing_frequency == 1:
+            return '%s/%s' % (tcurrency(self.payment_amount), self.billing_period)
+        else:
+            return '%s/%d %ss' % (tcurrency(self.payment_amount), self.billing_frequency, self.billing_period)
+    
+    list_display = ['user', edit_payment_info_link, view_on_site, 
+                    'description', 'billing_start_dt',
+                     how_much_to_pay,  
                      'status_detail']
     list_filter = ['status_detail']
     
