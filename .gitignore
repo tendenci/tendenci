@@ -13,7 +13,7 @@ themes/*
 site_media/directories/
 site_media/photologue/
 site_media/files/
-site_media/media/
+site_media/media/*
 site_media/static/tresources/
 
 # Ignore django cache
