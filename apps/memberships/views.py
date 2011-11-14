@@ -35,9 +35,9 @@ from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm, \
     MemberApproveForm, CSVForm, ReportForm, EntryEditForm, ExportForm
 from memberships.utils import new_mems_from_csv, is_import_valid, \
     prepare_chart_data, get_days, has_app_perm, get_over_time_stats
-from memberships.tasks import ImportMembershipsTask
-from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.forms import ImportMapForm, UploadForm
+from memberships.importer.utils import parse_mems_from_csv
+from memberships.importer.tasks import ImportMembershipsTask
 
 try:
     from notification import models as notification
@@ -786,7 +786,7 @@ def membership_import_preview(request, id, is_preview=True):
     """
     if not is_admin(request.user):
         raise Http403
-        
+    
     memport = get_object_or_404(MembershipImport, pk=id)
     
     if request.method == 'POST':
@@ -835,29 +835,31 @@ def membership_import_confirm(request, id):
     """
     if not is_admin(request.user):
         raise Http403
-        
+    
     memport = get_object_or_404(MembershipImport, pk=id)
     
-    app = request.session.get('membership.import.app')
-    memberships = request.session.get('membership.import.memberships')
-    fields = request.session.get('membership.import.fields')
-    
-    if not all([app, memberships, fields]):
-        return redirect('membership_import_upload_file')
-    
-    result = ImportMembershipsTask()
-    result = result.run(app, memberships, fields)
-    # result = ImportMembershipsTask.delay(app, memberships, fields)
-    # result.wait()
-    
-    #clear these from the session
-    request.session['membership.import.memberships'] = []
-    request.session['membership.import.fields'] = []
-    
-    if hasattr(result, 'task_id'):
-        return redirect('membership_import_status', result.task_id)
+    if request.method == "POST":
+        form = ImportMapForm(request.POST, memport=memport)
+        
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            app = memport.app
+            file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
+            
+            #this bypasses celery
+            result = ImportMembershipsTask()
+            result = result.run(app, file_path, cleaned_data)
+            
+            # leave in celery queue
+            # result = ImportMembershipsTask.delay(app, memberships, fields)
+            # result.wait()
+            
+            if hasattr(result, 'task_id'):
+                return redirect('membership_import_status', result.task_id)
+            else:
+                return redirect('membership_import_status','0')
     else:
-        return redirect('membership_import_status','0')
+        return redirect('membership_import_preview', memport.id)
 
 @login_required
 def membership_import_status(request, task_id, template_name = 'memberships/import-confirm.html'):
