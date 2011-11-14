@@ -59,7 +59,7 @@ class JobForm(TendenciBaseForm):
     post_dt = SplitDateTimeField(label=_('Post Date/Time'),
         initial=datetime.now())
 
-    expiration_dt = SplitDateTimeField(label=_('Expriation Date/Time'),
+    expiration_dt = SplitDateTimeField(label=_('Expiration Date/Time'),
         initial=datetime.now())
 
     status_detail = forms.ChoiceField(
