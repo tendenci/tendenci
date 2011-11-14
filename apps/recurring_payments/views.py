@@ -10,19 +10,23 @@ from django.db.models import Sum
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.utils import simplejson
+from django.http import HttpResponse
 
 from recurring_payments.models import (RecurringPayment, 
                                        PaymentProfile, 
                                        PaymentTransaction,
                                        RecurringPaymentInvoice)
 from recurring_payments.authnet.utils import get_test_mode
-from recurring_payments.utils import RecurringPaymentEmailNotices
+from recurring_payments.utils import (RecurringPaymentEmailNotices, 
+                                      run_a_recurring_payment)
 from recurring_payments.authnet.cim import CIMCustomerProfile
 
 from perms.utils import is_admin
 from base.http import Http403
 from event_logs.models import EventLog
 from base.decorators import ssl_required
+from base.utils import tcurrency
 
 @ssl_required
 @login_required
@@ -145,7 +149,46 @@ def my_accounts(request, username=None,
         context_instance=RequestContext(request))
     
     
+@staff_member_required
+def run_now(request):
+    """Run a recurring payment.
+    """
+    rp_id = request.POST.get('rp_id')
+    rp = get_object_or_404(RecurringPayment, pk=rp_id)
     
+    result_data = {}
+    result_data['processed'] = 'false'
+    result_data['reason'] = 'done'
+    
+    payment_profiles = PaymentProfile.objects.filter(
+                        customer_profile_id=rp.customer_profile_id,
+                        status=1,
+                        status_detail='active'
+                        ).order_by('-update_dt')
+                        
+    if not payment_profiles:
+        result_data['reason'] = 'not setup'
+    else:
+        if rp.status_detail == 'active':
+            num_processed = run_a_recurring_payment(rp)
+            if num_processed:
+                result_data['processed'] = 'true'
+                result_data['reason'] = 'processed'
+                # get total_paid and balance for this rp
+                result_data['total_paid'] = str(rp.total_paid)
+                result_data['balance'] = str(rp.get_outstanding_balance())
+                
+                # get total amount received for all rps
+                d = RecurringPaymentInvoice.objects.filter(
+                                            invoice__balance=0,
+                                            ).aggregate(total_amount_received=Sum('invoice__total'))
+                result_data['total_amount_received'] = d['total_amount_received']
+                if not result_data['total_amount_received']:
+                    result_data['total_amount_received'] = 0
+                result_data['total_amount_received'] = tcurrency(result_data['total_amount_received'])
+                               
+        
+    return HttpResponse(simplejson.dumps(result_data))
     
     
 @staff_member_required
@@ -203,7 +246,8 @@ def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
         rp = get_object_or_404(RecurringPayment, pk=rp_id, guid=rp_guid)
     
     payment_transaction = get_object_or_404(PaymentTransaction, 
-                                            pk=payment_transaction_id)
+                                            pk=payment_transaction_id,
+                                            status=1)
     payment_profile = PaymentProfile.objects.filter(
                     payment_profile_id=payment_transaction.payment_profile_id)[0]
 
