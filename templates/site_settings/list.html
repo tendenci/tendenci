@@ -16,3 +16,18 @@
 <input type="submit" value="Update Settings" name="submit" />
 </form>
 {% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('a.setting-toggle').click(function() {
+        var id = $(this).attr('id').replace('toggle','');
+        $('#description'+id).toggle();
+        if ($("#toggle"+id+":contains('Show')").length > 0) {
+        $(this).text($(this).text().replace('Show', 'Hide')); }
+        else { $(this).text($(this).text().replace('Hide', 'Show')); }
+    });
+});
+</script>
+{% endblock extra_body %}
