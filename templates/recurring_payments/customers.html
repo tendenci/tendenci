@@ -35,6 +35,9 @@
 	.not-active{
 		color: #ff0000 !important;
 	}
+	.tablesorter tr th, .tablesorter tr td{
+		font-size: 12px !important;
+	}
 </style>
 
 {% endblock %}
@@ -78,17 +81,17 @@
 	<div style="clear: both"></div>
 	
 	{% if recurring_payments %}
-		<table width="90%" class="tablesorter">
+		<table width="100%" class="tablesorter">
 			<thead>
 			<tr>
-				<th class="iheader">Name</th>
-				<th class="iheader">Description</th>
-				<th class="iheader">Amount ({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
-				<th class="iheader">Start Date &nbsp;</th>
-				<th class="iheader">Total Paid ({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
-				<th class="iheader">Balance ({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
-				<th class="iheader">Status Detail &nbsp;</th>
-				<th>&nbsp;</th>
+				<th class="iheader" width="12%">Name</th>
+				<th class="iheader" width="34%">Description</th>
+				<th class="iheader" width="9%">Amount({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
+				<th class="iheader" width="9%">Start Date &nbsp;</th>
+				<th class="iheader" width="10%">Total Paid({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
+				<th class="iheader" width="9%">Balance({{ SITE_GLOBAL_CURRENCYSYMBOL }}) &nbsp;</th>
+				<th class="iheader" width="11%">Status Detail &nbsp;</th>
+				<th width="6%">&nbsp;</th>
 			</tr>
 			</thead>
 			<tbody>
