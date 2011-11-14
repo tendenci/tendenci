@@ -16,6 +16,8 @@ site_media/files/
 site_media/media/*
 site_media/static/tresources/
 
+!site_media/media/readme.txt
+
 # Ignore django cache
 cache/
 index/
