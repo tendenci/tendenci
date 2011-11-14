@@ -31,13 +31,13 @@ from djcelery.models import TaskMeta
 
 from memberships.models import App, AppEntry, Membership, \
     MembershipType, Notice, AppField, AppFieldEntry, MembershipImport
-from memberships.forms import AppForm, AppEntryForm, \
-    AppCorpPreForm, MemberApproveForm, CSVForm, ReportForm, EntryEditForm, \
-    ExportForm, ImportMapForm, UploadForm
+from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm, \
+    MemberApproveForm, CSVForm, ReportForm, EntryEditForm, ExportForm
 from memberships.utils import new_mems_from_csv, is_import_valid, \
     prepare_chart_data, get_days, has_app_perm, get_over_time_stats
 from memberships.tasks import ImportMembershipsTask
 from memberships.importer.utils import parse_mems_from_csv
+from memberships.importer.forms import ImportMapForm, UploadForm
 
 try:
     from notification import models as notification
