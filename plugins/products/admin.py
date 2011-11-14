@@ -30,7 +30,7 @@ class SubcategoryAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['view_on_site', 'edit_link', 'name', 'slug','item_number', 'tags']
     list_filter = ['category', 'subcategory']
-    search_fields = ['name', 'description', 'category', 'subcategory']
+    search_fields = ['name', 'description', 'category__name', 'subcategory__name']
     inlines = [ProductFileAdmin,]
     fieldsets = (
         (None, 
