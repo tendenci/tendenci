@@ -402,8 +402,15 @@ class RegistrationForm(forms.Form):
             }
             payment_methods = reg_conf.payment_method.exclude(**filters).order_by('pk')
         
-        self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
-            queryset=payment_methods, widget=forms.RadioSelect(), initial=payment_methods[0])
+        try:
+            self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
+                queryset=payment_methods, widget=forms.RadioSelect(), initial=payment_methods[0])
+        except IndexError as e:
+            # this only happens if you try to use the credit card payment (only)
+            # and the website is not fully setup to take credit card payments.
+            raise IndexError("There are either no online payment methods available for this calendar event, \
+            the merchant account is not setup in /global/settings, \
+            or the merchant login is not setup in the local_settings.py file.")
 
         if not self.free_event:
             if user and is_admin(user):
