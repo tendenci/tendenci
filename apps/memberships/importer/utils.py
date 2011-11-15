@@ -33,6 +33,7 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
     """
     
     membership_dicts = []
+    skipped = 0
     for csv_dict in csv_to_dict(file_path):  # field mapping
     
         m = {}
@@ -40,7 +41,6 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
             if csv_field:  # skip blank option
                 # membership['username'] = 'charliesheen'
                 m[clean_field_name(app_field)] = csv_dict[csv_field]
-                
         
         # clean username
         username = clean_username(m['user_name'])
@@ -75,10 +75,14 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
             # no memtype
             membership_type = None
             m['skipped'] = True
+            skipped = skipped + 1
         
         if membership_type and user:
             # already exists
-            m['skipped'] = Membership.objects.filter(user=user, membership_type=membership_type).exists()
+            mem_type_exists = Membership.objects.filter(user=user, membership_type=membership_type).exists()
+            if mem_type_exists:
+                m['skipped'] = True
+                skipped = skipped + 1
         
         # detect if renewal
         m['renewal'] = bool(m.get('renew_date'))
@@ -116,6 +120,12 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
         m['subscribe_dt'] = subscribe_dt
         
         membership_dicts.append(m)
-        
-    return membership_dicts
+    
+    total = len(membership_dicts)
+    stats = {
+        'all': total,
+        'skipped': skipped,
+        'added': total-skipped,
+        }
+    return membership_dicts, stats
     

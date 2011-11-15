@@ -16,7 +16,7 @@ class ImportMembershipsTask(Task):
     def run(self, app, file_path, fields, **kwargs):
         #get parsed membership dicts
         imported = []
-        mems = parse_mems_from_csv(file_path, fields)
+        mems, stats = parse_mems_from_csv(file_path, fields)
         for m in mems:
             if not m['skipped']:
                 # get membership type.
@@ -167,4 +167,4 @@ class ImportMembershipsTask(Task):
                 # append to imported list
                 imported.append(membership)
                 
-        return imported
+        return imported, stats
