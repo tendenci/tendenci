@@ -835,8 +835,7 @@ def membership_import_confirm(request, id):
             app = memport.app
             file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
             
-            celery_present = False
-            if not celery_present:
+            if not settings.CELERY_IS_ACTIVE:
                 # if celery server is not present 
                 # evaluate the result and render the results page
                 result = ImportMembershipsTask()
@@ -847,8 +846,7 @@ def membership_import_confirm(request, id):
                     'datetime': datetime,
                 }, context_instance=RequestContext(request))
             else:
-                result = ImportMembershipsTask.delay(app, memberships, fields)
-                result.wait()
+                result = ImportMembershipsTask.delay(app, file_path, cleaned_data)
             
             return redirect('membership_import_status', result.task_id)
     else:
