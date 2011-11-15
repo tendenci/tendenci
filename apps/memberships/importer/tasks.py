@@ -1,9 +1,14 @@
 from datetime import datetime
 
+from django.contrib.auth.models import User
+
 from celery.task import Task
 from celery.registry import tasks
 
-from memberships.models import AppEntry, AppField, AppFieldEntry
+from profiles.models import Profile
+
+from memberships.models import (AppEntry, AppField, AppFieldEntry,
+    MembershipType, Membership)
 from memberships.importer.utils import parse_mems_from_csv
 
 class ImportMembershipsTask(Task):
@@ -13,17 +18,17 @@ class ImportMembershipsTask(Task):
         imported = []
         mems = parse_mems_from_csv(file_path, fields)
         for m in mems:
-            if not m.skipped:
+            if not m['skipped']:
                 # get membership type.
                 # this should not throw DNE errors
                 # otherwise it should have been marked skipped.
                 membership_type = MembershipType.objects.get(name=m['membership_type'])
                 
                 # initialize dates
-                join_dt = m['join_dt'] = join_dt
-                renew_dt = m['renew_dt'] = renew_dt
-                expire_dt = m['expire_dt'] = expire_dt
-                subscribe_dt = m['subscribe_dt'] = subscribe_dt
+                join_dt = m['join_dt']
+                renew_dt = m['renew_dt']
+                expire_dt = m['expire_dt']
+                subscribe_dt = m['subscribe_dt']
                 
                 # determine payment method id
                 # this assumes that the default payment methods are used.
@@ -38,6 +43,7 @@ class ImportMembershipsTask(Task):
                     payment_method_id = None
                 
                 # get or create User
+                username = m['user_name']
                 try:
                     user = User.objects.get(username = username)
                 except User.DoesNotExist:
@@ -137,10 +143,10 @@ class ImportMembershipsTask(Task):
                 for key, value in fields.items():
 
                     app_fields = AppField.objects.filter(app=app, label=key)
-                    if app_fields and membership.m.get(value):
+                    if app_fields and m.get(value):
 
                         try:
-                            value = unicode(membership.m.get(unicode(value)))
+                            value = unicode(m.get(unicode(value)))
                         except (UnicodeDecodeError) as e:
                             value = ''
 

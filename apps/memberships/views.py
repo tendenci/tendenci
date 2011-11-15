@@ -779,7 +779,7 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
         'datetime':datetime,
         }, context_instance=RequestContext(request))
     
-def membership_import_preview(request, id, is_preview=True):
+def membership_import_preview(request, id):
     """
     This will generate a form based on the uploaded CSV for field mapping.
     A preview will be generated based on the mapping given.
@@ -799,24 +799,13 @@ def membership_import_preview(request, id, is_preview=True):
             file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
             memberships = parse_mems_from_csv(file_path, cleaned_data)
             
-            if is_preview:
-                template_name = 'memberships/import-preview.html'
-                return render_to_response(template_name, {
-                    'memberships':memberships,
-                    'memport':memport,
-                    'datetime': datetime,
-                }, context_instance=RequestContext(request))
-            
-            else:
-                result = ImportMembershipsTask()
-                result = result.run(app, memberships, fields)
-                # result = ImportMembershipsTask.delay(app, memberships, fields)
-                # result.wait()
-            
-            if hasattr(result, 'task_id'):
-                return redirect('membership_import_status', result.task_id)
-            else:
-                return redirect('membership_import_status','0')
+            template_name = 'memberships/import-preview.html'
+            return render_to_response(template_name, {
+                'memberships':memberships,
+                'memport':memport,
+                'form':form,
+                'datetime': datetime,
+            }, context_instance=RequestContext(request))
 
     else:  # if not POST
         form = ImportMapForm(memport=memport)
@@ -846,18 +835,22 @@ def membership_import_confirm(request, id):
             app = memport.app
             file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
             
-            #this bypasses celery
-            result = ImportMembershipsTask()
-            result = result.run(app, file_path, cleaned_data)
-            
-            # leave in celery queue
-            # result = ImportMembershipsTask.delay(app, memberships, fields)
-            # result.wait()
-            
-            if hasattr(result, 'task_id'):
-                return redirect('membership_import_status', result.task_id)
+            celery_present = False
+            if not celery_present:
+                # if celery server is not present 
+                # evaluate the result and render the results page
+                result = ImportMembershipsTask()
+                memberships = result.run(app, file_path, cleaned_data)
+                print memberships
+                return render_to_response('memberships/import-confirm.html', {
+                    'memberships': memberships,
+                    'datetime': datetime,
+                }, context_instance=RequestContext(request))
             else:
-                return redirect('membership_import_status','0')
+                result = ImportMembershipsTask.delay(app, memberships, fields)
+                result.wait()
+            
+            return redirect('membership_import_status', result.task_id)
     else:
         return redirect('membership_import_preview', memport.id)
 
@@ -877,12 +870,10 @@ def membership_import_status(request, task_id, template_name = 'memberships/impo
     
     if task and task.status == "SUCCESS":
         
-        memberships, added, skipped = task.result
+        memberships = task.result
         
         return render_to_response(template_name, {
             'memberships': memberships,
-            'added': added,
-            'skipped': skipped,
             'datetime': datetime,
         }, context_instance=RequestContext(request))
     else:
