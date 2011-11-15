@@ -168,6 +168,3 @@ class ImportMembershipsTask(Task):
                 imported.append(membership)
                 
         return imported
-
-
-tasks.register(ImportMembershipsTask)
