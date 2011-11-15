@@ -87,7 +87,6 @@ class BeforeAndAfter(TendenciBaseModel):
         # we'll avoid calling .object so we won't hit the database
         i = 0
         for x in bnas:
-            print x.pk, x.object.pk
             if x.pk == self.pk:
                 break
             i = i + 1
@@ -111,7 +110,6 @@ class BeforeAndAfter(TendenciBaseModel):
         # we'll avoid calling .object so we won't hit the database
         i = 0
         for x in bnas:
-            print x.pk, x.object.pk
             if x.pk == self.pk:
                 break
             i = i + 1
