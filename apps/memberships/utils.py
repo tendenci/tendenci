@@ -101,8 +101,6 @@ def csv_to_dict(file_path):
             entry[col[i]] = row[i].decode('latin-1')
         lst.append(entry)
     
-    csv_file.close()
-    
     return lst  # list of dictionaries
 
 def new_mems_from_csv(file_path, app, columns):
