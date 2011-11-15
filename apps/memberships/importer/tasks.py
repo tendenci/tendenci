@@ -4,7 +4,7 @@ from celery.task import Task
 from celery.registry import tasks
 
 from memberships.models import AppEntry, AppField, AppFieldEntry
-from memberships.imports import parse_mems_from_csv
+from memberships.importer.utils import parse_mems_from_csv
 
 class ImportMembershipsTask(Task):
 
@@ -109,12 +109,13 @@ class ImportMembershipsTask(Task):
                 # bind corporate membership with membership if it exists
                 corp_memb_name = m.get('corp_membership_name', None)
                 if corp_memb_name:
-                    corp_memb = CorporateMembership.objects.get(name=corp_memb_name)
-                    membership.membership_type = corp_memb.corporate_membership_type.membership_type
-                    membership.corporate_membership_id = corp_memb.pk
-                    membership.save()
-                except CorporateMembership.DoesNotExist:
-                    pass
+                    try:
+                        corp_memb = CorporateMembership.objects.get(name=corp_memb_name)
+                        membership.membership_type = corp_membi.corporate_membership_type.membership_type
+                        membership.corporate_membership_id = corp_memb.pk
+                        membership.save()
+                    except CorporateMembership.DoesNotExist:
+                        pass
                 
                 # create entry
                 entry = AppEntry.objects.create(
