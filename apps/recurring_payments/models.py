@@ -504,6 +504,14 @@ class RecurringPaymentInvoice(models.Model):
         self.invoice.tender(self.recurring_payment.user)
         
         d = {'amount': amount,
+             'order': {
+                       'invoice_number': str(self.invoice.id),
+                       'description': '%s (billing cycle from %s to %s)' % (
+                                            self.recurring_payment.description,
+                                            self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
+                                            self.billing_cycle_end_dt.strftime('%m/%d/%Y')),
+                       'recurring_billing': 'true'
+                       }
              }
         
         cpt = CIMCustomerProfileTransaction(self.recurring_payment.customer_profile_id,
