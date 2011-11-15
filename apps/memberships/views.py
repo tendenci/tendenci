@@ -33,8 +33,8 @@ from memberships.models import App, AppEntry, Membership, \
     MembershipType, Notice, AppField, AppFieldEntry, MembershipImport
 from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm, \
     MemberApproveForm, CSVForm, ReportForm, EntryEditForm, ExportForm
-from memberships.utils import new_mems_from_csv, is_import_valid, \
-    prepare_chart_data, get_days, has_app_perm, get_over_time_stats
+from memberships.utils import is_import_valid, prepare_chart_data, \
+    get_days, has_app_perm, get_over_time_stats
 from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
@@ -623,125 +623,6 @@ def notice_email_content(request, id, template_name="memberships/notices/email_c
         'notice':notice,
         }, context_instance=RequestContext(request))
 
-# old import
-#@login_required
-#def membership_import(request, step=None):
-    #"""
-    #Membership Import Wizard: Walks you through a series of steps to upload memberships.
-    #"""
-    #if not is_admin(request.user):
-        #raise Http403
-
-    #if not step:  # start from beginning
-        #return redirect('membership_import_upload_file')
-
-    #request.session.set_expiry(0)  # expire when browser is closed
-    #step_numeral, step_name = step
-
-    #if step_numeral == 1:  # upload-file
-        #template_name = 'memberships/import-upload-file.html'
-        #if request.method == 'POST':
-            #form = CSVForm(request.POST, request.FILES, step=step)
-            #if form.is_valid():
-                #cleaned_data = form.save(step=step)
-                #app = cleaned_data['app']
-
-                ## check import requirements
-                #saved_files = File.objects.save_files_for_instance(request, Membership)
-                #file_path = os.path.join(settings.MEDIA_ROOT, str(saved_files[0].file))
-                #valid_import = is_import_valid(file_path)
-
-                ## store session info
-                #request.session['membership.import.app'] = app
-                #request.session['membership.import.file_path'] = file_path
-
-                ## move to next wizard page
-                #return redirect('membership_import_map_fields')
-        #else:  # if not POST
-            #form = CSVForm(step=step)
-
-        #return render_to_response(template_name, {
-            #'form':form,
-            #'datetime':datetime,
-            #}, context_instance=RequestContext(request))
-
-    #if step_numeral == 2:  # map-fields
-        #template_name = 'memberships/import-map-fields.html'
-        #file_path = request.session.get('membership.import.file_path')
-        #app = request.session.get('membership.import.app')
-
-        #if request.method == 'POST':
-            #form = CSVForm(
-                #request.POST,
-                #request.FILES,
-                #step=step,
-                #app=app,
-                #file_path=file_path
-            #)
-
-            #if form.is_valid():
-                #cleaned_data = form.save(step=step)
-                #file_path = request.session.get('membership.import.file_path')
-
-                #memberships, no_memtypes = new_mems_from_csv(file_path, app, cleaned_data)
-
-                #request.session['membership.import.memberships'] = memberships
-                #request.session['membership.import.no_memtypes'] = no_memtypes
-                #request.session['membership.import.fields'] = cleaned_data
-
-                #return redirect('membership_import_preview')
-
-        #else:  # if not POST
-            #form = CSVForm(step=step, app=app, file_path=file_path)
-
-        #return render_to_response(template_name, {
-            #'form':form,
-            #'datetime':datetime,
-            #}, context_instance=RequestContext(request))
-
-    #if step_numeral == 3:  # preview
-        #template_name = 'memberships/import-preview.html'
-        #memberships = request.session.get('membership.import.memberships')
-        #no_memtypes = request.session.get('membership.import.no_memtypes')
-        #added = []
-        #skipped = []
-        
-        #for membership in memberships:
-            #if membership.pk: skipped.append(membership)
-            #else: added.append(membership)
-        
-        #return render_to_response(template_name, {
-        #'memberships':memberships,
-        #'added': added,
-        #'skipped': skipped,
-        #'no_memtypes':no_memtypes,
-        #'datetime': datetime,
-        #}, context_instance=RequestContext(request))
-
-    #if step_numeral == 4:  # confirm
-
-        #app = request.session.get('membership.import.app')
-        #memberships = request.session.get('membership.import.memberships')
-        #fields = request.session.get('membership.import.fields')
-
-        #if not all([app, memberships, fields]):
-            #return redirect('membership_import_upload_file')
-
-        #result = ImportMembershipsTask()
-        #result = result.run(app, memberships, fields)
-        ## result = ImportMembershipsTask.delay(app, memberships, fields)
-        ## result.wait()
-
-        ##clear these from the session
-        #request.session['membership.import.memberships'] = []
-        #request.session['membership.import.fields'] = []
-
-
-        #if hasattr(result, 'task_id'):
-            #return redirect('membership_import_status', result.task_id)
-        #else:
-            #return redirect('membership_import_status','0')
-
 @login_required
 def membership_import_upload(request, template_name='memberships/import-upload-file.html'):
     """
@@ -778,7 +659,8 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
         'form':form,
         'datetime':datetime,
         }, context_instance=RequestContext(request))
-    
+
+@login_required
 def membership_import_preview(request, id):
     """
     This will generate a form based on the uploaded CSV for field mapping.
@@ -793,21 +675,24 @@ def membership_import_preview(request, id):
         form = ImportMapForm(request.POST, memport=memport)
         
         if form.is_valid():
+            #show the user a preview based on the mapping
             cleaned_data = form.cleaned_data
             app = memport.app
             
             file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
-            memberships = parse_mems_from_csv(file_path, cleaned_data)
+            memberships, stats = parse_mems_from_csv(file_path, cleaned_data)
             
+            # return the form to use it for the confirm view
             template_name = 'memberships/import-preview.html'
             return render_to_response(template_name, {
                 'memberships':memberships,
+                'stats':stats,
                 'memport':memport,
                 'form':form,
                 'datetime': datetime,
             }, context_instance=RequestContext(request))
 
-    else:  # if not POST
+    else:
         form = ImportMapForm(memport=memport)
     
     template_name = 'memberships/import-map-fields.html'
@@ -821,6 +706,8 @@ def membership_import_preview(request, id):
 def membership_import_confirm(request, id):
     """
     Confirm the membership import and continue with the process.
+    This can only be accessed via a hidden post form from the preview page.
+    That will hold the original mappings selected by the user.
     """
     if not is_admin(request.user):
         raise Http403
@@ -839,10 +726,10 @@ def membership_import_confirm(request, id):
                 # if celery server is not present 
                 # evaluate the result and render the results page
                 result = ImportMembershipsTask()
-                memberships = result.run(app, file_path, cleaned_data)
-                print memberships
+                memberships, stats = result.run(app, file_path, cleaned_data)
                 return render_to_response('memberships/import-confirm.html', {
                     'memberships': memberships,
+                    'stats': stats,
                     'datetime': datetime,
                 }, context_instance=RequestContext(request))
             else:
@@ -868,10 +755,11 @@ def membership_import_status(request, task_id, template_name = 'memberships/impo
     
     if task and task.status == "SUCCESS":
         
-        memberships = task.result
+        memberships, stats = task.result
         
         return render_to_response(template_name, {
             'memberships': memberships,
+            'stats':stats,
             'datetime': datetime,
         }, context_instance=RequestContext(request))
     else:
