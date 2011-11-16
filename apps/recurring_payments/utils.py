@@ -106,7 +106,7 @@ class RecurringPaymentEmailNotices(object):
                     self.email.subject = 'Payment received ' 
                 else:
                     self.email.subject = 'Payment failed ' 
-                self.email.subject = "%s for \"%s\" " % (self.email.subject, 
+                self.email.subject = "%s for %s " % (self.email.subject, 
                                                    payment_transaction.recurring_payment.description)
                 
                 self.email.send()
