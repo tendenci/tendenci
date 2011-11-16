@@ -179,8 +179,6 @@ INSTALLED_APPS = (
     'south',
     'tastypie',
     'api_tasty',
-    'piston',
-    'api_piston',
     'forms_builder.forms',
     'pluginmanager',
     'base',
