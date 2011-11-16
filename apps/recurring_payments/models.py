@@ -503,9 +503,16 @@ class RecurringPaymentInvoice(models.Model):
         # tender the invoice
         self.invoice.tender(self.recurring_payment.user)
         
+        # create a payment record
+        payment = Payment()
+
+        payment.payments_pop_by_invoice_user(self.recurring_payment.user, 
+                                             self.invoice, 
+                                             self.invoice.guid)
+        # make a transaction using CIM
         d = {'amount': amount,
              'order': {
-                       'invoice_number': str(self.invoice.id),
+                       'invoice_number': str(payment.invoice_num),
                        'description': '%s (billing cycle from %s to %s)' % (
                                             self.recurring_payment.description,
                                             self.billing_cycle_start_dt.strftime('%m/%d/%Y'),
@@ -528,12 +535,7 @@ class RecurringPaymentInvoice(models.Model):
                                     amount=amount,
                                     status=success)
         
-        # create a payment record
-        payment = Payment()
-
-        payment.payments_pop_by_invoice_user(self.recurring_payment.user, 
-                                             self.invoice, 
-                                             self.invoice.guid)
+        
         # update the payment entry with the direct response returned from payment gateway
         payment = payment_update_from_response(payment, response_d['direct_response'])
 
