@@ -1,0 +1,10 @@
+{% extends "courses/base.html" %}
+
+{% block body %}
+<div>{{ course.title }}</div>
+<div>{{ course.content }}</div>
+<div>{{ course.retries }}</div>
+<div>{{ course.retry_interval }}</div>
+<div>{{ course.passing_score }}</div>
+<div>{{ course.deadline }}</div>
+{% endblock body %}
