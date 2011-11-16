@@ -19,7 +19,7 @@ We attempted a payment for the {{ pt.recurring_payment.description }} but was fa
 		<td>Payment amount:</td><td>{{ pt.amount|format_currency }}</td>
 	</tr>
 	<tr>
-		<td>Billing cycle: </td><td>From {{ pt.recurring_payment_invoice.billing_cycle_start_dt|date }} To {{ pt.recurring_payment_invoice.billing_cycle_end_dt|date }}</td>
+		<td>Billing cycle: </td><td>From {{ pt.recurring_payment_invoice.billing_cycle_start_dt|date:'N j Y' }} To {{ pt.recurring_payment_invoice.billing_cycle_end_dt|date:'N j Y' }}</td>
 	</tr>
 	<tr>
 		<td>Date processed:</td><td>{{ pt.create_dt|date }}</td>
