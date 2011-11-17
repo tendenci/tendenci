@@ -16,8 +16,8 @@ class Course(TendenciBaseModel):
     title = models.CharField(_(u'Title'), max_length=200)
     content = models.TextField(_(u'Content'))
     retries = models.IntegerField(_(u'Retries'), help_text=u'Number of retries allowed (0, means unlimited)', default=0)
-    retry_interval = models.IntegerField(_(u'Retry_interval'), help_text=u'Number of hours before another retry', default=0)
-    passing_score = models.IntegerField(_(u'Passing_score'))
+    retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=u'Number of hours before another retry', default=0)
+    passing_score = models.IntegerField(_(u'Passing Score'), help_text=u'out of a total of 100')
     deadline = models.DateTimeField(_(u'Deadline'))
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
     
@@ -39,7 +39,7 @@ class Question(models.Model):
     Represents a single question for a course.
     point_value should always be equal to 100 over total number of course questions.
     """
-    course = models.ForeignKey(Course)
+    course = models.ForeignKey(Course, related_name="questions")
     question = models.CharField(_(u'Question'), max_length=200)
     answer_choices = models.CharField(_(u'Answer Choices'), help_text=_(u'separated by comma'), max_length=200)
     answer = models.CharField(_(u'Correct Answer'), max_length=200)
