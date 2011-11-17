@@ -14,22 +14,25 @@
     <div id="sponsor-items">
     {% if sponsor_stories %}
     {% for story in sponsor_stories %}
-        <img alt="Visit our Sponsor" src="{% image_url story.image size=650x110 crop=true quality=90 %}" />
+        {% if story.image %}
+        <a href="{{ story.full_story_link }}"><img alt="{{ story.title }}" src="{% image_url story.image size=140x80 crop=true quality=90 %}" /></a>
+        {% endif %}
     {% endfor %}
     {% else %}
         <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
         <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
         <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
         <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
+        {% if user.is_authenticated %}<p><a href="/stories/add/">Add a story</a> and tag it <strong>sponsor</strong> to have it appear as an image above.</p>{% endif %}
     {% endif %}
     </div>
     <section id="footer-links">
         <ul>
             <li><a href="/login/">{% trans "Log in" %}</a></li>
-            <li><a href="/sitemap/">Site Map</a></li>
-            <li><a href="/rss/">Feed</a></li>
-            <li><a href="http://schipul.com/">Schipul Web Design</a></li>
-            <li><a href="http://tendenci.com/">Tendenci&reg; Membership Management Software</a></li>
+            <li><a href="/sitemap/">{% trans "Site Map" %}</a></li>
+            <li><a href="/rss/">{% trans "Feed" %}</a></li>
+            <li><a href="http://schipul.com/">{% trans "Schipul Web Design" %}</a></li>
+            <li><a href="http://tendenci.com/">{% trans "Tendenci&reg; Membership Management Software" %}</a></li>
         </ul>
     </section>
 </section><!-- /#sponsors -->
