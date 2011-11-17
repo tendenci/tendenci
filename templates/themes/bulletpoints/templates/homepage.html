@@ -34,7 +34,7 @@
                 {% if rotator_list %}
                     {% for story in rotator_list %}
                     <div class="story story-{% cycle "even" "odd" %}">
-                      <div class="story-image"><a href="{{ story.full_story_link }}"><img style="height: 324px; width: 644px;" src="{% image_url story.photo size=644x324 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
+                      <div class="story-image"><a href="{{ story.full_story_link }}"><img style="height: 324px; width: 644px;" src="{% image_url story.image size=644x324 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
                         <div class="story-text">
                             <h2 class="headline"><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
                             <div class="story-summary">
@@ -46,22 +46,21 @@
                     {% endfor %}
                 {% else %}
                 <div class="story story-even">
-                  <div class="story-image"><a href="#"><img style="height: 324px; width: 644px;" src="http://schipul.com/files/2371/644x324/crop/88" alt="Stories"></a></div>
+                  <div class="story-image"><a href="#"><img style="height: 324px; width: 644px;" src="http://media.tendenciapp.com/images/rotator.jpg" alt="Sample"></a></div>
                     <div class="story-text">
-                        <h2 class="headline"><a href="#">Golden Gate</a></h2>
+                        <h2 class="headline"><a href="#">Sample Story</a></h2>
                         <div class="story-summary">
-                            <p>Golden Gate Bridge shot with the sun by Ed Schipul. 
-                            {% if request.user.is_authenticated %}<a href="/stories/add/">Add Stories</a> with the tag <strong>rotator</strong> and they will appear here.{% endif %}</p>
+                            <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %}</p>
                             <span><a class="readmore" href="#">Read More</a></span>
                         </div>
                     </div>
                 </div>
                 <div class="story story-odd">
-                  <div class="story-image"><a href="#"><img style="height: 324px; width: 644px;" src="http://schipul.com/files/2373/644x324/crop/88" alt="Something"></a></div>
+                  <div class="story-image"><a href="#"><img style="height: 324px; width: 644px;" src="http://media.tendenciapp.com/images/rotator.jpg" alt="Sample"></a></div>
                     <div class="story-text">
-                        <h2 class="headline"><a href="#">the TECH</a></h2>
+                        <h2 class="headline"><a href="#">Second Story</a></h2>
                         <div class="story-summary">
-                            <p>The TECH shot by Ed Schipul. {% if request.user.is_authenticated %}<a href="/stories/add/">Add Stories</a> with the tag <strong>featured</strong> and they will appear to the right.{% endif %}</p>
+                            <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %}</p>
                             <span><a class="readmore" href="#">Read More</a></span>
                         </div>
                     </div>
@@ -80,13 +79,13 @@
                     {% endfor %}
                 {% else %}
                     <div class="featured-item">
-                        <a href="#">Business Strategy</a>
+                        <a href="#">{% trans 'Business Strategy' %}</a>
                     </div>
                     <div class="featured-item">
-                        <a href="#">Talking Points</a>
+                        <a href="#">{% trans 'Talking Points' %}</a>
                     </div>
                     <div class="featured-item">
-                        <a href="#">Who We Are</a>
+                        <a href="#">{% trans 'Who We Are' %}</a>
                     </div>
                 {% endif %}
             </section><!-- /#featured -->
@@ -98,16 +97,13 @@
                 <div id="home-blog">
                     <h3>{% trans 'Blog' %}</h3>
                     <div class="blog-items clearfix">
-                      {% get_rss "http://blog.schipul.com/feed/" as rss %}
+                      {% if MODULE_THEME_BLOGFEED %}
+                        {% get_rss MODULE_THEME_BLOGFEED as rss %}
+                      {% else %}
+                        {% get_rss "http://blog.schipul.com/feed/" as rss %}
+                      {% endif %}
                         {% for entry in rss.entries|slice:":3" %}
                             <div class="blog-item">
-                                {% spaceless %}<img style="height: 90px; width: 100px;" alt="{{ entry.title }}" src="
-                                {% if entry.thumbnail|slice:":4" == "http" %}
-                                    {{ entry.thumbnail }}
-                                {% else %}
-                                    http://blog.schipul.com/{{ entry.thumbnail }}
-                                {% endif %}
-                                " />{% endspaceless %}
                                 <h4><a href="{{ entry.link }}">{{ entry.title }}</a></h4>
                                 <p>{{ entry.summary|striptags|safe|truncatewords:"12" }}</p>
                                 <p><span><a class="readmore" href="{{ entry.link }}">{% trans 'Read More ...' %}</a></span></p>
