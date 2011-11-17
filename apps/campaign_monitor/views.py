@@ -1,4 +1,5 @@
 import datetime
+import os
 from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -46,7 +47,20 @@ def template_view(request, template_id, template_name='campaign_monitor/template
         
     return render_to_response(template_name, {'template':template}, 
         context_instance=RequestContext(request))
-        
+
+def template_html_original(request, template_id):
+    template = get_object_or_404(Template, template_id=template_id)
+    
+    if not template.html_file:
+        raise Http404
+
+    text = template.html_file.read()
+    template.html_file.close()
+    response = HttpResponse(text)
+    response['Content-Disposition'] = 'attachment; file=original.html'
+
+    return response
+
 def template_html(request, template_id):
     template = get_object_or_404(Template, template_id=template_id)
     

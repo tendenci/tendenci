@@ -1,6 +1,7 @@
-html { margin-top: 30px !important; padding-bottom: 26px !important;  }
+html { margin-top: 30px !important; /*padding-bottom: 26px !important; */ }
 	#admin-bar { width: 100%; position: fixed; top: 0; left: 0; background: #6A120D; color: #ebebeb; height: 30px; z-index: 99999 !important;}
 	#admin-bar .admin-logo img {margin: 0; padding: 0;}
+	#admin-bar ul li a.admin-logo {background: #6A120D;}
 	#admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 12px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
 	#admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
 	#admin-bar a { display: block; padding: 8px 8px 6px; font-size: 12px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #6A120D; text-decoration: none; border-right: 1px solid #4B0D09; color: #ebebeb; }
@@ -31,6 +32,14 @@ html { margin-top: 30px !important; padding-bottom: 26px !important;  }
 	#admin-bar li #admin-search-box {margin: 3px 0 0 0; padding: 0 4px 0 0; border-right: 1px solid #4B0D09; font-size: 12px; }
 	#admin-bar #admin-search-box input#admin-search-submit {border: 1px solid #eee; color: #eee; background-color: #6A120D;font-family: Verdana, Geneva, sans-serif; font-size: 12px; }
 	
+	/* Alt color for admin-bar 
+	#admin-bar, #admin-bar ul, #admin-bar a, #admin-bar li li, #admin-bar li li a:hover,
+	#admin-bar #admin-search-box input#admin-search-submit { background-color: #3a3; }
+	#admin-bar li li a, #admin-bar li li.app a, #admin-bar .sub { background-color: #272; }
+	*/
+	
+	/* Old styles for deprecated bottom bar
+	
 	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #6A120D; color: #ebebeb; height: 26px; z-index: 99999 !important; }
 	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
 	#bottom-admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
@@ -52,7 +61,7 @@ html { margin-top: 30px !important; padding-bottom: 26px !important;  }
 	  background: #1d4ab4;
 	  cursor: pointer;
 	}
-	
+	*/
 	@media print {
 		#admin-bar, #bottom-admin-bar { display: none; }
   		body.admin-bar { margin-top: 0 !important; }

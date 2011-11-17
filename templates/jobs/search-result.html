@@ -10,9 +10,5 @@
             <div class="content">{{ job.description|striptags|truncatewords:20|safe }}</div>
         </div>
         {% include 'jobs/meta.html' %}
-        <!-- delete-job form -->
-        <form name="job-delete" method="POST" action="{% url job.delete job.pk %}">{% csrf_token %}
-            <input type="hidden" name="action" value="delete">
-        </form>
     </div>
 </div>

@@ -113,7 +113,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
         category_form_class = CategoryForm2
     
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user, prefix='job')
+        form = form_class(request.POST, user=request.user)
         categoryform = category_form_class(
                         content_type, 
                         request.POST,
@@ -221,10 +221,10 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             else:
                 return HttpResponseRedirect(reverse('job.thank_you'))
     else:
-        form = form_class(user=request.user, prefix='job')
+        form = form_class(user=request.user)
         initial_category_form_data = {
-            'app_label': 'pages',
-            'model': 'page',
+            'app_label': 'jobs',
+            'model': 'job',
             'pk': 0, #not used for this view but is required for the form
         }
         categoryform = category_form_class(
