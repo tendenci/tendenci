@@ -24,7 +24,7 @@ def newsletter_articles_list(request, articles_days, simplified):
     articles = Article.objects.filter(release_dt__lte=end_dt)
     if start_dt:
         articles = articles.filter(release_dt__gt=start_dt)
-    articles = articles.filter(status_detail='active', status=True, syndicate=True, allow_anonymous_view=True)
+    articles = articles.filter(status_detail='active', status=True, allow_anonymous_view=True)
     articles = articles.order_by("-release_dt")
     art_content = render_to_string('newsletters/articles_list.txt', 
                                    {'articles': articles,
@@ -43,7 +43,7 @@ def newsletter_news_list(request, news_days, simplified):
     news = News.objects.filter(release_dt__lte=end_dt)
     if start_dt:
         news = news.filter(release_dt__gt=start_dt)
-    news = news.filter(status_detail='active', status=True, syndicate=True, allow_anonymous_view=True)
+    news = news.filter(status_detail='active', status=True, allow_anonymous_view=True)
     news = news.order_by("-release_dt")
     news_content = render_to_string('newsletters/news_list.txt', 
                                    {'news': news,
@@ -84,7 +84,7 @@ def newsletter_jobs_list(request, jobs_days, simplified):
     jobs = Job.objects.filter(activation_dt__lte=end_dt)
     if start_dt:
         jobs = jobs.filter(activation_dt__gt=start_dt)
-    jobs = jobs.filter(status_detail='active', status=True, syndicate=True, allow_anonymous_view=True)
+    jobs = jobs.filter(status_detail='active', status=True, allow_anonymous_view=True)
     jobs = jobs.order_by("list_type")
     job_content = render_to_string('newsletters/jobs_list.txt', 
                                    {'jobs': jobs,
