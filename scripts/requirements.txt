@@ -5,7 +5,6 @@ South==0.7.3
 anyjson>=0.2.4
 django-authority>=0.4
 django-avatar>=1.0.4
-django-celery>=2.0.0
 django-form-utils>=0.1.8
 django-pagination>=1.0.7
 django-photologue>=2.3
@@ -14,7 +13,6 @@ django-simple-captcha>=0.1.7
 django-tagging>=0.3.1
 django-tinymce==1.5.1.dev100
 django-haystack==1.2.4
-django-kombu==0.9.4
 feedparser>=4.1
 httplib2>=0.4.0
 pytz>=2010h
@@ -34,6 +32,8 @@ createsend>=0.3.2
 celery>=2.2.4
 django-celery>=2.2.4
 django-kombu>=0.9.4
+mimeparse>=0.1.3
+python-dateutil>=1.5
 
 # git repositories
 git+http://github.com/notanumber/xapian-haystack.git
@@ -46,3 +46,6 @@ git+git://github.com/hmarr/boto@ses#egg=boto
 
 # django ses
 git+git://github.com/hmarr/django-ses#egg=django_ses
+
+# django tasty pie
+git+git://github.com/toastdriven/django-tastypie.git

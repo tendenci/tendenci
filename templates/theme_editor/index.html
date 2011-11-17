@@ -62,7 +62,7 @@
                 <p><a href="{% url home %}?theme={{ current_theme }}">{% trans "Preview" %} <strong>{{ current_theme }}</strong></a></p>
                 {% endifnotequal %}
             </div>
-       		<div id="right_files_list">
+            <div id="right_files_list">
                <h4>{% trans "Choose a folder or file:" %}</h4>
                {%  if pwd %}
                <div class="pwd" title="{{ pwd }}">
@@ -85,17 +85,27 @@
                     {% endfor %}
                </ul>
                {%  endif %}
-               {%  if files %}
+               {%  if files or non_editable_files %}
                <ul class="files_list">
+                    {% if files %}
                     {% for file in files %}
                         <li {% if current_file == file %}class="current_file"{% endif %}>
                             <a href="{% url theme_editor %}?file={{ pwd }}/{{ file }}&theme_edit={{ current_theme }}#to-editor">{{ file|safe }}</a>
                         </li>
                     {% endfor %}
+                    {% endif %}
+                    {% if non_editable_files %}
+                        <li style="border-top: solid 1px #111;">{% trans "Non-Editable Files" %}</li>
+                    {% for file in non_editable_files %}
+                        <li {% if current_file == file %}class="current_file"{% endif %}>
+                            <a href="{{ THEME_URL }}{{ pwd }}/{{ file }}" target="_blank">{{ file|safe }}</a>
+                        </li>
+                    {% endfor %}
+                    {% endif %}
                </ul>
                {% endif %}
-               {% if not files and not dirs %}
-               <p>{% trans "No editable files" %}</p>
+               {% if not files and not dirs and not non_editable_files %}
+               <p>{% trans "This folder is empty" %}</p>
                {% endif %}
                <br>
                <form id="upload_form" action="{% url theme_editor.upload %}" method="POST" enctype="multipart/form-data">{% csrf_token %}

@@ -6,6 +6,7 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from django.forms.models import model_to_dict
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 
 from site_settings.utils import (delete_setting_cache, cache_setting,
     delete_all_settings_cache, get_form_list, get_box_list)
@@ -31,18 +32,26 @@ def clean_settings_form(self):
                         raise forms.ValidationError("'%s' must be a file" % setting.label)
         except KeyError:
             pass
+
+        if setting.name == "siteurl" and setting.scope == "site":
+            field_value = self.cleaned_data["siteurl"] 
+            if field_value:
+                if field_value[-1:] == "/":
+                    field_value = field_value[:-1]
+                self.cleaned_data[setting.name] = field_value
+
     return self.cleaned_data
 
     
 def save_settings_form(self):
     """
         Save the updated settings in the database 
-        Removes and updates the settings cache
+        Setting's save will trigger a cache update.
+        If the field type is 'file' a file entry will be created.
     """
     for setting in self.settings:
         try:
             field_value = self.cleaned_data[setting.name]
-            
             if setting.input_type == "file":
                 if field_value:
                     # save a file object and set the value at that file object's id.
@@ -59,20 +68,22 @@ def save_settings_form(self):
                 else:
                     #retain the old file if no file is set
                     field_value = setting.value
-                    
+            
             if setting.value != field_value:
-                # delete the cache for all the settings to reset the context
-                key = [SETTING_PRE_KEY, 'all.settings']
-                key = '.'.join(key)
-                cache.delete(key)
-                
-                # delete and set cache for single key and save the value in the database
-                delete_all_settings_cache()
-                delete_setting_cache(setting.scope, setting.scope_category, setting.name)
+                #Setting changed. update the db entry.
+                #Setting model's save will recache.
                 setting.value = field_value
                 setting.save()
                 cache_setting(setting.scope, setting.scope_category, setting.name,
                   setting)
+
+            if setting.name == "siteurl" and setting.scope == "site":
+                if field_value:
+                    # Update the django site value in the contrib backend
+                    django_site = Site.objects.get(pk=1)
+                    django_site.domain = field_value.replace("http://","")
+                    django_site.name = field_value.replace("http://","")
+                    django_site.save()
         except KeyError:
             pass
             

@@ -21,28 +21,37 @@
     {% else %}
     <div class="event clearfix">
         <div class="event-date">
-            <span class="day">9</span>
-            <span class="month">Aug</span>
+            <span class="day">10</span>
+            <span class="month">{% now "M" %}</span>
         </div>
         <div class="event-text">
-            <a class="title" href="#">Upcoming Events Here</a>
-            <p>See our latest events...</p>
+            <a class="title" href="#">Our events</a>
+            <p>Your latest events will be displayed here.</p>
             <a class="readmore" href="#">Read More</a>
         </div>
     </div>
-    {% if request.user.is_authenticated %}
+    <div class="event clearfix">
+        <div class="event-date">
+            <span class="day">18</span>
+            <span class="month">{% now "M" %}</span>
+        </div>
+        <div class="event-text">
+            <a class="title" href="#">Another Event</a>
+            <p>{% if request.user.is_authenticated %}<a href="/events/add/">Add your first event</a> to take the place of these examples.{% else %}Great new upcoming event for the organization...{% endif %}</p>
+            <a class="readmore" href="#">Read More</a>
+        </div>
+    </div>
     <div class="event clearfix">
         <div class="event-date">
             <span class="day">22</span>
-            <span class="month">Aug</span>
+            <span class="month">{% now "M" %}</span>
         </div>
         <div class="event-text">
-            <a class="title" href="#">Add events to go here</a>
-            <p><a href="/events/add/">Add an event</a> to make this default information disappear.</p>
+            <a class="title" href="#">New events</a>
+            <p>We are excited about this fantastic upcoming event on the 22nd...</p>
             <a class="readmore" href="#">Read More</a>
         </div>
     </div>
-    {% endif %}
     {% endif %}
 </div>
 <div id="signup-form">
@@ -55,9 +64,9 @@
 </div>
 <div id="follow-box">
     <h3><span>{% trans "Follow" %}</span> {% trans "Us" %}</h3>
-    <a href="http://facebook.com/name"><img src="{{ THEME_URL }}media/images/facebook.png" alt="Facebook for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
-    <a href="http://linkedin.com/name"><img src="{{ THEME_URL }}media/images/linkedin.png" alt="LinkedIn for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
-    <a href="http://twitter.com/{{ MODULE_THEME_TWITTER }}"><img src="{{ THEME_URL }}media/images/twitter.png" alt="Twitter for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
-    <a href="http://youtube.com/name"><img src="{{ THEME_URL }}media/images/youtube.png" alt="Youtube for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
-    <a href="/feed"><img src="{{ THEME_URL }}media/images/rss.png" alt="RSS for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
+    {% if MODULE_THEME_FACEBOOK %}<a href="{{ MODULE_THEME_FACEBOOK }}"><img src="{{ THEME_URL }}media/images/facebook.png" alt="Facebook for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>{% endif %}
+    {% if MODULE_THEME_LINKEDIN %}<a href="{{ MODULE_THEME_LINKEDIN }}"><img src="{{ THEME_URL }}media/images/linkedin.png" alt="LinkedIn for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>{% endif %}
+    {% if MODULE_THEME_TWITTER %}<a href="http://twitter.com/{{ MODULE_THEME_TWITTER }}"><img src="{{ THEME_URL }}media/images/twitter.png" alt="Twitter for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>{% endif %}
+    {% if MODULE_THEME_YOUTUBE %}<a href="{{ MODULE_THEME_YOUTUBE }}"><img src="{{ THEME_URL }}media/images/youtube.png" alt="Youtube for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>{% endif %}
+    <a href="/feed/"><img src="{{ THEME_URL }}media/images/rss.png" alt="RSS for {{ SITE_GLOBAL_SITEDISPLAYNAME }}" /></a>
 </div>

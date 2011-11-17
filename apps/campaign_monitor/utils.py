@@ -28,14 +28,11 @@ def temporary_id():
     return id
 
 def sync_campaigns():
-    print 'Syncing sent campaigns...'
     sent = cl.campaigns()
     for c in sent:
         try:
             campaign = Campaign.objects.get(campaign_id = c.CampaignID)
-            print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
         except Campaign.DoesNotExist:
-            print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
             campaign = Campaign(campaign_id = c.CampaignID)
         campaign.subject = c.Subject
         campaign.name = c.Name
@@ -45,15 +42,12 @@ def sync_campaigns():
         campaign.status = 'S' #sent
         campaign.save()
     
-    print 'Syncing scheduled campaigns...'
     if hasattr(cl,'scheduled'): scheduled = cl.scheduled()
     else: scheduled = []
     for c in scheduled:
         try:
             campaign = Campaign.objects.get(campaign_id = c.CampaignID)
-            print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
         except Campaign.DoesNotExist:
-            print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
             campaign = Campaign(campaign_id = c.CampaignID)
         campaign.subject = c.Subject
         campaign.name = c.Name
@@ -63,15 +57,12 @@ def sync_campaigns():
         campaign.status = 'C' #Scheduled
         campaign.save()
     
-    print 'Syncing draft campaigns...'
     if hasattr(cl,'drafts'): drafts = cl.drafts()
     else: drafts = []
     for c in drafts:
         try:
             campaign = Campaign.objects.get(campaign_id = c.CampaignID)
-            print "Updating campaign (%s - %s)" % (c.CampaignID, c.Name)
         except Campaign.DoesNotExist:
-            print "Creating campaign (%s - %s)" % (c.CampaignID, c.Name)
             campaign = Campaign(campaign_id = c.CampaignID)
         campaign.subject = c.Subject
         campaign.name = c.Name
@@ -84,9 +75,7 @@ def sync_templates():
     for t in templates:
         try:
             template = Template.objects.get(template_id = t.TemplateID)
-            print "Updating template (%s - %s)" % (t.TemplateID, t.Name)
         except Template.DoesNotExist:
-            print "Creating template (%s - %s)" % (t.TemplateID, t.Name)
             template = Template(template_id = t.TemplateID)
         template.name = t.Name
         template.cm_preview_url = t.PreviewURL
@@ -120,7 +109,6 @@ def update_subscription(profile, old_email):
         for listmap in group.listmap_set.all():
             subscriber = Subscriber(listmap.list_id, old_email)
             try:
-                print "Resubscribing %s to %s." % (user.get_full_name(), group.name)
                 subscriber.update(profile.email, user.get_full_name(), [], False)
             except BadRequest, e:
                 print e
