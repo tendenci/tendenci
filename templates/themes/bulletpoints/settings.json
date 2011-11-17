@@ -1,2 +1,16 @@
 [
+  {
+    "name": "blogfeed",
+    "label": "Blog Feed URL",
+    "description": "The URL for the blog feed that is used on the homepage.",
+    "data_type": "string",
+    "default_value": "http://blog.schipul.com/feed/",
+    "input_type": "text",
+    "value": "http://blog.schipul.com/feed/",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  }
 ]
