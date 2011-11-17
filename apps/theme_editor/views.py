@@ -79,7 +79,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     dirs = get_dir_list(pwd, ROOT_DIR=theme_root)
     
     # get the file list
-    files = get_file_list(pwd, ROOT_DIR=theme_root)
+    files, non_editable_files = get_file_list(pwd, ROOT_DIR=theme_root)
     
     # get a list of revisions
     archives = ThemeFileVersion.objects.filter(relative_file_path=default_file).order_by("-create_dt")
@@ -109,6 +109,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
                                               'pwd':pwd,
                                               'dirs':dirs,
                                               'files': files,
+                                              'non_editable_files': non_editable_files,
                                               'archives':archives},
                               context_instance=RequestContext(request))
  
@@ -144,13 +145,14 @@ def original_templates(request, template_name="theme_editor/original_templates.h
         prev_dir = ''
     
     dirs = get_dir_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"), include_plugins=True)
-    files = get_file_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"), include_plugins=True)
+    files, non_editable_files = get_file_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"), include_plugins=True)
     return render_to_response(template_name, {
                                                 'current_dir': current_dir,
                                                 'prev_dir_name': prev_dir_name,
                                                 'prev_dir':prev_dir,
                                                 'dirs': dirs,
-                                                'files': files},
+                                                'files': files,
+                                                'non_editable_files': non_editable_files},
                               context_instance=RequestContext(request))
 
 @permission_required('theme_editor.change_themefileversion')
