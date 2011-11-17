@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.cache import cache
 from django.core.management import call_command
 
 INPUT_TYPE_CHOICES = (
@@ -41,6 +42,12 @@ class Setting(models.Model):
         return "(%s) %s" %(self.name, self.label)
         
     def save(self, *args, **kwargs):
+        try:
+            #get the old value as reference for updating the cache
+            orig = Setting.objects.get(pk = self.pk)
+        except Setting.DoesNotExist:
+            orig = None
+            
         if self.name == 'theme':
             from theme.utils import theme_options
             self.input_value = theme_options()
@@ -48,3 +55,17 @@ class Setting(models.Model):
             call_command('touch_settings')
         else:
             super(Setting, self).save(*args, **kwargs)
+        
+        #update the cache when value has changed
+        if orig and self.value != orig.value:
+            from site_settings.utils import (delete_setting_cache,
+                cache_setting, delete_all_settings_cache)
+            from site_settings.cache import SETTING_PRE_KEY
+            # delete the cache for all the settings to reset the context
+            key = [SETTING_PRE_KEY, 'all.settings']
+            key = '.'.join(key)
+            cache.delete(key)
+            # delete and set cache for single key and save the value in the database
+            delete_all_settings_cache()
+            delete_setting_cache(self.scope, self.scope_category, self.name)
+            cache_setting(self.scope, self.scope_category, self.name, self)

@@ -145,6 +145,11 @@
         margin-left: 5px;
     }
 
+    .add-registrants-link {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
     .add-registrants-text {
         padding-top: 20px;
         float: left;
@@ -262,7 +267,7 @@
                                 <div class="field">{{ reg_form.captcha }}</div>
                             </div>
                         {% endif %}
-                        <input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register & Pay{%endif%}" />
+                        <input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register &amp; Pay{%endif%}" />
                     </div>
 
     				{# price list #}
@@ -381,17 +386,16 @@
 			{% if price.quantity == 1 %}
 			<div class="add-registrant-box">
 				 <div class="add-registrants-text">
-				 {% blocktrans %} Add<input class="extra-registrants" type="text" name="extra-registrant-amount" value="1" /> registrant(s){% endblocktrans %}
+				 {% blocktrans %} Add <input class="extra-registrants" type="text" name="extra-registrant-amount" value="1" /> additional registrant(s). Click to <a class="add-registrants-link" title='Add registrant(s)' onClick="add_registrants(this, 'registrant'); return false;">Add More registrants</a>.{% endblocktrans %}
 				 </div>
-				 <input class="add-registrants-button" title='Add registrant(s)' type='submit' name='add_registrant'  onClick="add_registrants(this, 'registrant'); return false;"
-			 	  value='Add' />
 			</div>
             {% else %}
             <div class="add-registrant-box">
-                 <input class="add-registrants-button" title='Add registrant(s)' type='submit' name='add_registrant'  onClick="add_registrant_set(this, 'registrant'); return false;"
-                  value='Add {{ price.quantity }} more registrants' />
+                 <a class="add-registrants-link" title='Add registrant(s)' onClick="add_registrant_set(this, 'registrant'); return false;">{% blocktrans with price.quantity as quant %}Add another set of {{ quant }} additional registrants{% endblocktrans %}</a>
             </div>
             {% endif %}
+            <div class="clear"></div>
+            <input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register & Pay{%endif%}" />
             
             <div class="clear"></div>
         </div>
@@ -543,7 +547,7 @@
     }
 
     function add_registrants(e, prefix) {
-        extra_count = $(e).prev().find('.extra-registrants').val();
+        extra_count = $(e).parent().find('.extra-registrants').val();
         extra_count = parseInt(extra_count);
         if (extra_count > 0) {
             for (var i=0; i<extra_count; i++) {

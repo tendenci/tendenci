@@ -43,17 +43,17 @@
                 {% endfor %}
             {% else %}
                 <div class="story story-even">
-                  <div class="story-image"><a href="#"><img width="954" height="376" src="http://schipul.com/files/2371/954x376/crop/88" alt="San Fran"></a></div>
+                  <div class="story-image"><a href="#"><img width="954" height="376" src="http://media.tendenciapp.com/images/sizes/rotator_1000x500.jpg" alt="Sample"></a></div>
                     <div class="story-text">
-                        <h2 class="headline"><a href="#">Golden Gate</a></h2>
-                        <div class="story-summary">Golden Gate Bridge shot with the sun by Ed Schipul. {% if request.user.is_authenticated %}<a href="/stories/add/">Add Stories</a> with the tag <strong>rotator</strong> and they will appear here.{% endif %} | <span class="read-more"><a href="#">Read More</a></span></div>
+                        <h2 class="headline"><a href="#">Sample Story</a></h2>
+                        <div class="story-summary">Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %} | <span class="read-more"><a href="#">Read More</a></span></div>
                     </div>
                 </div>
                 <div class="story story-odd">
-                  <div class="story-image"><a href="#"><img width="954" height="376" src="http://schipul.com/files/2373/954x376/crop/88" alt="The TECH"></a></div>
+                  <div class="story-image"><a href="#"><img width="954" height="376" src="http://media.tendenciapp.com/images/sizes/rotator_1000x500.jpg" alt="Sample"></a></div>
                     <div class="story-text">
-                        <h2 class="headline"><a href="#">The TECH</a></h2>
-                        <div class="story-summary">The TECH shot by Ed Schipul. {% if request.user.is_authenticated %}<a href="/stories/add/">Add Stories</a> with the tag <strong>featured</strong> and they will appear in the section below.{% endif %} | <span class="read-more"><a href="#">Read More</a></span></div>
+                        <h2 class="headline"><a href="#">Second Story</a></h2>
+                        <div class="story-summary">Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %} | <span class="read-more"><a href="#">Read More</a></span></div>
                     </div>
                 </div>
             {% endif %}
@@ -61,6 +61,7 @@
             <div id="stories-pager"></div>
         </section><!-- /#rotator -->
     </div>
+    {% if "on" == MODULE_THEME_FEATURED_AREA|join:"" %}
     <div class="container">
         <section id="featured" class="band clearfix">
         {% list_stories as featured_list limit=3 tags="featured" %}
@@ -73,20 +74,21 @@
             {% endfor %}
         {% else %}
             <div class="featured-box">
-                <a href="#"><img src="{{ THEME_URL }}media/images/featured.jpg" />
+                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" />
                 <span>{% trans "HEADLINE 1" %}</span></a>
             </div>
             <div class="featured-box">
-                <a href="#"><img src="{{ THEME_URL }}media/images/featured.jpg" />
+                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" />
                 <span>{% trans "HEADLINE 2" %}</span></a>
             </div>
             <div class="featured-box last">
-                <a href="#"><img src="{{ THEME_URL }}media/images/featured.jpg" />
+                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" />
                 <span>{% trans "HEADLINE 3" %}</span></a>
             </div>
         {% endif %}
         </section><!-- /#featured -->
     </div>
+    {% endif %}
     <div class="container">
         <section id="home-content" class="no-band clearfix">
             <section id="sidebar">
@@ -104,7 +106,7 @@
                     {% endfor %}
                 {% else %}
                 <h3><a href="/about"><span>{% trans "About" %}</span> {% trans "Us" %}</a></h3>
-                <img src="{{ THEME_URL }}media/images/info-large.jpg" alt="About {{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
+                <img src="http://media.tendenciapp.com/images/sizes/pic_400x200.jpg" alt="About {{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
                 <p>All about us. {% if request.user.is_authenticated %}</p><p><a href="/admin/boxes/box/add/">Add a box</a> and use the tag <strong>aboutus</strong> to bring that content into this area. This will replace the image and the text, The title of the box will appear as the heading.{% endif %} <a href="/" class="readmore">Read more</a></p>
                 {% endif %}
             </div>
@@ -116,12 +118,12 @@
                     <a href="{{ photo.get_absolute_url }}"><img src="{% photo_image_url photo size=80x80 crop=True %}" alt="{{ photo.title }}" /></a>
                     {% endfor %}
                 {% else %}
-                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
-                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
-                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
-                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
-                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
-                <a href="#"><img src="{{ THEME_URL }}media/images/sample-image.jpg" alt="title" /></a>
+                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
+                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
+                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
+                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
+                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
+                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
                 {% endif %}
                 <a href="/photos/" class="readmore">{% trans "See More Photos" %}</a>
             </div>
@@ -138,7 +140,7 @@
                     {% endfor %}
                 {% else %}
                 <h3><a href="/about"><span>{% trans "Our" %}</span> {% trans "People" %}</a></h3>
-                <a href="#"><img src="{{ THEME_URL }}/media/images/person.jpg" alt="title" /></a>
+                <a href="#"><img style="height: 160px; width: 110px;" src="http://media.tendenciapp.com/images/person.jpg" alt="title" /></a>
                 <div class="info-small-text">
                     <h4><a href="#">Thomas Purser</a></h4>
                     <strong><em>Sales Manager</em></strong>

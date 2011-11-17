@@ -61,6 +61,10 @@ class Template(models.Model):
         return ("campaign_monitor.template_html", [self.template_id])
     
     @models.permalink
+    def get_html_original_url(self):
+        return ("campaign_monitor.template_html_original", [self.template_id])
+    
+    @models.permalink
     def get_render_url(self):
         return ("campaign_monitor.template_render", [self.template_id])
     
