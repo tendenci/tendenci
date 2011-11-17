@@ -7,4 +7,12 @@
 <div>{{ course.retry_interval }}</div>
 <div>{{ course.passing_score }}</div>
 <div>{{ course.deadline }}</div>
+<div>
+    {% for question in course.questions.all %}
+        <div>
+            {{ question }}
+            {{ question.point_value }}
+        </div>
+    {% endfor %}
+</div>
 {% endblock body %}
