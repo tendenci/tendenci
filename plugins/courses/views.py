@@ -112,20 +112,18 @@ def edit_questions(request, pk, template_name="courses/edit_questions.html"):
     if not has_perm(request.user, 'courses.change_courses', course):
         raise Http403
     
-    form_class = inlineformset_factory(Course, Question, form=QuestionForm, extra=3)
+    form_class = inlineformset_factory(Course, Question, form=QuestionForm, extra=1)
     
     if request.method == "POST":
-        form = form_class(request.POST, instance=course, queryset=course.questions.all())
+        form = form_class(request.POST, instance=course)
         if form.is_valid():
             questions = form.save(commit=False)
-            total = len(questions) # will need a check for 0 questions
             for question in questions:
-                question.point_value = 100/total
                 question.save()
             messages.add_message(request, messages.INFO, 'Successfully updated questions for %s' % course)
             return redirect('courses.detail', course.pk)
     else:
-        form = form_class(request.POST, instance=course, queryset=course.questions.all())
+        form = form_class(instance=course)
        
     return render_to_response(template_name, {
         'form':form,
