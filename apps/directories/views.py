@@ -31,7 +31,7 @@ def index(request, slug=None, template_name="directories/view.html"):
     
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (directory.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+    if (directory.status_detail).lower() != 'active' and (not is_admin(request.user)):
         raise Http403
     
     if has_perm(request.user,'directories.view_directory',directory):

@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.admin import widgets
 from django.db import models
 
-from recurring_payments.models import RecurringPayment
+from recurring_payments.models import RecurringPayment, PaymentProfile
 from recurring_payments.forms import RecurringPaymentForm
 
 from event_logs.models import EventLog
@@ -70,8 +70,22 @@ class NoAddAnotherModelAdmin(admin.ModelAdmin):
 
 class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
     def edit_payment_info_link(self):
+        # customer_profile_id
+        if not self.customer_profile_id:
+            pp = None
+        else:
+            pp = PaymentProfile.objects.filter(
+                                    customer_profile_id=self.customer_profile_id,
+                                    status=1, status_detail='active')
         link = reverse('recurring_payment.authnet.update_payment_info', args=[self.id])
-        return '<a href="%s">Add/Edit payment info</a>' % (link)
+        if pp:
+            pp = pp[0]
+            return '<a href="%s">Edit payment info</a><br />Last updated by %s<br /> on %s' % (
+                                                                        link,
+                                                                        pp.owner,
+                                                                        pp.update_dt.strftime('%Y-%m-%d'))
+        else:
+            return '<a href="%s">Add payment info</a>' % (link)
     edit_payment_info_link.allow_tags = True
     
     def view_on_site(self):

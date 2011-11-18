@@ -200,6 +200,9 @@
     	{% if user.is_super_user %}
         <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
         {% endif %}
+        {% if MODULE_RECURRING_PAYMENTS_ENABLED %}
+        <li><a href="{% url recurring_payment.customers %}">{% trans "Recurring Payments" %}</a></li>
+        {% endif %}
     </ul>
     </div>
     	

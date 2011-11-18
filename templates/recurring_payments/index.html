@@ -46,7 +46,7 @@
 	.rp-dname{
 		padding: 5px 0;
 	}
-	#btn-pm{
+	#btn-pm-wrap{
 		float:right; 
 		margin-right: 1em;
 	}
@@ -90,6 +90,11 @@
 		color: #ff0000;
 		background-color: #F6F7E6;
 	}
+	.last-updated{
+		font-size: 0.8em;
+		color: #777;
+		padding-top: 2px;
+	}
 
 </style>
 
@@ -119,7 +124,12 @@
 	    <h1>Recurring Payment Account </h1>
 	    
 	    {% if is_active %}
+	    <div id="btn-pm-wrap">
 	    <button id="btn-pm">{% if payment_profile %}Update Payment Info{% else %}Add Payment Method{% endif %}</button>
+	    {% if payment_profile %}
+	    <div class="last-updated">Last updated by {{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
+	    {% endif %}
+	    </div>
 	    {% endif %}
 
 	    <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>

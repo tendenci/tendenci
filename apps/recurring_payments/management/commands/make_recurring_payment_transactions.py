@@ -33,7 +33,3 @@ class Command(BaseCommand):
         
         for rp in recurring_payments:
             run_a_recurring_payment(rp, verbosity)
-                
-            
-                
-            
