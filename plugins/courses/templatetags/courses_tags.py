@@ -5,10 +5,21 @@ from base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
 
+@register.inclusion_tag("courses/nav.html", takes_context=True)
+def course_nav(context, user, course=None):
+    context.update({
+        "nav_object": course,
+        "user": user
+    })
+    return context
+
+@register.inclusion_tag("courses/search-form.html", takes_context=True)
+def course_search(context):
+    return context
+    
 
 class ListCoursesNode(ListNode):
     model = Course
-
 
 @register.tag
 def list_courses(parser, token):

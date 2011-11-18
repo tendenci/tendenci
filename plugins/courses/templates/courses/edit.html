@@ -4,7 +4,7 @@
 {% load perm_tags %}
 {% load courses_tags %}
 
-{% block title %}{% firstof MODULE_COURSES_LABEL 'Course' %} {% trans "Add" %}{% endblock %}
+{% block title %}{% firstof MODULE_COURSES_LABEL 'Course' %} {% trans "Edit" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -26,15 +26,15 @@
 
 {% block body %}
 <div class="t">
-    {% course_nav request.user %}
+    {% course_nav request.user course %}
 	
-    <h1>{% firstof MODULE_COURSE_LABEL 'Course' %} {% trans "Add" %}</h1>
+    <h1>{% firstof MODULE_COURSE_LABEL 'Course' %} {% trans "Edit" %}</h1>
     
 	<div class="course-wrap">
     	<form action="." method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="{% trans 'Add' %} {% firstof MODULE_COURSE_LABEL 'Course' %}" />
+        	<input type="submit" value="{% trans 'Update' %} {% firstof MODULE_COURSE_LABEL 'Course' %}" />
 		</div>
         </form>
     </div>

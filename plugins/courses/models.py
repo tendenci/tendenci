@@ -31,7 +31,7 @@ class Course(TendenciBaseModel):
     
     @models.permalink
     def get_absolute_url(self):
-        return ("course.detail", [self.pk])
+        return ("courses.detail", [self.pk])
 
 
 class Question(models.Model):
@@ -63,6 +63,3 @@ class CourseAttempt(models.Model):
     def __unicode__(self):
         return "%s: %s" % (self.course.title, self.question)
     
-    @models.permalink
-    def get_absolute_url(self):
-        return ("course.detail", [self.pk])
