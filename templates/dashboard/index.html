@@ -206,7 +206,11 @@
 	<div class="theme-management">
     <h3>{% trans "Update Theme" %}</h3>
 	<ul>
-		<li><a href="{% url theme_editor %}?file=/media/css/styles.css">{% trans "Update Styles" %}</a></li>
+	   {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
+	    <li><a href="/settings/module/theme_editor/">Change Themes</a></li>
+	    <li><a href="/settings/module/theme/">Theme Settings</a></li>
+	    {% endif %}
+		<li><a href="{% url theme_editor %}?file=/media/css/styles.{% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}less{% else %}css{% endif %}">{% trans "Update Styles" %}</a></li>
 		<li><a href="{% url theme_editor %}?file=/templates/homepage.html">{% trans "Update Template" %} </a></li>
 		<li><a href="{% url theme_editor %}?file=/templates/nav.html">{% trans "Update Navigation" %}</a></li>
     	<li><a href="{% url theme_editor %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>

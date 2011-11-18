@@ -283,7 +283,8 @@ class RecurringPayment(models.Model):
                 billing_cycle_start = self.billing_start_dt
                 billing_cycle_end = billing_cycle_start + timedelta
         else:
-            billing_cycle_start = last_billing_cycle['end'] + relativedelta(days=1)
+            #billing_cycle_start = last_billing_cycle['end'] + relativedelta(days=1)
+            billing_cycle_start = last_billing_cycle['end']
 
             billing_cycle_end = billing_cycle_start + timedelta
             

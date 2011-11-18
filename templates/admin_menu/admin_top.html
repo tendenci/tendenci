@@ -164,6 +164,22 @@
                 </div>
             </div>
         </li>
+        <li><a href="#"><strong>{% trans "Support" %}</strong></a>
+        	<div class="sub">
+            	<div class="column">
+                    <ul>
+                        <li><a href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">{% trans 'Tendenci Guide' %}</a></li>
+                        <li><a href="http://tendenci.com/help-files/" target="_blank">{% trans "Search Helpfiles" %}</a></li>
+                        <li><a id="feedback" href="{% url tendenci_feedback %}">{% trans "Feedback" %}</a></li>
+                        <li><a href="mailto:support@schipul.com">{% trans "E-mail Support" %}</a></li>
+                        {% if "Schipul" == SITE_DEVELOPER_PARTNER|join:"" %}
+                        <li><a href="http://schipul.com/py/" target="_blank">{% trans "Make a Payment" %}</a></li>
+                        <li><a href="#">{% trans "Call Schipul: " %}<br />281-497-6567 ext. 411</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </li>
     	<li class="right"><a href="/accounts/logout">{% trans "Logout" %}</a></li>
     	<li class="right"><a href="/profiles">{{ user.username }}</a></li>
     	<!-- <li class="right search"><a href="#">Search</a>
