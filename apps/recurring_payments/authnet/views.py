@@ -136,6 +136,13 @@ def update_payment_profile_local(request):
             ret_d['invalid_cpp_id'] = payment_profile_id
         else:
             ret_d['invalid_cpp_id'] = invalid_cpp_ids[0]
+    
+    # just so the owner and update_dt are updated 
+    try:      
+        payment_profile = PaymentProfile.objects.get(
+                                id=payment_profile_id
+                                ).save()
+    except: pass
         
     return HttpResponse(simplejson.dumps(ret_d))
 
