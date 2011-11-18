@@ -298,6 +298,7 @@ class Reg8nEditForm(BetterModelForm):
     payment_method = forms.ModelMultipleChoiceField(
         queryset=PaymentMethod.objects.all(),
         widget=forms.CheckboxSelectMultiple(),
+        required=False,
         initial=[1,2,3]) # first three items (inserted via fixture)
 
     class Meta:
@@ -323,6 +324,21 @@ class Reg8nEditForm(BetterModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(Reg8nEditForm, self).__init__(*args, **kwargs)
+
+    # def clean(self):
+    #     from django.db.models import Sum
+
+    #     cleaned_data = self.cleaned_data
+    #     price_sum = self.instance.regconfpricing_set.aggregate(sum=Sum('price'))['sum']
+    #     payment_methods = self.instance.payment_method.all()
+
+
+    #     print 'price_sum', type(price_sum), price_sum
+
+    #     if price_sum and not payment_methods:
+    #         raise forms.ValidationError("Please select possible payment methods for your attendees.")
+
+    #     return cleaned_data
             
 
 class Reg8nForm(forms.Form):
@@ -392,31 +408,21 @@ class RegistrationForm(forms.Form):
         self.count = kwargs.pop('count', 0)
         self.free_event = event_price <= 0
         super(RegistrationForm, self).__init__(*args, **kwargs)
-        
-        reg_conf =  event.registration_configuration
-        if reg_conf.can_pay_online:
-            payment_methods = reg_conf.payment_method.all()
-        else:
-            filters = {
-                'machine_name': 'credit-card'
-            }
-            payment_methods = reg_conf.payment_method.exclude(**filters).order_by('pk')
-        
-        try:
-            self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
-                queryset=payment_methods, widget=forms.RadioSelect(), initial=payment_methods[0])
-        except IndexError as e:
-            # this only happens if you try to use the credit card payment (only)
-            # and the website is not fully setup to take credit card payments.
-            raise IndexError("There are either no online payment methods available for this calendar event, \
-            the merchant account is not setup in /global/settings, \
-            or the merchant login is not setup in the local_settings.py file.")
 
         if not self.free_event:
+            reg_conf =  event.registration_configuration
+
+            if reg_conf.can_pay_online:
+                payment_methods = reg_conf.payment_method.all()
+            else:
+                payment_methods = reg_conf.payment_method.exclude(
+                    machine_name='credit card').order_by('pk')
+
+            self.fields['payment_method'] = forms.ModelChoiceField(
+                empty_label=None, queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=True)
+
             if user and is_admin(user):
-                self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial = event_price)
-        else:
-            self.fields['payment_method'].widget = forms.HiddenInput()
+                self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial=event_price)
 
     def get_discount(self):
         if self.is_valid() and self.cleaned_data['discount_code']:
