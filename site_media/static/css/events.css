@@ -389,6 +389,9 @@ input.short_text_input{
 	width: 100%;
 }
 
+ul.errorlist {;
+	margin-left: 0;
+}
 
 /* details page */
 .t .event-wrap {
