@@ -10,7 +10,7 @@
                 </form>
             </div>
             <div id="phone">
-                <span>123-456-7890</span>
+                <span>{% firstof SITE_GLOBAL_SITEPHONENUMBER '123-456-7890' %}</span>
             </div>
         </header>
     </section><!-- /#header -->
