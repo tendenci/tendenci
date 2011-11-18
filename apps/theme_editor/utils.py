@@ -21,7 +21,8 @@ ALLOWED_EXTENSIONS = (
     '.css',
     '.txt',
     '.js',
-    '.po'
+    '.po',
+    '.less',
 )
 
 def copy(path_to_file, file, FROM_ROOT=TEMPLATES_ROOT, TO_ROOT=THEME_ROOT, plugin=None):
@@ -88,6 +89,7 @@ def get_file_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
     working directory
     """
     file_list = []
+    others_list = []
     if pwd.startswith("plugins.") and include_plugins:
         plugin_name = pwd.split('plugins.')[1].split('/')[0]
         current_dir = os.path.join(settings.PROJECT_ROOT, "plugins",
@@ -102,8 +104,10 @@ def get_file_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
             if os.path.isfile(current_item):
                 if os.path.splitext(current_item)[1] in ALLOWED_EXTENSIONS:
                     file_list.append(item)
-        return sorted(file_list)
-    return file_list
+                elif os.path.splitext(current_item)[1]:
+                    others_list.append(item)
+        return sorted(file_list), sorted(others_list)
+    return file_list, others_list
 
 def get_file_content(file, ROOT_DIR=THEME_ROOT):
     """
