@@ -93,13 +93,52 @@ def add(request, form_class=CourseForm, template_name="courses/add.html"):
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % course)
+            messages.add_message(request, messages.INFO, 'Successfully created %s' % course)
             return redirect('courses.edit_questions', course.pk)
     else:
         form = form_class(user=request.user)
        
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
+        
+@login_required
+def edit(request, pk, form_class=CourseForm, template_name="courses/edit.html"):
+    """
+    Add a course then redirect to the question creation page for the course.
+    """
+    
+    course = get_object_or_404(Course, pk=pk)
+    
+    if not has_perm(request.user, 'courses.change_courses', course):
+        raise Http403
+        
+    if request.method == "POST":
+        form = form_class(request.POST, instace=course, user=request.user)
+        if form.is_valid():
+            course = form.save(commit=False)
+            
+            # add all permissions and save the model
+            course = update_perms_and_save(request, form, course)
+            
+            log_defaults = {
+                'event_id' : 113000,
+                'event_data': '%s (%d) added by %s' % (course._meta.object_name, course.pk, request.user),
+                'description': '%s added' % course._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': course,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % course)
+            return redirect('courses.edit_questions', course.pk)
+    else:
+        form = form_class(instance=course, user=request.user)
+       
+    return render_to_response(template_name, {
+        'form':form,
+        'course': course,
+    }, context_instance=RequestContext(request))
 
 @login_required
 def edit_questions(request, pk, template_name="courses/edit_questions.html"):
@@ -127,5 +166,21 @@ def edit_questions(request, pk, template_name="courses/edit_questions.html"):
        
     return render_to_response(template_name, {
         'form':form,
+        'course':course,
+        }, context_instance=RequestContext(request))
+        
+@login_required
+def delete(request, pk, template_name="courses/delete.html"):
+    course = get_object_or_404(Course, pk=pk)
+    
+    if not has_perm(request.user, 'courses.delete_courses', course):
+        raise Http403
+        
+    if request.method == "POST":
+        course.delete()
+        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % course)
+        return redirect("courses.search")
+    
+    return render_to_response(template_name, {
         'course':course,
         }, context_instance=RequestContext(request))
