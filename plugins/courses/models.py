@@ -43,7 +43,7 @@ class Question(models.Model):
     question = models.CharField(_(u'Question'), max_length=200)
     answer_choices = models.CharField(_(u'Answer Choices'), help_text=_(u'separated by comma'), max_length=200)
     answer = models.CharField(_(u'Correct Answer'), max_length=200)
-    point_value = models.IntegerField(_(u'Point Value'))
+    point_value = models.IntegerField(_(u'Point Value'), default=0)
     
     def __unicode__(self):
         return "%s: %s" % (self.course.title, self.question)

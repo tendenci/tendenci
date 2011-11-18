@@ -72,6 +72,6 @@ class CourseForm(TendenciBaseForm):
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ('question', 'answer_choices', 'answer')
+        fields = ('question', 'answer_choices', 'answer', 'point_value')
         
     
