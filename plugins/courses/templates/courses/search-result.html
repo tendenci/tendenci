@@ -1,0 +1,9 @@
+<div class="wrap-search-item">
+    <div class="search-item course-search-item">
+        <h2><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
+        <div class="item-content">
+            {{ course.content|striptags|truncatewords:40|safe  }}
+        </div>
+    </div>	
+      {% include "courses/meta.html" %}
+</div>
