@@ -5,11 +5,21 @@ from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
-from courses.models import Course
+
+from courses.models import Course, Question, CourseAttempt
 from courses.forms import CourseForm
 
+class CourseAttemptAdmin(admin.ModelAdmin):
+    list_display = ['course', 'user', 'score', 'create_dt']
+
+class QuestionInline(admin.TabularInline):
+    model = Question
+
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'edit_link', 'tags']
+    inlines = [
+        QuestionInline,
+    ]
+    list_display = ['title', 'deadline', 'view_on_site']
     list_filter = []
     search_fields = []
     fieldsets = (
@@ -118,3 +128,4 @@ class CourseAdmin(admin.ModelAdmin):
         return result
 
 admin.site.register(Course, CourseAdmin)
+admin.site.register(CourseAttempt, CourseAttemptAdmin)
