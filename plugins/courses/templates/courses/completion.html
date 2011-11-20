@@ -1,0 +1,54 @@
+{% extends "courses/base.html" %}
+{% load courses_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+{% tags_for_object course as tags %}
+
+<div class="t">
+    {% course_nav request.user course %}
+    <div class="course-wrap">
+        <h1>{{ course.title }}</h1>
+        <div class="status">
+            {% if has_passed %}
+                <p>
+                    Congratulations! You've passed this course!
+                    <a href="{% url courses.certificate course.pk %}">View your Certificate</a>
+                </p>
+            {% else %}
+                <p>
+                    Sorry, you havn't passed this course yet.
+                </p>
+                {% if can_retry %}
+                    <a href="{% url courses.take course.pk %}">Retry this Course</a>
+                {% else %}
+                    {% if retry_time_left %}
+                        <p>Try again in {{ retry_time_left }}</p>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+		</div>
+		<div class="attempts">
+			{% for attempt in attempts %}
+                <div class="attempt">
+                    <p>
+                        Date: {{ attempt.create_dt }}
+                    </p>
+                    <p>
+                        Score: {{ attempt.score }}
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
