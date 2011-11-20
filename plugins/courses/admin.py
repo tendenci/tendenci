@@ -19,7 +19,7 @@ class CourseAdmin(admin.ModelAdmin):
     inlines = [
         QuestionInline,
     ]
-    list_display = ['title', 'deadline', 'view_on_site']
+    list_display = ['title', 'deadline', 'passing_score', 'view_on_site']
     list_filter = []
     search_fields = []
     fieldsets = (
