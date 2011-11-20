@@ -281,22 +281,12 @@ def disable_account(request, rp_id,
             log_description = '%s disabled' % rp._meta.object_name
             
             # delete the CIM account - only if there is no other rps sharing the same customer profile
-            if rp.customer_profile_id:
+            is_deleted = rp.delete_customer_profile()
+            if is_deleted:
+                log_description = "%s as well as its CIM account." % log_description
                 
-                has_other_rps = RecurringPayment.objects.filter(
-                                            customer_profile_id=rp.customer_profile_id
-                                            ).exclude(id=rp.id).exists()
-                if not has_other_rps:
-                    cim_customer_profile = CIMCustomerProfile(rp.customer_profile_id)
-                    cim_customer_profile.delete()
-                    
-                    # delete payment profile belonging to this recurring payment
-                    PaymentProfile.objects.filter(customer_profile_id=rp.customer_profile_id).delete()
-                    
-                    log_description = "%s as well as its CIM account." % log_description
-                    
-                    rp.customer_profile_id = ''
-                    rp.save()
+                rp.customer_profile_id = ''
+                rp.save()
                     
             
             
@@ -307,7 +297,7 @@ def disable_account(request, rp_id,
             
             # log an event
             log_defaults = {
-                        'event_id' : 1120700,
+                        'event_id' : 1120500,
                         'event_data': '%s (%d) disabled by %s' % (rp._meta.object_name, rp.pk, request.user),
                         'description': log_description,
                         'user': request.user,

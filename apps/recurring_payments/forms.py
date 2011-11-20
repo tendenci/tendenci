@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 from models import RecurringPayment
 from memberships.fields import PriceInput
@@ -58,6 +59,9 @@ class RecurringPaymentForm(forms.ModelForm):
         self.fields['user'].choices = [(u.id, '%s %s (%s) - %s' % (
                         u.first_name, u.last_name, u.username, u.email
                         )) for u in User.objects.filter(is_active=1).order_by('first_name', 'last_name')]
+        self.fields['user'].help_text = """If not found in the list, 
+                                        <a href="%s">create a new user</a> before proceeding
+                                        """ % reverse('profile.add')
         
     
     def clean_billing_cycle(self):

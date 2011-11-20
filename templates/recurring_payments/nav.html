@@ -41,8 +41,9 @@
 				{% endif %}
 			{% endif %}
 			{% if isadmin %}
-			<li><a href="{% url admin:recurring_payments_recurringpayment_add %}">{% trans "Add" %}</a></li>
 			<li><a href="{% url recurring_payment.customers %}">{% trans "Customers" %}</a></li>
+			<li><a href="{% url admin:recurring_payments_recurringpayment_changelist %}">Admin Backend</a></li>
+			<li><a href="{% url admin:recurring_payments_recurringpayment_add %}">{% trans "Add" %}</a></li>
 			{% endif %}
 			
 
