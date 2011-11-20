@@ -172,5 +172,18 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
             'instance': object,
         }
         EventLog.objects.log(**log_defaults)
+        
+    def log_deletion(self, request, object, message):
+        super(RecurringPaymentAdmin, self).log_deletion(request, object, message)
+        log_defaults = {
+            'event_id' : 1120300,
+            'event_data': '%s for %s(%d) deleted by %s' % (object._meta.object_name, 
+                                                    object.user, object.pk, request.user),
+            'description': '%s deleted' % object._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': object,
+        }
+        EventLog.objects.log(**log_defaults) 
     
 admin.site.register(RecurringPayment, RecurringPaymentAdmin)

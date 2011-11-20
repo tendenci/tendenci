@@ -28,8 +28,6 @@ BILLING_PERIOD_CHOICES = (
 STATUS_DETAIL_CHOICES = (
                         ('active', _('Active')),
                         ('inactive', _('Inactive')),
-                        ('canceled', _('Canceled')),
-                        ('deleted', _('Deleted')),
                         ('disabled', _('Disabled')),
                         )
 
@@ -143,6 +141,22 @@ class RecurringPayment(models.Model):
                         if match:
                             self.customer_profile_id  = match.group(1)
                             self.save()
+                            
+    def delete_customer_profile(self):
+        """Delete the customer profile on payment gateway
+        """
+        if self.customer_profile_id:
+            has_other_rps = RecurringPayment.objects.filter(
+                                        customer_profile_id=self.customer_profile_id
+                                        ).exclude(id=self.id).exists()
+            if not has_other_rps:
+                cim_customer_profile = CIMCustomerProfile(self.customer_profile_id)
+                cim_customer_profile.delete()
+                
+                # delete payment profile belonging to this recurring payment
+                PaymentProfile.objects.filter(customer_profile_id=self.customer_profile_id).delete()
+                return True
+        return False
                                      
                 
             
@@ -594,7 +608,7 @@ class PaymentTransaction(models.Model):
     
     
     
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 
 def create_customer_profile(sender, instance=None, created=False, **kwargs):
     """ A post_save signal of RecurringPayment to create a customer profile
@@ -604,4 +618,14 @@ def create_customer_profile(sender, instance=None, created=False, **kwargs):
         # create a customer profile on payment gateway
         instance.add_customer_profile()
 
-post_save.connect(create_customer_profile, sender=RecurringPayment)   
+post_save.connect(create_customer_profile, sender=RecurringPayment)
+
+def delete_customer_profile(sender, instance=None, user=None, **kwargs):
+    """ A post_delete signal of RecurringPayment to delete a customer profile
+        on payment gateway.
+    """
+    if instance.id and instance.customer_profile_id:
+        # create a customer profile on payment gateway
+        instance.delete_customer_profile()
+        
+post_delete.connect(delete_customer_profile, sender=RecurringPayment)   
