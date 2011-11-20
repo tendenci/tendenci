@@ -1,4 +1,5 @@
 {% extends "courses/base.html" %}
+{% load courses_tags %}
 {% load styled_forms %}
 {% load forms_tags %}
 {% load i18n %}
@@ -7,7 +8,7 @@
 
 {% block body %}
 <div class="t">
-    {# courses_nav request.user #}
+    {% course_nav request.user course %}
 	 
     <h1>{% firstof MODULE_COURSES_LABEL 'Courses' %} {% trans "Questions Update" %}</h1>
 

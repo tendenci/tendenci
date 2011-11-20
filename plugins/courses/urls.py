@@ -10,4 +10,7 @@ urlpatterns = patterns('courses.views',
     url(r'^courses/(?P<pk>[\d/]+)/edit/$', 'edit', name="courses.edit"),
     url(r'^courses/(?P<pk>[\d/]+)/questions/$', 'edit_questions', name="courses.edit_questions"),
     url(r'^courses/(?P<pk>[\d/]+)/delete/$', 'delete', name="courses.delete"),
+    url(r'^courses/(?P<pk>[\d/]+)/take/$', 'take', name="courses.take"),
+    url(r'^courses/(?P<pk>[\d/]+)/completion/$', 'completion', name="courses.completion"),
+    url(r'^courses/(?P<pk>[\d/]+)/certificate/$', 'certificate', name="courses.certificate"),
 )

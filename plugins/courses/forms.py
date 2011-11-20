@@ -74,4 +74,35 @@ class QuestionForm(forms.ModelForm):
         model = Question
         fields = ('question', 'answer_choices', 'answer', 'point_value')
         
+
+class AnswerForm(forms.Form):
+    """
+    Create a form based on a given question
+    """
     
+    def __init__(self, *args, **kwargs):
+        """
+        Create the answer field based on the question
+        """
+        self.question = kwargs.pop('question')
+        choices = []
+        for choice in self.question.answer_choices.split(','):
+            choices.append((choice, choice))
+        
+        super(AnswerForm, self).__init__(*args, **kwargs)
+        
+        self.fields['answer'] = forms.ChoiceField(
+            label=self.question.question,
+            choices=choices,
+        )
+    
+    def points(self):
+        """
+        Return question's point value if answer is correct.
+        Return 0 otherwise.
+        """
+        if self.is_valid():
+            data = self.cleaned_data['answer']
+            if data == self.question.answer:
+                return self.question.point_value
+        return 0
