@@ -24,6 +24,11 @@
 		<div class="content">
 			{{ course.content|safe }} 
 		</div>
+        
+        <div>
+            <p><a href="{% url courses.completion course.pk %}">View my records for this course.</a></p>
+            <p><a href="{% url courses.take course.pk %}">Take this course</a></p>
+        </div>
     </div>
 </div>
 {% endblock %}

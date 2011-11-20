@@ -17,21 +17,28 @@ class Course(TendenciBaseModel):
     content = models.TextField(_(u'Content'))
     retries = models.IntegerField(_(u'Retries'), help_text=u'Number of retries allowed (0, means unlimited)', default=0)
     retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=u'Number of hours before another retry', default=0)
-    passing_score = models.IntegerField(_(u'Passing Score'), help_text=u'out of a total of 100')
+    passing_score = models.DecimalField(_(u'Passing Score'), help_text=u'out of 100%', max_digits=5, decimal_places=2)
     deadline = models.DateTimeField(_(u'Deadline'))
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
     
     objects = CourseManager()
     
-    def __unicode__(self):
-        return self.title
-    
     class Meta:
         permissions = (("view_course","Can view course"),)
+    
+    def __unicode__(self):
+        return self.title
     
     @models.permalink
     def get_absolute_url(self):
         return ("courses.detail", [self.pk])
+    
+    @property
+    def total_points(self):
+        total_points = 0
+        for question in self.questions.all():
+            total_points = total_points + question.point_value
+        return total_points
 
 
 class Question(models.Model):
@@ -56,10 +63,15 @@ class CourseAttempt(models.Model):
     """
     course = models.ForeignKey(Course)
     user = models.ForeignKey(User)
-    score =  models.IntegerField(_(u'Point Value'), help_text=_(u'out of 100'))
+    score =  models.DecimalField(_(u'Score'), help_text=_(u'out of 100%'), max_digits=5, decimal_places=2)
     create_dt = models.DateTimeField(auto_now_add=True)
     notes = models.TextField(_(u'Notes'), blank=True, default=u'')
     
     def __unicode__(self):
-        return "%s: %s" % (self.course.title, self.question)
+        return "%s" % (self.course.title)
     
+    @property
+    def passed(self):
+        if self.scoure >= self.course.passing_score:
+            return True
+        return False
