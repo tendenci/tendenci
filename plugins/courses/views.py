@@ -13,7 +13,7 @@ from event_logs.models import EventLog
 
 from courses.models import Course, Question, CourseAttempt
 from courses.forms import CourseForm, QuestionForm, AnswerForm
-from courses.utils import can_retry, get_passed_attempts
+from courses.utils import can_retry, get_passed_attempts, get_best_passed_attempt
 
 try:
     from notification import models as notification
@@ -276,9 +276,9 @@ def certificate(request, pk, template_name="courses/certificate.html"):
     if not has_perm(request.user, 'courses.view_course', course):
         raise Http403
     
-    attempt = get_best_attempt(course, request.user)
+    attempt = get_best_passed_attempt(course, request.user)
     
-    if not (attempt.score >= course.passing_score):
+    if not attempt:
         # there is no certificate if the user hasn't passed the course yet
         raise Http404
     
