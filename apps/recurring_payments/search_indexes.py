@@ -3,7 +3,7 @@ from haystack import site
 from recurring_payments.models import RecurringPayment
 
 
-class RecurringPaymentIndex(indexes.RealTimeSearchIndex):
+class RecurringPaymentIndex(indexes.SearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     user = indexes.CharField(model_attr='user', faceted=True)
     user_object = indexes.CharField(model_attr='user', faceted=True)

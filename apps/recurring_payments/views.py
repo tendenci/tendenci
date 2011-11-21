@@ -196,7 +196,10 @@ def customers(request, template_name="recurring_payments/customers.html"):
     """Display a list of recurring payment accounts.
     """
     query = request.GET.get('q', None)
-    recurring_payments = RecurringPayment.objects.search(query)
+    if query:
+        recurring_payments = RecurringPayment.objects.search(query)
+    else:
+        recurring_payments = RecurringPayment.objects.all()
     total_customers = RecurringPayment.objects.count()
     # get total amount received
     d = RecurringPaymentInvoice.objects.filter(

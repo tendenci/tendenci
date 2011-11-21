@@ -144,6 +144,12 @@ def format_currency(value):
     return tcurrency(value)
 format_currency.is_safe = True
 
+@register.filter     
+def get_object(obj):
+    """return obj.object if this obj has the attribute of object"""
+    if hasattr(obj, 'object'): return obj.object
+    else: return obj
+
 @register.filter
 def scope(object):
     return dir(object)

@@ -96,7 +96,7 @@
 			</thead>
 			<tbody>
 			{% for rp in recurring_payments %}
-			{% with rp.object as rp %}
+			{% with rp|get_object as rp %}
 				<tr> 
 					<td><a href="{% url recurring_payment.view_account rp.id %}">{% if not rp.user.get_full_name %}{{ rp.user.username }}{% else %}{{ rp.user.get_full_name }}{% endif %}</a></td>
 					<td>{{ rp.description }}</td>
