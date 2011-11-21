@@ -32,3 +32,13 @@ def get_passed_attempts(course, user):
         score__gte=course.passing_score
     )
     return passed_attempts
+
+def get_best_passed_attempt(course, user):
+    """
+    Returns the highest scoring attempt out of all the passing attempts
+    """
+    attempts = get_passed_attempts(course, user)
+    if attempts:
+        best = attempts.order_by('-score')[0]
+        return best
+    return None
