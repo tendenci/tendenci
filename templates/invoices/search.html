@@ -1,6 +1,7 @@
 {% extends "invoices/base.html" %}
 {% load pagination_tags %}
 {% load invoice_tags %}
+{% load base_filters %}
 {% load i18n %}
 
 {% block title %}{{ block.super }}Invoice Search{% endblock %}
@@ -20,7 +21,7 @@
 {% autopaginate invoices 10 %}
 <div class="invoices-wrap">
     {% for invoice in invoices %}
-    {% with invoice.object as invoice %}
+    {% with invoice|get_object as invoice %}
     	<div class="invoice-row">
 	    	<div class="invoice-row-inner">
 				{% invoices_search_results_line request invoice %}
