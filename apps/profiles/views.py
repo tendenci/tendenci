@@ -228,9 +228,11 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
         form = form_class(user_current=request.user,
                           user_this=None,
                           required_fields_list=required_fields_list)
-      
+    auto_pwd = request.POST.get('auto_pwd')
     return render_to_response(template_name, {'form':form, 'user_this':None,
-                                              'required_fields_list': required_fields_list}, 
+                                              'required_fields_list': required_fields_list,
+                                              'auto_pwd': auto_pwd
+                                              }, 
         context_instance=RequestContext(request))
     
 

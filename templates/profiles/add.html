@@ -328,16 +328,24 @@
                               {{ form.username }}
 							 </td>
                            </tr>
-                           <tr >
+                           
+                          <tr>
+                          	<td>&nbsp;</td>
+                          	<td><input type="checkbox" value="1" name="auto_pwd" id="auto-generate-pwd" {% if auto_pwd %}checked{% endif %} /> Use auto generated password</td>
+                          </tr>
+                           
+                           <tr id="tr-password1">
                              <td width="120" class="label"><label for="id_password1">{% trans 'Password'%}</label> <span class="body-copy-alerts">*</span></td>
                              <td>
                              {{ form.password1 }}
 							</td>
                            </tr>
-                           <tr >
+                           <tr id="tr-password2">
                              <td width="120" nowrap class="label"><label for="id_password2">{% trans 'Confirm Password'%}</label> <span class="body-copy-alerts">*</span></td>
                              <td>{{ form.password2 }}</td>
                            </tr>
+                           
+                           
                            <tr >
                              <td nowrap class="label"><label for="id_interactive">{% trans 'Interactive'%}</label> </td>
                              <td>
@@ -513,3 +521,55 @@
 </div>
 </div>
 {% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{# dynamically load jquery #}
+<script>
+	if (!(window.jQuery)) { 
+		var s = document.createElement('script');
+		s.setAttribute('src', '/site_media/static/js/jquery-1.4.2.min.js'); 
+		s.setAttribute('type', 'text/javascript');
+		document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+
+<script>
+$(document).ready(function(){
+	toggle_pwd($('#auto-generate-pwd'));
+	
+	$('#auto-generate-pwd').click(function(){
+		toggle_pwd($(this));
+		
+	});
+});
+
+function toggle_pwd(obj)
+{
+	if (obj.is(':checked')){
+		var pwd = random_pwd();
+		$('input#id_password1').val(pwd);
+		$('input#id_password2').val(pwd);
+		$('#tr-password1').hide();
+		$('#tr-password2').hide();
+	}else{
+		$('#tr-password1').show();
+		$('#tr-password2').show();
+	}
+	
+}
+	
+function random_pwd()
+{
+	var length = 12;
+    var chars = "$&*()#@?+=-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    var pwd = "";
+    for(x=0;x<length;x++)
+    {
+      i = Math.floor(Math.random() * 68);
+      pwd += chars.charAt(i);
+    }
+    return pwd;
+}
+</script>
+{% endblock %}
+
