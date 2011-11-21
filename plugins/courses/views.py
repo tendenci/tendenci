@@ -66,12 +66,16 @@ def detail(request, pk, template_name="courses/detail.html"):
         EventLog.objects.log(**log_defaults)
         
         #check if the user has attempted this course before
-        attempts = CourseAttempt.objects.filter(user=request.user, course=course)
-        if attempts:
-            return redirect('courses.completion', course.pk)
+        attempted = CourseAttempt.objects.filter(user=request.user, course=course).exists()
+        passed = get_passed_attempts(course, request.user)
+        retry = can_retry(course, request.user)
         
-        return render_to_response(template_name, {'course': course}, 
-            context_instance=RequestContext(request))
+        return render_to_response(template_name, {
+            'course':course,
+            'attempted':attempted,
+            'has_passed':passed,
+            'can_retry':retry,
+        }, context_instance=RequestContext(request))
     else:
         raise Http403
         
@@ -123,7 +127,7 @@ def edit(request, pk, form_class=CourseForm, template_name="courses/edit.html"):
         raise Http403
         
     if request.method == "POST":
-        form = form_class(request.POST, instace=course, user=request.user)
+        form = form_class(request.POST, instance=course, user=request.user)
         if form.is_valid():
             course = form.save(commit=False)
             
@@ -211,11 +215,17 @@ def take(request, pk, template_name="courses/take.html"):
         messages.add_message(request, messages.ERROR, 'You are currently not allowed to retake this course')
         return redirect('courses.detail', course.pk)
     
+    #check if this course has any questions at all
+    questions = course.questions.all()
+    if not questions:
+        messages.add_message(request, messages.ERROR, 'This course does not have any questions yet. Try again later.')
+        return redirect('courses.detail', course.pk)
+    
     forms = []
     if request.method == "POST":
         #collect all the points from each form
         points = 0
-        for question in course.questions.all():
+        for question in questions:
             form = AnswerForm(request.POST, question=question, prefix=question.pk)
             points = points + form.points()
         score = points * 100/course.total_points
@@ -223,7 +233,7 @@ def take(request, pk, template_name="courses/take.html"):
         return redirect('courses.completion', course.pk)
     else:
         #create a form for each question
-        for question in course.questions.all():
+        for question in questions:
             form = AnswerForm(question=question, prefix=question.pk)
             forms.append(form)
             

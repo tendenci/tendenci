@@ -2,13 +2,9 @@
 
 {% tags_for_object object as tags %}
 {% for tag in tags %}
-    tag:{{ tag }} 
+    tag:{{ tag }}
 {% endfor %}
 
-{{ object.pk }}
 {{ object.title }}
 {{ object.content }}
-{{ object.retries }}
-{{ object.retry_interval }}
-{{ object.passing_score }}
 {{ object.deadline }}
