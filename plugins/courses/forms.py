@@ -74,6 +74,11 @@ class QuestionForm(forms.ModelForm):
         model = Question
         fields = ('question', 'answer_choices', 'answer', 'point_value')
         
+    def clean_point_value(self):
+        data = self.cleaned_data['point_value']
+        if data <= 0:
+            raise forms.ValidationError("Point Value should be a positive integer")
+        return data
 
 class AnswerForm(forms.Form):
     """
@@ -87,7 +92,7 @@ class AnswerForm(forms.Form):
         self.question = kwargs.pop('question')
         choices = []
         for choice in self.question.answer_choices.split(','):
-            choices.append((choice, choice))
+            choices.append((choice.strip(), choice.strip()))
         
         super(AnswerForm, self).__init__(*args, **kwargs)
         
