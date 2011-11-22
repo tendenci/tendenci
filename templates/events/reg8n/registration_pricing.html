@@ -30,7 +30,7 @@
                 <div class="pricing-list-wrap">
                     <form action="{% url event.multi_register event.pk %}" method="post">{% csrf_token %}
                     <input type="hidden" name="from_price_form" value="1" />       
-                    {% if pricing|length == 1 and pricing.0.amount == 0 %}
+                    {% if pricing|length == 1 and pricing.0.amount == 0 and pricing.0.qualifies == True %}
                         <input type="hidden" name="price" value="{{ pricing.0.price.pk }}-{{ pricing.0.amount }}" />
                         <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register for Free' %}" />
                     {% else %}
