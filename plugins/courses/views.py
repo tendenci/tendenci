@@ -12,7 +12,7 @@ from perms.utils import is_admin
 from event_logs.models import EventLog
 
 from courses.models import Course, Question, CourseAttempt
-from courses.forms import CourseForm, QuestionForm, AnswerForm, CourseAttemptForm
+from courses.forms import CourseForm, QuestionForm, AnswerForm, CourseAttemptForm, DateRangeForm
 from courses.utils import can_retry, get_passed_attempts, get_best_passed_attempt
 
 try:
@@ -362,16 +362,61 @@ def clone(request, pk, form_class=CourseForm, template_name="courses/add.html"):
 @login_required
 def completion_report(request, pk, template_name="courses/completion_report.html"):
     """
-    Admin view for listing all the CourseAttempts for a Course
+    Admin report view for listing all the CourseAttempts for a Course
     """
     course = get_object_or_404(Course, pk=pk)
     
     if not is_admin(request.user):
         raise Http403
     
-    attempts = CourseAttempt.objects.filter(course=course).order_by("-create_dt")
+    #default to 30 days ago
+    start_dt = request.GET.get('start_dt', datetime.now()-timedelta(days=30))
+    end_dt = request.GET.get('end_dt', datetime.now())
+    
+    p_attempts = CourseAttempt.objects.filter(course=course, score__gte=course.passing_score)
+    f_attempts = CourseAttempt.objects.filter(course=course, score__lt=course.passing_score)
+    
+    if start_dt:
+        p_attempts = p_attempts.filter(create_dt__gte=start_dt)
+        f_attempts = f_attempts.filter(create_dt__gte=start_dt)
+    
+    if end_dt:
+        p_attempts = p_attempts.filter(create_dt__lte=end_dt)
+        f_attempts = f_attempts.filter(create_dt__lte=end_dt)
+        
+    form = DateRangeForm()
     
     return render_to_response(template_name, {
         'course':course,
-        'attempts':attempts,
+        'p_attempts':p_attempts,
+        'f_attempts':f_attempts,
+        'form':form,
         }, context_instance=RequestContext(request))
+
+@login_required
+def top_tests(request, template_name="courses/top_tests.html"):
+    """
+    Admin report view for course rankings and statistics
+    """
+    if not is_admin(request.user):
+        raise http403
+    
+    #default to 30 days ago
+    start_dt = request.GET.get('start_dt', datetime.now()-timedelta(days=30))
+    end_dt = request.GET.get('end_dt', datetime.now())
+    
+    courses = Course.objects.all()
+    
+    if start_dt:
+        courses = courses.filter(create_dt__gte=start_dt)
+    
+    if end_dt:
+        courses = courses.filter(create_dt__lte=end_dt)
+    
+    form = DateRangeForm()
+    
+    return render_to_response(template_name, {
+        'courses':courses,
+        'form':form,
+        }, context_instance=RequestContext(request))
+    
