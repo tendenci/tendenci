@@ -12,7 +12,7 @@ from perms.utils import is_admin
 from event_logs.models import EventLog
 
 from courses.models import Course, Question, CourseAttempt
-from courses.forms import CourseForm, QuestionForm, AnswerForm
+from courses.forms import CourseForm, QuestionForm, AnswerForm, CourseAttemptForm
 from courses.utils import can_retry, get_passed_attempts, get_best_passed_attempt
 
 try:
@@ -79,7 +79,6 @@ def detail(request, pk, template_name="courses/detail.html"):
     else:
         raise Http403
         
-    
 @login_required
 def add(request, form_class=CourseForm, template_name="courses/add.html"):
     """
@@ -252,6 +251,7 @@ def completion(request, pk, template_name="courses/completion.html"):
         raise Http403
     
     attempts = CourseAttempt.objects.filter(course=course, user=request.user).order_by("-create_dt")
+    
     passed = get_passed_attempts(course, request.user)
     retry = can_retry(course, request.user)
     
@@ -259,8 +259,6 @@ def completion(request, pk, template_name="courses/completion.html"):
         retry_time_left = retry
     else:
         retry_time_left = None
-    
-    print retry
         
     return render_to_response(template_name, {
         'attempts':attempts,
@@ -285,4 +283,93 @@ def certificate(request, pk, template_name="courses/certificate.html"):
     return render_to_response(template_name, {
         'course':course,
         'attempt':attempt,
+        }, context_instance=RequestContext(request))
+
+def add_completion(request, pk, template_name="courses/add_completion.html"):
+    """
+    Completion add for admin only
+    """
+    course = get_object_or_404(Course, pk=pk)
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == "POST":
+        form = CourseAttemptForm(request.POST)
+        if form.is_valid():
+            attempt = form.save()
+            return redirect('courses.completion_report', attempt.course.pk)
+    else:
+        form = CourseAttemptForm()
+        
+    return render_to_response(template_name, {
+        'course':course,
+        'form':form,
+        }, context_instance=RequestContext(request))
+        
+@login_required
+def clone(request, pk, form_class=CourseForm, template_name="courses/add.html"):
+    """
+    Add a course with a chosen course's details then
+    redirect to the question creation page for the new course.
+    Admin only.
+    """
+    
+    course = get_object_or_404(Course, pk=pk)
+    
+    if not is_admin(request.user):
+        raise Http403
+        
+    if request.method == "POST":
+        form = form_class(request.POST, user=request.user)
+        if form.is_valid():
+            clone = form.save(commit=False)
+            
+            # add all permissions and save the model
+            clone = update_perms_and_save(request, form, clone)
+            
+            #copy all related questions of the original
+            for question in course.questions.all():
+                Question.objects.create(
+                        course=clone,
+                        question=question.question,
+                        answer=question.answer,
+                        answer_choices=question.answer_choices,
+                        point_value=question.point_value,
+                    )
+            
+            log_defaults = {
+                'event_id' : 113000,
+                'event_data': '%s (%d) added by %s' % (course._meta.object_name, course.pk, request.user),
+                'description': '%s added' % course._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': course,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            messages.add_message(request, messages.INFO, 'Successfully created %s' % clone)
+            return redirect('courses.edit_questions', clone.pk)
+    else:
+        form = form_class(instance=course, user=request.user)
+       
+    return render_to_response(template_name,{
+        'form':form
+        },context_instance=RequestContext(request))
+
+@login_required
+def completion_report(request, pk, template_name="courses/completion_report.html"):
+    """
+    Admin view for listing all the CourseAttempts for a Course
+    """
+    course = get_object_or_404(Course, pk=pk)
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    attempts = CourseAttempt.objects.filter(course=course).order_by("-create_dt")
+    
+    return render_to_response(template_name, {
+        'course':course,
+        'attempts':attempts,
         }, context_instance=RequestContext(request))
