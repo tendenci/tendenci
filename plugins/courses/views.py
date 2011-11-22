@@ -242,7 +242,7 @@ def take(request, pk, template_name="courses/take.html"):
         'course':course,
         }, context_instance=RequestContext(request))
 
-def completion(request, pk, template_name="courses/completion.html"):
+def completion(request, pk, user_id=None, template_name="courses/completion.html"):
     """
     Generate a summary of user's course attempts
     """
@@ -250,11 +250,17 @@ def completion(request, pk, template_name="courses/completion.html"):
     
     if not has_perm(request.user, 'courses.view_course', course):
         raise Http403
+        
+    if user_id and is_admin(request.user):
+        # allow an admin user to view other certificates
+        user = User.objects.get(id=user_id)
+    else:
+        user = request.user
     
-    attempts = CourseAttempt.objects.filter(course=course, user=request.user).order_by("-create_dt")
+    attempts = CourseAttempt.objects.filter(course=course, user=user).order_by("-create_dt")
     
-    passed = get_passed_attempts(course, request.user)
-    retry, retry_time = can_retry(course, request.user)
+    passed = get_passed_attempts(course, user)
+    retry, retry_time = can_retry(course, user)
         
     return render_to_response(template_name, {
         'attempts':attempts,

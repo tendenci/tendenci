@@ -37,7 +37,7 @@
                 {% if admin %}
                     <li><a href="{% url courses.add_completion nav_object.pk %}">{% trans "Add Completion" %}</a></li>
                     <li><a href="{% url courses.clone nav_object.pk %}">{% trans "Clone" %}</a></li>
-                    <li><a href="{% url courses.completion nav_object.pk %}">{% trans "Completion Report" %}</a> </li>
+                    <li><a href="{% url courses.completion_report nav_object.pk %}">{% trans "Completion Report" %}</a> </li>
                 {% endif %}
 			{% endif %}
             <li><a href="{% url courses.search %}">{% trans "Search" %}</a></li>

@@ -15,4 +15,6 @@ urlpatterns = patterns('courses.views',
     url(r'^courses/(?P<pk>[\d/]+)/completion/$', 'completion', name="courses.completion"),
     url(r'^courses/(?P<pk>[\d/]+)/add_completion/$', 'add_completion', name="courses.add_completion"),
     url(r'^courses/(?P<pk>[\d/]+)/certificate/$', 'certificate', name="courses.certificate"),
+    url(r'^courses/(?P<pk>[\d/]+)/certificate/(?P<user_id>[\d/]+)/$', 'certificate', name="courses.user_certificate"),
+    url(r'^courses/(?P<pk>[\d/]+)/completion_report/$', 'completion_report', name="courses.completion_report"),
 )

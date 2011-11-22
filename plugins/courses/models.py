@@ -72,6 +72,6 @@ class CourseAttempt(models.Model):
     
     @property
     def passed(self):
-        if self.scoure >= self.course.passing_score:
+        if self.score >= self.course.passing_score:
             return True
         return False
