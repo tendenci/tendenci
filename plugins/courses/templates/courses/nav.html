@@ -42,7 +42,7 @@
 			{% endif %}
             <li><a href="{% url courses.search %}">{% trans "Search" %}</a></li>
             {% if admin %}
-                <li><a href="">{% trans "Top Tests Taken" %}</a></li>
+                <li><a href="{% url courses.top_tests %}">{% trans "Top Tests Taken" %}</a></li>
             {% endif %}
 			{% if can_add_course %}
                 <li><a href="{% url courses.add %}">{% trans "Add" %}</a></li>
