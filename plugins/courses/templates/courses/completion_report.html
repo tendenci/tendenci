@@ -18,8 +18,15 @@
     {% course_nav request.user course %}
     <div class="course-wrap">
         <h1>{{ course.title }} {% trans "Completion Report" %}</h1>
+        <div class="date-range">
+            <form method="get" action=".">
+                {{ form.start_dt.label }}: {{ form.start_dt }}<br>
+                {{ form.end_dt.label }}: {{ form.end_dt }}
+            </form>
+        </div>
 		<div class="attempts">
-			{% for attempt in attempts %}
+            <h2>{% trans "Successful Attempts" %}</h2>
+			{% for attempt in p_attempts %}
                 <div class="attempt">
                     <p>
                         {% trans "User" %}: {{ attempt.user.get_full_name }}
@@ -36,9 +43,27 @@
                             {% trans "Notes" %}: {{ attempt.notes }}
                         </p>
                     {% endif %}
-                    {% if attempt.passed %}
+                    <p>
+                        <a href="{% url courses.user_certificate course.pk attempt.user.pk %}">{% trans "View Certificate" %}</a>
+                    </p>
+                </div>
+            {% endfor %}
+            <h2>{% trans "Failed Attempts" %}</h2>
+			{% for attempt in f_attempts %}
+                <div class="attempt">
+                    <p>
+                        {% trans "User" %}: {{ attempt.user.get_full_name }}
+                    </p>
+                    <p>
+                        {% trans "Score" %}: {{ attempt.score }} {% trans "out of 100" %}
+                        ({% if attempt.passed %}PASSED{% else %}FAILED{% endif %})
+                    </p>
+                    <p>
+                        {% trans "Date of Attempt" %}: {{ attempt.create_dt }}
+                    </p>
+                    {% if attempt.notes %}
                         <p>
-                            <a href="{% url courses.user_certificate course.pk attempt.user.pk %}">{% trans "View Certificate" %}</a>
+                            {% trans "Notes" %}: {{ attempt.notes }}
                         </p>
                     {% endif %}
                 </div>

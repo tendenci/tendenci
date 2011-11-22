@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -116,3 +116,7 @@ class AnswerForm(forms.Form):
 class CourseAttemptForm(forms.ModelForm):
     class Meta:
         model = CourseAttempt
+        
+class DateRangeForm(forms.Form):
+    start_dt = forms.DateField(label=_('Start Date'), initial=datetime.now()-timedelta(days=30), widget=forms.extras.SelectDateWidget)
+    end_dt = forms.DateField(label=_('End Date'), initial=datetime.now(), widget=forms.extras.SelectDateWidget)

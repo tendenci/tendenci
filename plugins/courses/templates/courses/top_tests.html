@@ -1,0 +1,42 @@
+{% extends "courses/base.html" %}
+{% load pagination_tags %}
+{% load courses_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+{% load i18n %}
+
+{% block title %}Top Courses{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+<div class="t">
+	{% course_nav request.user %}
+    <h1>{% trans "Top" %} {% firstof MODULE_COURSES_LABEL 'Courses' %} {% trans "Taken" %}</h1>  
+    <div class="date-range">
+        <form method="get" action=".">
+            {{ form.start_dt.label }}: {{ form.start_dt }}<br>
+            {{ form.end_dt.label }}: {{ form.end_dt }}
+        </form>
+    </div>
+	
+    {% autopaginate courses 10 %}
+	
+	<div class="courses-wrap">
+    {% for course in courses %}
+        <div class="course-wrap">
+            <p>{{ course.title }}</p>
+        </div>
+	{% empty %}
+		<div>{% trans "0 Results Found" %}</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
