@@ -8,6 +8,7 @@
 	{% has_perm user courses.view_course nav_object as can_view_course %}
 	{% has_perm user courses.change_course nav_object as can_edit_course %}
 	{% has_perm user courses.delete_course nav_object as can_delete_course %}
+    {% is_admin user as admin %}
 {% endif %}
 
 <div id="showh">
@@ -26,12 +27,23 @@
 		<ul id="secondary">
 			<li><a href="{% url courses %}">{% firstof MODULE_COURSES_LABEL trans 'Courses' %}:</a></li> 
 			{% if nav_object %}
+                {% if can_view_course %}
+                    <li><a href="{% url courses.detail nav_object.pk %}">{% trans "View" %}</a></li>
+                {% endif %}
 				{% if can_edit_course %}
                     <li><a href="{% url courses.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
                     <li><a href="{% url courses.edit_questions nav_object.pk %}">{% trans "Edit Questions" %}</a></li>
 				{% endif %}
+                {% if admin %}
+                    <li><a href="{% url courses.add_completion nav_object.pk %}">{% trans "Add Completion" %}</a></li>
+                    <li><a href="{% url courses.clone nav_object.pk %}">{% trans "Clone" %}</a></li>
+                    <li><a href="">{% trans "Completion Report" %}</a> </li>
+                {% endif %}
 			{% endif %}
             <li><a href="{% url courses.search %}">{% trans "Search" %}</a></li>
+            {% if admin %}
+                <li><a href="">{% trans "Top Tests Taken" %}</a></li>
+            {% endif %}
 			{% if can_add_course %}
                 <li><a href="{% url courses.add %}">{% trans "Add" %}</a></li>
 			{% endif %}

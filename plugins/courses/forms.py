@@ -3,10 +3,11 @@ from datetime import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from courses.models import Course, Question
-from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
+from perms.forms import TendenciBaseForm
+
+from courses.models import Course, Question, CourseAttempt
 
 class CourseForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
@@ -111,3 +112,7 @@ class AnswerForm(forms.Form):
             if data == self.question.answer:
                 return self.question.point_value
         return 0
+
+class CourseAttemptForm(forms.ModelForm):
+    class Meta:
+        model = CourseAttempt
