@@ -32,7 +32,7 @@
                     <a href="{% url courses.take course.pk %}">Retry this Course</a>
                 {% else %}
                     {% if retry_time_left %}
-                        <p>Try again in {{ retry_time_left }}</p>
+                        <p>Try again on {{ retry_time_left }}</p>
                     {% endif %}
                 {% endif %}
             {% endif %}
