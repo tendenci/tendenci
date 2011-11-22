@@ -116,7 +116,10 @@ def build_settings_form(user, settings):
                 choices = get_box_list(user)
                 required = False
             else:
-                choices = tuple([(s,s)for s in setting.input_value.split(',')])
+                try:
+                    choices = tuple([(k,v)for k,v in eval(setting.input_value)])
+                except:
+                    choices = tuple([(s,s)for s in setting.input_value.split(',')])
                 required = True
             options = {
                 'label': setting.label,
