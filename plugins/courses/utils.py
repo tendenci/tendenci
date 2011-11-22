@@ -7,20 +7,23 @@ def can_retry(course, user):
     Check if the user has taken this course before.
     If it is a retake, check if the current time and number of attempts
     allows her to retake the course.
-    If she/he cannot retry, return the time interval for the next retry.
+    This will return a tuple where the first value is a boolean stating if
+    the user can retry or not. The 2nd is a date where the user may be able to retry.
+    The 2nd will be None if the user has exhausted all his/her retries.
     """
     attempts = CourseAttempt.objects.filter(course=course, user=user).order_by("-create_dt")
     if attempts:
         if course.retries == 0 or attempts.count() <= course.retries:
-            #redirect if the user is not yet allowed to retake the course
-            last_try = datetime.now() - attempts[0].create_dt
+            #return the next possible retry time
+            last_try = attempts[0].create_dt
             interval = timedelta(hours=course.retry_interval)
-            if last_try < interval:
-                return interval - last_try
+            next_try = last_try + interval
+            if datetime.now() < next_try:
+                return (False, next_try)
         else:
             #user has used up all her retries
-            return False
-    return True
+            return (False, None)
+    return (True, datetime.now())
 
 def get_passed_attempts(course, user):
     """
