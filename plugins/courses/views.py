@@ -68,13 +68,14 @@ def detail(request, pk, template_name="courses/detail.html"):
         #check if the user has attempted this course before
         attempted = CourseAttempt.objects.filter(user=request.user, course=course).exists()
         passed = get_passed_attempts(course, request.user)
-        retry = can_retry(course, request.user)
+        retry, retry_time = can_retry(course, request.user)
         
         return render_to_response(template_name, {
             'course':course,
             'attempted':attempted,
             'has_passed':passed,
             'can_retry':retry,
+            'retry_time_left':retry_time,
         }, context_instance=RequestContext(request))
     else:
         raise Http403
@@ -253,19 +254,14 @@ def completion(request, pk, template_name="courses/completion.html"):
     attempts = CourseAttempt.objects.filter(course=course, user=request.user).order_by("-create_dt")
     
     passed = get_passed_attempts(course, request.user)
-    retry = can_retry(course, request.user)
-    
-    if isinstance(retry, timedelta):
-        retry_time_left = retry
-    else:
-        retry_time_left = None
+    retry, retry_time = can_retry(course, request.user)
         
     return render_to_response(template_name, {
         'attempts':attempts,
         'course':course,
         'has_passed':passed,
         'can_retry':retry,
-        'retry_time_left':retry_time_left,
+        'retry_time_left':retry_time,
         }, context_instance=RequestContext(request))
 
 def certificate(request, pk, template_name="courses/certificate.html"):
