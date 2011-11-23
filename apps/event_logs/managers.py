@@ -7,6 +7,7 @@ from django.db.models import Manager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
+from django.conf import settings
 
 from robots.models import Robot
 
@@ -191,7 +192,10 @@ class EventLogManager(Manager):
                 if robot:
                     event_log.robot = robot
 
-            event_log.server_ip_address = gethostbyname(gethostname())
+            try:
+                event_log.server_ip_address = settings.INTERNAL_IPS[0]
+            except:
+                event_log.server_ip_address = gethostbyname(gethostname())
 
             if hasattr(request, 'path'):
                 event_log.url = request.path or ''
