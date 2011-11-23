@@ -13,7 +13,7 @@ from attorneys.managers import AttorneyManager
 CATEGORY_CHOICES = (
     ('SH', 'Shareholder'),
     ('OF', 'Of Counsel'),
-    ('AS', 'Associates'),
+    ('AS', 'Associate'),
 )
 
 class Attorney(TendenciBaseModel):
