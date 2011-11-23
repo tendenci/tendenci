@@ -106,7 +106,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
     list_filter = ['status_detail']
     
     fieldsets = (
-        (None, {'fields': ('user', 'description',)}),
+        (None, {'fields': ('user', 'url', 'description',)}),
         ("Billing Settings", {'fields': ('payment_amount',  
                            'billing_start_dt', 'billing_cycle', 'billing_dt_select', )}),
         ("Trial Period", {'fields': ('has_trial_period',  'trial_amount', 
