@@ -133,7 +133,11 @@
 	    {% endif %}
 
 	    <div class="rp-dname">Name: <a href="{% url profile rp.user.username %}">{{ rp.user.get_full_name }} ({{ rp.user.email }})</a></div>
+	    {% if rp.url %}
+	    <div class="rp-dname">Website: {{ rp.url|urlize }}</div>
+	    {% endif %}
 	    <div class="rp-dname">Description: <span style="color:#669900;">{{ rp.description }}</span></div>
+	   
 	    <div style="clear: right;"></div>
 	    
 	    {% if num_accounts > 1 %}
