@@ -1,4 +1,5 @@
 from ordereddict import OrderedDict
+from ast import literal_eval
 
 from django import forms
 from django.core.cache import cache
@@ -117,7 +118,7 @@ def build_settings_form(user, settings):
                 required = False
             else:
                 try:
-                    choices = tuple([(k,v)for k,v in eval(setting.input_value)])
+                    choices = tuple([(k,v)for k,v in literal_eval(setting.input_value)])
                 except:
                     choices = tuple([(s,s)for s in setting.input_value.split(',')])
                 required = True
