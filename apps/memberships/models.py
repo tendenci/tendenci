@@ -762,6 +762,9 @@ class AppFieldManager(models.Manager):
     def visible(self):
         return self.filter(visible=True).order_by('position')
 
+    def non_admin_visible(self):
+        return self.filter(visible=True, admin_only=False).order_by('position')
+
 class AppField(models.Model):
     app = models.ForeignKey("App", related_name="fields")
     content_type = models.ForeignKey(ContentType,
