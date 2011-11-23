@@ -20,23 +20,26 @@
     <h1>{% trans "Top" %} {% firstof MODULE_COURSES_LABEL 'Courses' %} {% trans "Taken" %}</h1>  
     <div class="date-range">
         <form method="get" action=".">
-            {{ form.start_dt.label }}: {{ form.start_dt }}<br>
-            {{ form.end_dt.label }}: {{ form.end_dt }}
+            from {{ form.start_dt }} to {{ form.end_dt }}
+            <input type="submit" value="Submit">
         </form>
     </div>
 	
-    {% autopaginate courses 10 %}
-	
 	<div class="courses-wrap">
-    {% for course in courses %}
+    {% for hits, course in courses %}
         <div class="course-wrap">
-            <p>{{ course.title }}</p>
+            <div class="wrap-search-item">
+                <div class="search-item course-search-item">
+                    <h2><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
+                    <p>{% trans "Times Taken" %}: {{ hits }}</p>
+                    <p><a href="{% url courses.completion_report course.pk %}">Completion Report</a></p>
+                </div>
+            </div>
         </div>
 	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+		<div>{% trans "No Tests Were Taken During This Time Period" %}</div>
     {% endfor %}
 	</div>
-
-    {% paginate %}
+    
 </div>
 {% endblock %}

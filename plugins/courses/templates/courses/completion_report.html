@@ -20,8 +20,8 @@
         <h1>{{ course.title }} {% trans "Completion Report" %}</h1>
         <div class="date-range">
             <form method="get" action=".">
-                {{ form.start_dt.label }}: {{ form.start_dt }}<br>
-                {{ form.end_dt.label }}: {{ form.end_dt }}
+                from {{ form.start_dt }} to {{ form.end_dt }}
+                <input type="submit" value="Submit">
             </form>
         </div>
 		<div class="attempts">

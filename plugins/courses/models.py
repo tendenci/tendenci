@@ -61,7 +61,7 @@ class CourseAttempt(models.Model):
     Represents course attempts.
     We can also use this to represent course completions and failures.
     """
-    course = models.ForeignKey(Course)
+    course = models.ForeignKey(Course, related_name="attempts")
     user = models.ForeignKey(User)
     score =  models.DecimalField(_(u'Score'), help_text=_(u'out of 100%'), max_digits=5, decimal_places=2)
     create_dt = models.DateTimeField(auto_now_add=True)
