@@ -163,7 +163,6 @@ def event_summary_report(request):
 
     m = 1+len(summary_data)/3
     mm = 2*m
-    print m, mm, len(summary_data)
     summary_data = summary_data[:m], summary_data[m:mm], summary_data[mm:]
 
     return render_to_response(
