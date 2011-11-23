@@ -45,3 +45,29 @@ def get_best_passed_attempt(course, user):
         best = attempts.order_by('-score')[0]
         return best
     return None
+
+def get_top_tests(start_dt, end_dt):
+    """
+    Return a list of Courses with the most attempts in a given time frame.
+    Might be better to use the search index for this.
+    """
+    
+    # number of hits will be based on CourseAttempt
+    # use select_related to avoid having to hit the database for each related model
+    attempts = CourseAttempt.objects.select_related().filter(create_dt__gte=start_dt, create_dt__lte=end_dt)
+    
+    # for each attempt associated to a course
+    # increment that course's hit count
+    report = {}
+    for attempt in attempts:
+        if attempt.course in report:
+            report[attempt.course] += 1
+        else:
+            report[attempt.course] = 1
+    
+    # Construct the course list and sort it based on the number of hits
+    courses = []
+    for course, hits in report.iteritems():
+        courses.append((hits, course))
+    
+    return sorted(courses, reverse=True)

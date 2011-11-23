@@ -12,8 +12,10 @@ from perms.utils import is_admin
 from event_logs.models import EventLog
 
 from courses.models import Course, Question, CourseAttempt
-from courses.forms import CourseForm, QuestionForm, AnswerForm, CourseAttemptForm, DateRangeForm
-from courses.utils import can_retry, get_passed_attempts, get_best_passed_attempt
+from courses.forms import (CourseForm, QuestionForm, AnswerForm,
+    CourseAttemptForm, DateRangeForm)
+from courses.utils import (can_retry, get_passed_attempts, get_top_tests,
+    get_best_passed_attempt)
 
 try:
     from notification import models as notification
@@ -369,9 +371,16 @@ def completion_report(request, pk, template_name="courses/completion_report.html
     if not is_admin(request.user):
         raise Http403
     
-    #default to 30 days ago
-    start_dt = request.GET.get('start_dt', datetime.now()-timedelta(days=30))
-    end_dt = request.GET.get('end_dt', datetime.now())
+    # get the date range
+    form = DateRangeForm(request.GET)
+    if form.is_valid():
+        start_dt = form.cleaned_data['start_dt']
+        end_dt = form.cleaned_data['end_dt']
+    else:
+        #default to 30 days ago
+        form = DateRangeForm()
+        start_dt = datetime.now() - timedelta(days=30)
+        end_dt = datetime.now()
     
     p_attempts = CourseAttempt.objects.filter(course=course, score__gte=course.passing_score)
     f_attempts = CourseAttempt.objects.filter(course=course, score__lt=course.passing_score)
@@ -383,8 +392,6 @@ def completion_report(request, pk, template_name="courses/completion_report.html
     if end_dt:
         p_attempts = p_attempts.filter(create_dt__lte=end_dt)
         f_attempts = f_attempts.filter(create_dt__lte=end_dt)
-        
-    form = DateRangeForm()
     
     return render_to_response(template_name, {
         'course':course,
@@ -401,19 +408,18 @@ def top_tests(request, template_name="courses/top_tests.html"):
     if not is_admin(request.user):
         raise http403
     
-    #default to 30 days ago
-    start_dt = request.GET.get('start_dt', datetime.now()-timedelta(days=30))
-    end_dt = request.GET.get('end_dt', datetime.now())
+    # get the date range
+    form = DateRangeForm(request.GET)
+    if form.is_valid():
+        start_dt = form.cleaned_data['start_dt']
+        end_dt = form.cleaned_data['end_dt']
+    else:
+        #default to 30 days ago
+        form = DateRangeForm()
+        start_dt = datetime.now() - timedelta(days=30)
+        end_dt = datetime.now()
     
-    courses = Course.objects.all()
-    
-    if start_dt:
-        courses = courses.filter(create_dt__gte=start_dt)
-    
-    if end_dt:
-        courses = courses.filter(create_dt__lte=end_dt)
-    
-    form = DateRangeForm()
+    courses = get_top_tests(start_dt, end_dt)
     
     return render_to_response(template_name, {
         'courses':courses,
