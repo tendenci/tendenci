@@ -21,6 +21,7 @@ from django.core.files.storage import FileSystemStorage
 from tinymce.widgets import TinyMCE
 
 from perms.forms import TendenciBaseForm
+from perms.utils import is_admin
 from models import MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry
 from fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
@@ -623,10 +624,15 @@ class AppEntryForm(forms.ModelForm):
         """
 
         self.app = app
-        self.form_fields = app.fields.visible()
+        
         self.types_field = app.membership_types
         self.user = kwargs.pop('user', None) or AnonymousUser
         self.corporate_membership = kwargs.pop('corporate_membership', None) # id; not object
+        
+        if is_admin(self.user):
+            self.form_fields = app.fields.visible()
+        else:
+            self.form_fields = app.fields.non_admin_visible()
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
@@ -654,7 +660,7 @@ class AppEntryForm(forms.ModelForm):
         for field in self.form_fields:
             if field.field_type == 'corporate_membership_id' and not self.corporate_membership:
                 continue
-                
+
             field_key = "field_%s" % field.id
             field_class, field_widget = CLASS_AND_WIDGET[field.field_type]
             field_class = getattr(forms, field_class)
