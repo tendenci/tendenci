@@ -37,10 +37,10 @@
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
-	<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/formset.js"></script>
-	<script type="text/javascript">
+    <script type="text/javascript">
 		var slugit = new Slugify({
 			input_element : 'input#id_title',
 			slug_element : 'input#id_slug',
@@ -68,7 +68,7 @@
         function find_field(name) {
             //finds a field given a label
             //don't use if multiple fields share the same label
-            labels = $(".forms").find("label");
+            labels = $(".label").find("label");
             label = labels[0];
             i = 0;
             while((label.innerHTML!=name) && (i < labels.length)) {
@@ -79,7 +79,7 @@
             return field;
         };
         
-        weekend = find_field("On weekend");
+        weekend = $('.id_on_weekend');
         start_dt = $(find_field("Start Date/Time").find('input')[0]);
         start_dt_val = start_dt.val();
         end_dt = $(find_field("End Date/Time").find('input')[0]);
