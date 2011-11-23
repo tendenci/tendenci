@@ -21,7 +21,8 @@ class RecurringPaymentForm(forms.ModelForm):
     
     class Meta:
         model = RecurringPayment
-        fields = ('user', 
+        fields = ('user',
+                  'url', 
                   'description',
                   'payment_amount',
                   'billing_start_dt',
