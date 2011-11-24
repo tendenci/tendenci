@@ -1,0 +1,19 @@
+[
+    {
+        "default_value": "", 
+        "description": "A list of email addresses that receive admin notices from Courses module on the site. Comma delimited.", 
+        "data_type": "string", 
+        "update_dt": "2010-08-12 17:19:11", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "courserecipients", 
+        "value": "", 
+        "label": "Course admin notice recipients", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "courses", 
+        "store": true, 
+        "updated_by": ""
+    }
+]
