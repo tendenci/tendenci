@@ -85,13 +85,6 @@ def get_setting(scope, scope_category, name):
     setting = cache.get(key)
     if setting:
         value = setting.value.strip()
-
-        # convert data types
-        if setting.data_type == 'boolean':
-            value = value[0].lower() == 't'
-        if setting.data_type == 'int':
-            if value.strip(): value = int(value.strip())
-            else: value = 0 # default to 0
                             
     if not value:
         try:
@@ -102,20 +95,27 @@ def get_setting(scope, scope_category, name):
             }            
 
             setting = Setting.objects.get(**filters)
-            cache_setting(setting.scope, setting.scope_category,setting.name,setting)
+            cache_setting(setting.scope, setting.scope_category,setting.name, setting)
         except:
             setting = None
             
         if setting:
             value = setting.value.strip()
             
-            # convert data types
-            if setting.data_type == 'boolean':
-                value = value[0].lower() == 't'
-            if setting.data_type == 'int':
-                if value.strip(): value = int(value.strip())
-                else: value = 0 # default to 0
-                
+    # convert data types
+    if setting.data_type == 'boolean':
+        value = value[0].lower() == 't'
+    if setting.data_type == 'int':
+        if value.strip(): value = int(value.strip())
+        else: value = 0 # default to 0
+    if setting.data_type == 'file':
+        from files.models import File as TFile
+        try:
+            tfile = TFile.objects.get(pk=value)
+        except TFile.DoesNotExist:
+            tfile = None
+        value = tfile
+        
     return value
 
 def check_setting(scope, scope_category, name):
