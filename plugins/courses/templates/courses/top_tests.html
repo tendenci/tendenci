@@ -1,0 +1,45 @@
+{% extends "courses/base.html" %}
+{% load pagination_tags %}
+{% load courses_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+{% load i18n %}
+
+{% block title %}Top Courses{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+<div class="t">
+	{% course_nav request.user %}
+    <h1>{% trans "Top" %} {% firstof MODULE_COURSES_LABEL 'Courses' %} {% trans "Taken" %}</h1>  
+    <div class="date-range">
+        <form method="get" action=".">
+            from {{ form.start_dt }} to {{ form.end_dt }}
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+	
+	<div class="courses-wrap">
+    {% for hits, course in courses %}
+        <div class="course-wrap">
+            <div class="wrap-search-item">
+                <div class="search-item course-search-item">
+                    <h2><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
+                    <p>{% trans "Times Taken" %}: {{ hits }}</p>
+                    <p><a href="{% url courses.completion_report course.pk %}">Completion Report</a></p>
+                </div>
+            </div>
+        </div>
+	{% empty %}
+		<div>{% trans "No Tests Were Taken During This Time Period" %}</div>
+    {% endfor %}
+	</div>
+    
+</div>
+{% endblock %}

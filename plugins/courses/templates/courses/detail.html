@@ -1,0 +1,55 @@
+{% extends "courses/base.html" %}
+{% load courses_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+{% tags_for_object course as tags %}
+
+<div class="t">
+    {% course_nav request.user course %}
+
+    <div class="course-wrap">
+
+        <h1>{{ course.title }}</h1>
+
+		<div class="content">
+			{{ course.content|safe }} 
+		</div>
+        
+        <div class="status">
+            {% if not attempted %}
+                {% if course.questions.all %}
+                    <a href="{% url courses.take course.pk %}">{% trans "Take this Course" %}</a>
+                {% else %}
+                    {% trans "This course does not have any questions yet." %}
+                {% endif %}
+            {% else %}
+                {% if has_passed %}
+                    <p>{% trans "Congratulations! You've passed this course!" %}</p>
+                    <p><a href="{% url courses.certificate course.pk %}">{% trans "View your Certificate" %}</a></p>
+                {% else %}
+                    <p>{% trans "Sorry, you have not passed this course yet." %}</p>
+                    {% if can_retry %}
+                        <p><a href="{% url courses.take course.pk %}">{% trans "Retry this Course" %}</a></p>
+                    {% else %}
+                        {% if retry_time_left %}
+                            <p>{% trans "Try again on" %} {{ retry_time_left }}</p>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                <p><a href="{% url courses.completion course.pk %}">{% trans "View Your Course Attempts" %}</a></p>
+            {% endif %}
+		</div>
+        
+    </div>
+</div>
+{% endblock %}
