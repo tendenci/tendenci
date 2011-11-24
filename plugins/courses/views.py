@@ -232,6 +232,36 @@ def take(request, pk, template_name="courses/take.html"):
             points = points + form.points()
         score = points * 100/course.total_points
         attempt = CourseAttempt.objects.create(user=request.user, course=course, score=score)
+        
+        # send notification to course taker
+        recipients = [request.user.email]
+        if recipients:
+            if notification:
+                passed = get_passed_attempts(course, request.user)
+                retry, retry_time = can_retry(course, request.user)
+                extra_context = {
+                    'attempt':attempt,
+                    'has_passed':passed,
+                    'can_retry':retry,
+                    'retry_time_left':retry_time,
+                }
+                notification.send_emails(recipients, 'course_completion', extra_context)
+                
+        # send notification to administrators
+        recipients = get_notice_recipients('module', 'courses', 'courserecipients')
+        if recipients:
+            if notification:
+                attempt_count = CourseAttempt.objects.filter(user=request.user, course=course).count()
+                extra_context = {
+                    'for_admin':True,
+                    'attempt_count':attempt_count,
+                    'attempt':attempt,
+                    'has_passed':passed,
+                    'can_retry':retry,
+                    'retry_time_left':retry_time,
+                }
+                notification.send_emails(recipients, 'course_completion', extra_context)
+        
         return redirect('courses.completion', course.pk)
     else:
         #create a form for each question
