@@ -1,8 +1,28 @@
+{% load i18n %}
+{% load courses_tags %}
+
 <div class="wrap-search-item">
     <div class="search-item course-search-item">
         <h2><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
-        <div class="item-content">
+        <div class="content">
             {{ course.content|striptags|truncatewords:40|safe  }}
+        </div>
+        <div class="user-options">
+            {% course_user_status course request.user %}
+            {% if request.user.is_authenticated %}
+                {% if has_passed %}
+                    <p><a href="{% url courses.user_certificate course.pk request.user.pk %}">
+                    {% trans "View Certificate" %}</a></p>
+                {% else %}
+                    {% if can_retry %}
+                        <a href="{% url courses.take course.pk %}">{% trans "Retry this Course" %}</a>
+                    {% else %}
+                        {% if retry_time_left %}
+                            <p>{% trans "Try again on" %} {{ retry_time_left }}</p>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
         </div>
     </div>	
       {% include "courses/meta.html" %}
