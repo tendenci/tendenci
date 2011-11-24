@@ -1,0 +1,38 @@
+{% extends "courses/base.html" %}
+{% load courses_tags %}
+{% load styled_forms %}
+{% load forms_tags %}
+{% load i18n %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% course_nav request.user course %}
+	 
+    <h1>{{ course.title }}</h1>
+    
+    <div class="instructions">
+        <p>
+            Read the questions carefully and answer the questions using your best judgement.<br>
+            Click on the submit button once you are done. Good luck!
+        </p>
+    </div>
+    
+	<div class="course-wrap">
+    	<form action="." method="post">{% csrf_token %}
+            <div class="forms">
+            {% for form in forms %}
+                {{ form|styled_form }}
+            {% endfor %}
+            </div>
+        	<input type="submit" value="Submit" />
+        </form>
+    </div>
+	
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}

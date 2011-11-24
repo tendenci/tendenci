@@ -1,0 +1,38 @@
+{% load i18n %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>{% trans "Course Completion" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff" text="#000000">
+
+<h1><a href="{{ SITE_GLOBAL_SITE_URL }}{{ attempt.course.get_absolute_url }}">{{ attempt.course.title }}</a></h1>
+{% if for_admin %}
+    <p>{% trans "User" %}: <a href="{{ SITE_GLOBAL_SITE_URL }}{% url profile attempt.user.username %}">{{ attempt.user.get_full_name }}</a></p>
+{% endif %}
+<p>{% trans "Time and date of course attempt" %}: {{ attempt.create_dt }}</p>
+<p>{% trans "Score" %}: {{ attempt.score }} {% trans "out of" %} 100%</p>
+{% if for_admin %}
+    <p>{% trans "Total Number of Attempts" %}: {{ attempt_count }}</p>
+{% endif %}
+{% if has_passed %}
+    <p>
+        <a href="{% url courses.user_certificate attempt.course.pk attempt.user.pk %}">{% trans "View Certificate" %}</a>
+    </p>
+{% else %}
+    {% if not for_admin %}
+        {% if can_retry %}
+            <a href="{% url courses.take attempt.course.pk %}">{% trans "Retry this Course" %}</a>
+        {% else %}
+            {% if retry_time_left %}
+                <p>{% trans "Try again on" %} {{ retry_time_left }}</p>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endif %}
+</body>
+</html>

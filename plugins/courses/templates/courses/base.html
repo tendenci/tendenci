@@ -1,0 +1,10 @@
+{% extends "site_base.html" %}
+
+{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Courses, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }} Courses{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+    {% include "courses/media/css/courses.css" %}
+</style>
+{% endblock %}

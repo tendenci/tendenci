@@ -1,0 +1,14 @@
+.course-wrap .attempts{
+    margin-top: 10px;
+}
+
+.course-wrap .attempts h2{
+    margin-top: 10px;
+}
+
+.course-wrap .attempts .attempt{
+    border: 1px solid;
+    padding: 0px 10px 0px 10px;
+    margin-top: 10px;
+    width: 80%;
+}
