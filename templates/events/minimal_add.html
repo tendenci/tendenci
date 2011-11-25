@@ -1,0 +1,113 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}{% trans "Minimal Add" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% event_nav request.user %}
+    
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Minimal Add" %}</h1>
+    <p>Adding events are subject to the approval of the Administrators.</p>
+    
+    <div class="event-wrap">
+    	<form action="{% url event.minimal_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    	<div class="forms">
+    		{{ form|styled_form }}
+			<input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL 'Event' %}" />
+		</div>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+    <script type="text/javascript">
+		var slugit = new Slugify({
+			input_element : 'input#id_title',
+			slug_element : 'input#id_slug',
+			submit_element : 'input[type="submit"]',
+			help: false,
+			limit : 150
+		});
+
+        $(".datepicker").live('focus', function() {
+            console.log('this', this);
+            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+
+        $(".timepicker").live('focus', function() {
+            $(this).timePicker({
+              show24Hours: false,
+              step: 15
+            });
+        });
+	</script>
+    <script type="text/javascript">
+        //script for hiding and showing the 'On weekend' field
+        //when nesessary.
+        
+        function find_field(name) {
+            //finds a field given a label
+            //don't use if multiple fields share the same label
+            labels = $(".label").find("label");
+            label = labels[0];
+            i = 0;
+            while((label.innerHTML!=name) && (i < labels.length)) {
+                i++;
+                label = labels[i];
+            };
+            field = $('.'+$.trim(label.parentNode.parentNode.attributes[0].value));
+            return field;
+        };
+        
+        weekend = $('.id_on_weekend');
+        start_dt = $(find_field("Start Date/Time").find('input')[0]);
+        start_dt_val = start_dt.val();
+        end_dt = $(find_field("End Date/Time").find('input')[0]);
+        end_dt_val = end_dt.val();
+        
+        if(start_dt_val != end_dt_val){
+            weekend.show();
+        } else {
+            weekend.hide();
+        }
+        
+        start_dt.change(function() {
+            val = end_dt.val()
+            if ($(this).val() == val) {
+                weekend.hide();
+            } else {
+                weekend.show();
+            }
+        });
+        
+        end_dt.change(function() {
+            val = start_dt.val()
+            if ($(this).val() == val) {
+                weekend.hide();
+            } else {
+                weekend.show();
+            }
+        });
+        
+    </script>
+{% endblock %}

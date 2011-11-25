@@ -1,9 +1,11 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load site_setting_tags %}
 {% load i18n %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user events.add_event as can_add_event %}
+{% get_setting module events minimaladdform as can_request_event %}
 
 {% if nav_object %}
 	{% has_perm user events.view_event nav_object as can_view_event %}
@@ -54,7 +56,11 @@
 			<li><a href="{% url event.search %}">{% trans "Search" %}</a></li>
 			<li><a href="{% url event.month %}">{% trans "Month" %}</a></li>
 			{% if can_add_event %}
-			<li><a href="{% url event.add %}">{% trans "Add" %}</a></li>
+                <li><a href="{% url event.add %}">{% trans "Add" %}</a></li>
+            {% else %}
+                {% if can_request_event %}
+                    <li><a href="{% url event.minimal_add %}">{% trans "Add" %}</a></li>
+                {% endif %}
 			{% endif %}
 			<li><a href="{% url event.types %}">{% trans "Types" %}</a></li>
             {% if nav_object %}
