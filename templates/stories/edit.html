@@ -20,7 +20,7 @@
     <h1>{% firstof MODULE_STORIES_LABEL "Story" %} {% trans "Edit" %}</h1>
  
     <div class="story-wrap">
-    	<form action="{% url story.edit story.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    	<form method="post" enctype="multipart/form-data">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
         	<input type="submit" value="{% trans "Save Story Changes" %}" />
