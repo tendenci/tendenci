@@ -50,10 +50,16 @@
     }
 </style>
 
-<nav>
+<nav class="clearfix">
 <ul>
 {% for item in items %}
     {% nav_item item %}
 {% endfor %}
 </ul>
+
+{% if admin %}
+<div class="admin-inline">
+  <div class="admin-links clear-block"><a href="{% url navs.edit_items nav.pk %}?next={{ request.path }}" title="Edit Nav" class="edit-nav">Edit {{ nav.title|title }}</a></div>
+</div>
+{% endif %}
 </nav>

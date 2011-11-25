@@ -15,7 +15,7 @@ class NavForm(TendenciBaseForm):
         fields = (
             'title',
             'description',
-            'megamenu',
+            # 'megamenu', # needs CSS first
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -26,7 +26,7 @@ class NavForm(TendenciBaseForm):
         fieldsets = [('Nav Information', {
                       'fields': ['title',
                                  'description',
-                                 'megamenu',
+                                 # 'megamenu', # needs CSS first
                                  ],
                       'legend': ''
                       }),
@@ -73,3 +73,22 @@ class ItemForm(forms.ModelForm):
         self.fields['page'].widget = forms.TextInput()
         self.fields['ordering'].widget = forms.HiddenInput()
         self.fields['level'].widget = forms.HiddenInput()
+
+    def clean_url(self):
+        ''' Fix URLs that don't start with / or http '''
+
+        if self.cleaned_data['url']:
+            if not self.cleaned_data['url'][:4].lower() == "http" and not self.cleaned_data['url'][:1] == "/":
+                # Append a beginning forward slash if none and not http
+                self.cleaned_data['url'] = "/%s" % self.cleaned_data['url']
+
+        return self.cleaned_data['url']
+
+#     def clean_page(self):
+#     ''' Create pages that don't exist yet '''
+#
+#         if not self.cleaned_data['page']:
+#             newpage = Page(title=self.cleaned_data['label'],slug=self.cleaned_data.get('url')),creator_id=
+#             newpage.save()
+#         
+#         return self.cleaned_data['page']
