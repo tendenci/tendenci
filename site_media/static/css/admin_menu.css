@@ -1,44 +1,191 @@
-html { margin-top: 30px !important; /*padding-bottom: 26px !important; */ }
-	#admin-bar { width: 100%; position: fixed; top: 0; left: 0; background: #6A120D; color: #ebebeb; height: 30px; z-index: 99999 !important;}
-	#admin-bar .admin-logo img {margin: 0; padding: 0;}
-	#admin-bar ul li a.admin-logo {background: #6A120D;}
-	#admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 12px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
-	#admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
-	#admin-bar a { display: block; padding: 8px 8px 6px; font-size: 12px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #6A120D; text-decoration: none; border-right: 1px solid #4B0D09; color: #ebebeb; }
-	#admin-bar h4 a { background: none; border: 0; font-size: 14px;}
-	#admin-bar li.app, #admin-bar h4 { font-size: 12px; line-height: 14px; margin: 0; border-bottom: 1px solid #4B0D09; }
-	#admin-bar li li a { background: #810D00; border-bottom: 1px dashed #4B0D09; border-right: none; padding: 4px 8px 4px;}
-	#admin-bar li li.app {clear: left; }
-	#admin-bar li li.app a { background: #810D00; border-bottom: none; border-right: none; font-weight: bold;}
-	#admin-bar li li a:hover { background: #6A120D; }
-	#admin-bar .app-list ul {border-bottom: 1px dashed #4B0D09; height: 24px; background: none;}
-	#admin-bar .app-list ul li,
-    #admin-bar .app-list ul li a {border: none;}
-	#admin-bar .app-list ul li {float: right;}
-	#admin-bar .app-list ul li.app {float: left;}
-	#admin-bar h4 {padding: 0 0 4px; font-size: 14px; font-weight: bold; font-family: Verdana, Geneva, sans-serif;}
-	#admin-bar li a.admin-logo {padding: 2px 8px 0;}
-	
-	#admin-bar .sub { background: #810D00; position: absolute; left: -999em; display: none; }
-	#admin-bar li:hover .sub { left: auto; display: block; }
-	#admin-bar li .sub .column { float: left; padding: 10px; }
-	#admin-bar li .sub .column .column.app-list { padding: 0 5px 0 0; }
-	#admin-bar li ul { min-width: 180px; }
-	#admin-bar li li { float: none; background: #6A120D; }
-	
-	#admin-bar li.right { float: right; }
-	#admin-bar li.right.search ul { width: auto; }
-	#admin-bar input#admin-search-bar { margin: 0 4px 0 0; line-height:14px; font-size: 12px;}
-	#admin-bar li #admin-search-box {margin: 3px 0 0 0; padding: 0 4px 0 0; border-right: 1px solid #4B0D09; font-size: 12px; }
-	#admin-bar #admin-search-box input#admin-search-submit {border: 1px solid #eee; color: #eee; background-color: #6A120D;font-family: Verdana, Geneva, sans-serif; font-size: 12px; }
-	
-	/* Alt color for admin-bar 
+html {
+	margin-top:30px!important;
+    /*padding-bottom: 26px !important; */
+}
+
+#admin-bar {
+	width:100%;
+	position:fixed;
+	top:0;
+	left:0;
+	background:#6A120D;
+	color:#ebebeb;
+	height:30px;
+	z-index:99999!important;
+}
+
+#admin-bar .admin-logo img {
+	margin:0;
+	padding:0;
+}
+
+#admin-bar ul li a.admin-logo {
+	background:#6A120D;
+}
+
+#admin-bar ul {
+	margin:0;
+	padding:0;
+	list-style:none;
+	position:static;
+	font-size:12px;
+	line-height:16px;
+	font-family:Verdana, Geneva, sans-serif;
+	color:#ebebeb;
+	background:#6A120D;
+}
+
+#admin-bar li {
+	background:none;
+	list-style:none;
+	float:left;
+	margin:0;
+	padding:0;
+}
+
+#admin-bar a {
+	display:block;
+	padding:8px 8px 6px;
+	font-size:12px;
+	line-height:16px;
+	font-family:Verdana, Geneva, sans-serif;
+	background:#6A120D;
+	text-decoration:none;
+	border-right:1px solid #4B0D09;
+	color:#ebebeb;
+}
+
+#admin-bar h4 a {
+	background:none;
+	border:0;
+	font-size:14px;
+}
+
+#admin-bar li.app,#admin-bar h4 {
+	font-size:12px;
+	line-height:14px;
+	margin:0;
+	border-bottom:1px solid #4B0D09;
+}
+
+#admin-bar li li a {
+	background:#810D00;
+	border-bottom:1px dashed #4B0D09;
+	border-right:none;
+	padding:4px 8px;
+}
+
+#admin-bar li li.app {
+	clear:left;
+}
+
+#admin-bar li li.app a {
+	background:#810D00;
+	border-bottom:none;
+	border-right:none;
+	font-weight:bold;
+}
+
+#admin-bar li li a:hover {
+	background:#6A120D;
+}
+
+#admin-bar .app-list ul {
+	border-bottom:1px dashed #4B0D09;
+	height:24px;
+	background:none;
+}
+
+#admin-bar .app-list ul li,#admin-bar .app-list ul li a {
+	border:none;
+}
+
+#admin-bar .app-list ul li {
+	float:right;
+}
+
+#admin-bar .app-list ul li.app {
+	float:left;
+}
+
+#admin-bar h4 {
+	padding:0 0 4px;
+	font-size:14px;
+	font-weight:bold;
+	font-family:Verdana, Geneva, sans-serif;
+}
+
+#admin-bar li a.admin-logo {
+	padding:2px 8px 0;
+}
+
+#admin-bar .sub {
+	background:#810D00;
+	position:absolute;
+	left:-999em;
+	display:none;
+}
+
+#admin-bar li:hover .sub {
+	left:auto;
+	display:block;
+}
+
+#admin-bar li .sub .column {
+	float:left;
+	padding:10px;
+}
+
+#admin-bar li .sub .column .column.app-list {
+	padding:0 5px 0 0;
+}
+
+#admin-bar li ul {
+	min-width:180px;
+}
+
+#admin-bar li li {
+	float:none;
+	background:#6A120D;
+}
+
+#admin-bar li.right {
+	float:right;
+}
+
+#admin-bar li.right.search ul {
+	width:auto;
+}
+
+#admin-bar input#admin-search-bar {
+	margin:0 4px 0 0;
+	line-height:14px;
+	font-size:12px;
+}
+
+#admin-bar li #admin-search-box {
+	margin:3px 0 0;
+	padding:0 4px 0 0;
+	border-right:1px solid #4B0D09;
+	font-size:12px;
+}
+
+#admin-bar #admin-search-box input#admin-search-submit {
+	border:1px solid #eee;
+	color:#eee;
+	background-color:#6A120D;
+	font-family:Verdana, Geneva, sans-serif;
+	font-size:12px;
+}
+
+/* Alt color for admin-bar 
 	#admin-bar, #admin-bar ul, #admin-bar a, #admin-bar li li, #admin-bar li li a:hover,
 	#admin-bar #admin-search-box input#admin-search-submit { background-color: #3a3; }
 	#admin-bar li li a, #admin-bar li li.app a, #admin-bar .sub { background-color: #272; }
 	*/
+
 	
-	/* Old styles for deprecated bottom bar
+/* Old styles for deprecated bottom bar
 	
 	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #6A120D; color: #ebebeb; height: 26px; z-index: 99999 !important; }
 	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
@@ -62,7 +209,143 @@ html { margin-top: 30px !important; /*padding-bottom: 26px !important; */ }
 	  cursor: pointer;
 	}
 	*/
-	@media print {
-		#admin-bar, #bottom-admin-bar { display: none; }
-  		body.admin-bar { margin-top: 0 !important; }
+
+	
+/* Admin CSS for hover links on content */
+div.admin-links {
+	margin:0;
+	padding:0;
+	border:0;
+	outline:0;
+	font-size:100%;
+	vertical-align:baseline;
+	line-height:inherit;
+	text-align:left;
+}
+
+div.admin-inline {
+	display:none;
+}
+
+div.admin-links {
+	-moz-border-radius-topleft:5px;
+	-moz-border-radius-topright:5px;
+	-webkit-border-top-left-radius:5px;
+	-webkit-border-top-right-radius:5px;
+	font:normal 11px/20px "Lucida Grande",Verdana,sans-serif!important;
+	background:#444!important;
+	position:absolute;
+	top:-20px;
+	left:0;
+	z-index:100;
+	height:20px;
+	line-height:20px;
+	overflow:hidden;
+}
+
+div.admin-inline {
+	display:none;
+}
+
+div.admin-border {
+	opacity:.25;
+	position:absolute;
+	left:0;
+	right:0;
+	top:0;
+	bottom:0;
+	height:5px;
+	width:5px;
+	background:#666;
+}
+
+div.admin-border-top {
+	left:5px;
+	right:5px;
+	width:auto;
+	bottom:auto;
+}
+
+div.admin-border-bottom {
+	left:5px;
+	right:5px;
+	width:auto;
+	top:auto;
+}
+
+div.admin-border-left {
+	height:auto;
+	right:auto;
+	-moz-border-radius-topleft:5px;
+	-moz-border-radius-bottomleft:5px;
+	-webkit-border-top-left-radius:5px;
+	-webkit-border-bottom-left-radius-:5px;
+}
+
+div.admin-border-right {
+	height:auto;
+	left:auto;
+	-moz-border-radius-topright:5px;
+	-moz-border-radius-bottomright:5px;
+	-webkit-border-top-right-radius:5px;
+	-webkit-border-bottom-right-radius-:5px;
+}
+
+div.admin-links a,div.admin-links a:hover {
+	background-color:transparent!important;
+	color:#fff!important;
+	text-transform:none!important;
+	font-weight:normal!important;
+	font-style:normal!important;
+	float:left!important;
+	padding:0 15px 0 15px;
+	line-height:25px!important;
+}
+
+div.admin-links a.edit-box {
+	background-position:-215px -180px;
+}
+
+
+	
+/* Boxes Admin CSS */
+div.boxes {
+	position:relative;
+}
+
+div.boxes div.view {
+	position:static;
+}
+
+div.boxes:hover div.admin-inline {
+	display:block;
+}
+
+
+/* Navs Admin CSS */
+nav div.view {
+	position:static;
+}
+
+nav:hover div.admin-inline {
+	display:block;
+}
+
+/* Rotator Admin CSS */
+#rotator #stories .story div.view {
+	position:static;
+}
+
+#rotator #stories .story:hover div.admin-inline {
+	display:block;
+}
+
+@media print 
+	#admin-bar,#bottom-admin-bar {
+		display:none;
 	}
+	
+	body.admin-bar {
+		margin-top:0!important;
+	}
+}
