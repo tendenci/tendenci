@@ -62,6 +62,11 @@
 	        
             <!-- event description -->
             <div class="content">
+                {% if event.image %}
+                <div class="photo">
+                    <img src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title }}" />
+                </div>
+                {% endif %}
                 <div class="event-desc">{{ event.description|safe }}</div>
             </div>
 

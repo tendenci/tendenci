@@ -29,7 +29,7 @@ from events.models import Event, RegistrationConfiguration, \
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
-    Reg8nConfPricingForm
+    Reg8nConfPricingForm, PendingEventForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
@@ -255,7 +255,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     if has_perm(request.user,'events.change_event', event):    
         if request.method == "POST":
             # single forms
-            form_event = form_class(request.POST, instance=event, user=request.user)
+            form_event = form_class(request.POST, request.FILES, instance=event, user=request.user)
             form_place = PlaceForm(request.POST, instance=event.place, prefix='place')
             form_organizer = OrganizerForm(
                 request.POST,
@@ -310,6 +310,12 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
+                
+                # save photo
+                photo = form_event.cleaned_data['photo_upload']
+                if photo:
+                    event.save(photo=photo)
+                print event.photo
 
                 # make dict (i.e. speaker_bind); bind speaker with speaker image
                 pattern = re.compile('speaker-\d+-name')
@@ -460,22 +466,21 @@ def add(request, year=None, month=None, day=None, \
         form=Reg8nConfPricingForm, 
         extra=1
     )
-
-
+    
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
             
             # single forms
-            form_event = form_class(request.POST, user=request.user)
+            form_event = form_class(request.POST, request.FILES, user=request.user)
             form_place = PlaceForm(request.POST, prefix='place')
             form_organizer = OrganizerForm(request.POST, prefix='organizer')
             form_regconf = Reg8nEditForm(request.POST, prefix='regconf')
 
             # form sets
             form_speaker = SpeakerFormSet(
-                request.POST, 
+                request.POST,
                 request.FILES,
-                queryset=Speaker.objects.none(), 
+                queryset=Speaker.objects.none(),
                 prefix='speaker'
             )
 
@@ -506,11 +511,16 @@ def add(request, year=None, month=None, day=None, \
                 speakers = form_speaker.save()
                 organizer = form_organizer.save()
                 regconf_pricing = form_regconfpricing.save()
-
+    
                 event = form_event.save(commit=False)
-
+    
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
+                
+                # save photo
+                photo = form_event.cleaned_data['photo_upload']
+                if photo:
+                    event.save(photo=photo)
                 
                 for speaker in speakers:
                     speaker.event = [event]
@@ -534,7 +544,6 @@ def add(request, year=None, month=None, day=None, \
                 event.place = place
                 event.registration_configuration = regconf
                 event.save()
-
 
                 EventLog.objects.log(
                     event_id =  171000, # add event
@@ -1407,10 +1416,10 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     event = get_object_or_404(Event, pk=id)
     registrants_count = 1
     registrant_hash = hash
-
+    
     if reg8n_id:
         registration = get_object_or_404(Registration, event=event, pk=reg8n_id)
-
+    
         is_permitted = has_perm(request.user, 'events.view_registration', registration)
         is_registrant = request.user in [r.user for r in registration.registrant_set.all()]
 
@@ -1693,3 +1702,80 @@ def copy(request, id):
     messages.add_message(request, messages.INFO, 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % new_event.title)
     
     return redirect('event.edit', id=new_event.id)
+    
+@login_required
+def minimal_add(request, form_class=PendingEventForm, template_name="events/minimal_add.html"):
+    """
+    Minimal add for events. Events created here require admin approval.
+    This does not require users to have the add_event permission.
+    The minimaladdform setting must be enabled for this form to be active.
+    """
+    # check if this form is enabled for use.
+    active = get_setting('module', 'events', 'minimaladdform')
+    # raise 404 if form not active
+    if not active:
+        raise Http404
+        
+    if request.method == "POST":
+        form = form_class(request.POST, request.FILES, user=request.user)
+        event = form.save(commit=False)
+        
+        # update all permissions and save the model
+        event = update_perms_and_save(request, form, event)
+        
+        # place event into pending queue
+        event.status = 0
+        event.status_detail = 'pending'
+        event.save()
+        
+        # save photo
+        photo = form.cleaned_data['photo_upload']
+        if photo: event.save(photo=photo)
+        
+        messages.add_message(request, messages.INFO,
+            'Your event submission has been received. It is now subject to approval.')
+        return redirect('events')
+    else:
+        form = form_class(user=request.user)
+        
+    return render_to_response(template_name, {
+        'form': form,
+        }, context_instance=RequestContext(request))
+
+@login_required
+def pending(request, template_name="events/pending.html"):
+    """
+    Show a list of pending events to be approved.
+    """
+    if not is_admin(request.user):
+        raise Http403
+        
+    events = Event.objects.search(status=0, status_detail='pending')
+    
+    return render_to_response(template_name, {
+        'events': events,
+        }, context_instance=RequestContext(request))
+
+@login_required
+def approve(request, id, template_name="events/approve.html"):
+    """
+    Approve a selected event
+    """
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    event = get_object_or_404(Event, pk=id)
+    
+    if request.method == "POST":
+        event.status = True
+        event.status_detail = 'active'
+        event.save()
+        
+        messages.add_message(request, messages.INFO, 'Successfully approved %s' % event)
+        
+        return redirect('event', id=id)
+    
+    return render_to_response(template_name, {
+        'event': event,
+        }, context_instance=RequestContext(request))

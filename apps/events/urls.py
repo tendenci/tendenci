@@ -97,12 +97,17 @@ urlpatterns = patterns('events',
         {'roster_view':'total'},
         name="event.registrant.export.total"
     ),
-
+    
+    # pending events
+    url(r'^minimal_add/$', 'views.minimal_add', name='event.minimal_add'),
+    url(r'^pending/$', 'views.pending', name='event.pending'),
+    url(r'^pending/(?P<event_id>\d+)/approve/$', 'views.approve', name='event.approve'),
+    
     url(r'^registrants/(?P<id>\d+)/$', 'views.registrant_details', name="event.registrant"),
-
+    
     # email registrants
     url(r'^message/(?P<event_id>\d+)/$', 'views.message_add', name='event.message'),
-
-    # event types
+    
+    # event types, need to be the last in the urls
     url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
 )
