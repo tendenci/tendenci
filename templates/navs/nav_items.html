@@ -15,24 +15,24 @@
 
 <div class="t">
 	{% nav_nav request.user nav %}
-    <h1>{% trans "Items" %} for {{ nav.title }}</h1>
     
     <div class="nav-wrap">
         <div class="nav-edit-menu">
-            <h2>{{ page_select.pages.label }}</h2>
-            Search:<input id="search-box" type="text">
+            <h3>{{ page_select.pages.label }} {% trans 'list' %}</h3>
+            <p>{% trans 'Select pages below to be added to' %} {{ nav.title }}. {% trans 'Use the seach box to filter the list of pages' %}.</p>
+            {% trans 'Search' %}: <input id="navs-search-box" type="text" />
             <form method="post" action="{% url navs.page_select %}" id="page-select">
                 <div class="forms">{% csrf_token %}
                 <div class="page-select">
                     {{ page_select.pages }}
                 </div>
-                <p>Select pages above to be added to Main Nav</p>
-                <input class="nav-add" type="submit" value="{% trans 'Add to' %} {{ nav.title }}" />
+                <input class="nav-add" type="submit" value="{% trans 'Add selected pages to' %} {{ nav.title }}" />
                 </div>
             </form>
-            <input type="submit" id="add-custom" value="Add a Custom Navigation Item">
+            <a id="add-custom" >{% trans 'Add a Custom Navigation Item' %}</a>
         </div>
         <div class="nav-edit-content">
+        <h1>{% trans "Items" %} for {{ nav.title }}</h1>
             <form method="post" action="">{% csrf_token %}
                 {{ formset.management_form }}
                 <div id="nav-items">
@@ -40,16 +40,14 @@
                 <div class="nav-item" {% if forloop.first %}id="first-item"{% endif %}>
                     <input type="hidden" name="form-{{ forloop.counter0 }}-id" id="id_form-{{ forloop.counter0 }}-id" /> 
                     <a href="#" class="nav-item-label">
-                        <b>+ {{ form.instance.label }}</b>
+                        + <span class="linklabel">{{ form.instance.label }}</span>&nbsp;<span class="helpertext">({% trans 'edit' %})</span>
                     </a>
                     <a href="#" class="nav-move-right">&rarr;</a>
                     <a href="#" class="nav-move-left">&larr;</a>
+                    {% if form.errors %}
+                        <div class="errors">{{ form.errors }}</div>
+                    {% endif %}
                     <div class="nav-item-detail">
-                        {% if form.non_field_errors %}
-                            <div class="errors">
-                                {{ form.non_field_errors }}
-                            </div>
-                        {% endif %}
                         <table>
                         <tr>
                         <td>
@@ -60,9 +58,9 @@
                                     </div>
                                 {% endif %}
                                 {% if form.instance.page %}
-                                    URL <input class="url-field" disabled="disabled" type="text" value="{{ form.instance.page.get_absolute_url }}">
+                                    <label class="small-label">{% trans 'URL' %}</label> <input class="url-field" disabled="disabled" type="text" value="{{ form.instance.page.get_absolute_url }}">
                                 {% else %}
-                                    {{ form.url.label }}
+                                    <label class="small-label">{{ form.url.label }}</label>
                                     {{ form.url }}
                                 {% endif %}
                             </div>
@@ -72,7 +70,7 @@
                                         {{ form.label.errors }}
                                     </div>
                                 {% endif %}
-                                {{ form.label.label }}
+                                <label class="small-label">{{ form.label.label }}</label>
                                 {{ form.label }}
                             </div>
                         </div>
@@ -84,7 +82,7 @@
                                         {{ form.title.errors }}
                                     </div>
                                 {% endif %}
-                                {{ form.title.label }}
+                                <label>{{ form.title.label }}</label>
                                 {{ form.title }}
                             </div>
                             <div class="nav-item-field">
@@ -93,7 +91,7 @@
                                         {{ form.css.errors }}
                                     </div>
                                 {% endif %}
-                                {{ form.css.label }}
+                                <label>{{ form.css.label }}</label>
                                 {{ form.css }}
                             </div>
                         </td>
@@ -104,13 +102,15 @@
                             <div class="level">{{ form.level }}</div>
                             {{ form.page }}
                         </div>
-                        <a href="#" class="item-delete">Remove</a>
+                        <a href="#" class="item-delete">{% trans 'Remove' %}</a>
                     </div>
                 </div>
             {% endfor %}
             </div>
-            <input type="submit" value="Save">
+            
+            <input type="submit" id="save-all" value="{% trans 'Save All Navigation items' %}">
             </form>
+            
         </div>
         <div style="clear:both"></div>
         <!-- The next div is a base template for the form in form sets -->
@@ -124,21 +124,21 @@
                 <tr>
                 <td>
                 <div class="nav-item-field"> 
-                    URL
+                    <label class="small-label">{% trans 'URL' %}</label>
                     <input class="url-field" id="id_form-0-url" type="text" name="form-0-url" maxlength="200" > 
                 </div> 
                 <div class="nav-item-field">
-                    Label
+                    <label class="small-label">{% trans 'Label' %}</label>
                     <input id="id_form-0-label" type="text" name="form-0-label" maxlength="100" /> 
                 </div> 
                 </td>
                 <td>
                 <div class="nav-item-field">
-                    Title Attribute
+                    <label>{% trans 'Title Attribute' %}</label>
                     <input id="id_form-0-title" type="text" name="form-0-title" maxlength="100" /> 
                 </div> 
                 <div class="nav-item-field">
-                    CSS Class
+                    <label>{% trans 'CSS Class' %}</label>
                     <input id="id_form-0-css" type="text" name="form-0-css" maxlength="100" /> 
                 </div> 
                 </td>
@@ -153,7 +153,7 @@
                     </div>
                     <input type="text" name="form-0-page" id="id_form-0-page" /> 
                 </div> 
-                <a class="item-delete">Remove</a> 
+                <a class="item-delete">{% trans 'Remove' %}</a> 
             </div> 
         </div> 
     </div>
@@ -164,7 +164,7 @@
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript">
-        $('#search-box').keypress(function(){
+        $('#navs-search-box').keypress(function(){
             // hide all pages that do not match search-box's value
             val = $('#search-box').val();
             pages = $('.page-select li');
@@ -217,11 +217,17 @@
         apply_toggle = function(thing){
             thing.click(function(){
                 $(this).parent().find('.nav-item-detail').toggle();
+                $(this).find('.linklabel').html($(this).parent().find('input[name*="-label"]').val());
                 str = $(this).html();
+                console.log($(this).find('.linklabel').html());
+                help_str = $(this).find(".helpertext").html();
+                if (str.indexOf("-") >= 0) {
+                    $(this).html(str.replace('-', '+'));
+                    $(this).find(".helpertext").html(help_str.replace('collapse', 'edit'));
+                }
                 if (str.indexOf("+") >= 0) {
                     $(this).html(str.replace('+', '-'));
-                } else {
-                    $(this).html(str.replace('-', '+'));
+                    $(this).find(".helpertext").html(help_str.replace('edit', 'collapse'));
                 }
                 return false;
             });
@@ -310,6 +316,7 @@
                     clone.find('#id_form-0-level').attr('id', 'id_form-' + form_number + '-level');
                     
                     //apply the click effects
+                    clone.find('.nav-item-label').html(clone.find('.nav-item-label').html()+"&nbsp;<span class='helpertext'>(edit)</span>");
                     apply_toggle(clone.find('.nav-item-label'));
                     apply_delete(clone.find('.item-delete'));
                     apply_move_left(clone.find('.nav-move-left'));
@@ -375,6 +382,7 @@
             clone.find('#id_form-0-url').attr('id', 'id_form-' + form_number + '-url');
             
             //apply the click effects
+            clone.find('.nav-item-label').html("- <span class='linklabel'>Item " + (form_number+1) + "</span>&nbsp;<span class='helpertext'>(collapse)</span>");
             apply_toggle(clone.find('.nav-item-label'));
             apply_delete(clone.find('.item-delete'));
             apply_move_left(clone.find('.nav-move-left'));
