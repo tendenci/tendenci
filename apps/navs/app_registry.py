@@ -14,4 +14,4 @@ class NavRegistry(CoreRegistry):
         'search': lazy_reverse('navs.search'),
     }
 
-#site.register(Nav, NavRegistry)
+site.register(Nav, NavRegistry)
