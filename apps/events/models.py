@@ -738,7 +738,7 @@ class Event(TendenciBaseModel):
     
     @property
     def photo(self):
-        if self.image.file:
+        if self.image:
             return self.image.file
         return None
 
