@@ -1724,7 +1724,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
         event = update_perms_and_save(request, form, event)
         
         # place event into pending queue
-        event.status = 0
+        event.status = False
         event.status_detail = 'pending'
         event.save()
         
@@ -1750,14 +1750,14 @@ def pending(request, template_name="events/pending.html"):
     if not is_admin(request.user):
         raise Http403
         
-    events = Event.objects.search(status=0, status_detail='pending')
+    events = Event.objects.search(status=False, status_detail='pending')
     
     return render_to_response(template_name, {
         'events': events,
         }, context_instance=RequestContext(request))
 
 @login_required
-def approve(request, id, template_name="events/approve.html"):
+def approve(request, event_id, template_name="events/approve.html"):
     """
     Approve a selected event
     """
@@ -1765,7 +1765,7 @@ def approve(request, id, template_name="events/approve.html"):
     if not is_admin(request.user):
         raise Http403
     
-    event = get_object_or_404(Event, pk=id)
+    event = get_object_or_404(Event, pk=event_id)
     
     if request.method == "POST":
         event.status = True
@@ -1774,7 +1774,7 @@ def approve(request, id, template_name="events/approve.html"):
         
         messages.add_message(request, messages.INFO, 'Successfully approved %s' % event)
         
-        return redirect('event', id=id)
+        return redirect('event', id=event_id)
     
     return render_to_response(template_name, {
         'event': event,
