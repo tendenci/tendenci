@@ -25,6 +25,7 @@
     	<form action="{% url event.minimal_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
     	<div class="forms">
     		{{ form|styled_form }}
+            {{ form_place|styled_form }}
 			<input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL 'Event' %}" />
 		</div>
         </form>
@@ -40,6 +41,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/formset.js"></script>
     <script type="text/javascript">
 		var slugit = new Slugify({
 			input_element : 'input#id_title',
