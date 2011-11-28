@@ -1717,29 +1717,40 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
         raise Http404
         
     if request.method == "POST":
-        form = form_class(request.POST, request.FILES, user=request.user)
-        event = form.save(commit=False)
+        form = form_class(request.POST, request.FILES, user=request.user, prefix="event")
+        form_place = PlaceForm(request.POST, prefix="place")
         
-        # update all permissions and save the model
-        event = update_perms_and_save(request, form, event)
-        
-        # place event into pending queue
-        event.status = False
-        event.status_detail = 'pending'
-        event.save()
-        
-        # save photo
-        photo = form.cleaned_data['photo_upload']
-        if photo: event.save(photo=photo)
-        
-        messages.add_message(request, messages.INFO,
-            'Your event submission has been received. It is now subject to approval.')
-        return redirect('events')
+        if form.is_valid() and form_place.is_valid():
+            event = form.save(commit=False)
+            
+            # update all permissions and save the model
+            event = update_perms_and_save(request, form, event)
+            
+            # save place
+            place = form_place.save()
+            event.place = place
+            
+            # place event into pending queue
+            event.status = False
+            event.status_detail = 'pending'
+            event.save()
+            
+            # save photo
+            photo = form.cleaned_data['photo_upload']
+            if photo: event.save(photo=photo)
+            
+            messages.add_message(request, messages.INFO,
+                'Your event submission has been received. It is now subject to approval.')
+            return redirect('events')
+        print "form", form.errors
+        print "form_place", form_place.errors
     else:
-        form = form_class(user=request.user)
+        form = form_class(user=request.user, prefix="event")
+        form_place = PlaceForm(prefix="place")
         
     return render_to_response(template_name, {
         'form': form,
+        'form_place': form_place,
         }, context_instance=RequestContext(request))
 
 @login_required

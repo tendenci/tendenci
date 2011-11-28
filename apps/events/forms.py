@@ -572,7 +572,7 @@ class MessageAddForm(forms.ModelForm):
         super(MessageAddForm, self).__init__(*args, **kwargs)
 
 class PendingEventForm(EventForm):
-     class Meta:
+    class Meta:
         model = Event
         fields = (
             'title',
@@ -600,3 +600,14 @@ class PendingEventForm(EventForm):
                       'legend': ''
                       }),
                     ]
+                    
+    def __init__(self, *args, **kwargs):
+        super(PendingEventForm, self).__init__(*args, **kwargs)
+        
+        if self.instance.pk:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+            
+        if 'status_detail' in self.fields:
+            self.fields.pop('status_detail')
