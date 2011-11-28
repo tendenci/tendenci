@@ -47,17 +47,23 @@ def api_rp(request):
         return HttpResponse('')
     
     method = data.get('api_method', '')
-    if method == 'api_add_rp':
-        from recurring_payments.utils import api_add_rp
-        success, ret_data = api_add_rp(data)
-    elif method == 'api_get_rp_token':
-        from recurring_payments.utils import api_get_rp_token
-        success, ret_data = api_get_rp_token(data)
-    elif method == 'api_verify_rp_payment_profile':
-        from recurring_payments.utils import api_verify_rp_payment_profile
-        success, ret_data = api_verify_rp_payment_profile(data)
+    if method == 'api_rp_setup':
+        from recurring_payments.utils import api_rp_setup
+        success, ret_data = api_rp_setup(data)
     else:
         return  HttpResponse('')
+        
+#    if method == 'api_add_rp':
+#        from recurring_payments.utils import api_add_rp
+#        success, ret_data = api_add_rp(data)
+#    elif method == 'api_get_rp_token':
+#        from recurring_payments.utils import api_get_rp_token
+#        success, ret_data = api_get_rp_token(data)
+#    elif method == 'api_verify_rp_payment_profile':
+#        from recurring_payments.utils import api_verify_rp_payment_profile
+#        success, ret_data = api_verify_rp_payment_profile(data)
+#    else:
+#        return  HttpResponse('')
         
     if success:
         ret_data.update(result_code_success)
