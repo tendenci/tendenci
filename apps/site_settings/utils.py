@@ -94,7 +94,7 @@ def get_setting(scope, scope_category, name):
             }
             setting = Setting.objects.get(**filters)
             cache_setting(setting.scope, setting.scope_category,setting.name, setting)
-        except Setting.DoesNotExist:
+        except:
             setting = None
     
     #check if the setting has been set and evaluate the value
