@@ -43,7 +43,7 @@ class RecurringPayment(models.Model):
     customer_profile_id = models.CharField(max_length=100, default='')
     user = models.ForeignKey(User, related_name="recurring_payment_user",
                              verbose_name=_('Customer'),  null=True)
-    url = models.CharField(_('Website'), max_length=100, default='', blank=True, null=True)
+    url = models.CharField(_('Website URL'), max_length=100, default='', blank=True, null=True)
     description = models.CharField(_('Description'), max_length=100, help_text="Use a short term, example: web hosting")
     # with object_content_type and object_content_id, we can apply the recurring 
     # payment to other modules such as memberships, jobs, etc.
