@@ -9,9 +9,14 @@ from dateutil.relativedelta import relativedelta
 from emails.models import Email
 from site_settings.utils import get_setting
 from profiles.models import Profile
-from recurring_payments.models import RecurringPayment, PaymentProfile, RecurringPaymentInvoice
+from recurring_payments.models import (RecurringPayment, 
+                                       PaymentProfile, 
+                                       RecurringPaymentInvoice,
+                                       PaymentTransaction)
 from recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
 from recurring_payments.authnet.utils import get_token
+from recurring_payments.authnet.utils import payment_update_from_response
+from payments.models import Payment
 
 UNSUCCESSFUL_TRANS_CODE = ['E00027']
         
@@ -286,9 +291,193 @@ def run_a_recurring_payment(rp, verbosity=0):
         rp.outstanding_balance = rp.get_outstanding_balance()
         rp.save()
         
-    return num_processed            
-            
-            
+    return num_processed  
+
+
+def api_rp_setup(data): 
+    """Create a recurrring payment account. Accepted format: json
+    
+    Input fields:
+        email - required
+        description - required
+        amount - required
+        cp_id - customer profile id, required
+        pp_id - customer payment profile id, required
+        billing_cycle_start_dt - required
+        billing_cycle_end_dt - required
+        response_str - required
+        login_name 
+        login_password
+        url 
+        first_name
+        last_name
+          
+        
+        billing_period - optional, default to 'month'
+        billing_frequency - optional, default to 1
+        billing_start_dt - optional, default to today
+        num_days - optional, default to 0
+        has_trial_period - optional, default to False
+        trial_period_start_dt - optional, default to today
+        trial_period_end_dt - optional, default to today
+        trial_amount - optional, default to 0
+        
+    Output:
+        rp_id - a recurring payment id
+        rp_url - url to rp
+        username        
+        result_code
+    """
+    from decimal import Decimal
+    from django.core.validators import email_re
+    import dateutil.parser as dparser
+    from imports.utils import get_unique_username
+    
+    email = data.get('email', '')
+    description = data.get('description', '')
+    url = data.get('url')
+    payment_amount = data.get('amount', '')
+    try:
+        payment_amount = Decimal(payment_amount)
+    except:
+        payment_amount = 0
+    cp_id = data.get('cp_id')
+    pp_id = data.get('pp_id')
+    billing_cycle_start_dt = data.get('billing_cycle_start_dt')
+    if billing_cycle_start_dt:
+        billing_cycle_start_dt = dparser.parse(billing_cycle_start_dt)
+    billing_cycle_end_dt = data.get('billing_cycle_end_dt')
+    if billing_cycle_end_dt:
+        billing_cycle_end_dt = dparser.parse(billing_cycle_end_dt)
+        
+    direct_response_str = data.get('response_str')
+    
+    if not all([email_re.match(email), 
+                description,
+                payment_amount>0,
+                cp_id,
+                pp_id,
+                billing_cycle_start_dt,
+                billing_cycle_end_dt,
+                direct_response_str] 
+               ):
+        return False, {}
+    
+    # 1) get or create user
+    username = data.get('login_name')
+    
+    # check if user already exists based on email and username
+    users = User.objects.filter(email=email, username=username)
+    if users:
+        u = users[0]
+    else:
+        # create user account
+        u = User()
+        u.email=email
+        u.username = username
+        if not u.username:
+            u.username = email.split('@')[0]
+        u.username = get_unique_username(u)
+        raw_password = data.get('login_password')
+        if not raw_password:
+            raw_password = User.objects.make_random_password(length=8)
+        u.set_password(raw_password)
+        u.first_name = data.get('first_name', '')
+        u.last_name = data.get('last_name', '')
+        u.is_staff = False
+        u.is_superuser = False
+        u.save()
+        
+        profile = Profile.objects.create(
+           user=u, 
+           creator=u, 
+           creator_username=u.username,
+           owner=u, 
+           owner_username=u.username, 
+           email=u.email
+        )
+        
+    # 2) create a recurring payment account
+    rp = RecurringPayment()
+    rp.user = u
+    rp.description = description
+    rp.url = url
+    rp.payment_amount = payment_amount
+    rp.customer_profile_id = cp_id
+    rp.billing_start_dt = billing_cycle_start_dt
+    
+    has_trial_period = data.get('has_trial_period')
+    trial_period_start_dt = data.get('trial_period_start_dt')
+    trial_period_end_dt = data.get('trial_period_end_dt')
+    if has_trial_period in ['True', '1',  True, 1] and all([trial_period_start_dt,
+                                                            trial_period_end_dt]):
+        rp.has_trial_period = True
+        rp.trial_period_start_dt = dparser.parse(trial_period_start_dt) 
+        rp.trial_period_end_dt = dparser.parse(trial_period_end_dt)
+    else:
+        rp.has_trial_period = False
+        
+    rp.status_detail = 'active'
+    rp.save()
+    
+    # 3) create a payment profile account
+    payment_profile_exists = PaymentProfile.objects.filter(
+                                        customer_profile_id=cp_id,
+                                        payment_profile_id=pp_id
+                                        ).exists()
+    if not payment_profile_exists:
+        PaymentProfile.objects.create(
+                        customer_profile_id=cp_id,
+                        payment_profile_id=pp_id,
+                        )
+        
+    # 4) create rp invoice
+    billing_cycle = {'start': billing_cycle_start_dt,
+                     'end': billing_cycle_end_dt}
+    rp_invoice = rp.create_invoice(billing_cycle, billing_cycle_start_dt)
+    rp_invoice.invoice.tender(rp.user)
+    
+    # 5) create rp transaction
+    now = datetime.now()
+    payment = Payment()
+    payment.payments_pop_by_invoice_user(rp.user, 
+                                         rp_invoice.invoice, 
+                                         rp_invoice.invoice.guid)
+    payment_transaction = PaymentTransaction(
+                                    recurring_payment=rp,
+                                    recurring_payment_invoice=rp_invoice,
+                                    payment_profile_id=pp_id,
+                                    trans_type='auth_capture',
+                                    amount=payment_amount,
+                                    status=True)
+    payment = payment_update_from_response(payment, direct_response_str)
+    payment.mark_as_paid()
+    payment.save()
+    rp_invoice.invoice.make_payment(rp.user, Decimal(payment.amount))
+    rp_invoice.invoice.save()
+    
+    
+    rp_invoice.payment_received_dt = now
+    rp_invoice.save()
+    rp.last_payment_received_dt = now
+    rp.num_billing_cycle_completed += 1
+    rp.save()
+    
+    payment_transaction.payment = payment
+    payment_transaction.result_code = data.get('result_code')
+    payment_transaction.message_code = data.get('message_code')
+    payment_transaction.message_text = data.get('message_text')
+        
+    payment_transaction.save()
+    
+    site_url = get_setting('site', 'global', 'siteurl')
+
+    
+    return True, {'rp_id': rp.id,
+                  'rp_url': '%s%s' %  (site_url, 
+                                reverse('recurring_payment.view_account', args=[rp.id])),
+                  'username': rp.user.username}
+
 def api_add_rp(data):
     """Create a recurrring payment account. Accepted format: json
     
