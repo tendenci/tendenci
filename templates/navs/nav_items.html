@@ -164,9 +164,9 @@
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript">
-        $('#navs-search-box').keypress(function(){
+        $('#navs-search-box').keyup(function(){
             // hide all pages that do not match search-box's value
-            val = $('#search-box').val();
+            val = $('#navs-search-box').val();
             pages = $('.page-select li');
             for(i=0;i<pages.length;i++){
                 if($(pages[i]).html().indexOf(val)==-1){

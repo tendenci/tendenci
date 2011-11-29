@@ -1,19 +1,27 @@
+{% comment %}
+Bulletpoints Theme - header.html
+{% endcomment %}
+
 {% load theme_tags %}
+{% load nav_tags %}
     <div class="container topborder">
         <section id="header" class="center">
             <header>
-                <div id="logo"><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a></div>
+                <div id="logo">
+                    <a class="clearfix" href="/"><img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/100x100/crop/90/{% else %}http://media.tendenciapp.com/images/logo.jpg{% endif %}" />
+                    <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</h1></a>
+                </div>
                 <div id="search-box">
                     <form method="get" action="/search/">
                         <input name="q" id="q" type="text" placeholder="Search" />
-                        <input type="submit" name="Go" value="" id="search-box-submit" />
+                        <input type="submit" name="Go" value="GO" id="search-box-submit" />
                     </form>
                 </div>
                 <div id="phone">
-                    <span>123-456-7890</span>
+                    <span>{% firstof SITE_GLOBAL_SITEPHONENUMBER '123-456-7890' %}</span>
                 </div>
                 <div id="nav">
-                    <nav class="clearfix">{% theme_include "nav.html" %}</nav>
+                    {% navigation 1 %}
                 </div><!-- /#nav -->
             </header>
         </section><!-- /#header -->

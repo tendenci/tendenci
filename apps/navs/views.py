@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.forms.models import modelformset_factory
 from django.utils import simplejson as json
 
@@ -162,6 +163,31 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
         {'page_select':page_select, 'formset':formset, 'nav':nav},
         context_instance=RequestContext(request),
     )
+
+@login_required
+def delete(request, id, template_name="navs/delete.html"):
+    nav = get_object_or_404(Nav, pk=id)
+
+    if has_perm(request.user,'navs.delete_nav'):
+        if request.method == "POST":
+#             log_defaults = {
+#                 'event_id' : 583000,
+#                 'event_data': '%s (%d) deleted by %s' % (nav._meta.object_name, nav.pk, request.user),
+#                 'description': '%s deleted' % nav._meta.object_name,
+#                 'user': request.user,
+#                 'request': request,
+#                 'instance': nav,
+#             }
+#             EventLog.objects.log(**log_defaults)
+#             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % nav)
+            
+            nav.delete()
+            return HttpResponseRedirect(reverse('navs.search'))
+    
+        return render_to_response(template_name, {'nav': nav}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
 
 @login_required
 def page_select(request, form_class=PageSelectForm):

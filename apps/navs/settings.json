@@ -12,24 +12,24 @@
         "input_value": "true,false", 
         "parent_id": 0, 
         "scope": "module", 
-        "scope_category": "forms", 
+        "scope_category": "navs", 
         "store": true, 
         "updated_by": ""
     }, 
     {
-        "default_value": "Forms", 
+        "default_value": "Navs", 
         "description": "The name of the module.", 
         "data_type": "string", 
         "update_dt": "2011-11-29 13:35:06", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "label", 
-        "value": "Forms", 
+        "value": "Navs", 
         "label": "Label", 
         "input_value": "", 
         "parent_id": 0, 
         "scope": "module", 
-        "scope_category": "forms", 
+        "scope_category": "navs", 
         "store": true, 
         "updated_by": ""
     }
