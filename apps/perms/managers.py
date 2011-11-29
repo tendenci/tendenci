@@ -317,10 +317,11 @@ class TendenciBaseManager(models.Manager):
         Filter the query set for anonymous users
         """
         status_detail = kwargs.get('status_detail', 'active')
+        status = kwargs.get('status', True)
 
         sqs = sqs.filter(
             allow_anonymous_view=True,
-            status=1,
+            status=status,
             status_detail=status_detail)
         return sqs
 
@@ -339,11 +340,12 @@ class TendenciBaseManager(models.Manager):
         """
         groups = [g.pk for g in user.group_set.all()]
         status_detail = kwargs.get('status_detail', 'active')
+        status = kwargs.get('status', True)
 
         anon_q = SQ(allow_anonymous_view=True)
         user_q = SQ(allow_user_view=True)
         member_q = SQ(allow_member_view=True)
-        status_q = SQ(status=1, status_detail=status_detail)
+        status_q = SQ(status=status, status_detail=status_detail)
         user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)
 
@@ -373,10 +375,11 @@ class TendenciBaseManager(models.Manager):
         """
         groups = [g.pk for g in user.group_set.all()]
         status_detail = kwargs.get('status_detail', 'active')
+        status = kwargs.get('status', True)
 
         anon_q = SQ(allow_anonymous_view=True)
         user_q = SQ(allow_user_view=True)
-        status_q = SQ(status=1, status_detail=status_detail)
+        status_q = SQ(status=status, status_detail=status_detail)
         user_perm_q = SQ(users_can_view__in=[user.pk])
         group_perm_q = SQ(groups_can_view__in=groups)
 
@@ -401,18 +404,18 @@ class TendenciBaseManager(models.Manager):
                 user = user.impersonated_user
         return user
 
-    def _permissions_sqs(self, sqs, user, status_detail):
+    def _permissions_sqs(self, sqs, user, status, status_detail):
         from perms.utils import is_admin, is_member, is_developer
         if is_admin(user) or is_developer(user):
             sqs = sqs.all()
         else:
             if user.is_anonymous():
-                sqs = self._anon_sqs(sqs, status_detail=status_detail)
+                sqs = self._anon_sqs(sqs, status=status, status_detail=status_detail)
             elif is_member(user):
-                sqs = self._member_sqs(sqs, user,
+                sqs = self._member_sqs(sqs, user, status=status,
                     status_detail=status_detail)
             else:
-                sqs = self._user_sqs(sqs, user,
+                sqs = self._user_sqs(sqs, user, status=status,
                     status_detail=status_detail)
         return sqs
 
@@ -435,10 +438,11 @@ class TendenciBaseManager(models.Manager):
         # if the status_detail is something like "published"
         # then you can specify the kwargs to override
         status_detail = kwargs.get('status_detail', 'active')
+        status = kwargs.get('status', True)
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 
-        sqs = self._permissions_sqs(sqs, user, status_detail)
+        sqs = self._permissions_sqs(sqs, user, status, status_detail)
 
         return sqs

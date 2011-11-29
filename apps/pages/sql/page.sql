@@ -1,0 +1,3 @@
+INSERT INTO `pages_page` (`id`, `allow_anonymous_view`, `allow_user_view`, `allow_member_view`, `allow_anonymous_edit`, `allow_user_edit`, `allow_member_edit`, `create_dt`, `update_dt`, `creator_id`, `creator_username`, `owner_id`, `owner_username`, `status`, `status_detail`, `guid`, `title`, `slug`, `content`, `view_contact_form`, `design_notes`, `syndicate`, `template`, `tags`, `entity_id`, `meta_id`)
+VALUES
+	(1, 1, 0, 0, 0, 0, 0, '2011-11-22 18:09:12', '2011-11-22 18:09:12', 1, 'admin', 1, 'admin', 1, 'active', '5f501fae-1567-11e1-833f-60c547031424', 'About Us', 'about-us', '<p>This page is all about us and our website.</p>', 0, '', 0, 'default.html', '', NULL, NULL);

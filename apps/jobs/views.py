@@ -481,7 +481,7 @@ def pricing_edit(request, id, form_class=JobPricingForm, template_name="jobs/pri
 def pricing_view(request, id, template_name="jobs/pricing-view.html"):
     job_pricing = get_object_or_404(JobPricing, id=id)
 
-    if has_perm(request.user, 'jobs.add_jobpricing', job_pricing):
+    if has_perm(request.user, 'jobs.view_jobpricing', job_pricing):
         return render_to_response(template_name, {'job_pricing': job_pricing},
             context_instance=RequestContext(request))
     else:

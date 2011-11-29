@@ -74,49 +74,49 @@ def delete_settings_cache(scope, scope_category):
 def get_setting(scope, scope_category, name):
     """
         Gets a single setting value from within a scope
-        and scope category
+        and scope category.
+        Returns the value of the setting if it exists
+        otherwise it returns an empty string
     """
-    value = u''
-    keys = [SETTING_PRE_KEY, scope, 
-            scope_category, 
-            name]
+    keys = [SETTING_PRE_KEY, scope, scope_category, name]
     key = '.'.join(keys)
     
     setting = cache.get(key)
+    
+    if not setting:
+        #setting is not in the cache
+        try:
+            #try to get the setting and cache it
+            filters = {
+                'scope': scope,
+                'scope_category': scope_category,
+                'name': name
+            }
+            setting = Setting.objects.get(**filters)
+            cache_setting(setting.scope, setting.scope_category, setting.name, setting)
+        except Exception, e:
+            setting = None
+    
+    #check if the setting has been set and evaluate the value
     if setting:
         value = setting.value.strip()
-
         # convert data types
         if setting.data_type == 'boolean':
             value = value[0].lower() == 't'
         if setting.data_type == 'int':
             if value.strip(): value = int(value.strip())
             else: value = 0 # default to 0
-                            
-    if not value:
-        try:
-            filters = {
-                'scope': scope,
-                'scope_category': scope_category,
-                'name': name
-            }            
-
-            setting = Setting.objects.get(**filters)
-            cache_setting(setting.scope, setting.scope_category,setting.name,setting)
-        except:
-            setting = None
-            
-        if setting:
-            value = setting.value.strip()
-            
-            # convert data types
-            if setting.data_type == 'boolean':
-                value = value[0].lower() == 't'
-            if setting.data_type == 'int':
-                if value.strip(): value = int(value.strip())
-                else: value = 0 # default to 0
-                
-    return value
+        if setting.data_type == 'file':
+            from files.models import File as TFile
+            try:
+                tfile = TFile.objects.get(pk=value)
+            except TFile.DoesNotExist:
+                tfile = None
+            value = tfile
+        return value
+    
+    #return empty string as default
+    return u''
 
 def check_setting(scope, scope_category, name):
     #check cache first
