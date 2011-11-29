@@ -95,12 +95,20 @@ def csv_to_dict(file_path):
     col = csv_file.next()
     lst = []
 
-    for row in csv_file:
-        entry = {}
-        for i in xrange(len(col)):
-            entry[col[i]] = row[i].decode('latin-1')
-        lst.append(entry)
-    
+    try:
+        for row in csv_file:
+            entry = {}
+            for i in xrange(len(col)):
+                entry[col[i]] = row[i].decode('latin-1')
+            lst.append(entry)
+    except csv.Error as e:
+        # NULL byte error
+        # stop everything; return empty list
+        # Empty list will raise an error msg
+        # this can typically be corrected by
+        # saving the file as a .csv
+        return []
+
     return lst  # list of dictionaries
 
 def is_import_valid(file_path):
