@@ -7,8 +7,8 @@ from celery.registry import tasks
 
 from profiles.models import Profile
 
-from memberships.models import (AppEntry, AppField, AppFieldEntry,
-    MembershipType, Membership)
+from corporate_memberships.models import CorporateMembership
+from memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
 from memberships.importer.utils import parse_mems_from_csv
 
 class ImportMembershipsTask(Task):
