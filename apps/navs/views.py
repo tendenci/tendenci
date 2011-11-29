@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.forms.models import modelformset_factory
 from django.utils import simplejson as json
 
@@ -148,7 +148,12 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
                 item.save()
             cache_nav(nav)
             messages.add_message(request, messages.INFO, 'Successfully updated %s' % nav)
-            return redirect('navs.tag_test', id=nav.id)
+            
+            redirect_to = request.REQUEST.get('next', '')
+            if redirect_to:
+                return HttpResponseRedirect(redirect_to)
+            else:
+                return redirect('navs.detail', id=nav.id)
     else:
         formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('ordering'))
         
@@ -180,11 +185,3 @@ def page_select(request, form_class=PageSelectForm):
     return HttpResponse(json.dumps({
                 "error": True
             }), mimetype="text/plain")
-
-def tag_test(request, id, template_name="navs/preview_nav.html"):
-    nav = get_object_or_404(Nav, id=id)
-    return render_to_response(
-        template_name,
-        {'nav':nav},
-        context_instance=RequestContext(request),
-    )

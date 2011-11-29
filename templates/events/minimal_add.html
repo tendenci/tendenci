@@ -4,7 +4,7 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}Add{% endblock %}
+{% block title %}{{ block.super }}{% trans "Minimal Add" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,12 +18,14 @@
 <div class="t">
     {% event_nav request.user %}
     
-    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Add" %}</h1>
-
+    <h1>{% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Minimal Add" %}</h1>
+    <p>Adding events are subject to the approval of the Administrators.</p>
+    
     <div class="event-wrap">
-    	<form action="{% url event.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    	<form action="{% url event.minimal_add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
     	<div class="forms">
-    		{{ multi_event_forms|styled_multi_forms }}
+    		{{ form|styled_form }}
+            {{ form_place|styled_form }}
 			<input type="submit" value="Add {% firstof MODULE_EVENTS_LABEL 'Event' %}" />
 		</div>
         </form>

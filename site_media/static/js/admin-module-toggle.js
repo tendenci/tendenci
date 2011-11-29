@@ -15,6 +15,7 @@ django.jQuery('document').ready(function() {
             'Social_Auth',
             'Sites',
             'Tagging',
+            'Tastypie',
             'User_Groups'
         ];
         var content_main = django.jQuery('#content-main');

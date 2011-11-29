@@ -623,11 +623,15 @@ class Event(TendenciBaseModel):
     private = models.BooleanField() # hide from lists
     password = models.CharField(max_length=50, blank=True)
     
-    on_weekend = models.BooleanField(default=True, help_text="This event occurs on weekends")
+    on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
+    
+    external_url = models.URLField(_('External URL'), default=u'', blank=True)
+    image = models.ForeignKey('EventPhoto', 
+        help_text=_('Photo that represents this event.'), null=True, blank=True)
     
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
-
+    
     objects = EventManager()
 
     class Meta:
@@ -651,7 +655,24 @@ class Event(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.guid = str(uuid.uuid1())
+        photo_upload = kwargs.pop('photo', None)
         super(Event, self).save(*args, **kwargs)
+
+        if photo_upload and self.pk:
+            image = EventPhoto(
+                        creator = self.creator,
+                        creator_username = self.creator_username,
+                        owner = self.owner,
+                        owner_username = self.owner_username
+                    )
+
+            image.file.save(photo_upload.name, photo_upload)  # save file row
+            image.save()  # save image row
+
+            if self.image: self.image.delete()  # delete image and file row
+            self.image = image  # set image
+
+            self.save()
 
     def __unicode__(self):
         return self.title
@@ -714,3 +735,14 @@ class Event(TendenciBaseModel):
     def number_of_days(self):
         delta = self.end_dt - self.start_dt
         return delta.days
+    
+    @property
+    def photo(self):
+        if self.image:
+            return self.image.file
+        return None
+
+class EventPhoto(File):
+    @property
+    def content_type(self):
+        return 'events'

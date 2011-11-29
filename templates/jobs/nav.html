@@ -58,8 +58,8 @@
 		</ul>
 		
 	</li>
-	{% if MODULE_NEWS_ENABLED %}
-	<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
+	{% if MODULE_RESUMES_ENABLED %}
+	<li><a href="{% url resumes %}">{% firstof MODULE_NEWS_LABEL 'Resumes' %}</a></li>
 	{% endif %}
 	</ul>
 </div>

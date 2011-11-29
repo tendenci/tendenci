@@ -1,4 +1,6 @@
 import re
+import imghdr
+from os.path import splitext
 from datetime import datetime, timedelta
 
 from django import forms
@@ -23,6 +25,12 @@ from discounts.models import Discount
 
 from fields import Reg8nDtField, Reg8nDtWidget
 
+ALLOWED_LOGO_EXT = (
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.png' 
+)   
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -65,6 +73,8 @@ class EventForm(TendenciBaseForm):
 
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now())
+    
+    photo_upload = forms.FileField(label=_('Photo'), required=False)
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
@@ -79,6 +89,8 @@ class EventForm(TendenciBaseForm):
             'on_weekend',
             'timezone',
             'type',
+            'external_url',
+            'photo_upload',
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -94,6 +106,8 @@ class EventForm(TendenciBaseForm):
                                  'on_weekend',
                                  'timezone',
                                  'type',
+                                 'external_url',
+                                 'photo_upload',
                                  ],
                       'legend': ''
                       }),
@@ -123,6 +137,22 @@ class EventForm(TendenciBaseForm):
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+            
+    def clean_photo_upload(self):
+        photo_upload = self.cleaned_data['photo_upload']
+        if photo_upload:
+            extension = splitext(photo_upload.name)[1]
+            
+            # check the extension
+            if extension.lower() not in ALLOWED_LOGO_EXT:
+                raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
+            
+            # check the image header
+            image_type = '.%s' % imghdr.what('', photo_upload.read())
+            if image_type not in ALLOWED_LOGO_EXT:
+                raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
+
+        return photo_upload
             
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -541,3 +571,43 @@ class MessageAddForm(forms.ModelForm):
     def __init__(self, event_id=None, *args, **kwargs):
         super(MessageAddForm, self).__init__(*args, **kwargs)
 
+class PendingEventForm(EventForm):
+    class Meta:
+        model = Event
+        fields = (
+            'title',
+            'description',
+            'start_dt',
+            'end_dt',
+            'on_weekend',
+            'timezone',
+            'type',
+            'external_url',
+            'photo_upload',
+            )
+        
+        fieldsets = [('Event Information', {
+                      'fields': ['title',
+                                 'description',
+                                 'start_dt',
+                                 'end_dt',
+                                 'on_weekend',
+                                 'timezone',
+                                 'type',
+                                 'external_url',
+                                 'photo_upload',
+                                 ],
+                      'legend': ''
+                      }),
+                    ]
+                    
+    def __init__(self, *args, **kwargs):
+        super(PendingEventForm, self).__init__(*args, **kwargs)
+        
+        if self.instance.pk:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+            
+        if 'status_detail' in self.fields:
+            self.fields.pop('status_detail')

@@ -30,7 +30,6 @@
 		<ul id="secondary">
 			<li><a href="{% url navs.search %}">{% trans 'Navs' %}:</a></li>
 			{% if nav_object %}
-                <li><a href="{% url navs.tag_test nav_object.pk %}">{% trans "Preview" %}</a></li>
 				{% if can_edit_nav %}
                     <li><a href="{% url navs.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
                     <li><a href="{% url navs.edit_items nav_object.pk %}">{% trans "Edit Nav Items" %}</a></li>
