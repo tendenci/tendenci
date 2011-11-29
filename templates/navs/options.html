@@ -13,7 +13,7 @@
 	{% endif %}
     
     {% if can_delete %}
-        <a class="option-link delete" href="">{% trans "Delete" %}</a>			
+        <a class="option-link delete" href="{% url navs.delete opt_object.pk %}">{% trans "Delete" %}</a>			
     {% endif %}
     
 </div>
