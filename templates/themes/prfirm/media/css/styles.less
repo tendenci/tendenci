@@ -109,6 +109,7 @@ blockquote { margin: 0 0 10px 20px; }
 header { position: relative; margin: 10px 0;
     #logo { .grid(4);
         img { background-color: #ccc; width: 215px; height: 100px; float: left; }
+        h1 { text-indent: -9999px; }
     }
     #login { .grid(8); margin-bottom: 44px; height: 28px; padding: 0; text-align: right;
         form {display: block;}
@@ -125,7 +126,7 @@ nav {display: block;
     ul { list-style: none;
         li { float: left; position: relative;
             a { line-height: 40px; padding: 0 12px; background-color: transparent; display: block; color: @primary; 
-                &:hover {color: @primary }
+                &:hover { color: @primary }
             }
             ul { display: none; float: left; margin: 0; position: absolute; top: 40px; width: 148px; z-index: 99999;
                 a { height: auto; line-height: 40px; width: 120px; }
@@ -137,11 +138,13 @@ nav {display: block;
     }
 }
 
-nav { .grid(8); 
+#nav { .grid(8); }
+nav {
     ul { margin: 0; display: inline; float: right;
         li { border-right: solid 1px @primary; text-align: left;
             a { line-height: @nav-height; text-decoration: none; color: @primary; 
                 &:hover { background-color: @primary; color: @complimentary; }
+                &:visited { color: @complimentary; }
             }
             ul { top: @nav-height; 
                 a { line-height: @nav-height; background-color: @secondary; }
@@ -151,11 +154,13 @@ nav { .grid(8);
             border-right: none;
         }
     }
+    .admin-inline .admin-links {right: 0; left: auto; }
 }
 
 #footer { .center; }
 footer { color: @primary; font-size: 13px; padding: 10px 0;
     h2 { font-size: 20px; }
+    a:visited { color: @complimentary; }
     #sponsors { .grid(8);
         #sponsor-items { padding: 10px 0;}
         img { background-color: #DDD; width: 140px; height: 80px; margin-right: 10px; }

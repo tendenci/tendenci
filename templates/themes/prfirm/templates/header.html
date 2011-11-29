@@ -1,9 +1,15 @@
+{% comment %}
+PR Firm Theme - header.html
+{% endcomment %}
+
 {% load theme_tags %}
+{% load nav_tags %}
 <div class="container">
     <section id="header">
         <header>
             <div id="logo">
-                <a href="/"><img src="http://media.tendenciapp.com/images/logo.jpg" /></a>
+                <a href="/"><img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/215x100/crop/90/{% else %}http://media.tendenciapp.com/images/logo.jpg{% endif %}" />
+                <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</h1></a>
             </div>
             <div id="login">
                 {% if request.user.is_authenticated %}
@@ -17,8 +23,8 @@
                 {% endif %}
             </div>
             <div id="nav">
-                <nav>{% theme_include "nav.html" %}</nav>
-            </div>
+                {% navigation 1 %}
+            </div><!-- /#nav -->
             <div class="clear" />
         </header>
    </section><!-- /#header -->
