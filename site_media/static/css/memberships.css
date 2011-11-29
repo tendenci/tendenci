@@ -480,9 +480,12 @@ form.connect-with li {
 ------------------------------------- */
 
 #import-wrap .form-field {
-	width: 417px;
-	height: 25px;
+	width: 500px;
+	/*height: 40px;*/
 	background-color: #F7F7F7;
+}
+#import-wrap .form-field > div {
+	clear: both;
 }
 
 #import-wrap .form-field .label,
@@ -493,12 +496,7 @@ form.connect-with li {
 
 #import-wrap .form-field .label {
 	text-align: right;
-	border-bottom: 1px solid #EEE;
 	padding: 5px 10px 5px 0;
-}
-
-#import-wrap .form-field .field {
-	padding: 3px 5px 0 0;
 }
 
 #import-wrap .form-field .field select {
@@ -520,7 +518,8 @@ form.connect-with li {
 }
 
 #import-wrap form input[type="submit"]{
-	margin-top: 10px;
+	margin-top: 50px;
+	float: left;
 }
 
 #import-wrap .form-field .error {
