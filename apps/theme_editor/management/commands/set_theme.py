@@ -26,6 +26,7 @@ class Command(BaseCommand):
             ).update(value=theme_name)
             call_command('hide_settings', 'theme')
             call_command('update_settings', 'themes.%s' % theme_name.lstrip())
+            call_command('clear_cache')
         except:
             if int(options['verbosity']) > 0:
                 print "We could not update the theme because the setting or theme is not available."
