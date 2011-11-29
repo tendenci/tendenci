@@ -292,11 +292,21 @@ class AppAdmin(admin.ModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
+
+    def export_as_json(model_admin, request, queryset):
+        from django.core import serializers
+        from django.http import HttpResponse
+
+        response = HttpResponse(mimetype="text/javascript")
+        serializers.serialize('json', queryset, stream=response, indent=4)
+
+        return response
+
     inlines = (AppFieldAdmin,)
     prepopulated_fields = {'slug': ('name',)}
     form = AppForm
     add_form_template = "memberships/admin/add_form.html"
-
+    actions = [export_as_json]
 
     def log_deletion(self, request, object, object_repr):
         super(AppAdmin, self).log_deletion(request, object, object_repr)
