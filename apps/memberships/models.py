@@ -641,7 +641,6 @@ class Notice(models.Model):
 
         if isinstance(emails, basestring):
             emails = [emails]  # expecting list of emails
-        print 'emails=', emails
             
         # allowed notice types
         if notice_type == 'join':
@@ -685,8 +684,6 @@ class Notice(models.Model):
 
         # send email to admins
         recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
-
-        print 'recipients', recipients
 
         if recipients and notification:
             notification.send_emails(recipients,
