@@ -33,7 +33,7 @@ from user_groups.models import GroupMembership
 from haystack.query import SearchQuerySet
 from event_logs.models import EventLog
 from profiles.models import Profile
-
+from files.models import File
 
 
 FIELD_CHOICES = (
@@ -417,7 +417,18 @@ class MembershipArchive(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s #%s" % (self.user.get_full_name(), self.member_number)
-
+        
+class MembershipImport(models.Model):
+    app = models.ForeignKey('App')
+    creator = models.ForeignKey(User)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    
+    def get_file(self):
+        file = File.objects.get_for_model(self)[0]
+        return file
+        
+    def __unicode__(self):
+        return self.get_file().file.path
 
 NOTICE_TYPES = (
     ('join', 'Join Date'),
