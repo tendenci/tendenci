@@ -41,11 +41,9 @@
     <div class="left-border-box">
         <h2>Contact Us</h2>
         <div id="contact-info">
-            12345 Main Street</br>
-            Houston, Texas 77071<br />
-            Phone: 555-555-555<br />
-            Fax: 555-555-555<br />
-            Email: info@prfirmhouston.com
+            {% firstof SITE_GLOBAL_SITEMAILINGADDRESS '12345 Main Street</br>Houston, Texas 77071' %}<br />
+            Phone: {% firstof SITE_GLOBAL_SITEPHONENUMBER '123-456-7890' %}<br />
+            Email: {% firstof SITE_GLOBAL_SITECONTACTEMAIL|obfuscate_email 'info@prfirmhouston.com' %}
         </div>
         <div id="social-links">
             <a href="http://twitter.com/{% firstof MODULE_THEME_TWITTER 'tendenci' %}"><img alt="Find us on Twitter" src="{{ THEME_URL }}media/images/twitter.png" /></a>

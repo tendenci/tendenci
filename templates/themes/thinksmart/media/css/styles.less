@@ -128,8 +128,12 @@ blockquote { margin: 0 0 10px 20px; }
 .no-band { background-color: @no-band; padding: 0 10px; width: @no-bandwidth; margin: 0 auto; }
 
 #header { height: 178px; position: relative; }
-#logo { position: absolute; top: 24px; left: 14px; }
-#logo a { display: block; background: url('../images/logo-@{logo}.png') top center no-repeat; width: 275px; height: 55px; padding-top: 78px; font-size: 46px; text-decoration: none; text-align: center; text-transform: uppercase; color: @text; font-weight: normal; }
+#logo { position: absolute; top: 24px; left: 14px;
+    a { display: block; width: 275px; text-decoration: none; 
+        img { background-color: #ccc; width: 250px; height: 100px; }
+        h1 { font-size: 46px; text-align: center; text-transform: uppercase; color: @text; font-weight: normal; padding-top: 8px; }
+    }
+}
 #search-box { 
     position: absolute; top: 0; right: 0; width: 306px; height: 46px; background-color: @band; background-image: url('../images/search-gradient-17.png') repeat-x top left; .gradient-bg(@band, 10%);
     
@@ -151,7 +155,7 @@ nav {display: block;
                 &:hover {color: @primary }
             }
             ul { display: none; float: left; margin: 0; position: absolute; top: 40px; width: 148px; z-index: 99999;
-                a { height: auto; line-height: 20px; padding: 10px; width: 120px; }
+                a { height: auto; line-height: 40px; width: 120px; }
                 ul { left: 100%; top: 0; }
             }
         }
@@ -159,21 +163,21 @@ nav {display: block;
         li:hover > ul { display: block; }
     }
 }
-
+#nav {
 nav { padding: 0 0 0 20px; background-image: url('../images/nav-gradient-17.png') repeat-x top left; .gradient-bg(@band, 10%);
     ul { margin: 0;
         li { text-transform: uppercase;
-            a { text-decoration: none; font-size: 15px; border-right: 2px solid @bandborder; text-shadow: @background 0 1px 2px; font-weight: bold; line-height: 50px; background-image: url('../images/nav-gradient-17.png') repeat-x top left; .gradient-bg(@band, 10%);
+            a { text-decoration: none; font-size: 15px; border-right: 2px solid @bandborder; text-shadow: @background 0 1px 2px; font-weight: normal; line-height: 36px; .gradient-bg(@band, 10%);
                 &.last { border: none; }
                 &:hover { background-image: none; background-color: @bandborder; color: @bandtext; }
             }
-            ul { top: 50px; 
-                a { border: 2px solid @bandborder; border-bottom: none; margin-left: -2px;}
+            ul { top: 36px; 
+                a { line-height: 36px; border: 2px solid @bandborder; border-bottom: none; margin-left: -2px; padding: 0 12px; }
             }
         }
     }
 }
-
+}
 
 #footer { background-image: url('../images/footer-gradient-17.png') repeat-x top left; .gradient-bg(@band, 10%); }
 footer { font-size: 12px; padding: 12px 0 6px 0; text-align: center; 
