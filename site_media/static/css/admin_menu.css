@@ -73,6 +73,13 @@ html {
 	border-bottom:1px dashed #4B0D09;
 	border-right:none;
 	padding:4px 8px;
+	text-decoration: none;
+}
+
+#admin-bar li li a.setting {
+    border-bottom:1px dashed #4B0D09;
+    height: 16px;
+    width: 16px;
 }
 
 #admin-bar li li.app {
@@ -178,11 +185,11 @@ html {
 	font-size:12px;
 }
 
-/* Alt color for admin-bar 
-	#admin-bar, #admin-bar ul, #admin-bar a, #admin-bar li li, #admin-bar li li a:hover,
-	#admin-bar #admin-search-box input#admin-search-submit { background-color: #3a3; }
-	#admin-bar li li a, #admin-bar li li.app a, #admin-bar .sub { background-color: #272; }
-	*/
+/*Alt color for admin-bar
+#admin-bar, #admin-bar ul, #admin-bar a, #admin-bar li li, #admin-bar li li a:hover,
+#admin-bar #admin-search-box input#admin-search-submit { background-color: #3a3; }
+#admin-bar li li a, #admin-bar li li.app a, #admin-bar .sub { background-color: #272; }
+ */
 
 	
 /* Old styles for deprecated bottom bar
@@ -329,6 +336,7 @@ nav div.view {
 
 nav:hover div.admin-inline {
 	display:block;
+	position: relative;
 }
 
 /* Rotator Admin CSS */
