@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from dateutil.parser import parse as dt_parse
 
 from django.contrib.auth.models import User
 
@@ -86,7 +87,7 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
         
         # detect if renewal
         m['renewal'] = bool(m.get('renew_date'))
-        
+
         #update the dates
         try:
             join_dt = dt_parse(m['join_date'])
