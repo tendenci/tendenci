@@ -92,7 +92,7 @@ class PhotoSet(TendenciBaseModel):
     def __unicode__(self):
         return self.name
         
-    def get_images(self, user=None, status_detail='active'):
+    def get_images(self, user=None, status=True, status_detail='active'):
         """
         Returns the images of this photosets and filters according
         to the given user's permissions.
@@ -108,7 +108,7 @@ class PhotoSet(TendenciBaseModel):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
         
-        sqs = PhotoSet.objects._permissions_sqs(sqs, user, status_detail)
+        sqs = PhotoSet.objects._permissions_sqs(sqs, user, status, status_detail)
         
         return sqs        
 
