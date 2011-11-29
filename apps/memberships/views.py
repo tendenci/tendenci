@@ -231,28 +231,50 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
             if not entry.approval_required():
 
-                    entry.approve()
+                entry.approve()
+                # get user from the membership since it's null in the entry
+                entry.user = entry.membership.user
 
-                    membership_total = Membership.objects.filter(status=True, status_detail='active').count()
-
-                    # send "approved" notification
-                    Notice.send_notice(
-                        request = request,
-                        emails=entry.email,
-                        notice_type='approve',
-                        membership=entry.membership,
-                        membership_type=entry.membership_type,
-                    )
-
-                    # log - entry approval
-                    EventLog.objects.log(**{
-                        'event_id' : 1082101,
-                        'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, entry.judge),
-                        'description': '%s viewed' % entry._meta.object_name,
-                        'user': user,
-                        'request': request,
-                        'instance': entry,
+                membership_total = Membership.objects.filter(status=True, status_detail='active').count()
+    
+                # send "approved" notification
+                Notice.send_notice(
+                    request = request,
+                    emails=entry.email,
+                    notice_type='approve',
+                    membership=entry.membership,
+                    membership_type=entry.membership_type,
+                )
+    
+                if not user.is_authenticated():
+                    from django.core.mail import send_mail
+                    from django.utils.http import int_to_base36
+                    from django.contrib.auth.tokens import default_token_generator
+                    from site_settings.utils import get_setting
+                    token_generator = default_token_generator
+    
+                    site_url = get_setting('site', 'global', 'siteurl')
+                    site_name = get_setting('site', 'global', 'sitedisplayname')
+    
+                    # send new user account welcome email (notification)
+                    notification.send_emails([entry.user.email],'user_welcome', {
+                        'site_url': site_url,
+                        'site_name': site_name,
+                        'uid': int_to_base36(entry.user.id),
+                        'user': entry.user,
+                        'username': entry.user.username,
+                        'token': token_generator.make_token(entry.user),
                     })
+    
+                # log - entry approval
+                EventLog.objects.log(**{
+                    'event_id' : 1082101,
+                    'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, entry.judge),
+                    'description': '%s viewed' % entry._meta.object_name,
+                    'user': user,
+                    'request': request,
+                    'instance': entry,
+                })
 
             # log - entry submission
             EventLog.objects.log(**{
