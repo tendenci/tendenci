@@ -2,7 +2,7 @@ from haystack import indexes
 from haystack import site
 from invoices.models import Invoice
 
-class InvoiceIndex(indexes.RealTimeSearchIndex):
+class InvoiceIndex(indexes.SearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     object_type = indexes.CharField(model_attr='object_type', null=True)
     object_id = indexes.IntegerField(model_attr='object_id', null=True)

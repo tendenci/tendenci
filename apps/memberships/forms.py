@@ -1,38 +1,46 @@
+import os
 import sys
 import operator
 from uuid import uuid4
 from captcha.fields import CaptchaField
+from os.path import join
+from datetime import datetime
+
 from django.contrib.auth.models import User, AnonymousUser
 from django.forms.fields import CharField, ChoiceField
 from django.template.defaultfilters import slugify
 from django.forms.widgets import HiddenInput
-
-from haystack.query import SearchQuerySet
-from os.path import join
-from datetime import datetime
-
 from django.http import Http404
 from django import forms
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
 from django.core.files.storage import FileSystemStorage
+from django.conf import settings
 
+from haystack.query import SearchQuerySet
 from tinymce.widgets import TinyMCE
 
 from perms.forms import TendenciBaseForm
+from perms.utils import is_admin
 from models import MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry
 from fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from memberships.utils import csv_to_dict
 
 from widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
+
 from corporate_memberships.models import CorporateMembership, AuthorizedDomain
 from user_groups.models import Group
+from perms.forms import TendenciBaseForm
 
+from memberships.models import MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry
+from memberships.fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
+from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
+from memberships.utils import csv_to_dict, is_import_valid
+from memberships.widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
-
 
 type_exp_method_fields = (
     'period_type', 'period', 'period_unit', 'rolling_option',
@@ -623,10 +631,15 @@ class AppEntryForm(forms.ModelForm):
         """
 
         self.app = app
-        self.form_fields = app.fields.visible()
+        
         self.types_field = app.membership_types
         self.user = kwargs.pop('user', None) or AnonymousUser
         self.corporate_membership = kwargs.pop('corporate_membership', None) # id; not object
+        
+        if is_admin(self.user):
+            self.form_fields = app.fields.visible()
+        else:
+            self.form_fields = app.fields.non_admin_visible()
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
@@ -654,7 +667,7 @@ class AppEntryForm(forms.ModelForm):
         for field in self.form_fields:
             if field.field_type == 'corporate_membership_id' and not self.corporate_membership:
                 continue
-                
+
             field_key = "field_%s" % field.id
             field_class, field_widget = CLASS_AND_WIDGET[field.field_type]
             field_class = getattr(forms, field_class)

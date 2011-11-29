@@ -62,6 +62,11 @@
 	        
             <!-- event description -->
             <div class="content">
+                {% if event.image %}
+                <div class="photo">
+                    <img src="{% image_url event.image size=300x300 crop=True quality=88 %}" title="{{ event.title }}" />
+                </div>
+                {% endif %}
                 <div class="event-desc">{{ event.description|safe }}</div>
             </div>
 
@@ -149,7 +154,7 @@
 
             {% if event.place.address and event.place.city_state %}
             <div class="map">
-<iframe width="250" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?q={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?q={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small>
+<iframe width="250" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small>
             </div>
             {% endif %}
             {% url event event.pk as the_url %}

@@ -74,6 +74,7 @@ def get_oembed(url, format='json', maxwidth=None, maxheight=None, thumbnail_url=
 
     # gather url, format, maxwidth or maxheight options for embed sizing
     params = {"url": url}
+    params['key'] = '438be524153e11e18f884040d3dc5c07'
     if maxwidth is not None:
         params['maxwidth'] = maxwidth
     if maxheight is not None:

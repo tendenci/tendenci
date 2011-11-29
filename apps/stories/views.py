@@ -1,6 +1,6 @@
 import os.path
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -118,8 +118,12 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
                 EventLog.objects.log(**log_defaults)
                 
                 messages.add_message(request, messages.INFO, 'Successfully updated %s' % story)
-                                                                 
-                return HttpResponseRedirect(reverse('story', args=[story.pk]))             
+                
+                redirect_to = request.REQUEST.get('next', '')
+                if redirect_to:
+                    return HttpResponseRedirect(redirect_to)
+                else:
+                    return redirect('story', id=story.pk)             
         else:
             form = form_class(instance=story, user=request.user)
     

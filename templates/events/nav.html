@@ -1,9 +1,12 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load site_setting_tags %}
 {% load i18n %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user events.add_event as can_add_event %}
+{% get_setting module events minimaladdform as can_request_event %}
+{% is_admin user as admin %}
 
 {% if nav_object %}
 	{% has_perm user events.view_event nav_object as can_view_event %}
@@ -41,22 +44,31 @@
 				<li><a href="{% url event.registrant.roster nav_object.pk %}">{% trans "Roster" %}</a></li>
 				<li><a href="{% url event.message nav_object.pk %}">{% trans "E-mail" %}</a></li>
 				{% endif %}
-                
-                {% if can_add_event %}
-                <li><a href="{% url event.copy nav_object.pk %}">{% trans "Copy" %}</a></li>
+                {% if admin and event.status == 0 %}
+                    <li><a href="{% url event.approve nav_object.pk %}">{% trans "Approve" %}</a></li>
                 {% endif %}
-
+                {% if can_add_event %}
+                    <li><a href="{% url event.copy nav_object.pk %}">{% trans "Copy" %}</a></li>
+                {% endif %}
+                
 				{% if can_delete_event %}
-				<li><a class="delete" href="{% url event.delete nav_object.pk %}">{% trans "Delete" %}</a></li>
+                    <li><a class="delete" href="{% url event.delete nav_object.pk %}">{% trans "Delete" %}</a></li>
 				{% endif %}
 
 			{% endif %}
 			<li><a href="{% url event.search %}">{% trans "Search" %}</a></li>
 			<li><a href="{% url event.month %}">{% trans "Month" %}</a></li>
 			{% if can_add_event %}
-			<li><a href="{% url event.add %}">{% trans "Add" %}</a></li>
+                <li><a href="{% url event.add %}">{% trans "Add" %}</a></li>
+            {% else %}
+                {% if can_request_event %}
+                    <li><a href="{% url event.minimal_add %}">{% trans "Add" %}</a></li>
+                {% endif %}
 			{% endif %}
 			<li><a href="{% url event.types %}">{% trans "Types" %}</a></li>
+            {% if admin %}
+                <li><a href="{% url event.pending %}">{% trans "Pending" %}</a></li>
+            {% endif %}
             {% if nav_object %}
                 <li><a href="{% url event.ics_single nav_object.pk %}">{% trans "Export" %}</a></li>
             {% else %}

@@ -66,7 +66,11 @@ class NavItem(models.Model):
                 ordering__lt=sibling.ordering).order_by('ordering')
             return children
         else:
-            return None
+            # get children for the last item in a list
+            children = NavItem.objects.filter(nav=self.nav,
+                level = self.level+1,
+                ordering__gt=self.ordering).order_by('ordering')
+            return children
     
     @property
     def next(self):

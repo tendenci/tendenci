@@ -60,7 +60,10 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     
 def search(request, template_name="invoices/search.html"):
     query = request.GET.get('q', None)
-    invoices = Invoice.objects.search(query)
+    if query:
+        invoices = Invoice.objects.search(query)
+    else:
+        invoices = Invoice.objects.all()
     if is_admin(request.user):
         invoices = invoices.order_by('-create_dt')
     else:
