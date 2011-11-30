@@ -98,7 +98,8 @@ class RegistrantManager(TendenciBaseManager):
         Uses haystack to query events.
         Returns a SearchQuerySet
         """
-        sqs = SearchQuerySet()
+        #sqs = SearchQuerySet()
+        sqs = kwargs.pop('sqs', SearchQuerySet())
         event = kwargs.get('event')
         
         if event:

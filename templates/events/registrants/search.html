@@ -125,12 +125,16 @@
 		    <h1>{% trans "Event Registrant Search" %}</h1>  
 		
 			{% registrant_search event %}
+			
+			{% if query %}
+			<div style="color: #828282; font-size:0.9em; font-style: italic;">{{ INDEX_UPDATE_NOTE }}</div>
+			{% endif %}
 		
 		    {% autopaginate registrants 10 %}
 			
 			<div class="events-wrap">
 		    {% for registrant in registrants %}
-				{% with registrant.object as registrant %}
+				{% with registrant|get_object as registrant %}
 		    	{# has_perm user events.view_event event as can_view #}
 		    	{# if can_view #}
 				<div class="event-wrap-search">
