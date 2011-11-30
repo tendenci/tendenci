@@ -62,7 +62,7 @@ class EventTypeIndex(indexes.RealTimeSearchIndex):
     primary_key = indexes.CharField(model_attr='pk')
 
 
-class RegistrantIndex(indexes.RealTimeSearchIndex):
+class RegistrantIndex(indexes.SearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     event_pk = indexes.IntegerField(model_attr='registration__event__pk')
     cancel_dt = indexes.DateTimeField(model_attr='cancel_dt', null=True)

@@ -37,7 +37,8 @@ def search(request, template_name="photos/search.html"):
         'description': '%s searched' % 'Image',
         'user': request.user,
         'request': request,
-        'source': 'photos'
+        'source': 'photos',
+        'query': query
     }
     EventLog.objects.log(**log_defaults)
     

@@ -230,7 +230,8 @@ def customers(request, template_name="recurring_payments/customers.html"):
                     'total_customers': total_customers,
                     'total_amount_received': total_amount_received,
                     'total_amount_unpaid': total_amount_unpaid,
-                    'total_amount_past_due': total_amount_past_due
+                    'total_amount_past_due': total_amount_past_due,
+                    'query': query
                                               }, 
         context_instance=RequestContext(request))
 
