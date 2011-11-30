@@ -56,7 +56,7 @@ def init_signals():
 
     for app in apps:
 
-        if app['model']._meta.module_name == 'file':
+        if app['model']._meta.module_name in ('file', 'invoice',):
             continue  # go to next app
 
         signals.post_save.connect(save_files, sender=app['model'], weak=False)

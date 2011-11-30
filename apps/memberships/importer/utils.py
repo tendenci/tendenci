@@ -67,7 +67,11 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
             if first_name or last_name:
                 m['full_name'] = "%s %s" % (first_name, last_name)
         m['email'] = email
-                
+
+        # skip importing a record if
+        # membership type does not exist
+        # membership record already exists
+
         #check if should be skipped or not
         m['skipped'] = False
         try:
