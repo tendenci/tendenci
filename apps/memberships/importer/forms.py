@@ -74,8 +74,8 @@ class ImportMapForm(forms.Form):
             
                 if slugify(app_field.label) == 'membership-type':
                     continue  # skip membership type
-                
-                self.fields[app_field.label] = forms.ChoiceField(**{
+
+                self.fields[app_field.field_name] = forms.ChoiceField(**{
                     'label':app_field.label,
                     'choices': choice_tuples,
                     'required': False,
@@ -84,4 +84,4 @@ class ImportMapForm(forms.Form):
                 # compare label with choices
                 # if label matches choice; set initial
                 if app_field.label in choices:
-                    self.fields[app_field.label].initial = app_field.label
+                    self.fields[app_field.field_name].initial = app_field.label
