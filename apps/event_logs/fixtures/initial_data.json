@@ -1609,6 +1609,51 @@
             "rgb_color": "85,170,204", 
             "hex_color": "55AACC"
         }
+    },         
+    {
+        "pk": 180, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1002100, 
+            "rgb_color": "17,153,51", 
+            "hex_color": "119933"
+        }
+    },
+    {
+        "pk": 181, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1002200, 
+            "rgb_color": "238,221,85", 
+            "hex_color": "EEDD55"
+        }
+    },
+    {
+        "pk": 182, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1002300, 
+            "rgb_color": "170,34,34", 
+            "hex_color": "AA2222"
+        }
+    },
+    {
+        "pk": 183, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1002400, 
+            "rgb_color": "204,85,238", 
+            "hex_color": "CC55EE"
+        }
+    },
+    {
+        "pk": 184, 
+        "model": "event_logs.eventlogcolor", 
+        "fields": {
+            "event_id": 1002500, 
+            "rgb_color": "85,170,204", 
+            "hex_color": "55AACC"
+        }
     },
     {
         "pk": 1, 
@@ -2058,6 +2103,15 @@
             "event_id": 1120000,
             "source": "recurring_payments",
             "hex_color": "1A7731"
+        }
+    },
+    {
+        "pk": 51,
+        "model": "event_logs.eventlogbasecolor",
+        "fields": {
+            "event_id": 1002000,
+            "source": "tendenci_guide",
+            "hex_color": "A20900"
         }
     }
 ]
