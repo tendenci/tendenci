@@ -1,6 +1,0 @@
-{% load base_filters %}
-<ul>
-    {% for guide in guides %}
-    <li><a {% ifequal guide slug %}class="active" {% endifequal %}href="{% url tendenci_guide.guide_page guide %}">{{ guide|split_str:"-"|join:" "|title }}</a></li>
-    {% endfor %}
-</ul>
