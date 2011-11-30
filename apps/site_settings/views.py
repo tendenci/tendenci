@@ -1,8 +1,9 @@
 import re
 import os
 from django.shortcuts import render_to_response
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.template import RequestContext
+from django.contrib import messages
 
 from base.http import Http403
 from site_settings.models import Setting
@@ -58,6 +59,11 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
                 call_command('touch_settings')
                 #setattr(django_settings, 'LANGUAGE_CODE', lang)
 
+            messages.add_message(request, messages.INFO, 'Successfully saved %s settings' % scope_category)
+
+            redirect_to = request.REQUEST.get('next', '')
+            if redirect_to:
+                return HttpResponseRedirect(redirect_to)
 
     else:
         form = build_settings_form(request.user, settings)()
