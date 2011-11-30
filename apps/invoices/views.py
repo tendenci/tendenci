@@ -73,7 +73,7 @@ def search(request, template_name="invoices/search.html"):
         else:
             raise Http403
     
-    return render_to_response(template_name, {'invoices': invoices}, 
+    return render_to_response(template_name, {'invoices': invoices, 'query': query}, 
         context_instance=RequestContext(request))
     
 def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adjust.html"):

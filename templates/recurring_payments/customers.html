@@ -74,6 +74,9 @@
 	<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
 	<input type="submit" name="search" value="Search" />
 	</form>
+	{% if query %}
+	<div style="color: #828282; font-size:0.9em; font-style: italic;">{{ INDEX_UPDATE_NOTE }}</div>
+	{% endif %}
 	</div>
 	
 	

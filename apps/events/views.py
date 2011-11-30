@@ -1134,15 +1134,27 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
         except:
             raise Http404
     elif hash:
-        sqs = SearchQuerySet()
-        sqs = sqs.models(Registrant)
-        sqs = sqs.filter(event_pk=event.pk)
-        sqs = sqs.auto_query(sqs.query.clean(hash))
+#        sqs = SearchQuerySet()
+#        sqs = sqs.models(Registrant)
+#        sqs = sqs.filter(event_pk=event.pk)
+#        sqs = sqs.auto_query(sqs.query.clean(hash))
+#        sqs = sqs.order_by("-update_dt")
+#
+#        try:
+#            registrant = sqs[0].object
+#        except:
+#            raise Http404
+
+        sqs = Registrant.objects.filter(registration__event=event)
         sqs = sqs.order_by("-update_dt")
 
-        try:
-            registrant = sqs[0].object
-        except:
+        # if the for loop is heavy, add the hash field to the table Registrant
+        registrant = None
+        for reg in sqs:
+            if reg.hash == hash:
+                registrant = reg
+                break
+        if not registrant:
             raise Http404
 
     if registrant.cancel_dt:
@@ -1320,20 +1332,45 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
     query = request.GET.get('q', None)
 
     event = get_object_or_404(Event, pk=event_id)
-    registrants = Registrant.objects.search(
-        query, user=request.user, event=event).order_by("-update_dt")
+    
+    if not query:
+        # pull directly from db
+        sqs = Registrant.objects.filter(registration__event=event)
+        registrants = Registrant.objects.search(
+                                    user=request.user, 
+                                    sqs=sqs,
+                                    direct_db=1
+                                    ).order_by("-update_dt")
+        sqs_active = sqs.filter(cancel_dt=None)
+        active_registrants = Registrant.objects.search(
+                                    user=request.user, 
+                                    sqs=sqs_active,
+                                    direct_db=1
+                                    ).order_by("-update_dt")
+                                    
+        sqs_canceled = sqs.exclude(cancel_dt=None)
+        canceled_registrants = Registrant.objects.search(
+                                    user=request.user, 
+                                    sqs=sqs_canceled,
+                                    direct_db=1
+                                    ).order_by("-update_dt")
+        
+    else:
+        registrants = Registrant.objects.search(
+            query, user=request.user, event=event).order_by("-update_dt")
 
-    active_registrants = Registrant.objects.search(
-        "is:active", user=request.user, event=event).order_by("-update_dt")
-
-    canceled_registrants = Registrant.objects.search(
-        "is:canceled", user=request.user, event=event).order_by("-update_dt")
+        active_registrants = Registrant.objects.search(
+            "is:active", user=request.user, event=event).order_by("-update_dt")
+    
+        canceled_registrants = Registrant.objects.search(
+            "is:canceled", user=request.user, event=event).order_by("-update_dt")
 
     return render_to_response(template_name, {
         'event':event, 
         'registrants':registrants,
         'active_registrants':active_registrants,
         'canceled_registrants':canceled_registrants,
+        'query': query,
         }, context_instance=RequestContext(request))
 
 # http://127.0.0.1/events/4/registrants/roster/total
@@ -1430,14 +1467,25 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         registrant = registration.registrant
 
     elif registrant_hash:
-        sqs = SearchQuerySet()
-        sqs = sqs.models(Registrant)
-        sqs = sqs.filter(event_pk=event.pk)
-        sqs = sqs.auto_query(sqs.query.clean(registrant_hash))
+        # not real time index, pull directly from db
+#        sqs = SearchQuerySet()
+#        sqs = sqs.models(Registrant)
+#        sqs = sqs.filter(event_pk=event.pk)
+        sqs = Registrant.objects.filter(registration__event=event)
+#        sqs = sqs.auto_query(sqs.query.clean(registrant_hash))
         sqs = sqs.order_by("-update_dt")
+        
+        # find the match - the for loop might be heavy. maybe add hash field later
+        registrant = None
+        for reg in sqs:
+            if reg.hash == registrant_hash:
+                registrant = reg
+                break
+        if not registrant:
+            raise Http404
 
         try:
-            registrant = sqs[0].object
+            #registrant = sqs[0].object
             registration = registrant.registration
         except:
             raise Http404
