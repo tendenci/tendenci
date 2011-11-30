@@ -86,6 +86,8 @@ class ImportMembershipsTask(Task):
                 if m.get('dob'):
                     profile.dob = dt_parse(m.get('dob')) or datetime.now()
                 
+                profile.save()
+                
                 # get or create membership
                 # relation does not hold unique constraints
                 # so we assume the first hit is the correct membership

@@ -151,6 +151,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'theme.context_processors.theme',
     'site_settings.context_processors.settings',
     'base.context_processors.static_url',
+    'base.context_processors.index_update_note',
     'registry.context_processors.registered_apps',
 )
 
@@ -416,11 +417,20 @@ CAMPAIGNMONITOR_URL = 'https://tendenci.createsend.com'
 # ------------------------------------ #
 PHOTOLOGUE_MAXBLOCK = 2**20  # prevents 'IOError: encoder error -2'
 
+#-------------------------------------------------------#
+# A note for non real time indexes update status
+# displaying on the search templates where there non_realtime 
+# indexes are being used.
+#-------------------------------------------------------#
+INDEX_UPDATE_NOTE = 'updated every hour'
+
+
 # local settings for development
 try:
     from local_settings import *
 except ImportError:
     pass
+
 
 # ------------------------------------ #
 # PLUGINS
