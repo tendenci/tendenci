@@ -159,7 +159,7 @@ def build_settings_form(user, settings):
 
                 if tfile:
                     if tfile.file.name.lower().endswith(('.jpg', '.jpe', '.png', '.gif', '.svg')):
-                        file_display = '<img src="/files/%s/80x80/crop/">' % tfile.pk
+                        file_display = '<img src="/files/%s/">' % tfile.pk
                     else:
                         file_display = tfile.file.name
             except TendenciFile.DoesNotExist:
@@ -167,7 +167,7 @@ def build_settings_form(user, settings):
             options = {
                 'label': setting.label,
                 'help_text': "%s<br> Current File: %s" % (setting.description, file_display),
-                'initial': tfile and tfile.file,
+                #'initial': tfile and tfile.file, # Removed this so the file doesn't save over and over
                 'required': False
             }
             if setting.client_editable:
