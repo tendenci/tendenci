@@ -12,6 +12,9 @@ TAX_FIELDS = ('amount', 'name', 'description')
 SHIPPING_FIELDS = ('amount', 'name', 'description')
 LINE_ITEMS_FIELDS = ('itemId', 'name', 'description', 'quantity', 'unitPrice', 'taxable')
 ORDER_FIELDS = ('invoiceNumber', 'description', 'purchaseOrderNumber')
+TRANSACTION_EXTRA_OPTIONS = {'x_delim_data': 'TRUE', 
+                            'x_delim_char': '||', 
+                            'x_encap_char': ''}
 
 
 class CIMBase(object):
@@ -74,6 +77,7 @@ class CIMBase(object):
     
     def process_request(self, xml_root):
         request_xml_str = '%s\n%s' % ('<?xml version="1.0" encoding="utf-8"?>', ET.tostring(xml_root))
+        #print request_xml_str
         request = urllib2.Request(self.cim_url, 
                                 request_xml_str, 
                                 {'Content-Type': 'text/xml',
@@ -658,6 +662,11 @@ class CIMCustomerProfileTransaction(CIMBase):
         transaction_node = self.create_transaction_node(**kwargs)
         xml_root.append(transaction_node)
         
+        # extra options
+        extra_options_node = ET.SubElement(xml_root, 'extraOptions')
+        extra_options_text = '&'.join(['%s=%s' % (x, y) for (x, y) in TRANSACTION_EXTRA_OPTIONS.items()])
+        extra_options_node.text = extra_options_text
+        
         return self.process_request(xml_root)
                 
         
@@ -750,6 +759,7 @@ class CIMCustomerProfileTransaction(CIMBase):
         if split_tender_id:
             split_tender_id_node = ET.SubElement(trans_auth_capture_node, "splitTenderId")
             split_tender_id_node.text = split_tender_id
+                                               
             
         return transaction_node
     
