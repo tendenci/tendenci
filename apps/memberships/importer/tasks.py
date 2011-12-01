@@ -120,7 +120,7 @@ class ImportMembershipsTask(Task):
                 if corp_memb_name:
                     try:
                         corp_memb = CorporateMembership.objects.get(name=corp_memb_name)
-                        membership.membership_type = corp_membi.corporate_membership_type.membership_type
+                        membership.membership_type = corp_memb.corporate_membership_type.membership_type
                         membership.corporate_membership_id = corp_memb.pk
                         membership.save()
                     except CorporateMembership.DoesNotExist:
