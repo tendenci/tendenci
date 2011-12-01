@@ -1,0 +1,73 @@
+[
+  {"_themename": "Iceman", "_filename": "settings.json"},
+  {
+    "name": "twitter",
+    "label": "Twitter Username",
+    "description": "The Twitter Username (no @) to link on the site template. Leave this empty to remove the Twitter feed.",
+    "data_type": "string",
+    "default_value": "tendenci",
+    "input_type": "text",
+    "value": "tendenci",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  },
+  {
+    "name": "tagline",
+    "label": "Header Tagline",
+    "description": "The tagline under the site name in the website header.",
+    "data_type": "string",
+    "default_value": "A new Tendenci Website",
+    "input_type": "text",
+    "value": "A new Tendenci Website",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  },
+  {
+    "name": "logo",
+    "label": "Logo",
+    "description": "The logo image used for the theme header. The default dimensions are 940x198. Supports .jpg, .jpeg, and .png files.",
+    "data_type": "string",
+    "default_value": "",
+    "input_type": "file",
+    "value": "",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  },
+  {
+    "name": "space_1",
+    "label": "Space 1",
+    "description": "This setting controls the homepage. You can choose from the Content options and any <a href='/admin/boxes/box/add/'>boxes</a> you have made.",
+    "data_type": "string",
+    "default_value": "default_welcome_tendenci.html",
+    "input_type": "select",
+    "value": "default_welcome_tendenci.html",
+    "input_value": "[('','Nothing'),('default_welcome_tendenci.html','Default Content'),('articles_blog_list.html','Articles list')] #<box_list>",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  },
+  {
+    "name": "space_sidebar",
+    "label": "Space Sidebar",
+    "description": "This setting controls the space in the sidebar and on the homepage below the search box. You can choose from any <a href='/admin/boxes/box/add/'>boxes</a> you have made.",
+    "data_type": "string",
+    "default_value": "",
+    "input_type": "select",
+    "value": "",
+    "input_value": "<box_list>",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  }
+]
