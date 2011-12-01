@@ -1,0 +1,46 @@
+{% load theme_tags %}
+{% load base_filters %}
+{% load base_tags %}
+{% load cache %}
+<div class="primary-sidebar content-middle "> 
+        <ul>
+            <li>
+                <h2>Search</h2> 
+                <form id="searchform" method="get" action="/search"> 
+                    <input type="text" value="type, hit enter" onfocus="if (this.value == 'type, hit enter') {this.value = '';}" onblur="if (this.value == '') {this.value = 'type, hit enter';}" size="18" maxlength="50" name="q" id="s" /> 
+                </form> 
+            </li>
+            <li>
+            <div class="space" id="space_sidebar">{% space_include MODULE_THEME_SPACE_SIDEBAR %}</div>
+            </li>
+            {% if MODULE_THEME_TWITTER %}
+            <li>
+                <h2>What is {{ MODULE_THEME_TWITTER }} doing...</h2> 
+                <div class="aktt_tweets"> 
+                    {% with "http://twitter.com/statuses/user_timeline/"|add:MODULE_THEME_TWITTER|add:".rss" as rss_feed %}
+                    {% get_rss rss_feed as rss %}
+                        <ul>
+                        {% for entry in rss.entries|slice:":3" %}
+                            <li>{{ entry.title|twitterize }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endwith %}
+                </div>
+            </li> 
+            {% endif %}
+            <li>
+                <h2>Meta</h2>
+                <ul>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url dashboard %}">Dashboard</a></li>
+                        <li><a href="{% url auth_logout %}">Log Out</a></li>
+                    {% else %} 
+                        {% if MODULE_USERS_SELFREGISTRATION %}
+                        <li><a href="{% url registration_register %}">Register</a></li>
+                        {% endif %}
+                        <li><a href="{% url auth_login %}">Log in</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+        </ul>
+        </div><!-- /sidebar -->
