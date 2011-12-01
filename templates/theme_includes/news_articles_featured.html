@@ -1,0 +1,26 @@
+{% load news_tags %}
+{% load article_tags %}
+{% list_news as featured_news limit=1 %}
+{% list_articles as featured_articles limit=1 %}
+<section id="news-featured">
+    <h2>News</h2>
+    
+    {% if featured_news %}
+    {% for news_item in featured_news %}
+        <p>{{ news_item.body|striptags|truncatewords:30|safe }}</p> <a class="readmore" href="{% url news.view news_item.slug %}">Read more</a>
+    {% endfor %}
+    {% else %}
+        <p>Tendenci supports great news updates for your members and website visitors. You can pull extra details from the latest news, while showing other news items to the side. {% if request.user.is_authenticated %}<a href="/news/add/">Add your first news item</a> to take the place of these examples.{% endif %}</p> <a class="readmore" href="/">Read more</a>
+    {% endif %}
+</section>
+<section id="news-featured">
+    <h2>Articles</h2>
+    {% if featured_articles %}
+    {% for art in featured_articles %}
+        <p>{{ art.body|striptags|truncatewords:30|safe }}</p> <a class="readmore" href="{% url article art.slug %}">Read more</a>
+    {% endfor %}
+    {% else %}
+        <p>Tendenci supports great article updates for your members and website visitors. You can pull extra details from the latest news, while showing other news items to the side. {% if request.user.is_authenticated %}<a href="/articles/add/">Add your first article</a> to take the place of these examples.{% endif %}</p> <a href="/">Read more</a>
+    {% endif %}
+</section>
+{% include "theme_includes/space_edit.html" %}
