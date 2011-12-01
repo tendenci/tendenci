@@ -1,5 +1,5 @@
 import os
-from django.template import TemplateSyntaxError, TemplateDoesNotExist
+from django.template import TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
 from django.template import Library, Template
 from django.conf import settings
 from django.template.loader import get_template
@@ -72,7 +72,11 @@ class ThemeIncludeNode(IncludeNode):
 
 class SpaceIncludeNode(IncludeNode):
     def render(self, context):
-        setting_value = self.template_name.resolve(context)
+        try:
+            setting_value = self.template_name.resolve(context)
+        except VariableDoesNotExist:
+            setting_value = None
+
         if setting_value:
             # First try to render this as a box
             query = '"pk:%s"' % (setting_value)
