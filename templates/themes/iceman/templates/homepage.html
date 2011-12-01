@@ -2,7 +2,6 @@
 {% load base_filters %}
 {% load base_tags %}
 {% load cache %}
-{% load photo_tags %}
 
 {% theme_extends 'base.html' %}
 
@@ -15,61 +14,20 @@
 
 {% block html_body %}
 <div id="container">
-	<div id="header"> 
-		<h1><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a></h1> 
-		<h2>Website tagline</h2> 
-	</div> 
-
-	<div id="headerimage"> 
-		<img src="{{ THEME_URL }}media/images/headers/header.jpg" width="940" height="198" alt="" /> 
-	</div> 
-        
-    <div id="menu"> 
-    	{% spaceless %}{% theme_include "nav.html" %}{% endspaceless %}
-    </div>
+	{% theme_include "header.html" %}
     
     <div class="content content-middle"> 
         {% spaceless %}{% theme_include "base/messages.html" %}{% endspaceless %}
             
         {% block body %}
-        	<h2>Welcome to your Tendenci 5 powered Site!</h2>
+            <div class="space" id="space_1">{% space_include MODULE_THEME_SPACE_1 %}</div>
         {% endblock %}
         
     </div><!-- /content content-middle -->
 
-	<div class="primary-sidebar content-middle "> 
-		<ul>
-			<li>
-				<h2>Search</h2> 
-				<form id="searchform" method="get" action="/search"> 
-					<input type="text" value="type, hit enter" onfocus="if (this.value == 'type, hit enter') {this.value = '';}" onblur="if (this.value == '') {this.value = 'type, hit enter';}" size="18" maxlength="50" name="q" id="s" /> 
-				</form> 
-			</li>
-			<li>
-				<h2>Meta</h2>
-				<ul>
-					{% if user.is_authenticated %}
-						<li><a href="{% url dashboard %}">Dashboard</a></li>
-						<li><a href="{% url auth_logout %}">Log Out</a></li>
-					{% else %} 
-						{% if MODULE_USERS_SELFREGISTRATION %}
-						<li><a href="{% url registration_register %}">Register</a></li>
-						{% endif %}
-						<li><a href="{% url auth_login %}">Log in</a></li>
-                    {% endif %}
-				</ul>
-			</li>
-					
-			<li>
-				{% list_photos as photos limit=4 %}
-            {% for photo in photos %}
-                <img src="{% photo_image_url photo size=100x100 crop=True %}" />
-            {% endfor %}
-			</li> 
-		
-			
-		</ul>
-	</div>
+    {% block sidebar %}
+        {% theme_include "sidebar.html" %}
+    {% endblock %}
 
     <div id="footer">
       {% spaceless %}{% theme_include "footer.html" %}{% endspaceless %}

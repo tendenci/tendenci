@@ -20,15 +20,16 @@ Version: 1.0
 @text: #333;
 
 @alink: darken(@complimentary, 2%);
-@ahover: darken(@alink, 10%);
-@avisited: darken(@alink, 20%);
+@ahover: darken(@alink, 6%);
+@avisited: darken(@alink, 12%);
 
-@nav-height: 28px;
+@nav-height: 30px;
 
 @column: 60px;
 @base-width: (@column + 20)*12;
 
 .grid(@count: 1){ margin: 0 10px 0 10px; width: @count*(@column+20)-20; float: left; /*background-color: #aaa;*/ }
+.inner(@wide: 50%){ float: left; width: @wide; }
 .center() { width: @base-width; margin: 0 auto;}
 .gradient-bg(@color, @alpha: 10) {
    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(@color), to(darken(@color, @alpha)));
@@ -147,6 +148,7 @@ nav {
                 &:visited { color: @complimentary; }
             }
             ul { top: @nav-height; 
+                li { border: none; }
                 a { line-height: @nav-height; background-color: @secondary; }
             }
         }
@@ -204,14 +206,15 @@ footer { color: @primary; font-size: 13px; padding: 10px 0;
 }
 
 #home-content { .center; padding: 10px 0;
+    #space_1, #space_2 { .grid(8); }
     h2 { color: darken(@complimentary, 16); font-size: 20px; margin: 0 0 10px 0; }
-    #about-info { .grid(4); }
-    #about-img { .grid(4);
+    #about-info { .inner; }
+    #about-img { .inner;
         img { width: 300px; height: 150px; background-color: #DDD; }
     }
     .separator { .grid(8); margin: 10px; border-bottom: dashed 2px @secondary; }
-    #news-featured { .grid(4); }
-    #news-others { .grid(4);
+    #news-featured { .inner; }
+    #news-others { .inner;
         ul#news-items { list-style-type: square; list-style-position: inside; }
         li { margin-bottom: 4px; }
     }
@@ -221,10 +224,13 @@ footer { color: @primary; font-size: 13px; padding: 10px 0;
 #upcoming-events { .grid(4);
     ul { margin: 0 0 10px 0; }
     li { list-style-type: none; margin-bottom: 10px;
-        .numeral { padding: 5px; border: 2px solid #aaa; float: left; text-align: center; font-weight: bold; font-size: 16px; }
-        .month { font-size: 16px; margin-left: 46px; }
+        .numeral { padding: 5px 3px; border: 2px solid #aaa; float: left; text-align: center; font-weight: bold; font-size: 16px; line-height: 14px; }
+        .month { clear: left; float: left; font-size: 12px; text-transform: uppercase; text-align: center; width: 28px; padding-top: 2px; }
         .month a, .numeral a { color: @secondary; text-decoration: none; }
-        .blurb { margin-left: 46px; }
+        .title { font-size: 16px; margin-left: 42px; }
+        .title a { color: darken(@complimentary, 10); }
+        
+        .blurb { margin-left: 42px; }
     }
     .cta-btn a { display: block; .gradient-bg(@complimentary, 15); color: #fff; font-weight: bold; padding: 14px; margin-bottom: 10px; position: relative; text-decoration: none;
         span { position: absolute; top: -12px; right: 10px; font-size: 50px; font-weight: normal;}

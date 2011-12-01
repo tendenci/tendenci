@@ -553,6 +553,7 @@ class RecurringPaymentInvoice(models.Model):
         
         
         # update the payment entry with the direct response returned from payment gateway
+        #print success, response_d
         payment = payment_update_from_response(payment, response_d['direct_response'])
 
         if success:
