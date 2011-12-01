@@ -314,7 +314,20 @@ div.admin-links a.edit-box {
 }
 
 
-	
+/* Spaces Admin CSS */
+div.space {
+	position:relative;
+}
+
+div.space div.view {
+	position:static;
+}
+
+div.space:hover div.admin-inline {
+	display:block;
+}
+
+
 /* Boxes Admin CSS */
 div.boxes {
 	position:relative;
