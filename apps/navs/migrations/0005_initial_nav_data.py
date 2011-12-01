@@ -11,9 +11,9 @@ class Migration(DataMigration):
         if not orm.Nav.objects.exists():
             nav = orm.Nav.objects.create(
                 allow_anonymous_view=1,
-                creator_id=1,
+                creator_id=0,
                 creator_username='admin',
-                owner_id=1,
+                owner_id=0,
                 owner_username='admin',
                 status=1,
                 status_detail='active',
