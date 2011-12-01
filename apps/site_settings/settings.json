@@ -678,5 +678,22 @@
         "scope_category": "global", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "", 
+        "description": "Enter a NAICS (North American Industry Classification System) number for the organization. Full list and lookup is available on the <a href='http://www.census.gov/cgi-bin/sssd/naics/naicsrch?chart=2007'>US Census website</a>.", 
+        "data_type": "string", 
+        "update_dt": "2011-12-01 11:45:07", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "naics", 
+        "value": "", 
+        "label": "NAICS Number", 
+        "input_value": "string", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "global", 
+        "store": true, 
+        "updated_by": ""
     }
 ]
