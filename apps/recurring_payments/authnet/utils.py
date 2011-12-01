@@ -66,7 +66,8 @@ def direct_response_dict(direct_response_str):
 
     response_dict = {}
     max_length = len(direct_response_fields)
-    direct_response_list = direct_response_str.split(',')
+    # the x_delim_char we specified is || (in cim.py)
+    direct_response_list = direct_response_str.split('||')
     for i, value in enumerate(direct_response_list):
         if i < max_length:
             response_dict[direct_response_fields[i]] = value
