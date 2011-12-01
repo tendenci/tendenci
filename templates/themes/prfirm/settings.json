@@ -55,5 +55,61 @@
     "store": "true",
     "scope": "module",
     "scope_category": "theme"
+  },
+  {
+    "name": "space_1",
+    "label": "Space 1",
+    "description": "This setting controls the first space on the homepage below the rotator. You can choose from the Content options and any <a href='/admin/boxes/box/add/'>boxes</a> you have made.",
+    "data_type": "string",
+    "default_value": "default_about_info_image.html",
+    "input_type": "select",
+    "value": "default_about_info_image.html",
+    "input_value": "[('','Nothing'),('default_about_info_image.html','Default Content'),('news_featured_others.html','Featured News with list'),('news_articles_featured.html','Latest News and Article')] #<box_list>",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  },
+  {
+    "name": "space_2",
+    "label": "Space 2",
+    "description": "This setting controls the second space on the homepage below the rotator. You can choose from the Content options and any <a href='/admin/boxes/box/add/'>boxes</a> you have made.",
+    "data_type": "string",
+    "default_value": "news_featured_others.html",
+    "input_type": "select",
+    "value": "news_featured_others.html",
+    "input_value": "[('','Nothing'),('news_featured_others.html','Featured News with list'),('news_articles_featured.html','Latest News and Article')] #<box_list>",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  },
+  {
+    "name": "space_3",
+    "label": "Space 3",
+    "description": "This setting controls the larger space in the footer. You can choose from the Content options and any <a href='/admin/boxes/box/add/'>boxes</a> you have made.",
+    "data_type": "string",
+    "default_value": "stories_sponsors.html",
+    "input_type": "select",
+    "value": "stories_sponsors.html",
+    "input_value": "[('','Nothing'),('stories_sponsors.html','Sponsor List')] #<box_list>",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
+  },
+  {
+    "name": "space_sidebar",
+    "label": "Space Sidebar",
+    "description": "This setting controls the space in the sidebar and on the homepage. You can choose from the Content options and any <a href='/admin/boxes/box/add/'>boxes</a> you have made.",
+    "data_type": "string",
+    "default_value": "events_list_daybox.html",
+    "input_type": "select",
+    "value": "events_list_daybox.html",
+    "input_value": "[('','Nothing'),('events_list_daybox.html','Events List')] #<box_list>",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "module",
+    "scope_category": "theme"
   }
 ]
