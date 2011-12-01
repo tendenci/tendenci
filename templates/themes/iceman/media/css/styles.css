@@ -285,7 +285,8 @@ a:hover{text-decoration: none; color:#000;}
 
 .content {
 	overflow: hidden;
-	margin:10px 0 20px 0;
+	margin:0 0 20px 0;
+	padding-top: 20px;
 	}
 	
 .content-middle {
