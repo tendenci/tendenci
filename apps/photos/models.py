@@ -35,8 +35,8 @@ class PhotoSet(TendenciBaseModel):
     author = models.ForeignKey(User)
 
     class Meta:
-        verbose_name = _('photo set')
-        verbose_name_plural = _('photo sets')
+        verbose_name = _("photo")
+        verbose_name_plural = _("photos")
         permissions = (("view_photoset","Can view photoset"),)
         
     objects = PhotoSetManager()
