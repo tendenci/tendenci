@@ -26,5 +26,5 @@ class PhotoSetRegistry(CoreRegistry):
         'search': lazy_reverse('photoset_latest'),
     }
 
-site.register(Image, PhotoRegistry)
+#site.register(Image, PhotoRegistry)
 site.register(PhotoSet, PhotoSetRegistry)
