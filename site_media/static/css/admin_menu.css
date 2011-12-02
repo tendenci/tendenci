@@ -1,3 +1,5 @@
+@import url('websymbols.css');
+
 html {
 	margin-top:30px!important;
     /*padding-bottom: 26px !important; */
@@ -113,6 +115,7 @@ html {
 
 #admin-bar .app-list ul li.app {
 	float:left;
+	min-width: 150px;
 }
 
 #admin-bar h4 {
@@ -178,11 +181,9 @@ html {
 }
 
 #admin-bar #admin-search-box input#admin-search-submit {
-	border:1px solid #eee;
+	border: none;
 	color:#eee;
 	background-color:#6A120D;
-	font-family:Verdana, Geneva, sans-serif;
-	font-size:12px;
 }
 
 /*Alt color for admin-bar
