@@ -1,67 +1,71 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
-from events.models import RegConfPricing
-from events.utils import get_available_pricings
+from discounts.models import Discount
 
-class PricingForm(forms.Form):
+from events.models import RegConfPricing, PaymentMethod
+from events.registration.utils import get_available_pricings
+
+class RegistrationForm(forms.Form):
     """
-    This form is the user's pricing selection.
-    This form will be mainly used for ajax requests.
-    This is the first form a user must answer before a registrant formset is loaded.
+    Registration form.
+    Focuses on non-registrant specific details.
     """
+    amount_for_admin = forms.DecimalField(decimal_places=2)
+    discount = forms.CharField(label=_('Discount Code'), required=False)
+    captcha = CaptchaField(label=_('Type the code below'))
+    payment_method = forms.ModelChoiceField(empty_label=None, required=True,
+        queryset=PaymentMethod.objects.none(), widget=forms.RadioSelect, initial=1)
     
-    pricing = forms.ModelChoiceField(queryset=RegConfPricing.objects.none())
-    
-    def __init__(self, user, event, *args, **kwargs):
-        super(PricingForm, self).__init__(*args, **kwargs)
-        
-        #initialize pricing options
-        pricings = get_available_pricings(event, user)
-        self.field['pricing'].queryset = pricings
-
-
-class RegistrantBaseFormSet(BaseFormSet):
-    """
-    Extending the BaseFormSet to be able to add extra_params.
-    note that extra_params does not consider conflicts in a single form's kwargs.
-    """
-    
-    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
-                 initial=None, error_class=ErrorList, **kwargs):
-        self.extra_params = kwargs.pop('extra_params', {})
-        super(RegistrantBaseFormSet, self).__init__(data, files, auto_id, prefix,
-                 initial, error_class)
-        
-    def _construct_form(self, i, **kwargs):
+    def __init__(self, event, user, *args, **kwargs):
         """
-        Instantiates and returns the i-th form instance in a formset.
+        event: instance of Event model
+        user: request.user
+        reg_count: used for discount validation (discounts have usage limits)
         """
-        defaults = {
-            'auto_id': self.auto_id,
-            'prefix': self.add_prefix(i),
-            'form_index': i,
-        }
+        self.event = event
+        self.user = user
+        self.reg_count = kwargs.pop('reg_count', 0)
+        self.free_event = total_price <= 0
         
-        for key in self.extra_params.keys():
-            defaults[key] = self.extra_params[key]
+        super(RegistrationForm, self).__init__(*args, **kwargs)
         
-        if self.data or self.files:
-            defaults['data'] = self.data
-            defaults['files'] = self.files
-        if self.initial:
+        # no need for captcha if logged in
+        if user.is_authenticated():
+            self.fields.pop('captcha')
+        
+        # admin only price override field
+        if not is_admin(user):
+            self.fields.pop('amount_for_admin')
+        
+        # payment methods for non free events only
+        if not self.free_event:
+            reg_conf =  event.registration_configuration
+            if reg_conf.can_pay_online:
+                payment_methods = reg_conf.payment_method.all()
+            else:
+                payment_methods = reg_conf.payment_method.exclude(
+                    machine_name='credit card').order_by('pk')
+            self.fields['payment_method'].queryset = payment_methods
+        else:
+            self.fields.pop('payment_method')
+   
+    def clean_discount(self):
+        """
+        Returns the discount instance if it exists for a given code.
+        Returns none if the code is blank.
+        """
+        code = self.cleaned_data['discount']:
+        if code:
             try:
-                defaults['initial'] = self.initial[i]
-            except IndexError:
-                pass
-        
-        # Allow extra forms to be empty.
-        if i >= self.initial_form_count():
-            defaults['empty_permitted'] = True
-        defaults.update(kwargs)
-        form = self.form(**defaults)
-        self.add_fields(form, i)
-        
-        return form
+                discount = Discount.objects.get(discount_code=self.cleaned_data['discount'])
+                if discount.available_for(self.reg_count):
+                    return discount
+                else:
+                    raise forms.ValidationError(_("Discount Code cannot be used for %s people." % self.reg_count))
+            except Discount.objects.DoesNotExist:
+                raise forms.ValidationError(_("This is not a valid Discount Code!"))
+        return code
 
 class RegistrantForm(forms.Form):
     """
@@ -133,3 +137,19 @@ class RegistrantForm(forms.Form):
         data = self.cleaned_data['email']
         data.strip()
         return data
+
+class PricingForm(forms.Form):
+    """
+    This form is the user's pricing selection.
+    This form will be mainly used for ajax requests.
+    This is the first form a user must answer before a registrant formset is loaded.
+    """
+    
+    pricing = forms.ModelChoiceField(queryset=RegConfPricing.objects.none())
+    
+    def __init__(self, event, user, *args, **kwargs):
+        super(PricingForm, self).__init__(*args, **kwargs)
+        
+        #initialize pricing options
+        pricings = get_available_pricings(event, user)
+        self.field['pricing'].queryset = pricings
