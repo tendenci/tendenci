@@ -83,6 +83,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         RegistrantForm,
         formset=RegistrantBaseFormSet,
         can_delete=True,
+        extra=0,
     )
     
     if request.method == "POST":
