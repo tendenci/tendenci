@@ -1,7 +1,9 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from captcha.fields import CaptchaField
 from discounts.models import Discount
+from perms.utils import is_admin
 
 from events.models import RegConfPricing, PaymentMethod
 from events.registration.utils import get_available_pricings
@@ -26,7 +28,6 @@ class RegistrationForm(forms.Form):
         self.event = event
         self.user = user
         self.reg_count = kwargs.pop('reg_count', 0)
-        self.free_event = total_price <= 0
         
         super(RegistrationForm, self).__init__(*args, **kwargs)
         
@@ -38,24 +39,20 @@ class RegistrationForm(forms.Form):
         if not is_admin(user):
             self.fields.pop('amount_for_admin')
         
-        # payment methods for non free events only
-        if not self.free_event:
-            reg_conf =  event.registration_configuration
-            if reg_conf.can_pay_online:
-                payment_methods = reg_conf.payment_method.all()
-            else:
-                payment_methods = reg_conf.payment_method.exclude(
-                    machine_name='credit card').order_by('pk')
-            self.fields['payment_method'].queryset = payment_methods
+        reg_conf =  event.registration_configuration
+        if reg_conf.can_pay_online:
+            payment_methods = reg_conf.payment_method.all()
         else:
-            self.fields.pop('payment_method')
+            payment_methods = reg_conf.payment_method.exclude(
+                machine_name='credit card').order_by('pk')
+        self.fields['payment_method'].queryset = payment_methods
    
     def clean_discount(self):
         """
         Returns the discount instance if it exists for a given code.
         Returns none if the code is blank.
         """
-        code = self.cleaned_data['discount']:
+        code = self.cleaned_data['discount']
         if code:
             try:
                 discount = Discount.objects.get(discount_code=self.cleaned_data['discount'])
@@ -92,7 +89,7 @@ class RegistrantForm(forms.Form):
                 self.fields[key].required = False
                 
         #initialize pricing options and reg_set field
-        self.fields['pricing'] = forms.ModelChoiceField(widget=forms.HiddentInput, queryset=pricings)
+        self.fields['pricing'] = forms.ModelChoiceField(widget=forms.HiddenInput, queryset=self.pricings)
         self.fields['reg_set'] = forms.IntegerField(widget=forms.HiddenInput)
     
     def clean_first_name(self):
@@ -152,4 +149,4 @@ class PricingForm(forms.Form):
         
         #initialize pricing options
         pricings = get_available_pricings(event, user)
-        self.field['pricing'].queryset = pricings
+        self.fields['pricing'].queryset = pricings
