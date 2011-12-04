@@ -83,6 +83,9 @@
 
                 </div>
             {% endif %}
+            {% if anonpricing %}
+                <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" onClick="location.href='{% url event.anon_multi_register event.pk %}'" />
+            {% endif %}
         {% endif %}
     {% endif %}
 {% endif %}
