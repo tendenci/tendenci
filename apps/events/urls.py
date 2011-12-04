@@ -98,6 +98,10 @@ urlpatterns = patterns('events',
         name="event.registrant.export.total"
     ),
     
+    # dynamic pricing registration
+    url(r'^(?P<event_id>\d+)/register/$', 'registration.views.multi_register', name='event.anon_multi_register'),
+    url(r'^(?P<event_id>\d+)/register/pricing/$', 'registration.views.ajax_pricing_info', name='event.reg_pricing'),
+    
     # pending events
     url(r'^minimal_add/$', 'views.minimal_add', name='event.minimal_add'),
     url(r'^pending/$', 'views.pending', name='event.pending'),
