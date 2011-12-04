@@ -90,7 +90,6 @@ class RegistrantForm(forms.Form):
                 
         #initialize pricing options and reg_set field
         self.fields['pricing'] = forms.ModelChoiceField(widget=forms.HiddenInput, queryset=self.pricings)
-        self.fields['reg_set'] = forms.IntegerField(widget=forms.HiddenInput)
     
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
