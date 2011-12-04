@@ -3,11 +3,12 @@ from datetime import datetime
 from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 
-from events.constants import REG_CLOSED, REG_FULL, REG_OPEN
 from events.utils import get_event_spots_taken
 from events.models import Event, RegConfPricing
 
-def reg_status(event):
+from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
+
+def reg_status(event, user):
     """
     Determines if a registration is open, closed or full.
     """
@@ -21,7 +22,7 @@ def reg_status(event):
             return 'FULL'
     
     # check if pricings are still open
-    pricings = get_available_pricings(event)
+    pricings = get_available_pricings(event, user)
     if not pricings:
         return 'CLOSED'
         
@@ -34,9 +35,11 @@ def get_available_pricings(event, user):
     pricings = RegConfPricing.objects.filter(
         reg_conf=event.registration_configuration,
         start_dt__lte=datetime.now(),
-        end_dt__lt=datetime.now(),
+        end_dt__gt=datetime.now(),
         status=True,
     )
+    
+    print pricings
     
     if is_admin(user):
         # return all if admin is user
@@ -52,7 +55,7 @@ def get_available_pricings(event, user):
             exclude_list = []
             # user permitted pricings
             for price in pricings:
-                # just to be sure...
+                # shown to all
                 if price.allow_anonymous:
                     continue
                 
