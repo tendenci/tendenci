@@ -422,7 +422,7 @@ PHOTOLOGUE_MAXBLOCK = 2**20  # prevents 'IOError: encoder error -2'
 # displaying on the search templates where there non_realtime 
 # indexes are being used.
 #-------------------------------------------------------#
-INDEX_UPDATE_NOTE = 'updated every hour'
+INDEX_UPDATE_NOTE = 'updated hourly'
 
 
 # local settings for development
