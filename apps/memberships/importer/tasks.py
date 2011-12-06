@@ -140,6 +140,7 @@ class ImportMembershipsTask(Task):
                     creator_username=membership.creator_username,
                     owner=membership.owner,
                     owner_username=membership.owner_username,
+                    allow_anonymous_view=False,
                 )
 
                 # create entry fields
