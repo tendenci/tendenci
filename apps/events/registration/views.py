@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
@@ -15,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from events.models import Event
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
-from events.registration.utils import get_available_pricings, reg_status
+from events.registration.utils import get_available_pricings, reg_status, process_registration
 from events.registration.forms import PricingForm, RegistrantForm, RegistrationForm
 from events.registration.formsets import RegistrantBaseFormSet
 
@@ -94,9 +92,45 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                                 'pricings':pricings,
                             })
         reg_form = RegistrationForm(event, request.user, request.POST,
-                            reg_count = len(registrant.forms))
+                            reg_count = len(reg_formset.forms))
+        # validate the form and formset
         if reg_form.is_valid() and reg_formset.is_valid():
-            print "VALIDATED"
+            
+            # process the registration
+            # this will create the registrants and apply the discount
+            reg8n = process_registration(reg_form, reg_formset)
+            
+            self_reg8n = get_setting('module', 'users', 'selfregistration')
+            is_credit_card_payment = (reg8n.payment_method and 
+                (reg8n.payment_method.machine_name).lower() == 'credit-card'
+                and reg8n.amount_paid > 0)
+            
+            if is_credit_card_payment: # online payment
+                # email the admins as well
+                email_admins(event, event_price, self_reg8n, reg8n)
+                # get invoice; redirect to online pay
+                return redirect('payments.views.pay_online',
+                    reg8n.invoice.id, reg8n.invoice.guid)
+            else:
+                # offline payment
+                # email the registrant
+                send_registrant_email(reg8n)
+                # email the admins as well
+                email_admins(event, event_price, self_reg8n, reg8n)
+                
+            # log an event
+            log_defaults = {
+                'event_id' : 431000,
+                'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
+                'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
+                'user': request.user,
+                'request': request,
+                'instance': event,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            # redirect to confirmation
+            return redirect('event.registration_confirmation', event_id, reg8n.registrant.hash)
     else:
         # intialize empty forms
         reg_formset = RegistrantFormSet(
