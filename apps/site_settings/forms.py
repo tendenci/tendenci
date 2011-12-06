@@ -117,11 +117,21 @@ def build_settings_form(user, settings):
                 choices = get_box_list(user)
                 required = False
             else:
+                # Allow literal_eval in settings in order to pass a list from the setting
+                # This is useful if you want different values and labels for the select options
                 try:
                     choices = tuple([(k,v)for k,v in literal_eval(setting.input_value)])
+
+                    # By adding #<box_list> on to the end of a setting, this will append the boxes
+                    # as select items in the list as well.
+                    if '<box_list>' in setting.input_value:
+                        box_choices = get_box_list(user)[1:]
+                        choices = (('Content',choices),('Boxes',box_choices))
+                        required = False
                 except:
                     choices = tuple([(s,s)for s in setting.input_value.split(',')])
-                required = True
+                    required = True
+
             options = {
                 'label': setting.label,
                 'help_text': setting.description,
@@ -149,7 +159,7 @@ def build_settings_form(user, settings):
 
                 if tfile:
                     if tfile.file.name.lower().endswith(('.jpg', '.jpe', '.png', '.gif', '.svg')):
-                        file_display = '<img src="/files/%s/80x80/crop/">' % tfile.pk
+                        file_display = '<img src="/files/%s/">' % tfile.pk
                     else:
                         file_display = tfile.file.name
             except TendenciFile.DoesNotExist:
@@ -157,7 +167,7 @@ def build_settings_form(user, settings):
             options = {
                 'label': setting.label,
                 'help_text': "%s<br> Current File: %s" % (setting.description, file_display),
-                'initial': tfile and tfile.file,
+                #'initial': tfile and tfile.file, # Removed this so the file doesn't save over and over
                 'required': False
             }
             if setting.client_editable:

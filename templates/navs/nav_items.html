@@ -19,7 +19,7 @@
     <div class="nav-wrap">
         <div class="nav-edit-menu">
             <h3>{{ page_select.pages.label }} {% trans 'list' %}</h3>
-            <p>{% trans 'Select pages below to be added to' %} {{ nav.title }}. {% trans 'Use the seach box to filter the list of pages' %}.</p>
+            <p>{% trans 'Select pages below to be added to' %} {{ nav.title }}. {% trans 'Use the search box to filter the list of pages' %}.</p>
             {% trans 'Search' %}: <input id="navs-search-box" type="text" />
             <form method="post" action="{% url navs.page_select %}" id="page-select">
                 <div class="forms">{% csrf_token %}
@@ -108,7 +108,7 @@
             {% endfor %}
             </div>
             
-            <input type="submit" id="save-all" value="{% trans 'Save All Navigation items' %}">
+            <input type="submit" id="save-all" value="{% trans 'Save All Navigation Items' %}">
             </form>
             
         </div>
@@ -164,12 +164,12 @@
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript">
-        $('#navs-search-box').keypress(function(){
+        $('#navs-search-box').keyup(function(){
             // hide all pages that do not match search-box's value
-            val = $('#search-box').val();
+            val = $('#navs-search-box').val().toLowerCase();
             pages = $('.page-select li');
             for(i=0;i<pages.length;i++){
-                if($(pages[i]).html().indexOf(val)==-1){
+                if($(pages[i]).html().toLowerCase().indexOf(val)==-1){
                     $(pages[i]).hide();
                 }else{
                     $(pages[i]).show();

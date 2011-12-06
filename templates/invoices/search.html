@@ -20,6 +20,9 @@
 {% invoice_search %}
 {% autopaginate invoices 10 %}
 <div class="invoices-wrap">
+	{% if query %}
+	<div style="color: #828282; font-size:0.9em; font-style: italic;">{{ INDEX_UPDATE_NOTE }}</div>
+	{% endif %}
     {% for invoice in invoices %}
     {% with invoice|get_object as invoice %}
     	<div class="invoice-row">

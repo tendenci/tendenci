@@ -23,7 +23,7 @@
     <h1>{% trans "Processing Membership Import!" %}</h1>
 	<p class="timestamp">{% trans "Step 4/4" %} &middot; {{ datetime.now }}</p>
 
-	<p class="msg">Thank you for being patient.</p>
+	<p class="msg">We're not done yet! Come back and check on us again later. Thanks!</p>
     {% endif %}
 
 	<p class="link"><a href="{% url membership.search %}">{% trans "Back to membership search page." %}</a></p>
@@ -34,8 +34,9 @@
 {% block extra_body %}
 {{ block.super }}
 <script type="text/javascript">
+    //reload every 60 seconds
     setInterval(function(){
             window.location.reload();
-        }, 5000);
+        }, 60000);
 </script>
 {% endblock %}

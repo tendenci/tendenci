@@ -1,10 +1,7 @@
 {% load base_filters %}
 {% load base_tags %}
 {% load cache %}
-{% load box_tags %}
 {% load story_tags %}
-{% load news_tags %}
-{% load event_tags %}
 {% load theme_tags %}
 {% load i18n %}
 
@@ -42,6 +39,11 @@
                         <p>{{ story.content|striptags|truncatewords:"16"|safe }} <a class="readmore" href="{{ story.full_story_link }}">Read more</a></p>
                         <span id="story-label-{{ forloop.counter0 }}" class="story-label">{{ story.title|truncatewords:"1"|slice:"-4" }}</span>
                     </div>
+                {% if admin %}
+                    <div class="admin-inline">
+                      <div class="admin-links clear-block"><a href="{% url story.edit story.pk %}?next={{ request.path }}" title="Edit Story" class="edit-story">Edit {{ story.title|title }} Story</a></div>
+                    </div>
+                {% endif %}
                 </div><!-- /.story-{{ forloop.counter }} -->
                 {% endfor %}
                 {% else %}
@@ -86,43 +88,9 @@
         <section id="home-content">
             <div id="sections" class="clearfix">
                 {% theme_include "sidebar.html" %}
-                <section id="about-info">
-                    <h2>About {{ SITE_GLOBAL_SITEDISPLAYNAME }}</h2>
-                    <div class="blurb">
-                        <p>We're a Public Relations firm. You should join us so that we can hook you up with all of our knowledge and introduce you to all of our peeps. We've been in business for sometimes which means we know something. Most of our peeps have big money which means people will listen when we network.</p>
-                    </div>
-                </section><!-- /#about-info -->
-                <section id="about-img">
-                    <img src="http://media.tendenciapp.com/images/photo.jpg" />
-                </section><!-- /#about-img -->
+                <div class="space" id="space_1">{% space_include MODULE_THEME_SPACE_1 %}</div>
                 <div class="separator"></div>
-                {% list_news as featured_news limit=8 %}
-                <section id="news-featured">
-                    <h2>News</h2>
-                    
-                    {% if featured_news %}
-                    {% for news_item in featured_news|slice:":1" %}
-                        <p>{{ news_item.body|striptags|truncatewords:40|safe }} <a class="readmore" href="{% url news.view news_item.slug %}">Read more</a></p>
-                    {% endfor %}
-                    {% else %}
-                        <p>Tendenci supports great news updates for your members and website visitors. You can pull extra details from the latest news, while showing other news items to the side. {% if request.user.is_authenticated %}<a href="/news/add/">Add your first news item</a> to take the place of these examples.{% endif %}</p> <a href="/">Read more</a>
-                    {% endif %}
-                </section>
-                <section id="news-others">
-                    <ul id="news-items">
-                        {% if featured_news|length > 1 %}
-                        {% for news_item in featured_news %}
-                            {% if forloop.first %}
-                            {% else %}
-                            <li><a href="{% url news.view news_item.slug %}">{{ news_item.headline|truncatewords:4|safe }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                        {% else %}
-                        <li>Another top story in the news</li>
-                        <li>Even more great news updates</li>
-                        {% endif %}
-                    </ul>
-                </section>
+                <div class="space" id="space_2">{% space_include MODULE_THEME_SPACE_2 %}</div>
             </div>
         </section><!-- /#home-content -->
     </div>

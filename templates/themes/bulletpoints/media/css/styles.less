@@ -11,10 +11,10 @@ Version: 1.0
 // ------------------------------
 //  LESS CSS Styles
 // ------------------------------
-@background: #ccc;
-@primary: #393738;
-@secondary: #E0AA26;
-@compliment: #533841;
+//@background: #ccc;
+//@primary: #393738;
+//@secondary: #E0AA26;
+//@compliment: #533841;
 
 @text: #333;
 @offtext: #eee; 
@@ -109,14 +109,17 @@ blockquote { margin: 0 0 10px 20px; }
 .topborder { border-top: solid 14px darken(@compliment, 5); }
 
 #header { height: 150px; position: relative; }
-#logo { position: absolute; width: 440px; top: 30px; left: 20px; }
-#logo a { background: url('../images/logo.jpg') top left no-repeat; padding: 18px 0 30px 110px; .header-font(54px); display: block; color: @primary; text-decoration: none; text-shadow: 1px 2px 1px #666;}
+#logo { position: absolute; width: 440px; top: 30px; left: 20px;
+    a { display: block; text-decoration: none; 
+        img { float: left; width: 100px; height: 100px; border: none; }
+        h1 { padding: 34px 0 32px 10px; width: 320px; .header-font(54px); color: @primary; text-shadow: 1px 2px 1px #666; float: left; margin: 0; }
+    }
+}
 #phone { position: absolute; width: 100px; font-size: 16px; top: 12px; right: 256px; font-style: italic; }
 #search-box { position: absolute; width: 254px; margin-bottom: 50px; top: 0px; right: 0px;
     form { position: relative; }
     input#q { position: absolute; top: 8px; left: 12px; width: 190px; height: 20px; border: solid 1px #ccc; }
-    input#search-box-submit { position: absolute; top: 8px; right: 23px; height: 24px; width: 26px; color: @text; font-size: 13px; border: solid 1px #ccc; border-left: 1px solid @secondary; text-transform: uppercase; background: url('../images/search-btn.jpg') #fff top left no-repeat;
-    }
+    input#search-box-submit { position: absolute; top: 8px; right: 20px; height: 24px; width: 30px; color: @text; font-size: 13px; border: solid 1px #ccc; border-left: 1px solid @secondary; text-transform: uppercase; background: #fff; margin: 0; padding: 0; }
 }
 #nav { float: right; width: 530px; position: absolute; top: 80px; right: 0;}
 
@@ -127,7 +130,7 @@ nav {display: block;
     ul { list-style: none;
         li { float: left; position: relative;
             a { line-height: 40px; padding: 0 12px; background-color: transparent; display: block; color: @primary; 
-                &:hover {color: @primary }
+                &:hover { color: @primary }
             }
             ul { display: none; float: left; margin: 0; position: absolute; top: 40px; width: 148px; z-index: 99999;
                 a { height: auto; line-height: 20px; padding: 10px; width: 120px; }
@@ -141,7 +144,7 @@ nav {display: block;
 
 /* Custom Nav overrides */
 nav { border: solid 4px @secondary; border-right: none; border-left: none;
-    ul {
+    ul { margin: 0;
         li { 
             a { text-decoration: none; color: @primary; }
             ul { border-bottom: solid 4px @secondary;
@@ -152,6 +155,7 @@ nav { border: solid 4px @secondary; border-right: none; border-left: none;
         }
         li:hover > a, a:focus { text-decoration: underline; }
     }
+    &:hover div.admin-inline { top: -4px; }
 }
 
 
@@ -272,3 +276,5 @@ a.readmore { float: left; font-style: italic; color: #479E8B;}
 .clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; visibility: hidden; } 
 .clearfix:after { clear: both; }
 .clearfix { zoom: 1; }
+
+.less-error-message { display: none; }

@@ -394,6 +394,14 @@ colors = {
     '1120400':'14E548', # search
     '1120500':'339B41', # disable
 
+    # tendenci_guide
+    '1002000':'A20900', # base
+    '1002100':'119933', # add
+    '1002200':'EEDD55', # edit
+    '1002300':'AA2222', # delete
+    '1002400':'CC55EE', # search
+    '1002500':'55AACC', # detail
+
 #    '':'', # base
 #    '':'119933', # add
 #    '':'EEDD55', # edit

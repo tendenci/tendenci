@@ -283,13 +283,24 @@ def twitterize(value, autoescape=None):
     value = strip_tags(value)
     # Link URLs
     value = urlize(value, nofollow=False, autoescape=autoescape)
+    
+    # Link twitter usernames for the first person
+    value = re.sub(r'(^[^:]+)',r'<a href="http://twitter.com/\1">\1</a>',value)
     # Link twitter usernames prefixed with @
-    value = re.sub(r'(\s+|\A)@([a-zA-Z0-9\-_]*)\b',r'\1<a href="http://twitter.com/\2">@\2</a>&nbsp;',value)
+    value = re.sub(r'(\s+|\A)@([a-zA-Z0-9\-_]*)\b',r'\1<a href="http://twitter.com/\2">@\2</a>',value)
     # Link hash tags
-    value = re.sub(r'(\s+|\A)#([a-zA-Z0-9\-_]*)\b',r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>&nbsp;',value)
+    value = re.sub(r'(\s+|\A)#([a-zA-Z0-9\-_]*)\b',r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>',value)
     return mark_safe(value)
 twitterize.is_safe=True
 twitterize.needs_autoescape = True
+
+@register.filter
+@stringfilter
+def twitterdate(value):
+    from datetime import datetime, timedelta
+    time = value.replace(" +0000","")
+    dt = datetime.strptime(time, "%a, %d %b %Y %H:%M:%S")
+    return dt + timedelta(hours=-6)
 
 @register.filter
 def thumbnail(file, size='200x200'):

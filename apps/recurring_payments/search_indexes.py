@@ -8,9 +8,11 @@ class RecurringPaymentIndex(indexes.SearchIndex):
     user = indexes.CharField(model_attr='user', faceted=True)
     user_object = indexes.CharField(model_attr='user', faceted=True)
     description = indexes.CharField(model_attr='description')
-    payment_amount = indexes.FloatField(model_attr='payment_amount')
-    
+    payment_amount = indexes.FloatField(model_attr='payment_amount')   
 
+    def get_updated_field(self):
+        return 'update_dt'
+    
     def prepare_user_object(self, obj):
         return obj.user.username
 

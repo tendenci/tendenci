@@ -18,9 +18,9 @@
 	<h1>{% trans "Membership Import Finished!" %}</h1>
 	<p class="timestamp">{% trans "Step 4/4" %} &middot; {{ datetime.now }}</p>
 
-	<p class="msg">We attempted <em>{{ memberships|length}}</em> import{{ memberships|length|pluralize }}; 
-	<em>{{ added|length }}</em> {{ added|length|pluralize:"was,were" }} added,
-	and <em>{{ skipped|length }}</em> {{ skipped|length|pluralize:"was,were" }} skipped.</p>
+	<p class="msg">We attempted <em>{{ stats.all }}</em> import{{ stats.all|pluralize }}; 
+	<em>{{ stats.added }}</em> {{ stats.added|pluralize:"was,were" }} added,
+	and <em>{{ stats.skipped }}</em> {{ stats.skipped|pluralize:"was,were" }} skipped.</p>
 
 	<p class="link"><a href="{% url membership.search %}">{% trans "Back to membership search page." %}</a></p>
 

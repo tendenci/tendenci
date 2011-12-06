@@ -34,13 +34,18 @@
             {% if rotator_list %}
                 {% for story in rotator_list %}
                 <div class="story story-{% cycle "even" "odd" %}">
-                  <div class="story-image"><a href="{{ story.full_story_link }}"><img width="954" height="376" src="{% image_url story.photo size=954x376 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
+                  <div class="story-image"><a href="{{ story.full_story_link }}"><img width="954" height="376" src="{% image_url story.image size=954x376 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
                     <div class="story-text">
                         <h2 class="headline"><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
                         <div class="story-summary">{{ story.title|striptags|truncatewords_html:"12" }} | <span class="read-more"><a href="{{ story.full_story_link }}">{% trans "Read More" %}</a></span></div>
                     </div>
+                {% if admin %}
+                    <div class="admin-inline">
+                      <div class="admin-links clear-block"><a href="{% url story.edit story.pk %}?next={{ request.path }}" title="Edit Story" class="edit-story">Edit {{ story.title|title }} Story</a></div>
+                    </div>
+                {% endif %}
                 </div>
-                {% endfor %}
+                {% endfor %}<!-- /.story-{{ forloop.counter }} -->
             {% else %}
                 <div class="story story-even">
                   <div class="story-image"><a href="#"><img width="954" height="376" src="http://media.tendenciapp.com/images/sizes/rotator_1000x500.jpg" alt="Sample"></a></div>

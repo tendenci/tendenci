@@ -5,7 +5,7 @@
 <div id="admin-bar">
 	<ul>
 	   <li><a class="admin-logo" href="{% url dashboard %}"><img src="{{ STATIC_URL }}/images/tendenci_white_small_100x51.gif" height="24" /></a></li>
-    	<li><a href="#">{% trans "Content" %}</a>
+    	<li><a href="#"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
         	<div class="sub">
             	<div class="column">
             	<h4><a href="{% url dashboard %}">{% trans "App List" %}</a></h4>
@@ -18,11 +18,14 @@
                                          {{ app|capfirst }}
                                      </a>
                                 </li>
+                                {% if app.url.settings %}
+                                <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
+                                {% endif %}
                                 {% if app.url.search %}
-                                <li><a href="{{ app.url.search }}">{% trans "List" %}</a></li>
+                                <li><a href="{{ app.url.search }}" class="glyph search" title="Search {{ app|title }}">&#76;</a></li>
                                 {% endif %}
                                 {% if app.url.add %}
-                                <li><a href="{{ app.url.add }}">{% trans "Add" %}</a></li>
+                                <li><a href="{{ app.url.add }}" class="glyph plus" title="Add {{ app|title }}">&#43;</a></li>
                                 {% endif %}
                             </ul>
                             {% endif %}
@@ -39,11 +42,14 @@
                                      {{ app|capfirst }}
                                  </a>
                             </li>
+                            {% if app.url.settings %}
+                            <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
+                            {% endif %}
                             {% if app.url.search %}
-                            <li><a href="{{ app.url.search }}">{% trans "List" %}</a></li>
+                            <li><a href="{{ app.url.search }}" class="glyph search" title="Search {{ app|title }}">&#76;</a></li>
                             {% endif %}
                             {% if app.url.add %}
-                            <li><a href="{{ app.url.add }}">{% trans "Add" %}</a></li>
+                            <li><a href="{{ app.url.add }}" class="glyph plus" title="Add {{ app|title }}">&#43;</a></li>
                             {% endif %}
                         </ul>
                     {% endfor %}
@@ -51,19 +57,30 @@
                 {% endif %}
             </div>
         </li>
-    	<li><a href="{% url profile.search %}">{% trans "Users" %}</a>
+    	<li><a href="{% url profile.search %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "Users" %}</a>
         	<div class="sub">
-            	<div class="column">                
+            	<div class="column app-list">                
                     <ul>
-                        <li><a href="{% url profile.search %}">{% trans "List" %}</a></li>
-                        <li><a href="{% url profile.add %}">{% trans "Add" %}</a></li>
-                        <li><a href="{% url profile.search %}">{% trans "Search" %}</a></li>
-                        <li><a href="{% url groups %}">{% trans "Groups" %}</a></li>
-                        <li><a href="{% url reports-user-activity %}">{% trans "Activity Report" %}</a></li>
+                        <li class="app"><a href="{% url profile.search %}">{% trans "Users" %}</a></li>
+                        <li><a href="/settings/module/users/" class="glyph gear">&#83;</a></li>
+                        <li><a href="{% url profile.search %}" class="glyph search">&#76;</a></li>
+                        <li><a href="{% url profile.add %}" class="glyph plus">&#43;</a></li>
+
+                    </ul>
+                    <ul>
+                        <li class="app"><a href="{% url groups %}">{% trans "Groups" %}</a></li>
+                        <li><a href="/settings/module/groups/" class="glyph gear">&#83;</a></li>
+                        <li><a href="{% url groups %}" class="glyph search">&#76;</a></li>
+                        <li><a href="{% url group.add %}" class="glyph plus">&#43;</a></li>
+                    </ul>
+                    <ul>
+                        <li class="app"><a href="{% url reports-user-activity %}">{% trans "Activity Report" %}</a></li>
+                        <li><a href="{% url reports-user-activity %}" class="glyph heading">&#117;</a></li>
                     </ul>
                 </div>
             </div>
         </li>
+        {% comment %}
     	<!-- <li><a href="#">{% trans "Members" %}</a>
         	<div class="sub">
             	<div class="column">                
@@ -77,6 +94,7 @@
                 </div>
             </div>
         </li> -->
+        {% endcomment %}
         {% comment %}
         <!-- <li><a href="nowhere">{% trans "Language" %}</a>
             <div class="sub">
@@ -93,23 +111,21 @@
             </div>
         </li> -->
         {% endcomment %}
-        <li><a href="{% url settings %}">{% trans "Settings" %}</a>
+        {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
+        <li><a href="{% url settings %}"><span class="glyph heading">&sup3;</span>&nbsp;&nbsp;{% trans "Themes" %}</a>
         	<div class="sub">
             	<div class="column">                
                     <ul>
-                        <li><a href="/settings/site/global/">{% trans "Global" %}</a></li>
-                        {% for app in registered_apps.core %}
-                            {% if app.has_settings %}
-                            <li><a href="{{ app.url.settings }}">{{ app|capfirst }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                        <li><a href="/settings/module/groups/">{% trans "Groups" %}</a></li>
-                        <li><a href="/settings/module/users/">{% trans "Users" %}</a></li>
+                        <li><a href="/settings/module/theme_editor/">{% trans "Current Theme: " %}{{ MODULE_THEME_EDITOR_THEME|title }}</a></li>
+                        <li><a href="/settings/module/theme/">{% trans "Theme Settings" %}</a></li>
+                        <li><a href="{% url theme_editor %}">{% trans "Theme Editor" %}</a></li>
+                        <li><a href="/settings/module/theme_editor/">{% trans "Change my Theme" %}</a></li>
                     </ul>
                 </div>
             </div>
         </li>
-        <li><a href="/reports">{% trans "Reports" %}</a>
+        {% endif %}
+        <li><a href="/reports"><span class="glyph heading">&#117;</span>&nbsp;&nbsp;{% trans "Reports" %}</a>
             <div class="sub">
             	<div class="column">                
                     <ul>
@@ -149,10 +165,12 @@
                 </div>
             </div> -->
         </li>
-        <li><a href="/reports">{% trans "Quick Links" %}</a>
+        <li><a href="#"><span class="glyph heading">&#75;</span>&nbsp;&nbsp;{% trans "Quick Links" %}</a>
         	<div class="sub">
             	<div class="column">
                     <ul>
+                        <li><a href="/settings/site/global/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Site Settings" %}</a></li>
+                        <li><a href="/settings/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Full Settings List" %}</a></li>
                         <li><a href="{% url dashboard %}">{% trans "Dashboard" %}</a></li>
                         <li><a href="{% url admin:index %}">{% trans "Admin Backend" %}</a></li>
                         <li><a href="{% url theme_editor %}">{% trans "Theme Editor" %}</a></li>
@@ -164,7 +182,7 @@
                 </div>
             </div>
         </li>
-        <li><a href="#"><strong>{% trans "Support" %}</strong></a>
+        <li><a href="#"><span class="glyph heading">&#87;</span><strong>&nbsp;&nbsp;{% trans "Support" %}</strong></a>
         	<div class="sub">
             	<div class="column">
                     <ul>
@@ -202,7 +220,7 @@
         </li> -->
         <li class="right">
             <form action="/search/" method="get" name="search" id="admin-search-box">
-                            <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" value="Search" id="admin-search-submit">                            </form>
+                            <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" class="glyph heading" value="&#76;" id="admin-search-submit">                            </form>
         </li>
     </ul>
      

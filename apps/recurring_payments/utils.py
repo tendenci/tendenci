@@ -429,6 +429,8 @@ def api_rp_setup(data):
         PaymentProfile.objects.create(
                         customer_profile_id=cp_id,
                         payment_profile_id=pp_id,
+                        owner=u,
+                        owner_username=u.username
                         )
         
     # 4) create rp invoice
