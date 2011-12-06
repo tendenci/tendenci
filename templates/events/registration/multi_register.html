@@ -381,7 +381,7 @@
                 {{ pricing.title }} ({{ pricing.quantity }} registrant{{ pricing.quantity|pluralize }} for {{ pricing.price }})
                 <br>
                 {% endfor %}
-                <input id="add-registrants-button" type="button" value="Add">
+                <input id="add-registrants-button" type="button" value="Add Registrant Set">
             </div>
             
             <div class="clear"></div>
@@ -562,19 +562,15 @@
         $(row).removeAttr('id');
         // place proper class
         $(row).addClass('registrant-form');
-        // remove hidden class
-        $(row).find('.hidden').removeClass('hidden');
-        // remove the error
-        $(row).find('div.error').remove();
         if(formCount > 0){
             // remove required att
             $(row).find('div.label').removeClass("required");
         };
-        
         // update id attr
         var id_regex = new RegExp('(registrant_\\d+)');
         var replacement = prefix + '_' + formCount
         if (row.id) {row.id = row.id.replace(id_regex, replacement);}
+        
         $(row).find(".form-field").children().children().each(function() {
             updateIndex(this, prefix, formCount);
             // assign pricing selected
