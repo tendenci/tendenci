@@ -26,7 +26,7 @@
     {% endif %}
 
 	<li>
-		<span>{% trans 'Navs' %}</span>
+		<span>{% if page_select %}{% trans 'Nav Items' %}{% else %}{% trans 'Navs' %}{% endif %}</span>
 		<ul id="secondary">
 			<li><a href="{% url navs.search %}">{% trans 'Navs' %}:</a></li>
 			{% if nav_object %}
