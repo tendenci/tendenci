@@ -11,16 +11,17 @@ from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
 
+from site_settings.utils import get_setting
+from event_logs.models import EventLog
+
 from events.models import Event
+from events.utils import email_admins
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
-from events.registration.utils import get_available_pricings, reg_status, process_registration
+from events.registration.utils import get_available_pricings, reg_status
+from events.registration.utils import process_registration, send_registrant_email
 from events.registration.forms import PricingForm, RegistrantForm, RegistrationForm
 from events.registration.formsets import RegistrantBaseFormSet
 
-try:
-    from notification import models as notification
-except:
-    notification = None
 
 @csrf_exempt
 def ajax_pricing_info(request, event_id, form_class=PricingForm, template_name="events/registration/pricing.html"):
@@ -107,16 +108,16 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             
             if is_credit_card_payment: # online payment
                 # email the admins as well
-                email_admins(event, event_price, self_reg8n, reg8n)
+                email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
                 # get invoice; redirect to online pay
                 return redirect('payments.views.pay_online',
                     reg8n.invoice.id, reg8n.invoice.guid)
             else:
                 # offline payment
                 # email the registrant
-                send_registrant_email(reg8n)
+                send_registrant_email(reg8n, self_reg8n)
                 # email the admins as well
-                email_admins(event, event_price, self_reg8n, reg8n)
+                email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
                 
             # log an event
             log_defaults = {

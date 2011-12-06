@@ -5,10 +5,15 @@ from django.contrib.auth.models import User
 from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 
-from events.utils import get_event_spots_taken
+from events.utils import get_event_spots_taken, update_event_spots_taken
 from events.models import Event, RegConfPricing, Registration, Registrant
-
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
+
+try:
+    from notification import models as notification
+except:
+    notification = None
+
 
 def reg_status(event, user):
     """
@@ -75,7 +80,7 @@ def get_available_pricings(event, user):
     # return the QUERYSET
     return pricings
 
-def send_registrant_email(reg8n):
+def send_registrant_email(reg8n, self_reg8n):
     """
     Email registrant about his/her registration
     """
@@ -92,8 +97,8 @@ def send_registrant_email(reg8n):
                 'SITE_GLOBAL_SITEURL': site_url,
                 'self_reg8n': self_reg8n,
                 'reg8n': reg8n,
-                'event': event,
-                'price': event_price,
+                'event': reg8n.event,
+                'price': reg8n.amount_paid,
                 'is_paid': reg8n.invoice.balance == 0
              },
             True, # save notice in db
