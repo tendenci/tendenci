@@ -207,6 +207,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                     entry.is_renewal = True
 
             # add all permissions and save the model
+            entry.allow_anonymous_view = False
             entry = update_perms_and_save(request, app_entry_form, entry)
 
             # administrators go to approve/disapprove page
