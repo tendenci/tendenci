@@ -209,6 +209,8 @@ class Command(BaseCommand):
             context.update({'membershiptypeid': str(membership.membership_type.id),
                             'membershiplink': '%s%s' % (site_url, membership.get_absolute_url()),
                             'renewlink': memberships_page,
+                            'membernumber': membership.member_number,
+                            'membershiptype': membership.membership_type.name,
                             })
             if membership.expire_dt:
                 context['expirationdatetime'] = time.strftime("%d-%b-%y %I:%M %p", 
