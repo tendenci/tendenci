@@ -1,3 +1,4 @@
+import re
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
@@ -13,7 +14,7 @@ class RegistrationForm(forms.Form):
     Registration form.
     Focuses on non-registrant specific details.
     """
-    amount_for_admin = forms.DecimalField(decimal_places=2)
+    amount_for_admin = forms.DecimalField(decimal_places=2, required=False)
     discount = forms.CharField(label=_('Discount Code'), required=False)
     captcha = CaptchaField(label=_('Type the code below'))
     payment_method = forms.ModelChoiceField(empty_label=None, required=True,
@@ -46,6 +47,12 @@ class RegistrationForm(forms.Form):
             payment_methods = reg_conf.payment_method.exclude(
                 machine_name='credit card').order_by('pk')
         self.fields['payment_method'].queryset = payment_methods
+        
+    def get_user(self):
+        return self.user
+        
+    def get_event(self):
+        return self.event
    
     def clean_discount(self):
         """
@@ -87,9 +94,18 @@ class RegistrantForm(forms.Form):
         if self.form_index and self.form_index > 0:
             for key in self.fields.keys():
                 self.fields[key].required = False
-                
-        #initialize pricing options and reg_set field
+        
+        # initialize pricing options and reg_set field
         self.fields['pricing'] = forms.ModelChoiceField(widget=forms.HiddenInput, queryset=self.pricings)
+        
+        # initialize internal variables
+        self.price = None
+        
+    def set_price(self, price):
+        self.price = price
+        
+    def get_price(self):
+        return self.price
     
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
@@ -133,6 +149,7 @@ class RegistrantForm(forms.Form):
         data = self.cleaned_data['email']
         data.strip()
         return data
+    
 
 class PricingForm(forms.Form):
     """
