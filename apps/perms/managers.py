@@ -426,9 +426,11 @@ class TendenciBaseManager(models.Manager):
         Returns a SearchQuerySet object
         """
         sqs = kwargs.get('sqs', SearchQuerySet())
+        direct_db = kwargs.get('direct_db', 0)
 
         # filter out the big parts first
-        sqs = sqs.models(self.model)
+        if not direct_db:
+            sqs = sqs.models(self.model)
 
         # user information
         user = kwargs.get('user') or AnonymousUser()

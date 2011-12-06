@@ -14,18 +14,7 @@
 
 {% block html_body %}
 <div id="container">
-	<div id="header"> 
-		<h1><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a></h1> 
-		<h2>Website tagline</h2> 
-	</div><!-- /header --> 
-
-	<div id="headerimage"> 
-		<img src="{{ THEME_URL }}media/images/headers/header.jpg" width="940" height="198" alt="" /> 
-	</div><!-- /headerimage --> 
-        
-    <div id="menu"> 
-    	{% spaceless %}{% theme_include "nav.html" %}{% endspaceless %}
-    </div><!-- /menu -->
+    {% theme_include "header.html" %}
     
     <div class="content content-middle {% block content_classes %}{% endblock %}"> 
         {% spaceless %}{% theme_include "base/messages.html" %}{% endspaceless %}
@@ -34,50 +23,9 @@
         
     </div><!-- /content-->
 
-	 {% block sidebar %}
-	 <div class="primary-sidebar content-middle "> 
-	 <h2>Interior page</h2>
-		<ul>
-			<li>
-				<h2>Search</h2> 
-				<form id="searchform" method="get" action="/search"> 
-					<input type="text" value="type, hit enter" onfocus="if (this.value == 'type, hit enter') {this.value = '';}" onblur="if (this.value == '') {this.value = 'type, hit enter';}" size="18" maxlength="50" name="q" id="s" /> 
-				</form> 
-			</li>
-					
-			<li>
-				<h2>What is schipul doing...</h2> 
-				<div class="aktt_tweets"> 
-					{% cache 86400 schipul_rss %}
-               	    {% get_rss "http://twitter.com/statuses/user_timeline/6971652.rss" as rss %}
-		                <ul>
-		                {% for entry in rss.entries|slice:":3" %}
-		                    <li>{{ entry.title }}</li>
-		                {% endfor %}
-		                </ul>
-					{% endcache %}
-				</div>
-			</li> 
-		
-			<li>
-				<h2>Meta</h2>
-				<ul>
-					{% if user.is_authenticated %}
-						<li><a href="{% url dashboard %}">Dashboard</a></li>
-						<li><a href="{% url auth_logout %}">Log Out</a></li>
-					{% else %} 
-						{% if MODULE_USERS_SELFREGISTRATION %}
-						<li><a href="{% url registration_register %}">Register</a></li>
-						{% endif %}
-						<li><a href="{% url auth_login %}">Log in</a></li>
-					{% endif %}					
-				</ul>
-			</li>
-		</ul>
-		</div><!-- /sidebar -->
-		{% endblock %}
-	
-	
+     {% block sidebar %}
+         {% theme_include "sidebar.html" %}
+     {% endblock %}
 
     <div id="footer">
       {% spaceless %}{% theme_include "footer.html" %}{% endspaceless %}
@@ -85,8 +33,3 @@
         
 </div><!-- /container -->
 {% endblock %}
-
- 
-{% block extra_body %}
-{{ block.super }}
-<script type="text/javascript" src="{{ THEME_URL }}media/js/menu.js"></script>{% endblock %}

@@ -1,0 +1,20 @@
+{% load story_tags %}
+{% load base_tags %}
+<h2>Sponsors</h2>
+{% list_stories as sponsor_stories tags=sponsor limit=4 random=true %}
+<div id="sponsor-items">
+{% if sponsor_stories %}
+{% for story in sponsor_stories %}
+    {% if story.image %}
+    <a href="{{ story.full_story_link }}"><img alt="{{ story.title }}" src="{% image_url story.image size=140x80 crop=true quality=90 %}" /></a>
+    {% endif %}
+{% endfor %}
+{% else %}
+    <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
+    <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
+    <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
+    <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
+    {% if user.is_authenticated %}<p><a href="/stories/add/">Add a story</a> and tag it <strong>sponsor</strong> to have it appear as an image above.</p>{% endif %}
+{% endif %}
+</div>
+{% include "theme_includes/space_edit.html" %}

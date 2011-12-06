@@ -1,3 +1,5 @@
+@import url('websymbols.css');
+
 html {
 	margin-top:30px!important;
     /*padding-bottom: 26px !important; */
@@ -73,6 +75,13 @@ html {
 	border-bottom:1px dashed #4B0D09;
 	border-right:none;
 	padding:4px 8px;
+	text-decoration: none;
+}
+
+#admin-bar li li a.setting {
+    border-bottom:1px dashed #4B0D09;
+    height: 16px;
+    width: 16px;
 }
 
 #admin-bar li li.app {
@@ -106,6 +115,7 @@ html {
 
 #admin-bar .app-list ul li.app {
 	float:left;
+	min-width: 150px;
 }
 
 #admin-bar h4 {
@@ -171,18 +181,16 @@ html {
 }
 
 #admin-bar #admin-search-box input#admin-search-submit {
-	border:1px solid #eee;
+	border: none;
 	color:#eee;
 	background-color:#6A120D;
-	font-family:Verdana, Geneva, sans-serif;
-	font-size:12px;
 }
 
-/* Alt color for admin-bar 
-	#admin-bar, #admin-bar ul, #admin-bar a, #admin-bar li li, #admin-bar li li a:hover,
-	#admin-bar #admin-search-box input#admin-search-submit { background-color: #3a3; }
-	#admin-bar li li a, #admin-bar li li.app a, #admin-bar .sub { background-color: #272; }
-	*/
+/*Alt color for admin-bar
+#admin-bar, #admin-bar ul, #admin-bar a, #admin-bar li li, #admin-bar li li a:hover,
+#admin-bar #admin-search-box input#admin-search-submit { background-color: #3a3; }
+#admin-bar li li a, #admin-bar li li.app a, #admin-bar .sub { background-color: #272; }
+ */
 
 	
 /* Old styles for deprecated bottom bar
@@ -307,7 +315,20 @@ div.admin-links a.edit-box {
 }
 
 
-	
+/* Spaces Admin CSS */
+div.space {
+	position:relative;
+}
+
+div.space div.view {
+	position:static;
+}
+
+div.space:hover div.admin-inline {
+	display:block;
+}
+
+
 /* Boxes Admin CSS */
 div.boxes {
 	position:relative;
@@ -329,6 +350,7 @@ nav div.view {
 
 nav:hover div.admin-inline {
 	display:block;
+	position: relative;
 }
 
 /* Rotator Admin CSS */

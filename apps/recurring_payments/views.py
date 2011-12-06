@@ -165,6 +165,13 @@ def run_now(request):
                         status=1,
                         status_detail='active'
                         ).order_by('-update_dt')
+    if not payment_profiles:
+        valid_cpp_ids, invalid_cpp_ids = rp.populate_payment_profile()
+        #print valid_cpp_ids, invalid_cpp_ids
+        
+        if valid_cpp_ids:
+            payment_profiles = PaymentProfile.objects.filter(
+                           customer_profile_id=valid_cpp_ids[0])        
                         
     if not payment_profiles:
         result_data['reason'] = 'not setup'
@@ -230,7 +237,8 @@ def customers(request, template_name="recurring_payments/customers.html"):
                     'total_customers': total_customers,
                     'total_amount_received': total_amount_received,
                     'total_amount_unpaid': total_amount_unpaid,
-                    'total_amount_past_due': total_amount_past_due
+                    'total_amount_past_due': total_amount_past_due,
+                    'query': query
                                               }, 
         context_instance=RequestContext(request))
 

@@ -33,7 +33,10 @@ def navigation(context, nav_id):
     This will call nav_item that will call itself recursively nesting 
     the subnavs
     """
-    nav = Nav.objects.get(id=nav_id)
+    try:
+        nav = Nav.objects.get(id=nav_id)
+    except:
+        return None
     context.update({
         "nav": nav,
         "items": nav.top_items,
