@@ -68,23 +68,6 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "false", 
-        "description": "New Users are Non-Interactive defines whether or not to allow log in for the self registered users. If this value is True, it sets noninteractive for the self added users.", 
-        "data_type": "boolean", 
-        "update_dt": "2010-08-12 17:19:12", 
-        "input_type": "select", 
-        "client_editable": true, 
-        "name": "userssetselfaddnoninteractive", 
-        "value": "false", 
-        "label": "New Users are Non-Interactive", 
-        "input_value": "true,false", 
-        "parent_id": 0, 
-        "scope": "module", 
-        "scope_category": "users", 
-        "store": true, 
-        "updated_by": ""
-    }, 
-    {
         "default_value": "no", 
         "description": "Hide Default determines whether or not to default the hide (in search, email, address, phone) checkboxes as checked.", 
         "data_type": "string", 
