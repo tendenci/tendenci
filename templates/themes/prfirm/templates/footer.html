@@ -1,31 +1,10 @@
 {% load base_filters %}
 {% load base_tags %}
-{% load cache %}
-{% load box_tags %}
-{% load story_tags %}
-{% load news_tags %}
-{% load event_tags %}
 {% load theme_tags %}
 {% load i18n %}
 
 <section id="sponsors">
-    <h2>Sponsors</h2>
-    {% list_stories as sponsor_stories tags=sponsor limit=4 random=true %}
-    <div id="sponsor-items">
-    {% if sponsor_stories %}
-    {% for story in sponsor_stories %}
-        {% if story.image %}
-        <a href="{{ story.full_story_link }}"><img alt="{{ story.title }}" src="{% image_url story.image size=140x80 crop=true quality=90 %}" /></a>
-        {% endif %}
-    {% endfor %}
-    {% else %}
-        <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
-        <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
-        <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
-        <img alt="Visit our Sponsor" src="http://media.tendenciapp.com/images/sponsor.jpg" />
-        {% if user.is_authenticated %}<p><a href="/stories/add/">Add a story</a> and tag it <strong>sponsor</strong> to have it appear as an image above.</p>{% endif %}
-    {% endif %}
-    </div>
+    <div id="space_3" class="space">{% space_include MODULE_THEME_SPACE_3 %}</div>
     <section id="footer-links">
         <ul>
             <li><a href="/login/">{% trans "Log in" %}</a></li>
@@ -39,18 +18,16 @@
 
 <section id="contact-us">
     <div class="left-border-box">
-        <h2>Contact Us</h2>
+        <h2>{% trans 'Contact Us' %}</h2>
         <div id="contact-info">
-            12345 Main Street</br>
-            Houston, Texas 77071<br />
-            Phone: 555-555-555<br />
-            Fax: 555-555-555<br />
-            Email: info@prfirmhouston.com
+            {% firstof SITE_GLOBAL_SITEMAILINGADDRESS '12345 Main Street</br>Houston, Texas 77071' %}<br />
+            {% trans 'Phone: ' %}{% firstof SITE_GLOBAL_SITEPHONENUMBER '123-456-7890' %}<br />
+            {% trans 'Email: ' %}{% firstof SITE_GLOBAL_SITECONTACTEMAIL|obfuscate_email 'info@prfirmhouston.com' %}
         </div>
         <div id="social-links">
-            <a href="http://twitter.com/{% firstof MODULE_THEME_TWITTER 'tendenci' %}"><img alt="Find us on Twitter" src="{{ THEME_URL }}media/images/twitter.png" /></a>
-            <a href="{% firstof MODULE_THEME_LINKEDIN '#' %}"><img alt="Find us on LinkedIn" src="{{ THEME_URL }}media/images/linkedin.png" /></a>
-            <a href="{% firstof MODULE_THEME_FACEBOOK 'http://facebook.com/tendenci' %}"><img alt="Find us on Facebook" src="{{ THEME_URL }}media/images/facebook.png" /></a>
+            {% if MODULE_THEME_TWITTER %}<a href="http://twitter.com/{{ MODULE_THEME_TWITTER }}"><img alt="Find us on Twitter" src="{{ THEME_URL }}media/images/twitter.png" /></a>{% endif %}
+            {% if MODULE_THEME_LINKEDIN %}<a href="{{ MODULE_THEME_LINKEDIN }}"><img alt="Find us on LinkedIn" src="{{ THEME_URL }}media/images/linkedin.png" /></a>{% endif %}
+            {% if MODULE_THEME_FACEBOOK %}<a href="{{ MODULE_THEME_FACEBOOK }}"><img alt="Find us on Facebook" src="{{ THEME_URL }}media/images/facebook.png" /></a>{% endif %}
         </div>
         <div id="mini-search">
             <form>

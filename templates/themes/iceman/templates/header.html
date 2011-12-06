@@ -1,0 +1,13 @@
+{% load nav_tags %}
+<div id="header"> 
+    <h1><a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }}</a></h1> 
+    <h2>{{ MODULE_THEME_TAGLINE }}</h2> 
+</div><!-- /header --> 
+
+<div id="headerimage"> 
+    <img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/940x198/crop/90/{% else %}{{ THEME_URL }}media/images/headers/header.jpg{% endif %}" width="940" height="198" alt="" /> 
+</div><!-- /headerimage --> 
+    
+<div id="menu"> 
+    {% spaceless %}{% navigation 1 %}{% endspaceless %}
+</div><!-- /menu -->

@@ -1,9 +1,11 @@
 import os
-from django.template import TemplateSyntaxError, TemplateDoesNotExist
+from django.template import TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
 from django.template import Library, Template
 from django.conf import settings
 from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode
+
+from boxes.models import Box
 
 register = Library()
 
@@ -65,7 +67,44 @@ class ThemeIncludeNode(IncludeNode):
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
-                raise
+                pass #raise
+            return ''
+
+class SpaceIncludeNode(IncludeNode):
+    def render(self, context):
+        try:
+            setting_value = self.template_name.resolve(context)
+        except VariableDoesNotExist:
+            setting_value = None
+
+        if setting_value:
+            # First try to render this as a box
+            query = '"pk:%s"' % (setting_value)
+            try:
+                box = Box.objects.search(query=query).best_match()
+                context['box'] = box.object
+                template = get_template('boxes/edit-link.html')
+                output = '<div id="box-%s" class="boxes">%s %s</div>' % (
+                    box.object.pk,
+                    box.object.content,
+                    template.render(context),
+                )
+                return output
+            except:
+                # Otherwise try to render a template
+                try:
+                    template_name = setting_value
+                    theme = context['THEME']
+                    try:
+                        t = get_template("%s/templates/theme_includes/%s"%(theme,template_name))
+                    except TemplateDoesNotExist:
+                        #load the true default template directly to be sure
+                        #that we are not loading the active theme's template
+                        t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", "theme_includes", template_name)).read(), "utf-8"))
+                    return t.render(context)
+                except:
+                    return ''
+        else:
             return ''
 
 def theme_extends(parser, token):
@@ -99,7 +138,7 @@ def theme_include(parser, token):
     Loads a template and renders it with the current context.
     context['THEME'] is used to specify a selected theme for the templates
     Example:
-        {% include "foo/some_include" %}
+        {% theme_include "foo/some_include" %}
     """
     bits = token.split_contents()
     if len(bits) != 2:
@@ -109,5 +148,19 @@ def theme_include(parser, token):
         return ThemeConstantIncludeNode(path[1:-1])
     return ThemeIncludeNode(bits[1])
 
+def space_include(parser, token):
+    """
+    Loads a a box or a template and renders it with the current context.
+    context['THEME'] is used to specify a selected theme for the templates
+    Example:
+        {% space_include MODULE_THEME_SPACE_1 %}
+    """
+    bits = token.split_contents()
+    if len(bits) != 2:
+        raise TemplateSyntaxError("%r tag takes one argument: the setting to be included" % bits[0])
+    path = bits[1]
+    return SpaceIncludeNode(bits[1])
+
 register.tag('theme_extends', theme_extends)
 register.tag('theme_include', theme_include)
+register.tag('space_include', space_include)
