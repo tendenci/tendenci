@@ -214,3 +214,8 @@
 
 .t .bna-detail .other-photosets a {text-decoration: none;}
 
+.t .bna-detail #more-photos-carousel li.jcarousel-item {
+    /* jcarousel should auto-detect an appropriate width, but it's not.
+    width: 172px !important;
+}
+
