@@ -66,7 +66,7 @@ class RegistrantBaseFormSet(BaseFormSet):
                 self.pricings[pricing].append(form)
             else:
                 self.pricings[pricing] = [form,]
-                
+        
         # validate the reg quantity for each pricing
         for pricing in self.pricings.keys():
             # the registrant length must be divisible by the pricing's quantity
@@ -89,5 +89,4 @@ class RegistrantBaseFormSet(BaseFormSet):
                 self.total_price += price
         
     def get_total_price(self):
-        print "total_price", self.total_price
         return self.total_price

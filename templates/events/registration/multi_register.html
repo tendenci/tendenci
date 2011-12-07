@@ -174,8 +174,24 @@
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
         </div>
         <div class="event-msg">
-            <strong>{% blocktrans %} Only the first</strong> registrant information is required. The rest of the registrants can be left blank if you don't know the information. {% endblocktrans %}
+            {% blocktrans %}
+                <strong>Only the first</strong>
+                registrant information is required. The rest of the registrants can be left blank
+                if you don't know the information.
+            {% endblocktrans %}
         </div>
+        {% if email_form %}
+            <div class="event-email">
+                {% blocktrans %}
+                    <p>If you'd like to see more available pricing options,
+                    login or enter your email below:</p>
+                {% endblocktrans %}
+                <form method="get" action="">
+                    {{ email_form|styled_form }}
+                    <input type="submit" value="Validate">
+                </form>
+            </div>
+        {% endif %}
     </div>
         
     {% if reg_form.errors.values or has_registrant_form_errors %}
@@ -352,22 +368,15 @@
                             
                             {{ form.pricing }}
 							
-							{% if form.DELETE %}
-							{% if price.quantity == 1 %}
-							<div class="form-field delete{% if forloop.first %} hidden{% endif %}">
+                            <div class="form-field delete{% if forloop.first %} hidden{% endif %}">
 								<div class="delete-button-wrap">
 									<button class="delete-button">&nbsp;&nbsp;{% trans "Delete" %}</button>
 								</div>
-								
 								<noscript>
 									<div>{{ form.DELETE }} {% trans "Delete" %}</div>
 								</noscript>
-							
 							</div>
-							{% endif %}
-							{% endif %}	
-							
-						</div>	
+						</div>
 					</div>
 				{% endwith %}	
 				{% endfor %}
