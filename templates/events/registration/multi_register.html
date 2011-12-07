@@ -144,8 +144,12 @@
         padding-top: 20px;
     }
     
+    .add-registrants-box h3 {
+        margin-bottom: 5px;
+    }
+    
     .add-registrants-box input{
-        padding: 5px;
+        margin: 5px;
     }
 
     .summary-total {
@@ -384,7 +388,7 @@
 			</div>
 			
             <div class="add-registrants-box">
-                <h3>Add another set of registrants</h3>
+                <h3>{% blocktrans %}Choose a pricing to add another set of registrants{% endblocktrans %}</h3>
                 {% for pricing in pricings %}
                 <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}">
                 {{ pricing.title }} ({{ pricing.quantity }} registrant{{ pricing.quantity|pluralize }} for {{ pricing.price }})
@@ -399,7 +403,7 @@
             <div class="clear"></div>
         </div>
         </form>
-        <div>
+        <div style="display: none;">
             <div id="registrant-hidden">
                 <div class="registrant-header">
                     <span class="showhide"></span>Registrant #<span class="item-counter">1</span>:
@@ -520,7 +524,9 @@
 
         var reg_header = $(this_form).find('.registrant-header');
         if (reg_header) {
-            $(reg_header).parent().children('div:last').hide();
+            if(idx != 1){
+                $(reg_header).parent().children('div:last').hide();
+            }
             $(reg_header).children('span.showhide').text('+ ');
             var ic = $(reg_header).find('.item-counter');
             if (ic) {
