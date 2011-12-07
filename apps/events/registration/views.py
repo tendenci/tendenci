@@ -11,6 +11,7 @@ from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
 
+from perms.utils import is_admin
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 
@@ -20,6 +21,7 @@ from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
 from events.registration.utils import get_available_pricings, reg_status
 from events.registration.utils import process_registration, send_registrant_email
 from events.registration.forms import PricingForm, RegistrantForm, RegistrationForm
+from events.registration.forms import EmailForm
 from events.registration.formsets import RegistrantBaseFormSet
 
 
@@ -53,9 +55,11 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     A registration set is a set of registrants (one or many) that comply with a specific pricing.
     A pricing defines the maximum number of registrants in a registration set.
     A user can avail multiple registration sets.
+    
     If the site setting anonymousmemberpricing is enabled,
     anonymous users can select non public pricings in their registration sets,
     provided that the first registrant of every registration set's email is validated to be an existing user.
+    
     If the site setting anonymousmemberpricing is disabled,
     anonymous users will not be able to see non public prices.
     """
@@ -65,17 +69,34 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     if (not event.registration_configuration and event.registration_configuration.enabled):
         raise Http404
     
-    # check if it is still open
-    status = reg_status(event, request.user)
-    if status == REG_FULL:
-        messages.add_message(request, messages.ERROR, _('Registration is full.'))
-        return redirect('event', event.pk)
-    elif status == REG_CLOSED:
-        messages.add_message(request, messages.ERROR, _('Registration is closed.'))
-        return redirect('event', event.pk)
+    # check if it is still open, always open for admin users
+    if not is_admin(request.user):
+        status = reg_status(event, request.user)
+        if status == REG_FULL:
+            messages.add_message(request, messages.ERROR, _('Registration is full.'))
+            return redirect('event', event.pk)
+        elif status == REG_CLOSED:
+            messages.add_message(request, messages.ERROR, _('Registration is closed.'))
+            return redirect('event', event.pk)
+    
+    # if setting is enabled, determine the anonymous user from email form
+    anonymousmemberpricing = get_setting('module', 'events', 'anonymousmemberpricing')
+    if not request.user.is_authenticated() and anonymousmemberpricing:
+        # get the anonymous user based on the email
+        email_form = EmailForm(request.GET)
+        if email_form.is_valid():
+            users = User.objects.filter(email=email_form.cleaned_data['email'])
+            if users:
+                user = users[0] # no match
+            else:
+                user = request.user
+    else:
+        # don't show the form if user is logged in or setting is false
+        email_form = None
+        user = request.user
         
     # get available pricings
-    pricings = get_available_pricings(event, request.user)
+    pricings = get_available_pricings(event, user)
     
     # start the form set factory    
     RegistrantFormSet = formset_factory(
@@ -92,7 +113,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                             extra_params={
                                 'pricings':pricings,
                             })
-        reg_form = RegistrationForm(event, request.user, request.POST,
+        reg_form = RegistrationForm(event, user, request.POST,
                             reg_count = len(reg_formset.forms))
         # validate the form and formset
         if reg_form.is_valid() and reg_formset.is_valid():
@@ -145,5 +166,6 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             'event':event,
             'reg_form':reg_form,
             'registrant': reg_formset,
+            'email_form': email_form,
             'pricings':pricings,
             }, context_instance=RequestContext(request))
