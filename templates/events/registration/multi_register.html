@@ -45,7 +45,7 @@
     }
     .registrant-header{
         border-bottom: 1px dotted #ccc;
-        margin: 2em 0 1em;
+        margin-top: 5px;
         padding: 5px 8px;
         font-weight: bold;
         font-size: 14px;
@@ -159,6 +159,12 @@
     }
 
     .summary-payment {
+        margin-bottom: 15px;
+    }
+    
+    .registrant-set{
+        border:1px solid black;
+        padding: 5px;
         margin-bottom: 15px;
     }
     
@@ -284,13 +290,7 @@
 
     				{# price list #}
     				<table id="summary-price">
-    					<tr id="price_registrant_0" style="display:none;">
-	    					<td width="50%">{% trans "Reg" %}#<span class="item-counter"></span></td>
-	    					<td width="50%" align="right">
-		    					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-		    					<span class="reg-price"></span>
-	    					</td>
-    					</tr>
+    					
     				</table>
 					<table id="summary-total-price">
 						<tr>
@@ -372,14 +372,6 @@
                             
                             {{ form.pricing }}
 							
-                            <div class="form-field delete{% if forloop.first %} hidden{% endif %}">
-								<div class="delete-button-wrap">
-									<button class="delete-button">&nbsp;&nbsp;{% trans "Delete" %}</button>
-								</div>
-								<noscript>
-									<div>{{ form.DELETE }} {% trans "Delete" %}</div>
-								</noscript>
-							</div>
 						</div>
 					</div>
 				{% endwith %}	
@@ -404,6 +396,20 @@
         </div>
         </form>
         <div style="display: none;">
+            <table>
+            <tr id="price_registrant-hidden">
+                <td width="50%">{% trans "Reg" %}#<span class="item-counter"></span></td>
+                <td width="50%" align="right">
+                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                    <span class="reg-price"></span>
+                </td>
+            </tr>
+            </table>
+            <div id="delete-hidden" class="delete">
+                <div class="delete-button-wrap">
+                    <input type="button" class="delete-button" value="&nbsp;&nbsp;{% trans 'Delete' %}">
+                </div>
+            </div>
             <div id="registrant-hidden">
                 <div class="registrant-header">
                     <span class="showhide"></span>Registrant #<span class="item-counter">1</span>:
@@ -460,7 +466,7 @@
  <script type="text/javascript">
 
     function deleteRegistrant(ele, prefix) {
-        var registrant_form = $(ele).parents('.registrant-form');
+        var registrant_form = $(ele);
         var attr_id = $(registrant_form).attr("id");
         
         // remove the registrant form
@@ -479,23 +485,6 @@
 		total_amount = (parseFloat(total_amount) - parseFloat(registrant_price)).toFixed(2);
 		
 		$(registrant_summary_entry).remove();
-		
-		// update form index
-		var this_form;
-		for (var i=0, formCount=forms.length; i<formCount; i++){
-			this_form = forms.get(i);
-			$(this_form).find(".form-field").children().children().each(function() {
-				if (this){
-					updateIndex(this, prefix, i);
-				}
-			});
-
-			// update form header
-			if (i > 0){
-				updateFormHeader(this_form, prefix, i);
-				updateSummary(this_form, prefix, i);
-			}
-		}
         
 		$("#total-amount").html(total_amount);
         $("span.summary-total-amount").html(total_amount);
@@ -514,9 +503,7 @@
     }
 
     // update the serial number on the form. ex: Registrant #3, Reg #3
-    function updateFormHeader(this_form, prefix, idx, pricing_title){
-        idx = idx + 1;
-        
+    function updateFormHeader(this_form, prefix, idx){
         // change the serial number on the form
         var id_regex = new RegExp('(registrant_\\d+)');
         var replacement = prefix + '_' + idx
@@ -524,42 +511,41 @@
 
         var reg_header = $(this_form).find('.registrant-header');
         if (reg_header) {
-            if(idx != 1){
+            if(idx != 0){
                 $(reg_header).parent().children('div:last').hide();
             }
             $(reg_header).children('span.showhide').text('+ ');
             var ic = $(reg_header).find('.item-counter');
             if (ic) {
-                $(ic).html(idx + " ("+pricing_title+")");
+                $(ic).html(idx+1);
             }
         };
         
     }
     
     function updateSummary(this_form, prefix, idx){
-        idx = idx + 1;
         // change the serial number in the summary
-        var price_item = $('#summary-price').find('tr')[idx-1];
+        var price_item = $('#summary-price').find('tr')[idx];
         if (price_item){
             if (price_item.id){
                 price_item.id = 'price_registrant_' + idx;
                 var item_counter = $(price_item).find('.item-counter');
-                if (item_counter) {$(item_counter).html(idx);}
+                if (item_counter) {$(item_counter).html(idx+1);}
             }
         }   
     }
     function addSummaryEntry(this_form, prefix, idx, price){
-        idx = idx + 1;
-        var row = $('#summary-price').find('tr:first').clone(true).get(0);
+        var row = $('#price_registrant-hidden').clone(true);
         $(row).attr('style', '');
-        $(row).find('.item-counter').html(idx);
+        $(row).find('.item-counter').html(idx+1);
         $(row).find('.reg-price').html(price);
         
-		var id_regex = new RegExp('(registrant_\\d+)');
-		var replacement = prefix + '_' + idx
-		if (row.id) {row.id = row.id.replace(id_regex, replacement);}
+		var replacement = 'price_registrant_' + idx;
+        $(row).attr('id', replacement);
 		
-		$(row).insertAfter($('#summary-price').find('tr:last'))
+        // append entry to summary box
+		$('#summary-price').append(row);
+        
 		// update the total
 		var total_amount = $("#total-amount").html();
 		total_amount = (parseFloat(total_amount) + parseFloat($(row).find(".reg-price").html())).toFixed(2);
@@ -570,21 +556,19 @@
         $('#final-amount').html(total_amount);
 	}
 
-    function addRegistrant(prefix, price, price_pk, pricing_title){
+    function addRegistrant(prefix, price, price_pk, pricing_title, set_container){
         var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
         var row = $('#registrant-hidden').clone(true).get(0);
-        // remove hidden id
-        $(row).removeAttr('id');
         // place proper class
         $(row).addClass('registrant-form');
         if(formCount > 0){
             // remove required att
             $(row).find('div.label').removeClass("required");
         };
+        
         // update id attr
-        var id_regex = new RegExp('(registrant_\\d+)');
         var replacement = prefix + '_' + formCount
-        if (row.id) {row.id = row.id.replace(id_regex, replacement);}
+        $(row).attr('id',replacement);
         
         $(row).find(".form-field").children().children().each(function() {
             updateIndex(this, prefix, formCount);
@@ -600,27 +584,33 @@
         });
         
         // insert as last element into form list
-        $('#registrant-forms').append(row);
+        $(set_container).append(row);
         
-        $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
-        
-        updateFormHeader(row, prefix, formCount, pricing_title);
+        updateFormHeader(row, prefix, formCount);
         
         addSummaryEntry(row, prefix, formCount, price);
+        
+        $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
         
         return false;
     }
     
     function addRegistrantSet(prefix, quantity, price, pricing_pk, pricing_title){
         extra_count = quantity;
+        container = $('<div class="registrant-set"></div>');
+        container.append("<h2>"+pricing_title+"</h2>");
         if (extra_count > 0){
             //only the first one is charged in a set
-            addRegistrant(prefix, price, pricing_pk, pricing_title);
+            addRegistrant(prefix, price, pricing_pk, pricing_title, container);
             //the rest will have 0 price
             for (var i=1; i<extra_count; i++) {
-                addRegistrant(prefix, 0.00, pricing_pk, pricing_title);
+                addRegistrant(prefix, 0.00, pricing_pk, pricing_title, container);
             }
         }
+        delete_button = $("#delete-hidden").clone(true);
+        delete_button.removeAttr('id');
+        container.append(delete_button);
+        $('#registrant-forms').append(container);
         return false;
     }
     
@@ -638,11 +628,31 @@
         
         // show delete-button-wrap
         $(".delete-button-wrap").show();
-        // delete confirmation
-        $('button.delete-button').live('click', function(){
-            var delete_confirm = confirm('Are you sure you want to delete this registrant?');   // confirm
+        // delete registrant set button
+        $('.delete-button').live('click', function(){
+            var delete_confirm = confirm('Are you sure you want to delete this registrant set?');   // confirm
             if(delete_confirm) {
-                return deleteRegistrant(this, 'registrant');
+                // delete each form in the set
+                set = $($($($(this).parent()).parent()).parent());
+                forms = set.find('.registrant-form');
+                for(i=0;i<forms.length;i++){
+                    deleteRegistrant(forms[i], 'registrant');
+                }
+                set.remove();
+                
+                // update form index
+                forms = $('.registrant-form');
+                var this_form;
+                for (var i=0, formCount=forms.length; i<formCount; i++){
+                    this_form = forms.get(i);
+                    $(this_form).find(".form-field").children().children().each(function() {
+                        if (this){
+                            updateIndex(this, 'registrant', i);
+                        }
+                    });
+                    updateFormHeader(this_form, 'registrant', i);
+                    updateSummary(this_form, 'registrant', i);
+                }
             }
             return false;   // cancel
         });
