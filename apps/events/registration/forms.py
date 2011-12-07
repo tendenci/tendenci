@@ -166,3 +166,9 @@ class PricingForm(forms.Form):
         #initialize pricing options
         pricings = get_available_pricings(event, user)
         self.fields['pricing'].queryset = pricings
+
+class EmailForm(forms.Form):
+    """
+    Form for validating emails
+    """
+    email = forms.EmailField(required=False)

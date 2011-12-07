@@ -50,32 +50,29 @@ def get_available_pricings(event, user):
         # return all if admin is user
         return pricings
     
-    anonymousmemberpricing = get_setting('module', 'events', 'anonymousmemberpricing')
-    
-    if not anonymousmemberpricing:
-        if not user.is_authenticated():
-            # public pricings only
-            pricings = pricings.filter(allow_anonymous=True)
-        else:
-            exclude_list = []
-            # user permitted pricings
-            for price in pricings:
-                # shown to all
-                if price.allow_anonymous:
-                    continue
-                
-                # Members allowed
-                if price.allow_member and is_member(user):
-                    continue
-                
-                # Group members allowed
-                if price.group and price.group.is_member(user):
-                    continue
-                
-                # user failed all permission checks
-                exclude_list.append(price.pk)
-            # exclude pricings user failed permission checks with
-            pricings = pricings.exclude(pk__in=exclude_list)
+    if not user.is_authenticated():
+        # public pricings only
+        pricings = pricings.filter(allow_anonymous=True)
+    else:
+        exclude_list = []
+        # user permitted pricings
+        for price in pricings:
+            # shown to all
+            if price.allow_anonymous:
+                continue
+            
+            # Members allowed
+            if price.allow_member and is_member(user):
+                continue
+            
+            # Group members allowed
+            if price.group and price.group.is_member(user):
+                continue
+            
+            # user failed all permission checks
+            exclude_list.append(price.pk)
+        # exclude pricings user failed permission checks with
+        pricings = pricings.exclude(pk__in=exclude_list)
     
     # return the QUERYSET
     return pricings
