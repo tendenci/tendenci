@@ -513,6 +513,8 @@
         if (reg_header) {
             if(idx != 0){
                 $(reg_header).parent().children('div:last').hide();
+            }else{
+                $(reg_header).parent().children('div:last').show();
             }
             $(reg_header).children('span.showhide').text('+ ');
             var ic = $(reg_header).find('.item-counter');
