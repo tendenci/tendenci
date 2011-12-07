@@ -4,7 +4,9 @@
 {% firstof object.title "Untitled" %}
 by {{ object.creator }}
 by {{ object.object.creator.get_profile.display_name }}
-{{ object.content }}
+
+{{ object.content|striptags }}
+
 {% get_category_for_object object as category %}
 {% if category %}
 category:{{ category }}
@@ -20,3 +22,5 @@ is:{{ object.status_detail }}
 {% for tag in tags %}
 tag:{{ tag }}
 {% endfor %}
+
+pk:{{ object.pk }}
