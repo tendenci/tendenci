@@ -14,8 +14,8 @@
                             {% if app.enabled %}
                             <ul>
                                 <li class="app">
-                                     <a href="{{ app.url.search }}" title="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}">
-                                         {{ app|capfirst }}
+                                     <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                         {{ app|title }}
                                      </a>
                                 </li>
                                 {% if app.url.settings %}
@@ -38,8 +38,8 @@
                     {% for app in registered_apps.plugins %}
                         <ul>
                             <li class="app">
-                                 <a href="{{ app.url.search }}" title="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|capfirst }}&nbsp;&ndash;&nbsp;{{ app.description }}">
-                                     {{ app|capfirst }}
+                                 <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                     {{ app|title }}
                                  </a>
                             </li>
                             {% if app.url.settings %}
@@ -57,27 +57,37 @@
                 {% endif %}
             </div>
         </li>
-    	<li><a href="{% url profile.search %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "Users" %}</a>
+    	<li><a href="{% url profile.search %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
         	<div class="sub">
-            	<div class="column app-list">                
-                    <ul>
-                        <li class="app"><a href="{% url profile.search %}">{% trans "Users" %}</a></li>
-                        <li><a href="/settings/module/users/" class="glyph gear">&#83;</a></li>
-                        <li><a href="{% url profile.search %}" class="glyph search">&#76;</a></li>
-                        <li><a href="{% url profile.add %}" class="glyph plus">&#43;</a></li>
-
-                    </ul>
-                    <ul>
-                        <li class="app"><a href="{% url groups %}">{% trans "Groups" %}</a></li>
-                        <li><a href="/settings/module/groups/" class="glyph gear">&#83;</a></li>
-                        <li><a href="{% url groups %}" class="glyph search">&#76;</a></li>
-                        <li><a href="{% url group.add %}" class="glyph plus">&#43;</a></li>
-                    </ul>
+        	   {% if registered_apps.people %}
+                <div class="column app-list">
+                    {% for app in registered_apps.people %}
+                        <ul>
+                            <li class="app">
+                                 <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                     {{ app|title }}
+                                 </a>
+                            </li>
+                            {% if app.url.settings %}
+                            <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
+                            {% endif %}
+                            {% if app.url.search %}
+                            <li><a href="{{ app.url.search }}" class="glyph search" title="Search {{ app|title }}">&#76;</a></li>
+                            {% endif %}
+                            {% if app.url.add %}
+                            <li><a href="{{ app.url.add }}" class="glyph plus" title="Add {{ app|title }}">&#43;</a></li>
+                            {% endif %}
+                        </ul>
+                    {% endfor %}
                     <ul>
                         <li class="app"><a href="{% url reports-user-activity %}">{% trans "Activity Report" %}</a></li>
                         <li><a href="{% url reports-user-activity %}" class="glyph heading">&#117;</a></li>
                     </ul>
+                    <ul>
+                        <li class="app"><a href="{% url profile.admins %}">{% trans "Administrators" %}</a></li>
+                    </ul>
                 </div>
+                {% endif %}
             </div>
         </li>
         {% comment %}
