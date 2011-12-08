@@ -19,7 +19,7 @@ class Command(BaseCommand):
 		verbosity = options['verbosity']
 
 		# example if no settings are passed.
-		if not settings:
+		if not settings and verbosity > 0:
 			print self.help
 
 		for setting in settings:
