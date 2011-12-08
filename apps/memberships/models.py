@@ -274,8 +274,8 @@ class Membership(TendenciBaseModel):
     objects = MembershipManager()
 
     class Meta:
-        verbose_name = _("Membership")
-        verbose_name_plural = _("Memberships")
+        verbose_name = _("Member")
+        verbose_name_plural = _("Members")
         permissions = (("view_membership","Can view membership"),)
 
     def __unicode__(self):

@@ -88,6 +88,8 @@ class Profile(TendenciBaseModel):
     
     class Meta:
         permissions = (("view_profile","Can view profile"),)
+        verbose_name = "User"
+        verbose_name_plural = "Users"
         
     def save(self, *args, **kwargs):
         from campaign_monitor.utils import update_subscription
