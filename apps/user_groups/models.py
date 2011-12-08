@@ -36,8 +36,8 @@ class Group(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_group","Can view group"),)
-        verbose_name = "User Group"
-        verbose_name_plural = "User Groups"
+        verbose_name = "Group"
+        verbose_name_plural = "Groups"
         
             
     def __unicode__(self):
