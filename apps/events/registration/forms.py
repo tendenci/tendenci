@@ -150,25 +150,3 @@ class RegistrantForm(forms.Form):
         data.strip()
         return data
     
-
-class PricingForm(forms.Form):
-    """
-    This form is the user's pricing selection.
-    This form will be mainly used for ajax requests.
-    This is the first form a user must answer before a registrant formset is loaded.
-    """
-    
-    pricing = forms.ModelChoiceField(queryset=RegConfPricing.objects.none())
-    
-    def __init__(self, event, user, *args, **kwargs):
-        super(PricingForm, self).__init__(*args, **kwargs)
-        
-        #initialize pricing options
-        pricings = get_available_pricings(event, user)
-        self.fields['pricing'].queryset = pricings
-
-class EmailForm(forms.Form):
-    """
-    Form for validating emails
-    """
-    email = forms.EmailField(required=False)
