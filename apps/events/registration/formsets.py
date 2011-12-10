@@ -76,13 +76,18 @@ class RegistrantBaseFormSet(BaseFormSet):
         # if all quantities are valid, update each form's corresponding price 
         for pricing in self.pricings.keys():
             for i in range(0, len(self.pricings[pricing])):
+                form = self.pricings[pricing][i]
                 if i % pricing.quantity == 0:
-                    price = pricing.price
+                    # first form of each set must be authorized for the pricing
+                    user = form.get_user()
+                    if can_use_pricing(self.event, user, pricing):
+                        price = pricing.price
+                    else:
+                        raise forms.ValidationError(_("%s is not authorized to use %s" % (user, pricing)))
                 else:
                     price = Decimal('0.00')
                 
                 # associate the price with the form
-                form = self.pricings[pricing][i]
                 form.set_price(price)
                 
                 # update the total price
