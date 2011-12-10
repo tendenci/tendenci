@@ -20,34 +20,49 @@ from events.utils import email_admins
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
 from events.registration.utils import get_available_pricings, reg_status
 from events.registration.utils import process_registration, send_registrant_email
-from events.registration.forms import PricingForm, RegistrantForm, RegistrationForm
-from events.registration.forms import EmailForm
+from events.registration.forms import RegistrantForm, RegistrationForm
 from events.registration.formsets import RegistrantBaseFormSet
 
 
 @csrf_exempt
-def ajax_pricing_info(request, event_id, form_class=PricingForm, template_name="events/registration/pricing.html"):
+def ajax_pricing(request, event_id, template_name="events/registration/pricing.html"):
     """
     Ajax query for pricing info.
+    The parameters are email and memberid.
+    Both are not unique to a user but are assumed to be unique.
+    On cases that there are multiple matches,
+    the first match will be the basis of the pricing list
     """
     event = get_object_or_404(Event, pk=event_id)
     
-    if request.method == "POST":
-        form = form_class(event, request.user, request.POST)
-        if form.is_valid():
-            pricing = form.cleaned_data['pricing']
-            data = json.dumps({
-                    "title":pricing.title,
-                    "pk":pricing.pk,
-                    "price":str(pricing.price),
-                })
-            return HttpResponse(data, mimetype="text/plain")
-    else:
-        form = form_class(event, request.user)
-        
-    return render_to_response(template_name,{
-        'form':form,
-    },context_instance=RequestContext(request))
+    memberid = request.GET.get('memberid', None)
+    email = request.GET.get('email', None)
+    
+    user = request.user
+    if memberid:# memberid takes priority over email
+        user = Membership.objects.filter(member_number=memberid)
+        if user:
+            user = user[0]
+    elif email:
+        user = User.objects.filter(email=email)
+        if user:
+            user = user[0]
+    
+    pricings = []
+    if user:
+        pricings = get_available_pricings(event, user)
+    
+    pricing_list = []
+    for pricing in pricings:
+        pricing_list.append({
+            'title':pricing.title,
+            'quantity':pricing.quantity,
+            'price':str(pricing.price),
+            'pk':pricing.pk,
+        })
+    
+    data = json.dumps(pricing_list)
+    return HttpResponse(data, mimetype="text/plain")
 
 def multi_register(request, event_id, template_name="events/registration/multi_register.html"):
     """
@@ -79,21 +94,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             messages.add_message(request, messages.ERROR, _('Registration is closed.'))
             return redirect('event', event.pk)
     
-    # if setting is enabled, determine the anonymous user from email form
-    anonymousmemberpricing = get_setting('module', 'events', 'anonymousmemberpricing')
-    if not request.user.is_authenticated() and anonymousmemberpricing:
-        # get the anonymous user based on the email
-        email_form = EmailForm(request.GET)
-        if email_form.is_valid():
-            users = User.objects.filter(email=email_form.cleaned_data['email'])
-            if users:
-                user = users[0] # no match
-            else:
-                user = request.user
-    else:
-        # don't show the form if user is logged in or setting is false
-        email_form = None
-        user = request.user
+    user = request.user
         
     # get available pricings
     pricings = get_available_pricings(event, user)
@@ -166,6 +167,5 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             'event':event,
             'reg_form':reg_form,
             'registrant': reg_formset,
-            'email_form': email_form,
             'pricings':pricings,
             }, context_instance=RequestContext(request))

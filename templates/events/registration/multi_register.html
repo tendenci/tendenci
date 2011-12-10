@@ -190,18 +190,6 @@
                 if you don't know the information.
             {% endblocktrans %}
         </div>
-        {% if email_form %}
-            <div class="event-email">
-                {% blocktrans %}
-                    <p>If you'd like to see more available pricing options,
-                    login or enter your email below:</p>
-                {% endblocktrans %}
-                <form method="get" action="">
-                    {{ email_form|styled_form }}
-                    <input type="submit" value="Validate">
-                </form>
-            </div>
-        {% endif %}
     </div>
         
     {% if reg_form.errors.values or has_registrant_form_errors %}
@@ -381,11 +369,16 @@
 			
             <div class="add-registrants-box">
                 <h3>{% blocktrans %}Choose a pricing to add another set of registrants{% endblocktrans %}</h3>
-                {% for pricing in pricings %}
-                <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}">
-                {{ pricing.title }} ({{ pricing.quantity }} registrant{{ pricing.quantity|pluralize }} for {{ pricing.price }})
-                <br>
-                {% endfor %}
+                <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="">
+                <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value="">
+                <input id="pricing-check" type="button" value="Get Pricings">
+                <div id="pricing-choices">
+                    {% for pricing in pricings %}
+                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}">
+                    {{ pricing.title }} ({{ pricing.quantity }} for {{ pricing.price }})
+                    <br>
+                    {% endfor %}
+                </div>
                 <input id="add-registrants-button" type="button" value="Add Registrant Set">
             </div>
             
@@ -635,8 +628,8 @@
             var delete_confirm = confirm('Are you sure you want to delete this registrant set?');   // confirm
             if(delete_confirm) {
                 // delete each form in the set
-                set = $($($($(this).parent()).parent()).parent());
-                forms = set.find('.registrant-form');
+                var set = $($($($(this).parent()).parent()).parent());
+                var forms = set.find('.registrant-form');
                 for(i=0;i<forms.length;i++){
                     deleteRegistrant(forms[i], 'registrant');
                 }
@@ -673,9 +666,9 @@
 	// });
     
     $('#discount_check').click(function(){
-        code = $('#id_discount_code').val();
-        price = $('#original-price').html();
-        count = parseInt($('#id_registrant-TOTAL_FORMS').val());
+        var code = $('#id_discount_code').val();
+        var price = $('#original-price').html();
+        var count = parseInt($('#id_registrant-TOTAL_FORMS').val());
         $.post(
             '{% url discount.discounted_price %}',
             {
@@ -708,6 +701,32 @@
         } else 
         {$(this).children('span.showhide').text('+ '); }
     });
+    
+    $('#pricing-check').click(function(){
+        getPricingList();
+    });
+    
+    function getPricingList(){
+        var email = $('#pricing-email').val();
+        var memberid = $('#pricing-memberid').val();
+        $.ajax({
+            url: "{% url event.reg_pricing event.pk %}",
+            type: "GET",
+            data: {'email':email, 'memberid':memberid},
+            dataType: "json",
+            success: function(p_list){
+                var p_html = "";
+                for(i=0; i<p_list.length; i++){
+                    p_html = p_html +  '<input type="radio" name="add-registrants-pricing" value="' + p_list[i]['pk'] + '"'
+                    p_html = p_html + 'quantity="'+ p_list[i]['quantity'] +'" price="' + p_list[i]['price'] + '"'
+                    p_html = p_html + 'title="' + p_list[i]['title'] + '">'+p_list[i]['title']
+                    p_html = p_html + ' (' + p_list[i]['quantity'] + ' for ' + p_list[i]['price'] + ')<br>'
+                }
+                $('#pricing-choices').html(p_html);
+                $($('input:radio[name=add-registrants-pricing]')[0]).check();
+            }
+        });
+    };
     
    </script>
 {% endblock %}
