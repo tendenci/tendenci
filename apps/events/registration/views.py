@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
@@ -14,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from perms.utils import is_admin
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
+from memberships.models import Membership
 
 from events.models import Event
 from events.utils import email_admins
@@ -38,11 +39,11 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     memberid = request.GET.get('memberid', None)
     email = request.GET.get('email', None)
     
-    user = request.user
+    user = AnonymousUser()
     if memberid:# memberid takes priority over email
-        user = Membership.objects.filter(member_number=memberid)
-        if user:
-            user = user[0]
+        membership = Membership.objects.filter(member_number=memberid)
+        if membership:
+            user = membership[0].user
     elif email:
         user = User.objects.filter(email=email)
         if user:
@@ -94,8 +95,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             messages.add_message(request, messages.ERROR, _('Registration is closed.'))
             return redirect('event', event.pk)
     
-    user = request.user
-        
+    user = AnonymousUser()
     # get available pricings
     pricings = get_available_pricings(event, user)
     

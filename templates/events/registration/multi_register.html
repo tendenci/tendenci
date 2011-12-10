@@ -356,7 +356,15 @@
 								<div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "Email" %}</div>
 								<div class="field">{{ form.email }}</div>
 							</div>
-							{% endif %}	
+							{% endif %}
+                            
+                            {% if form.memberid %}
+                            <div class="form-field">
+								<div class="error">{{ form.memberid.errors }}</div>
+								<div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "Member ID" %}</div>
+								<div class="field">{{ form.memberid }}</div>
+							</div>
+                            {% endif %}
                             
                             {{ form.pricing }}
 							
@@ -369,17 +377,18 @@
 			
             <div class="add-registrants-box">
                 <h3>{% blocktrans %}Choose a pricing to add another set of registrants{% endblocktrans %}</h3>
-                <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="">
-                <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value="">
-                <input id="pricing-check" type="button" value="Get Pricings">
                 <div id="pricing-choices">
                     {% for pricing in pricings %}
                     <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}">
-                    {{ pricing.title }} ({{ pricing.quantity }} for {{ pricing.price }})
+                    {{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
                     <br>
                     {% endfor %}
                 </div>
                 <input id="add-registrants-button" type="button" value="Add Registrant Set">
+                <h3>...or get more available pricings:</h3>
+                <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="">
+                <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value=""><br>
+                <input id="pricing-check" type="button" value="Get More Pricings">
             </div>
             
             <div class="clear"></div>
@@ -441,6 +450,13 @@
                         <div class="label required">Email</div>
                         <div class="field">
                             <input value="{{ request.user.email}}" type="text" name="registrant-0-email" id="id_registrant-0-email">
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <div class="error"></div>
+                        <div class="label">Member ID</div>
+                        <div class="field">
+                            <input value="" type="text" name="registrant-0-memberid" id="id_registrant-0-memberid">
                         </div>
                     </div>
                     <div class="form-field">
@@ -529,6 +545,7 @@
             }
         }   
     }
+    
     function addSummaryEntry(this_form, prefix, idx, price){
         var row = $('#price_registrant-hidden').clone(true);
         $(row).attr('style', '');
@@ -652,18 +669,6 @@
             return false;   // cancel
         });
     });
-
-	// $(window).scroll(function(){
-	// 	if  ($(window).scrollTop() > $(".float-anchor").offset().top){
-	// 		$(".float-window").css("position", "fixed");
-	// 		$(".float-window").css("top", "8px");
-	// 	}
-		
-	// 	if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
-	// 		$(".float-window").css("position", "relative");
-	// 		$(".float-window").css("top", $(".float-anchor").offset);
-	// 	}
-	// });
     
     $('#discount_check').click(function(){
         var code = $('#id_discount_code').val();

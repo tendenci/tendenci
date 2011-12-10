@@ -76,6 +76,13 @@ def get_available_pricings(event, user):
     
     # return the QUERYSET
     return pricings
+    
+def can_use_pricing(event, user, pricing):
+    """
+    Determine if a user can use a specific pricing of a given event
+    """
+    pricings = get_available_pricings(event, user)
+    return pricings.filter(pk=pricing.pk).exists()
 
 def send_registrant_email(reg8n, self_reg8n):
     """
