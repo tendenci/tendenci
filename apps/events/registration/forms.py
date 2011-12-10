@@ -1,6 +1,7 @@
 import re
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User, AnonymousUser
 
 from captcha.fields import CaptchaField
 from discounts.models import Discount
@@ -81,6 +82,7 @@ class RegistrantForm(forms.Form):
     first_name = forms.CharField(max_length=50)
     last_name = forms.CharField(max_length=50)
     email = forms.EmailField()
+    memberid = forms.CharField(label=_("Member ID"), max_length=50, required=False)
     company_name = forms.CharField(max_length=100, required=False)
     phone = forms.CharField(max_length=20, required=False)
     
@@ -106,6 +108,26 @@ class RegistrantForm(forms.Form):
         
     def get_price(self):
         return self.price
+        
+    def get_user(self):
+        """
+        Gets the user from memberid or email.
+        Return AnonymousUser if both are unavailable.
+        """
+        user = AnonymousUser()
+        memberid = self.cleaned_data.get('memberid', None)
+        email = self.cleaned_data.get('email', None)
+        
+        if memberid:# memberid takes priority over email
+            membership = Membership.objects.filter(member_number=memberid)
+            if user:
+                user = membership[0].user
+        elif email:
+            user = User.objects.filter(email=email)
+            if user:
+                user = user[0]
+                
+        return user
     
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
