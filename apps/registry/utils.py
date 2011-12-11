@@ -17,11 +17,13 @@ class RegisteredApps(object):
 
     core_apps = registered_apps.core
     plugin_apps = registered_apps.plugin
+    people_apps = registered_apps.people
     """
     def __init__(self, apps, build_from_cache=False):
         self.all_apps = []
         self.core = []
         self.plugins = []
+        self.people = []
 
         # append core and plugin apps to
         # individual lists
@@ -51,6 +53,9 @@ class RegisteredApps(object):
 
                 if registry.fields['app_type'] == 'plugin':
                     self.plugins.append(registry.fields)
+
+                if registry.fields['app_type'] == 'people':
+                    self.people.append(registry.fields)
 
                 if registry.fields['app_type'] == 'core':
                     self.core.append(registry.fields)
@@ -86,6 +91,9 @@ class RegisteredApps(object):
                 if app['app_type'] == 'plugin':
                     self.plugins.append(app)
 
+                if app['app_type'] == 'people':
+                    self.people.append(app)
+
                 if app['app_type'] == 'core':
                     self.core.append(app)
 
@@ -98,6 +106,7 @@ class RegisteredApps(object):
         self.all_apps = sorted(self.all_apps, key=key)
         self.core = sorted(self.core, key=key)
         self.plugins = sorted(self.plugins, key=key)
+        self.people = sorted(self.people, key=key)
 
     def __iter__(self):
         return iter(self.all_apps)
