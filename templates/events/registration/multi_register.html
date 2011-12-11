@@ -192,10 +192,12 @@
         </div>
     </div>
         
-    {% if reg_form.errors.values or has_registrant_form_errors %}
+    {% if reg_form.errors or registrant.errors %}
         <div class="errors-box">
             <ul>
-                {{ reg_form.non_field_errors }}
+                {% for error in reg_form.non_field_errors %}
+                    <li><a href="javascript:;">{{ error }}</a></li>
+                {% endfor %}
                 {% for field in reg_form %}
                     {% if field.errors %}
                         {% for error in field.errors %}
@@ -203,7 +205,9 @@
                         {% endfor %}
                     {% endif %}
                 {% endfor %}
-                
+                {% for error in registrant.non_form_errors %}
+                    <li><a href="javascript:;">{{ error }}</a></li>
+                {% endfor %}
                 {% for form in registrant.forms %}
                     {{ form.non_field_errors }}
                     {% for field in form %}
@@ -484,7 +488,7 @@
         // update the TOTAL_FORMS
         var forms = $(".registrant-form");
         $("#id_" + prefix + "-TOTAL_FORMS").val(forms.length);
-
+        
 		// update the total amount and remove the reg price entry
 		var reg_id = attr_id.split('_')[1];
 		var registrant_summary_entry = $("tr[id=price_registrant_" + reg_id + "]");
@@ -512,7 +516,7 @@
     }
 
     // update the serial number on the form. ex: Registrant #3, Reg #3
-    function updateFormHeader(this_form, prefix, idx){
+    function updateFormHeader(this_form, prefix, idx, hide_form){
         // change the serial number on the form
         var id_regex = new RegExp('(registrant_\\d+)');
         var replacement = prefix + '_' + idx
@@ -520,9 +524,9 @@
 
         var reg_header = $(this_form).find('.registrant-header');
         if (reg_header) {
-            if(idx != 0){
+            if(hide_form==1){
                 $(reg_header).parent().children('div:last').hide();
-            }else{
+            }else if(hide_form==-1){
                 $(reg_header).parent().children('div:last').show();
             }
             $(reg_header).children('span.showhide').text('+ ');
@@ -568,7 +572,7 @@
         $('#final-amount').html(total_amount);
 	}
 
-    function addRegistrant(prefix, price, price_pk, pricing_title, set_container){
+    function addRegistrant(prefix, pricing, initial_data, set_container, hide_form){
         var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
         var row = $('#registrant-hidden').clone(true).get(0);
         // place proper class
@@ -586,37 +590,38 @@
             updateIndex(this, prefix, formCount);
             // assign pricing selected
             if($(this).attr("name")==(prefix+"-"+formCount+"-pricing")){
-                $(this).val(price_pk);
-            } else {
-                // only the first form gets the default data
-                if(formCount>0){
-                    $(this).val('');
-                }
+                $(this).val(pricing['pk']);
+            }else if($(this).attr("name")==(prefix+"-"+formCount+"-email")){
+                $(this).val(initial_data['email']);
+            }else if($(this).attr("name")==(prefix+"-"+formCount+"-memberid")){
+                $(this).val(initial_data['memberid']);
             }
         });
         
         // insert as last element into form list
         $(set_container).append(row);
         
-        updateFormHeader(row, prefix, formCount);
+        updateFormHeader(row, prefix, formCount, hide_form);
         
-        addSummaryEntry(row, prefix, formCount, price);
+        addSummaryEntry(row, prefix, formCount, pricing['price']);
         
         $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
         
         return false;
     }
     
-    function addRegistrantSet(prefix, quantity, price, pricing_pk, pricing_title){
-        extra_count = quantity;
+    function addRegistrantSet(prefix, pricing, initial_data){
+        extra_count = pricing['quantity'];
         container = $('<div class="registrant-set"></div>');
-        container.append("<h2>"+pricing_title+"</h2>");
+        container.append("<h2>"+pricing['title']+"</h2>");
         if (extra_count > 0){
             //only the first one is charged in a set
-            addRegistrant(prefix, price, pricing_pk, pricing_title, container);
+            //only the first one has initial data
+            addRegistrant(prefix, pricing, initial_data, container, -1);
             //the rest will have 0 price
             for (var i=1; i<extra_count; i++) {
-                addRegistrant(prefix, 0.00, pricing_pk, pricing_title, container);
+                pricing['price'] = 0.00;
+                addRegistrant(prefix, pricing, {}, container, 1);
             }
         }
         delete_button = $("#delete-hidden").clone(true);
@@ -628,14 +633,26 @@
     
     
     $(document).ready(function(){
+        default_pricings = $('#pricing-choices').html();
         // add registrant set button
         $("#add-registrants-button").click(function(){
-            pricing = $('input:radio[name=add-registrants-pricing]:checked');
-            quantity = pricing.attr('quantity');
-            price = pricing.attr('price');
-            pricing_title = pricing.attr('title');
-            pricing_pk = pricing.val();
-            addRegistrantSet('registrant', quantity, price, pricing_pk, pricing_title);
+            var pricing = $('input:radio[name=add-registrants-pricing]:checked');
+            var price_d = {};
+            if(pricing.val()){
+                price_d['quantity'] = pricing.attr('quantity');
+                price_d['price'] = pricing.attr('price');
+                price_d['title'] = pricing.attr('title');
+                price_d['pk'] = pricing.val();
+                var init_d = {};
+                init_d['email'] = $('#pricing-email').val();
+                $('#pricing-email').val('');
+                init_d['memberid'] = $('#pricing-memberid').val();
+                $('#pricing-memberid').val('');
+                addRegistrantSet('registrant', price_d, init_d);
+                $('#pricing-choices').html(default_pricings);
+            } else {
+                alert("Please select a pricing first.");
+            }
         });
         
         // show delete-button-wrap
@@ -662,7 +679,7 @@
                             updateIndex(this, 'registrant', i);
                         }
                     });
-                    updateFormHeader(this_form, 'registrant', i);
+                    updateFormHeader(this_form, 'registrant', i, 0);
                     updateSummary(this_form, 'registrant', i);
                 }
             }
@@ -728,7 +745,6 @@
                     p_html = p_html + ' (' + p_list[i]['quantity'] + ' for ' + p_list[i]['price'] + ')<br>'
                 }
                 $('#pricing-choices').html(p_html);
-                $($('input:radio[name=add-registrants-pricing]')[0]).check();
             }
         });
     };
