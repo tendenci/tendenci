@@ -243,8 +243,8 @@ class CorporateMembership(TendenciBaseModel):
     
     class Meta:
         permissions = (("view_corporatemembership", "Can view corporate membership"),)
-        verbose_name = _("Corporate Membership")
-        verbose_name_plural = _("Corp. Memberships")
+        verbose_name = _("Corporate Member")
+        verbose_name_plural = _("Corporate Members")
     
     def __unicode__(self):
         return "%s" % (self.name)

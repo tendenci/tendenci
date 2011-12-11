@@ -93,19 +93,20 @@
 
 
 <div id="users-wrap">
-    <div id="users-chart"></div>
     <p>Users over the last 7 days</p>
+    <div id="users-chart"></div>
 </div>
 
 <div id="members-wrap">
-    <div id="members-chart"></div>
     <p>Members over the last 7 days</p>
+    <div id="members-chart"></div>
+    
 </div>
 
 <div id="traffic-wrap">
+    <p>Web traffic for the last 7 days</p>
     <div id="traffic-chart"></div>
-    <p>Web traffic for the last 7 days<br />
-    Last 7 days Total {{ week_sums.total_visits }}<br />
+    <p>Last 7 days Total {{ week_sums.total_visits }}<br />
     Last 30 days Total {{ month_sums.total_visits }}</p>
     <p>Storage: {{ yesterday.disk_usage|filesizeformat }}</p>
 </div>
