@@ -79,6 +79,11 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     If the site setting anonymousmemberpricing is disabled,
     anonymous users will not be able to see non public prices.
     """
+    
+    # redirect to default registration if anonymousmemberpricing not enabled
+    if not get_setting('module', 'events', 'anonymousmemberpricing'):
+        return redirect('event.multi_register')
+    
     event = get_object_or_404(Event, pk=event_id)
     
     # check if event allows registration
@@ -97,7 +102,8 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     
     user = AnonymousUser()
     # get available pricings
-    pricings = get_available_pricings(event, user)
+    default_pricings = get_available_pricings(event, user)
+    event_pricings = event.registration_configuration.regconfpricing_set.all()
     
     # start the form set factory    
     RegistrantFormSet = formset_factory(
@@ -111,8 +117,9 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         # process the submitted forms
         reg_formset = RegistrantFormSet(request.POST,
                             prefix='registrant',
+                            event = event,
                             extra_params={
-                                'pricings':pricings,
+                                'pricings':event_pricings,
                             })
         reg_form = RegistrationForm(event, user, request.POST,
                             reg_count = len(reg_formset.forms))
@@ -158,14 +165,15 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         # intialize empty forms
         reg_formset = RegistrantFormSet(
                             prefix='registrant',
+                            event = event,
                             extra_params={
-                                'pricings':pricings
+                                'pricings':event_pricings
                             })
         reg_form = RegistrationForm(event, request.user)
-        
+    
     return render_to_response(template_name, {
             'event':event,
             'reg_form':reg_form,
             'registrant': reg_formset,
-            'pricings':pricings,
+            'pricings':default_pricings,
             }, context_instance=RequestContext(request))

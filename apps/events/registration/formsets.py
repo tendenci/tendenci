@@ -1,7 +1,11 @@
 from decimal import Decimal
 
+from django import forms
 from django.forms.formsets import BaseFormSet
 from django.forms.util import ErrorList
+from django.utils.translation import ugettext_lazy as _
+
+from events.registration.utils import can_use_pricing
 
 class RegistrantBaseFormSet(BaseFormSet):
     """
@@ -11,6 +15,7 @@ class RegistrantBaseFormSet(BaseFormSet):
     
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
                  initial=None, error_class=ErrorList, **kwargs):
+        self.event = kwargs.pop('event')
         self.extra_params = kwargs.pop('extra_params', {})
         super(RegistrantBaseFormSet, self).__init__(data, files, auto_id, prefix,
                  initial, error_class)
