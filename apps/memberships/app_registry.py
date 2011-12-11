@@ -1,9 +1,9 @@
 from registry import site
-from registry.base import CoreRegistry, lazy_reverse
+from registry.base import PeopleRegistry, lazy_reverse
 from models import Membership
 
 
-class MembershipRegistry(CoreRegistry):
+class MembershipRegistry(PeopleRegistry):
     version = '1.0'
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
