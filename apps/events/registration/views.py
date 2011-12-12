@@ -169,9 +169,12 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                             })
         reg_form = RegistrationForm(event, request.user)
     
+    sets = reg_formset.get_sets()
+    
     return render_to_response(template_name, {
             'event':event,
             'reg_form':reg_form,
             'registrant': reg_formset,
+            'sets': sets,
             'pricings':default_pricings,
             }, context_instance=RequestContext(request))
