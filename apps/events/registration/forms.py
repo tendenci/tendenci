@@ -1,4 +1,7 @@
 import re
+
+from decimal import Decimal
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
@@ -101,7 +104,8 @@ class RegistrantForm(forms.Form):
         self.fields['pricing'] = forms.ModelChoiceField(widget=forms.HiddenInput, queryset=self.pricings)
         
         # initialize internal variables
-        self.price = None
+        self.price = Decimal('0.00')
+        self.saved_data = {}
         
     def set_price(self, price):
         self.price = price
@@ -109,14 +113,17 @@ class RegistrantForm(forms.Form):
     def get_price(self):
         return self.price
         
+    def get_form_label(self):
+        return self.form_index + 1
+        
     def get_user(self):
         """
         Gets the user from memberid or email.
         Return AnonymousUser if both are unavailable.
         """
         user = AnonymousUser()
-        memberid = self.cleaned_data.get('memberid', None)
-        email = self.cleaned_data.get('email', None)
+        memberid = self.saved_data.get('memberid', None)
+        email = self.saved_data.get('email', None)
         
         if memberid:# memberid takes priority over email
             membership = Membership.objects.filter(member_number=memberid)
@@ -172,3 +179,8 @@ class RegistrantForm(forms.Form):
         data.strip()
         return data
     
+    def clean(self):
+        # cleaned_data is removed if form is invalid.
+        # save that data eitherway to access it in the formset
+        self.saved_data = self.cleaned_data
+        return self.cleaned_data
