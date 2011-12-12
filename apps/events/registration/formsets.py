@@ -22,6 +22,7 @@ class RegistrantBaseFormSet(BaseFormSet):
                  
         # initialize internal variables
         self.pricings = {}
+        self.sets = []
         self.total_price = Decimal('0.00')
         
     def _construct_form(self, i, **kwargs):
@@ -54,23 +55,49 @@ class RegistrantBaseFormSet(BaseFormSet):
         self.add_fields(form, i)
         
         return form
+        
+    def set_pricing_groups(self):
+        """
+        Organize the forms based on pricings used
+        """
+        for i in range(0, self.total_form_count()):
+            form = self.forms[i]
+            pricing = form.saved_data['pricing']
+            if pricing in self.pricings:
+                self.pricings[pricing].append(form)
+            else:
+                self.pricings[pricing] = [form,]
+
+    def get_total_price(self):
+        return self.total_price
+    
+    def set_sets(self):
+        """
+        Group each form to their corresponding set
+        """
+        for pricing in self.pricings.keys():
+            for i in range(0, len(self.pricings[pricing])):
+                form = self.pricings[pricing][i]
+                if i % pricing.quantity == 0:
+                    # initialize a new set with this form
+                    new_set = [form] # we're assured this is always initialized.
+                    self.sets.append(new_set)
+                else:
+                    new_set.append(form)
+        self.sets.reverse()
+                    
+    def get_sets(self):
+        if not self.sets:
+            self.set_sets()
+        return self.sets
     
     def clean(self):
         """
         Validate the set of registrants for all the pricings used.
         """
-        if any(self.errors):
-            # Don't bother validating the formset unless each form is valid on its own
-            return
         
-        # organize the forms based on pricings used
-        for i in range(0, self.total_form_count()):
-            form = self.forms[i]
-            pricing = form.cleaned_data['pricing']
-            if pricing in self.pricings:
-                self.pricings[pricing].append(form)
-            else:
-                self.pricings[pricing] = [form,]
+        # organize pricing dict
+        self.set_pricing_groups()
         
         # validate the reg quantity for each pricing
         for pricing in self.pricings.keys():
@@ -78,17 +105,19 @@ class RegistrantBaseFormSet(BaseFormSet):
             if len(self.pricings[pricing]) % pricing.quantity != 0:
                 raise forms.ValidationError(_("Please enter a valid number of registrants."))
         
-        # if all quantities are valid, update each form's corresponding price 
+        # if all quantities are valid, update each form's corresponding price
+        errors = []
         for pricing in self.pricings.keys():
             for i in range(0, len(self.pricings[pricing])):
                 form = self.pricings[pricing][i]
                 if i % pricing.quantity == 0:
+                    price = pricing.price
+                    
                     # first form of each set must be authorized for the pricing
                     user = form.get_user()
-                    if can_use_pricing(self.event, user, pricing):
-                        price = pricing.price
-                    else:
-                        raise forms.ValidationError(_("%s is not authorized to use %s" % (user, pricing)))
+                    # take note of each invalid price but continue setting prices
+                    if not can_use_pricing(self.event, user, pricing):
+                        errors.append(forms.ValidationError(_("%s is not authorized to use %s" % (user, pricing))))
                 else:
                     price = Decimal('0.00')
                 
@@ -98,5 +127,6 @@ class RegistrantBaseFormSet(BaseFormSet):
                 # update the total price
                 self.total_price += price
         
-    def get_total_price(self):
-        return self.total_price
+        # raise any errors found
+        for error in errors:
+            raise error
