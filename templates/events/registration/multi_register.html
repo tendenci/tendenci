@@ -277,7 +277,7 @@
                                 <div class="field">{{ reg_form.captcha }}</div>
                             </div>
                         {% endif %}
-                        <input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register &amp; Pay{%endif%}" />
+                        <input type="submit" name="submit" class="register-submit" id="register-button" value="{% trans 'Register &amp; Pay' %}" />
                     </div>
 
     				{# price list #}
@@ -396,7 +396,7 @@
             </div>
             
             <div class="clear"></div>
-            <input type="submit" name="submit" id="register-button" value="{% trans 'Register & Pay' %}" />
+            <input type="submit" name="submit" class="register-submit" id="register-button" value="{% trans 'Register & Pay' %}" />
             
             <div class="clear"></div>
         </div>
@@ -418,49 +418,49 @@
             </div>
             <div id="registrant-hidden">
                 <div class="registrant-header">
-                    <span class="showhide"></span>Registrant #<span class="item-counter">1</span>:
+                    <span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">1</span>:
                 </div>
                 <div class="odd-registrant">
                     <div class="form-field">
                         <div class="error"></div>
-                        <div class="label required">First Name</div>
+                        <div class="label required">{% trans "First Name" %}</div>
                         <div class="field">
                             <input value="{{ request.user.first_name }}" id="id_registrant-0-first_name" type="text" name="registrant-0-first_name" maxlength="50">
                         </div>
                     </div>
                     <div class="form-field">
                         <div class="error"></div>
-                        <div class="label required">Last Name</div>
+                        <div class="label required">{% trans "Last Name" %}</div>
                         <div class="field">
                             <input value="{{ request.user.last_name }}" id="id_registrant-0-last_name" type="text" name="registrant-0-last_name" maxlength="50">
                         </div>
                     </div>
                     <div class="form-field">
                         <div class="error"></div>
-                        <div class="label">Company</div>
+                        <div class="label">{% trans "Company" %}</div>
                         <div class="field">
                             <input id="id_registrant-0-company_name" type="text" name="registrant-0-company_name" maxlength="100">
                         </div>
                     </div>
                     <div class="form-field">
                         <div class="error"></div>
-                        <div class="label">Phone</div>
+                        <div class="label">{% trans "Phone" %}</div>
                         <div class="field">
                             <input id="id_registrant-0-phone" type="text" name="registrant-0-phone" maxlength="20">
                         </div>
                     </div>
                     <div class="form-field">
                         <div class="error"></div>
-                        <div class="label required">Email</div>
+                        <div class="label required">{% trans "Email" %}</div>
                         <div class="field">
-                            <input value="{{ request.user.email}}" type="text" name="registrant-0-email" id="id_registrant-0-email">
+                            <input class="registrant-email" value="{{ request.user.email }}" type="text" name="registrant-0-email" id="id_registrant-0-email">
                         </div>
                     </div>
                     <div class="form-field">
                         <div class="error"></div>
-                        <div class="label">Member ID</div>
+                        <div class="label">{% trans "Member ID" %}</div>
                         <div class="field">
-                            <input value="" type="text" name="registrant-0-memberid" id="id_registrant-0-memberid">
+                            <input class="registrant-memberid" value="" type="text" name="registrant-0-memberid" id="id_registrant-0-memberid">
                         </div>
                     </div>
                     <div class="form-field">
@@ -588,13 +588,27 @@
         
         $(row).find(".form-field").children().children().each(function() {
             updateIndex(this, prefix, formCount);
-            // assign pricing selected
             if($(this).attr("name")==(prefix+"-"+formCount+"-pricing")){
-                $(this).val(pricing['pk']);
+                // assign pricing selected
+                $(this).val(pricing['pk'])
             }else if($(this).attr("name")==(prefix+"-"+formCount+"-email")){
-                $(this).val(initial_data['email']);
+                // assign email selected
+                if(initial_data['email']){
+                    $(this).val(initial_data['email'])
+                }else{
+                    // default if no email and 1st form
+                    if(formCount>0){
+                        $(this).val(initial_data['email'])
+                    }
+                }
             }else if($(this).attr("name")==(prefix+"-"+formCount+"-memberid")){
-                $(this).val(initial_data['memberid']);
+                // assign memberid selected
+                $(this).val(initial_data['memberid'])
+            }else{
+                // clear the field
+                if(formCount > 0){
+                    $(this).val("")
+                }
             }
         });
         
@@ -748,6 +762,58 @@
             }
         });
     };
+    
+    $('.register-submit').click(function(){
+        // validate that emails/memberids are only used once.
+        
+        emails = $('.registrant-email');
+        memberids = $('.registrant-memberid');
+        
+        // check email uniqueness
+        var match_found = false;
+        for(i=0;i<emails.length;i++){
+            if($(emails[i]).val()){
+                for(j=i+1;j<emails.length;j++){
+                    if($(emails[j]).val()){
+                        if($(emails[i]).val() == $(emails[j]).val()){
+                            match_found = true
+                            break
+                        }
+                    }
+                }
+                if(match_found){
+                    break
+                }
+            }
+        };        
+        if(match_found){
+            alert('{% trans "An email can only be used once per registration!" %}');
+            return false;
+        }
+        
+        // check memberid uniqueness
+        var match_found = false;
+        for(i=0;i<memberids.length;i++){
+            if($(memberids[i]).val()){
+                for(j=i+1;j<memberids.length;j++){
+                    if($(memberids[j]).val()){
+                        if($(memberids[i]).val() == $(memberids[j]).val()){
+                            match_found = true
+                            break
+                        }
+                    }
+                }
+                if(match_found){
+                    break
+                }
+            }
+        };        
+        if(match_found){
+            alert('{% trans "An Member ID can only be used once per registration!" %}');
+            return false;
+        }
+        
+    });
     
    </script>
 {% endblock %}
