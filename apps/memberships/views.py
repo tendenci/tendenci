@@ -843,15 +843,15 @@ def membership_export(request):
             
             filename = "memberships_%d_export.csv" % app.id
             
-            fields = AppField.objects.filter(app=app).exclude(field_type__in=('section_break', 
-                                                               'page_break')).order_by('position')
+            fields = AppField.objects.filter(app=app).exclude(field_type__in=('section_break','page_break')).order_by('position')
+
             label_list = [field.label for field in fields]
-            extra_field_labels = ['Subscribe Date', 'Expiration Date', 'Status', 'Status Detail']
-            extra_field_names = ['subscribe_dt', 'expire_dt', 'status', 'status_detail']
+            extra_field_labels = ['User Name','Subscribe Date','Expiration Date','Status','Status Detail']
+            extra_field_names = ['user', 'subscribe_dt','expire_dt','status','status_detail']
             
             label_list.extend(extra_field_labels)
             label_list.append('\n')
-            
+
             data_row_list = []
             memberships = Membership.objects.filter(ma=app)
             for memb in memberships:
@@ -861,9 +861,7 @@ def membership_export(request):
                     field_name = slugify(field.label).replace('-','_')
                     value = ''
                     
-                    if field.field_type in ['first-name', 'last-name', 'email', 
-                                            'membership-type', 'payment-method',
-                                            'corporate_membership_id']:
+                    if field.field_type in ['first-name','last-name','email','membership-type','payment-method','corporate_membership_id']:
                         if field.field_type == 'first-name':
                             value = memb.user.first_name
                         elif field.field_type == 'last-name':
@@ -883,24 +881,27 @@ def membership_export(request):
                         
                     if value == None:
                         value = ''
-                    value_type = type(value)
-                    if (value_type is bool) or (value_type is long) or (value_type is int):
-                        value = str(value)
-                    if (value_type is unicode) or (value_type is str):
-                        value = value.replace(',', ' ')
+
+                    if type(value) in (bool,int,long):
+                        value = unicode(value)
+
+                    value = value.replace(',', ' ')
                     data_row.append(value)
                 
                 for field in extra_field_names:
-                    value = ''
-                    
-                    exec('value=memb.%s' % field)
-                    if field == 'expire_dt' and (not memb.expire_dt):
-                        value = 'never expire'
-                    value_type = type(value)
-                    if value_type is bool or value_type is long or value_type is int:
-                        value = str(value)
+
+                    if field == 'user':
+                        value = memb.user.username
+                    elif field == 'expire_dt':
+                        value = memb.expire_dt or 'never expire'
+                    else:
+                        value = getattr(memb, field, '')
+
+                    if type(value) in (bool,int,long):
+                        value = unicode(value)
+
                     data_row.append(value)
-                    
+
                 data_row.append('\n')
                 data_row_list.append(data_row)
                 
