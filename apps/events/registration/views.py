@@ -49,9 +49,7 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
         if user:
             user = user[0]
     
-    pricings = []
-    if user:
-        pricings = get_available_pricings(event, user)
+    pricings = get_available_pricings(event, user)
     
     pricing_list = []
     for pricing in pricings:
@@ -121,7 +119,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                             extra_params={
                                 'pricings':event_pricings,
                             })
-        reg_form = RegistrationForm(event, user, request.POST,
+        reg_form = RegistrationForm(event, request.user, request.POST,
                             reg_count = len(reg_formset.forms))
         # validate the form and formset
         if reg_form.is_valid() and reg_formset.is_valid():
