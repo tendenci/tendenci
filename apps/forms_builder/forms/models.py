@@ -70,6 +70,7 @@ class Form(TendenciBaseModel):
         max_length=200)
     completion_url = models.URLField(_("Completion URL"), blank=True, null=True,
         help_text=_("Redirect to this page after form completion."))
+    payment_methods = models.ManyToManyField("payments.PaymentMethod")
     
     objects = FormManager()
 
@@ -328,3 +329,6 @@ class Pricing(models.Model):
     form = models.ForeignKey('Form')
     label = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __unicode__(self):
+        return "%s %s" % (self.price, self.label)
