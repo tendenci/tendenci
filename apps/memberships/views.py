@@ -846,8 +846,8 @@ def membership_export(request):
             fields = AppField.objects.filter(app=app).exclude(field_type__in=('section_break','page_break')).order_by('position')
 
             label_list = [field.label for field in fields]
-            extra_field_labels = ['User Name','Subscribe Date','Expiration Date','Status','Status Detail']
-            extra_field_names = ['user', 'subscribe_dt','expire_dt','status','status_detail']
+            extra_field_labels = ['User Name','Member Number','Join Date','Renew Date','Expiration Date','Status','Status Detail']
+            extra_field_names = ['user','member_number','join_dt','renew_dt','expire_dt','status','status_detail']
             
             label_list.extend(extra_field_labels)
             label_list.append('\n')
@@ -892,6 +892,12 @@ def membership_export(request):
 
                     if field == 'user':
                         value = memb.user.username
+                    elif field == 'join_dt':
+                        if memb.renewal: value = ''
+                        else: value = memb.subscribe_dt
+                    elif field == 'renew_dt':
+                        if memb.renewal: value = memb.subscribe_dt
+                        else: value = ''
                     elif field == 'expire_dt':
                         value = memb.expire_dt or 'never expire'
                     else:
