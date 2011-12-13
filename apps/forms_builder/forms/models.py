@@ -321,3 +321,10 @@ class FieldEntry(models.Model):
         super(FieldEntry, self).save(*args, **kwargs)
         self.field.execute_function(self.entry, self.value, user=user)
     
+class Pricing(models.Model):
+    """
+    Pricing options for custom payment forms.
+    """
+    form = models.ForeignKey('Form')
+    label = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)

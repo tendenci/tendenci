@@ -9,7 +9,7 @@ from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 
 from tinymce.widgets import TinyMCE
-from forms_builder.forms.models import FormEntry, FieldEntry, Field, Form
+from forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
@@ -232,3 +232,8 @@ class FormForField(forms.ModelForm):
             cleaned_data['required'] = False
             
         return cleaned_data
+
+class PricingForm(forms.ModelForm):
+    class Meta:
+        model = Pricing
+        
