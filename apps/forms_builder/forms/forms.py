@@ -8,13 +8,15 @@ from django.core.files.storage import FileSystemStorage
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 
+from payments.models import PaymentMethod
 from tinymce.widgets import TinyMCE
-from forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
-from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
 from captcha.fields import CaptchaField
 from user_groups.models import Group
+
+from forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
+from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -62,6 +64,22 @@ class FormForForm(forms.ModelForm):
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
             self.fields[field_key] = field_class(**field_args)
+            
+        # include pricing options if any
+        if self.form.pricing_set.all():
+            self.fields['pricing-option'] = forms.ModelChoiceField(
+                    label=_('Pricing'),
+                    empty_label=None,
+                    queryset=self.form.pricing_set.all(),
+                    widget=forms.RadioSelect,
+                )
+            self.fields['payment-option'] = forms.ModelChoiceField(
+                    label=_('Payment Method'),
+                    empty_label=None,
+                    queryset=self.form.payment_methods.all(),
+                    widget=forms.RadioSelect,
+                    initial=1,
+                )
             
         if not self.user.is_authenticated(): # add captcha if not logged in
             self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
@@ -138,7 +156,14 @@ class FormAdminForm(TendenciBaseForm):
 class FormForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('draft','Draft'),('published','Published'),))
-
+    custom_payment = forms.BooleanField(label=_('Is Custom Payment'), required=False)
+    payment_methods = forms.ModelMultipleChoiceField(
+            queryset=PaymentMethod.objects.all(),
+            widget=forms.CheckboxSelectMultiple,
+            required=False,
+            initial=[1,2,3]
+        )
+    
     class Meta:
         model = Form
         fields = ('title',
@@ -150,6 +175,8 @@ class FormForm(TendenciBaseForm):
                   'subject_template',
                   'email_from',
                   'email_copies',
+                  'custom_payment',
+                  'payment_methods',
                   'user_perms',
                   'member_perms',
                   'group_perms',
@@ -182,14 +209,18 @@ class FormForm(TendenciBaseForm):
                         'fields': ['status',
                                     'status_detail'], 
                         'classes': ['admin-only'],
-                    })]
+                    }),
+                    ('Payments', {
+                        'fields':['custom_payment', 'payment_methods'],
+                        'legend':''
+                    }),]
                 
     def __init__(self, *args, **kwargs):
         super(FormForm, self).__init__(*args, **kwargs)
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-            
+        
 class FormForField(forms.ModelForm):
     class Meta:
         model = Field
