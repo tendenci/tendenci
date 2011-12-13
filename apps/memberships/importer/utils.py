@@ -9,12 +9,12 @@ from memberships.utils import csv_to_dict
 
 def clean_username(un):
     # clean username
-    un = re.sub(r'[^a-zA-Z0-9._]+', '', un)
+    un = re.sub(r'[^a-zA-Z0-9._@]+', '', un)
     
     # soft truncate
     if len(un) > 30:
         un = un.split('@')[0]  # pray for email address
-    
+
     # hard truncate
     return un[:30]
     
@@ -42,14 +42,18 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
             if csv_field:  # skip blank option
                 # membership['username'] = 'charliesheen'
                 m[clean_field_name(app_field)] = csv_dict[csv_field]
-        
-        # clean username
-        username = clean_username(m['user_name'])
-        m['user_name'] = username
+
+        username = m['user_name']
         try:
-            user = User.objects.get(username = username)
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
-            user = None
+
+            username = clean_username(username)
+
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                user = None
         
         # update full name and email
         if user:
