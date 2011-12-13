@@ -42,14 +42,22 @@ class ImportMembershipsTask(Task):
                     payment_method_id = 3
                 else:
                     payment_method_id = None
-                
+
                 # get or create User
                 username = m['user_name']
                 try:
                     user = User.objects.get(username = username)
                 except User.DoesNotExist:
-                    # Maybe we should set a password here too?
-                    user = User(username = username)
+
+                    # clean username
+                    username = clean_username(m['user_name'])
+
+                    try:
+                        user = User.objects.get(username = username)
+                    except User.DoesNotExist:
+                        # Maybe we should set a password here too?
+                        user = User(username = username)
+
                 # update user
                 user.first_name = m.get('first_name')
                 user.last_name = m.get('last_name')
