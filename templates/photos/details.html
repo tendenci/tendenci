@@ -41,7 +41,7 @@
             <div class="photo">
                 </a>
                 <br>
-                <div id="photo-rights" about="{{ photo.get_medium_640_url }}" 
+                <div about="{{ photo.get_medium_640_url }}" 
                     xmlns:dct="http://purl.org/dc/terms/"
                     xmlns:cc="http://creativecommons.org/ns#">
 
@@ -53,6 +53,7 @@
                     {% endif %}
 
                     <br />
+                    <div id="photo-rights">
                     <span property="dct:title">{{ photo.title }}</span>
                     by <a href="{{ photo.creator.get_absolute_url }}"
                         property="cc:attributionName" 
@@ -64,6 +65,7 @@
                         <a rel="license" href="{{ photo_deed }}"> 
                             {{ photo_name }}</a>.{% endblocktrans %}
                     {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
