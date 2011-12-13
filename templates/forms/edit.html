@@ -15,10 +15,38 @@
     	<form action="{% url form_edit form_instance.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
+            <fieldset id='pricing-options'>
+                <legend>Pricing Options</legend>
+                {{ formset.management_form }}
+                {{ formset|styled_form_set }}
+            </fieldset>
         	<input type="submit" value="Apply Change(s)" />
 		</div>
         </form>
     </div>
 	
 </div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        {% if form_instance.pricing_set.exists %}
+            $('#id_custom_payment').attr('checked', 'checked');
+        {% else %}
+            $('#pricing-options').hide();
+            $('.id_payment_methods').hide();
+        {% endif %}
+        $('#id_custom_payment').change(function(){
+            pricings = $(this).attr('checked');
+            if(pricings=='checked'){
+                $('#pricing-options').show();
+                $('.id_payment_methods').show();
+            }else{
+                $('#pricing-options').hide();
+                $('.id_payment_methods').hide();
+            }
+        });
+    });
+</script>
 {% endblock %}
