@@ -8,9 +8,9 @@ class Command(BaseCommand):
     Query the site settings for the value of one or more settings.
     
     Usages: 
-           query_site_settings name1 name2 name3 
-           query_site_settings scope/scope_category/name1
-           query_site_settings scope/scope_category/name1 scope/scope_category/name2
+           query_settings name1 name2 name3 
+           query_settings scope/scope_category/name1
+           query_settings scope/scope_category/name1 scope/scope_category/name2
            ...
     
     
