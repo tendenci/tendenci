@@ -10,8 +10,8 @@ from django.contrib import messages
 from django.utils.encoding import smart_str
 
 from base.http import Http403
-from forms_builder.forms.forms import FormForForm, FormForm, FormForField
-from forms_builder.forms.models import Form, Field, FormEntry
+from forms_builder.forms.forms import FormForForm, FormForm, FormForField, PricingForm
+from forms_builder.forms.models import Form, Field, FormEntry, Pricing
 from forms_builder.forms.utils import generate_admin_email_body, generate_submitter_email_body, generate_email_subject
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
@@ -22,31 +22,39 @@ from site_settings.utils import get_setting
 def add(request, form_class=FormForm, template_name="forms/add.html"):
     if not has_perm(request.user,'forms.add_form'):
         raise Http403
+        
+    PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=3, can_delete=False)
     
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
-        if form.is_valid():           
+        form = form_class(request.POST, user=request.user)        
+        if form.is_valid():
             form_instance = form.save(commit=False)
-           
-            form_instance = update_perms_and_save(request, form, form_instance)
-
-            log_defaults = {
-                'event_id' : 587100,
-                'event_data': '%s (%d) added by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
-                'description': '%s added' % form_instance._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': form_instance,
-            }
-            EventLog.objects.log(**log_defaults)
-                                    
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % form_instance)
-            return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
+            formset = PricingFormSet(request.POST, instance=form_instance)
+            if formset.is_valid():
+                # save form and associated pricings
+                form_instance = update_perms_and_save(request, form, form_instance)
+                formset.save()
+                
+                log_defaults = {
+                    'event_id' : 587100,
+                    'event_data': '%s (%d) added by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
+                    'description': '%s added' % form_instance._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': form_instance,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                messages.add_message(request, messages.INFO, 'Successfully added %s' % form_instance)
+                return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(user=request.user)
-       
-    return render_to_response(template_name, {'form':form}, 
-        context_instance=RequestContext(request))
+        formset = PricingFormSet()
+        
+    return render_to_response(template_name, {
+        'form':form,
+        'formset':formset,
+    }, context_instance=RequestContext(request))
 
 
 def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
@@ -54,13 +62,16 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
     
     if not has_perm(request.user,'forms.change_form',form_instance):
         raise Http403
-
+    
+    PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=1)
+    
     if request.method == "POST":
         form = form_class(request.POST, instance=form_instance, user=request.user)
-        if form.is_valid():           
+        formset = PricingFormSet(request.POST, instance=form_instance)
+        if form.is_valid() and formset.is_valid():
             form_instance = form.save(commit=False)
-            
             form_instance = update_perms_and_save(request, form, form_instance)
+            formset.save()
 
             log_defaults = {
                 'event_id' : 587200,
@@ -76,9 +87,12 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(instance=form_instance, user=request.user)
-       
-    return render_to_response(template_name, {'form':form, 'form_instance':form_instance}, 
-        context_instance=RequestContext(request))
+        formset = PricingFormSet(instance=form_instance)
+    return render_to_response(template_name, {
+        'form':form,
+        'formset':formset,
+        'form_instance':form_instance,
+        },context_instance=RequestContext(request))
 
 
 @login_required
