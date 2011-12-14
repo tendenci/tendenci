@@ -160,7 +160,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     initial_dict = {}
     if hasattr(user, 'memberships'):
         membership = user.memberships.get_membership()
-        user_member_requirements = [
+        is_only_a_member = [
             is_developer(user) == False,
             is_admin(user) == False,
             is_member(user) == True,
@@ -168,7 +168,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
         # deny access to renew memberships
         if all(user_member_requirements):
-            initial_dict = membership.get_app_initial()
+            initial_dict = membership.get_app_initial(app)
             if not membership.can_renew():
                 return render_to_response("memberships/applications/no-renew.html", {
                     "app": app, "user":user, "membership": membership}, 
@@ -202,12 +202,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             entry_invoice = entry.save_invoice()
 
             if user.is_authenticated():
-                entry.user = user  # bind to user
-                if all(user_member_requirements):  # save as renewal
-                    entry.is_renewal = True
+                entry.user = user
+                entry.is_renewal = all(is_only_a_member)
 
             # add all permissions and save the model
-            entry.allow_anonymous_view = False
             entry = update_perms_and_save(request, app_entry_form, entry)
 
             # administrators go to approve/disapprove page
@@ -635,7 +633,7 @@ def application_entries_search(request, template_name="memberships/entries/searc
         'apps':apps,
         'types':types,
         }, context_instance=RequestContext(request))
-    
+
 @login_required    
 def notice_email_content(request, id, template_name="memberships/notices/email_content.html"):
     if not is_admin(request.user):

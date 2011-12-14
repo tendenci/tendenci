@@ -351,16 +351,23 @@ class Membership(TendenciBaseModel):
         # assert that we're within the renewal period
         return (datetime.now() >= start_dt and datetime.now() <= end_dt)
 
-    def get_app_initial(self):
+    def get_app_initial(self, app):
         """
         Get a dictionary of membership application
         initial values.  Used for prefilling out membership
         application forms. Useful for renewals.
         """
-        entry = self.ma.entries.order_by('-pk')[0]
-        init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
+
+        # get the last application entry filled out by this member
+
+        try:
+            entry = self.user.entries.filter(app=app).order_by('-pk')[0]
+            init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
+        except IndexError:
+            init_kwargs = {}
+
         return dict(init_kwargs)
-    
+
     def archive(self, user=None):
         """
         Copy self to the MembershipArchive table
