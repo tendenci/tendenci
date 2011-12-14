@@ -581,7 +581,7 @@ class EntryEditForm(forms.ModelForm):
             pk = key.split('.')[1]
 
             membership_type = None
-            Membership_type_entry_pk = 0
+            membership_type_entry_pk = 0
 
             if 'corporate_membership' in key:
                 corp_memb = CorporateMembership.objects.get(name=value)  # get corp. via name
