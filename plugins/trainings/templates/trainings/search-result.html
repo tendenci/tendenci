@@ -1,0 +1,14 @@
+{% load base_tags %}
+{% load i18n %}
+        <div class="wrap-search-item">
+            <div class="search-item training-search-item">
+            
+<h2><a href="{{ training.get_absolute_url }}">{{ training.title }}</a></h2>
+<div><em>{{ training.author_instructor|urlize }}</em></div>
+<div>{{ training.description|striptags|safe|urlize|truncatewords_html:"20" }}</div>
+<div>{{ training.training_type }}</div>
+<div>{{ training.points|floatformat }} {% trans 'point' %}{{ training.points|pluralize }}</div>
+{% if training.completions > 0 %}<div>Completions: {{ training.completions }}</div>{% endif %}
+            </div>
+            {% include "trainings/meta.html" %}
+        </div>
