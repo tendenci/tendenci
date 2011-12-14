@@ -244,7 +244,7 @@ div.admin-links {
 	background:#444!important;
 	position:absolute;
 	top:-20px;
-	left:0;
+	left:0px;
 	z-index:100;
 	height:20px;
 	line-height:20px;
@@ -361,6 +361,20 @@ nav:hover div.admin-inline {
 #rotator #stories .story:hover div.admin-inline {
 	display:block;
 }
+
+/* Edit Setting Forms */
+a.edit-setting-link { cursor: pointer; text-decoration: underline; }
+
+.admin-edit-setting { display:none; position: absolute; top:-20px; left:0; right:0; max-width: 360px; background: #ddd; color: #222; z-index: 988; -moz-box-shadow: 0 2px 8px #aaa;
+  -webkit-box-shadow: 0 2px 8px #aaa;
+  box-shadow: 0 2px 8px #aaa;}
+.admin-edit-setting .setting-header { background: #aaa; padding: 4px; font-size: 16px; }
+.admin-edit-setting .setting-header a { display: block; float: right; width: 12px; color: #fafafa; font-size: 16px; line-height: 16px; cursor: pointer; }
+.admin-edit-setting div.form-content { margin: 8px 15px 10px 15px; }
+.admin-edit-setting p a { color: #454545; }
+a.edit-setting { text-decoration: underline; cursor: pointer; }
+
+#admin-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 980; background: transparent; background: rgba(50,50,50,.80); display: none; }
 
 @media print 
 	#admin-bar,#bottom-admin-bar {
