@@ -33,19 +33,24 @@
 
             <div class="result-head {{ entry.status_msg|lower }}">
                 {% if entry.is_pending %}
+                <div class="member-number" title="No Member Number Yet">0000</div>
                 {% else %}
                 <div class="member-number">{{ entry.membership.member_number }}</div>
                 {% endif %}
 
-                <div class="member-status"><a 
-                    href="{% url membership.application_entries entry.pk %}">
-                    {{ entry.status_msg }}</a></div>
+                <div class="member-status">
+                    {% if entry.is_renewal %}
+                        Renewal
+                    {% else %}
+                        Joining
+                    {% endif %}
+                    <a href="{% url membership.application_entries entry.pk %}">{{ entry.status_msg }}</a>
+                </div>
 
-                {% if entry.is_renewal %}
-                <div class="member-subscription">Renewal</div>
-                {% else %}
-                <div class="member-subscription">Join</div>
-                {% endif %}
+                <div class="result-content">
+                    <span class="member-name">{{ entry.name }}</span>
+                    <div class="member-email">{{ entry.email }}</div>
+                </div>
 
                 {% if entry.is_pending %}
                 <div class="member-date">Since {{ entry.create_dt|date }}</div>
@@ -55,10 +60,7 @@
 
                 <div style="clear:both:"></div>
             </div>
-            <div class="result-content">
-                <div class="member-name">{{ entry.name }}</div>
-                <div class="member-email">{{ entry.email }}</div>
-            </div>
+
 
             <!-- <h2>
                 <a href="{% url membership.application_entries entry.pk %}">
