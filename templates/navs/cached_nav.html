@@ -1,6 +1,13 @@
 {% load nav_tags %}
+<nav class="clearfix">
 {% if cached %}
     {{ cached }}
 {% else %}
-    {% navigation nav_id %}
+    {% load_nav nav_id %}
 {% endif %}
+{% if admin %}
+<div class="admin-inline">
+  <div class="admin-links clear-block"><a href="{% url navs.edit_items nav_id %}?next={{ request.path }}" title="Edit Nav" class="edit-nav">Edit Nav</a></div>
+</div>
+{% endif %}
+</nav>
