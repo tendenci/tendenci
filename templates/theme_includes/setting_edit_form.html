@@ -1,0 +1,34 @@
+{% load base_filters %}
+{% if admin %}
+<div class="admin-inline">
+    <div class="admin-border admin-border-top"></div>
+    <div class="admin-border admin-border-right"></div>
+    <div class="admin-border admin-border-bottom"></div>
+    <div class="admin-border admin-border-left"></div>
+    <div class="admin-links clear-block"><a id="admin_link_{{ setting_name }}" title="Change {{ setting_name|underscore_space|title }} Content" class="edit-setting-link">Edit {{ setting_name|underscore_space|title }}</a></div>
+</div>
+<div id="form_{{ setting_name }}" class="admin-edit-setting">
+    <div class="setting-header">Change {{ setting_name|underscore_space|title }} Content <a>x</a></div>
+    <div class="form-content">
+        <form class="settings-form" action="/settings/module/{{ scope_category }}/{{ setting_name }}/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        {% for field in setting_form %}
+            {{ field }}
+        {% endfor %}
+        <p>You can change this space's content by choosing one of the content options or any <a href="/boxes/add/?next={{ request.path }}">boxes</a> you have added.</p>
+        <input type="submit" value="Update {{ setting_name|underscore_space|title }}" name="submit" />
+        </form>
+    </div>
+    
+    {% if settings_value_list %}
+    <div class="setting-header">Configure {{ setting_value|underscore_space|title }}</div>
+    <div class="form-content">
+        <form class="settings-form" action="/settings/template/{{ setting_value }}/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+        {% for field in setting_value_form %}
+            <p><strong>{{ field.label }}</strong>: {{ field }}</p>
+        {% endfor %}
+        <input type="submit" value="Update {{ setting_value|underscore_space|title }}" name="submit" />
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
