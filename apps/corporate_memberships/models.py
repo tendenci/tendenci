@@ -232,7 +232,6 @@ class CorporateMembership(TendenciBaseModel):
     approved = models.BooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
     approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
-    #payment_method = models.CharField(_("Payment Method"), max_length=50)
     payment_method = models.ForeignKey(PaymentMethod, verbose_name=_("Payment Method"), null=True, default=None)
     
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
@@ -344,7 +343,20 @@ class CorporateMembership(TendenciBaseModel):
                     'request': request,
                 }
                 notification.send_emails(recipients,'corp_memb_paid', extra_context)
-                
+    
+    def get_payment_method(self):
+        from payments.models import PaymentMethod
+
+        # return payment method if defined
+        if self.payment_method:
+            return self.payment_method
+
+        # first method is credit card (online)
+        # will raise exception if payment method does not exist
+        self.payment_method = PaymentMethod.objects.get(machine_name='credit-card')
+        return self.payment_method
+
+ 
     def approve_renewal(self, request, **kwargs):
         """
         Approve the corporate membership renewal, and
