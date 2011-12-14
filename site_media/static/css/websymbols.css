@@ -9,7 +9,8 @@
          url('../fonts/websymbols-regular-webfont.svg#WebSymbolsRegular') format('svg');
     }
 
-#admin-bar a.glyph, #admin-bar span.glyph {
+#admin-bar a.glyph, #admin-bar span.glyph,
+a.glyph, span.glyph {
   font-family: 'WebSymbolsRegular'; text-decoration: none;
 }
 
