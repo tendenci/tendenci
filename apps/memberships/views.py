@@ -167,7 +167,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
         ]
 
         # deny access to renew memberships
-        if all(user_member_requirements):
+        if all(is_only_a_member):
             initial_dict = membership.get_app_initial(app)
             if not membership.can_renew():
                 return render_to_response("memberships/applications/no-renew.html", {
@@ -181,6 +181,8 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             is_approved__isnull = True,  # pending   
         )
 
+        # if an application entry was submitted
+        # after your current membership was created
         if user.memberships.get_membership():
             pending_entries.filter(
                 entry_time__gte = user.memberships.get_membership().subscribe_dt
