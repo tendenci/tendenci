@@ -44,12 +44,13 @@ class RegisteredApps(object):
                     registry.fields['enabled'] = True
                     registry.fields['has_settings'] = False
 
-                registry.fields['url'].update({
-                    'settings': lazy_reverse('settings.index', args=[
-                        'module',
-                        registry.fields['model']._meta.app_label
-                    ])
-                })
+                if not 'settings' in registry.fields['url'].keys():
+                    registry.fields['url'].update({
+                        'settings': lazy_reverse('settings.index', args=[
+                            'module',
+                            registry.fields['model']._meta.app_label
+                        ])
+                    })
 
                 if registry.fields['app_type'] == 'plugin':
                     self.plugins.append(registry.fields)
@@ -81,12 +82,13 @@ class RegisteredApps(object):
                     app['enabled'] = True
                     app['has_settings'] = False
 
-                app['url'].update({
-                    'settings': lazy_reverse('settings.index', args=[
-                        'module',
-                        app['model']._meta.app_label
-                    ])
-                })
+                if not 'settings' in app['url'].keys():
+                    app['url'].update({
+                        'settings': lazy_reverse('settings.index', args=[
+                            'module',
+                            app['model']._meta.app_label
+                        ])
+                    })
 
                 if app['app_type'] == 'plugin':
                     self.plugins.append(app)

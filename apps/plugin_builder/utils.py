@@ -11,12 +11,20 @@ from django.conf import settings
 
 TEMPLATE_ROOT = os.path.join(settings.PROJECT_ROOT, 'templates', 'plugin_builder')
 
-def render_to_plugin(temp, plugin):
-    return temp.replace('S_P_LOW', plugin.plural_lower)\
+def render_to_plugin(temp, plugin, extra={}):
+    """
+    This will replace all place holders in temp with the approriate value
+    for a given plugin.
+    extra are for extra place holders that should also be replaced.
+    """
+    content = temp.replace('S_P_LOW', plugin.plural_lower)\
         .replace('S_S_CAP', plugin.single_caps)\
         .replace('S_S_LOW', plugin.single_lower)\
         .replace('S_P_CAP', plugin.plural_caps)\
         .replace('EVID', str(plugin.event_id))
+    for key in extra.keys():
+        content = content.replace(key, extra[key])
+    return content
 
 def build_plugin(plugin):
     """
@@ -49,19 +57,34 @@ def build_models(plugin, plugin_dir):
     models = open(os.path.join(plugin_dir, 'models.py'), 'w')
     models.write(render_to_plugin(top, plugin))
     for field in plugin.fields.all():
-        type = field.type.split('/')[0]
+        field_type = field.type.split('/')[0]
         models.write(
-            "    %s = models.%s(_(%r), help_text=%r, blank=%s," \
-            % (field.name, type, field.name, field.help_text, not(field.required))
+            "    %s = models.%s(_(%r)," \
+            % (field.name, field_type, field.name, )
         )
-        #add max_length for charfield
-        if type == 'CharField':
+        
+        #add max_length if CharField
+        if field_type == 'CharField':
             models.write(" max_length=200,")
-        #add default param
-        if type == 'IntegerField':
-            models.write(" default=%s,"%field.default)
-        else:
-            models.write(" default=%r,"%field.default)
+        
+        #add help_text if available
+        if field.help_text:
+            models.write(" help_text=%r," % field.help_text)
+        
+        #non required field
+        if not field.required:
+            if field_type == "DateTimeField" or field_type == "IntegerField":
+                models.write(" null=True,")
+            else:
+                models.write(" blank=True,")
+            
+        if field.default:
+            #add default param
+            if field_type == "DateTimeField" or field_type == 'IntegerField':
+                models.write(" default=%s,"%field.default)
+            else:
+                models.write(" default=%r,"%field.default)
+        
         #add extra kwargs
         if field.kwargs:
             models.write(" %s)\n"%field.kwargs)
@@ -106,12 +129,18 @@ def build_search_indexes(plugin, plugin_dir):
     bottom = open(os.path.join(TEMPLATE_ROOT, 'search_indexes', 'bottom.txt')).read()
     index = open(os.path.join(plugin_dir, 'search_indexes.py'), 'w')
     index.write(render_to_plugin(top, plugin))
+    
+    # encode the fields
     for field in plugin.fields.all():
-        type = field.type.split('/')[2]
+        field_type = field.type.split('/')[2]
         index.write(
-            "    %s = indexes.%s(model_attr='%s')\n" \
-            % (field.name, type, field.name)
+            "    %s = indexes.%s(model_attr='%s'," \
+            % (field.name, field_type, field.name)
         )
+        if not field.required:
+            index.write(" null=True,")
+        index.write(")\n")
+        
     index.write(render_to_plugin(bottom, plugin))
     index.close()
 
@@ -120,9 +149,9 @@ def build_search_document(plugin, plugin_dir):
     Creates the plugin's document for the search index.
     """
     top = open(os.path.join(TEMPLATE_ROOT, 'search_document', 'top.txt')).read()
-    document_path = os.path.join(plugin_dir, 'templates', 'search', plugin.plural_lower)
+    document_path = os.path.join(plugin_dir, 'templates', 'search', 'indexes', plugin.plural_lower)
     os.makedirs(document_path)
-    document = open(os.path.join(document_path, '%s.txt' % plugin.single_caps.lower()), 'w')
+    document = open(os.path.join(document_path, '%s_text.txt' % plugin.single_caps.lower()), 'w')
     document.write(render_to_plugin(top, plugin))
     for field in plugin.fields.all():
         document.write("{{ object.%s }}\n"%field.name)
@@ -137,7 +166,7 @@ def build_template_tags(plugin, plugin_dir):
     tags_text = open(os.path.join(TEMPLATE_ROOT, 'template_tags.txt')).read()
     init = open(os.path.join(tags_path, '__init__.py'), 'w')
     init.close()
-    tags = open(os.path.join(tags_path, '%s_tags.py' % plugin.plural_lower), 'w')
+    tags = open(os.path.join(tags_path, '%s_tags.py' % plugin.single_lower), 'w')
     tags.write(render_to_plugin(tags_text, plugin))
     tags.close()
     
@@ -158,13 +187,41 @@ def build_templates(plugin, plugin_dir):
     search.write(render_to_plugin(search_text, plugin))
     search.close()
     
+    search_form_text = open(os.path.join(TEMPLATE_ROOT, 'templates', 'search-form.html')).read()
+    search_form = open(os.path.join(templates_path, 'search-form.html'), 'w')
+    search_form.write(render_to_plugin(search_form_text, plugin))
+    search_form.close()
+    
+    meta_text = open(os.path.join(TEMPLATE_ROOT, 'templates', 'meta.html')).read()
+    meta = open(os.path.join(templates_path, 'meta.html'), 'w')
+    meta.write(render_to_plugin(meta_text, plugin))
+    meta.close()
+    
+    #build search-result.html
+    top = open(os.path.join(TEMPLATE_ROOT, 'templates', 'search-result', 'top.txt')).read()
+    bottom = open(os.path.join(TEMPLATE_ROOT, 'templates', 'search-result', 'bottom.txt')).read()
+    result = open(os.path.join(templates_path, 'search-result.html'), 'w')
+    result.write(render_to_plugin(top, plugin))
+    for field in plugin.fields.all():
+        field_type = field.type.split('/')[1]
+        if field_type == "Wysiwyg":
+            result.write("<div>{{ %s.%s|safe }}</div>\n"% (plugin.single_lower, field.name))
+        else:
+            result.write("<div>{{ %s.%s }}</div>\n"% (plugin.single_lower, field.name))
+    result.write(render_to_plugin(bottom, plugin))
+    result.close()
+    
     #build detail.html
     top = open(os.path.join(TEMPLATE_ROOT, 'templates', 'detail', 'top.txt')).read()
     bottom = open(os.path.join(TEMPLATE_ROOT, 'templates', 'detail', 'bottom.txt')).read()
     detail = open(os.path.join(templates_path, 'detail.html'), 'w')
     detail.write(render_to_plugin(top, plugin))
     for field in plugin.fields.all():
-        detail.write("<div>{{ %s.%s }}</div>\n"% (plugin.single_lower, field.name))
+        field_type = field.type.split('/')[1]
+        if field_type == "Wysiwyg":
+            detail.write("<div>{{ %s.%s|safe }}</div>\n"% (plugin.single_lower, field.name))
+        else:
+            detail.write("<div>{{ %s.%s }}</div>\n"% (plugin.single_lower, field.name))
     detail.write(render_to_plugin(bottom, plugin))
     detail.close()
     
@@ -175,7 +232,9 @@ def build_admin(plugin, plugin_dir):
     top = open(os.path.join(TEMPLATE_ROOT, 'admin', 'top.txt')).read()
     bottom = open(os.path.join(TEMPLATE_ROOT, 'admin', 'bottom.txt')).read()
     document = open(os.path.join(plugin_dir, 'admin.py'), 'w')
-    document.write(render_to_plugin(top, plugin))
+    # include the first field when rendering the top part of the admin.py
+    first_field = plugin.fields.all().order_by('pk')[0]
+    document.write(render_to_plugin(top, plugin, extra={'FIRST_FIELD':"%r"%first_field.name}))
     for field in plugin.fields.all():
         document.write("                '%s',\n" % field.name)
     document.write(render_to_plugin(bottom, plugin))

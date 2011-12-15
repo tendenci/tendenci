@@ -1,7 +1,7 @@
     objects = S_S_CAPManager()
     
     def __unicode__(self):
-        return self.id
+        return unicode(self.id)
     
     class Meta:
         permissions = (("view_S_S_LOW","Can view S_S_LOW"),)
