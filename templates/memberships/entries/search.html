@@ -61,30 +61,6 @@
                 <div style="clear:both:"></div>
             </div>
 
-
-            <!-- <h2>
-                <a href="{% url membership.application_entries entry.pk %}">
-                {% firstof entry.name trans "Name was not recorded" %}
-                &nbsp;-&nbsp; {% firstof entry.email trans "Email was not recorded" %}
-                </a>
-            </h2>
-
-            <h3>{% blocktrans with entry.entry_time|date as entry_date %}Submitted {{ entry_date }}{% endblocktrans %}</h3>
-
-            {% if entry.is_approved == 1 or entry.is_approved == 0 %}
-                {% if entry.is_approved == 1 %}
-                <div class="membership-status approved">
-                    {% blocktrans with entry.decision_dt|date as entry_decision %}Approved on {{ entry_decision }}{% endblocktrans %}
-                </div>
-                {% else %}
-                    {% if entry.is_approved = 0 %}
-                    <div class="membership-status disapproved">
-                        {% blocktrans with entry.decision_dt|date as entry_decision %}Disapproved on {{ entry_decision }}{% endblocktrans %}
-                    </div>
-                    {% endif %}
-                {% endif %}
-            {% endif %} -->
-
             <div style="clear:both;"></div>
 
 		</div>
