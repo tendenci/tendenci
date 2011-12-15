@@ -59,9 +59,9 @@ class ImportMembershipsTask(Task):
                         user = User(username = username)
 
                 # update user
-                user.first_name = m.get('first_name')
-                user.last_name = m.get('last_name')
-                user.email = m.get('email')
+                user.first_name = m.get('first_name') or user.first_name
+                user.last_name = m.get('last_name') or user.last_name
+                user.email = m.get('email') or user.email
                 #save user
                 user.save()
                 

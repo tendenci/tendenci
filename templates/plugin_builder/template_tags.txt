@@ -38,3 +38,7 @@ def list_S_P_LOW(parser, token):
         kwargs['order'] = '-create_dt'
 
     return ListS_P_CAPNode(context_var, *args, **kwargs)
+
+@register.inclusion_tag("S_P_LOW/search-form.html", takes_context=True)
+def S_S_LOW_search(context):
+    return context
