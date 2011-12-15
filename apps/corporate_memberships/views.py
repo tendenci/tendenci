@@ -7,7 +7,7 @@ import csv
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
+from django.utils import simplejson
 
 from imports.utils import render_excel
 
@@ -52,6 +53,7 @@ from memberships.models import Membership
 from perms.utils import get_notice_recipients
 from base.utils import send_email_notification
 from files.models import File
+from profiles.models import Profile
 
 
 def add(request, slug, template="corporate_memberships/add.html"):
@@ -713,6 +715,23 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
                                               'reps': reps}, 
         context_instance=RequestContext(request))
     
+def reps_lookup(request):
+    q = request.REQUEST['term']
+    profiles = Profile.objects.search(
+                        q, 
+                        user=request.user
+                        ).order_by('last_name_exact')
+    if profiles and len(profiles) > 10:
+        profiles = profiles[:10]
+
+    users = [p.object.user for p in profiles]
+    #users = User.objects.all()
+    results = []
+    for u in users:
+        value = '%s, %s (%s) - %s' % (u.last_name, u.first_name, u.username, u.email)
+        u_dict = {'id': u.id, 'label': value, 'value': value}
+        results.append(u_dict)
+    return HttpResponse(simplejson.dumps(results),mimetype='application/json')
     
 @login_required
 def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html"):
