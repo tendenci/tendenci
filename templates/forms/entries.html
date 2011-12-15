@@ -13,7 +13,7 @@
 
 {% block body %}
 <div class="t">
- {% forms_nav request.user %}
+ {% forms_nav request.user form %}
     <h1>{% firstof MODULE_FORMS_LABEL 'Form' %} Entries</h1>
     <h2>{{ form.title }}</h2>
  	<p><a href="{% url form_entries_export form.pk %}">Export All Entries</a></p>
