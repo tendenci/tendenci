@@ -286,22 +286,31 @@ class CorpMembForm(forms.ModelForm):
     
     
 class CorpMembRepForm(forms.ModelForm):
+    user_display = forms.CharField(max_length=100, required=False,
+                                    help_text='type name, or username or email')
+    
     class Meta:
         model = CorporateMembershipRep
-        exclude = (
-                  'corporate_membership',
-                  )
+        fields=('user_display',
+                'user',
+                'is_dues_rep', 
+                'is_member_rep',)
+#        exclude = (
+#                  'corporate_membership',
+#                  )
         
     def __init__(self, corp_memb, *args, **kwargs):
         self.corporate_membership = corp_memb
         super(CorpMembRepForm, self).__init__(*args, **kwargs)
         from django.contrib.auth.models import User
         #self.fields['user'].queryset = User.objects.filter(is_active=1)
-        users = User.objects.filter(is_active=1)
-        self.fields['user'].choices = [(0, 'Select One')] + [(u.id, '%s %s (%s)' % (u.first_name, 
-                                                                                    u.last_name, 
-                                                                                    u.email)) for u in users]
-        self.fields['user'].label = "Add a Representative"
+#        users = User.objects.filter(is_active=1)
+#        self.fields['user'].choices = [(0, 'Select One')] + [(u.id, '%s %s (%s)' % (u.first_name, 
+#                                                                                    u.last_name, 
+#                                                                                    u.email)) for u in users]
+        self.fields['user_display'].label = "Add a Representative"
+        self.fields['user'].widget = forms.HiddenInput()
+        self.fields['user'].error_messages['required']='Please enter a valid user.'
         
     def clean_user(self):
         value = self.cleaned_data['user']
