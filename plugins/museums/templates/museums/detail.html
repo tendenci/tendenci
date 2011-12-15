@@ -1,0 +1,32 @@
+{% extends "museums/base.html" %}
+
+{% block body %}
+<div class="museum-wrap">
+<div>{{ museum.name }}</div>
+<div>{{ museum.phone }}</div>
+<div>{{ museum.address }}</div>
+<div>{{ museum.city }}</div>
+<div>{{ museum.state }}</div>
+<div>{{ museum.zip }}</div>
+<div>{{ museum.website }}</div>
+<div>{{ museum.building_photo }}</div>
+<div>{{ museum.about }}</div>
+<div>{{ museum.hours }}</div>
+<div>{{ museum.free_times }}</div>
+<div>{{ museum.parking_information }}</div>
+<div>{{ museum.free_parking }}</div>
+<div>{{ museum.street_parking }}</div>
+<div>{{ museum.paid_parking }}</div>
+<div>{{ museum.dining_information }}</div>
+<div>{{ museum.restaurant }}</div>
+<div>{{ museum.snacks }}</div>
+<div>{{ museum.shopping_information? }}</div>
+<div>{{ museum.events }}</div>
+<div>{{ museum.special_offers }}</div>
+<div>{{ museum.facebook }}</div>
+<div>{{ museum.twitter }}</div>
+<div>{{ museum.flickr }}</div>
+<div>{{ museum.youtube }}</div>
+{% include "museums/meta.html" %} 
+</div>
+{% endblock body %}
