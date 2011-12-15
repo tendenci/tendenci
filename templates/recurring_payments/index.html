@@ -336,7 +336,7 @@
   // This can speed up the processing of the page slightly.
  // AuthorizeNetPopup.options.skipZIndexCheck = true;
 
-  AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }}
+  AuthorizeNetPopup.options.useTestEnvironment = {{ test_mode }};
   //]]>
 </script>
 {% endif %}
@@ -439,7 +439,7 @@ $(document).ready(function(){
 	// disable confirmation
 	$('.disable').click(function(){
 		var disable_account = confirm('Are you sure you want to disable this account?');	// confirm
-		if(disable_account) $('form[name="rp-disable"]').submit() // disable: if OK
+		if(disable_account) $('form[name="rp-disable"]').submit(); // disable: if OK
 		return false;	// cancel
 	});
 </script>

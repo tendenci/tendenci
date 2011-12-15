@@ -1,10 +1,11 @@
-                <section id="about-info">
-                    <h2>About {{ SITE_GLOBAL_SITEDISPLAYNAME }}</h2>
-                    <div class="blurb">
-                        <p>We're a Public Relations firm. You should join us so that we can hook you up with all of our knowledge and introduce you to all of our peeps. We've been in business for sometimes which means we know something. Most of our peeps have big money which means people will listen when we network.</p>
-                    </div>
-                </section><!-- /#about-info -->
-                <section id="about-img">
-                    <img src="http://media.tendenciapp.com/images/photo.jpg" />
-                </section><!-- /#about-img -->
-                {% include "theme_includes/space_edit.html" %}
+{% load theme_tags %}
+<section id="about-info">
+    <h2>About {{ SITE_GLOBAL_SITEDISPLAYNAME }}</h2>
+    <div class="blurb">
+        <p>We're a Public Relations firm. You should join us so that we can hook you up with all of our knowledge and introduce you to all of our peeps. We've been in business for sometimes which means we know something. Most of our peeps have big money which means people will listen when we network.</p>
+    </div>
+</section><!-- /#about-info -->
+<section id="about-img">
+    <img src="http://media.tendenciapp.com/images/photo.jpg" />
+</section><!-- /#about-img -->
+{% theme_setting setting_name %}

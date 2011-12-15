@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.utils.encoding import smart_str
+from django.template.defaultfilters import yesno
 
 from base.http import Http403
 from forms_builder.forms.forms import FormForForm, FormForm, FormForField
@@ -237,8 +238,12 @@ def entries_export(request, id):
                     file_path = join(settings.MEDIA_ROOT,field.value)
                     archive_name = join('files',field.value)
                     zip.write(file_path, archive_name, zipfile.ZIP_DEFLATED)
-                values.append(smart_str(field.value))        
-            writer.writerow(values)        
+
+                if field.field.field_type == 'BooleanField':
+                    values.append(yesno(smart_str(field.value)))
+                else:
+                    values.append(smart_str(field.value))
+            writer.writerow(values)
         
         # add the csv file to the zip, close it, and set the response
         if has_files:

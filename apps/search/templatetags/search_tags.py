@@ -17,7 +17,10 @@ class SearchResultNode(IncludeNode):
         """
         try:
             result = self.result.resolve(context)
-            result_object = result.object
+            try:
+                result_object = result.object
+            except:
+                result_object = result
             var_name = result_object._meta.verbose_name.replace(' ', '_').lower()
             if var_name == 'photo_set':
                 #special case since Image and PhotoSet share the same app.

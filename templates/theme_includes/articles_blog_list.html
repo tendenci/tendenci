@@ -1,3 +1,4 @@
+{% load theme_tags %}
 {% load article_tags %}
 {% load pagination_tags %}
 {% list_articles as articles_list limit=500 %}
@@ -21,4 +22,4 @@
     {% endfor %}
   </div>
       {% paginate %}
-    {% include "theme_includes/space_edit.html" %}
+{% theme_setting setting_name %}

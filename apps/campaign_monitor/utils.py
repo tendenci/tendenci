@@ -104,12 +104,13 @@ def update_subscription(profile, old_email):
     If the old email is not on CM this will not subscribe the user
     to CM.
     """
-    user = profile.user
-    for group in profile.get_groups():
-        for listmap in group.listmap_set.all():
-            subscriber = Subscriber(listmap.list_id, old_email)
-            try:
-                subscriber.update(profile.email, user.get_full_name(), [], False)
-            except BadRequest, e:
-                print e
+    if api_key and client_id:
+        user = profile.user
+        for group in profile.get_groups():
+            for listmap in group.listmap_set.all():
+                subscriber = Subscriber(listmap.list_id, old_email)
+                try:
+                    subscriber.update(profile.email, user.get_full_name(), [], False)
+                except BadRequest, e:
+                    print e
             

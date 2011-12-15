@@ -43,6 +43,23 @@ def navigation(context, nav_id):
     })
     return context
 
+@register.inclusion_tag("navs/load_nav.html", takes_context=True)
+def load_nav(context, nav_id):
+    """
+    Renders the nav and its nav items.
+    This will call nav_item that will call itself recursively nesting 
+    the subnavs
+    """
+    try:
+        nav = Nav.objects.get(id=nav_id)
+    except:
+        return None
+    context.update({
+        "nav": nav,
+        "items": nav.top_items,
+    })
+    return context
+
 @register.inclusion_tag("navs/navigation_item.html", takes_context=True)
 def nav_item(context, item):
     """
