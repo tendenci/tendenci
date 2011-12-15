@@ -20,6 +20,6 @@ class PluginAdmin(admin.ModelAdmin):
             build_plugin(plugin)
             message_bit = message_bit + ", %s" % plugin.plural_lower
         self.message_user(request, "Successfully built the following plugins:%s" % message_bit[1:])
-    build_plugins.short_description = "Build/Rebuild all selected plugins."
+    build_plugins.short_description = "Build/Rebuild selected plugins."
 
 admin.site.register(Plugin, PluginAdmin)
