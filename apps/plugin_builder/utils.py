@@ -203,7 +203,11 @@ def build_templates(plugin, plugin_dir):
     result = open(os.path.join(templates_path, 'search-result.html'), 'w')
     result.write(render_to_plugin(top, plugin))
     for field in plugin.fields.all():
-        result.write("<div>{{ %s.%s }}</div>\n"% (plugin.single_lower, field.name))
+        field_type = field.type.split('/')[1]
+        if field_type == "Wysiwyg":
+            result.write("<div>{{ %s.%s|safe }}</div>\n"% (plugin.single_lower, field.name))
+        else:
+            result.write("<div>{{ %s.%s }}</div>\n"% (plugin.single_lower, field.name))
     result.write(render_to_plugin(bottom, plugin))
     result.close()
     
@@ -213,7 +217,11 @@ def build_templates(plugin, plugin_dir):
     detail = open(os.path.join(templates_path, 'detail.html'), 'w')
     detail.write(render_to_plugin(top, plugin))
     for field in plugin.fields.all():
-        detail.write("<div>{{ %s.%s }}</div>\n"% (plugin.single_lower, field.name))
+        field_type = field.type.split('/')[1]
+        if field_type == "Wysiwyg":
+            detail.write("<div>{{ %s.%s|safe }}</div>\n"% (plugin.single_lower, field.name))
+        else:
+            detail.write("<div>{{ %s.%s }}</div>\n"% (plugin.single_lower, field.name))
     detail.write(render_to_plugin(bottom, plugin))
     detail.close()
     
