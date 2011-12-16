@@ -10,7 +10,7 @@ from profiles.models import Profile
 
 from corporate_memberships.models import CorporateMembership
 from memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
-from memberships.importer.utils import parse_mems_from_csv
+from memberships.importer.utils import parse_mems_from_csv, clean_username
 
 class ImportMembershipsTask(Task):
 
