@@ -18,9 +18,9 @@
     <p>{{ app.description|safe|urlize }}</p>
 
     {% if pending_entries %}
-        <div class="pending-entries">
+        <!-- <div class="pending-entries">
             <a href="{% url membership.application_entries_search %}?q=status:pending">
-            {% blocktrans count pending_entries|length as pend_length %}You have {{ pend_length }} pending submission.{% plural %}You have {{ pend_length }} pending submissions.{% endblocktrans %}</a></div>
+            {% blocktrans count pending_entries|length as pend_length %}You have {{ pend_length }} pending submission.{% plural %}You have {{ pend_length }} pending submissions.{% endblocktrans %}</a></div> -->
     {% endif %}
 
 	<div class="form-builder-wrap">

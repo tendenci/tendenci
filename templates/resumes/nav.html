@@ -4,7 +4,6 @@
 
 {% is_admin user as user_is_admin %}
 {% has_perm user site_settings.change_setting as can_edit_setting %}
-{% has_perm user resumes.add_resume as can_add_resume %}
 
 {% if nav_object %}
 	{% has_perm user resumes.view_resume nav_object as can_view_resume %}
@@ -45,11 +44,9 @@
 				{% endif %}
 			{% endif %}
 			<li><a href="{% url resume.search %}">{% trans "Search" %}</a></li>
-			{% if can_add_resume %}
-			<li><a href="{% url resume.add %}">{% trans "Add" %}</a></li>
-			{% endif %}
 			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
+                <li><a href="{% url resume.add %}">{% trans "Add" %}</a></li>
+    			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}
 		</ul>
 		

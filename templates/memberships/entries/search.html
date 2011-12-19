@@ -33,19 +33,24 @@
 
             <div class="result-head {{ entry.status_msg|lower }}">
                 {% if entry.is_pending %}
+                <div class="member-number" title="No Member Number Yet">0000</div>
                 {% else %}
                 <div class="member-number">{{ entry.membership.member_number }}</div>
                 {% endif %}
 
-                <div class="member-status"><a 
-                    href="{% url membership.application_entries entry.pk %}">
-                    {{ entry.status_msg }}</a></div>
+                <div class="member-status">
+                    {% if entry.is_renewal %}
+                        Renewal
+                    {% else %}
+                        Joining
+                    {% endif %}
+                    <a href="{% url membership.application_entries entry.pk %}">{{ entry.status_msg }}</a>
+                </div>
 
-                {% if entry.is_renewal %}
-                <div class="member-subscription">Renewal</div>
-                {% else %}
-                <div class="member-subscription">Join</div>
-                {% endif %}
+                <div class="result-content">
+                    <span class="member-name">{{ entry.name }}</span>
+                    <div class="member-email">{{ entry.email }}</div>
+                </div>
 
                 {% if entry.is_pending %}
                 <div class="member-date">Since {{ entry.create_dt|date }}</div>
@@ -55,33 +60,6 @@
 
                 <div style="clear:both:"></div>
             </div>
-            <div class="result-content">
-                <div class="member-name">{{ entry.name }}</div>
-                <div class="member-email">{{ entry.email }}</div>
-            </div>
-
-            <!-- <h2>
-                <a href="{% url membership.application_entries entry.pk %}">
-                {% firstof entry.name trans "Name was not recorded" %}
-                &nbsp;-&nbsp; {% firstof entry.email trans "Email was not recorded" %}
-                </a>
-            </h2>
-
-            <h3>{% blocktrans with entry.entry_time|date as entry_date %}Submitted {{ entry_date }}{% endblocktrans %}</h3>
-
-            {% if entry.is_approved == 1 or entry.is_approved == 0 %}
-                {% if entry.is_approved == 1 %}
-                <div class="membership-status approved">
-                    {% blocktrans with entry.decision_dt|date as entry_decision %}Approved on {{ entry_decision }}{% endblocktrans %}
-                </div>
-                {% else %}
-                    {% if entry.is_approved = 0 %}
-                    <div class="membership-status disapproved">
-                        {% blocktrans with entry.decision_dt|date as entry_decision %}Disapproved on {{ entry_decision }}{% endblocktrans %}
-                    </div>
-                    {% endif %}
-                {% endif %}
-            {% endif %} -->
 
             <div style="clear:both;"></div>
 

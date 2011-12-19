@@ -1,0 +1,24 @@
+{% extends "trainings/base.html" %}
+{% load i18n %}
+{% load perm_tags %}
+
+{% block body %}
+{% if completions %}
+<h1>{% trans 'All Training Completions Report' %}</h1>
+<p>From {{ start_dt|date:"N j, Y" }} to {{ end_dt|date:"N j, Y" }}</p>
+
+<ul>
+{% for completionset in completions %}
+    <li><a href="{% url profile completionset.owner %}">{{ completionset.owner__first_name }} {{ completionset.owner__last_name }}</a> - {{ completionset.points_sum }}</li>
+{% endfor %}
+
+{% for u in all_user_completions %}
+    User ID {{ u.user }}<br />
+    {% for cs in u.completions %}
+        {{ cs.training.title }} - {{ cs.training.points|floatformat }} - {{ cs.finish_dt }}<br />
+    {% endfor %}
+{% endfor %}
+
+</ul>
+{% endif %}
+{% endblock body %}

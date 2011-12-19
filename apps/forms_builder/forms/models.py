@@ -47,7 +47,7 @@ class Form(TendenciBaseModel):
     """
 
     title = models.CharField(_("Title"), max_length=50)
-    slug = models.SlugField(editable=False, max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000)
     response = models.TextField(_("Confirmation Text"), max_length=2000)
     email_text = models.TextField(_("Email Text to Submitter"), default='', blank=True, help_text=
@@ -80,24 +80,6 @@ class Form(TendenciBaseModel):
     
     def __unicode__(self):
         return self.title
-
-    def save(self, *args, **kwargs):
-        """
-        Create a unique slug from title - append an index and increment if it 
-        already exists.
-        """
-        if not self.slug:
-            self.slug = slugify(self.title)
-            i = 0
-            while True:
-                if i > 0:
-                    if i > 1:
-                        self.slug = self.slug.rsplit("-", 1)[0]
-                    self.slug = "%s-%s" % (self.slug, i)
-                if not Form.objects.filter(slug=self.slug):
-                    break
-                i += 1
-        super(Form, self).save(*args, **kwargs)
         
     @models.permalink
     def get_absolute_url(self):
