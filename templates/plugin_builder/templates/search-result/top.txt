@@ -1,0 +1,3 @@
+{% load base_tags %}
+<div class="wrap-search-item">
+<div class="search-item S_P_LOW-search-item">

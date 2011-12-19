@@ -7,7 +7,7 @@
 {% block body %}
 
 <div class="t">
-    {% forms_nav request.user %}
+    {% forms_nav request.user form_instance %}
 	
     <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} Edit</h1>
 
@@ -21,4 +21,18 @@
     </div>
 	
 </div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+<script type="text/javascript">
+    var slugit = new Slugify({
+        input_element : 'input#id_title',
+        slug_element : 'input#id_slug',
+        submit_element : 'input[type="submit"]',
+        help: false,
+        limit : 150
+    });
+</script>
 {% endblock %}

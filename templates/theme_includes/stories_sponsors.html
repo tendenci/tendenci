@@ -1,3 +1,4 @@
+{% load theme_tags %}
 {% load story_tags %}
 {% load base_tags %}
 <h2>Sponsors</h2>
@@ -17,4 +18,4 @@
     {% if user.is_authenticated %}<p><a href="/stories/add/">Add a story</a> and tag it <strong>sponsor</strong> to have it appear as an image above.</p>{% endif %}
 {% endif %}
 </div>
-{% include "theme_includes/space_edit.html" %}
+{% theme_setting setting_name %}
