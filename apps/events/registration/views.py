@@ -36,11 +36,15 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     """
     event = get_object_or_404(Event, pk=event_id)
     
+    if not get_setting('module', 'events', 'anonymousmemberpricing'):
+        raise Http404
+    
     memberid = request.GET.get('memberid', None)
     email = request.GET.get('email', None)
     
     user = AnonymousUser()
-    if memberid:# memberid takes priority over email
+    allow_memberid = get_setting('module', 'events', 'memberidpricing')
+    if memberid and allow_memberid:# memberid takes priority over email
         membership = Membership.objects.filter(member_number=memberid)
         if membership:
             user = membership[0].user
@@ -177,4 +181,5 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             'registrant': reg_formset,
             'sets': sets,
             'pricings':default_pricings,
+            'allow_memberid_pricing':get_setting('module', 'events', 'memberidpricing'),
             }, context_instance=RequestContext(request))

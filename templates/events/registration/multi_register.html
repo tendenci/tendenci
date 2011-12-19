@@ -1,5 +1,6 @@
 {% extends "events/base-wide.html" %}
 {% load event_tags %}
+{% load site_setting_tags %}
 {% load styled_forms %}
 {% load base_filters %}
 {% load i18n %}
@@ -376,6 +377,11 @@
 						</div>
 					</div>	
 				{% endfor %}
+                <div class="delete">
+                    <div class="delete-button-wrap">
+                        <input type="button" class="delete-button" value="&nbsp;&nbsp;{% trans 'Delete' %}">
+                    </div>
+                </div>
                 </div>
 				{% endfor %}
 			</div>
@@ -392,7 +398,10 @@
                 <input id="add-registrants-button" type="button" value="Add Registrant Set">
                 <h3>...or get more available pricings:</h3>
                 <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="">
-                <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value=""><br>
+                {% if allow_memberid_pricing %}
+                    <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value="">
+                {% endif %}
+                <br>
                 <input id="pricing-check" type="button" value="Get More Pricings">
             </div>
             
@@ -457,6 +466,7 @@
                             <input class="registrant-email" value="{{ request.user.email }}" type="text" name="registrant-0-email" id="id_registrant-0-email">
                         </div>
                     </div>
+                    {% if allow_memberid_pricing %}
                     <div class="form-field">
                         <div class="error"></div>
                         <div class="label">{% trans "Member ID" %}</div>
@@ -464,6 +474,7 @@
                             <input class="registrant-memberid" value="" type="text" name="registrant-0-memberid" id="id_registrant-0-memberid">
                         </div>
                     </div>
+                    {% endif %}
                     <div class="form-field">
                         <div class="field">
                             <input type="hidden" name="registrant-0-pricing" id="id_registrant-0-pricing" value="">
@@ -757,7 +768,7 @@
                     p_html = p_html +  '<input type="radio" name="add-registrants-pricing" value="' + p_list[i]['pk'] + '"'
                     p_html = p_html + 'quantity="'+ p_list[i]['quantity'] +'" price="' + p_list[i]['price'] + '"'
                     p_html = p_html + 'title="' + p_list[i]['title'] + '">'+p_list[i]['title']
-                    p_html = p_html + ' (' + p_list[i]['quantity'] + ' for ' + p_list[i]['price'] + ')<br>'
+                    p_html = p_html + ' (' + p_list[i]['quantity'] + ' for {{ SITE_GLOBAL_CURRENCYSYMBOL }}' + p_list[i]['price'] + ')<br>'
                 }
                 $('#pricing-choices').html(p_html);
             }
