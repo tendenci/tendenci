@@ -9,6 +9,7 @@ from django.contrib.auth.models import User, AnonymousUser
 from captcha.fields import CaptchaField
 from discounts.models import Discount
 from perms.utils import is_admin
+from site_settings.utils import get_setting
 
 from events.models import RegConfPricing, PaymentMethod
 from events.registration.utils import get_available_pricings
@@ -103,6 +104,10 @@ class RegistrantForm(forms.Form):
         # initialize pricing options and reg_set field
         self.fields['pricing'] = forms.ModelChoiceField(widget=forms.HiddenInput, queryset=self.pricings)
         
+        allow_memberid = get_setting('module', 'events', 'memberidpricing')
+        if not allow_memberid:
+            self.fields.pop('memberid')
+        
         # initialize internal variables
         self.price = Decimal('0.00')
         self.saved_data = {}
@@ -130,9 +135,9 @@ class RegistrantForm(forms.Form):
             if user:
                 user = membership[0].user
         elif email:
-            user = User.objects.filter(email=email)
-            if user:
-                user = user[0]
+            users = User.objects.filter(email=email)
+            if users:
+                user = users[0]
                 
         return user
     
