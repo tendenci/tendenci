@@ -940,13 +940,27 @@ class AppEntry(TendenciBaseModel):
     @property
     def membership_type(self):
         """Get MembershipType object"""
-        # Getting membership_type object via membership_type name
-        # Membership names are assumed to be unique.  :/
+        # Get membership type via name
+
         try:
             entry_field = self.fields.get(field__field_type="membership-type")
             return MembershipType.objects.get(name__exact=entry_field.value.strip())
         except:
-            return None
+            pass
+
+        # Find an older "approved" membership entry
+        entries = AppEntry.objects.filter(
+            user=self.user,
+            membership__isnull=False,
+            create_dt__lt=self.create_dt,
+        ).order_by('-create_dt')
+
+        if entries:
+            return entries[0].membership.membership_type
+
+        
+
+        
 
     @property
     def payment_method(self):
