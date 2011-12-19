@@ -162,7 +162,7 @@ class DirectoryPricing(models.Model):
     status = models.BooleanField(default=True)
 
     class Meta:
-        permissions = (("view_directory_pricing", "Can view directory pricing"),)
+        permissions = (("view_directorypricing", "Can view directory pricing"),)
     
     def save(self, user=None, *args, **kwargs):
         if not self.id:

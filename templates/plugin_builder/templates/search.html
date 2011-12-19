@@ -1,5 +1,29 @@
 {% extends "S_P_LOW/base.html" %}
 
-{% block body %}
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load S_S_LOW_tags %}
 
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+    </style>
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'S_P_CAP' %}" href="{% url S_P_LOW.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate S_P_LOW 10 %}
+<div class="t">
+<h1>{% trans 'S_S_CAP List' %}</h1>
+{% S_S_LOW_search %}
+<div class="S_P_LOW-wrap clearfix">
+{% for S_S_LOW in S_P_LOW %}
+{% search_result S_S_LOW %}
+{% empty %}
+<p>{% trans '0 S_P_LOW found' %}</p>
+{% endfor %}
+</div>
+{% paginate %}
+</div>
 {% endblock body %}

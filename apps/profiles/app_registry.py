@@ -13,6 +13,7 @@ class ProfileRegistry(PeopleRegistry):
     url = {
         'search': lazy_reverse('profile.search'),
         'add': lazy_reverse('profile.add'),
+        'settings': lazy_reverse('settings.index', args=['module','users']),
     }
 
 site.register(Profile, ProfileRegistry)

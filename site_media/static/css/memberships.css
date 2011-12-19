@@ -115,28 +115,27 @@
 /* Membership details
  ------------------------- */
  .t .memberships-wrap .membership-wrap-search {
-	border: 1px solid silver;
-	/*padding: 10px;*/
-	margin-bottom: 10px;
+	padding-bottom: 10px;
+	margin-bottom: 20px;
 	position: relative;
 	background-color: white;
-
+	border: 1px solid #DDD;
+	border-top: none;
 }
 
 .result-head {
-	background-color: #EEE;
 	padding: 10px;
-	margin: 7px 7px 0 7px;
+	/*margin: 7px 7px 0 7px;*/
 	/*cursor: pointer;*/
 }
 .result-head.approved {
-	border-top: 5px solid #7AE309;
+	border-top: 10px solid #7AE309;
 }
 .result-head.disapproved {
-	border-top: 5px solid #E30918;
+	border-top: 10px solid #E30918;
 }
 .result-head.pending {
-	border-top: 5px solid #FFE44B;
+	border-top: 10px solid #FFE44B;
 }
 .result-head .member-requires-approval {
 	font-weight: bold;
@@ -162,9 +161,11 @@
 	font-size: .8em;
 	text-align: right;
 	margin-top: 4px;
+	float: right;
 }
 .result-content {
-	padding: 10px;
+	margin-top: 4px;
+	float: left;
 }
 
 .result-content .member-name {

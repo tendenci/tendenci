@@ -12,9 +12,12 @@
             'status_detail'
         )}),
     )
-    form = S_S_CAPForm
-    actions = []
-
+    
+    class Media:
+        js = (
+            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+        )
+    
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:S_P_LOW_S_S_LOW_change', args=[obj.pk])
         return link

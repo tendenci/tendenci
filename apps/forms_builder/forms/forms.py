@@ -7,6 +7,7 @@ from django import forms
 from django.core.files.storage import FileSystemStorage
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import slugify
 
 from tinymce.widgets import TinyMCE
 from forms_builder.forms.models import FormEntry, FieldEntry, Field, Form
@@ -119,6 +120,7 @@ class FormAdminForm(TendenciBaseForm):
     class Meta:
         model = Form
         fields = ('title',
+                  'slug',
                   'intro',
                   'response',
                   'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
@@ -134,6 +136,22 @@ class FormAdminForm(TendenciBaseForm):
                   'status',
                   'status_detail',
                  )
+    
+    def clean_slug(self):
+        slug = slugify(self.cleaned_data['slug'])
+        i = 0
+        while True:
+            if i > 0:
+                if i > 1:
+                    slug = slug.rsplit("-", 1)[0]
+                slug = "%s-%s" % (slug, i)
+            match = Form.objects.filter(slug=slug)
+            if self.instance:
+                match = match.exclude(pk=self.instance.pk)
+            if not match:
+                break
+            i += 1
+        return slug
         
 class FormForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
@@ -142,6 +160,7 @@ class FormForm(TendenciBaseForm):
     class Meta:
         model = Form
         fields = ('title',
+                  'slug',
                   'intro',
                   'response',
                   'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
@@ -159,6 +178,7 @@ class FormForm(TendenciBaseForm):
                  )
         fieldsets = [('Form Information', {
                         'fields': [ 'title',
+                                    'slug',
                                     'intro',
                                     'response',
                                     'completion_url',
@@ -189,6 +209,22 @@ class FormForm(TendenciBaseForm):
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+            
+    def clean_slug(self):
+        slug = slugify(self.cleaned_data['slug'])
+        i = 0
+        while True:
+            if i > 0:
+                if i > 1:
+                    slug = slug.rsplit("-", 1)[0]
+                slug = "%s-%s" % (slug, i)
+            match = Form.objects.filter(slug=slug)
+            if self.instance:
+                match = match.exclude(pk=self.instance.pk)
+            if not match:
+                break
+            i += 1
+        return slug
             
 class FormForField(forms.ModelForm):
     class Meta:
