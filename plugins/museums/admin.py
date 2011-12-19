@@ -1,51 +1,64 @@
 from django.contrib import admin
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.encoding import iri_to_uri
-from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 
 from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
-from museums.models import Museum
-from museums.forms import MuseumForm
+from museums.models import Museum, Photo
+from museums.forms import MuseumForm, PhotoForm
+
+class PhotoAdmin(admin.StackedInline):
+    fieldsets = (
+        (None, {
+            'fields': (
+            'file',
+        )},),
+    )
+    model = Photo
+    form = PhotoForm
 
 class MuseumAdmin(admin.ModelAdmin):
     list_display = [u'name', 'view_on_site', 'edit_link']
     list_filter = []
     search_fields = []
     actions = []
-    
+    inlines = (PhotoAdmin,)
     form = MuseumForm
     
     fieldsets = (
-        (None, 
-            {'fields': (
-                'name',
-                'phone',
-                'address',
-                'city',
-                'state',
-                'zip',
-                'website',
-                'building_photo',
-                'about',
-                'hours',
-                'free_times',
-                'parking_information',
-                'free_parking',
-                'street_parking',
-                'paid_parking',
-                'dining_information',
-                'restaurant',
-                'snacks',
-                'shopping_information',
-                'events',
-                'special_offers',
-                'facebook',
-                'twitter',
-                'flickr',
-                'youtube',
-            )}
-        ),
+        ('Basic Information', {'fields': (
+            'name',
+            'phone',
+            'address',
+            'city',
+            'state',
+            'zip',
+            'website',
+            'building_photo',
+            'about'
+        )}),
+        ('Visitor Information', {'fields': (
+            'hours',
+            'free_times',
+            'parking_information',
+            'free_parking',
+            'street_parking',
+            'paid_parking',
+            'dining_information',
+            'restaurant',
+            'snacks',
+            'shopping_information',
+            'events',
+            'special_offers',
+        )}),
+        ('Social Media', {'fields': (
+            'facebook',
+            'twitter',
+            'flickr',
+            'youtube',
+        )}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',),'fields': (
             'user_perms',
@@ -134,6 +147,19 @@ class MuseumAdmin(admin.ModelAdmin):
         instance = form.save(commit=False)
         perms = update_perms_and_save(request, form, instance)
         return instance
+        
+    def save_formset(self, request, form, formset, change):
+        """
+        Associate the user to each photo saved.
+        """
+        photos = formset.save(commit=False)
+        for photo in photos:
+            photo.content_type = ContentType.objects.get_for_model(photo.museum)
+            photo.object_id = photo.museum.pk
+            photo.name = photo.file.name
+            photo.creator = request.user
+            photo.owner = request.user
+            photo.save()
 
     def change_view(self, request, object_id, extra_context=None):
         result = super(MuseumAdmin, self).change_view(request, object_id, extra_context)
