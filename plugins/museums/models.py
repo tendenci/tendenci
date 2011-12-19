@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
@@ -21,27 +22,27 @@ class Museum(TendenciBaseModel):
     zip = models.CharField(_(u'Zip'), max_length=200)
     website = models.URLField(_(u'Website'), max_length=200)
     building_photo = models.ImageField(_(u'Building Photo'), upload_to=file_directory)
-    about = models.TextField(_(u'About'),)
+    about = models.TextField(_(u'About'))
     
     ## Visitor Information
-    hours = models.TextField(_(u'Hours'),)
-    free_times = models.TextField(_(u'Free Times'),)
-    parking_information = models.TextField(_(u'Parking Information'),)
+    hours = models.TextField(_(u'Hours'))
+    free_times = models.TextField(_(u'Free Times'))
+    parking_information = models.TextField(_(u'Parking Information'))
     free_parking = models.BooleanField(_(u'Free Parking?'), default=False)
     street_parking = models.BooleanField(_(u'Street Parking?'), default=False)
     paid_parking = models.BooleanField(_(u'Paid Parking?'), default=False)
-    dining_information = models.TextField(_(u'Dining Information'))
+    dining_information = models.TextField(_(u'Dining Information'), blank=True)
     restaurant = models.BooleanField(_(u'Restaurant?'), default=False)
     snacks = models.BooleanField(_(u'Snacks?'), default=False)
-    shopping_information = models.TextField(_(u'Shopping Information'))
-    events = models.CharField(_(u'Events'), max_length=200)
-    special_offers = models.TextField(_(u'Special Offers'))
+    shopping_information = models.TextField(_(u'Shopping Information'), blank=True)
+    events = models.CharField(_(u'Events'), max_length=200, blank=True)
+    special_offers = models.TextField(_(u'Special Offers'), blank=True)
     
     ## Stay Connected
-    facebook = models.URLField(_(u'Facebook'), max_length=200)
-    twitter = models.CharField(_(u'Twitter'), max_length=200)
-    flickr = models.CharField(_(u'Flickr'), max_length=200)
-    youtube = models.URLField(_(u'YouTube'), max_length=200)
+    facebook = models.URLField(_(u'Facebook'), max_length=200, blank=True)
+    twitter = models.CharField(_(u'Twitter'), max_length=200, blank=True)
+    flickr = models.CharField(_(u'Flickr'), max_length=200, blank=True)
+    youtube = models.URLField(_(u'YouTube'), max_length=200, blank=True)
     
     objects = MuseumManager()
     
@@ -53,7 +54,15 @@ class Museum(TendenciBaseModel):
     
     @models.permalink
     def get_absolute_url(self):
-        return ("museum.detail", [self.pk])
+        return ("museums.detail", [self.pk])
+        
+    @property
+    def content_type(self):
+        return ContentType.objects.get_for_model(self)
+        
+    @property
+    def full_address(self):
+        return "%s, %s, %s" % (self.address, self.city, self.state)
 
 class Photo(File):
-    museum = models.ForeignKey(Museum)
+    museum = models.ForeignKey(Museum, related_name="photos")
