@@ -980,8 +980,26 @@ class AppEntry(TendenciBaseModel):
             return PaymentMethod.objects.filter(
                 human_name__exact=entry_field.value.strip()
             )[0]
-        except PaymentMethod.DoesNotExist as e:
-            return None
+        except (AppFieldEntry.DoesNotExist, PaymentMethod.DoesNotExist) as e:
+            pass
+
+        # Find an older "approved" membership entry ------------
+        entries = AppEntry.objects.filter(
+            user=self.user,
+            membership__isnull=False,
+            create_dt__lt=self.create_dt,
+        ).order_by('-create_dt')
+
+        if entries:
+            return entries[0].membership.payment_method
+
+        # If the application only has one membership type choice ,use that ------
+        payment_methods = self.app.payment_methods.all()
+
+        if payment_methods:
+            return payment_methods[0]
+
+        # else return none; boom.
 
     def applicant(self):
         """Get User object"""
