@@ -948,7 +948,7 @@ class AppEntry(TendenciBaseModel):
         except:
             pass
 
-        # Find an older "approved" membership entry
+        # Find an older "approved" membership entry ------------
         entries = AppEntry.objects.filter(
             user=self.user,
             membership__isnull=False,
@@ -958,9 +958,14 @@ class AppEntry(TendenciBaseModel):
         if entries:
             return entries[0].membership.membership_type
 
-        
+        # If the application only has one membership type choice ,use that ------
+        membership_types = self.app.membership_types.all()
 
-        
+        if membership_types.count() == 1:
+            return membership_types[0]
+
+        # else return none; boom.
+
 
     @property
     def payment_method(self):
