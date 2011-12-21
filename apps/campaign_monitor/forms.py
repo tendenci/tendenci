@@ -39,7 +39,7 @@ class CampaignForm(forms.Form):
     events =  forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))
     event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))
-    events_type = forms.ChoiceField(initial='', choices=TYPE_CHOICES)
+    events_type = forms.ChoiceField(initial='', choices=TYPE_CHOICES, required=False)
     articles = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     articles_days = forms.ChoiceField(initial=60, choices=DAYS_CHOICES)
     news = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
