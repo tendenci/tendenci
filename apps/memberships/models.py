@@ -898,14 +898,10 @@ class AppEntry(TendenciBaseModel):
         return self.get_field_value('email')
 
     def approval_required(self):
-        join_approval_required = self.membership_type.require_approval
-        renew_approval_required = self.membership_type.renewal_require_approval
-
         if self.is_renewal:
-            return renew_approval_required
+            return self.membership_type.renewal_require_approval
         else:
-            return join_approval_required
-
+            return self.membership_type.require_approval
     
     @property
     def corporate_membership_id(self):
@@ -940,8 +936,8 @@ class AppEntry(TendenciBaseModel):
     @property
     def membership_type(self):
         """Get MembershipType object"""
-        # Get membership type via name
 
+        # Get membership type via name
         try:
             entry_field = self.fields.get(field__field_type="membership-type")
             return MembershipType.objects.get(name__exact=entry_field.value.strip())
@@ -949,14 +945,15 @@ class AppEntry(TendenciBaseModel):
             pass
 
         # Find an older "approved" membership entry ------------
-        entries = AppEntry.objects.filter(
-            user=self.user,
-            membership__isnull=False,
-            create_dt__lt=self.create_dt,
-        ).order_by('-create_dt')
+        if self.user:
+            entries = AppEntry.objects.filter(
+                user=self.user,
+                membership__isnull=False,
+                create_dt__lt=self.create_dt,
+            ).order_by('-create_dt')
 
-        if entries:
-            return entries[0].membership.membership_type
+            if entries:
+                return entries[0].membership.membership_type
 
         # If the application only has one membership type choice ,use that ------
         membership_types = self.app.membership_types.all()
@@ -984,14 +981,15 @@ class AppEntry(TendenciBaseModel):
             pass
 
         # Find an older "approved" membership entry ------------
-        entries = AppEntry.objects.filter(
-            user=self.user,
-            membership__isnull=False,
-            create_dt__lt=self.create_dt,
-        ).order_by('-create_dt')
+        if self.user:
+            entries = AppEntry.objects.filter(
+                user=self.user,
+                membership__isnull=False,
+                create_dt__lt=self.create_dt,
+            ).order_by('-create_dt')
 
-        if entries:
-            return entries[0].membership.payment_method
+            if entries:
+                return entries[0].membership.payment_method
 
         # If the application only has one membership type choice ,use that ------
         payment_methods = self.app.payment_methods.all()
