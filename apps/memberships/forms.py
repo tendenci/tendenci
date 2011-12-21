@@ -748,6 +748,7 @@ class AppEntryForm(forms.ModelForm):
         app_entry.owner_username = username or admin.username
         app_entry.status = True
         app_entry.status_detail = 'active'
+        app_entry.allow_anonymous_view = False
         
         app_entry.save()
         
