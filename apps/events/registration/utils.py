@@ -174,15 +174,18 @@ def process_registration(reg_form, reg_formset):
         if admin_price and admin_price != total_price:
             total_price = admin_price
             admin_notes = "Price has been overriden for this registration."
-    
+
     # create registration
     reg8n_attrs = {
         "event": event,
         "payment_method": reg_form.cleaned_data['payment_method'],
         "amount_paid": total_price,
-        "creator": user,
-        "owner": user,
     }
+
+    # if user; record creator and owner
+    if not user.is_anonymous():
+        reg8n_attrs.update({'creator': user,'owner': user})
+
     reg8n = Registration.objects.create(**reg8n_attrs)
     
     # create each registrant
