@@ -7,10 +7,10 @@ from django.contrib.auth.models import User
 from haystack.query import SearchQuerySet
 from perms.managers import TendenciBaseManager
 
-#class GroupManager(TendenciBaseManager):
-#    pass
+class GroupManager(TendenciBaseManager):
+    pass
 
-class GroupManager(Manager):
+class OldGroupManager(Manager):
     def search(self, query=None, *args, **kwargs):
         """
             Uses haystack to query groups. 

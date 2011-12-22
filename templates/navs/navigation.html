@@ -50,7 +50,7 @@
     }
 </style>{% endcomment %}
 
-<nav class="clearfix">
+<nav class="clearfix navigation">
 <ul>
 {% for item in items %}
     {% nav_item item %}
@@ -59,7 +59,7 @@
 
 {% if admin %}
 <div class="admin-inline">
-  <div class="admin-links clear-block"><a href="{% url navs.edit_items nav.pk %}?next={{ request.path }}" title="Edit Nav" class="edit-nav">Edit {{ nav.title|title }}</a></div>
+  <div class="admin-links clear-block"><a href="{% url navs.edit_items nav.id %}?next={{ request.path }}" title="Edit Nav" class="edit-nav">Edit {{ nav.title|title }}</a></div>
 </div>
 {% endif %}
 </nav>

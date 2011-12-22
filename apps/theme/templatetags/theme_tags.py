@@ -1,11 +1,13 @@
 import os
 from django.template import TemplateSyntaxError, TemplateDoesNotExist, VariableDoesNotExist
-from django.template import Library, Template
+from django.template import Library, Template, Variable
 from django.conf import settings
 from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode
 
 from boxes.models import Box
+from site_settings.models import Setting
+from site_settings.forms import build_settings_form
 
 register = Library()
 
@@ -67,11 +69,12 @@ class ThemeIncludeNode(IncludeNode):
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
-                pass #raise
+                raise
             return ''
 
 class SpaceIncludeNode(IncludeNode):
     def render(self, context):
+        context['setting_name'] = unicode(self.template_name).replace('MODULE_THEME_','').lower()
         try:
             setting_value = self.template_name.resolve(context)
         except VariableDoesNotExist:
@@ -83,13 +86,8 @@ class SpaceIncludeNode(IncludeNode):
             try:
                 box = Box.objects.search(query=query).best_match()
                 context['box'] = box.object
-                template = get_template('boxes/edit-link.html')
-                output = '<div id="box-%s" class="boxes">%s %s</div>' % (
-                    box.object.pk,
-                    box.object.content,
-                    template.render(context),
-                )
-                return output
+                template = get_template('theme_includes/box.html')
+                return template.render(context)
             except:
                 # Otherwise try to render a template
                 try:
@@ -103,9 +101,53 @@ class SpaceIncludeNode(IncludeNode):
                         t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", "theme_includes", template_name)).read(), "utf-8"))
                     return t.render(context)
                 except:
+                    if settings.TEMPLATE_DEBUG:
+                        raise
                     return ''
         else:
             return ''
+
+class ThemeSettingNode(IncludeNode):
+    def __init__(self, setting_name):
+        self.setting_name = setting_name
+
+    def render(self, context):
+        try:
+            setting_name = Variable(self.setting_name)
+            setting_name = setting_name.resolve(context)
+
+        except:
+            setting_name = self.setting_name
+        full_setting_name = ''.join(['module_theme_',setting_name]).upper()
+        try:
+            setting_value = Variable(full_setting_name)
+            setting_value = setting_value.resolve(context)
+            setting_value = setting_value.replace('.html','')
+        except:
+            setting_value = None
+        settings_list = Setting.objects.filter(scope='module', scope_category='theme', name=setting_name)
+        settings_value_list = Setting.objects.filter(scope='template', scope_category=setting_value)
+        context['setting_name'] = setting_name
+        context['setting_value'] = setting_value
+        context['settings_value_list'] = settings_value_list
+        context['scope_category'] = 'theme'
+        context['setting_form'] = build_settings_form(context['user'], settings_list)()
+        context['setting_value_form'] = build_settings_form(context['user'], settings_value_list)()
+        template_name = 'theme_includes/setting_edit_form.html'
+        try:
+            theme = context['THEME']
+            try:
+                t = get_template("%s/templates/%s"%(theme,template_name))
+            except TemplateDoesNotExist:
+                #load the true default template directly to be sure
+                #that we are not loading the active theme's template
+                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
+            return t.render(context)
+        except:
+            if settings.TEMPLATE_DEBUG:
+                raise
+            return ''
+
 
 def theme_extends(parser, token):
     """
@@ -161,6 +203,21 @@ def space_include(parser, token):
     path = bits[1]
     return SpaceIncludeNode(bits[1])
 
+def theme_setting(parser, token):
+    """
+    Loads a single setting form to edit the setting that is passed in.
+    The setting must be of scope 'module' and scope_category 'theme'.
+    Example:
+        {% theme_setting space_1 %}
+    """
+    bits = token.split_contents()
+    if len(bits) != 2:
+        raise TemplateSyntaxError("%r tag takes one argument: the setting to be included" % bits[0])
+    path = bits[1]
+    return ThemeSettingNode(bits[1])
+
 register.tag('theme_extends', theme_extends)
 register.tag('theme_include', theme_include)
 register.tag('space_include', space_include)
+register.tag('theme_setting', theme_setting)
+

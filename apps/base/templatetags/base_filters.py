@@ -358,5 +358,9 @@ def split(str, splitter):
     return str.split(splitter)
 
 @register.filter
+def underscore_space(value):
+    return value.replace("_"," ")
+
+@register.filter
 def format_string(value, arg):
     return arg % value

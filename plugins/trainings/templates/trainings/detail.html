@@ -1,0 +1,42 @@
+{% extends "trainings/base.html" %}
+{% load i18n %}
+{% load perm_tags %}
+
+{% block body %}
+<div class="training-wrap">
+<h1>Training</h1>
+<h2>{{ training.title }}</h2>
+<div><em>{{ training.author_instructor|urlize }}</em></div>
+<div>{{ training.description|safe|urlize }}</div>
+<div>{{ training.training_type }}</div>
+<div>{{ training.points|floatformat }} {% trans 'point' %}{{ training.points|pluralize }}</div>
+
+{% has_perm user trainings.add_completion as can_add %}
+{% if can_add %}
+<p>    
+    {% if not user_completion %}
+    <a href="{% url trainings.completion_add training.pk %}">{% trans 'Mark training as completed' %}</a>
+    {% else %}
+    <a href="{% url trainings.completion_edit user_completion.pk %}">{% trans 'Edit my completion' %}</a>
+    {% endif %}
+</p>
+{% endif %}
+
+{% if completions %}
+<h3>Completions</h3>
+<ul>
+{% for completion in completions %}
+    <li>{% if request.user == completion.owner %}<strong>{% endif %}
+    {{ completion.owner.get_full_name }} - {{ completion.finish_dt }}
+    {% if request.user == completion.owner %}</strong>{% endif %}
+    {% has_perm user trainings.delete_completion completion as can_delete %}
+    {% if can_delete %}
+      (<a href="{% url trainings.completion_delete completion.pk %}">Delete</a>)
+    {% endif %}</li>
+{% endfor %}
+</ul>
+{% endif %}
+<div><a href="{% url trainings %}">{% trans 'Search All Trainings' %}</a></div>
+{% include "trainings/meta.html" %} 
+</div>
+{% endblock body %}
