@@ -10,7 +10,7 @@ from profiles.models import Profile
 
 from corporate_memberships.models import CorporateMembership
 from memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
-from memberships.importer.utils import parse_mems_from_csv
+from memberships.importer.utils import parse_mems_from_csv, clean_username
 
 class ImportMembershipsTask(Task):
 
@@ -42,18 +42,26 @@ class ImportMembershipsTask(Task):
                     payment_method_id = 3
                 else:
                     payment_method_id = None
-                
+
                 # get or create User
                 username = m['user_name']
                 try:
                     user = User.objects.get(username = username)
                 except User.DoesNotExist:
-                    # Maybe we should set a password here too?
-                    user = User(username = username)
+
+                    # clean username
+                    username = clean_username(m['user_name'])
+
+                    try:
+                        user = User.objects.get(username = username)
+                    except User.DoesNotExist:
+                        # Maybe we should set a password here too?
+                        user = User(username = username)
+
                 # update user
-                user.first_name = m.get('first_name')
-                user.last_name = m.get('last_name')
-                user.email = m.get('email')
+                user.first_name = m.get('first_name') or user.first_name
+                user.last_name = m.get('last_name') or user.last_name
+                user.email = m.get('email') or user.email
                 #save user
                 user.save()
                 
@@ -146,11 +154,11 @@ class ImportMembershipsTask(Task):
                 # create entry fields
                 for key, value in fields.items():
 
-                    app_fields = AppField.objects.filter(app=app, label=key)
-                    if app_fields and m.get(value):
+                    app_fields = AppField.objects.filter(app=app, field_name=key)
+                    if app_fields and m.get(key):
 
                         try:
-                            value = unicode(m.get(unicode(value)))
+                            value = unicode(m.get(unicode(key)))
                         except (UnicodeDecodeError) as e:
                             value = ''
 

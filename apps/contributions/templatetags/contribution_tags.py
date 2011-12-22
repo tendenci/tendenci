@@ -26,12 +26,12 @@ def contribution_search(context):
 class LatestContributionsNode(Node):
     def __init__(self, **kwargs):
         self.user = Variable(kwargs.get('user', None))
-        self.limit = Variable(kwargs.get('limit', '10'))
+        self.limit = Variable(kwargs.get('limit', '40'))
         self.context_var = kwargs.get('context_var', None)
 
     def render(self, context):
         limit = self.limit.resolve(context)
-        contributions = Contribution.objects.filter(owner=self.user.resolve(context))[:limit]
+        contributions = Contribution.objects.filter(owner=self.user.resolve(context)).order_by('-update_dt')[:limit]
         context[self.context_var] = contributions
         return ''
 

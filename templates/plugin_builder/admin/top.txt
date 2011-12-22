@@ -9,9 +9,13 @@ from S_P_LOW.models import S_S_CAP
 from S_P_LOW.forms import S_S_CAPForm
 
 class S_S_CAPAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'edit_link', 'tags']
+    list_display = [FIRST_FIELD, 'view_on_site', 'edit_link', 'tags']
     list_filter = []
     search_fields = []
+    actions = []
+    
+    form = S_S_CAPForm
+    
     fieldsets = (
         (None, 
             {'fields': (

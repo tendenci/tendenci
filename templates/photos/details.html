@@ -53,6 +53,7 @@
                     {% endif %}
 
                     <br />
+                    <div id="photo-rights">
                     <span property="dct:title">{{ photo.title }}</span>
                     by <a href="{{ photo.creator.get_absolute_url }}"
                         property="cc:attributionName" 
@@ -64,6 +65,7 @@
                         <a rel="license" href="{{ photo_deed }}"> 
                             {{ photo_name }}</a>.{% endblocktrans %}
                     {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

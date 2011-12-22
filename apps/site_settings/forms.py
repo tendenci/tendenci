@@ -121,13 +121,13 @@ def build_settings_form(user, settings):
                 # This is useful if you want different values and labels for the select options
                 try:
                     choices = tuple([(k,v)for k,v in literal_eval(setting.input_value)])
+                    required = False
 
                     # By adding #<box_list> on to the end of a setting, this will append the boxes
                     # as select items in the list as well.
                     if '<box_list>' in setting.input_value:
                         box_choices = get_box_list(user)[1:]
                         choices = (('Content',choices),('Boxes',box_choices))
-                        required = False
                 except:
                     choices = tuple([(s,s)for s in setting.input_value.split(',')])
                     required = True

@@ -20,7 +20,7 @@ from campaign_monitor.utils import sync_campaigns, sync_templates
 from campaign_monitor.utils import apply_template_media
 from site_settings.utils import get_setting
 from base.http import Http403
-from events.models import Event
+from events.models import Event, Type
 from newsletters.utils import newsletter_articles_list, newsletter_jobs_list, \
     newsletter_news_list, newsletter_pages_list
 
@@ -106,13 +106,18 @@ def template_html(request, template_id):
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
         
     events = request.GET.get('events', 1)
+    events_type = request.GET.get('events_type')
     start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
     event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
     end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
     event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
     if events:
-        events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True).order_by('start_dt')
-    
+        events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
+        if events_type:
+            events_list = events_list.filter(type__pk=events_type)
+            events_type = Type.objects.filter(pk=events_type)[0]
+        events_list = events_list.order_by('start_dt')
+
     text = DTemplate(apply_template_media(template))
     context = RequestContext(request, 
             {
@@ -128,7 +133,8 @@ def template_html(request, template_id):
                 "pages_content":pages_content,
                 "pages_list":pages_content,
                 "events":events_list, # legacy usage in templates
-                "events_list":events_list
+                "events_list":events_list,
+                "events_type":events_type
             })
     
     response = HttpResponse(text.render(context))
@@ -181,13 +187,18 @@ def template_render(request, template_id):
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
         
     events = request.GET.get('events', 1)
+    events_type = request.GET.get('events_type')
     start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
     event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
     end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
     event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
     if events:
-        events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True).order_by('start_dt')
-    
+        events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
+        if events_type:
+            events_list = events_list.filter(type__pk=events_type)
+            events_type = Type.objects.filter(pk=events_type)[0]
+        events_list = events_list.order_by('start_dt')
+ 
     text = DTemplate(apply_template_media(template))
     context = RequestContext(request, 
             {
@@ -203,7 +214,8 @@ def template_render(request, template_id):
                 "pages_content":pages_content,
                 "pages_list":pages_content,
                 "events":events_list, # legacy usage in templates
-                "events_list":events_list
+                "events_list":events_list,
+                "events_type":events_type
             })
     
     response = HttpResponse(text.render(context))
@@ -511,6 +523,7 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
             html_url += "?include_login=%s" % form.cleaned_data.get('include_login', False)
             html_url += "&jump_links=%s" % form.cleaned_data.get('jump_links')
             html_url += "&events=%s" % form.cleaned_data.get('events')
+            html_url += "&events_type=%s" % form.cleaned_data.get('events_type')
             html_url += "&event_start_dt=%s" % form.cleaned_data.get('event_start_dt', '')
             html_url += "&event_end_dt=%s" % form.cleaned_data.get('event_end_dt', '')
             html_url += "&articles=%s" % form.cleaned_data.get('articles')

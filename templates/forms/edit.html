@@ -7,7 +7,7 @@
 {% block body %}
 
 <div class="t">
-    {% forms_nav request.user %}
+    {% forms_nav request.user form_instance %}
 	
     <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} Edit</h1>
 
@@ -30,6 +30,9 @@
 
 {% block extra_body %}
 <script type="text/javascript">
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+<script type="text/javascript">
     $(document).ready(function(){
         {% if form_instance.pricing_set.exists %}
             $('#id_custom_payment').attr('checked', 'checked');
@@ -47,6 +50,13 @@
                 $('.id_payment_methods').hide();
             }
         });
+    });
+    var slugit = new Slugify({
+        input_element : 'input#id_title',
+        slug_element : 'input#id_slug',
+        submit_element : 'input[type="submit"]',
+        help: false,
+        limit : 150
     });
 </script>
 {% endblock %}

@@ -140,20 +140,20 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         inv.estimate = 1
         inv.status_detail = 'estimate'
         inv.save(user)
-        
-        
+
+
         if is_admin(user):
-            #if corp_memb.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
-            if not corp_memb.payment_method.is_online:
+            # if offline payment method
+            if not corp_memb.get_payment_method().is_online:
                 inv.tender(user) # tendered the invoice for admin if offline
-                
-                # payment
+
+                # mark payment as made
                 payment = Payment()
                 payment.payments_pop_by_invoice_user(user, inv, inv.guid)
                 payment.mark_as_paid()
-                payment.method = corp_memb.payment_method
+                payment.method = corp_memb.get_payment_method()
                 payment.save(user)
-                
+
                 # this will make accounting entry
                 inv.make_payment(user, payment.amount)
         return inv

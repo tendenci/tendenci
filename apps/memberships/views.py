@@ -160,15 +160,15 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     initial_dict = {}
     if hasattr(user, 'memberships'):
         membership = user.memberships.get_membership()
-        user_member_requirements = [
+        is_only_a_member = [
             is_developer(user) == False,
             is_admin(user) == False,
             is_member(user) == True,
         ]
 
         # deny access to renew memberships
-        if all(user_member_requirements):
-            initial_dict = membership.get_app_initial()
+        if all(is_only_a_member):
+            initial_dict = membership.get_app_initial(app)
             if not membership.can_renew():
                 return render_to_response("memberships/applications/no-renew.html", {
                     "app": app, "user":user, "membership": membership}, 
@@ -181,6 +181,8 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             is_approved__isnull = True,  # pending   
         )
 
+        # if an application entry was submitted
+        # after your current membership was created
         if user.memberships.get_membership():
             pending_entries.filter(
                 entry_time__gte = user.memberships.get_membership().subscribe_dt
@@ -202,12 +204,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             entry_invoice = entry.save_invoice()
 
             if user.is_authenticated():
-                entry.user = user  # bind to user
-                if all(user_member_requirements):  # save as renewal
-                    entry.is_renewal = True
+                entry.user = user
+                entry.is_renewal = all(is_only_a_member)
 
             # add all permissions and save the model
-            entry.allow_anonymous_view = False
             entry = update_perms_and_save(request, app_entry_form, entry)
 
             # administrators go to approve/disapprove page
@@ -635,7 +635,7 @@ def application_entries_search(request, template_name="memberships/entries/searc
         'apps':apps,
         'types':types,
         }, context_instance=RequestContext(request))
-    
+
 @login_required    
 def notice_email_content(request, id, template_name="memberships/notices/email_content.html"):
     if not is_admin(request.user):
@@ -846,8 +846,8 @@ def membership_export(request):
             fields = AppField.objects.filter(app=app).exclude(field_type__in=('section_break','page_break')).order_by('position')
 
             label_list = [field.label for field in fields]
-            extra_field_labels = ['User Name','Subscribe Date','Expiration Date','Status','Status Detail']
-            extra_field_names = ['user', 'subscribe_dt','expire_dt','status','status_detail']
+            extra_field_labels = ['User Name','Member Number','Join Date','Renew Date','Expiration Date','Status','Status Detail']
+            extra_field_names = ['user','member_number','join_dt','renew_dt','expire_dt','status','status_detail']
             
             label_list.extend(extra_field_labels)
             label_list.append('\n')
@@ -892,6 +892,12 @@ def membership_export(request):
 
                     if field == 'user':
                         value = memb.user.username
+                    elif field == 'join_dt':
+                        if memb.renewal: value = ''
+                        else: value = memb.subscribe_dt
+                    elif field == 'renew_dt':
+                        if memb.renewal: value = memb.subscribe_dt
+                        else: value = ''
                     elif field == 'expire_dt':
                         value = memb.expire_dt or 'never expire'
                     else:
