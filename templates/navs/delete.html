@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load base_tags %}
 
-{% block title %}{% trans "Delete Nav" %} {{ nav.title }}{% endblock %}
+{% block title %}{% trans "Delete Nav" %} {{ current_nav.title }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -15,13 +15,13 @@
     <div class="nav-wrap">
         <h1>{% trans "Delete a Nav" %}</h1>
         <div class="content">
-        <h2>{{ nav.title }}</h2>
+        <h2>{{ current_nav.title }}</h2>
         </div>
         <div class="delete-prompt"> 
         	{% trans "Are you sure you want to permanently delete this nav?" %}
         </div>
         <div class="delete-form">
-            <form action="{% url navs.delete nav.id %}" method="post">{% csrf_token %}
+            <form action="{% url navs.delete current_nav.id %}" method="post">{% csrf_token %}
                 <input type="submit" value="{% trans 'Confirm Delete' %}" />
             </form>
         </div>
