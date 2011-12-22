@@ -1,7 +1,9 @@
 from django.db import models
 
+# format is ModelField/FormField/SearchIndexField
 field_choices = (
     ('IntegerField/IntegerField/IntegerField', 'Integer'),
+    ('BooleanField/BooleanField/BooleanField', 'Boolean'),
     ('CharField/CharField/CharField', 'Text (single line)'),
     ('TextField/TextField/CharField', 'Text (multi line)'),
     ('TextField/Wysiwyg/CharField', 'Wysiwyg'),
