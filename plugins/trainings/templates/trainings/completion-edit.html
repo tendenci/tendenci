@@ -1,0 +1,54 @@
+{% extends "trainings/base.html" %}
+{% load training_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% trans 'Training Completion Edit' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+div.forms div.form-field div.id_finish_dt .field input {
+	margin: 0 5px 0 0;
+	width: 100px;
+}
+div.forms div.form-field div.id_finish_dt .field input#id_finish_dt_1 {
+	width: 80px;
+}
+</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+	
+    <h1>{% trans 'Edit Training Completion for' %}</h1>
+    <h2>{{ training.title|title }}</h2>
+
+    <div class="completion-wrap">  
+    	<form action="{% url trainings.completion_edit completion.pk %}" method="post">{% csrf_token %}
+    	<div class="forms">
+			{{ form|styled_form }}
+        	<input type="submit" value="Save {% trans 'Training Completion' %}" />
+		</div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		$(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+		$('.timepicker').timePicker({
+		  show24Hours: false,
+		  step: 30
+		});
+	</script>
+{% endblock %}

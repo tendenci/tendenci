@@ -7,6 +7,8 @@ from django.template.defaultfilters import slugify
 from base.fields import SlugField
 from perms.models import TendenciBaseModel
 from entities.models import Entity
+from files.models import File
+
 from user_groups.managers import GroupManager
 
 class Group(TendenciBaseModel):
@@ -85,7 +87,6 @@ class Group(TendenciBaseModel):
 
         return (user, True)  # user, created
 
-
 class GroupMembership(models.Model):
     group = models.ForeignKey(Group)
     member = models.ForeignKey(User, related_name='group_member')
@@ -115,3 +116,8 @@ class GroupMembership(models.Model):
         verbose_name = "Group Membership"
         verbose_name_plural = "Group Memberships"
 
+class ImportFile(File):
+    group = models.ForeignKey(Group)
+    
+    def __unicode__(self):
+        return "%s" % self.group.name

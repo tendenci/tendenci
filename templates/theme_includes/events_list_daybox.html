@@ -1,7 +1,8 @@
+{% load theme_tags %}
 {% load event_tags %}
 {% list_events as featured_events limit=3 %}
 <section id="events-list">
-<h2>Upcoming Events</h2>
+<h3>Upcoming Events</h3>
     <ul>
     {% if featured_events %}
     {% for event in featured_events %}
@@ -34,4 +35,4 @@
     {% endif %}
     </ul>
 </section>
-{% include "theme_includes/space_edit.html" %}
+{% theme_setting setting_name %}

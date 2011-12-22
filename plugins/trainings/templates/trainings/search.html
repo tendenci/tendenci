@@ -1,0 +1,35 @@
+{% extends "trainings/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load training_tags %}
+{% load perm_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+</style>
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest trainings' %}" href="{% url trainings.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate trainings 20 %}
+<div class="t">
+    <h1>{% trans 'Trainings' %}</h1>
+    {% training_search %}
+    {% has_perm user training.add_training as can_add %}
+    {% if can_add %}
+    <a href="{% url admin:trainings_training_add %}">{% trans 'Add a Training' %}</a>
+    {% endif %}
+    <div class="trainings-wrap clearfix">
+        {% for training in trainings %}
+            {% search_result training %}
+        {% empty %}
+            <p>{% trans '0 trainings found' %}</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+
+{% endblock body %}

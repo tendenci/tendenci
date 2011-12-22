@@ -19,20 +19,20 @@
     <div class="nav-wrap">
         <div class="nav-edit-menu">
             <h3>{{ page_select.pages.label }} {% trans 'list' %}</h3>
-            <p>{% trans 'Select pages below to be added to' %} {{ nav.title }}. {% trans 'Use the search box to filter the list of pages' %}.</p>
+            <p>{% trans 'Select pages below to be added to' %} {{ current_nav.title }}. {% trans 'Use the search box to filter the list of pages' %}.</p>
             {% trans 'Search' %}: <input id="navs-search-box" type="text" />
             <form method="post" action="{% url navs.page_select %}" id="page-select">
                 <div class="forms">{% csrf_token %}
                 <div class="page-select">
                     {{ page_select.pages }}
                 </div>
-                <input class="nav-add" type="submit" value="{% trans 'Add selected pages to' %} {{ nav.title }}" />
+                <input class="nav-add" type="submit" value="{% trans 'Add selected pages to' %} {{ current_nav.title }}" />
                 </div>
             </form>
             <a id="add-custom" >{% trans 'Add a Custom Navigation Item' %}</a>
         </div>
         <div class="nav-edit-content">
-        <h1>{% trans "Items" %} for {{ nav.title }}</h1>
+        <h1>{% trans "Items" %} for {{ current_nav.title }}</h1>
             <form method="post" action="">{% csrf_token %}
                 {{ formset.management_form }}
                 <div id="nav-items">
