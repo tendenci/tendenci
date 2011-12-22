@@ -7,7 +7,7 @@
 {% block body %}
 
 <div class="t">
-    {% forms_nav request.user %}
+    {% forms_nav request.user form_instance %}
 	
     <h1>{% firstof MODULE_FORMS_LABEL 'Forms' %} Edit</h1>
 

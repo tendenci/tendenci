@@ -59,7 +59,7 @@ def detail(request, id, template_name="navs/detail.html"):
     
     return render_to_response(
         template_name,
-        {'nav':nav},
+        {'current_nav':nav},
         context_instance=RequestContext(request),
     )
 
@@ -121,7 +121,7 @@ def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
         
     return render_to_response(
         template_name,
-        {'form':form, 'nav':nav},
+        {'form':form, 'current_nav':nav},
         context_instance=RequestContext(request),
     )
 
@@ -160,7 +160,7 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
         
     return render_to_response(
         template_name,
-        {'page_select':page_select, 'formset':formset, 'nav':nav},
+        {'page_select':page_select, 'formset':formset, 'current_nav':nav},
         context_instance=RequestContext(request),
     )
 
@@ -184,7 +184,7 @@ def delete(request, id, template_name="navs/delete.html"):
             nav.delete()
             return HttpResponseRedirect(reverse('navs.search'))
     
-        return render_to_response(template_name, {'nav': nav}, 
+        return render_to_response(template_name, {'current_nav': nav}, 
             context_instance=RequestContext(request))
     else:
         raise Http403

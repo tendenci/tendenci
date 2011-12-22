@@ -4,6 +4,7 @@
 
 {% has_perm user forms.change_form opt_object as can_edit %}
 {% has_perm user forms.delete_form opt_object as can_delete %}
+{% has_perm user forms.add_form as can_add %}
 
 <div class="t-iconrow">
 <ul>
@@ -18,6 +19,9 @@
         <li><a class="option-link" href="{% url subscribers opt_object.pk %}">{% trans "Subscribers" %}</a></li>
 		<li><a class="option-link edit" href="{% url form_edit opt_object.pk %}">{% trans "Edit" %}</a></li>
 		<li><a class="option-link edit" href="{% url form_field_update opt_object.pk %}">{% trans "Edit Fields" %}</a></li>
+        {% if can_add %}
+        <li><a class="option-link" href="{% url form_copy opt_object.pk %}">{% trans "Copy" %}</a></li>
+        {% endif %}
 		{% if can_delete %}
 		<li><a class="option-link delete" href="{% url form_delete opt_object.pk %}">{% trans "Delete" %}</a></li>
 		{% endif %}
