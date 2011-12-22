@@ -132,8 +132,86 @@ def delete(request, id, template_name="forms/delete.html"):
 
     return render_to_response(template_name, {'form': form_instance},
         context_instance=RequestContext(request))
+        
+@login_required
+def copy(request, id):
+    """
+    Copies a form_instance and all the fields related to it.
+    """
+    form_instance = get_object_or_404(Form, pk=id)
+    
+    # check permission
+    if not (has_perm(request.user,'forms.add_form',form_instance) and 
+        has_perm(request.user,'forms.change_form',form_instance)):
+            raise Http403
+    
+    # create a new slug
+    slug = form_instance.slug
+    i = 1
+    while True:
+        if i > 0:
+            if i > 1:
+                slug = slug.rsplit("-", 1)[0]
+            slug = "%s-%s" % (slug, i)
+        match = Form.objects.filter(slug=slug)
+        if not match:
+            break
+        i += 1
+    
+    # copy the form
+    new_form = Form.objects.create(
+        title = form_instance.title,
+        slug = slug,
+        intro = form_instance.intro,
+        response = form_instance.response,
+        email_text = form_instance.email_text,
+        subject_template = form_instance.subject_template,
+        send_email = form_instance.send_email,
+        email_from = form_instance.email_from,
+        email_copies = form_instance.email_copies,
+        completion_url = form_instance.completion_url,
+        allow_anonymous_view = form_instance.allow_anonymous_view,
+        allow_user_view = form_instance.allow_user_view,
+        allow_member_view = form_instance.allow_member_view,
+        allow_anonymous_edit = form_instance.allow_anonymous_edit,
+        allow_user_edit = form_instance.allow_user_edit,
+        allow_member_edit = form_instance.allow_member_edit,
+        creator = request.user,
+        creator_username = request.user.username,
+        owner = request.user,
+        owner_username = request.user.username,
+        status = False,
+        status_detail = 'draft',
+        )
+    
+    # copy form fields
+    for field in form_instance.fields.all():
+        Field.objects.create(
+            form = new_form,
+            label = field.label,
+            field_type = field.field_type,
+            field_function = field.field_function,
+            function_params = field.function_params,
+            required = field.required,
+            visible = field.visible,
+            choices = field.choices,
+            position = field.position,
+            default = field.default,
+            )
+            
+    log_defaults = {
+        'event_id' : 587100,
+        'event_data': '%s (%d) added by %s' % (new_form._meta.object_name, new_form.pk, request.user),
+        'description': '%s added' % new_form._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': new_form,
+    }
+    EventLog.objects.log(**log_defaults)
+    
+    messages.add_message(request, messages.INFO, 'Successfully added %s' % new_form)
+    return redirect('form_edit', new_form.pk)
 
- 
 @login_required
 def entries(request, id, template_name="forms/entries.html"):
     form = get_object_or_404(Form, pk=id)

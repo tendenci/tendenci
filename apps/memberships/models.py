@@ -806,7 +806,7 @@ class AppField(models.Model):
         help_text="Comma separated options where applicable")
 
     unique = models.BooleanField(_("Unique"), default=False, blank=True)
-    admin_only = models.BooleanField(_("Admin Only"), default=False, blank=True)
+    admin_only = models.BooleanField(_("Admin Only"), default=False)
     position = models.IntegerField(blank=True)
 
     objects = AppFieldManager()

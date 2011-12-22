@@ -147,7 +147,7 @@
 		</div>
 {% endif %}
 
-{% if job.contact_name or job.contact_phone or job.contact_email or job.contact_fax or job.contact_website  %}
+{% if job.contact_name or job.contact_phone or job.contact_email or job.contact_fax or job.contact_website or job.contact_method or job.is_agency %}
 		<h2>{% trans "Contact Information" %}</h2>
 		<div class="contact-wrap">
 			<div>{{ job.contact_name }}</div>

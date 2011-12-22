@@ -15,6 +15,7 @@ class GetCategoryForObjectNode(Node):
         object = self.object.resolve(context)  
         category = Category.objects.get_for_object(object, 'category')
         if category: context[self.context] = category
+        else: context[self.context] = ''
         return ''
 
 @register.tag
@@ -44,6 +45,7 @@ class GetSubCategoryForObjectNode(Node):
         object = self.object.resolve(context)  
         category = Category.objects.get_for_object(object, 'sub_category')
         if category: context[self.context] = category
+        else: context[self.context] = ''
         return ''
 
 @register.tag

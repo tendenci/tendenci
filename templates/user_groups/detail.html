@@ -40,9 +40,12 @@
             <p>{% blocktrans %}This group currently has {{ count_members }} members.{% endblocktrans %}</p>
             <p>{% blocktrans with group.groupsubscription_set.all.count as count %}This group currently has {{ count }} subscribers.{% endblocktrans %}</p>
             {% if can_edit %}
+                <h3>Export</h3>
                 <p><a href="{% url group.member_export group.slug %}">{% trans "Export all members" %}</a></p>
                 <p><a href="{% url group.subscriber_export group.slug %}">{% trans "Export all subscribers" %}</a></p>
                 <p><a href="{% url group.all_export group.slug %}">{% trans "Export all members and subscribers" %}</a></p>
+                <h3>Import</h3>
+                <p><a href="{% url group.subscriber_import group.slug %}">{% trans "Import subscribers" %}</a></p>
             {% endif %}
             <!-- <p><a href="">View all members</a>. <a href="">View editors only</a></p>
             <p><a href="">Add/Remove Members of this Group</a></p>

@@ -12,7 +12,7 @@
 {% block body %}
 
 <div class="t">
- 	{% forms_nav request.user %}
+ 	{% forms_nav request.user form %}
     <h1>{% firstof MODULE_FORMS_LABEL 'Form' %}{% trans " Delete" %}</h1>
     
     <div class="form-builder-wrap">
