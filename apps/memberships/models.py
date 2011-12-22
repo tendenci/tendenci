@@ -940,13 +940,32 @@ class AppEntry(TendenciBaseModel):
     @property
     def membership_type(self):
         """Get MembershipType object"""
-        # Getting membership_type object via membership_type name
-        # Membership names are assumed to be unique.  :/
+        # Get membership type via name
+
         try:
             entry_field = self.fields.get(field__field_type="membership-type")
             return MembershipType.objects.get(name__exact=entry_field.value.strip())
         except:
-            return None
+            pass
+
+        # Find an older "approved" membership entry ------------
+        entries = AppEntry.objects.filter(
+            user=self.user,
+            membership__isnull=False,
+            create_dt__lt=self.create_dt,
+        ).order_by('-create_dt')
+
+        if entries:
+            return entries[0].membership.membership_type
+
+        # If the application only has one membership type choice ,use that ------
+        membership_types = self.app.membership_types.all()
+
+        if membership_types.count() == 1:
+            return membership_types[0]
+
+        # else return none; boom.
+
 
     @property
     def payment_method(self):
@@ -961,8 +980,26 @@ class AppEntry(TendenciBaseModel):
             return PaymentMethod.objects.filter(
                 human_name__exact=entry_field.value.strip()
             )[0]
-        except PaymentMethod.DoesNotExist as e:
-            return None
+        except (AppFieldEntry.DoesNotExist, PaymentMethod.DoesNotExist) as e:
+            pass
+
+        # Find an older "approved" membership entry ------------
+        entries = AppEntry.objects.filter(
+            user=self.user,
+            membership__isnull=False,
+            create_dt__lt=self.create_dt,
+        ).order_by('-create_dt')
+
+        if entries:
+            return entries[0].membership.payment_method
+
+        # If the application only has one membership type choice ,use that ------
+        payment_methods = self.app.payment_methods.all()
+
+        if payment_methods:
+            return payment_methods[0]
+
+        # else return none; boom.
 
     def applicant(self):
         """Get User object"""
