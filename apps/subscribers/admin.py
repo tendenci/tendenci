@@ -1,4 +1,11 @@
 from django.contrib import admin
-from subscribers.models import GroupSubscription
+from subscribers.models import GroupSubscription, SubscriberData
 
-# admin.site.register(GroupSubscription)
+class DataAdmin(admin.TabularInline):
+    model = SubscriberData
+    ordering = ("field_label",)
+
+class GroupSubAdmin(admin.ModelAdmin):
+    inlines = (DataAdmin,)
+    
+admin.site.register(GroupSubscription, GroupSubAdmin)
