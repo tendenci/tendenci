@@ -1,0 +1,35 @@
+{% extends "user_groups/base.html" %}
+{% load user_group_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}Groups{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <link rel="stylesheet" href="/site_media/static/css/iconrow.css">
+    <link rel="stylesheet" href="/site_media/static/css/usergroups.css">
+{% endblock %}
+
+{% block body %}
+    <div class="t">
+    {% user_group_nav request.user %}
+    
+    <h1>{% trans "Import Results for" %} {{ group.name }}</h1>
+    
+    <div class="import-result">
+    {% for sub in subs %}
+        <div class="subscriber">
+        {% for field in sub.data %}
+            <p>{{ field.field_label }}: {{ field.value }}</p>
+        {% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+    
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{% endblock %}
