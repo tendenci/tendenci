@@ -23,15 +23,27 @@ class GroupSubscription(models.Model):
         verbose_name_plural = "Group Subscriptions"
         
     def __unicode__(self):
-        return "%s - %s" % (self.subscriber.pk , self.group.name)
-        
+        return "%s" % (self.group.name)
+    
     @property
     def name(self):
-        return self.subscriber.get_name_email()[0]
+        if self.subscriber:
+            return self.subscriber.get_name_email()[0]
+        else:
+            name_data = self.data.filter(field_label__icontains="name")
+            if name_data:
+                return name_data[0].value
+        return None
         
     @property
     def email(self):
-        return self.subscriber.get_name_email()[1]
+        if self.subscriber:
+            return self.subscriber.get_name_email()[1]
+        else:
+            email_data = self.data.filter(field_label__icontains="email")
+            if email_data:
+                return email_data[0].value
+        return None
 
 class SubscriberData(models.Model):
     """
@@ -40,7 +52,7 @@ class SubscriberData(models.Model):
     This may appear to be redundant data from the GroupSubscription's FormEntry field.
     But this is essentail for imported subscribers since the form is not imported with them.
     """
-    subscription = models.ForeignKey(GroupSubscription)
+    subscription = models.ForeignKey(GroupSubscription, related_name="data")
     field_label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     value = models.CharField(_("Value"), max_length=FIELD_MAX_LENGTH)
     
