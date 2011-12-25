@@ -118,6 +118,12 @@
     background-color: #EEE;
 }
 
+.t .import-result .subscriber {
+    padding: 5px;
+    margin: 5px;
+    border-bottom: 1px solid #CCC;
+}
+
  /* Groups Add/Edit
  ------------------------- */
 
