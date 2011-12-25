@@ -23,7 +23,7 @@ class GroupSubscription(models.Model):
         verbose_name_plural = "Group Subscriptions"
         
     def __unicode__(self):
-        return "%s" % (self.group.name)
+        return "%s (%s)" % (self.name, self.email)
     
     @property
     def name(self):
