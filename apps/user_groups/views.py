@@ -14,6 +14,7 @@ from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.http import HttpResponse
 
+from djcelery.models import TaskMeta
 from base.http import Http403
 from perms.utils import is_admin, get_notice_recipients, has_perm
 from entities.models import Entity
@@ -783,7 +784,8 @@ def group_subscriber_import(request, group_slug, form_class=UploadForm, template
                     'subs':subs,
                 }, context_instance=RequestContext(request))
             else:
-                result = ImportMembershipsTask.delay(app, file_path, cleaned_data)
+                result = ImportSubscribersTask.delay(group, csv.file.path)
+                return redirect('subscribers_import_status', group.slug, result.task_id)
     else:
         form = form_class()
     
@@ -791,3 +793,31 @@ def group_subscriber_import(request, group_slug, form_class=UploadForm, template
         'group':group,
         'form':form,
     }, context_instance=RequestContext(request))
+
+@login_required
+def subscribers_import_status(request, group_slug, task_id, template_name='user_groups/import_status.html'):
+    """
+    Checks if a subscriber import is completed.
+    """
+    group = get_object_or_404(Group, slug=group_slug)
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        #tasks database entries are not created at once.
+        task = None
+    
+    if task and task.status == "SUCCESS":
+        subs = task.result
+        return render_to_response('user_groups/import_subscribers_result.html', {
+            'group':group,
+            'subs':subs,
+        }, context_instance=RequestContext(request))
+    else:
+        return render_to_response(template_name, {
+            'group':group,
+            'task':task,
+        }, context_instance=RequestContext(request))

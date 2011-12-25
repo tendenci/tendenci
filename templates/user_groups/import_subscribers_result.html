@@ -20,8 +20,8 @@
     <div class="import-result">
     {% for sub in subs %}
         <div class="subscriber">
-        {% for field in sub.data %}
-            <p>{{ field.field_label }}: {{ field.value }}</p>
+        {% for field in sub.data.all %}
+            <p><b>{{ field.field_label }}:</b> {{ field.value }}</p>
         {% endfor %}
         </div>
     {% endfor %}
