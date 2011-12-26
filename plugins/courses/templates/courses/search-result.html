@@ -15,7 +15,11 @@
                     {% trans "View Certificate" %}</a></p>
                 {% else %}
                     {% if can_retry %}
-                        <a href="{% url courses.take course.pk %}">{% trans "Retry this Course" %}</a>
+                        {% if attempted %}
+                            <a href="{% url courses.take course.pk %}">{% trans "Retry this Course" %}</a>
+                        {% else %}
+                            <a href="{% url courses.take course.pk %}">{% trans "Take this Course" %}</a>
+                        {% endif %}
                     {% else %}
                         {% if retry_time_left %}
                             <p>{% trans "Try again on" %} {{ retry_time_left }}</p>
