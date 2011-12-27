@@ -224,7 +224,7 @@ def edit(request, id, template="corporate_memberships/edit.html"):
                 field_obj.display_content = corporate_membership.payment_method
                 if corporate_membership.invoice:
                     field_obj.display_content = '%s - <a href="%s">View Invoice</a>' % (field_obj.display_content,
-                                                                                        corporate_membership.invoice.get_absolute_url)
+                                                                                        corporate_membership.invoice.get_absolute_url())
         
     form = CorpMembForm(corporate_membership.corp_app, field_objs, request.POST or None, 
                         request.FILES or None, instance=corporate_membership)
