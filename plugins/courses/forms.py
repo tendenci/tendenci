@@ -101,7 +101,7 @@ class AnswerForm(forms.Form):
             
         # set up the correct answers
         self.answers = []
-        for answer in self.question.answer_choices.split(','):
+        for answer in self.question.answer.split(','):
             self.answers.append(answer.strip())
         
         super(AnswerForm, self).__init__(*args, **kwargs)
@@ -127,9 +127,11 @@ class AnswerForm(forms.Form):
         if self.is_valid():
             data = self.cleaned_data['answer']
             if len(self.answers) == 1:
+                print data, self.question.answer
                 if data == self.question.answer:
                     return self.question.point_value
             else:
+                print set(data), set(self.answers)
                 if set(data) == set(self.answers):
                     return self.question.point_value
         return 0
