@@ -3,12 +3,12 @@
 {% load i18n %}
 
 {% has_perm user courses.add_course as can_add_course %}
+{% is_admin user as admin %}
 
 {% if nav_object %}
 	{% has_perm user courses.view_course nav_object as can_view_course %}
 	{% has_perm user courses.change_course nav_object as can_edit_course %}
 	{% has_perm user courses.delete_course nav_object as can_delete_course %}
-    {% is_admin user as admin %}
 {% endif %}
 
 <div id="showh">

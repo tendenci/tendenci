@@ -29,13 +29,14 @@ class CourseUserStatusNode(Node):
     def render(self, context):
         course = self.course.resolve(context)
         user = self.user.resolve(context)
-        passed = get_passed_attempts(course, user)
-        attempted = CourseAttempt.objects.filter(user=user, course=course).exists()
-        retry, retry_time = can_retry(course, user)
-        context['attempted'] = attempted
-        context['has_passed'] = passed
-        context['can_retry'] = retry
-        context['retry_time_left'] = retry_time
+        if user.is_authenticated():
+            passed = get_passed_attempts(course, user)
+            attempted = CourseAttempt.objects.filter(user=user, course=course).exists()
+            retry, retry_time = can_retry(course, user)
+            context['attempted'] = attempted
+            context['has_passed'] = passed
+            context['can_retry'] = retry
+            context['retry_time_left'] = retry_time
         return ''
         
 def course_user_status(parser, token):
