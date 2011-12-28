@@ -759,10 +759,10 @@ def group_subscriber_import(request, group_slug, form_class=UploadForm, template
     """
     group = get_object_or_404(Group, slug=group_slug)
     
-    # if they can edit it, they can export it
+    # if they can edit, they can export
     if not has_perm(request.user,'user_groups.change_group', group):
         raise Http403
-        
+
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES)
         if form.is_valid():
