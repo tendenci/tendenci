@@ -48,39 +48,38 @@ def search(request, template_name="courses/search.html"):
     return render_to_response(template_name, {'courses':courses}, 
         context_instance=RequestContext(request))
 
-
+@login_required
 def detail(request, pk, template_name="courses/detail.html"):
     """
     Course detail view
     """
-    
     course = get_object_or_404(Course, pk=pk)
     
-    if has_perm(request.user, 'course.view_course', course):
-        log_defaults = {
-            'event_id' : 113500,
-            'event_data': '%s (%d) viewed by %s' % (course._meta.object_name, course.pk, request.user),
-            'description': '%s viewed' % course._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': course,
-        }
-        EventLog.objects.log(**log_defaults)
-        
-        #check if the user has attempted this course before
-        attempted = CourseAttempt.objects.filter(user=request.user, course=course).exists()
-        passed = get_passed_attempts(course, request.user)
-        retry, retry_time = can_retry(course, request.user)
-        
-        return render_to_response(template_name, {
-            'course':course,
-            'attempted':attempted,
-            'has_passed':passed,
-            'can_retry':retry,
-            'retry_time_left':retry_time,
-        }, context_instance=RequestContext(request))
-    else:
+    if not has_perm(request.user, 'course.view_course', course):
         raise Http403
+        
+    log_defaults = {
+        'event_id' : 113500,
+        'event_data': '%s (%d) viewed by %s' % (course._meta.object_name, course.pk, request.user),
+        'description': '%s viewed' % course._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': course,
+    }
+    EventLog.objects.log(**log_defaults)
+    
+    #check if the user has attempted this course before
+    attempted = CourseAttempt.objects.filter(user=request.user, course=course).exists()
+    passed = get_passed_attempts(course, request.user)
+    retry, retry_time = can_retry(course, request.user)
+    
+    return render_to_response(template_name, {
+        'course':course,
+        'attempted':attempted,
+        'has_passed':passed,
+        'can_retry':retry,
+        'retry_time_left':retry_time,
+    }, context_instance=RequestContext(request))
         
 @login_required
 def add(request, form_class=CourseForm, template_name="courses/add.html"):
@@ -210,6 +209,10 @@ def take(request, pk, template_name="courses/take.html"):
     course = get_object_or_404(Course, pk=pk)
     
     if not has_perm(request.user, 'course.view_course', course):
+        raise Http403
+    
+    # closed course, deadline passed
+    if course.is_closed() and not is_admin(request.user):
         raise Http403
     
     #check if user can retake/take the course

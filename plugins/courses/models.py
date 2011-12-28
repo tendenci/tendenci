@@ -42,7 +42,12 @@ class Course(TendenciBaseModel):
         for question in self.questions.all():
             total_points = total_points + question.point_value
         return total_points
-
+    
+    def is_closed(self):
+        return (self.close_after_deadline and datetime.now() > self.deadline)
+        
+    def deadline_has_passed(self):
+        return (datetime.now() > self.deadline)
 
 class Question(models.Model):
     """
