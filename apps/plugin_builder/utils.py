@@ -75,6 +75,8 @@ def build_models(plugin, plugin_dir):
         if not field.required:
             if field_type == "DateTimeField" or field_type == "IntegerField":
                 models.write(" null=True,")
+            if field_type == "BooleanField":
+                pass
             else:
                 models.write(" blank=True,")
             
@@ -118,6 +120,9 @@ def build_forms(plugin, plugin_dir):
                 "'storme_model':%s._meta.module_name.lower()}))\n" \
                 % plugin.single_caps
             )
+        elif type == "BooleanField":
+            if field.required:
+                forms.write("    %s = forms.BooleanField(required=True)\n" % field.name)
     forms.close()
     
 def build_search_indexes(plugin, plugin_dir):

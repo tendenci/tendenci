@@ -1,9 +1,12 @@
 {% extends "courses/base.html" %}
-{% load courses_tags %}
-{% load tagging_tags %}
+{% load i18n %}
 {% load base_tags %}
 {% load base_filters %}
-{% load i18n %}
+{% load perm_tags %}
+{% load courses_tags %}
+{% load tagging_tags %}
+
+{% is_admin user as admin %}
 
 {% block title %}{{ course.title }}{% endblock %}
 
@@ -22,30 +25,39 @@
         <h1>{{ course.title }}</h1>
 
 		<div class="content">
+            <p><b>DEADLINE:</b> {{ course.deadline }}</p>
 			{{ course.content|safe }} 
 		</div>
         
         <div class="status">
-            {% if not attempted %}
-                {% if course.questions.all %}
-                    <a href="{% url courses.take course.pk %}">{% trans "Take this Course" %}</a>
-                {% else %}
-                    {% trans "This course does not have any questions yet." %}
-                {% endif %}
+            {% if has_passed %}
+                <p>{% trans "Congratulations! You've passed this course!" %}</p>
+                <p><a href="{% url courses.certificate course.pk %}">{% trans "View your Certificate" %}</a></p>
             {% else %}
-                {% if has_passed %}
-                    <p>{% trans "Congratulations! You've passed this course!" %}</p>
-                    <p><a href="{% url courses.certificate course.pk %}">{% trans "View your Certificate" %}</a></p>
+                {% if course.is_closed and not admin %}
+                    <p>{% trans "The deadline has passed and this course is now closed." %}</p>
                 {% else %}
-                    <p>{% trans "Sorry, you have not passed this course yet." %}</p>
-                    {% if can_retry %}
-                        <p><a href="{% url courses.take course.pk %}">{% trans "Retry this Course" %}</a></p>
+                    {% if course.deadline_has_passed %}
+                        <p>{% trans "The deadline has passed but you may still take the course." %}</p>
+                    {% endif %}
+                    {% if not attempted %}
+                        {% if course.questions.all %}
+                            <p><a href="{% url courses.take course.pk %}">{% trans "Take this Course" %}</a></p>
+                        {% else %}
+                            <p>{% trans "This course does not have any questions yet." %}</p>
+                        {% endif %}
                     {% else %}
-                        {% if retry_time_left %}
-                            <p>{% trans "Try again on" %} {{ retry_time_left }}</p>
+                        {% if can_retry %}
+                            <p><a href="{% url courses.take course.pk %}">{% trans "Retry this Course" %}</a></p>
+                        {% else %}
+                            {% if retry_time_left %}
+                                <p>{% trans "Try again on" %} {{ retry_time_left }}</p>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% endif %}
+            {% endif %}
+            {% if attempted %}
                 <p><a href="{% url courses.completion course.pk %}">{% trans "View Your Course Attempts" %}</a></p>
             {% endif %}
 		</div>
