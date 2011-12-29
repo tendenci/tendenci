@@ -24,6 +24,8 @@
             <p><b>{{ field.field_label }}:</b> {{ field.value }}</p>
         {% endfor %}
         </div>
+    {% empty %}
+        <p>No valid subscriber was found in the import file.</p>
     {% endfor %}
     </div>
     
