@@ -11,17 +11,28 @@ Bulletpoints Theme - header.html
                     <a class="clearfix" href="/"><img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/100x100/crop/90/{% else %}http://media.tendenciapp.com/images/logo.jpg{% endif %}" />
                     <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</h1></a>
                 </div>
-                <div id="search-box">
-                    <form method="get" action="/search/">
-                        <input name="q" id="q" type="text" placeholder="Search" />
-                        <input type="submit" name="Go" value="GO" id="search-box-submit" />
+                <div id="login">
+                    {% if request.user.is_authenticated %}
+                    <span>Logged in as <a href="/profiles/">{{ request.user }}</a> | <a href="/accounts/logout/">Logout</a></span>
+                    {% else %}
+                    <form method="post" action="/accounts/login/">{% csrf_token %}
+                        <input id="id_username" value="Username" onfocus="clearDefault(this)" type="text" name="username" maxlength="30" />
+                        <input value="password" onfocus="clearDefault(this)" type="password" name="password" id="id_password"  />
+                        <input name="submit" type="submit" value="LOGIN" />
                     </form>
+                {% endif %}
                 </div>
                 <div id="phone">
                     <span>{% firstof SITE_GLOBAL_SITEPHONENUMBER '123-456-7890' %}</span>
                 </div>
+                <div id="search-box">
+                    <form method="get" action="/search/">
+                        <input name="q" id="q" type="text" value="Search" onfocus="clearDefault(this)" placeholder="Search" />
+                        <input type="submit" name="Go" value="GO" id="search-box-submit" />
+                    </form>
+                </div>
                 <div id="nav">
-                    {% navigation 1 %}
+                    {% nav 1 %}
                 </div><!-- /#nav -->
             </header>
         </section><!-- /#header -->

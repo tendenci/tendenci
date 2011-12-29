@@ -11,10 +11,13 @@ Version: 1.0
 // ------------------------------
 //  LESS CSS Styles
 // ------------------------------
+
+@import '/site_media/static/css/template-includes.less';
+
 //@background: #ccc;
 //@primary: #393738;
 //@secondary: #E0AA26;
-//@compliment: #533841;
+//@complimentary: #533841;
 
 @text: #333;
 @offtext: #eee; 
@@ -26,6 +29,8 @@ Version: 1.0
 
 @base-width: 1036px;
 
+@column: 60px;
+@base-width: (@column + 20)*12;
 
 .base-font() {
     font-family: Helvetica, Arial, "sans-serif"; 
@@ -37,6 +42,8 @@ Version: 1.0
     font-size: @size;
     text-transform: uppercase; 
 }
+.grid(@count: 1){ margin: 0 10px 0 10px; width: @count*(@column+20)-20; float: left; /*background-color: #aaa;*/ }
+.center() { width: @base-width; margin: 0 auto;}
 .buildbg() {background-color: #abc;}
 .imgborder() { background-color: #000; padding: 1px; border: 1px solid #aaa; }
 .textshadow(@color: #ccc) {text-shadow: 1px 1px 2px @color;}
@@ -105,120 +112,121 @@ blockquote { margin: 0 0 10px 20px; }
 ------------------------------ */
 .container { width: 100%; margin: 0; padding: 0; }
 .center { width: @base-width; margin: 0 auto; padding: 0; background-color: #fff;}
-.compliment { background-color: @compliment; }
-.topborder { border-top: solid 14px darken(@compliment, 5); }
+.complimentary { background-color: @complimentary; }
+.topborder { border-top: solid 14px darken(@complimentary, 5); }
 
-#header { height: 150px; position: relative; }
-#logo { position: absolute; width: 440px; top: 30px; left: 20px;
-    a { display: block; text-decoration: none; 
-        img { float: left; width: 100px; height: 100px; border: none; }
-        h1 { padding: 34px 0 32px 10px; width: 320px; .header-font(54px); color: @primary; text-shadow: 1px 2px 1px #666; float: left; margin: 0; }
-    }
-}
-#phone { position: absolute; width: 100px; font-size: 16px; top: 12px; right: 256px; font-style: italic; }
-#search-box { position: absolute; width: 254px; margin-bottom: 50px; top: 0px; right: 0px;
-    form { position: relative; }
-    input#q { position: absolute; top: 8px; left: 12px; width: 190px; height: 20px; border: solid 1px #ccc; }
-    input#search-box-submit { position: absolute; top: 8px; right: 20px; height: 24px; width: 30px; color: @text; font-size: 13px; border: solid 1px #ccc; border-left: 1px solid @secondary; text-transform: uppercase; background: #fff; margin: 0; padding: 0; }
-}
-#nav { float: right; width: 530px; position: absolute; top: 80px; right: 0;}
-
-/* Standard Nav organization for a dropdown
-The ul li a line-height and the top of ul li ul need to match
-colors, heights, and borders can be overridden */
-nav {display: block;
-    ul { list-style: none;
-        li { float: left; position: relative;
-            a { line-height: 40px; padding: 0 12px; background-color: transparent; display: block; color: @primary; 
-                &:hover { color: @primary }
-            }
-            ul { display: none; float: left; margin: 0; position: absolute; top: 40px; width: 148px; z-index: 99999;
-                a { height: auto; line-height: 20px; padding: 10px; width: 120px; }
-                ul { left: 100%; top: 0; }
-            }
+header {
+    #logo { .grid(7); margin-top: 10px; margin-bottom: 10px;
+        a { display: block; text-decoration: none; 
+            img { float: left; width: 100px; height: 100px; border: none; }
+            h1 { padding: 34px 0 32px 10px; width: 430px; .header-font(54px); color: @primary; text-shadow: 1px 2px 1px #666; float: left; margin: 0; }
         }
-        li:hover > a, a:focus { /* background-color: transparent; */ }
-        li:hover > ul { display: block; }
     }
-}
-
-/* Custom Nav overrides */
-nav { border: solid 4px @secondary; border-right: none; border-left: none;
-    ul { margin: 0;
-        li { 
-            a { text-decoration: none; color: @primary; }
-            ul { border-bottom: solid 4px @secondary;
-                li { border: solid 4px @secondary; border-bottom: none;
-                    a { background-color: #fff; }
+    #login { .grid(5); margin-top: 10px; margin-bottom: 10px; padding: 0; text-align: right;
+            form { display: block;}
+            input[type="text"], input[type="password"] { font-size: 14px; width: 120px; }
+            input[type="submit"] { font-size: 12px; font-weight: bold; background-color: @secondary; padding: 4px 10px; border: 0; }
+            span { color: @primary; }
+        }
+    #phone { .grid(2); font-size: 16px; font-style: italic; text-align: right; }
+    #search-box { .grid(3); text-align: right; 
+        form { display: block; }
+        input#q { width: 156px; border: solid 1px #ccc; }
+        input#search-box-submit { width: 30px; color: @text; font-size: 13px; border: solid 1px #ccc; background-color: @secondary; text-transform: uppercase; margin: 0; padding: 0; }
+    }
+    #nav { .grid(12); margin-bottom: 10px; }
+    
+    /* Standard Nav organization for a dropdown
+    The ul li a line-height and the top of ul li ul need to match
+    colors, heights, and borders can be overridden */
+    nav {display: block;
+        ul { list-style: none;
+            li { float: left; position: relative;
+                a { line-height: 40px; padding: 0 12px; background-color: transparent; display: block; color: @primary; 
+                    &:hover { color: @primary }
+                }
+                ul { display: none; float: left; margin: 0; position: absolute; top: 40px; width: 148px; z-index: 99999;
+                    a { height: auto; line-height: 20px; padding: 10px; width: 120px; }
+                    ul { left: 100%; top: 0; }
                 }
             }
+            li:hover > a, a:focus { /* background-color: transparent; */ }
+            li:hover > ul { display: block; }
         }
-        li:hover > a, a:focus { text-decoration: underline; }
     }
-    &:hover div.admin-inline { top: -4px; }
+    
+    /* Custom Nav overrides */
+    nav { border: solid 4px @secondary; border-right: none; border-left: none;
+        ul { margin: 0;
+            li { 
+                a { text-decoration: none; color: @primary; }
+                ul { border-bottom: solid 4px @secondary;
+                    li { border: solid 4px @secondary; border-bottom: none;
+                        a { background-color: #fff; }
+                    }
+                }
+            }
+            li:hover > a, a:focus { text-decoration: underline; }
+        }
+        &:hover div.admin-inline { top: -4px; }
+    }
 }
 
-
-#footer { background-color: @compliment; color: @offtext; padding: 6px; text-align: center; line-height: 28px;
+#footer { background-color: @complimentary; color: @offtext; padding: 6px; text-align: center; line-height: 28px;
     a { color: @offtext; }
 }
 
 /* ------------------------------
     Homepage Content
 ------------------------------ */
-#rotator { padding: 0 10px 10px 20px; position: relative; width: 644px; float: left;
-    #stories { height: 324px; width: 644px;
+#home h3 { .header-font(30px); border: solid 4px @secondary; border-left: none; border-right: none; color: @complimentary; padding: 10px 0 10px 0; margin-bottom: 10px; .textshadow(#333); }
+
+#messages-box { .grid(12); }
+
+#rotator { .grid(8); position: relative; margin-bottom: 10px;
+    #stories { height: 328px;
         .story { 
-            .story-image { height: 324px; width: 640px; 
+            .story-image { height: 324px; width: 618px; 
                 img {.imgborder; }
             }
-            .story-text { position: absolute; top: 222px; left: 2px; padding: 10px 10px 10px 20px; width: 614px; height: 84px; background: fadeout(#000,20); }
-            h2.headline { float: left; width: 260px; margin-right: 10px; }
+            .story-text { width: 618px; position: absolute; top: 232px; left: 2px; height: 84px; background: fadeout(#000,40); padding-top: 10px; }
+            h2.headline { .grid(3); }
             h2.headline a { font-weight: normal; .header-font(36px); color: #fff; text-decoration: none; .textshadow(#444); }
-            .story-summary { float: right; width: 330px; color: @offtext; height: 84px; border-left: solid 3px @secondary; padding-left: 10px;}
+            .story-summary { .grid(4); padding-left: 10px; color: @offtext; border-left: solid 3px @secondary; }
         }
     }
-    #stories-pager { position: absolute; width: 40px; top: 34px; left: 24px; height: 40px; z-index: 990;
-        a { display: block; float: left; margin-bottom: 4px; padding: 4px 8px; font-size: 12px; font-weight: bold; text-decoration: none; background: fadeout(@secondary,30); color: @offtext; .textshadow(#222); border: solid 1px darken(@secondary, 30); }
+    #stories-pager { position: absolute; width: 30px; top: 14px; left: 1px; z-index: 890;
+        a { display: block; float: left; margin-bottom: 4px; padding: 4px 8px; font-size: 12px; font-weight: bold; text-decoration: none; background: fadeout(@secondary,40); color: @offtext; .textshadow(#222); border: solid 1px darken(@secondary, 30); }
         a.activeSlide { background: @secondary; }
     }
 }
-#featured { float: right; width: 336px; padding: 0 20px 0 6px; 
+#space_1 { .grid(4); 
     .featured-item a { color: #fff; display: block; width: 100%; text-align: center; padding: 28px 0; background-color: @primary; margin-bottom: 18px; .header-font(34px); text-decoration: none; .textshadow(@secondary); }
 }
 
 #home-content { padding-bottom: 10px;
-    h3 { .header-font(30px); border: solid 4px @secondary; border-left: none; border-right: none; color: @compliment; width: 350px; padding: 10px 0 10px 20px; margin-bottom: 10px; .textshadow(#333);}
-    #top-row { margin-bottom: 20px; 
-        #home-blog { padding-top: 10px; width: 664px; float: left;
-            .blog-item {float: left; width: 201px; margin-left: 20px;
-                img {.imgborder;}
-                h4 a { color: @compliment; text-decoration: none; .header-font(18px); }
-            }
-        }
-        #newsletter-form { padding-top: 10px; width: 336px; float: right; background-color: #ccc; margin-right: 20px; 
-            h3 { width: 250px;}
-            form { margin-left: 20px; padding-bottom: 20px;
-                .label label {font-weight: normal; font-size: 13px; }
-                .form-field {margin-bottom: 6px;}
-                input { width: 280px; border: solid 1px #aaa; }
-                input#newsletter-submit { width: 138px; color: @offtext; .header-font(20px); .textshadow(@secondary); background-color: @primary; margin-left: 150px; }
-            }
+    #space_2 { .grid(8); margin-bottom: 20px; margin-top: 10px; }
+
+    #newsletter-form { padding-top: 10px; .grid(4); background-color: #ccc; margin-bottom: 20px;
+        h3 { padding-left: 10px; }
+        form { margin-left: 20px; padding-bottom: 20px;
+            .label label {font-weight: normal; font-size: 13px; }
+            .form-field {margin-bottom: 6px;}
+            input { width: 260px; border: solid 1px #aaa; }
+            input#newsletter-submit { width: 138px; color: @offtext; .header-font(20px); .textshadow(@secondary); background-color: @primary; margin-left: 130px; }
         }
     }
-    #bottom-row {  
-        #home-events { width: 504px; float: left; 
-            #home-event-item { margin-left: 20px;}
-            .event-img { float: left; width: 174px;
-                img { .imgborder; }
-            }
-            .event-info { float: left; width: 284px; margin-left: 10px;line-height: 18px; 
-                h4 a { color: @compliment; text-decoration: none; .header-font(22px); }
-            }
-        }
-        #locations-map { width: 488px; float: right; border-left: solid 2px #ccc; padding-left: 30px;
-            iframe { .imgborder; }
-        }
+    #space_3 { .grid(6); 
+    }
+    #space_4 { .grid(6); 
+        iframe { .imgborder; }
+    }
+}
+
+#home {
+    #space_2, #space_3, #space_4 {
+        section { margin-left: 10px; }
+        section h3 { margin-left: -10px; padding-left: 10px; }
     }
 }
 
@@ -226,16 +234,16 @@ nav { border: solid 4px @secondary; border-right: none; border-left: none;
 /* ------------------------------
     Sidebar 
 ------------------------------ */
-#sidebar { width: 280px; padding: 10px 10px 0 10px; float: left;
+#sidebar { .grid(3); padding-top: 10px;
    h3 {font-size: 28px; margin-bottom: 12px; }
 }
 
 /* ------------------------------
     Body Content
 ------------------------------ */
-#body-content { padding: 10px; width: @base-width - 20px; }
-
-.content-middle { width: @base-width - 386px; float: right; }
+#body-content { width: @base-width; }
+#body-content .content-wide { .grid(12); width: @base-width - 20px !important;}
+.content-middle { .grid(9); float: right; }
 
 
 /* ------------------------------
@@ -270,11 +278,15 @@ nav { border: solid 4px @secondary; border-right: none; border-left: none;
 	left: 5px;
 }
 
-a.readmore { float: left; font-style: italic; color: #479E8B;}
+a.readmore { font-style: italic; color: #479E8B;}
 
 .clear { clear: both; }
 .clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; visibility: hidden; } 
 .clearfix:after { clear: both; }
 .clearfix { zoom: 1; }
+
+.center:before, .center:after { content: "\0020"; display: block; height: 0; visibility: hidden; } 
+.center:after { clear: both; }
+.center { zoom: 1; }
 
 .less-error-message { display: none; }
