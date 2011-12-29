@@ -7,8 +7,6 @@ register = template.Library()
 
 GLOBAL_SITE_URL = get_setting('site', 'global', 'siteurl')
 
-print GLOBAL_SITE_URL
-
 def relative_to_absolute_urls(value):
     """
     Converts all relative urls to absolute urls.
