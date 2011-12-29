@@ -27,7 +27,8 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
     PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=3, can_delete=False)
     
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)        
+        form = form_class(request.POST, user=request.user)  
+        formset = PricingFormSet()      
         if form.is_valid():
             form_instance = form.save(commit=False)
             formset = PricingFormSet(request.POST, instance=form_instance)
