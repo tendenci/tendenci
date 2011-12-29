@@ -297,7 +297,6 @@ def completion(request, pk, user_id=None, template_name="courses/completion.html
         # allow an admin user to view other certificates
         user = User.objects.get(id=user_id)
         for_admin = True
-        print "admin view"
     else:
         user = request.user
         for_admin = False
