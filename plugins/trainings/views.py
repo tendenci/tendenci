@@ -28,30 +28,34 @@ def detail(request, pk=None, template_name="trainings/detail.html"):
     if not pk: return HttpResponseRedirect(reverse('trainings.search'))
     
     training = get_object_or_404(Training, pk=pk)
-    
-    if has_perm(request.user, 'trainings.view_completion'):
-        completions = Completion.objects.filter(training=training)
-    else:
-        completions = Completion.objects.filter(training=training, owner=request.user)
-    completions = completions.order_by('finish_dt')
 
-    try:
-        user_completion = Completion.objects.get(training=training, owner=request.user)
-    except:
-        user_completion = None
+    if request.user.is_authenticated():
     
-    if has_perm(request.user, 'trainings.view_training', training):
-        log_defaults = {
-            'event_id' : 1011500,
-            'event_data': '%s (%d) viewed by %s' % (training._meta.object_name, training.pk, request.user),
-            'description': '%s viewed' % training._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': training,
-        }
-        EventLog.objects.log(**log_defaults)
-        return render_to_response(template_name, {'training': training, 'completions':completions,'user_completion':user_completion}, 
-            context_instance=RequestContext(request))
+        if has_perm(request.user, 'trainings.view_completion'):
+            completions = Completion.objects.filter(training=training)
+        else:
+            completions = Completion.objects.filter(training=training, owner=request.user)
+        completions = completions.order_by('finish_dt')
+
+        try:
+            user_completion = Completion.objects.get(training=training, owner=request.user)
+        except:
+            user_completion = None
+        
+        if has_perm(request.user, 'trainings.view_training', training):
+            log_defaults = {
+                'event_id' : 1011500,
+                'event_data': '%s (%d) viewed by %s' % (training._meta.object_name, training.pk, request.user),
+                'description': '%s viewed' % training._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': training,
+            }
+            EventLog.objects.log(**log_defaults)
+            return render_to_response(template_name, {'training': training, 'completions':completions,'user_completion':user_completion}, 
+                context_instance=RequestContext(request))
+        else:
+            raise Http403
     else:
         raise Http403
 
