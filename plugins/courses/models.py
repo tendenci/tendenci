@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -18,7 +20,8 @@ class Course(TendenciBaseModel):
     retries = models.IntegerField(_(u'Retries'), help_text=u'Number of retries allowed (0, means unlimited)', default=0)
     retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=u'Number of hours before another retry', default=0)
     passing_score = models.DecimalField(_(u'Passing Score'), help_text=u'out of 100%', max_digits=5, decimal_places=2)
-    deadline = models.DateTimeField(_(u'Deadline'))
+    deadline = models.DateTimeField(_(u'Deadline'), default=datetime(datetime.now().year+1, datetime.now().month, datetime.now().day))
+    close_after_deadline = models.BooleanField(_(u'Close After Deadline'), default=False)
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
     
     objects = CourseManager()
@@ -39,7 +42,12 @@ class Course(TendenciBaseModel):
         for question in self.questions.all():
             total_points = total_points + question.point_value
         return total_points
-
+    
+    def is_closed(self):
+        return (self.close_after_deadline and datetime.now() > self.deadline)
+        
+    def deadline_has_passed(self):
+        return (datetime.now() > self.deadline)
 
 class Question(models.Model):
     """

@@ -606,6 +606,35 @@ def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
         'entry': entry,
         'form': form,
         }, context_instance=RequestContext(request))
+        
+@login_required
+def entry_delete(request, id=0, template_name="memberships/entries/delete.html"):
+    """
+    Delete membership application entry.
+    """
+    entry = get_object_or_404(AppEntry, id=id)  # exists
+    
+    if not is_admin(request.user):
+        raise Http303  # not permitted
+
+    if request.method == "POST":
+        # log entry delete
+        EventLog.objects.log(**{
+            'event_id' : 1080000,
+            'event_data': '%s (%d) viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
+            'description': '%s viewed' % entry._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': entry,
+        })
+        messages.add_message(request, messages.INFO, "Deleted %s" % entry)
+        entry.delete()
+        
+        return redirect("membership.application_entries_search")
+    
+    return render_to_response(template_name, {
+        'entry':entry,
+    }, context_instance=RequestContext(request))
 
 @login_required
 def application_entries_search(request, template_name="memberships/entries/search.html"):
