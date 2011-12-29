@@ -323,9 +323,9 @@ if cm_api_key and cm_client_id:
             email = instance.member.email
             name = instance.member.get_full_name()
         elif isinstance(instance, GroupSubscription):
-            form_entry = instance.subscriber
-            (name, email) = form_entry.get_name_email()
-                    
+            name = instance.name
+            email = instance.email
+            
         return (name, email)
             
         

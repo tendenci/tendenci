@@ -7,7 +7,7 @@ from os.path import join
 from datetime import datetime
 
 from django.contrib.auth.models import User, AnonymousUser
-from django.forms.fields import CharField, ChoiceField
+from django.forms.fields import CharField, ChoiceField, BooleanField
 from django.template.defaultfilters import slugify
 from django.forms.widgets import HiddenInput
 from django.http import Http404
@@ -464,6 +464,10 @@ class AppFieldForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(AppFieldForm, self).__init__(*args, **kwargs)
 
+        # remove "admin only" option from membership type and payment method
+        if self.instance.field_type in ['membership-type','payment-method']:
+            self.fields['admin_only'] = BooleanField(widget=HiddenInput)
+
         # remove field_type options
         choices_dict = dict(self.fields['field_type'].choices)
         del choices_dict['membership-type']
@@ -665,8 +669,12 @@ class AppEntryForm(forms.ModelForm):
         }
 
         for field in self.form_fields:
+
+            print 'field', field
+
+
             if field.field_type == 'corporate_membership_id' and not self.corporate_membership:
-                continue
+                continue  # on to the next one
 
             field_key = "field_%s" % field.id
             field_class, field_widget = CLASS_AND_WIDGET[field.field_type]
@@ -748,6 +756,7 @@ class AppEntryForm(forms.ModelForm):
         app_entry.owner_username = username or admin.username
         app_entry.status = True
         app_entry.status_detail = 'active'
+        app_entry.allow_anonymous_view = False
         
         app_entry.save()
         
