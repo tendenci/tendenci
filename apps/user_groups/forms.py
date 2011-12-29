@@ -49,7 +49,7 @@ class GroupForm(TendenciBaseForm):
     email_recipient = forms.CharField(label="Recipient Email", required=False, max_length=100, 
         help_text='Recipient email(s), comma delimited')
     show_as_option = forms.BooleanField(initial=1, label="Show Option", 
-        help_text='Display this user group as an option to logged-in users.',required=False)
+        help_text='Display this group as an option to logged-in users.',required=False)
     status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
 
     class Meta:
@@ -77,7 +77,7 @@ class GroupForm(TendenciBaseForm):
         fieldsets = [('Group Information', {
                       'fields': ['name',
                                  'label',
-                                 'entity',
+                                 # 'entity',
                                  'email_recipient',
                                  'show_as_option',
                                  'allow_self_add', 

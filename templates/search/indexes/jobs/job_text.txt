@@ -14,6 +14,7 @@ by {{ object.object.creator.get_profile.display_name }}
 
 location:{{ object.location }}
 is:{{ object.status_detail }}
+is:{{ object.list_type }}
 
 {% tags_for_object object as tags %}
 {% for tag in tags %}

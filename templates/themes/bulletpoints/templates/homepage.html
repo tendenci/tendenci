@@ -1,3 +1,7 @@
+{% comment %}
+Bulletpoints Theme - homepage.html
+{% endcomment %}
+
 {% load base_filters %}
 {% load base_tags %}
 {% load cache %}
@@ -31,14 +35,17 @@
 <div id="wrapper" class="container">
     {% theme_include "header.html" %}
     <div class="container">
-        <section id="rotator-featured" class="center clearfix">
+        <section id="rotator-featured" class="center">
+        <div id="messages-box">
+            {% theme_include "base/messages.html" %}
+        </div>
             <section id="rotator">
                 <div id="stories">
                 {% list_stories as rotator_list limit=6 tags="rotator" %}
                 {% if rotator_list %}
                     {% for story in rotator_list %}
                     <div class="story story-{% cycle "even" "odd" %}">
-                      <div class="story-image"><a href="{{ story.full_story_link }}"><img style="height: 324px; width: 644px;" src="{% image_url story.image size=644x324 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
+                      <div class="story-image"><a href="{{ story.full_story_link }}"><img style="height: 324px; width: 618px;" src="{% image_url story.image size=618x324 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
                         <div class="story-text">
                             <h2 class="headline"><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
                             <div class="story-summary">
@@ -55,7 +62,7 @@
                     {% endfor %}
                 {% else %}
                 <div class="story story-even">
-                  <div class="story-image"><a href="#"><img style="height: 324px; width: 644px;" src="http://media.tendenciapp.com/images/rotator.jpg" alt="Sample"></a></div>
+                  <div class="story-image"><a href="#"><img style="height: 324px; width: 618px;" src="http://media.tendenciapp.com/images/rotator.jpg" alt="Sample"></a></div>
                     <div class="story-text">
                         <h2 class="headline"><a href="#">Sample Story</a></h2>
                         <div class="story-summary">
@@ -65,7 +72,7 @@
                     </div>
                 </div>
                 <div class="story story-odd">
-                  <div class="story-image"><a href="#"><img style="height: 324px; width: 644px;" src="http://media.tendenciapp.com/images/rotator.jpg" alt="Sample"></a></div>
+                  <div class="story-image"><a href="#"><img style="height: 324px; width: 618px;" src="http://media.tendenciapp.com/images/rotator.jpg" alt="Sample"></a></div>
                     <div class="story-text">
                         <h2 class="headline"><a href="#">Second Story</a></h2>
                         <div class="story-summary">
@@ -78,129 +85,51 @@
                 </div>
                 <div id="stories-pager"></div>
             </section><!-- /#rotator -->
-            <section id="featured">
-                {% list_stories as featured_stories limit=3 tags="featured" %}
-                {% if featured_stories %}
-                    {% for story in featured_stories %}
-                        <div class="featured-item">
-                            <a href="{{ story.full_story_link }}">{{ story.title }}</a>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="featured-item">
-                        <a href="#">{% trans 'Business Strategy' %}</a>
-                    </div>
-                    <div class="featured-item">
-                        <a href="#">{% trans 'Talking Points' %}</a>
-                    </div>
-                    <div class="featured-item">
-                        <a href="#">{% trans 'Who We Are' %}</a>
-                    </div>
-                {% endif %}
-            </section><!-- /#featured -->
+            <div class="space" id="space_1">{% space_include MODULE_THEME_SPACE_1 %}</div>
         </section>
     </div>
     <div class="container">
         <section id="home-content" class="center">
-            <section id="top-row" class="clearfix">
-                <div id="home-blog">
-                    <h3>{% trans 'Blog' %}</h3>
-                    <div class="blog-items clearfix">
-                      {% if MODULE_THEME_BLOGFEED %}
-                        {% get_rss MODULE_THEME_BLOGFEED as rss %}
-                      {% else %}
-                        {% get_rss "http://blog.schipul.com/feed/" as rss %}
-                      {% endif %}
-                        {% for entry in rss.entries|slice:":3" %}
-                            <div class="blog-item">
-                                <h4><a href="{{ entry.link }}">{{ entry.title }}</a></h4>
-                                <p>{{ entry.summary|striptags|safe|truncatewords:"12" }}</p>
-                                <p><span><a class="readmore" href="{{ entry.link }}">{% trans 'Read More ...' %}</a></span></p>
+            <div class="space" id="space_2">{% space_include MODULE_THEME_SPACE_2 %}</div>
+            <div id="newsletter-form" class="clearfix">
+                <h3>{% trans 'Newsletter' %}</h3>
+                {# embed_form 1 #}
+                <form action="/forms/contact-us/" method="post">{% csrf_token %}
+                    <div class="forms">
+                    <div class="form-field">
+                        <div class="id_field_1">
+                            <div class="label">
+                                <label for="id_field_1">{% trans 'First Name' %}</label>
                             </div>
-                        {% endfor %}
+                            
+                            <div class="field">
+                                <input id="id_field_1" type="text" name="field_1" maxlength="100">
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div id="newsletter-form" class="clearfix">
-                    <h3>{% trans 'Newsletter' %}</h3>
-                    {# embed_form 1 #}
-                    <form action="/contact/" method="post">{% csrf_token %}
-                        <div class="forms">
-                        <div class="form-field">
-                            <div class="id_first_name">
-                                <div class="label">
-                                    <label for="id_first_name">{% trans 'First Name' %}</label>
-                                </div>
-                                
-                                <div class="field">
-                                    <input id="id_first_name" type="text" name="first_name" maxlength="100">
-                                </div>
+                    <div class="form-field">
+                        <div class="id_field_3">
+                            <div class="label">
+                                <label for="id_field_3">{% trans 'Email Address' %}</label>
+                            </div>
+                            <div class="field">
+                                <input id="id_field_3" type="text" name="field_3" maxlength="100">
                             </div>
                         </div>
-                        <div class="form-field">
-                            <div class="id_email">
-                                <div class="label">
-                                    <label for="id_email">{% trans 'Email Address' %}</label>
-                                </div>
-                                <div class="field">
-                                    <input id="id_email" type="text" name="email" maxlength="100">
-                                </div>
-                            </div>
-                        </div>
-                            <input type="submit" id="newsletter-submit" value="{% trans 'Register' %}">
-                        </div>
-                    </form>
-                </div><!-- /#newsletter-form -->
-            </section><!-- /#top-row -->
-            <section id="bottom-row" class="clearfix">
-                <div id="home-events">
-                    <h3>{% trans 'Upcoming Events' %}</h3>
-                    {% list_events as events_list limit=1 %}
-                    <div id="home-event-item" class="clearfix">
-                    {% if events_list %}
-                        {% for event in events_list %}
-                        <div class="event-img">
-                        {% for speaker in event.speaker_set.all %}
-                            {% if forloop.first %}
-                                {% for img in speaker.files %}
-                                  {% if forloop.last %}
-                                          <img alt="Speaker: {{ speaker.name }}" src="{% url file img.pk %}170x200/crop/" height="200" width="170" />
-                                  {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                <img src="http://schipul.com/files/2369/170x200/crop/90" alt="{{ event.title }}" style="height: 200px; width: 170px;"/>
-                            {% endif %}
-                        {% endfor %}
-                        </div>
-                        <div class="event-info">
-                            <h4><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
-                            <p class="event-date">{{ event.start_dt|date:"F d, Y" }}</p>
-                            <p>{{ event.description|striptags|truncatewords:"30"|safe }}</p>
-                            <p><span><a class="readmore" href="{{ event.get_absolute_url }}">{% trans 'Read More ...' %}</a></span></p>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="event-img">
-                            <img src="http://schipul.com/files/2369/170x200/crop/90" style="height: 200px; width: 170px;"/>
-                        </div>
-                        <div class="event-info">
-                            <h4><a href="#">Our Next Event</a></h4>
-                            <p class="event-date">{% now "F d, Y" %}</p>
-                            <p>Come join us at our next event!</p>
-                            {% if request.user.is_authenticated %}<p>Display your next upcoming event right on your homepage. Once you <a href="/events/add/">add your first event</a>, this area will be replaced by that information. Don't forget to add a speaker photo!</p>{% endif %}
-                            <p><span><a class="readmore" href="#">{% trans 'Read More ...' %}</a></span></p>
-                        </div>
-                    {% endif %}
                     </div>
-                </div>
-                <div id="locations-map">
-                    <h3>{% trans 'Locations' %}</h3>
-                    {# box 1 #}
-                    <p><span><a class="readmore" href="/locations">{% trans 'See all our Locations ...' %}</a></span></p>
-                </div>
-            </section><!-- /#bottom-row -->
+                        <input type="submit" id="newsletter-submit" value="{% trans 'Contact Us' %}">
+                    </div>
+                </form>
+            </div><!-- /#newsletter-form -->
+            <div class="space" id="space_3">
+                {% space_include MODULE_THEME_SPACE_3 %}
+            </div>
+            <div class="space" id="space_4">
+                {% space_include MODULE_THEME_SPACE_4 %}
+            </div>
         </section><!-- /#home-content -->
     </div>
-    <div class="container compliment topborder">
+    <div class="container complimentary topborder">
         <section id="footer" class="center">
             <footer>{% theme_include "footer.html" %}</footer>  
         </section><!-- /#footer -->
@@ -212,6 +141,9 @@
 {{ block.super }}
     <script src="{{ THEME_URL }}media/js/jquery.cycle.all.min.js" type="text/javascript"></script>
     <script type="text/javascript">
+    function clearDefault(val) {  
+        if (val.defaultValue==val.value) val.value = "" 
+    } 
     $(document).ready(function() {
         $("#stories").cycle({
             timeout: 8000,

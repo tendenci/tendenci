@@ -19,7 +19,7 @@
     <h1>{% firstof MODULE_NAVS_LABEL "Nav" %} {% trans "Edit" %}</h1>
     
     <div class="nav-wrap">
-    	<form action="{% url navs.edit nav.id %}" method="post">{% csrf_token %}
+    	<form action="{% url navs.edit current_nav.id %}" method="post">{% csrf_token %}
     	<div class="forms">
 			{{ form|styled_form }}
         	<input type="submit" value="{% trans 'Update Nav' %}" />

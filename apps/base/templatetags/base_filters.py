@@ -358,6 +358,16 @@ def split(str, splitter):
     return str.split(splitter)
 
 @register.filter
+def make_range(value):
+    try:
+        value = int(value)
+        if value > 0:
+            return range(int(value))
+        return []
+    except:
+        return []
+
+@register.filter
 def underscore_space(value):
     return value.replace("_"," ")
 
