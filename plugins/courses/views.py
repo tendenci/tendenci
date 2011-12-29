@@ -4,12 +4,14 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.forms.models import inlineformset_factory
 
 from base.http import Http403
 from perms.utils import get_notice_recipients, has_perm, update_perms_and_save
 from perms.utils import is_admin
 from event_logs.models import EventLog
+from site_settings.utils import get_setting
 
 from courses.models import Course, Question, CourseAttempt
 from courses.forms import (CourseForm, QuestionForm, AnswerForm,
@@ -48,39 +50,38 @@ def search(request, template_name="courses/search.html"):
     return render_to_response(template_name, {'courses':courses}, 
         context_instance=RequestContext(request))
 
-
+@login_required
 def detail(request, pk, template_name="courses/detail.html"):
     """
     Course detail view
     """
-    
     course = get_object_or_404(Course, pk=pk)
     
-    if has_perm(request.user, 'course.view_course', course):
-        log_defaults = {
-            'event_id' : 113500,
-            'event_data': '%s (%d) viewed by %s' % (course._meta.object_name, course.pk, request.user),
-            'description': '%s viewed' % course._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': course,
-        }
-        EventLog.objects.log(**log_defaults)
-        
-        #check if the user has attempted this course before
-        attempted = CourseAttempt.objects.filter(user=request.user, course=course).exists()
-        passed = get_passed_attempts(course, request.user)
-        retry, retry_time = can_retry(course, request.user)
-        
-        return render_to_response(template_name, {
-            'course':course,
-            'attempted':attempted,
-            'has_passed':passed,
-            'can_retry':retry,
-            'retry_time_left':retry_time,
-        }, context_instance=RequestContext(request))
-    else:
+    if not has_perm(request.user, 'course.view_course', course):
         raise Http403
+        
+    log_defaults = {
+        'event_id' : 113500,
+        'event_data': '%s (%d) viewed by %s' % (course._meta.object_name, course.pk, request.user),
+        'description': '%s viewed' % course._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': course,
+    }
+    EventLog.objects.log(**log_defaults)
+    
+    #check if the user has attempted this course before
+    attempted = CourseAttempt.objects.filter(user=request.user, course=course).exists()
+    passed = get_passed_attempts(course, request.user)
+    retry, retry_time = can_retry(course, request.user)
+    
+    return render_to_response(template_name, {
+        'course':course,
+        'attempted':attempted,
+        'has_passed':passed,
+        'can_retry':retry,
+        'retry_time_left':retry_time,
+    }, context_instance=RequestContext(request))
         
 @login_required
 def add(request, form_class=CourseForm, template_name="courses/add.html"):
@@ -212,6 +213,10 @@ def take(request, pk, template_name="courses/take.html"):
     if not has_perm(request.user, 'course.view_course', course):
         raise Http403
     
+    # closed course, deadline passed
+    if course.is_closed() and not is_admin(request.user):
+        raise Http403
+    
     #check if user can retake/take the course
     if not can_retry(course, request.user):
         messages.add_message(request, messages.ERROR, 'You are currently not allowed to retake this course')
@@ -244,6 +249,8 @@ def take(request, pk, template_name="courses/take.html"):
                     'has_passed':passed,
                     'can_retry':retry,
                     'retry_time_left':retry_time,
+                    'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                    'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                 }
                 notification.send_emails(recipients, 'course_completion', extra_context)
                 
@@ -259,6 +266,8 @@ def take(request, pk, template_name="courses/take.html"):
                     'has_passed':passed,
                     'can_retry':retry,
                     'retry_time_left':retry_time,
+                    'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                    'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                 }
                 notification.send_emails(recipients, 'course_completion', extra_context)
         
@@ -274,6 +283,7 @@ def take(request, pk, template_name="courses/take.html"):
         'course':course,
         }, context_instance=RequestContext(request))
 
+@login_required
 def completion(request, pk, user_id=None, template_name="courses/completion.html"):
     """
     Generate a summary of user's course attempts
@@ -286,8 +296,11 @@ def completion(request, pk, user_id=None, template_name="courses/completion.html
     if user_id and is_admin(request.user):
         # allow an admin user to view other certificates
         user = User.objects.get(id=user_id)
+        for_admin = True
+        print "admin view"
     else:
         user = request.user
+        for_admin = False
     
     attempts = CourseAttempt.objects.filter(course=course, user=user).order_by("-create_dt")
     
@@ -295,6 +308,7 @@ def completion(request, pk, user_id=None, template_name="courses/completion.html
     retry, retry_time = can_retry(course, user)
         
     return render_to_response(template_name, {
+        'for_admin':for_admin,
         'attempts':attempts,
         'course':course,
         'has_passed':passed,
@@ -302,6 +316,7 @@ def completion(request, pk, user_id=None, template_name="courses/completion.html
         'retry_time_left':retry_time,
         }, context_instance=RequestContext(request))
 
+@login_required
 def certificate(request, pk, template_name="courses/certificate.html"):
     course = get_object_or_404(Course, pk=pk)
     
@@ -319,6 +334,7 @@ def certificate(request, pk, template_name="courses/certificate.html"):
         'attempt':attempt,
         }, context_instance=RequestContext(request))
 
+@login_required
 def add_completion(request, pk, template_name="courses/add_completion.html"):
     """
     Completion add for admin only

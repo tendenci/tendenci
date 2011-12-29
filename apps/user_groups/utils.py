@@ -16,5 +16,4 @@ def member_choices(group, member_label):
     choices = []
     for member in members:
         choices.append((member.pk, label(member)))
-    print choices
     return choices
