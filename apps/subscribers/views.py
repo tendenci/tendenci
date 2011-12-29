@@ -14,6 +14,9 @@ from forms_builder.forms.models import Form
 
 @login_required
 def subscribers(request, id, template_name="subscribers/subscribers.html"):
+    """
+    Returns subscriber entries for a given form
+    """
     form = get_object_or_404(Form, id=id)
     
     # check permission
@@ -23,10 +26,9 @@ def subscribers(request, id, template_name="subscribers/subscribers.html"):
     subscribers = GroupSubscription.objects.filter(subscriber__form=form)
         
     return render_to_response(template_name, {
-                        'form':form,
-                        'subscribers': subscribers,
-                        },
-                        context_instance=RequestContext(request))
+            'form':form,
+            'subscribers': subscribers,
+        }, context_instance=RequestContext(request))
 
 @login_required
 def subscriber_delete(request, id, template_name="subscribers/delete.html"):
@@ -50,7 +52,20 @@ def subscriber_delete(request, id, template_name="subscribers/delete.html"):
         grp_sub.delete()
         return HttpResponseRedirect(grp_sub.group.get_absolute_url())
     return render_to_response(template_name, {
-                        'grp_sub': grp_sub,
-                        },
-                        context_instance=RequestContext(request))
+            'grp_sub': grp_sub,
+        }, context_instance=RequestContext(request))
+
+@login_required
+def subscriber_detail(request, id, template_name="subscribers/detail.html"):
+    """
+    View that considers non custom form generated subscription for a single subscriber.
+    """
+    grp_sub = get_object_or_404(GroupSubscription, pk=id)
     
+    # check permission
+    if not has_perm(request.user,'subscribers.change_groupsubscriptions'):
+        raise Http403
+        
+    return render_to_response(template_name, {
+            'grp_sub': grp_sub,
+        }, context_instance=RequestContext(request))
