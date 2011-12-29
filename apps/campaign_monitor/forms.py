@@ -4,6 +4,7 @@ from django.conf import settings
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 from campaign_monitor.models import Template, Campaign, ListMap
+from events.models import Type
 from createsend import CreateSend
 from createsend import Campaign as CSC
 
@@ -13,6 +14,12 @@ DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
                 (120,'120'), (0,'ALL'),
                 )
 INCLUDE_CHOICES = ((1, 'Include'),(0, 'Skip'),)
+
+types_list = [('','All')]
+types = Type.objects.all()
+for type in types:
+    types_list.append((int(type.pk),type.name))
+TYPE_CHOICES = tuple(types_list)
 
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
@@ -32,6 +39,7 @@ class CampaignForm(forms.Form):
     events =  forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))
     event_end_dt = forms.DateField(initial=datetime.date.today() + datetime.timedelta(days=90), widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))
+    events_type = forms.ChoiceField(initial='', choices=TYPE_CHOICES, required=False)
     articles = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     articles_days = forms.ChoiceField(initial=60, choices=DAYS_CHOICES)
     news = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)

@@ -1,8 +1,9 @@
 from datetime import datetime
 from datetime import date
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render_to_response
+from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
@@ -13,17 +14,19 @@ from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.http import HttpResponse
 
-from user_groups.models import Group, GroupMembership
-from user_groups.forms import GroupForm, GroupMembershipForm, \
-                            GroupPermissionForm, GroupMembershipBulkForm
+from djcelery.models import TaskMeta
 from base.http import Http403
-from perms.utils import is_admin
-from event_logs.models import EventLog
-from perms.utils import get_notice_recipients
-from perms.utils import has_perm
+from perms.utils import is_admin, get_notice_recipients, has_perm
 from entities.models import Entity
+from event_logs.models import EventLog
 from event_logs.utils import request_month_range, day_bars
 from event_logs.views import event_colors
+
+from user_groups.models import Group, GroupMembership
+from user_groups.forms import GroupForm, GroupMembershipForm
+from user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
+from user_groups.importer.forms import UploadForm
+from user_groups.importer.tasks import ImportSubscribersTask
 
 try:
     from notification import models as notification
@@ -749,3 +752,72 @@ def group_all_export(request, group_slug):
     response['Content-Disposition'] = 'attachment; filename=group_%s_all_export.xls' % group.pk
     book.save(response)
     return response
+
+def group_subscriber_import(request, group_slug, form_class=UploadForm, template="user_groups/import_subscribers.html"):
+    """
+    Import subscribers for a specific group
+    """
+    group = get_object_or_404(Group, slug=group_slug)
+    
+    # if they can edit, they can export
+    if not has_perm(request.user,'user_groups.change_group', group):
+        raise Http403
+
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES)
+        if form.is_valid():
+            csv = form.save(commit=False)
+            csv.group = group
+            csv.creator = request.user
+            csv.creator_username = request.user.username
+            csv.owner = request.user
+            csv.owner_username = request.user.username
+            csv.save()
+            
+            if not settings.CELERY_IS_ACTIVE:
+                # if celery server is not present 
+                # evaluate the result and render the results page
+                result = ImportSubscribersTask()
+                subs = result.run(group, csv.file.path)
+                return render_to_response('user_groups/import_subscribers_result.html', {
+                    'group':group,
+                    'subs':subs,
+                }, context_instance=RequestContext(request))
+            else:
+                result = ImportSubscribersTask.delay(group, csv.file.path)
+                return redirect('subscribers_import_status', group.slug, result.task_id)
+    else:
+        form = form_class()
+    
+    return render_to_response(template, {
+        'group':group,
+        'form':form,
+    }, context_instance=RequestContext(request))
+
+@login_required
+def subscribers_import_status(request, group_slug, task_id, template_name='user_groups/import_status.html'):
+    """
+    Checks if a subscriber import is completed.
+    """
+    group = get_object_or_404(Group, slug=group_slug)
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        #tasks database entries are not created at once.
+        task = None
+    
+    if task and task.status == "SUCCESS":
+        subs = task.result
+        return render_to_response('user_groups/import_subscribers_result.html', {
+            'group':group,
+            'subs':subs,
+        }, context_instance=RequestContext(request))
+    else:
+        return render_to_response(template_name, {
+            'group':group,
+            'task':task,
+        }, context_instance=RequestContext(request))

@@ -15,7 +15,7 @@ class CourseForm(TendenciBaseForm):
                 widget=TinyMCE(attrs={'style':'width:100%'},
                 mce_attrs={'storme_app_label':u'courses',
                 'storme_model':Course._meta.module_name.lower()}))
-    deadline = SplitDateTimeField(label=_('Deadline'), initial=datetime.now())
+    deadline = SplitDateTimeField(label=_('Deadline'), initial=datetime(datetime.now().year+1, datetime.now().month, datetime.now().day))
                 
     class Meta:
         model = Course
@@ -26,6 +26,7 @@ class CourseForm(TendenciBaseForm):
             'retry_interval',
             'passing_score',
             'deadline',
+            'close_after_deadline',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -43,6 +44,7 @@ class CourseForm(TendenciBaseForm):
                     'retry_interval',
                     'passing_score',
                     'deadline',
+                    'close_after_deadline',
                     'tags',
                     ],
                 'legend': ''
@@ -91,16 +93,31 @@ class AnswerForm(forms.Form):
         Create the answer field based on the question
         """
         self.question = kwargs.pop('question')
+        
+        # set up answer choices
         choices = []
         for choice in self.question.answer_choices.split(','):
             choices.append((choice.strip(), choice.strip()))
+            
+        # set up the correct answers
+        self.answers = []
+        for answer in self.question.answer.split(','):
+            self.answers.append(answer.strip())
         
         super(AnswerForm, self).__init__(*args, **kwargs)
         
-        self.fields['answer'] = forms.ChoiceField(
-            label=self.question.question,
-            choices=choices,
-        )
+        if len(self.answers) == 1:
+            self.fields['answer'] = forms.ChoiceField(
+                label=self.question.question,
+                choices=choices,
+                widget=forms.RadioSelect,
+            )
+        else:
+            self.fields['answer'] = forms.MultipleChoiceField(
+                label=self.question.question,
+                choices=choices,
+                widget=forms.CheckboxSelectMultiple,
+            )
     
     def points(self):
         """
@@ -109,8 +126,14 @@ class AnswerForm(forms.Form):
         """
         if self.is_valid():
             data = self.cleaned_data['answer']
-            if data == self.question.answer:
-                return self.question.point_value
+            if len(self.answers) == 1:
+                print data, self.question.answer
+                if data == self.question.answer:
+                    return self.question.point_value
+            else:
+                print set(data), set(self.answers)
+                if set(data) == set(self.answers):
+                    return self.question.point_value
         return 0
 
 class CourseAttemptForm(forms.ModelForm):
