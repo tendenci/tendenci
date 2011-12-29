@@ -21,6 +21,9 @@
     .entry-edit {
         float: right;
     }
+    .entry-delete {
+        float: right;
+    }
 </style>
 
 <div class="t">
@@ -40,7 +43,8 @@
 
         <div class="entry_dt">{% trans "Submitted" %} {{ entry.entry_time|date_short }}
             {% if admin %}
-            <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">{% trans "Edit Entry" %}</a>
+            <a class="entry-delete" href="{% url membership.entry_delete entry.pk %}">{% trans "Delete" %}&nbsp;</a>
+            <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">{% trans "Edit" %}&nbsp;</a>
             {% endif %}
         </div>
 

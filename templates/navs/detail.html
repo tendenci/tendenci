@@ -4,7 +4,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} {{ nav.title }}{% endblock %}
+{% block title %}{{ block.super }} {{ current_nav.title }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -16,11 +16,11 @@
 <div class="t">
     {% nav_nav request.user nav %}
     <div class="nav-wrap">
-        <h1>{{ nav.title }}</h1>
+        <h1>{{ current_nav.title }}</h1>
         <div class="content">
-            {{ nav.description }}
+            {{ current_nav.description }}
         </div>
-        {% nav nav.id %}
+        {% nav current_nav.id %}
     </div>
 </div>
 {% endblock %}

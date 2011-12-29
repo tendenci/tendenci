@@ -1,0 +1,119 @@
+{% extends "memberships/base.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load i18n %}
+{% is_admin user as admin %}
+
+{% block title %}{% trans "Delete Membership Entry" %}{% endblock %}
+{% block meta_description %}{{ entry.get_description }}{% endblock %}
+{% block meta_keywords %}{{ entry.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ entry.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+<style type="text/css">
+    .entry-edit {
+        float: right;
+    }
+</style>
+
+<div class="t">
+
+    <div class="application-entry-wrap">
+
+        {% if entry.is_renewal %}
+        <h1>{{ entry.app.name }} {% trans "Renewal" %}</h1>
+        {% else %}
+        <h1>{{ entry.app.name }} {% trans "Submission" %}</h1>
+        {% endif %}
+
+        {% if is_confirmation and entry.app.confirmation_text %}
+            <div>{{ entry.app.confirmation_text|safe|urlize }}</div>
+            <hr />
+        {% endif %}
+
+        <div class="entry_dt">{% trans "Submitted" %} {{ entry.entry_time|date_short }}
+            {% if admin %}
+            <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">{% trans "Edit Entry" %}</a>
+            {% endif %}
+        </div>
+        
+        <div class="approval-status {{ entry.status_msg|lower }}">
+            {{ entry.status_msg }}
+            {% if entry.decision_dt %}
+                {{ entry.decision_dt|date_long }}
+            {% endif %}
+        </div>
+        
+        <div class="delete-prompt"> 
+            <p>{% trans "Are you sure you want to permanently delete this entry?" %}</p>
+            <div class="delete-form">
+                <form name="entry-delete" method="POST" action="{% url membership.entry_delete entry.pk %}">{% csrf_token %}
+                    <input type="hidden" name="action" value="delete">
+                    <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+                </form>
+            </div>
+        </div>
+        
+        {% if entry.is_approved %}
+            <div id="member-number">{{ entry.membership.member_number }}</div>
+        {% endif %}
+
+    	{% for field in entry.fields.all %}
+    		{% if field.field.field_type == 'FileField' %}
+            <div class="field">
+                <div class="label">{{ field.field.label }}</div>
+    			<div class="value">
+                    <a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
+    			</div>
+            </div>
+    		{% else %}
+            <div class="field">
+                <div class="label">{{ field.field.label }}</div>
+    			<div class="value">
+    			{% with field.corporate_membership_name as cm_name %}
+    			{% if cm_name %}
+    				{{ cm_name }} (ID:{{ field.value }})
+    			{% else %}
+    				{{ field.value }}
+    			{% endif %}
+    			{% endwith %}
+    			</div>
+            </div>
+    		{% endif %}
+    	{% endfor %}
+
+        {% if user.is_admin %}
+        {% if entry.is_approved == 0 or entry.is_approved == 1 %}
+        {% else %}
+            {% if form %}
+            <form action="" method="post" class="connect-with">{% csrf_token %}
+                <div>{{ form }}</div>
+                
+                {% if entry.is_renewal %}
+                <input type="submit" name="status" value="Disapprove Renewal">
+                <input type="submit" name="status" value="Approve Renewal">
+                {% else %}
+                <input type="submit" name="status" value="Disapprove">
+                <input type="submit" name="status" value="Approve">
+                {% endif %}
+            </form>
+            {% endif %}
+        {% endif %}
+        {% endif %}
+    </div>
+
+    {% if entry.membership %}
+    <div class="profile-link">
+        <a href="{% url profile  entry.membership.user %}#userview-memberships">{% trans "View Profile &amp; Membership" %}</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

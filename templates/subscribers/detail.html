@@ -1,0 +1,52 @@
+{% extends "subscribers/base.html" %}
+{% load forms_tags %}
+{% load base_filters %}
+{% load user_group_tags %}
+{% load i18n %}
+
+{% block title %}{% trans "Subscriber" %} - {{ grp_sub.name }} ({{ grp_sub.email }}){% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% user_group_nav request.user %}
+	<div class="subscriber-wrap">
+		<h1>{{ grp_sub.name }} ({{ grp_sub.email }})</h1>
+        <p>
+            <strong>Group</strong><br />
+            <em><a href="{{ grp_sub.group.get_absolute_url }}">{{ grp_sub.group }}</a></em>
+        </p>
+        {% if grp_sub.subscriber %}
+            {% for field in grp_sub.subscriber.fields.all %}
+                {% if field.field.field_type == 'FileField' %}
+                <p>
+                    <strong>{{ field.field.label }}</strong><br />
+                    <a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
+                </p>   		
+                {% else %}
+                <p>
+                    <strong>{{ field.field.label }}</strong><br />
+                    <em>{{ field.value }}</em>
+                </p>
+                {% endif %}
+            {% endfor %}
+            {% if grp_sub.subscriber.entry_path %}
+                <p>
+                    <strong>Entry Path</strong><br />
+                    <em>{{ entry.entry_path }}</em>
+                </p>
+            {% endif %}
+        {% else %}
+            {% for field in grp_sub.data.all %}
+                <p>
+                    <strong>{{ field.field_label }}</strong><br />
+                    <em>{{ field.value }}</em>
+                </p>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
