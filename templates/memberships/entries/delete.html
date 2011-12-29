@@ -6,7 +6,7 @@
 {% load i18n %}
 {% is_admin user as admin %}
 
-{% block title %}Membership Application for {{ entry.name }}{% endblock %}
+{% block title %}{% trans "Delete Membership Entry" %}{% endblock %}
 {% block meta_description %}{{ entry.get_description }}{% endblock %}
 {% block meta_keywords %}{{ entry.get_keywords }}{% endblock %}
 {% block meta_canonical_url %}<link rel="canonical" href="{{ entry.get_canonical_url }}" />{% endblock %}
@@ -19,9 +19,6 @@
 {% block body %}
 <style type="text/css">
     .entry-edit {
-        float: right;
-    }
-    .entry-delete {
         float: right;
     }
 </style>
@@ -43,21 +40,29 @@
 
         <div class="entry_dt">{% trans "Submitted" %} {{ entry.entry_time|date_short }}
             {% if admin %}
-            <a class="entry-delete" href="{% url membership.entry_delete entry.pk %}">{% trans "Delete" %}&nbsp;</a>
-            <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">{% trans "Edit" %}&nbsp;</a>
+            <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">{% trans "Edit Entry" %}</a>
             {% endif %}
         </div>
-
+        
         <div class="approval-status {{ entry.status_msg|lower }}">
             {{ entry.status_msg }}
             {% if entry.decision_dt %}
                 {{ entry.decision_dt|date_long }}
             {% endif %}
         </div>
-    
-
+        
+        <div class="delete-prompt"> 
+            <p>{% trans "Are you sure you want to permanently delete this entry?" %}</p>
+            <div class="delete-form">
+                <form name="entry-delete" method="POST" action="{% url membership.entry_delete entry.pk %}">{% csrf_token %}
+                    <input type="hidden" name="action" value="delete">
+                    <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+                </form>
+            </div>
+        </div>
+        
         {% if entry.is_approved %}
-        <div id="member-number">{{ entry.membership.member_number }}</div>
+            <div id="member-number">{{ entry.membership.member_number }}</div>
         {% endif %}
 
     	{% for field in entry.fields.all %}

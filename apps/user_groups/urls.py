@@ -17,4 +17,5 @@ urlpatterns = patterns('user_groups.views',
     url(r'^(?P<slug>[-.\w]+)/selfadd/(?P<user_id>\d+)/$', 'group_membership_self_add', name='group.selfadd'),
     url(r'^(?P<slug>[-.\w]+)/selfremove/(?P<user_id>\d+)/$', 'group_membership_self_remove', name='group.selfremove'),
     url(r'^(?P<group_slug>[-.\w]+)/deleteuser/(?P<user_id>\d+)/$', 'groupmembership_delete', name='group.deleteuser'),
+    url(r'^(?P<group_slug>[-.\w]+)/import/status/(?P<task_id>[-\w]+)/$', "subscribers_import_status", name='subscribers_import_status'),
 )
