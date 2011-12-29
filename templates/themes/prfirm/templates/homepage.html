@@ -1,3 +1,7 @@
+{% comment %}
+PR Firm Theme - homepage.html
+{% endcomment %}
+
 {% load base_filters %}
 {% load base_tags %}
 {% load cache %}
@@ -21,13 +25,10 @@
 
 {% block html_body %}
 <div id="wrapper">
-    <div class="container">
-        <section id="header">
     {% theme_include "header.html" %}
-       </section><!-- /#header -->
-    </div>
     <div class="container">
         <section id="rotator" class="clearfix">
+            {% theme_include "base/messages.html" %}
             <div id="stories">
                 {% list_stories as featured_stories limit=4 %}
                 {% if featured_stories %}

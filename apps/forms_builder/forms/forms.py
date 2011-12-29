@@ -112,7 +112,7 @@ class FormAdminForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Form._meta.app_label, 
         'storme_model':Form._meta.module_name.lower()}))
 
-    response = forms.CharField(required=False,
+    response = forms.CharField(required=False, label='Confirmation Text', 
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Form._meta.app_label, 
         'storme_model':Form._meta.module_name.lower()}))
