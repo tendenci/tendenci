@@ -806,7 +806,7 @@ class AppField(models.Model):
         help_text="Comma separated options where applicable")
 
     unique = models.BooleanField(_("Unique"), default=False, blank=True)
-    admin_only = models.BooleanField(_("Admin Only"), default=False, blank=True)
+    admin_only = models.BooleanField(_("Admin Only"), default=False)
     position = models.IntegerField(blank=True)
 
     objects = AppFieldManager()
@@ -898,14 +898,10 @@ class AppEntry(TendenciBaseModel):
         return self.get_field_value('email')
 
     def approval_required(self):
-        join_approval_required = self.membership_type.require_approval
-        renew_approval_required = self.membership_type.renewal_require_approval
-
         if self.is_renewal:
-            return renew_approval_required
+            return self.membership_type.renewal_require_approval
         else:
-            return join_approval_required
-
+            return self.membership_type.require_approval
     
     @property
     def corporate_membership_id(self):
@@ -940,13 +936,33 @@ class AppEntry(TendenciBaseModel):
     @property
     def membership_type(self):
         """Get MembershipType object"""
-        # Getting membership_type object via membership_type name
-        # Membership names are assumed to be unique.  :/
+
+        # Get membership type via name
         try:
             entry_field = self.fields.get(field__field_type="membership-type")
             return MembershipType.objects.get(name__exact=entry_field.value.strip())
         except:
-            return None
+            pass
+
+        # Find an older "approved" membership entry ------------
+        if self.user:
+            entries = AppEntry.objects.filter(
+                user=self.user,
+                membership__isnull=False,
+                create_dt__lt=self.create_dt,
+            ).order_by('-create_dt')
+
+            if entries:
+                return entries[0].membership.membership_type
+
+        # If the application only has one membership type choice ,use that ------
+        membership_types = self.app.membership_types.all()
+
+        if membership_types.count() == 1:
+            return membership_types[0]
+
+        # else return none; boom.
+
 
     @property
     def payment_method(self):
@@ -961,8 +977,27 @@ class AppEntry(TendenciBaseModel):
             return PaymentMethod.objects.filter(
                 human_name__exact=entry_field.value.strip()
             )[0]
-        except PaymentMethod.DoesNotExist as e:
-            return None
+        except (AppFieldEntry.DoesNotExist, PaymentMethod.DoesNotExist) as e:
+            pass
+
+        # Find an older "approved" membership entry ------------
+        if self.user:
+            entries = AppEntry.objects.filter(
+                user=self.user,
+                membership__isnull=False,
+                create_dt__lt=self.create_dt,
+            ).order_by('-create_dt')
+
+            if entries:
+                return entries[0].membership.payment_method
+
+        # If the application only has one membership type choice ,use that ------
+        payment_methods = self.app.payment_methods.all()
+
+        if payment_methods:
+            return payment_methods[0]
+
+        # else return none; boom.
 
     def applicant(self):
         """Get User object"""
