@@ -549,3 +549,10 @@ form.connect-with li {
 #import-wrap.finished .link {
 	margin-top: 0;
 }
+
+/*Delete CSS*/
+.delete-prompt {
+    padding: 5px;
+    border: 2px solid #C00;
+    margin-top: 10px;
+}
