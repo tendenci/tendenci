@@ -1,4 +1,3 @@
-
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
@@ -62,7 +61,7 @@ class Form(TendenciBaseModel):
         max_length=200,
         blank=True, null=True)
     send_email = models.BooleanField(_("Send email"), default=False, help_text=
-        _("If checked, the person entering the form will be sent an email"))
+        _("If checked, the person submitting the form will be sent an email"))
     email_from = models.EmailField(_("From address"), blank=True, 
         help_text=_("The address the email will be sent from"))
     email_copies = models.CharField(_("Send copies to"), blank=True, 

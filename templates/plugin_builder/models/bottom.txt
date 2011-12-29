@@ -8,4 +8,4 @@
     
     @models.permalink
     def get_absolute_url(self):
-        return ("S_S_LOW.detail", [self.pk])
+        return ("S_P_LOW.detail", [self.pk])

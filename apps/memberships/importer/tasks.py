@@ -10,7 +10,7 @@ from profiles.models import Profile
 
 from corporate_memberships.models import CorporateMembership
 from memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
-from memberships.importer.utils import parse_mems_from_csv
+from memberships.importer.utils import parse_mems_from_csv, clean_username
 
 class ImportMembershipsTask(Task):
 
@@ -154,11 +154,11 @@ class ImportMembershipsTask(Task):
                 # create entry fields
                 for key, value in fields.items():
 
-                    app_fields = AppField.objects.filter(app=app, label=key)
-                    if app_fields and m.get(value):
+                    app_fields = AppField.objects.filter(app=app, field_name=key)
+                    if app_fields and m.get(key):
 
                         try:
-                            value = unicode(m.get(unicode(value)))
+                            value = unicode(m.get(unicode(key)))
                         except (UnicodeDecodeError) as e:
                             value = ''
 
