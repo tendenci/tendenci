@@ -375,7 +375,7 @@
                             {% endif %}
                             {{ form.pricing }}
 						</div>
-					</div>	
+					</div>
 				{% endfor %}
                 <div class="delete">
                     <div class="delete-button-wrap">
@@ -393,6 +393,8 @@
                     <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}">
                     {{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
                     <br>
+                    {% empty %}
+                    No pricings are publicly available.<br>
                     {% endfor %}
                 </div>
                 <input id="add-registrants-button" type="button" value="Add Registrant Set">
