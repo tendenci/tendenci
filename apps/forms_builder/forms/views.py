@@ -13,7 +13,9 @@ from django.template.defaultfilters import yesno
 from base.http import Http403
 from forms_builder.forms.forms import FormForForm, FormForm, FormForField
 from forms_builder.forms.models import Form, Field, FormEntry
-from forms_builder.forms.utils import generate_admin_email_body, generate_submitter_email_body, generate_email_subject
+from forms_builder.forms.utils import (generate_admin_email_body, 
+    generate_submitter_email_body, generate_email_subject)
+from forms_builder.forms.formsets import BaseFieldFormSet
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
@@ -28,9 +30,9 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
         form = form_class(request.POST, user=request.user)
         if form.is_valid():           
             form_instance = form.save(commit=False)
-           
+            
             form_instance = update_perms_and_save(request, form, form_instance)
-
+            
             log_defaults = {
                 'event_id' : 587100,
                 'event_data': '%s (%d) added by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
@@ -89,7 +91,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
     if not has_perm(request.user,'forms.add_form',form_instance):
         raise Http403
 
-    form_class=inlineformset_factory(Form, Field, form=FormForField, extra=3)
+    form_class=inlineformset_factory(Form, Field, form=FormForField, formset=BaseFieldFormSet, extra=3)
     form_class._orderings = 'position'
     
     if request.method == "POST":
