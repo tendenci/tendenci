@@ -10,8 +10,8 @@ class Migration(DataMigration):
         ''' Insert default nav information '''
         
         # First, remove the foreign keys on creator and owner
-        db.delete_foreign_key('navs_nav', 'creator_id')
-        db.delete_foreign_key('navs_nav', 'owner_id')
+#        db.delete_foreign_key('navs_nav', 'creator_id')
+#        db.delete_foreign_key('navs_nav', 'owner_id')
         
         if not orm.Nav.objects.exists():
             nav = orm.Nav.objects.create(
@@ -48,11 +48,11 @@ class Migration(DataMigration):
                     nav=nav,
                 )
             
-            # Add our constraints back
-            sql_creator = db.foreign_key_sql('navs_nav', 'creator_id', 'auth_user', 'id')
-            sql_owner = db.foreign_key_sql('navs_nav', 'owner_id', 'auth_user', 'id')
-            db.execute(sql_creator)
-            db.execute(sql_owner)
+#            # Add our constraints back
+#            sql_creator = db.foreign_key_sql('navs_nav', 'creator_id', 'auth_user', 'id')
+#            sql_owner = db.foreign_key_sql('navs_nav', 'owner_id', 'auth_user', 'id')
+#            db.execute(sql_creator)
+#            db.execute(sql_owner)
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
