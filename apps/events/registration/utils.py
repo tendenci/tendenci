@@ -29,11 +29,28 @@ def reg_status(event, user):
             return 'FULL'
     
     # check if pricings are still open
-    pricings = get_available_pricings(event, user)
+    if get_setting('module', 'events', 'anonymousmemberpricing'):
+        pricings = get_active_pricings(event)
+    else:
+        pricings = get_available_pricings(event, user)
+    
     if not pricings:
         return 'CLOSED'
         
     return 'OPEN'
+    
+def get_active_pricings(event):
+    """
+    Returns all active pricings of a event.
+    """
+    pricings = RegConfPricing.objects.filter(
+        reg_conf=event.registration_configuration,
+        start_dt__lte=datetime.now(),
+        end_dt__gt=datetime.now(),
+        status=True,
+    )
+    
+    return pricings
 
 def get_available_pricings(event, user):
     """

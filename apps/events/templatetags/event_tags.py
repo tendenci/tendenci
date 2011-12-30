@@ -82,12 +82,9 @@ def registration_pricing_and_button(context, event, user):
     # setting for allowing anonymous members to choose prices
     anonpricing = get_setting('module', 'events', 'anonymousmemberpricing')
     
-    if not anonpricing:
-        # dictionary with helpers, not a queryset
-        # see get_pricing
-        q_pricing = get_pricing(user, event, pricing=pricing)
-    else:
-        q_pricing = []
+    # dictionary with helpers, not a queryset
+    # see get_pricing
+    q_pricing = get_pricing(user, event, pricing=pricing)
     
     # spots taken
     if limit > 0:

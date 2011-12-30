@@ -126,7 +126,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         reg_form = RegistrationForm(event, request.user, request.POST,
                             reg_count = len(reg_formset.forms))
         # validate the form and formset
-        if reg_form.is_valid() and reg_formset.is_valid():
+        if False not in (reg_form.is_valid(), reg_formset.is_valid()):
             
             # process the registration
             # this will create the registrants and apply the discount
