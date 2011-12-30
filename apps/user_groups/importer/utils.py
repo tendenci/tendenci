@@ -1,6 +1,20 @@
 import xlrd
+from django.db.models import Q
 from django.core.validators import email_re
+from forms_builder.forms.models import FieldEntry
 from subscribers.models import SubscriberData, GroupSubscription
+
+def get_subscriber(email, group):
+    """
+    Return a GroupSubscription with the given email and group.
+    """
+    sub = GroupSubscription.objects.filter(
+        Q(group=group), 
+        Q(Q(data__value=email) or Q(subscriber__fields__value=email))
+    )
+    if sub:
+        return sub[0]
+    return None
 
 def xls_to_dict(file_path):
     """
@@ -43,15 +57,28 @@ def parse_subs_from_csv(group, file_path):
         # skip subscription entry if no email
         if sub_email:
             # check for duplicates
-            dup = SubscriberData.objects.filter(value=sub_email, subscription__group=group)
+            dup = get_subscriber(sub_email, group)
             if not dup: # create the subscriber
                 sub.save()
                 for datum in sub_data:
                     datum.subscription = sub
                     datum.save()
             else: # update the subscription's fields
-                sub = dup[0].subscription
+                sub = dup
                 for datum in sub_data:
-                    sub.data.filter(field_label=datum.field_label).update(value=datum.value)
+                    # check form entry fields
+                    if sub.subscriber:
+                        field_entry = sub.subscriber.fields.filter(field__label=datum.field_label)
+                    else:
+                        field_entry = None
+                    if field_entry: #existing Field Entry
+                        field_entry.update(value=datum.value)
+                    else:
+                        sub_datum = sub.data.filter(field_label=datum.field_label)
+                        if sub_datum: #existing SubscriberData
+                            sub_datum.update(value=datum.value)
+                        else:
+                            datum.subscription = sub
+                            datum.save()
             subs.append(sub)
     return subs
