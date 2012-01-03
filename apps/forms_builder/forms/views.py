@@ -25,7 +25,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
     if not has_perm(request.user,'forms.add_form'):
         raise Http403
         
-    PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=3, can_delete=False)
+    PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=2, can_delete=False)
     
     formset = PricingFormSet()
     if request.method == "POST":
@@ -70,7 +70,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
     if not has_perm(request.user,'forms.change_form',form_instance):
         raise Http403
     
-    PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=1)
+    PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=2)
     
     if request.method == "POST":
         form = form_class(request.POST, instance=form_instance, user=request.user)
