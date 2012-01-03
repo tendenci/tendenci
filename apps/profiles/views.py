@@ -16,10 +16,18 @@ from django.contrib import messages
 # for password change
 from django.views.decorators.csrf import csrf_protect
 
+from base.decorators import ssl_required
+
+from perms.object_perms import ObjectPermission
+from perms.utils import (has_perm, is_admin, update_perms_and_save,
+    get_notice_recipients)
+from base.http import Http403
+from event_logs.models import EventLog
+from site_settings.utils import get_setting
+
 # for avatar
 from avatar.models import Avatar, avatar_file_path
 from avatar.forms import PrimaryAvatarForm
-from perms.utils import has_perm, is_admin
 
 
 try:
@@ -38,8 +46,6 @@ from profiles.utils import user_add_remove_admin_auth_group
 from base.http import Http403
 from user_groups.models import GroupMembership
 from user_groups.forms import GroupMembershipEditForm
-
-from perms.utils import is_admin
 
 from event_logs.models import EventLog
 from perms.object_perms import ObjectPermission
@@ -574,7 +580,7 @@ def change_avatar(request, id, extra_context={}, next_override=None):
         )
     )
     
-    
+@ssl_required    
 @csrf_protect
 @login_required
 def password_change(request, id, template_name='registration/password_change_form.html',
