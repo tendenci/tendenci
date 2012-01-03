@@ -13,11 +13,12 @@ from django.template.defaultfilters import yesno
 from base.http import Http403
 from forms_builder.forms.forms import FormForForm, FormForm, FormForField, PricingForm
 from forms_builder.forms.models import Form, Field, FormEntry, Pricing
-from forms_builder.forms.utils import generate_admin_email_body, generate_submitter_email_body, generate_email_subject
+from forms_builder.forms.utils import (generate_admin_email_body, 
+    generate_submitter_email_body, generate_email_subject)
+from forms_builder.forms.formsets import BaseFieldFormSet
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
-
 
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
@@ -26,9 +27,9 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
         
     PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=3, can_delete=False)
     
+    formset = PricingFormSet()
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)  
-        formset = PricingFormSet()      
+        form = form_class(request.POST, user=request.user)
         if form.is_valid():
             form_instance = form.save(commit=False)
             formset = PricingFormSet(request.POST, instance=form_instance)
@@ -56,7 +57,6 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
                 return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(user=request.user)
-        formset = PricingFormSet()
         
     return render_to_response(template_name, {
         'form':form,
@@ -118,7 +118,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
     if not has_perm(request.user,'forms.add_form',form_instance):
         raise Http403
 
-    form_class=inlineformset_factory(Form, Field, form=FormForField, extra=3)
+    form_class=inlineformset_factory(Form, Field, form=FormForField, formset=BaseFieldFormSet, extra=3)
     form_class._orderings = 'position'
     
     if request.method == "POST":

@@ -1,10 +1,17 @@
-
+{% load i18n %}
 <div class="wrap-search-item">
     <div class="search-item">
-        <div><b>
-            <a href="{% url profile membership.user %}">{{ membership.user.first_name }} {{ membership.user.last_name }}</a>
-        </b></div>
-        <div>{{ membership.membership_type.name}}</div>
+        <div>
+        <h2><a href="{% url profile membership.user %}">{{ membership.user.first_name }} {{ membership.user.last_name }}</a></h2>
+        </div>
+        {% if membership.entries.all %}
+        <div>
+            <h2>{% trans "Application Entries" %}:</h2>
+            {% for entry in membership.entries.all %}
+                <a href="{% url membership.application_entries entry.pk %}">{{ entry }}</a><br>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
     {% include 'memberships/meta.html' %}
 </div>
