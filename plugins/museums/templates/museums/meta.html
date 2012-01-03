@@ -1,0 +1,67 @@
+{% load base_filters %}
+{% load museum_tags %}
+{% load perm_tags %}
+{% load tagging_tags %}
+{% has_perm user museums.change_museum museum as can_edit %}
+{% has_perm user museums.delete_museum museum as can_delete %}
+{% tags_for_object museum as tags %}
+<div class="meta {% if not user.is_authenticated and not tags %}anon{% endif %}">
+<div class="meta-left">
+{% if tags %}
+<div class="tags"><strong>Tags: </strong>
+{% for tag in tags %}
+<a href="{% url museum.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+{% endfor %}
+</div>
+{% endif %}
+
+{% if user.is_authenticated %}
+<div class="submitted">Created {{ museum.create_dt|date:"long" }}
+by <a href="{{ museum.creator.get_absolute_url }}">
+{% if museum.creator.first_name %}{{ museum.creator.first_name }} {{ museum.creator.last_name }}
+{% else %}
+{{ museum.creator }}
+{% endif %}</a>
+</div>
+
+<div class="submitted">Last updated {{ museum.update_dt|date:"long" }}
+by <a href="{{ museum.owner.get_absolute_url }}">
+{% if museum.owner.first_name %}{{ museum.owner.first_name }} {{ museum.owner.last_name }}
+{% else %}
+{{ museum.owner }}
+{% endif %}</a>
+</div>
+{% endif %}
+
+</div>
+<div class="meta-right">
+<a class="share-link"></a>
+</div>
+</div>
+{% if can_edit %}
+<div class="editor-bar">
+<div class="perm-status">
+<ul>
+<li>{% obj_perms museum %}</li>
+<li>{% obj_status museum %}</li>
+</ul>
+</div>
+<div class="edit-links">
+<ul>
+<li><a class="eventlog-link" href="{% url event_log.search %}?q=app-id:%20museums-{{ museum.pk }}">Eventlogs</a></li>
+<li><a class="edit-link" href="{% url admin:museums_museum_change museum.pk %}?next={{ request.path }}">Edit</a></li>
+<li><a class="options-link" href="#">Options <small>&#9650;</small></a>
+<div class="options-list">
+<ul>
+{% if can_delete %}
+<li>
+<a class="delete" href="{% url admin:museums_museum_delete museum.pk %}">Delete</a>
+</li> 
+{% endif %} 
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div> 
+{% endif %}

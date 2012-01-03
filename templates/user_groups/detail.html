@@ -107,7 +107,11 @@
         <div class="group-member-list">
         {% for gs in group.groupsubscription_set.all %}
             <div class="group-member {% cycle 'gray' '' %}">
-                <a href="{{ gs.subscriber.get_absolute_url }}">{{ gs.name }} ({{ gs.email }})</a>
+                {% if gs.subscriber %}
+                    <a href="{{ gs.subscriber.get_absolute_url }}">{{ gs.name }} ({{ gs.email }})</a>
+                {% else %}
+                    <a href="{% url subscriber_detail gs.pk %}">{{ gs.name }} ({{ gs.email }})</a>
+                {% endif %}
                 {% if can_delete %}
                     &nbsp;<span class="delete-subscriber">- <a href="{% url subscriber_delete  gs.id %}">{% trans "Remove" %}</a></span>
                 {% endif %}

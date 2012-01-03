@@ -74,8 +74,7 @@ def topic(request, id, template_name="help_files/topic.html"):
 def details(request, slug, template_name="help_files/details.html"):
     "Help file details"
     help_file = get_object_or_404(HelpFile, slug=slug)
-    help_file.view_totals += 1
-    help_file.save()
+    HelpFile.objects.filter(pk=help_file.pk).update(view_totals=help_file.view_totals+1)
 
     if has_perm(request.user, 'help_files.view_helpfile', help_file):
         log_defaults = {

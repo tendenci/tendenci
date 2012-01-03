@@ -29,12 +29,12 @@
             </div><!-- /.content-middle-->
             {% block sidebar %}
             <section id="sidebar">
-                {% theme_include "sidebar.html" %}
+                <div class="space">{% space_include MODULE_THEME_SIDEBAR %}</div>
             </section><!-- /#sidebar-->
             {% endblock %}
         </section><!-- /#body-content-->
     </div>
-    <div class="container compliment topborder">
+    <div class="container complimentary topborder">
         <section id="footer" class="center">
             <footer>{% theme_include "footer.html" %}</footer>  
         </section><!-- /#footer -->

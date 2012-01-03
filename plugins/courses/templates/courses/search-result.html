@@ -5,6 +5,7 @@
     <div class="search-item course-search-item">
         <h2><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
         <div class="content">
+            <p><b>DEADLINE:</b> {{ course.deadline }}</p>
             {{ course.content|striptags|truncatewords:40|safe  }}
         </div>
         <div class="user-options">
@@ -14,11 +15,26 @@
                     <p><a href="{% url courses.user_certificate course.pk request.user.pk %}">
                     {% trans "View Certificate" %}</a></p>
                 {% else %}
-                    {% if can_retry %}
-                        <a href="{% url courses.take course.pk %}">{% trans "Retry this Course" %}</a>
+                    {% if course.is_closed and not admin %}
+                    <p>{% trans "The deadline has passed and this course is now closed." %}</p>
                     {% else %}
-                        {% if retry_time_left %}
-                            <p>{% trans "Try again on" %} {{ retry_time_left }}</p>
+                        {% if course.deadline_has_passed %}
+                            <p>{% trans "The deadline has passed but you may still take the course." %}</p>
+                        {% endif %}
+                        {% if not attempted %}
+                            {% if course.questions.all %}
+                                <p><a href="{% url courses.take course.pk %}">{% trans "Take this Course" %}</a></p>
+                            {% else %}
+                                <p>{% trans "This course does not have any questions yet." %}</p>
+                            {% endif %}
+                        {% else %}
+                            {% if can_retry %}
+                                <p><a href="{% url courses.take course.pk %}">{% trans "Retry this Course" %}</a></p>
+                            {% else %}
+                                {% if retry_time_left %}
+                                    <p>{% trans "Try again on" %} {{ retry_time_left }}</p>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 {% endif %}

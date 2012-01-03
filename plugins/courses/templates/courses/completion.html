@@ -21,18 +21,24 @@
         <div class="status">
             {% if has_passed %}
                 <p>
-                    {% trans "Congratulations! You've passed this course!" %}
-                    <a href="{% url courses.certificate course.pk %}">{% trans "View your Certificate" %}</a>
+                    {% if for_admin %}
+                        {{ attempts.0.user.get_full_name }} {% trans "has passed this course" %}.
+                    {% else %}
+                        {% trans "Congratulations! You've passed this course!" %}
+                    {% endif %}
+                    <a href="{% url courses.certificate course.pk %}">{% trans "View Certificate" %}</a>
                 </p>
             {% else %}
-                <p>
-                    {% trans "Sorry, you have not passed this course yet." %}
-                </p>
-                {% if can_retry %}
-                    <a href="{% url courses.take course.pk %}">{% trans "Retry this Course" %}</a>
+                {% if for_admin %}
+                    <p>{{ attempts.0.user.get_full_name }} {% trans "has not passed this course" %}.</p>
                 {% else %}
-                    {% if retry_time_left %}
-                        <p>{% trans "Try again on" %} {{ retry_time_left }}</p>
+                    <p>{% trans "Sorry, you have not passed this course yet." %}</p>
+                    {% if can_retry %}
+                        <a href="{% url courses.take course.pk %}">{% trans "Retry this Course" %}</a>
+                    {% else %}
+                        {% if retry_time_left %}
+                            <p>{% trans "Try again on" %} {{ retry_time_left }}</p>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% endif %}
