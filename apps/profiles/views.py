@@ -18,13 +18,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from base.decorators import ssl_required
 
-from perms.object_perms import ObjectPermission
-from perms.utils import (has_perm, is_admin, update_perms_and_save,
-    get_notice_recipients)
-from base.http import Http403
-from event_logs.models import EventLog
-from site_settings.utils import get_setting
-
+from perms.utils import (has_perm, is_admin, get_notice_recipients)
 # for avatar
 from avatar.models import Avatar, avatar_file_path
 from avatar.forms import PrimaryAvatarForm
@@ -50,7 +44,6 @@ from user_groups.forms import GroupMembershipEditForm
 from event_logs.models import EventLog
 from perms.object_perms import ObjectPermission
 from site_settings.utils import get_setting
-from perms.utils import get_notice_recipients
 
 # view profile  
 @login_required 
