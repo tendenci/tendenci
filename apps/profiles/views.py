@@ -15,6 +15,8 @@ from django.contrib import messages
 # for password change
 from django.views.decorators.csrf import csrf_protect
 
+from base.decorators import ssl_required
+
 from perms.object_perms import ObjectPermission
 from perms.utils import (has_perm, is_admin, update_perms_and_save,
     get_notice_recipients)
@@ -573,7 +575,7 @@ def change_avatar(request, id, extra_context={}, next_override=None):
         )
     )
     
-    
+@ssl_required    
 @csrf_protect
 @login_required
 def password_change(request, id, template_name='registration/password_change_form.html',
