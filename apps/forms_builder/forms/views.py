@@ -149,6 +149,8 @@ def copy(request, id):
     
     # create a new slug
     slug = form_instance.slug
+    if len(slug.rsplit('-', 1)) > 1 and slug.rsplit('-', 1)[1].isdigit():
+        slug = slug.rsplit('-', 1)[0]
     i = 1
     while True:
         if i > 0:
