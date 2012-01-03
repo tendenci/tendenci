@@ -21,7 +21,7 @@
                     {% get_rss rss_feed as rss %}
                         <ul>
                         {% for entry in rss.entries|slice:":3" %}
-                            <li>{{ entry.title|twitterize }}</li>
+                            <li>{{ entry.title|twitterize }} | <a href="{{ entry.link }}">{{ entry.updated|twitterdate|timesince }} ago</a></li>
                         {% endfor %}
                         </ul>
                     {% endwith %}

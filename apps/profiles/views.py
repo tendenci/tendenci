@@ -12,15 +12,28 @@ from django.utils.translation import ugettext as _
 from django.db.models import get_app
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib import messages
-
 # for password change
 from django.views.decorators.csrf import csrf_protect
+
+from perms.object_perms import ObjectPermission
+from perms.utils import (has_perm, is_admin, update_perms_and_save,
+    get_notice_recipients)
+from base.http import Http403
+from event_logs.models import EventLog
+from site_settings.utils import get_setting
 
 # for avatar
 from avatar.models import Avatar, avatar_file_path
 from avatar.forms import PrimaryAvatarForm
-from perms.utils import has_perm, is_admin
 
+# for group memberships
+from user_groups.models import GroupMembership
+from user_groups.forms import GroupMembershipEditForm
+
+from profiles.models import Profile
+from profiles.forms import (ProfileForm, UserPermissionForm, 
+    UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm)
+from profiles.utils import user_add_remove_admin_auth_group
 
 try:
     notification = get_app('notification')
@@ -31,20 +44,6 @@ friends = False
 #if 'friends' in settings.INSTALLED_APPS:
 #    friends = True
 #    from friends.models import Friendship
-
-from profiles.models import Profile
-from profiles.forms import ProfileForm, UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm
-from profiles.utils import user_add_remove_admin_auth_group
-from base.http import Http403
-from user_groups.models import GroupMembership
-from user_groups.forms import GroupMembershipEditForm
-
-from perms.utils import is_admin
-
-from event_logs.models import EventLog
-from perms.object_perms import ObjectPermission
-from site_settings.utils import get_setting
-from perms.utils import get_notice_recipients
 
 # view profile  
 @login_required 
@@ -725,4 +724,31 @@ def user_role_edit(request, username, membership_id, form_class=GroupMembershipE
     return render_to_response(template_name, {
                             'form': form,
                             'membership': membership,
+                            }, context_instance=RequestContext(request))
+
+@login_required
+def user_membership_add(request, username, form_class=UserMembershipForm, template_name="profiles/add_membership.html"):
+    user = get_object_or_404(User, username=username)
+    
+    try:
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create_profile(user=user)
+        
+    if not profile.allow_edit_by(request.user):
+        raise Http403
+        
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            membership = form.save(commit=False)
+            membership = update_perms_and_save(request, form, membership)
+            messages.add_message(request, messages.INFO, 'Successfully updated memberships for %s' % user.get_full_name())
+            return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-memberships'))
+    else:
+        form = form_class(initial={'user':user})
+
+    return render_to_response(template_name, {
+                            'form': form,
+                            'user_this': user,
                             }, context_instance=RequestContext(request))
