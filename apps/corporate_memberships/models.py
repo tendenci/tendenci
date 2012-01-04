@@ -343,18 +343,17 @@ class CorporateMembership(TendenciBaseModel):
                     'request': request,
                 }
                 notification.send_emails(recipients,'corp_memb_paid', extra_context)
-    
+
     def get_payment_method(self):
         from payments.models import PaymentMethod
 
         # return payment method if defined
-        if self.payment_method:
-            return self.payment_method
+        if self.payment_method and self.payment_method.isdigit():
+            return PaymentMethod.objects.get(pk=int(self.payment_method))
 
         # first method is credit card (online)
         # will raise exception if payment method does not exist
-        self.payment_method = PaymentMethod.objects.get(machine_name='credit-card')
-        return self.payment_method
+        return PaymentMethod.objects.get(machine_name='credit-card')
 
  
     def approve_renewal(self, request, **kwargs):
@@ -373,7 +372,7 @@ class CorporateMembership(TendenciBaseModel):
                 # 2) update the corporate_membership record with the renewal info from renew_entry
                 self.renewal = True
                 self.corporate_membership_type = renew_entry.corporate_membership_type
-                self.payment_method = renew_entry.payment_method
+                self.payment_method = renew_entry.get_payment_method()
                 self.invoice = renew_entry.invoice
                 self.renew_dt = renew_entry.create_dt
                 self.approved = True
