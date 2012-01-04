@@ -344,17 +344,6 @@ class CorporateMembership(TendenciBaseModel):
                 }
                 notification.send_emails(recipients,'corp_memb_paid', extra_context)
 
-    def get_payment_method(self):
-        from payments.models import PaymentMethod
-
-        # return payment method if defined
-        if self.payment_method and self.payment_method.isdigit():
-            return PaymentMethod.objects.get(pk=int(self.payment_method))
-
-        # first method is credit card (online)
-        # will raise exception if payment method does not exist
-        return PaymentMethod.objects.get(machine_name='credit-card')
-
  
     def approve_renewal(self, request, **kwargs):
         """
@@ -673,7 +662,7 @@ class CorpMembRenewEntry(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True)
     status_detail = models.CharField(max_length=50)   # pending, approved and disapproved
-    
+
     @property   
     def module_name(self):
         return self._meta.module_name.lower()
@@ -688,8 +677,19 @@ class CorpMembRenewEntry(models.Model):
         return self.corporate_membership.make_acct_entries(user, inv, amount, **kwargs)
     
     def auto_update_paid_object(self, request, payment):
-        return self.corporate_membership.auto_update_paid_object(request, payment)       
-    
+        return self.corporate_membership.auto_update_paid_object(request, payment)
+
+    def get_payment_method(self):
+        from payments.models import PaymentMethod
+
+        # return payment method if defined
+        if self.payment_method and self.payment_method.isdigit():
+            return PaymentMethod.objects.get(pk=int(self.payment_method))
+
+        # first method is credit card (online)
+        # will raise exception if payment method does not exist
+        return PaymentMethod.objects.get(machine_name='credit-card') 
+
     
 class IndivMembRenewEntry(models.Model):
     corp_memb_renew_entry = models.ForeignKey("CorpMembRenewEntry")
