@@ -39,14 +39,13 @@
                     <em>{{ entry.entry_path }}</em>
                 </p>
             {% endif %}
-        {% else %}
-            {% for field in grp_sub.data.all %}
-                <p>
-                    <strong>{{ field.field_label }}</strong><br />
-                    <em>{{ field.value }}</em>
-                </p>
-            {% endfor %}
         {% endif %}
+        {% for field in grp_sub.data.all %}
+            <p>
+                <strong>{{ field.field_label }}</strong><br />
+                <em>{{ field.value }}</em>
+            </p>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

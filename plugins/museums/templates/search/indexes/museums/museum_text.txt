@@ -1,0 +1,16 @@
+{{ object.pk }}
+{{ object.name }}
+{{ object.phone }}
+{{ object.address }}
+{{ object.city }}
+{{ object.state }}
+{{ object.zip }}
+{{ object.website }}
+{{ object.about }}
+{{ object.hours }}
+{{ object.free_times }}
+{{ object.parking_information }}
+{{ object.dining_information }}
+{{ object.shopping_information }}
+{{ object.events }}
+{{ object.special_offers }}

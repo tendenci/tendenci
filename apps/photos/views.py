@@ -1,24 +1,29 @@
 import os
 import re
+import zipfile
+
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 from django.template import RequestContext
 from django.db.models import Q
-from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.query import QuerySet
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 from django.contrib import messages
-from django.forms.models import modelformset_factory
+from django.core import serializers
 from django.core.urlresolvers import reverse
-from django.db.models.query import QuerySet
+from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import modelformset_factory
 from django.middleware.csrf import get_token as csrf_get_token
+
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save, is_admin
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from files.utils import get_image
+
 from photos.cache import PHOTO_PRE_KEY
 from photos.search_indexes import PhotoSetIndex
 from photos.models import Image, Pool, PhotoSet, AlbumCover, License
@@ -658,4 +663,31 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     return render_to_response(template_name, {
         "photos": photos,
         "photo_set": photo_set,
+    }, context_instance=RequestContext(request))
+
+def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
+    """ Generate zip file for the entire photo set
+    for admins only.
+    """
+    
+    photo_set = get_object_or_404(PhotoSet, id=id)
+    
+    #admin only
+    if not is_admin(request.user):
+        raise Http403
+    
+    #create zip files directory if it doesn't already exist
+    try:
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'zip_files'))
+    except OSError:
+        pass
+        
+    zfile = zipfile.ZipFile(os.path.join(settings.MEDIA_ROOT, 'zip_files', "set_%s.zip" % photo_set.id), 'w')
+    for image in photo_set.image_set.all():
+        zfile.write(image.image.path, os.path.basename(image.image.name))
+    zfile.close
+    
+    return render_to_response(template_name, {
+        "photo_set": photo_set,
+        "zip_path":os.path.join(settings.MEDIA_URL, 'zip_files', "set_%s.zip" % photo_set.id),
     }, context_instance=RequestContext(request))
