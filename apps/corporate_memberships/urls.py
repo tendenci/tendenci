@@ -15,6 +15,7 @@ urlpatterns = patterns('corporate_memberships.views',
     url(r"^renew_conf/(?P<id>\d+)/$", "renew_conf", name="corp_memb.renew_conf"),
     url(r"^approve/(?P<id>\d+)/$", "approve", name="corp_memb.approve"),
     url(r"^(?P<id>\d+)/$", "view", name="corp_memb.view"),
+    url(r'^reps_lookup/$', 'reps_lookup', name="corp_memb.reps_lookup"),
     
     # import
     url(r"^import/$", "corp_import", name="corp_import"),

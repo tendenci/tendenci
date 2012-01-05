@@ -1,28 +1,35 @@
 import os
 import re
+
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
+from django.utils import simplejson as json
 from django.template import RequestContext
 from django.db.models import Q
-from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.query import QuerySet
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 from django.contrib import messages
-from django.forms.models import modelformset_factory
+from django.core import serializers
 from django.core.urlresolvers import reverse
-from django.db.models.query import QuerySet
+from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import modelformset_factory
 from django.middleware.csrf import get_token as csrf_get_token
+
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save, is_admin
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from files.utils import get_image
+from djcelery.models import TaskMeta
+
 from photos.cache import PHOTO_PRE_KEY
 from photos.search_indexes import PhotoSetIndex
 from photos.models import Image, Pool, PhotoSet, AlbumCover, License
 from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
+from photos.tasks import ZipPhotoSetTask
 
 def search(request, template_name="photos/search.html"):
     """ Photos search """
@@ -659,3 +666,40 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
         "photos": photos,
         "photo_set": photo_set,
     }, context_instance=RequestContext(request))
+
+def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
+    """ Generate zip file for the entire photo set
+    for admins only.
+    """
+    
+    photo_set = get_object_or_404(PhotoSet, id=id)
+    
+    #admin only
+    if not is_admin(request.user):
+        raise Http403
+    
+    file_path = ""
+    task_id = ""
+    if not settings.CELERY_IS_ACTIVE:
+        task = ZipPhotoSetTask()
+        file_path = task.run(photo_set)        
+    else:
+        task = ZipPhotoSetTask.delay(photo_set)
+        task_id = task.task_id
+    
+    return render_to_response(template_name, {
+        "photo_set": photo_set,
+        "task_id":task_id,
+        "file_path":file_path,
+    }, context_instance=RequestContext(request))
+
+def photoset_zip_status(request, id, task_id):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        task = None
+    
+    if task and task.status == "SUCCESS":
+        file_path = task.result
+        return HttpResponse(json.dumps(file_path), mimetype='application/json')
+    return HttpResponse(json.dumps('DNE'), mimetype='application/json')
