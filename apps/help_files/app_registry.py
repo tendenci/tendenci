@@ -9,4 +9,9 @@ class HelpFileRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create help files, tutorials and more!'
 
+    url = {
+        'search': lazy_reverse('help_files.search'),
+        'add': lazy_reverse('admin:help_files_helpfile_add'),
+    }
+
 site.register(HelpFile, HelpFileRegistry)
