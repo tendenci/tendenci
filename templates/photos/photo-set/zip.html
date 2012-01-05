@@ -1,0 +1,39 @@
+{% extends "photos/base.html" %}
+
+{% load i18n %}
+{% load humanize %}
+{% load pagination_tags %}
+{% load tagging_tags %}
+{% load photo_tags %}
+{% load perm_tags %}
+
+{% block title %}{{ block.super }}{{ photo_set.name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    <div class="photos-nav">
+		{% photo_set_nav request.user photo_set %}
+	</div>
+
+    <h1>{{ photo_set.name }}</h1>
+    
+    <p>{% trans "Zip file for" %} {{ photo_set.name }}</p>
+    <a href="{{ zip_path }}">Download</a>
+    
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+		$(document).ready(function(){
+		});
+    </script>
+{% endblock %}

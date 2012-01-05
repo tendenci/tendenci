@@ -12,5 +12,5 @@ urlpatterns = patterns('profiles.views',
     url(r'^(?P<username>[+-.\w\d@]+)/$','index', name='profile'),
     url(r'^(?P<username>[+-.\w\d@]+)/groups/edit/$','user_groups_edit', name='profile.edit_groups'),
     url(r'^(?P<username>[+-.\w\d@]+)/groups/(?P<membership_id>\d+)/edit/$','user_role_edit', name='profile.edit_role'),
-
+    url(r'^(?P<username>[+-.\w\d@]+)/memberships/add/$','user_membership_add', name='profile.add_membership'),
 )

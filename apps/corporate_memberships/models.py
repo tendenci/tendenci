@@ -343,19 +343,19 @@ class CorporateMembership(TendenciBaseModel):
                     'request': request,
                 }
                 notification.send_emails(recipients,'corp_memb_paid', extra_context)
-    
+
+ 
     def get_payment_method(self):
         from payments.models import PaymentMethod
-
+ 
         # return payment method if defined
         if self.payment_method:
             return self.payment_method
-
+ 
         # first method is credit card (online)
         # will raise exception if payment method does not exist
         self.payment_method = PaymentMethod.objects.get(machine_name='credit-card')
         return self.payment_method
-
  
     def approve_renewal(self, request, **kwargs):
         """
@@ -373,7 +373,7 @@ class CorporateMembership(TendenciBaseModel):
                 # 2) update the corporate_membership record with the renewal info from renew_entry
                 self.renewal = True
                 self.corporate_membership_type = renew_entry.corporate_membership_type
-                self.payment_method = renew_entry.payment_method
+                self.payment_method = renew_entry.get_payment_method()
                 self.invoice = renew_entry.invoice
                 self.renew_dt = renew_entry.create_dt
                 self.approved = True
@@ -674,7 +674,7 @@ class CorpMembRenewEntry(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     creator = models.ForeignKey(User, null=True)
     status_detail = models.CharField(max_length=50)   # pending, approved and disapproved
-    
+
     @property   
     def module_name(self):
         return self._meta.module_name.lower()
@@ -689,8 +689,19 @@ class CorpMembRenewEntry(models.Model):
         return self.corporate_membership.make_acct_entries(user, inv, amount, **kwargs)
     
     def auto_update_paid_object(self, request, payment):
-        return self.corporate_membership.auto_update_paid_object(request, payment)       
-    
+        return self.corporate_membership.auto_update_paid_object(request, payment)
+
+    def get_payment_method(self):
+        from payments.models import PaymentMethod
+
+        # return payment method if defined
+        if self.payment_method and self.payment_method.isdigit():
+            return PaymentMethod.objects.get(pk=int(self.payment_method))
+
+        # first method is credit card (online)
+        # will raise exception if payment method does not exist
+        return PaymentMethod.objects.get(machine_name='credit-card') 
+
     
 class IndivMembRenewEntry(models.Model):
     corp_memb_renew_entry = models.ForeignKey("CorpMembRenewEntry")

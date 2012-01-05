@@ -1,0 +1,29 @@
+{% extends "museums/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load museum_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+    </style>
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Museums' %}" href="{% url museums.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate museums 10 %}
+<div class="t">
+<h1>{% trans 'Museum List' %}</h1>
+{% museum_search %}
+<div class="museums-wrap clearfix">
+{% for museum in museums %}
+{% search_result museum %}
+{% empty %}
+<p>{% trans '0 museums found' %}</p>
+{% endfor %}
+</div>
+{% paginate %}
+</div>
+{% endblock body %}

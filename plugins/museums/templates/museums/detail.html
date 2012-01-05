@@ -1,0 +1,80 @@
+{% extends "museums/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+
+{% block body %}
+<div class="museum-wrap">
+<h1>{{ museum.name }}</h1>
+<div class="museum-info">
+    <div class="museum-photo">
+        <img src="{{ museum.building_photo|thumbnail:'300x300' }}">
+    </div>
+    <div class="museum-about">
+        <p>{{ museum.about }}</p>
+    </div>
+    <div class="museum-basic">
+        <h3>Basic Information</h3>
+        <p>Phone: {{ museum.phone }}</p>
+        <p>Address: {{ museum.address }}</p>
+        <p>City: {{ museum.city }}</p>
+        <p>State: {{ museum.state }}</p>
+        <p>Zip: {{ museum.zip }}</p>
+        <p>Website: <a href="{{ museum.website }}">{{ museum.website }}</a></p>
+    </div>
+</div>
+<div class="museum-visitor">
+    <h3>Visitor Information</h3>
+    <p>Hours: {{ museum.hours }}</p>
+    <p>Free Times: {{ museum.free_times }}</p>
+    <div class="museum-parking">
+        <h3>Parking</h3>
+        <p>{{ museum.parking_information }}</p>
+        <p>
+            Free Parking: {% if museum.free_parking %}Yes{% else %}No{% endif %}<br>
+            Street Parking: {% if museum.street_parking %}Yes{% else %}No{% endif %}<br>
+            Paid Parking: {% if museum.paid_parking %}Yes{% else %}No{% endif %}<br>
+        </p>
+    </div>
+    <div class="museum-dining">
+        <h3>Dining</h3>
+        <p>{{ museum.dining_information }}</p>
+        <p>
+            Restaurant: {% if museum.restaurant %}Yes{% else %}No{% endif %}<br>
+            Snacks: {% if museum.snacks %}Yes{% else %}No{% endif %}<br>
+        </p>
+    </div>
+    {% if museum.shopping_information %}
+        <p>Shopping Information: {{ museum.shopping_information }}</p>
+    {% endif %}
+    {% if museum.events %}
+        <p>Events: {{ museum.events }}</p>
+    {% endif %}
+    {% if museum.special_offers %}
+        <p>Special Offers: {{ museum.special_offers }}</p>
+    {% endif %}
+</div>
+<div class="museum-connect">
+    {% if museum.facebook %}
+        <p>Facebook: {{ museum.facebook }}</p>
+    {% endif %}
+    {% if museum.twitter %}
+        <p>Twitter: {{ museum.twitter }}</p>
+    {% endif %}
+    {% if museum.flickr %}
+        <p>Flickr: {{ museum.flickr }}</p>
+    {% endif %}
+    {% if museum.youtube %}
+        <p>YouTube: {{ museum.youtube }}</p>
+    {% endif %}
+</div>
+<div class="museum-photos">
+    <h3>Other Photos</h3>
+    {% for photo in museum.photos.all %}
+        <div class="museum-photo">
+            <img src="{{ photo.file|thumbnail:'300x300' }}">
+        </div>
+    {% endfor %}
+</div>
+{% include "museums/meta.html" %} 
+</div>
+{% endblock body %}

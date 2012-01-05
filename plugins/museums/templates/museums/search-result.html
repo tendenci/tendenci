@@ -1,0 +1,19 @@
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+<div class="wrap-search-item">
+<div class="search-item museums-search-item">
+<h2><a href="{{ museum.get_absolute_url }}">{{ museum.name }}</a></h2>
+<div>
+    <p>
+    <a href="http://maps.google.com.ph/maps?q={{ museum.full_address }}">
+    {{ museum.full_address }}</a>
+    </p>
+    <p>Hours: {{ meseum.hours }}</p>
+    <p>Website: {{ museum.website }}</p>
+    <p>Phone: {{ museum.phone }}</p>
+</div>
+</div>
+    {% include "museums/meta.html" %}
+</div>
