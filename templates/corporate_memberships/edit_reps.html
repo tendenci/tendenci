@@ -9,6 +9,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css">
 <style>
 	.corp-reps h3, .corp-reps .forms{
 		margin: 1em 0;
@@ -87,6 +88,16 @@
 {% endblock %}
 
 {% block extra_body %}
+<script>
+	if (!(window.jQuery)) { 
+		var s = document.createElement('script');
+		s.setAttribute('src', 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'); 
+		s.setAttribute('type', 'text/javascript');
+		document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+
+
  <script type="text/javascript">
 	$(document).ready(function(){
 
@@ -96,6 +107,16 @@
 			if(delete_corp_memb_rep) $(this).parents('.corp-rep').find('form[name="corp-memb-rep-delete"]').submit() // delete: if OK
 			return false;	// cancel
 		});
+		
+		$( "#id_user_display" ).autocomplete({
+			source: "{% url corp_memb.reps_lookup %}",
+			selectFirst:true,
+			minLength:2,
+			select:function(event,ui) {
+				$("#id_user").val(ui.item.id)
+			}
+        });
+        
 	});
    </script>
  {% endblock %}
