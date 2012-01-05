@@ -8,13 +8,17 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
 
-from user_groups.models import Group, GroupMembership
-from event_logs.models import EventLog
-from profiles.models import Profile
-from profiles.utils import get_groups, get_memberships, group_choices
+from base.fields import SplitDateTimeField
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin, is_developer
 from site_settings.utils import get_setting
+from user_groups.models import Group, GroupMembership
+from memberships.models import App, Membership
+from event_logs.models import EventLog
+
+from profiles.models import Profile
+from profiles.utils import (get_groups, get_memberships, 
+    group_choices, app_choices)
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -359,3 +363,56 @@ class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
                 raise forms.ValidationError(mark_safe("The new password does not meet the requirements </li><li>%s" % password_requirements))
 
         return password1
+
+class UserMembershipForm(TendenciBaseForm):
+    subscribe_dt = SplitDateTimeField(label=_('Subscribe Date/Time'),
+        initial=datetime.datetime.now())
+    expire_dt = SplitDateTimeField(label=_('Expire Date/Time'), required=False)
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        
+    class Meta:
+        model = Membership
+        fields = (
+            'user',
+            'member_number',
+            'subscribe_dt',
+            'expire_dt',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail',
+        )
+
+        fieldsets = [
+            ('Membership Information', {
+                'fields': [
+                    'user',
+                    'member_number',
+                    'subscribe_dt',
+                    'expire_dt',
+                ],
+                'legend': ''
+                }),
+            ('Permissions', {
+                'fields': [
+                    'allow_anonymous_view',
+                    'user_perms',
+                    'member_perms',
+                    'group_perms',
+                ],
+                'classes': ['permissions'],
+            }),
+            ('Administrator Only', {
+                'fields': [
+                    'syndicate',
+                    'status',
+                    'status_detail'], 
+                'classes': ['admin-only'],
+            })]
+            
+    def __init__(self, *args, **kwargs):
+        super(UserMembershipForm, self).__init__(*args, **kwargs)
+        self.fields['user'].widget = forms.HiddenInput()

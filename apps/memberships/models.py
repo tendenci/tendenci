@@ -261,7 +261,7 @@ class MembershipType(TendenciBaseModel):
 class Membership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     member_number = models.CharField(_("Member Number"), max_length=50)
-    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type")) 
+    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"), null=True)
     user = models.ForeignKey(User, related_name="memberships")
     directory = models.ForeignKey(Directory, blank=True, null=True) 
     renewal = models.BooleanField(default=False)
@@ -270,7 +270,7 @@ class Membership(TendenciBaseModel):
     expire_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.ForeignKey(PaymentMethod, null=True)
-    ma = models.ForeignKey("App")
+    ma = models.ForeignKey("App", null=True)
     objects = MembershipManager()
 
     class Meta:
