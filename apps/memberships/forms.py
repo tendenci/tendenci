@@ -466,7 +466,7 @@ class AppFieldForm(forms.ModelForm):
 
         # remove "admin only" option from membership type and payment method
         if self.instance.field_type in ['membership-type','payment-method']:
-            self.fields['admin_only'] = BooleanField(widget=HiddenInput)
+            self.fields['admin_only'] = BooleanField(widget=HiddenInput, required=False)
 
         # remove field_type options
         choices_dict = dict(self.fields['field_type'].choices)
