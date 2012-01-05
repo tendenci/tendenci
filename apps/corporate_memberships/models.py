@@ -345,6 +345,18 @@ class CorporateMembership(TendenciBaseModel):
                 notification.send_emails(recipients,'corp_memb_paid', extra_context)
 
  
+    def get_payment_method(self):
+        from payments.models import PaymentMethod
+ 
+        # return payment method if defined
+        if self.payment_method:
+            return self.payment_method
+ 
+        # first method is credit card (online)
+        # will raise exception if payment method does not exist
+        self.payment_method = PaymentMethod.objects.get(machine_name='credit-card')
+        return self.payment_method
+ 
     def approve_renewal(self, request, **kwargs):
         """
         Approve the corporate membership renewal, and
