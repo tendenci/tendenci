@@ -3,6 +3,9 @@
 {% if form_set.errors %}
 <div class="errors">
 There were some problems in the formset. Please review. Thanks!
+{% for error in form_set.non_form_errors %}
+    <p>{{ error }}</p>
+{% endfor %}
 </div>
 {% endif %}
     
