@@ -156,6 +156,7 @@ class PasswordResetForm(forms.Form):
         """
         email = self.cleaned_data["email"]
         self_reg = get_setting('module', 'users', 'selfregistration')
+        self.email = email
         self.users_cache = User.objects.filter(email__iexact=email)
         if len(self.users_cache) == 0:
             if self_reg:
@@ -166,7 +167,8 @@ class PasswordResetForm(forms.Form):
 
     def save(self, email_template_name='registration/password_reset_email.html', **kwargs):
         """
-        Generates a one-use only link for resetting password and sends to the user
+        Generates a one-use only link for resetting password and sends to the designated email.
+        The email will contain links for resetting passwords for all accounts associated to the email.
         """
         from django.core.mail import send_mail
         
@@ -174,23 +176,28 @@ class PasswordResetForm(forms.Form):
         use_https = kwargs.get('use_https', False)
         token_generator = kwargs.get('token_generator', default_token_generator)
         
-        
+        user_list = []
         for user in self.users_cache:
-            if not domain_override:
-                site_name = get_setting('site', 'global', 'sitedisplayname')
-            else:
-                site_name  = domain_override
-            site_url = get_setting('site', 'global', 'siteurl')
-            t = loader.get_template(email_template_name)
-            c = {
-                'email': user.email,
-                'site_url': site_url,
-                'site_name': site_name,
-                'uid': int_to_base36(user.id),
-                'user': user,
-                'token': token_generator.make_token(user),
-                'protocol': use_https and 'https' or 'http',
-            }
-            from_email = get_setting('site', 'global', 'siteemailnoreplyaddress')
-            send_mail(_("Password reset on %s") % site_name,
-                t.render(Context(c)), from_email, [user.email])
+            user_list.append({
+                    'uid': int_to_base36(user.id),
+                    'user': user,
+                    'token': token_generator.make_token(user),
+                })
+                
+        if not domain_override:
+            site_name = get_setting('site', 'global', 'sitedisplayname')
+        else:
+            site_name  = domain_override
+        site_url = get_setting('site', 'global', 'siteurl')
+        t = loader.get_template(email_template_name)
+        c = {
+            'email': self.email,
+            'site_url': site_url,
+            'site_name': site_name,
+            'user_list': user_list,
+            'protocol': use_https and 'https' or 'http',
+        }
+        
+        from_email = get_setting('site', 'global', 'siteemailnoreplyaddress')
+        send_mail(_("Password reset on %s") % site_name,
+            t.render(Context(c)), from_email, [user.email])
