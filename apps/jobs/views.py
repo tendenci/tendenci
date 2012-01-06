@@ -14,7 +14,7 @@ from base.utils import now_localized
 
 from jobs.models import Job, JobPricing
 from jobs.forms import JobForm, JobPricingForm
-from jobs.utils import job_set_inv_payment
+from jobs.utils import job_set_inv_payment, get_job_unique_slug
 
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
@@ -147,14 +147,19 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
 
             # set the expiration date
             job.expiration_dt = job.activation_dt + timedelta(days=job.requested_duration)
-
-            job = update_perms_and_save(request, form, job)
-
+            
             # semi-anon job posts don't get a slug field on the form
             # see __init__ method in JobForm
             if not job.slug:
-                job.slug = '%s-%s' % (slugify(job.title), job.pk)
-                job.save()
+                job.slug = get_job_unique_slug(slugify(job.title))
+
+            job = update_perms_and_save(request, form, job)
+
+#            # semi-anon job posts don't get a slug field on the form
+#            # see __init__ method in JobForm
+#            if not job.slug:
+#                job.slug = '%s-%s' % (slugify(job.title), job.pk)
+#                job.save()
 
             # create invoice
             job_set_inv_payment(request.user, job, pricing)

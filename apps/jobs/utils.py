@@ -1,7 +1,7 @@
 # settings - jobspaymenttypes, jobsrequirespayment
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
-from jobs.models import JobPricing
+from jobs.models import Job, JobPricing
 from invoices.models import Invoice
 from payments.models import Payment
 from perms.utils import is_admin, is_member
@@ -21,6 +21,19 @@ def get_payment_method_choices(user):
             return [(item, item) for item in job_payment_types_list]
         else:
             return ()
+        
+def get_job_unique_slug(slug):
+    # check if this slug already exists
+    jobs = Job.objects.filter(slug__istartswith=slug)
+
+    if jobs:
+        t_list = [j.slug[len(j.slug):] for j in jobs]
+        num = 1
+        while str(num) in t_list:
+            num += 1
+        slug = '%s-%s' % (slug, str(num))
+        
+    return slug
   
 def job_set_inv_payment(user, job, pricing):
     if get_setting('module', 'jobs', 'jobsrequirespayment'):
