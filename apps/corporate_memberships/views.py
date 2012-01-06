@@ -388,7 +388,8 @@ def renew(request, id, template="corporate_memberships/renew.html"):
                 
                 
                 # handle online payment
-                if corp_renew_entry.payment_method.lower() in ['credit card', 'cc']:
+                if corp_renew_entry.get_payment_method().is_online:
+                #if corp_renew_entry.payment_method.lower() in ['credit card', 'cc']:
                     if corp_renew_entry.invoice and corp_renew_entry.invoice.balance > 0:
                         return HttpResponseRedirect(reverse('payments.views.pay_online', 
                                                             args=[corp_renew_entry.invoice.id, 
