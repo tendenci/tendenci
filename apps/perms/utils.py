@@ -56,7 +56,7 @@ def update_perms_and_save(request, form, instance):
             instance.owner = request.user
         if hasattr(instance, 'owner_username'):
             instance.owner_username = request.user.username
-
+    
     # save the instance because we need the primary key
     if instance.pk:
         ObjectPermission.objects.remove_all(instance)
