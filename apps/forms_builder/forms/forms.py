@@ -25,7 +25,7 @@ class FormForForm(forms.ModelForm):
 
     class Meta:
         model = FormEntry
-        exclude = ("form", "entry_time", "entry_path")
+        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing")
     
     def __init__(self, form, user, *args, **kwargs):
         """
@@ -67,7 +67,7 @@ class FormForForm(forms.ModelForm):
             self.fields[field_key] = field_class(**field_args)
             
         # include pricing options if any
-        if self.form.pricing_set.all():
+        if self.form.custom_payment and self.form.pricing_set.all():
             self.fields['pricing-option'] = forms.ModelChoiceField(
                     label=_('Pricing'),
                     empty_label=None,
@@ -108,6 +108,13 @@ class FormForForm(forms.ModelForm):
                 field_entry.save(user = self.user)
             else:
                 field_entry.save()
+                
+        # save selected pricing and payment method if any
+        if self.form.custom_payment and self.form.pricing_set.all():
+            entry.payment_method = self.cleaned_data['payment-option']
+            entry.pricing = self.cleaned_data['pricing-option']
+            entry.save()
+            
         return entry
         
     def email_to(self):
@@ -304,3 +311,14 @@ class PricingForm(forms.ModelForm):
     class Meta:
         model = Pricing
         
+class BillingForm(forms.Form):
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    company = forms.CharField(required=False)
+    address = forms.CharField(required=False)
+    city = forms.CharField(required=False)
+    state = forms.CharField(required=False)
+    zip_code = forms.CharField(required=False)
+    country = forms.CharField(required=False)
+    phone = forms.CharField(required=False)
+    email = forms.CharField(required=False)

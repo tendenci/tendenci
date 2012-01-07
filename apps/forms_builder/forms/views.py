@@ -11,14 +11,18 @@ from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 
 from base.http import Http403
-from forms_builder.forms.forms import FormForForm, FormForm, FormForField, PricingForm
-from forms_builder.forms.models import Form, Field, FormEntry, Pricing
-from forms_builder.forms.utils import (generate_admin_email_body, 
-    generate_submitter_email_body, generate_email_subject)
-from forms_builder.forms.formsets import BaseFieldFormSet
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
+from invoices.models import Invoice
+
+from forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
+    PricingForm, BillingForm)
+from forms_builder.forms.models import Form, Field, FormEntry, Pricing
+from forms_builder.forms.utils import (generate_admin_email_body, 
+    generate_submitter_email_body, generate_email_subject,
+    make_invoice_for_entry, update_invoice_for_entry)
+from forms_builder.forms.formsets import BaseFieldFormSet
 
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
@@ -127,7 +131,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
             form.save()
         
             messages.add_message(request, messages.INFO, 'Successfully updated %s' % form_instance)
-            return HttpResponseRedirect(reverse('forms'))
+            return redirect('form_detail', form_instance.slug)
     else:
         form = form_class(instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
        
@@ -380,7 +384,7 @@ def entries_export(request, id):
 
 def search(request, template_name="forms/search.html"):
     query = request.GET.get('q', None)
-    forms = Form.objects.search(query, user=request.user)
+    forms = Form.objects.search(query, user=request.user).order_by('-primary_key')
     
     return render_to_response(template_name, {'forms':forms}, 
         context_instance=RequestContext(request))
@@ -443,9 +447,29 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     f.seek(0)
                     msg.attach(f.name, f.read())
                 msg.send()
+            
+            # payment redirect
+            if form.custom_payment:
+                # create the invoice
+                invoice = make_invoice_for_entry(entry)
+                # log an event for invoice add
+                log_defaults = {
+                    'event_id' : 311000,
+                    'event_data': '%s (%d) added by %s' % (invoice._meta.object_name, invoice.pk, request.user),
+                    'description': '%s added' % invoice._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': invoice,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                # redirect to billing form
+                return redirect('form_entry_payment', invoice.id, invoice.guid)
+                
+            # default redirect
             if form.completion_url:
                 return redirect(form.completion_url)
-            return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
+            return redirect("form_sent", form.slug)
     context = {"form": form, "form_for_form": form_for_form}
     return render_to_response(template, context, RequestContext(request))
 
@@ -457,3 +481,38 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     form = get_object_or_404(published, slug=slug)
     context = {"form": form}
     return render_to_response(template, context, RequestContext(request))
+
+def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm, template="forms/form_payment.html"):
+    """
+    Show billing form, update the invoice then proceed to external payment.
+    """
+    invoice = get_object_or_404(Invoice, pk=invoice_id)
+
+    if not invoice.allow_view_by(request.user, invoice_guid):
+        raise Http403
+        
+    entry = FormEntry.objects.get(id=invoice.object_id)
+        
+    if request.method == "POST":
+        form = form_class(request.POST)
+        if form.is_valid():
+            update_invoice_for_entry(invoice, form)
+            # redirect to online payment
+            if (entry.payment_method.machine_name).lower() == 'credit-card':
+                return redirect('payments.views.pay_online', invoice.id, invoice.guid)
+            # redirect to invoice page
+            return redirect('invoice.view', invoice.id, invoice.guid)
+    else:
+        if request.user.is_authenticated():
+            form = form_class(initial={
+                        'first_name':request.user.first_name,
+                        'last_name':request.user.last_name,
+                        'email':request.user.email})
+        else:
+            form = form_class()
+    
+    return render_to_response(template, {
+            'payment_form':form,
+            'form':entry.form,
+        }, context_instance=RequestContext(request))
+        
