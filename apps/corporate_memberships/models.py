@@ -644,7 +644,7 @@ class CorporateMembershipArchive(TendenciBaseModel):
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
     approved_denied_user = models.ForeignKey(User, null=True)
     #payment_method = models.CharField(_("Payment Method"), max_length=50)
-    payment_method = models.ForeignKey(PaymentMethod, verbose_name=_("Payment Method"))
+    payment_method = models.ForeignKey(PaymentMethod, verbose_name=_("Payment Method"), null=True, default=None)
 
     corp_memb_create_dt = models.DateTimeField()
     corp_memb_update_dt = models.DateTimeField()
