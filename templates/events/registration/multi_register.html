@@ -775,11 +775,12 @@
                         p_html = p_html + "class='gray-text'>"
                     }
                     p_html = p_html + '<input type="radio" name="add-registrants-pricing" value="' + p_list[i]['pk'] + '"'
-                    if (~p_list[i]['enabled']){
-                        p_html = p_html + 'DISABLED'
-                    }
                     p_html = p_html + 'quantity="'+ p_list[i]['quantity'] +'" price="' + p_list[i]['price'] + '"'
-                    p_html = p_html + 'title="' + p_list[i]['title'] + '">'+p_list[i]['title']
+                    p_html = p_html + 'title="' + p_list[i]['title']
+                    if (~p_list[i]['enabled']){
+                        p_html = p_html + ' DISABLED '
+                    }
+                    p_html = p_html + '">' +p_list[i]['title']
                     p_html = p_html + ' (' + p_list[i]['quantity'] + ' for {{ SITE_GLOBAL_CURRENCYSYMBOL }}' + p_list[i]['price'] + ')</div>'
                 }
                 $('#pricing-choices').html(p_html);
