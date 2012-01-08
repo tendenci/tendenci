@@ -12,7 +12,6 @@ from perms.utils import is_admin
 from site_settings.utils import get_setting
 
 from events.models import RegConfPricing, PaymentMethod
-from events.registration.utils import get_available_pricings
 
 class RegistrationForm(forms.Form):
     """
