@@ -172,6 +172,7 @@
     .admin {color: #800; font-weight: bold;}
     .discount-summary {display: none;}
     .showhide {font-size: 18px;}
+    .gray-text {color: #777; }
 </style>
 
 <div class="t">    
@@ -390,15 +391,15 @@
                 <h3>{% blocktrans %}Choose a pricing to add another set of registrants{% endblocktrans %}</h3>
                 <div id="pricing-choices">
                     {% for pricing in pricings %}
-                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}">
-                    {{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
-                    <br>
+                    <div {% if not pricing.allow_anonymous %}class="gray-text"{% endif %}>
+                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}" {% if not pricing.allow_anonymous %}DISABLED{% endif %}>{{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
+                    </div>
                     {% empty %}
                     No pricings are publicly available.<br>
                     {% endfor %}
                 </div>
                 <input id="add-registrants-button" type="button" value="Add Registrant Set">
-                <h3>...or get more available pricings:</h3>
+                <h3>...or enable more pricings:</h3>
                 <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="">
                 {% if allow_memberid_pricing %}
                     <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value="">
@@ -767,10 +768,19 @@
             success: function(p_list){
                 var p_html = "";
                 for(i=0; i<p_list.length; i++){
-                    p_html = p_html +  '<input type="radio" name="add-registrants-pricing" value="' + p_list[i]['pk'] + '"'
+                    p_html = p_html + '<div '
+                    if (p_list[i]['enabled']){
+                        p_html = p_html + '>'
+                    } else {
+                        p_html = p_html + "class='gray-text'>"
+                    }
+                    p_html = p_html + '<input type="radio" name="add-registrants-pricing" value="' + p_list[i]['pk'] + '"'
+                    if (~p_list[i]['enabled']){
+                        p_html = p_html + 'DISABLED'
+                    }
                     p_html = p_html + 'quantity="'+ p_list[i]['quantity'] +'" price="' + p_list[i]['price'] + '"'
                     p_html = p_html + 'title="' + p_list[i]['title'] + '">'+p_list[i]['title']
-                    p_html = p_html + ' (' + p_list[i]['quantity'] + ' for {{ SITE_GLOBAL_CURRENCYSYMBOL }}' + p_list[i]['price'] + ')<br>'
+                    p_html = p_html + ' (' + p_list[i]['quantity'] + ' for {{ SITE_GLOBAL_CURRENCYSYMBOL }}' + p_list[i]['price'] + ')</div>'
                 }
                 $('#pricing-choices').html(p_html);
             }
