@@ -19,7 +19,7 @@ from memberships.models import Membership
 from events.models import Event
 from events.utils import email_admins
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
-from events.registration.utils import get_available_pricings, reg_status
+from events.registration.utils import get_available_pricings, get_active_pricings, reg_status
 from events.registration.utils import process_registration, send_registrant_email
 from events.registration.forms import RegistrantForm, RegistrationForm
 from events.registration.formsets import RegistrantBaseFormSet
@@ -53,16 +53,23 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
         if user:
             user = user[0]
     
-    pricings = get_available_pricings(event, user)
+    all_pricings = get_active_pricings(event)
+    available_pricings = get_available_pricings(event, user)
     
     pricing_list = []
-    for pricing in pricings:
-        pricing_list.append({
+    for pricing in all_pricings:
+        p_dict = {
             'title':pricing.title,
             'quantity':pricing.quantity,
             'price':str(pricing.price),
             'pk':pricing.pk,
-        })
+            'enabled':True,
+        }
+        
+        if pricing not in available_pricings:
+            p_dict['enabled'] = False
+        
+        pricing_list.append(p_dict)
     
     data = json.dumps(pricing_list)
     return HttpResponse(data, mimetype="text/plain")
@@ -104,7 +111,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     
     user = AnonymousUser()
     # get available pricings
-    default_pricings = get_available_pricings(event, user)
+    active_pricings = get_active_pricings(event)
     event_pricings = event.registration_configuration.regconfpricing_set.all()
     
     # start the form set factory    
@@ -180,6 +187,6 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             'reg_form':reg_form,
             'registrant': reg_formset,
             'sets': sets,
-            'pricings':default_pricings,
+            'pricings':active_pricings,
             'allow_memberid_pricing':get_setting('module', 'events', 'memberidpricing'),
             }, context_instance=RequestContext(request))
