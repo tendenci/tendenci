@@ -517,7 +517,8 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
                 # send "approved" notification
                 Notice.send_notice(
-                    request = request,
+                    request=request,
+                    entry=entry,
                     emails=entry.email,
                     notice_type='approve',
                     membership=entry.membership,

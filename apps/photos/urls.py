@@ -65,6 +65,7 @@ urlpatterns = patterns('',
     url(r'^set/(?P<id>\d+)/$', 'photos.views.photoset_details', name="photoset_details"),
     # /photos/set/23/zip/
     url(r'^set/(?P<id>\d+)/zip/$', 'photos.views.photoset_zip', name="photoset_zip"),
+    url(r'^set/(?P<id>\d+)/zip/status/(?P<task_id>[-\w]+)/$', 'photos.views.photoset_zip_status', name="photoset_zip_status"),
 
     url(r'^feeds/latest-albums/$', LatestAlbums(), name='photo.feed.latest-albums'),
 
