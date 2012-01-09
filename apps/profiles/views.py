@@ -737,7 +737,7 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user)
         
-    if not profile.allow_edit_by(request.user):
+    if not is_admin(request.user):
         raise Http403
         
     if request.method == 'POST':

@@ -376,6 +376,7 @@ class UserMembershipForm(TendenciBaseForm):
         fields = (
             'user',
             'member_number',
+            'membership_type',
             'subscribe_dt',
             'expire_dt',
             'allow_anonymous_view',
@@ -391,6 +392,7 @@ class UserMembershipForm(TendenciBaseForm):
                 'fields': [
                     'user',
                     'member_number',
+                    'membership_type',
                     'subscribe_dt',
                     'expire_dt',
                 ],
