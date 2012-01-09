@@ -130,8 +130,8 @@ class RegistrantForm(forms.Form):
         email = self.saved_data.get('email', None)
         
         if memberid:# memberid takes priority over email
-            membership = Membership.objects.filter(member_number=memberid)
-            if user:
+            memberships = Membership.objects.filter(member_number=memberid)
+            if memberships:
                 user = membership[0].user
         elif email:
             users = User.objects.filter(email=email)
@@ -183,8 +183,25 @@ class RegistrantForm(forms.Form):
         data.strip()
         return data
     
-    def clean(self):
-        # cleaned_data is removed if form is invalid.
-        # save that data eitherway to access it in the formset
-        self.saved_data = self.cleaned_data
-        return self.cleaned_data
+    def _clean_fields(self):
+        for name, field in self.fields.items():
+            # value_from_datadict() gets the data from the data dictionaries.
+            # Each widget type knows how to retrieve its own data, because some
+            # widgets split data over several HTML fields.
+            value = field.widget.value_from_datadict(self.data, self.files, self.add_prefix(name))
+            try:
+                if isinstance(field, forms.FileField):
+                    initial = self.initial.get(name, field.initial)
+                    value = field.clean(value, initial)
+                else:
+                    value = field.clean(value)
+                self.cleaned_data[name] = value
+                if hasattr(self, 'clean_%s' % name):
+                    value = getattr(self, 'clean_%s' % name)()
+                    self.cleaned_data[name] = value
+            except forms.ValidationError, e:
+                self._errors[name] = self.error_class(e.messages)
+                if name in self.cleaned_data:
+                    del self.cleaned_data[name]
+            # save invalid or valid data into saved_data
+            self.saved_data[name] = value
