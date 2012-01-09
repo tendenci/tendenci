@@ -16,19 +16,65 @@ from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from memberships.models import Membership
 
-from events.models import Event
+from events.models import Event, RegConfPricing, Registrant
 from events.utils import email_admins
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
-from events.registration.utils import get_available_pricings, get_active_pricings, reg_status
+from events.registration.utils import get_available_pricings, reg_status
+from events.registration.utils import can_use_pricing, get_active_pricings 
 from events.registration.utils import process_registration, send_registrant_email
 from events.registration.forms import RegistrantForm, RegistrationForm
 from events.registration.formsets import RegistrantBaseFormSet
 
+def ajax_user(request, event_id):
+    """Ajax query for user validation
+    The parameters are email and memberid and pricing.
+    The user that matches the given email/memberid will be checked
+    if he/she can still register in the event with the given pricing.
+    """
+    event = get_object_or_404(Event, pk=event_id)
+    
+    if not get_setting('module', 'events', 'anonymousmemberpricing'):
+        raise Http404
+    
+    memberid = request.GET.get('memberid', None)
+    email = request.GET.get('email', None)
+    pricingid = request.GET.get('pricingid', None)
+    
+    pricing = get_object_or_404(RegConfPricing, pk=pricingid)
+    
+    user = AnonymousUser()
+    
+    allow_memberid = get_setting('module', 'events', 'memberidpricing')
+    if memberid and allow_memberid:# memberid takes priority over email
+        membership = Membership.objects.filter(member_number=memberid)
+        if membership:
+            user = membership[0].user
+    elif email:
+        user = User.objects.filter(email=email)
+        if user:
+            user = user[0]
+    
+    #check if can user
+    can_use = can_use_pricing(event, user, pricing)
+    if not can_use:
+        data = json.dumps({"error":"The pricing option is invalid for this user."})
+        return HttpResponse(data, mimetype="text/plain")
+        
+    #check if already registered
+    used = Registrant.objects.filter(user=user)
+    if used:
+        if pricing.allow_anonymous:
+            data = json.dumps({"message":"This user has already registered but can still register more people into the event."})
+        else:
+            data = json.dumps({"error":"This user is already registered for this event"})
+    else:
+        data = json.dumps("")
+        
+    return HttpResponse(data, mimetype="text/plain")
 
 @csrf_exempt
 def ajax_pricing(request, event_id, template_name="events/registration/pricing.html"):
-    """
-    Ajax query for pricing info.
+    """Ajax query for pricing info.
     The parameters are email and memberid.
     Both are not unique to a user but are assumed to be unique.
     On cases that there are multiple matches,
