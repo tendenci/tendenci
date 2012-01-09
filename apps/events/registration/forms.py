@@ -208,8 +208,9 @@ class RegistrantForm(forms.Form):
 
     def clean(self):
         data = self.cleaned_data
+        pricing = self.cleaned_data['pricing']
         user = self.get_user()
-        if not user.is_anonymous():
+        if not (user.is_anonymous() or pricing.allow_anonymous):
             already_registered = Registrant.objects.filter(user=user)
             if already_registered:
                 if not is_admin(user):
