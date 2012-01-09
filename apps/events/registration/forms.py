@@ -11,7 +11,7 @@ from discounts.models import Discount
 from perms.utils import is_admin
 from site_settings.utils import get_setting
 
-from events.models import RegConfPricing, PaymentMethod
+from events.models import RegConfPricing, PaymentMethod, Registrant
 
 class RegistrationForm(forms.Form):
     """
@@ -205,3 +205,13 @@ class RegistrantForm(forms.Form):
                     del self.cleaned_data[name]
             # save invalid or valid data into saved_data
             self.saved_data[name] = value
+
+    def clean(self):
+        data = self.cleaned_data
+        user = self.get_user()
+        if not user.is_anonymous():
+            already_registered = Registrant.objects.filter(user=user)
+            if already_registered:
+                if not is_admin(user):
+                    raise forms.ValidationError('%s is already registered for this event' % user)
+        return data
