@@ -84,7 +84,9 @@ class RegistrantBaseFormSet(BaseFormSet):
                     self.sets.append(new_set)
                 else:
                     new_set.append(form)
-        self.sets.reverse()
+        
+        # sort the sets based on first form label
+        self.sets = sorted(self.sets, key=lambda s: s[0].get_form_label())
                     
     def get_sets(self):
         if not self.sets:
@@ -107,6 +109,7 @@ class RegistrantBaseFormSet(BaseFormSet):
         
         # if all quantities are valid, update each form's corresponding price
         errors = []
+        users = []
         for pricing in self.pricings.keys():
             for i in range(0, len(self.pricings[pricing])):
                 form = self.pricings[pricing][i]
@@ -118,6 +121,14 @@ class RegistrantBaseFormSet(BaseFormSet):
                     # take note of each invalid price but continue setting prices
                     if not can_use_pricing(self.event, user, pricing):
                         errors.append(forms.ValidationError(_("%s is not authorized to use %s" % (user, pricing))))
+                    
+                    if not user.is_anonymous():
+                        # check if this user has already been used before
+                        if user.pk in users:
+                            errors.append(forms.ValidationError(_("%s can only be registered once per registration" % user)))
+                        else:
+                            # mark this pricing pair used
+                            users.append(user.pk)
                 else:
                     price = Decimal('0.00')
                 
@@ -130,3 +141,4 @@ class RegistrantBaseFormSet(BaseFormSet):
         # raise any errors found
         for error in errors:
             raise error
+        
