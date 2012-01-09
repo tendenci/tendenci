@@ -152,6 +152,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'site_settings.context_processors.settings',
     'base.context_processors.static_url',
     'base.context_processors.index_update_note',
+    'base.context_processors.today',
     'registry.context_processors.registered_apps',
 )
 

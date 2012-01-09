@@ -23,8 +23,16 @@
 
     <h1>{{ photo_set.name }}</h1>
     
-    <p>{% trans "Zip file for" %} {{ photo_set.name }}</p>
-    <a href="{{ zip_path }}">Download</a>
+    {% if task_id %}
+        <div id="zip-wait">
+            <p>{% trans "Please wait while we compile the zip file for" %} {{ photo_set.name }}. <img src="{{ STATIC_URL }}images/ajax-loader.gif"></p>
+        </div>
+    {% endif %}
+    
+    <div id="zip-done">
+        <p>{% trans "Zip file ready for download" %}.</p>
+        {% trans "Download" %} <a id='download-link' href="{{ file_path }}">{% trans "here" %}.</a></p>
+    </div>
     
 </div>
 
@@ -33,7 +41,25 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-		$(document).ready(function(){
-		});
+        {% if task_id %}
+            function refresh(){
+                $.ajax({
+                    url: "{% url photoset_zip_status photo_set.id task_id %}",
+                    success: function(data){
+                        if (data != "DNE"){
+                            $('#zip-wait').hide();
+                            $('#download-link').attr('href', data);
+                            $('#zip-done').show();
+                        } else {
+                            setTimeout(refresh, 2000);
+                        }
+                    }
+                });
+            }
+            $(document).ready(function(){
+                $('#zip-done').hide();
+                refresh();
+            });
+        {% endif %}
     </script>
 {% endblock %}
