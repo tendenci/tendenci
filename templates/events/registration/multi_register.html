@@ -173,6 +173,16 @@
     .discount-summary {display: none;}
     .showhide {font-size: 18px;}
     .gray-text {color: #777; }
+    
+    .error {
+        color: #722;
+        padding: 5px;
+    }
+    
+    .notice {
+        color: #992;
+        padding: 5px;
+    }
 </style>
 
 <div class="t">    
@@ -374,7 +384,11 @@
 								<div class="field">{{ form.memberid }}</div>
 							</div>
                             {% endif %}
-                            {{ form.pricing }}
+                            {% if form.pricing %}
+                            <div class="form-field">
+                                <div class="field">{{ form.pricing }}</div>
+                            </div>
+                            {% endif %}
 						</div>
 					</div>
 				{% endfor %}
@@ -433,6 +447,7 @@
                 <div class="registrant-header">
                     <span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">1</span>:
                 </div>
+                <div class="registrant-notice"></div>
                 <div class="odd-registrant">
                     <div class="form-field">
                         <div class="error"></div>
@@ -480,7 +495,7 @@
                     {% endif %}
                     <div class="form-field">
                         <div class="field">
-                            <input type="hidden" name="registrant-0-pricing" id="id_registrant-0-pricing" value="">
+                            <input class="registrant-pricing" type="hidden" name="registrant-0-pricing" id="id_registrant-0-pricing" value="">
                         </div>
                     </div>
                 </div>
@@ -492,6 +507,42 @@
 
 {% block extra_body %}
  <script type="text/javascript">
+    function getUserStatus(form){
+        var form = $(form)
+        var email = form.find('.registrant-email').val();
+        var memberid = form.find('.registrant-memberid').val();
+        var pricingid = form.find('.registrant-pricing').val();
+        
+        $.ajax({
+            url: "{% url event.reg_user_status event.pk %}",
+            type: "GET",
+            data: {'email':email, 'memberid':memberid, 'pricingid':pricingid},
+            dataType: "json",
+            success: function(data){
+                if(data){
+                    var notice= $(form.parent().find('.registrant-notice')[0])
+                    if(data['error']=='INVALID'){
+                        var msg = "<div class='error'>Invalid user for pricing.</div>"
+                        notice.html(msg);
+                    }else if(data['error']=='REG'){
+                        var msg = "<div class='error'>User already registered.</div>"
+                        notice.html(msg);
+                    }else{
+                        var msg = "<div class='notice'>User already registered but can still register more people.</div>"
+                        notice.html(msg);
+                    }
+                }
+            }
+        });
+    }    
+    $('.first-registrant-email').blur(function(){
+        form = $(this).parent().parent().parent()
+        getUserStatus(form);
+    });
+    $('.first-registrant-memberid').blur(function(){
+        form = $(this).parent().parent().parent()
+        getUserStatus(form);
+    });
 
     function deleteRegistrant(ele, prefix) {
         var registrant_form = $(ele);
@@ -635,6 +686,15 @@
         addSummaryEntry(row, prefix, formCount, pricing['price']);
         
         $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
+        
+        // attempt to get the user status for this form
+        if(hide_form==-1){
+            $(row).find('.registrant-email').attr('class', 'registrant-email first-registrant-email')
+            $(row).find('.registrant-memberid').attr('class', 'registrant-memberid first-registrant-memberid')
+            getUserStatus(row);
+        }else{
+            
+        }
         
         return false;
     }
@@ -837,9 +897,7 @@
         if(match_found){
             alert('{% trans "An Member ID can only be used once per registration!" %}');
             return false;
-        }
-        
-    });
-    
+        }        
+    });    
    </script>
 {% endblock %}

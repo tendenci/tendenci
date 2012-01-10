@@ -50,27 +50,28 @@ def ajax_user(request, event_id):
         if membership:
             user = membership[0].user
     elif email:
-        user = User.objects.filter(email=email)
-        if user:
-            user = user[0]
+        users = User.objects.filter(email=email)
+        if users:
+            user = users[0]
     
-    #check if can user
+    #check if can use
     can_use = can_use_pricing(event, user, pricing)
     if not can_use:
-        data = json.dumps({"error":"The pricing option is invalid for this user."})
+        data = json.dumps({"error":"INVALID"})
         return HttpResponse(data, mimetype="text/plain")
-        
+    
+    data = json.dumps(None)
     #check if already registered
-    used = Registrant.objects.filter(user=user)
-    if used:
-        if pricing.allow_anonymous:
-            data = json.dumps({"message":"This user has already registered but can still register more people into the event."})
-        else:
-            data = json.dumps({"error":"This user is already registered for this event"})
-    else:
-        data = json.dumps("")
-        
+    if not (user.is_anonymous() or pricing.allow_anonymous):
+        used = Registrant.objects.filter(user=user)
+        if used:
+            if not (pricing.allow_anonymous or is_admin(user)):
+                data = json.dumps({"error":"REG"})
+            else:
+                data = json.dumps({"message":"REG"})
+    
     return HttpResponse(data, mimetype="text/plain")
+        
 
 @csrf_exempt
 def ajax_pricing(request, event_id, template_name="events/registration/pricing.html"):
