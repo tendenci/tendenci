@@ -416,7 +416,7 @@ class PhotoImageURL(Node):
         photo = self.photo.resolve(context)
 
         # return empty unicode string
-        if not file.pk:
+        if not photo.pk:
             return unicode('')
 
         args = [photo.pk, self.size]
