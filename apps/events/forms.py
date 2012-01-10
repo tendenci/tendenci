@@ -12,7 +12,8 @@ from django.forms.util import ErrorList
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, Sponsor, Organizer, Speaker, Type, \
-    TypeColorSet, Registrant, RegConfPricing
+    TypeColorSet, Registrant, RegConfPricing, CustomRegForm, \
+    CustomRegField
 
 from payments.models import PaymentMethod
 from perms.utils import is_admin
@@ -30,7 +31,25 @@ ALLOWED_LOGO_EXT = (
     '.jpeg',
     '.gif',
     '.png' 
-)   
+)
+
+
+class CustomRegFormAdminForm(forms.ModelForm):
+    status = forms.ChoiceField(
+        choices=(('draft','Draft'),('active','Active'),('inactive', 'Inactive'),))
+
+    class Meta:
+        model = CustomRegForm
+        fields = ('name',
+                  'notes',
+                  'status'
+                 )
+        
+class CustomRegFormForField(forms.ModelForm):
+    class Meta:
+        model = CustomRegField
+        exclude = ["position"]       
+           
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 

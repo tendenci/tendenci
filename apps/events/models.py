@@ -23,6 +23,12 @@ from files.models import File
 from site_settings.utils import get_setting
 from payments.models import PaymentMethod as GlobalPaymentMethod
 
+from events.settings import (FIELD_MAX_LENGTH, 
+                             LABEL_MAX_LENGTH, 
+                             FIELD_TYPE_CHOICES, 
+                             USER_FIELD_CHOICES)
+
+
 
 class TypeColorSet(models.Model):
     """
@@ -746,3 +752,50 @@ class EventPhoto(File):
     @property
     def content_type(self):
         return 'events'
+    
+class CustomRegForm(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+    notes = models.TextField(_("Notes"), max_length=2000, blank=True)
+    
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True)
+    creator_username = models.CharField(max_length=50)
+    owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True)    
+    owner_username = models.CharField(max_length=50)
+    status = models.CharField(max_length=50, default='active')
+    
+    class Meta:
+        verbose_name = _("Custom Registration Form")
+        verbose_name_plural = _("Custom Registration Forms")
+    
+    
+
+class CustomRegField(models.Model):
+    form = models.ForeignKey("CustomRegForm", related_name="custom_reg_fields")
+    label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
+    field_type = models.CharField(_("Type"), choices=FIELD_TYPE_CHOICES,
+        max_length=64)
+    field_tied_to = models.CharField(_("Tie to User Field"), choices=USER_FIELD_CHOICES,
+        max_length=64)
+    required = models.BooleanField(_("Required"), default=True)
+    visible = models.BooleanField(_("Visible"), default=True)
+    choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
+        help_text="Comma separated options where applicable")
+    position = models.PositiveIntegerField(_('position'), default=0)
+    default = models.CharField(_("Default"), max_length=1000, blank=True,
+        help_text="Default value of the field")
+    
+    class Meta:
+        verbose_name = _("Field")
+        verbose_name_plural = _("Fields")
+        
+class CustomRegFormEntry(models.Model):
+    form = models.ForeignKey("CustomRegForm", related_name="custom_reg_entries")
+    entry_time = models.DateTimeField(_("Date/time"))
+
+
+class CustomRegFieldEntry(models.Model):
+    entry = models.ForeignKey("CustomRegFormEntry", related_name="custom_reg_fields")
+    field = models.ForeignKey("CustomRegField", related_name="custom_reg_field")
+    value = models.CharField(max_length=FIELD_MAX_LENGTH)
