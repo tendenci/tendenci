@@ -9,3 +9,9 @@
 {{ object.country }}
 
 is:{{ object.status_detail }}
+
+{% for role in object.roles %}
+is:{{ role }}
+{% endfor %}
+
+highestrole:{{ object.highest_role }}
