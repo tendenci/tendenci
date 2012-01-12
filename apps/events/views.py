@@ -236,10 +236,15 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         extra=1,
         can_delete=True
     )
+    
+    if event.registration_configuration.regconfpricing_set.all():
+        extra = 0
+    else:
+        extra = 1
     RegConfPricingSet = modelformset_factory(
         RegConfPricing, 
         form=Reg8nConfPricingForm,
-        extra=0,
+        extra=extra,
         can_delete=True
     )
 
