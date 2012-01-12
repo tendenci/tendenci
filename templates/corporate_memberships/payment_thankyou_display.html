@@ -5,11 +5,11 @@
 <h3>{% trans "What would you like to do now?" %}</h3>
 <ul>
 	{% if obj.module_name == 'corpmembrenewentry' %}
-	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url membership.application_details_corp_pre obj.corporate_membership.corp_app.memb_app.slug corp_memb.id %}" class="links">{% trans "Create memberships under this corporate membership" %}</a></li>
+	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url membership.application_details_corp_pre obj.corporate_membership.corp_app.memb_app.slug obj.corporate_membership.id %}" class="links">{% trans "Create memberships under this corporate membership" %}</a></li>
 	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.edit_reps obj.corporate_membership.id %}" class="links">{% trans "Designate representatives for this corporate membership" %}</a></li>
 	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view obj.corporate_membership.id %}" class="links">{% trans "View Corporate Membership" %}</a></li>
 	{% else %}
-	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url membership.application_details_corp_pre corp_memb.corp_app.memb_app.slug corp_memb.id %}" class="links">{% trans "Create memberships under this corporate membership" %}</a></li>
+	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url membership.application_details_corp_pre obj.corp_app.memb_app.slug obj.id %}" class="links">{% trans "Create memberships under this corporate membership" %}</a></li>
 	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.edit_reps obj.id %}" class="links">{% trans "Designate representatives for this corporate membership" %}</a></li>
 	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view obj.id %}" class="links">{% trans "View Corporate Membership" %}</a></li>
 	{% endif %}
