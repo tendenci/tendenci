@@ -1,3 +1,5 @@
+from registry import site
+
 # colors from schipul_codebase_dev\cb\eventlogs\cb_eventlogs_hex.asp
 # colors = { 'event_id':'hex color' }
 
@@ -68,7 +70,7 @@ colors = {
     '435000':'CCCC99', # view 
     '435001':'FFCC99', # print view 
 
-   # news
+    # news
     '305000':'FF0033', # base
     '305100':'FF0033', # add
     '305200':'FF0033', # edit
@@ -410,16 +412,30 @@ colors = {
 #    '':'55AACC', # detail
 }
 
+def generate_colors():
+    """Create the event id to color dict so we won't
+    have to iterate over the apps in the event registry
+    for every event id.
+    """
+    d = {}
+    apps = site.get_registered_apps().all_apps
+    for app in apps:
+        d[app.base_id] = app.base_color
+        d[app.add_id] = app.add_color
+        d[app.edit_id] = app.edit_color
+        d[app.search_id] = app.search_color
+        d[app.detail_id] = app.detail_color
+
+colors = generate_colors()
+
 def get_color(event_id):
+    """Gets the hex color of an event log based on the event id
+    get_color('id')
     """
-        Gets the hex color of an event log based on the event id
-        get_color('id')
-    """
+    apps = 
     if event_id in colors:
         return colors[event_id]
     else:
         return 'FFFFFF'
     
     return ''
-    
-    
