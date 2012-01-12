@@ -75,7 +75,7 @@ def get_available_pricings(event, user):
         # user permitted pricings
         for price in pricings:
             # shown to all
-            if price.allow_anonymous:
+            if price.allow_anonymous or price.allow_user:
                 continue
             
             # Members allowed
