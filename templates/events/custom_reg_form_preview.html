@@ -1,0 +1,40 @@
+{% extends "events/base.html" %}
+{% load styled_forms %}
+{% load event_tags %}
+
+{% block title %}{{ form.name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+.id_captcha input[type="text"]{
+	width: 160px !important;
+}
+.t .form-wrap {
+    padding: 10px;
+    margin-bottom: 10px;
+    position: relative;
+}
+</style>
+
+{% endblock extra_head %}
+
+{% block body %}
+
+<div class="t">
+	{% event_nav user %}
+    <div class="form-wrap">
+        <h1>Preview: {{ form.name }}</h1>
+    
+    	<div class="form-builder-wrap">
+        	<form method="post">{% csrf_token %}
+      
+        	<div class="forms">
+                {{ form_for_form|styled_form }}
+            	<input type="submit" value="Submit" disabled="true" />
+    		</div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
