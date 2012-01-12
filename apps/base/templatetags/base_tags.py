@@ -414,6 +414,11 @@ class PhotoImageURL(Node):
 
     def render(self, context):
         photo = self.photo.resolve(context)
+
+        # return empty unicode string
+        if not photo.pk:
+            return unicode('')
+
         args = [photo.pk, self.size]
         if self.crop:
             args.append("crop")
@@ -460,6 +465,11 @@ class ImageURL(Node):
 
     def render(self, context):
         file = self.file.resolve(context)
+
+        # return empty unicode string
+        if not file.pk:
+            return unicode('')
+
         args = [file.pk, self.size]
         if self.crop:
             args.append("crop")

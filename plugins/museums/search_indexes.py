@@ -22,6 +22,7 @@ class MuseumIndex(TendenciBaseSearchIndex):
     restaurant = indexes.BooleanField(model_attr='restaurant')
     snacks = indexes.BooleanField(model_attr='snacks')
     events = indexes.CharField(model_attr='events')
+    ordering = indexes.IntegerField(model_attr='ordering')
     
     # RSS fields
     can_syndicate = indexes.BooleanField()

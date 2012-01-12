@@ -1,4 +1,5 @@
 {% extends "memberships/base-wide.html" %}
+{% load humanize %}
 {% load pagination_tags %}
 {% load membership_tags %}
 {% load base_tags %}
@@ -19,7 +20,7 @@
 <div class="t">
     {% entry_nav request.user %}
 
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% trans "Membership Entry Search" %}</h1>
+    <h1>{% trans "Membership Entry Search" %}</h1>
 
 	{% entry_search %}
 
@@ -42,7 +43,7 @@
                     {% if entry.is_renewal %}
                         Renewal
                     {% else %}
-                        Joining
+                        Join
                     {% endif %}
                     <a href="{% url membership.application_entries entry.pk %}">{{ entry.status_msg }}</a>
                 </div>
@@ -58,7 +59,18 @@
                 <div class="member-date">{% firstof entry.decision_dt|date  entry.create_dt|date %}</div>
                 {% endif %}
 
-                <div style="clear:both:"></div>
+                <div style="clear:both;"></div>
+
+                
+                <div class="balance">
+                {% if entry.invoice.pk %}
+                    <a href="{% url invoice.view entry.invoice.pk %}">Balance ${% firstof entry.invoice.balance  0|intcomma %}</a>
+                {% else %}
+                    Balance ${% firstof entry.invoice.balance  0|intcomma %}
+                {% endif %}
+                </div>
+                
+
             </div>
 
             <div style="clear:both;"></div>
