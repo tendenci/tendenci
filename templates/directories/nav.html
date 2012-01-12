@@ -45,11 +45,11 @@
 			{% endif %}
 			<li><a href="{% url directory.search %}">{% trans "Search" %}</a></li>
 			{% if can_add_directory %}
-			<li><a href="{% url directory.add %}">{% trans "Add" %}</a></li>
 			<li><a href="{% url directory_pricing.search %}">{% trans "Pricing" %}</a></li>
 			{% endif %}
 
 			{% if user.is_authenticated %}
+			<li><a href="{% url directory.add %}">{% trans "Add" %}</a></li>
 			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}
 		</ul>
