@@ -6,6 +6,7 @@ LABEL_MAX_LENGTH = 255
 
 FIELD_TYPE_CHOICES = (
     ("CharField", _("Text")),
+    ('DecimalField', _('Number')),
     ("CharField/django.forms.Textarea", _("Paragraph Text")),
     ("BooleanField", _("Checkbox")),
     ("ChoiceField", _("Choose from a list")),
