@@ -20,9 +20,12 @@ class PhotoAdmin(admin.StackedInline):
     form = PhotoForm
 
 class MuseumAdmin(admin.ModelAdmin):
-    list_display = [u'name', 'view_on_site', 'edit_link']
+    list_display = ['view_on_site', 'edit_link', u'name', 'ordering']
     list_filter = []
-    search_fields = []
+    search_fields = ['name', 'about']
+    list_editable = ['ordering']
+    prepopulated_fields = {'slug': ['name']}
+    ordering = ['ordering']
     actions = []
     inlines = (PhotoAdmin,)
     form = MuseumForm
@@ -30,6 +33,7 @@ class MuseumAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Basic Information', {'fields': (
             'name',
+            'slug',
             'phone',
             'address',
             'city',
@@ -74,6 +78,9 @@ class MuseumAdmin(admin.ModelAdmin):
     class Media:
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery-ui-1.8.2.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
     
     def edit_link(self, obj):
@@ -85,7 +92,7 @@ class MuseumAdmin(admin.ModelAdmin):
     def view_on_site(self, obj):
         link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
-            reverse('museums.detail', args=[obj.pk]),
+            reverse('museums.detail', args=[obj.slug]),
             obj,
             link_icon,
         )
